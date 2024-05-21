@@ -152,7 +152,7 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
 
 Видно, что для вызова удалённой команды нужно указать типы данных запроса/ответа и указать имя очереди, которая соответствует полному имени типа данных обработчика.
 Теперь клиент с сервером готовы обмениваться командами и ответами на них.
-Что бы получить ответ на запрос от удалённой системы вызывающий клиент `<IRabbitClient, RabbitClient>` отправляемому сообщению указывает имя очереди в которой ожидается ответ. Имя этой очереди формируется по шаблону:
+Что бы получить ответ на запрос от удалённой системы вызывающий клиент `<IRabbitClient, RabbitClient>` отправляемому сообщению указывает [имя очереди в которой ожидается ответ](https://github.com/badhitman/DesignerApp/blob/main/ServerLib/Services/RabbitMQ/RabbitClient.cs#L49). Имя этой очереди формируется по шаблону:
 ```c#
 string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}-{queue}/{Guid.NewGuid()}";
 ```
