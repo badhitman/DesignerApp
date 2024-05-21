@@ -1,0 +1,56 @@
+﻿@page "/Account/Manage/Disable2fa"
+
+@inject IdentityRedirectManager RedirectManager
+@inject ILogger<Disable2fa> Logger
+@inject IUsersProfilesService UsersProfilesRepo
+
+<PageTitle>Отключить двухфакторную аутентификацию (2FA)</PageTitle>
+
+<h3>Отключить двухфакторную аутентификацию (2FA)</h3>
+<StatusMessage Messages="@Messages" />
+
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>Это действие отключает только 2FA.</strong>
+    </p>
+    <p>
+        Отключение 2FA не меняет ключи, используемые в приложениях для аутентификации. Если вы хотите изменить ключ
+        используемые в приложении для аутентификации, вам следует <a href="Account/Manage/ResetAuthenticator">сбросить ключи аутентификации.</a>
+    </p>
+</div>
+
+<div>
+    <form @formname="disable-2fa" @onsubmit="OnSubmitAsync" method="post">
+        <AntiforgeryToken />
+        <button class="btn btn-danger" type="submit">Отключить 2FA</button>
+    </form>
+</div>
+
+@code {
+    IEnumerable<ResultMessage>? Messages;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        TResponseModel<bool?> rest = await UsersProfilesRepo.GetTwoFactorEnabledAsync();
+        Messages = rest.Messages;
+        if (HttpMethods.IsGet(HttpContext.Request.Method) && rest.Response != true)
+        {
+            throw new InvalidOperationException("Невозможно отключить 2FA для пользователя, поскольку в настоящее время он не включен.");
+        }
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        ResponseBaseModel disable2faResult = await UsersProfilesRepo.SetTwoFactorEnabledAsync(false);
+        Messages = disable2faResult.Messages;
+        if (!disable2faResult.Success())
+        {
+            throw new InvalidOperationException("Произошла непредвиденная ошибка при отключении 2FA.");
+        }
+
+        Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Warning, Text = "2фа отключен. Вы можете повторно включить 2FA при настройке приложения для аутентификации." }];
+    }
+}

@@ -1,0 +1,137 @@
+﻿@inject ITelegramRemoteTransmissionService TelegramRemoteRepo
+@inject IUsersProfilesService UsersManageRepo
+@inject ITelegramWebService tgWebRepo
+
+@inherits BlazorBusyComponentBaseModel
+
+@rendermode InteractiveServer
+
+<StatusMessage Messages="@Messages" />
+
+<p>
+    Telegram: @(TelegramUser is null ? "не привязан" : $"К вашей учётной записи привязан {TelegramUser}")
+    @if (TelegramUser is not null)
+    {
+        <RemoveTelegramJoinComponent TelegramUserId="TelegramUser.TelegramId" IdentityUserId="@User.UserId" />
+    }
+</p>
+<div class="input-group input-group-sm mb-3">
+    <span title="Привязка аккаунта Telegram к учётной записи сайта" class="input-group-text" id="inputGroup-sizing-sm">Привязка Telegram к у/з</span>
+    <input value="@(TelegramJoinAccount?.GuidToken ?? "Токен отсутствует")" readonly type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+    <button disabled="@IsBusyProgress" class="btn btn-outline-secondary" type="button" id="button-addon2" @onclick="CreateToken">@(TelegramJoinAccount is null ? "Создать" : "перевыпустить") токен</button>
+    @if (TelegramJoinAccount is not null)
+    {
+        <button disabled="@IsBusyProgress" class="btn btn-outline-secondary" type="button" id="button-addon2" @onclick="DeleteToken">Удалить токен</button>
+        <button disabled="@IsBusyProgress" class="btn btn-outline-secondary" type="button" id="button-addon2" @onclick="SendEmailInfo" title="Отправка на Email пользователя информацию о токене">Email уведомление</button>
+    }
+</div>
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-primary d-flex align-items-center" role="alert">
+        <p>
+            @((MarkupString)About)
+        </p>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? UserId { get; set; }
+
+    [Parameter, EditorRequired]
+    public string TelegramBotUsername { get; set; } = default!;
+
+    UserInfoModel User = default!;
+
+    string? bot_username;
+
+    TelegramJoinAccountModelDB? TelegramJoinAccount;
+    List<ResultMessage> Messages = [];
+    TelegramUserBaseModelDb? TelegramUser;
+
+    string About
+    {
+        get
+        {
+            if (TelegramJoinAccount is null)
+                return $"Для привязки{(User.TelegramId.HasValue ? " нового" : "")} аккаунта Telegram к вашей учётной записи выпустите токен (кнопка: 'Создать токен').";
+
+            string? tg_link = string.IsNullOrWhiteSpace(bot_username) ? null : $"<a target='_blank' href='https://t.me/{bot_username}?start={TelegramJoinAccount.GuidToken}'>https://t.me/{bot_username}?start={TelegramJoinAccount.GuidToken}</a>";
+            return $"Вам создан токен {TelegramJoinAccount.GuidToken}. Теперь его нужно отправить в Telegram бота @{TelegramBotUsername} (или воспользоваться ссылкой: {tg_link}).";
+        }
+    }
+
+    async Task SendEmailInfo() => await ReadState(true);
+
+    async Task ReadState(bool notify_email)
+    {
+        IsBusyProgress = true;
+        TelegramJoinAccountResponseModel rest = await tgWebRepo.TelegramJoinAccountState(notify_email, User.UserId);
+        IsBusyProgress = false;
+        if (!rest.Success())
+        {
+            Messages = rest.Messages;
+            throw new Exception("can`t get: TelegramJoinAccount. error {656F9472-7C6E-4A9B-81C8-E739D96E9E00}");
+        }
+        TelegramJoinAccount = rest.TelegramJoinAccount;
+    }
+
+    async Task CreateToken()
+    {
+        IsBusyProgress = true;
+        TelegramJoinAccountResponseModel rest = await tgWebRepo.TelegramJoinAccountCreate();
+        Messages = rest.Messages;
+        TelegramJoinAccount = rest.TelegramJoinAccount;
+        IsBusyProgress = false;
+    }
+
+    async Task DeleteToken()
+    {
+        IsBusyProgress = true;
+        ResponseBaseModel rest = await tgWebRepo.TelegramJoinAccountDeleteAction();
+        Messages = rest.Messages;
+        TelegramJoinAccountResponseModel rest_state = await tgWebRepo.TelegramJoinAccountState(false, User.UserId);
+        IsBusyProgress = false;
+        TelegramJoinAccount = rest_state.TelegramJoinAccount;
+
+        if (!rest_state.Success())
+            Messages.AddRange(rest_state.Messages);
+    }
+
+    async Task Rest()
+    {
+        IsBusyProgress = true;
+        TResponseModel<UserInfoModel?> rest = await UsersManageRepo.FindByIdAsync(UserId);
+        Messages = rest.Messages;
+        if (!rest.Success() || rest.Response is null)
+            throw new Exception("can`t get user data. error {590D6CFB-21E2-4976-AEC9-34192D34D2A0}");
+        User = rest.Response;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Rest();
+        await ReadState(false);
+        IsBusyProgress = true;
+        TResponseModel<string?> bot_username_res = await TelegramRemoteRepo.GetBotUsername();
+        IsBusyProgress = false;
+        bot_username = bot_username_res.Response;
+        Messages.AddRange(bot_username_res.Messages);
+        if (User.TelegramId.HasValue)
+        {
+            IsBusyProgress = true;
+            TResponseModel<TelegramUserBaseModelDb?> rest = await tgWebRepo.GetTelegramUserCachedInfo(User.TelegramId.Value);
+            IsBusyProgress = false;
+            Messages.AddRange(rest.Messages);
+            TelegramUser = rest.Response;
+        }
+    }
+}

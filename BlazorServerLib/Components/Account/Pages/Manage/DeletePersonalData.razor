@@ -1,0 +1,75 @@
+﻿@page "/Account/Manage/DeletePersonalData"
+
+@inject IdentityRedirectManager RedirectManager
+@inject ILogger<DeletePersonalData> LoggerRepo
+@inject IUsersProfilesService UsersProfilesRepo
+@inject IUsersAuthenticateService UserAuthRepo
+
+<PageTitle>Удалить персональные данные</PageTitle>
+
+<StatusMessage Messages="@Messages" />
+
+<h3>Удалить персональные данные</h3>
+
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>Удаление этих данных приведет к безвозвратному удалению вашей учетной записи, и ее невозможно будет восстановить.</strong>
+    </p>
+</div>
+
+<div>
+    <EditForm Model="Input" FormName="delete-user" OnValidSubmit="OnValidSubmitAsync" method="post">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" role="alert" />
+        @if (requirePassword)
+        {
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Пожалуйста введите ваш пароль." />
+                <label for="password" class="form-label">Пароль</label>
+                <ValidationMessage For="() => Input.Password" class="text-danger" />
+            </div>
+        }
+        <button class="w-100 btn btn-lg btn-danger" type="submit">Удалить данные и закрыть мою учетную запись</button>
+    </EditForm>
+</div>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private PasswordSingleModel Input { get; set; } = new();
+
+    UserInfoModel? user;
+    bool requirePassword;
+
+    List<ResultMessage> Messages = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Input ??= new();
+        UserBooleanResponseModel rest = await UsersProfilesRepo.UserHasPasswordAsync();
+        Messages = rest.Messages;
+        requirePassword = rest.Response == true;
+        user = rest.UserInfo;
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        UserBooleanResponseModel rest = await UsersProfilesRepo.CheckUserPasswordAsync(Input.Password);
+        Messages = rest.Messages;
+        if (requirePassword && !rest.Success())
+            return;
+
+        ResponseBaseModel result = await UsersProfilesRepo.DeleteUserDataAsync(Input.Password);
+        Messages.AddRange(result.Messages);
+        if (!result.Success())
+        {
+            throw new InvalidOperationException("Произошла непредвиденная ошибка при удалении пользователя.");
+        }
+
+        await UserAuthRepo.SignOutAsync();
+        LoggerRepo.LogInformation("Пользователь с идентификатором '{UserId}' удалил свои данные.", user?.UserId);
+        RedirectManager.RedirectToCurrentPage();
+    }
+}

@@ -1,0 +1,59 @@
+﻿@page "/Account/LoginWithRecoveryCode"
+
+@inject IdentityRedirectManager RedirectManager
+@inject ILogger<LoginWithRecoveryCode> Logger
+@inject IUsersAuthenticateService UsersAuthRepo
+
+<PageTitle>Проверка кода восстановления</PageTitle>
+
+<h1>Проверка кода восстановления</h1>
+<hr />
+<StatusMessage Messages="@Messages" />
+<p>
+    Вы запросили вход с кодом восстановления. Этот логин не будет запомнен до тех пор, пока вы не предоставите код приложения для аутентификации при входе в систему или не отключите 2FA и не войдете в систему снова.
+</p>
+<div class="row">
+    <div class="col-md-4">
+        <EditForm Model="Input" FormName="login-with-recovery-code" OnValidSubmit="OnValidSubmitAsync" method="post">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.RecoveryCode" class="form-control" autocomplete="off" placeholder="RecoveryCode" />
+                <label for="recovery-code" class="form-label">Код восстановления</label>
+                <ValidationMessage For="() => Input.RecoveryCode" class="text-danger" />
+            </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Авторизоваться</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private RecoveryCodeSingleModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    IEnumerable<ResultMessage>? Messages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        TResponseModel<UserInfoModel?> user = await UsersAuthRepo.GetTwoFactorAuthenticationUserAsync();
+        Messages = user.Messages;
+        if (user.Response is null)
+            throw new InvalidOperationException("Невозможно загрузить пользователя двухфакторной аутентификации.");
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        Messages = null;
+        string recoveryCode = Input.RecoveryCode.Replace(" ", string.Empty);
+        IdentityResultResponseModel result = await UsersAuthRepo.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
+        Messages = result.Messages;
+
+        if (result.Success())
+            RedirectManager.RedirectTo(ReturnUrl);
+        else if (result.IsLockedOut == true)
+            RedirectManager.RedirectTo("Account/Lockout");
+    }
+}

@@ -1,0 +1,185 @@
+﻿@page "/Users/Profiles"
+@attribute [Authorize(Roles = "admin")]
+
+@using System.Net.Mail
+
+@rendermode InteractiveServer
+@inject IUsersProfilesService UsersManageRepo
+
+<PageTitle>Пользователи</PageTitle>
+
+<h3>Пользователи @(RoleInfo is null ? "" : $"в роли: {RoleInfo.Name}")</h3>
+
+<div class="row">
+    @if (RoleInfo is not null)
+    {
+        <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text">Добавить пользователя</span>
+            <input @bind-value="added_user_email" @bind-value:event="oninput" type="text" class="form-control" aria-label="Имя создаваемой роли">
+            <button disabled="@(string.IsNullOrWhiteSpace(added_user_email))" @onclick="AddRoleToUser" class="btn btn-outline-secondary" type="button">
+                Включить пользователя в роль
+            </button>
+        </div>
+    }
+    <div class="grid">
+        <QuickGrid ItemsProvider="@foodRecallProvider" Pagination="@pagination" @ref="myGrid">
+            <TemplateColumn Title="Email">
+                @{
+                    string lock_user_css_link = LinkCssClass(context);
+                }
+                <div class="hstack">
+                    <div class="px-2">
+                        <NavLink class="@lock_user_css_link" href="@($"/Users/Profiles/view-{context.UserId}")">@($"{context.Email}{(context.UserName?.Equals(context.Email) == true ? "" : $"(user name: {context.UserName})")}")</NavLink>
+                    </div>
+                    @if (context.AccessFailedCount > 0)
+                    {
+                        <sup title="Количество неудачных попыток входа"> @(context.AccessFailedCount) ошибок</sup>
+                    }
+                    <span>@context.PhoneNumber</span>
+                    @if (RoleInfo is not null && !string.IsNullOrWhiteSpace(context.Email))
+                    {
+                        <div class="px-2">
+                            <span @onclick="() => DeleteUser(context.Email)" title="исключить пользователя из роли" class="my-btn badge text-bg-danger">
+                                исключить из роли {<b>@RoleInfo.Name</b>}
+                            </span>
+                        </div>
+                    }
+                    <span class="bi bi-envelope-@(context.EmailConfirmed ? "check-fill text-success" : "x text-warning") mx-1" title="email @(context.EmailConfirmed ? "" : "НЕ")подтверждён"></span>
+                    @if (context.TelegramId.HasValue)
+                    {
+                        <TelegramSendMessageComponent TelegramId="context.TelegramId.Value" />
+                        <RemoveTelegramJoinComponent TelegramUserId="context.TelegramId.Value" />
+                    }
+                    @if (string.IsNullOrWhiteSpace(lock_user_css_link))
+                    {
+                        <span @onclick="() => SetUserLock(context.UserId, string.IsNullOrWhiteSpace(lock_user_css_link))" title="заблокировать пользователя" class="my-btn mx-2 badge text-bg-warning">
+                            заблокировать
+                        </span>
+                    }
+                    else
+                    {
+                        <span @onclick="() => SetUserLock(context.UserId, string.IsNullOrWhiteSpace(lock_user_css_link))" title="разблокировать пользователя" class="my-btn mx-2 badge text-bg-success">
+                            разблокировать
+                        </span>
+                    }
+                </div>
+            </TemplateColumn>
+            <TemplateColumn Title="Роли" Align="Align.Right">
+                @context.RolesAsString(";")
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="@pagination" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? OwnerRoleId { get; set; }
+
+    PaginationState pagination = new PaginationState { ItemsPerPage = 15 };
+    string nameFilter = string.Empty;
+    QuickGrid<UserInfoModel>? myGrid;
+    int numResults;
+    GridItemsProvider<UserInfoModel>? foodRecallProvider;
+    string? added_user_email;
+    IEnumerable<ResultMessage>? Messages;
+    RoleInfoModel? RoleInfo;
+
+    static string LinkCssClass(UserInfoModel user)
+    {
+        return user.LockoutEnabled && user.LockoutEnd.GetValueOrDefault(DateTimeOffset.MinValue) > DateTimeOffset.UtcNow ? "text-decoration-line-through" : "";
+    }
+
+    async Task SetUserLock(string userId, bool locked_set)
+    {
+        ResponseBaseModel rest = await UsersManageRepo.SetLockUser(userId, locked_set);
+        Messages = rest.Messages;
+        if (myGrid is not null)
+            await myGrid.RefreshDataAsync();
+    }
+
+    async Task DeleteUser(string user_email)
+    {
+        if (string.IsNullOrEmpty(RoleInfo?.Name))
+        {
+            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "пустое имя роли. error {062C0753-24D3-4F84-A635-514832D978D0}" }];
+            return;
+        }
+
+        if (!MailAddress.TryCreate(user_email, out _))
+        {
+            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "исключение пользователя без email" }];
+            return;
+        }
+
+        ResponseBaseModel rest = await UsersManageRepo.DeleteRoleFromUser(RoleInfo.Name, user_email);
+
+        Messages = rest.Messages;
+        if (!rest.Success())
+            return;
+        added_user_email = "";
+
+        if (myGrid is not null)
+            await myGrid.RefreshDataAsync();
+    }
+
+    async Task AddRoleToUser()
+    {
+        if (!MailAddress.TryCreate(added_user_email, out _))
+        {
+            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "email пользователя не корректный" }];
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(RoleInfo?.Name))
+        {
+            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "role name IsNullOrWhiteSpace. error {2DFAFA92-B8E8-4914-832B-1DE267D39A18}" }];
+            return;
+        }
+
+        ResponseBaseModel rest = await UsersManageRepo.AddRoleToUser(RoleInfo.Name, added_user_email);
+        Messages = rest.Messages;
+        if (!rest.Success())
+            return;
+        added_user_email = "";
+
+        if (myGrid is not null)
+            await myGrid.RefreshDataAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(OwnerRoleId))
+        {
+            TResponseModel<RoleInfoModel?> rest = await UsersManageRepo.GetRole(OwnerRoleId);
+            Messages = rest.Messages;
+            if (!rest.Success())
+                return;
+            RoleInfo = rest.Response;
+        }
+
+        foodRecallProvider = async req =>
+        {
+            UsersInfoPaginationModel res = await UsersManageRepo.FindUsersAsync(new FindWithOwnedRequestModel()
+                {
+                    FindQuery = nameFilter,
+                    PageNum = pagination.CurrentPageIndex,
+                    PageSize = pagination.ItemsPerPage,
+                    OwnerId = RoleInfo?.Id
+                });
+
+            if (res.UsersInfo is null)
+            {
+                string msg = "UsersInfo is null. error {B57C9FB4-FC33-44A1-90C7-E52C00A041EE}";
+                throw new Exception(msg);
+            }
+
+            if (numResults != res.TotalRowsCount)
+            {
+                numResults = res.TotalRowsCount;
+                StateHasChanged();
+            }
+
+            return GridItemsProviderResult.From<UserInfoModel>(res.UsersInfo, res.TotalRowsCount);
+        };
+    }
+}

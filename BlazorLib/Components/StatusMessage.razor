@@ -1,0 +1,14 @@
+﻿@using SharedLib
+
+@if (Messages?.Any() == true)
+{
+    <div class="alert alert-light" role="alert">
+
+        <ul class="list-group">
+            @foreach (ResultMessage ie in Messages)
+            {
+                <li title="@ie.TypeMessage.DescriptionInfo()" class="list-group-item list-group-item-@getCssItem(ie.TypeMessage)">@ie.Text</li>
+            }
+        </ul>
+    </div>
+}

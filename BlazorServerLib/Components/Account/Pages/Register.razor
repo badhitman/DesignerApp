@@ -1,0 +1,72 @@
+﻿@page "/Account/Register"
+
+@inject IUsersAuthenticateService UserAuthRepo
+@inject ILogger<Register> LoggerRepo
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Регистрация</PageTitle>
+
+<h1>Регистрация</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <StatusMessage Messages="@identityErrors" />
+        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
+            <DataAnnotationsValidator />
+            <h2>Создать новый аккаунт.</h2>
+            <hr />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label for="email">Email</label>
+                <ValidationMessage For="() => Input.Email" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label for="password">Пароль</label>
+                <ValidationMessage For="() => Input.Password" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label for="confirm-password">Повтор Пароля</label>
+                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+            </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Регистрация</button>
+        </EditForm>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Использование другого сервиса для регистрации.</h3>
+            <hr />
+            Telegram?
+        </section>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+#if DEBUG
+    private UserRegistrationModel Input { get; set; } = new() { Password = "Qwerty123!", ConfirmPassword = "Qwerty123!" };
+#else
+    private UserRegistrationModel Input { get; set; } = new();
+#endif
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private IEnumerable<ResultMessage>? identityErrors;
+
+    public async Task RegisterUser(EditContext editContext)
+    {
+        identityErrors = null;
+        RegistrationNewUserResponseModel result = await UserAuthRepo.RegisterNewUserAsync(Input.Email, Input.Password, NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").ToString());
+        identityErrors = result.Messages;
+        if (!result.Success())
+            return;
+
+        LoggerRepo.LogInformation($"Пользователь #{result.Response} создал новую учетную запись с паролем.");
+        if (!string.IsNullOrWhiteSpace(ReturnUrl))
+            RedirectManager.RedirectTo(ReturnUrl);
+    }
+}

@@ -1,0 +1,47 @@
+﻿@page "/Account/ConfirmEmail"
+
+@inject IUsersProfilesService UserProfilesManage
+@inject IUsersAuthenticateService UserAuthManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Подтвердите адрес электронной почты</PageTitle>
+
+<h1>Подтвердите адрес электронной почты</h1>
+<StatusMessage Messages="@Messages" />
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? UserId { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? Code { get; set; }
+
+    List<ResultMessage> Messages = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserId is null || Code is null)
+        {
+            RedirectManager.RedirectTo("");
+        }
+
+        TResponseModel<UserInfoModel?> user = await UserProfilesManage.FindByIdAsync(UserId);
+        Messages = user.Messages;
+        if (user.Response is null)
+        {
+            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+        }
+        else
+        {
+            ResponseBaseModel result = await UserAuthManager.ConfirmEmailAsync(user.Response.UserId, Code);
+            Messages.AddRange(result.Messages);
+            if (!result.Success())
+            {
+                Messages.Add(new() { TypeMessage = ResultTypesEnum.Success, Text = "Ошибка подтверждения электронной почты." });
+            }
+        }
+    }
+}

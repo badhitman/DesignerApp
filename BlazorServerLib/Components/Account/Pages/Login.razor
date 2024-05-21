@@ -1,0 +1,132 @@
+﻿@page "/Account/Login"
+
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+
+@inject IUsersAuthenticateService UserAuthManage
+@inject ILogger<Login> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Вход</PageTitle>
+
+<h1>Вход</h1>
+<StatusMessage Messages="@Messages" />
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <StatusMessage Messages="@result?.Messages" />
+            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+                <DataAnnotationsValidator />
+                <h2>Используйте локальную учетную запись для входа.</h2>
+                <hr />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label for="email" class="form-label">Email</label>
+                    <ValidationMessage For="() => Input.Email" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label for="password" class="form-label">Password</label>
+                    <ValidationMessage For="() => Input.Password" class="text-danger" />
+                </div>
+                <div class="checkbox mb-3">
+                    <label class="form-label">
+                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
+                        Запомнить меня
+                    </label>
+                </div>
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Вход</button>
+                </div>
+                <div>
+                    <p>
+                        <a href="Account/ForgotPassword">Забыли пароль?</a>
+                    </p>
+                    <p>
+                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Зарегистрируйтесь как новый пользователь</a>
+                    </p>
+                    <p>
+                        <a href="Account/ResendEmailConfirmation">Повторно отправить подтверждение по электронной почте</a>
+                    </p>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+
+    @if (IsDebug && result is not null)
+    {
+        <div class="col-md-6 col-md-offset-2">
+            <section>
+                <h3>Use another service to log in.</h3>
+                <hr />
+                @if (result.IsNotAllowed == true)
+                {
+                    <ul class="list-group">
+                        <li class="list-group-item">@(nameof(result.Succeeded)): @result.Succeeded</li>
+                        <li class="list-group-item">@(nameof(result.IsLockedOut)): @result.IsLockedOut</li>
+                        <li class="list-group-item">@(nameof(result.IsNotAllowed)): @result.IsNotAllowed</li>
+                        <li class="list-group-item">@(nameof(result.RequiresTwoFactor)): @result.RequiresTwoFactor</li>
+                    </ul>
+                }
+            </section>
+        </div>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromForm]
+#if DEBUG
+    private UserAuthorizationModel Input { get; set; } = new() { Password = "Qwerty123!" };
+    bool IsDebug = true;
+#else
+    private UserAuthorizationModel Input { get; set; } = new();
+    bool IsDebug = false;
+#endif
+
+    /// <summary>
+    /// This doesn't count login failures towards account lockout
+    /// To enable password failures to trigger account lockout, set lockoutOnFailure: true
+    /// </summary>
+    IdentityResultResponseModel? result;
+
+    List<ResultMessage> Messages = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpMethods.IsGet(HttpContext.Request.Method) && HttpContext.User.Identity?.IsAuthenticated == true)
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+    }
+
+    public async Task LoginUser()
+    {
+        result = await UserAuthManage.UserLoginAsync(Input.Email, Input.Password, Input.RememberMe);
+        Messages.AddRange(result.Messages);
+        if (result.Success())
+        {
+            Logger.LogInformation("User logged in.");
+            RedirectManager.RedirectTo(ReturnUrl);
+        }
+        else if (result.RequiresTwoFactor == true)
+        {
+            RedirectManager.RedirectTo(
+                "Account/LoginWith2fa",
+                new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
+        }
+        else if (result.IsLockedOut == true)
+        {
+            Logger.LogWarning("User account locked out.");
+            RedirectManager.RedirectTo("Account/Lockout");
+        }
+    }
+}

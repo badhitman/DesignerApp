@@ -1,0 +1,17 @@
+﻿@page "/Users/Profiles/view-{UserId:guid}"
+@attribute [Authorize(Roles = "admin")]
+
+@inject IUsersProfilesService UsersProfilesRepo
+
+<PageTitle>Пользователь</PageTitle>
+
+<h3>Пользователь</h3>
+
+<div class="row">
+    <RolesPage OwnerUserId="@UserId.ToString()" />
+</div>
+
+@code {
+    [Parameter]
+    public Guid UserId { get; set; }
+}

@@ -1,0 +1,16 @@
+[Unit]
+Description=api.iq-s.pro
+
+[Service]
+WorkingDirectory=/srv/net6/api.iq-s.pro/www/
+ExecStart=/usr/bin/dotnet /srv/net6/api.iq-s.pro/www/ApiRestApp.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-api-iq-s-pro
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

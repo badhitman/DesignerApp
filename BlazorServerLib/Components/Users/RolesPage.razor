@@ -1,0 +1,136 @@
+﻿@page "/Users/Roles"
+@attribute [Authorize(Roles = "admin")]
+
+@rendermode InteractiveServer
+@inject IUsersProfilesService UsersManageRepo
+
+<PageTitle>Роли</PageTitle>
+
+<h3>
+    Роли
+    @if (UserInfo is not null)
+    {
+        <text> пользователя: @UserInfo.Email</text>
+    }
+</h3>
+<StatusMessage Messages="@Messages" />
+
+<div class="row">
+    <div class="input-group input-group-sm mb-3">
+        <span class="input-group-text">Новая роль</span>
+        <input @bind-value="added_role_name" @bind-value:event="oninput" type="text" class="form-control" aria-label="Имя создаваемой роли">
+        <button disabled="@(string.IsNullOrWhiteSpace(added_role_name))" @onclick="AddNewRole" class="btn btn-outline-secondary" type="button">
+            @(UserInfo is null ? "Создать новую роль" : "Добавить роль пользователю")
+        </button>
+    </div>
+    <div class="grid">
+        <QuickGrid ItemsProvider="@foodRecallProvider" Pagination="@pagination" @ref="myGrid">
+            <TemplateColumn Title="Роль">
+                <NavLink href="@($"/Users/Roles/view-{context.Id}")">@context.Name</NavLink>
+            </TemplateColumn>
+            <TemplateColumn Align="Align.Right">
+                <div class="hstack">
+                    <div title="Количество участников в группе" class="px-2">@context.UsersCount</div>
+                    <div class="px-2">
+                        <span @onclick="() => DeleteRole(context.Name)" title="@(UserInfo is null ? "удалить роль" : "исключить пользователя из роли")" class="my-btn badge text-bg-danger">
+                            @(UserInfo is null ? "удалить" : "исключить")
+                        </span>
+                    </div>
+                </div>
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="@pagination" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? OwnerUserId { get; set; }
+
+    PaginationState pagination = new PaginationState { ItemsPerPage = 15 };
+    string nameFilter = string.Empty;
+    QuickGrid<RoleInfoModel>? myGrid;
+    int numResults;
+    GridItemsProvider<RoleInfoModel>? foodRecallProvider;
+    string? added_role_name;
+    IEnumerable<ResultMessage>? Messages;
+    UserInfoModel? UserInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(OwnerUserId))
+        {
+            TResponseModel<UserInfoModel?> rest = await UsersManageRepo.FindByIdAsync(OwnerUserId);
+            Messages = rest.Messages;
+            if (!rest.Success())
+                return;
+            UserInfo = rest.Response;
+        }
+
+        foodRecallProvider = async req =>
+        {
+            RolesPaginationModel res = await UsersManageRepo.FindRolesAsync(new FindWithOwnedRequestModel()
+                {
+                    OwnerId = OwnerUserId,
+                    FindQuery = nameFilter,
+                    PageNum = pagination.CurrentPageIndex,
+                    PageSize = pagination.ItemsPerPage
+                });
+
+            if (res.Roles is null)
+            {
+                string msg = "Roles is null. error {CEB87925-CA09-46EE-BCA4-93B7A5DF52EE}";
+                throw new Exception(msg);
+            }
+
+            if (numResults != res.TotalRowsCount)
+            {
+                numResults = res.TotalRowsCount;
+                StateHasChanged();
+            }
+
+            return GridItemsProviderResult.From<RoleInfoModel>(res.Roles, res.TotalRowsCount);
+        };
+    }
+
+    async Task DeleteRole(string? roleName)
+    {
+        if (string.IsNullOrWhiteSpace(roleName))
+        {
+            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "удаление роли без имени" }];
+            return;
+        }
+
+        ResponseBaseModel rest = !string.IsNullOrEmpty(UserInfo?.Email)
+        ? await UsersManageRepo.DeleteRoleFromUser(roleName, UserInfo.Email)
+        : await UsersManageRepo.DeleteRole(roleName.Trim());
+
+        Messages = rest.Messages;
+        if (!rest.Success())
+            return;
+        added_role_name = "";
+
+        if (myGrid is not null)
+            await myGrid.RefreshDataAsync();
+    }
+
+    async Task AddNewRole()
+    {
+        if (string.IsNullOrWhiteSpace(added_role_name))
+        {
+            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "не указано имя создаваемой роли" }];
+            return;
+        }
+        ResponseBaseModel rest = !string.IsNullOrEmpty(UserInfo?.Email)
+        ? await UsersManageRepo.AddRoleToUser(added_role_name, UserInfo.Email)
+        : await UsersManageRepo.CateNewRole(added_role_name.Trim());
+
+        Messages = rest.Messages;
+        if (!rest.Success())
+            return;
+        added_role_name = "";
+
+        if (myGrid is not null)
+            await myGrid.RefreshDataAsync();
+    }
+}

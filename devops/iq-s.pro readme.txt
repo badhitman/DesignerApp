@@ -1,0 +1,33 @@
+apt-get update
+apt-get upgrade
+apt-get dist-upgrade
+
+apt-get install redis-server 
+apt-get install wget
+apt-get install nano
+apt-get install sqlite3
+
+apt-get install ufw
+ufw allow 22
+ufw allow 443
+ufw enable
+
+wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+dpkg -i packages-microsoft-prod.deb
+rm packages-microsoft-prod.deb
+apt-get update && \
+  apt-get install -y dotnet-sdk-6.0
+apt-get update && \
+  apt-get install -y aspnetcore-runtime-6.0
+
+systemctl enable api.iq-s.pro
+systemctl start api.iq-s.pro
+journalctl -u api.iq-s.pro
+
+ln -s /etc/nginx/sites-available/api.iq-s.pro.conf /etc/nginx/sites-enabled/
+
+systemctl reload nginx
+
+ln -s /etc/nginx/sites-available/iq-s.pro.conf /etc/nginx/sites-enabled/
+
+systemctl reload nginx

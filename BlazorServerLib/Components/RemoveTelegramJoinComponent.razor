@@ -1,0 +1,68 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@inject ITelegramWebService telegramWebRepo;
+@inject NavigationManager navManager
+
+@rendermode InteractiveServer
+
+<StatusMessage Messages="@Messages" />
+
+@if (IdentityUserId is null && !TelegramUserId.HasValue)
+{
+    <span class="badge rounded-pill text-bg-secondary ms-2">owned is null. error {C5FABB48-E47A-499B-894D-A0D8D9479AF6}</span>
+}
+else if(IsBusyProgress)
+{
+    <div class="spinner-border spinner-border-sm  ms-2" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+}
+else
+{
+    <span @onclick="TelegramAccountRemoveJoin" class="badge text-bg-@(DeleteInit ? "danger" : "warning") ms-1" style="cursor:pointer;">@(DeleteInit ? "Подтвердить удаление" : "Удалить связь пользователя с Telegram")</span>
+}
+
+@code {
+    [Parameter]
+    public string? IdentityUserId { get; set; }
+
+    [Parameter]
+    public long? TelegramUserId { get; set; }
+
+    List<ResultMessage> Messages = [];
+
+    bool DeleteInit;
+
+    async Task TelegramAccountRemoveJoin()
+    {
+        if (IsBusyProgress)
+            return;
+
+        if (IdentityUserId is null && !TelegramUserId.HasValue)
+        {
+            Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "owned is null. error {3A166646-E3D3-470B-8F51-073209F694E9}" }];
+            return;
+        }
+
+        if (!DeleteInit)
+        {
+            DeleteInit = true;
+            return;
+        }
+        IsBusyProgress = true;
+        await Task.Run(async () =>
+        {
+            ResponseBaseModel rest = TelegramUserId.HasValue
+            ? await telegramWebRepo.TelegramAccountRemoveJoin(TelegramUserId.Value)
+            : await telegramWebRepo.TelegramAccountRemoveJoin(IdentityUserId!);
+            IsBusyProgress = false;
+            DeleteInit = false;
+            if (!rest.Success())
+                Messages = rest.Messages;
+            else
+                navManager.ReloadPage();
+
+            await InvokeAsync(() => { StateHasChanged(); });
+        });
+    }
+}

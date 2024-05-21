@@ -1,0 +1,42 @@
+﻿@page "/Account/Manage/PersonalData"
+
+@inject IUsersProfilesService UsersProfilesRepo
+
+<PageTitle>Личные данные</PageTitle>
+
+<StatusMessage Messages="@Messages" />
+<h3>Личные данные</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Ваша учетная запись содержит персональные данные, которые вы нам предоставили. Эта страница позволяет вам загрузить или удалить эти данные.</p>
+        <p>
+            <strong>Удаление этих данных приведет к безвозвратному удалению вашей учетной записи, и ее невозможно будет восстановить.</strong>
+        </p>
+        <form action="Account/Manage/DownloadPersonalData" method="post">
+            <AntiforgeryToken />
+            <button class="btn btn-primary" type="submit">Скачать</button>
+        </form>
+        <p>
+            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger">Удалить</a>
+        </p>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    IEnumerable<ResultMessage>? Messages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        TResponseModel<UserInfoModel?> rest = await UsersProfilesRepo.FindByIdAsync();
+        if (rest.Response is null)
+        {
+            string msg = "user data can`t load. error {8F75F2FF-31F1-4E7D-8E41-CD2494C39FD8}";
+            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = msg }];
+            throw new Exception(msg);
+        }
+    }
+}
