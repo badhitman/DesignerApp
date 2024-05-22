@@ -9,6 +9,9 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public static class ServiceProviderExtensions
 {
+    /// <inheritdoc/>
+    public static TResponseModel<object?>? SetRemoteConf = null;
+
     /// <summary>
     /// Получить конфигурацию
     /// </summary>
