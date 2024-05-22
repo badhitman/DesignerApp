@@ -18,7 +18,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\BlazorLib\BlazorLib.csproj" />
-		<ProjectReference Include="..\IdentityLib\IdentityLib.csproj" />
 		<ProjectReference Include="..\ServerLib\ServerLib.csproj" />
 	</ItemGroup>
 
