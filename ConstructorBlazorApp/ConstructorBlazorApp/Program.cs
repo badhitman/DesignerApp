@@ -84,9 +84,6 @@ builder.Services.AddDbContextFactory<MainDbAppContext>(opt =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<ApplicationRole>()
     .AddRoleManager<RoleManager<ApplicationRole>>()
