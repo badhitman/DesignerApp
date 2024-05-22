@@ -67,7 +67,10 @@
     {
         if (webConfig.Value.BaseUri is null)
             webConfig.Value.BaseUri = NavigatorRepo.BaseUri;
-        await tgRemoteCall.SetWebConfig(webConfig.Value);
+
+        if (ServiceProviderExtensions.SetRemoteConf?.Success() != true)
+            ServiceProviderExtensions.SetRemoteConf = await tgRemoteCall.SetWebConfig(webConfig.Value);
+
         base.OnInitialized();
     }
 }
