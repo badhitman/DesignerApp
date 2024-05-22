@@ -44,7 +44,7 @@ public class RabbitClient : IRabbitClient
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<T?>> MqRemoteCall<T>(string queue, object? request = null)
+    public Task<TResponseModel<T?>> MqRemoteCall<T>(string queue, object? request = null)
     {
         string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}-{queue}/{Guid.NewGuid()}";
 
@@ -80,7 +80,7 @@ public class RabbitClient : IRabbitClient
             }
 
             _channel.BasicAck(e.DeliveryTag, false);
-            
+
             stopwatch.Stop();
             cts.Cancel();
             cts.Dispose();
@@ -127,6 +127,6 @@ public class RabbitClient : IRabbitClient
             res.AddError($"Прервано по таймауту: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
         }
 
-        return res;
+        return Task.FromResult(res);
     }
 }
