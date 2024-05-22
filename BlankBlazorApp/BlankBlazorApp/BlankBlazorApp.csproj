@@ -37,7 +37,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\BlazorServerLib\BlazorWebLib.csproj" />
 		<ProjectReference Include="..\BlankBlazorApp.Client\BlankBlazorApp.Client.csproj" />
-		<ProjectReference Include="..\..\ServerLib\ServerLib.csproj" />
 	</ItemGroup>
 
 </Project>
