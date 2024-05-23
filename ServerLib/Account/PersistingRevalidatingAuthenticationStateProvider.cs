@@ -10,7 +10,7 @@ using SharedLib;
 using System.Diagnostics;
 using System.Security.Claims;
 
-namespace BlazorWebLib.Components.Account;
+namespace ServerLib;
 
 /// <summary>
 /// Это AuthenticationStateProvider на стороне сервера, который повторно проверяет метку безопасности для подключенного пользователя

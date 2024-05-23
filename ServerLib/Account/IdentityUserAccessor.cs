@@ -2,7 +2,7 @@ using IdentityLib;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
-namespace BlazorWebLib.Components.Account;
+namespace ServerLib;
 
 /// <summary>
 /// Identity User Accessor

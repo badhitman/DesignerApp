@@ -2,7 +2,7 @@ using IdentityLib;
 using Microsoft.AspNetCore.Identity;
 using SharedLib;
 
-namespace BlazorWebLib;
+namespace ServerLib;
 
 /// <summary>
 /// Инфраструктура ASP.NET Core Identity (не предназначено для использования в качестве абстракции электронной почты общего назначения).
