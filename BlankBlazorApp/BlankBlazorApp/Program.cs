@@ -1,6 +1,5 @@
 using BlankBlazorApp.Components;
-using BlazorWebLib;
-using BlazorWebLib.Components.Account;
+using BlazorLib;
 using DbcLib;
 using IdentityLib;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -160,7 +159,7 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(BlankBlazorApp.Client._Imports).Assembly, typeof(BlazorWebLib._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(BlankBlazorApp.Client._Imports).Assembly, typeof(BlazorWebLib._Imports).Assembly, typeof(BlazorLib._Imports).Assembly);
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
