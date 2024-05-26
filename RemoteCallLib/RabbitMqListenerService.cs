@@ -44,7 +44,7 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
 
         using (IServiceScope scope = servicesProvider.CreateScope())
         {
-            receiveService = scope.ServiceProvider.GetServices<IResponseReceive<TRequest, TResponse>>().First(o => o.GetType() == QueueType);
+            receiveService = scope.ServiceProvider.GetServices<IResponseReceive<TRequest?, TResponse>>().First(o => o.GetType() == QueueType);
         }
 
         factory = new()
