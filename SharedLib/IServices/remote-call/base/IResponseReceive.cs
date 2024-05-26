@@ -9,4 +9,9 @@ public interface IResponseReceive<TRequest, TResponse>
     /// Обработчик ответа на запрос
     /// </summary>
     public Task<TResponseModel<TResponse?>> ResponseHandleAction(TRequest? payload);
+
+    /// <summary>
+    /// Имя очереди
+    /// </summary>
+    public virtual static string QueueName { get; } = string.Empty;
 }

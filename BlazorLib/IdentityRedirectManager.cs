@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics.CodeAnalysis;
 
-namespace BlazorWebLib.Components.Account;
+namespace BlazorLib;
 
 /// <summary>
 /// Identity Redirect Manager
