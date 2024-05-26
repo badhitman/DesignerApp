@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SharedLib;
+﻿using SharedLib;
 using Telegram.Bot;
 
 namespace Transmission.Receives.telegram;
@@ -10,6 +9,9 @@ namespace Transmission.Receives.telegram;
 public class GetBotUsernameReceive(ITelegramBotClient _botClient, ILogger<GetBotUsernameReceive> _logger)
     : IResponseReceive<object?, string?>
 {
+    /// <inheritdoc/>
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetBotUsernameReceive;
+
     /// <inheritdoc/>
     public async Task<TResponseModel<string?>> ResponseHandleAction(object? payload = null)
     {

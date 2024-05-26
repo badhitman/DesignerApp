@@ -10,7 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Telegram;
 
 /// <inheritdoc/>
-public class RabbitMqListenerService<TQueue,TRequest,TResponse> : BackgroundService
+public class RabbitMqListenerService<TQueue, TRequest, TResponse>
+    : BackgroundService
     where TQueue : IResponseReceive<TRequest, TResponse>
 {
     readonly IConnection _connection;
@@ -20,15 +21,21 @@ public class RabbitMqListenerService<TQueue,TRequest,TResponse> : BackgroundServ
 
     static Dictionary<string, object>? ResponseQueueArguments;
 
+    Type? _queueType;
     /// <summary>
     /// Queue type
     /// </summary>
-    public Type QueueType { get; }
+    public Type QueueType { get { _queueType ??= typeof(TQueue); return _queueType; } }
+
+    string? _queueName;
+    /// <summary>
+    /// Имя очереди MQ
+    /// </summary>
+    public string QueueName { get { _queueName ??= TQueue.QueueName; return _queueName; } } // TQueue.QueueName;
 
     /// <inheritdoc/>
     public RabbitMqListenerService(IOptions<RabbitMQConfigModel> rabbitConf, IServiceProvider servicesProvider)
     {
-        QueueType = typeof(TQueue);
         ResponseQueueArguments ??= new()
         {
             { "x-message-ttl", rabbitConf.Value.RemoteCallTimeoutMs },
@@ -50,7 +57,7 @@ public class RabbitMqListenerService<TQueue,TRequest,TResponse> : BackgroundServ
 
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.QueueDeclare(queue: QueueType.FullName, durable: true, exclusive: false, autoDelete: false, arguments: null);
+        _channel.QueueDeclare(queue: QueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
     }
 
     /// <inheritdoc/>
@@ -86,7 +93,7 @@ public class RabbitMqListenerService<TQueue,TRequest,TResponse> : BackgroundServ
                 }
         };
 
-        _channel.BasicConsume(QueueType.FullName, false, consumer);
+        _channel.BasicConsume(QueueName, false, consumer);
         return Task.CompletedTask;
     }
 

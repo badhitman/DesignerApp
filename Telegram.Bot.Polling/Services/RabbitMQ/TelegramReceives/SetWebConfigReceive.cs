@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SharedLib;
+﻿using SharedLib;
 
 namespace Transmission.Receives.telegram;
 
@@ -9,6 +8,9 @@ namespace Transmission.Receives.telegram;
 public class SetWebConfigReceive(WebConfigModel webConfig, ILogger<SetWebConfigReceive> _logger)
     : IResponseReceive<WebConfigModel?, object?>
 {
+    /// <inheritdoc/>
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetWebConfigReceive;
+
     /// <inheritdoc/>
     public Task<TResponseModel<object?>> ResponseHandleAction(WebConfigModel? payload)
     {

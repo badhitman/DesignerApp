@@ -1,5 +1,4 @@
-﻿using Transmission.Receives.telegram;
-using SharedLib;
+﻿using SharedLib;
 
 namespace ServerLib;
 
@@ -10,13 +9,13 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
 {
     /// <inheritdoc/>
     public async Task<TResponseModel<string?>> GetBotUsername()
-        => await rabbitClient.MqRemoteCall<string?>(typeof(GetBotUsernameReceive).FullName!);
+        => await rabbitClient.MqRemoteCall<string?>(GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram)
-        => await rabbitClient.MqRemoteCall<int?>(typeof(SendTextMessageTelegramReceive).FullName!, message_telegram);
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive, message_telegram);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<object?>> SetWebConfig(WebConfigModel webConf)
-        => await rabbitClient.MqRemoteCall<object?>(typeof(SetWebConfigReceive).FullName!, webConf);
+        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.SetWebConfigReceive, webConf);
 }

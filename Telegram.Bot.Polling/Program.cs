@@ -61,8 +61,6 @@ builder.ConfigureServices((context, services) =>
     services.AddSingleton<WebConfigModel>();
     services.AddOptions();
 
-    services.AddSingleton<IMailProviderService, MailProviderService>();
-
     // Register named HttpClient to benefits from IHttpClientFactory
     // and consume it with ITelegramBotClient typed client.
     // More read:
@@ -88,9 +86,9 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IRabbitClient, RabbitClient>();
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     //
-    services.RegisterMqttListener<GetBotUsernameReceive, object?, string?>();
-    services.RegisterMqttListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>();
-    services.RegisterMqttListener<SetWebConfigReceive, WebConfigModel, object?>();
+    services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>();
+    services.RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>();
+    services.RegisterMqListener<GetBotUsernameReceive, object?, string?>();
     #endregion
 });
 

@@ -8,6 +8,10 @@ public class GetTelegramUserReceive(ITelegramWebService tgWebRepo, ILogger<GetTe
     : IResponseReceive<long, TelegramUserBaseModelDb?>
 {
     /// <inheritdoc/>
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive;
+
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<TelegramUserBaseModelDb?>> ResponseHandleAction(long payload)
     {
         TResponseModel<TelegramUserBaseModelDb?> res = new();

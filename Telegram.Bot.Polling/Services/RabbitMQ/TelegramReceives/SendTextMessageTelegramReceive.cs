@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using SharedLib;
+﻿using SharedLib;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
@@ -12,6 +10,9 @@ namespace Transmission.Receives.telegram;
 public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IWebRemoteTransmissionService webRemoteCall, ILogger<SendTextMessageTelegramReceive> _logger) 
     : IResponseReceive<SendTextMessageTelegramBotModel?, int?>
 {
+    /// <inheritdoc/>
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive;
+
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> ResponseHandleAction(SendTextMessageTelegramBotModel? message)
     {

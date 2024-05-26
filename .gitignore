@@ -401,4 +401,4 @@ FodyWeavers.xsd
 *.sqlite
 *.sqlite-wal
 *.sqlite-shm
-/BlankBlazorApp/BlankBlazorApp/wwwroot/lib
+**/wwwroot/lib

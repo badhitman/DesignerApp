@@ -10,6 +10,9 @@ public class TelegramJoinAccountConfirmReceive(ITelegramWebService tgWebRepo, IL
     : IResponseReceive<TelegramJoinAccountConfirmModel?, object?>
 {
     /// <inheritdoc/>
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive;
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<object?>> ResponseHandleAction(TelegramJoinAccountConfirmModel? confirm)
     {
         TResponseModel<object?> res = new();

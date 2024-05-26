@@ -6,9 +6,12 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// Update Telegram main user message
 /// </summary>
-public class UpdateTelegramMainUserMessageReceive(ITelegramWebService tgWebRepo, ILogger<UpdateTelegramUserReceive> _logger) 
+public class UpdateTelegramMainUserMessageReceive(ITelegramWebService tgWebRepo, ILogger<UpdateTelegramUserReceive> _logger)
     : IResponseReceive<MainUserMessageModel?, object?>
 {
+    /// <inheritdoc/>
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive;
+
     /// <inheritdoc/>
     public async Task<TResponseModel<object?>> ResponseHandleAction(MainUserMessageModel? setMainMessage)
     {

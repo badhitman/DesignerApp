@@ -128,12 +128,12 @@ builder.Services.AddScoped<ITelegramWebService, TelegramWebService>();
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 builder.Services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
 //
-builder.Services.RegisterMqttListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserModel?>();
-builder.Services.RegisterMqttListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();
-builder.Services.RegisterMqttListener<TelegramJoinAccountDeleteReceive, long, object?>();
-builder.Services.RegisterMqttListener<GetWebConfigReceive, object?, WebConfigModel>();
-builder.Services.RegisterMqttListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>();
-builder.Services.RegisterMqttListener<GetTelegramUserReceive, long, TelegramUserBaseModelDb>();
+builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserModel?>();
+builder.Services.RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();
+builder.Services.RegisterMqListener<TelegramJoinAccountDeleteReceive, long, object?>();
+builder.Services.RegisterMqListener<GetWebConfigReceive, object?, WebConfigModel>();
+builder.Services.RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>();
+builder.Services.RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModelDb>();
 #endregion
 
 WebApplication app = builder.Build();

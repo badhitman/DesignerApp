@@ -10,6 +10,9 @@ public class GetWebConfigReceive(IOptions<WebConfigModel> webConfig)
     : IResponseReceive<object?, WebConfigModel?>
 {
     /// <inheritdoc/>
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive;
+
+    /// <inheritdoc/>
     public Task<TResponseModel<WebConfigModel?>> ResponseHandleAction(object? payload = null)
     {
         return Task.FromResult(new TResponseModel<WebConfigModel?>()

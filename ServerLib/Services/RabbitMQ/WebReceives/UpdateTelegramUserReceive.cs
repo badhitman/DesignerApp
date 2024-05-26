@@ -10,6 +10,9 @@ public class UpdateTelegramUserReceive(ITelegramWebService tgWebRepo, ILogger<Up
     : IResponseReceive<CheckTelegramUserHandleModel?, CheckTelegramUserModel?>
 {
     /// <inheritdoc/>
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateTelegramUserReceive;
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<CheckTelegramUserModel?>> ResponseHandleAction(CheckTelegramUserHandleModel? user)
     {
         TResponseModel<CheckTelegramUserModel?> res = new();

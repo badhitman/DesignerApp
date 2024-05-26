@@ -49,6 +49,48 @@ public static class GlobalStaticConstants
     public const string SESSION_TOKEN_NAME = "token";
 
     /// <summary>
+    /// Префикс имени MQ очереди
+    /// </summary>
+    public const string TransmissionQueueNamePrefix = "Transmission.Receives";
+
+    /// <summary>
+    /// Transmission MQ queues
+    /// </summary>
+    public static class TransmissionQueues
+    {
+        #region Web
+        /// <inheritdoc/>
+        public readonly static string GetTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string GetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string TelegramJoinAccountConfirmReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.JOIN_ACTION_NAME, Routes.ACCOUNT_CONTROLLER_NAME, Routes.CONFIRM_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string TelegramJoinAccountDeleteReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.JOIN_ACTION_NAME, Routes.ACCOUNT_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string UpdateTelegramMainUserMessageReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.MAIN_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.MESSAGE_CONTROLLER_NAME, Routes.EDIT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string UpdateTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.EDIT_ACTION_NAME);
+        #endregion
+
+        #region TelegramBot
+        /// <inheritdoc/>
+        public readonly static string GetBotUsernameReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.NAME_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string SendTextMessageTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.TEXT_CONTROLLER_NAME, Routes.MESSAGE_CONTROLLER_NAME, Routes.SEND_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string SetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.EDIT_ACTION_NAME);
+        #endregion
+    }
+
+    /// <summary>
     /// имена контроллеров и действий
     /// </summary>
     public static class Routes
@@ -83,8 +125,73 @@ public static class GlobalStaticConstants
         /// </summary>
         public const string TELEGRAM_CONTROLLER_NAME = "telegram";
 
+        /// <summary>
+        /// Web
+        /// </summary>
+        public const string WEB_CONTROLLER_NAME = "web";
+
+        /// <summary>
+        /// main
+        /// </summary>
+        public const string MAIN_CONTROLLER_NAME = "telegram";
+
+        /// <summary>
+        /// configuration
+        /// </summary>
+        public const string CONFIGURATION_CONTROLLER_NAME = "configuration";
+
+        /// <summary>
+        /// Account
+        /// </summary>
+        public const string ACCOUNT_CONTROLLER_NAME = "account";
+
+        /// <summary>
+        /// User
+        /// </summary>
+        public const string USER_CONTROLLER_NAME = "user";
+
+        /// <summary>
+        /// Name
+        /// </summary>
+        public const string NAME_CONTROLLER_NAME = "name";
+
+        /// <summary>
+        /// Text
+        /// </summary>
+        public const string TEXT_CONTROLLER_NAME = "text";
+
+        /// <summary>
+        /// Message
+        /// </summary>
+        public const string MESSAGE_CONTROLLER_NAME = "message";
 
 
+
+
+        /// <summary>
+        /// Подключить/присоединить
+        /// </summary>
+        public const string JOIN_ACTION_NAME = "join";
+
+        /// <summary>
+        /// Отправить
+        /// </summary>
+        public const string SEND_ACTION_NAME = "send";
+
+        /// <summary>
+        /// Подтвердить
+        /// </summary>
+        public const string CONFIRM_ACTION_NAME = "confirm";
+
+        /// <summary>
+        /// Удалить
+        /// </summary>
+        public const string DELETE_ACTION_NAME = "delete";
+
+        /// <summary>
+        /// Прочитать
+        /// </summary>
+        public const string READ_ACTION_NAME = "read";
 
         /// <summary>
         /// Редактировать
@@ -141,9 +248,4 @@ public static class GlobalStaticConstants
     /// Шаблон пространства имён
     /// </summary>
     public const string NAME_SPACE_TEMPLATE = @"^[a-zA-Z][a-zA-Z0-9_\.]{1,72}[a-zA-Z0-9]{1,128}$";
-
-    /// <summary>
-    /// Имя очереди Telegram
-    /// </summary>
-    public const string QueueResponseTelegramHeaderName = "QueueTelegramHeader";
 }

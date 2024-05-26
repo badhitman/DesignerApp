@@ -10,6 +10,9 @@ public class TelegramJoinAccountDeleteReceive(ITelegramWebService tgWebRepo, ILo
     : IResponseReceive<long, object?>
 {
     /// <inheritdoc/>
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteReceive;
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<object?>> ResponseHandleAction(long payload)
     {
         TResponseModel<object?> res = new();
