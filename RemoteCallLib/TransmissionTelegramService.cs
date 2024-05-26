@@ -9,7 +9,7 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
 {
     /// <inheritdoc/>
     public async Task<TResponseModel<string?>> GetBotUsername()
-        => await rabbitClient.MqRemoteCall<string?>(GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive);
+        => await rabbitClient.MqRemoteCall<string?>(GlobalStaticConstants.TransmissionQueues.GetBotUsernameReceive);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram)
