@@ -12,11 +12,11 @@ namespace Telegram;
 /// <inheritdoc/>
 public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     : BackgroundService
-    where TQueue : IResponseReceive<TRequest, TResponse>
+    where TQueue : IResponseReceive<TRequest?, TResponse>
 {
     readonly IConnection _connection;
     readonly IModel _channel;
-    readonly IResponseReceive<TRequest, TResponse> receiveService;
+    readonly IResponseReceive<TRequest?, TResponse> receiveService;
     readonly ConnectionFactory factory;
 
     static Dictionary<string, object>? ResponseQueueArguments;
@@ -44,7 +44,7 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
 
         using (IServiceScope scope = servicesProvider.CreateScope())
         {
-            receiveService = scope.ServiceProvider.GetServices<IResponseReceive<TRequest, TResponse>>().First(o => o.GetType() == QueueType);
+            receiveService = scope.ServiceProvider.GetServices<IResponseReceive<TRequest?, TResponse>>().First(o => o.GetType() == QueueType);
         }
 
         factory = new()
@@ -68,12 +68,15 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
         EventingBasicConsumer consumer = new(_channel);
         consumer.Received += async (ch, ea) =>
         {
-            string content = Encoding.UTF8.GetString(ea.Body.ToArray());
+            string content = Encoding.UTF8.GetString(ea.Body.ToArray()).Trim();
 
             TResponseModel<TResponse?> result_handler;
             try
             {
-                TRequest? sr = JsonConvert.DeserializeObject<TRequest>(content);
+                TRequest? sr = content.Equals("null", StringComparison.OrdinalIgnoreCase) 
+                ? default 
+                : JsonConvert.DeserializeObject<TRequest?>(content);
+
                 result_handler = await receiveService.ResponseHandleAction(sr);
             }
             catch (Exception ex)

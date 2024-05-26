@@ -62,8 +62,10 @@ public class RabbitClient : IRabbitClient
         CancellationTokenSource cts = new();
         CancellationToken token = cts.Token;
         ManualResetEventSlim mres = new(false);
+
         void MessageReceivedEvent(object? sender, BasicDeliverEventArgs e)
         {
+            string msg;
             consumer.Received -= MessageReceivedEvent;
             string content = Encoding.UTF8.GetString(e.Body.ToArray());
             try
@@ -73,13 +75,23 @@ public class RabbitClient : IRabbitClient
             }
             catch (Exception ex)
             {
-                string msg = $"error deserialisation: {content}.\n\nerror ";
+                msg = $"error deserialisation: {content}.\n\nerror ";
                 loggerRepo.LogError(ex, msg);
                 res!.AddError(msg);
                 res.Messages.InjectException(ex);
             }
 
-            _channel.BasicAck(e.DeliveryTag, false);
+            try
+            {
+                _channel.BasicAck(e.DeliveryTag, false);
+            }
+            catch (Exception ex)
+            {
+                msg = "exception basic ask. error {A62029D4-1A23-461D-99AD-349C6B7500A8}";
+                loggerRepo.LogError(ex, msg);
+                res.Messages.InjectException(ex);
+                res.AddError(msg);
+            }
 
             stopwatch.Stop();
             cts.Cancel();
