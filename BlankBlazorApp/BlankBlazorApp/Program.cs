@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Web;
+using RemoteCallLib;
 using ServerLib;
 using SharedLib;
 using System.Globalization;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
+using RemoteCallLib;
 using SharedLib;
-using Telegram;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

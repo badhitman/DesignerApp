@@ -1,6 +1,6 @@
 ﻿using SharedLib;
 
-namespace ServerLib;
+namespace RemoteCallLib;
 
 /// <summary>
 /// Удалённый вызов команд в TelegramBot службе

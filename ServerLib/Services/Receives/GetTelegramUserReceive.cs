@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using RemoteCallLib;
 using SharedLib;
 
 namespace Transmission.Receives.web;
@@ -9,7 +10,6 @@ public class GetTelegramUserReceive(ITelegramWebService tgWebRepo, ILogger<GetTe
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive;
-
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TelegramUserBaseModelDb?>> ResponseHandleAction(long payload)

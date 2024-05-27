@@ -1,4 +1,6 @@
-﻿namespace SharedLib;
+﻿using SharedLib;
+
+namespace RemoteCallLib;
 
 /// <summary>
 /// RabbitMq client

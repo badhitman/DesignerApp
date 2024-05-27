@@ -2,25 +2,61 @@
 
 Транспорт устроен просто. Сначала нужно определиться с типом параметра для вызова команды (объект будет отправлен серверу как полезная нагрузка запроса) и типом возвращаемого ответа. Далее нужно реализовать единственный метод интерфейса [IResponseReceive](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/IServices/remote-call/base/IResponseReceive.cs) с указанием этих самых типов запроса/ответа. Как пример вот как это выглядит в базовых реализациях:
 
+> [!WARNING]
+> Кроме того нужно зарезервировать имена MQ очередей. В данном случае они сгруппированы в `public static class TransmissionQueues` [^2]
+
 - TelegramBot
 ```c#
-public class GetBotUsernameReceive(ITelegramBotClient _botClient, ILogger<GetBotUsernameReceive> _logger) : IResponseReceive<object?, string?>
+public class UpdateTelegramUserReceive(ITelegramWebService tgWebRepo, ILogger<UpdateTelegramUserReceive> _logger)
+    : IResponseReceive<CheckTelegramUserHandleModel?, CheckTelegramUserModel?>
 {
-  public async Task<TResponseModel<string?>> ResponseHandleAction(object? payload = null)
+  public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateTelegramUserReceive;
+  public async Task<TResponseModel<CheckTelegramUserModel?>> ResponseHandleAction(CheckTelegramUserHandleModel? user)
   {
     ... код обработчика ...
   }
 }
-public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IWebRemoteTransmissionService webRemoteCall, ILogger<SendTextMessageTelegramReceive> _logger) : IResponseReceive<SendTextMessageTelegramBotModel?, int?>
+public class UpdateTelegramMainUserMessageReceive(ITelegramWebService tgWebRepo, ILogger<UpdateTelegramMainUserMessageReceive> _logger)
+    : IResponseReceive<MainUserMessageModel?, object?>
 {
-  public async Task<TResponseModel<int?>> ResponseHandleAction(SendTextMessageTelegramBotModel? message)
+  public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive;
+  public async Task<TResponseModel<object?>> ResponseHandleAction(MainUserMessageModel? setMainMessage)
   {
     ... код обработчика ...
   }
 }
-public class SetWebConfigReceive(WebConfigModel webConfig, ILogger<SetWebConfigReceive> _logger) : IResponseReceive<WebConfigModel?, object?>
+public class TelegramJoinAccountDeleteReceive(ITelegramWebService tgWebRepo, ILogger<TelegramJoinAccountDeleteReceive> _logger) 
+    : IResponseReceive<long, object?>
 {
-  public Task<TResponseModel<object?>> ResponseHandleAction(WebConfigModel? payload)
+  public static string QueueName => GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteReceive;
+  public async Task<TResponseModel<object?>> ResponseHandleAction(long payload)
+  {
+    ... код обработчика ...
+  }
+}
+public class TelegramJoinAccountConfirmReceive(ITelegramWebService tgWebRepo, ILogger<TelegramJoinAccountConfirmReceive> _logger)
+    : IResponseReceive<TelegramJoinAccountConfirmModel?, object?>
+{
+  public static string QueueName => GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive;
+  public async Task<TResponseModel<object?>> ResponseHandleAction(TelegramJoinAccountConfirmModel? confirm)
+  {
+    ... код обработчика ...
+  }
+}
+public class GetWebConfigReceive(IOptions<WebConfigModel> webConfig)
+    : IResponseReceive<object?, WebConfigModel?>
+{
+  public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive;
+  public Task<TResponseModel<WebConfigModel?>> ResponseHandleAction(object? payload = null)
+  {
+    ... код обработчика ...
+  }
+}
+public class GetTelegramUserReceive(ITelegramWebService tgWebRepo, ILogger<GetTelegramUserReceive> _logger)
+    : IResponseReceive<long, TelegramUserBaseModelDb?>
+{
+  public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive;
+  public async Task<TResponseModel<TelegramUserBaseModelDb?>> ResponseHandleAction(long payload)
   {
     ... код обработчика ...
   }
@@ -29,44 +65,29 @@ public class SetWebConfigReceive(WebConfigModel webConfig, ILogger<SetWebConfigR
 
 - BlazorWebApp
 ```c#
-public class GetTelegramUserReceive(ITelegramWebService tgWebRepo, ILogger<GetTelegramUserReceive> _logger) : IResponseReceive<long, TelegramUserBaseModelDb?>
+public class SetWebConfigReceive(WebConfigModel webConfig, ILogger<SetWebConfigReceive> _logger)
+    : IResponseReceive<WebConfigModel?, object?>
 {
-  public async Task<TResponseModel<TelegramUserBaseModelDb?>> ResponseHandleAction(long payload)
+  public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetWebConfigReceive;
+  public Task<TResponseModel<object?>> ResponseHandleAction(WebConfigModel? payload)
   {
     ... код обработчика ...
   }
 }
-public class GetWebConfigReceive(IOptions<WebConfigModel> webConfig) : IResponseReceive<object?, WebConfigModel?>
+public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IWebRemoteTransmissionService webRemoteCall, ILogger<SendTextMessageTelegramReceive> _logger) 
+    : IResponseReceive<SendTextMessageTelegramBotModel?, int?>
 {
-  public Task<TResponseModel<WebConfigModel?>> ResponseHandleAction(object? payload)
+  public static string QueueName => GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive;
+  public async Task<TResponseModel<int?>> ResponseHandleAction(SendTextMessageTelegramBotModel? message)
   {
     ... код обработчика ...
   }
 }
-public class TelegramJoinAccountConfirmReceive(ITelegramWebService tgWebRepo, ILogger<TelegramJoinAccountConfirmReceive> _logger) : IResponseReceive<TelegramJoinAccountConfirmModel?, object?>
+public class GetBotUsernameReceive(ITelegramBotClient _botClient, ILogger<GetBotUsernameReceive> _logger)
+    : IResponseReceive<object?, string?>
 {
-  public async Task<TResponseModel<object?>> ResponseHandleAction(TelegramJoinAccountConfirmModel? confirm)
-  {
-    ... код обработчика ...
-  }
-}
-public class TelegramJoinAccountDeleteReceive(ITelegramWebService tgWebRepo, ILogger<TelegramJoinAccountDeleteReceive> _logger) : IResponseReceive<long, object?>
-{
-  public async Task<TResponseModel<object?>> ResponseHandleAction(long payload)
-  {
-    ... код обработчика ...
-  }
-}
-public class UpdateTelegramMainUserMessageReceive(ITelegramWebService tgWebRepo, ILogger<UpdateTelegramUserReceive> _logger) : IResponseReceive<MainUserMessageModel?, object?>
-{
-  public async Task<TResponseModel<object?>> ResponseHandleAction(MainUserMessageModel? setMainMessage)
-  {
-    ... код обработчика ...
-  }
-}
-public class UpdateTelegramUserReceive(ITelegramWebService tgWebRepo, ILogger<UpdateTelegramUserReceive> _logger) : IResponseReceive<CheckTelegramUserHandleModel?, CheckTelegramUserModel?>
-{
-  public async Task<TResponseModel<CheckTelegramUserModel?>> ResponseHandleAction(CheckTelegramUserHandleModel? user)
+  public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetBotUsernameReceive;
+  public async Task<TResponseModel<string?>> ResponseHandleAction(object? payload = null)
   {
     ... код обработчика ...
   }
@@ -159,4 +180,6 @@ string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}-{queue
 Где `RabbitConfigRepo.QueueMqNamePrefixForResponse` - префикс имени очереди из конфигов (*по умолчанию*: **response.transit**), `queue` - исходное имя очереди (полное имя типа реализации обработчика) и GUID для контроля уникальности.
 Вот на эту временную очередь отправитель ожидает ответ.
 
-[^1]: С примерами реализаций можно ознакомиться на командах, которые были реализованы в рамках данного решения. Несколько команд есть для [Telegram бота](./Receives/telegram) и некоторое количество сделано для [BlazorWebApp](./Receives/web) службы: 
+[^1]: С примерами реализаций можно ознакомиться на командах, которые были реализованы в рамках данного решения. Несколько команд есть для [Telegram бота](./Receives/telegram) и некоторое количество сделано для [BlazorWebApp](./Receives/web) службы
+
+[^2]: 

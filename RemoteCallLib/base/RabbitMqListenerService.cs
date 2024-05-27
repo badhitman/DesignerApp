@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Telegram;
+namespace RemoteCallLib;
 
 /// <inheritdoc/>
 public class RabbitMqListenerService<TQueue, TRequest, TResponse>
@@ -31,7 +31,7 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     /// <summary>
     /// Имя очереди MQ
     /// </summary>
-    public string QueueName { get { _queueName ??= TQueue.QueueName; return _queueName; } } // TQueue.QueueName;
+    public string QueueName { get { _queueName ??= TQueue.QueueName; return _queueName; } }
 
     /// <inheritdoc/>
     public RabbitMqListenerService(IOptions<RabbitMQConfigModel> rabbitConf, IServiceProvider servicesProvider)

@@ -7,7 +7,7 @@ using SharedLib;
 using System.Diagnostics;
 using System.Text;
 
-namespace ServerLib;
+namespace RemoteCallLib;
 
 /// <summary>
 /// RabbitMq client
