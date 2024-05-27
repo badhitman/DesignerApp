@@ -83,11 +83,11 @@ else
   "UserManage": {
     "UpdatesUsersRoles": [
       {
-        "EmailUser": "badhitman@ya.ru",
+        "EmailUser": "ваш_email@сайт.ru",
         "SetRoles": [ "admin" ]
       },
       {
-        "EmailUser": "badhitman@yandex.ru",
+        "EmailUser": "другой_email@домен.com",
         "SetRoles": [ "manager" ]
       }
     ]
