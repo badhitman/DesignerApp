@@ -7,7 +7,7 @@ using SharedLib;
 using System.Diagnostics;
 using System.Text;
 
-namespace ServerLib;
+namespace RemoteCallLib;
 
 /// <summary>
 /// RabbitMq client
@@ -46,7 +46,7 @@ public class RabbitClient : IRabbitClient
     /// <inheritdoc/>
     public Task<TResponseModel<T?>> MqRemoteCall<T>(string queue, object? request = null)
     {
-        string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}-{queue}_{Guid.NewGuid()}";
+        string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}";
 
         using IConnection _connection = factory.CreateConnection(); ;
         using IModel _channel = _connection.CreateModel();

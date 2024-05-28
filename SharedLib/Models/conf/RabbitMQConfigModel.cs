@@ -31,5 +31,5 @@ public class RabbitMQConfigModel
     /// <summary>
     /// Префикс имён очередей для ответов на удалённые команды
     /// </summary>
-    public string QueueMqNamePrefixForResponse { get; set; } = "response.transit";
+    public string QueueMqNamePrefixForResponse { get; set; } = "response.transit-";
 }
