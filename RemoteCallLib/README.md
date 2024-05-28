@@ -177,7 +177,7 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
 ```c#
 string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}";
 ```
-Где `RabbitConfigRepo.QueueMqNamePrefixForResponse` - префикс имени очереди из конфигов (*по умолчанию*: **response.transit-**), `queue` - исходное имя очереди (полное имя типа реализации обработчика) и GUID для контроля уникальности.
+Где `RabbitConfigRepo.QueueMqNamePrefixForResponse` - префикс имени очереди из конфигов (*по умолчанию*: **response.transit-**), `queue` - исходное имя очереди и GUID для контроля уникальности.
 Вот на эту временную очередь отправитель ожидает ответ.
 
 [^1]: С примерами реализаций можно ознакомиться на командах, которые были реализованы в рамках данного решения. Несколько команд есть для [Telegram бота](./Receives/telegram) и некоторое количество сделано для [BlazorWebApp](./Receives/web) службы
