@@ -90,4 +90,4 @@ TelegramDialogResponseModel resp = await receiveService.TelegramDialogHandle(new
 
 [^2]: Имя обработчика ответов храниться в [контексте пользователя](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/Models/TelegramUserBaseModelDb.cs#L45). О хранении имени обработчика в контексте пользователя можно узнать [тут](https://github.com/badhitman/DesignerApp/tree/main/ServerLib/Services/TelegramDialog#контекст-хранения-имени-обработчика-для-пользователя)
 
-[^3]: Обработчик ответов на входящие сообщения в Telegram бота: [базовая реализация](https://github.com/badhitman/DesignerApp/blob/main/ServerLib/Services/TelegramDialog/DefaultTelegramDialogHandle.cs) (по умолчанию)
+[^3]: Обработчик ответов на входящие сообщения в Telegram бота: [базовая реализация](https://github.com/badhitman/DesignerApp/blob/main/Telegram.Bot.Polling/Services/DefaultTelegramDialogHandle.cs) (по умолчанию)
