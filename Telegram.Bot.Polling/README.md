@@ -7,9 +7,9 @@
 
 - У бота зарегистрировано несколько своих команд для обработки запросов от удалённых систем:
 ```c#
-services.RegisterMqttListener<GetBotUsernameReceive, object?, string?>(); // возвращает имя бота
-services.RegisterMqttListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>(); // отправка сообщения в Telegram
-services.RegisterMqttListener<SetWebConfigReceive, WebConfigModel, object?>(); // установка настроек web сервиса
+services.RegisterMqListener<GetBotUsernameReceive, object?, string?>(); // возвращает имя бота
+services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>(); // отправка сообщения в Telegram
+services.RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>(); // установка настроек web сервиса
 ```
 
 [^1]: Для создания собственного обработчика диалога подробнее можно узнать [тут](https://github.com/badhitman/DesignerApp/tree/main/ServerLib/Services/TelegramDialog)

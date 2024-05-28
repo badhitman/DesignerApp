@@ -101,19 +101,19 @@ public class GetBotUsernameReceive(ITelegramBotClient _botClient, ILogger<GetBot
 После того как ваш обработчик готов его можно регистрировать в службе: в данном случае есть обработчики команд в обоих службах и каждый в свою очередь регистрирует свой набор:
 - TelegramBot
 ```c#
-services.RegisterMqttListener<GetBotUsernameReceive, object?, string?>();
-services.RegisterMqttListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>();
-services.RegisterMqttListener<SetWebConfigReceive, WebConfigModel, object?>();
+services.RegisterMqListener<GetBotUsernameReceive, object?, string?>();
+services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>();
+services.RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>();
 ```
 
 - BlazorWebApp
 ```c#
-builder.Services.RegisterMqttListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserModel?>();
-builder.Services.RegisterMqttListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();
-builder.Services.RegisterMqttListener<TelegramJoinAccountDeleteReceive, long, object?>();
-builder.Services.RegisterMqttListener<GetWebConfigReceive, object?, WebConfigModel>();
-builder.Services.RegisterMqttListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>();
-builder.Services.RegisterMqttListener<GetTelegramUserReceive, long, TelegramUserBaseModelDb>();
+builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserModel?>();
+builder.Services.RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();
+builder.Services.RegisterMqListener<TelegramJoinAccountDeleteReceive, long, object?>();
+builder.Services.RegisterMqListener<GetWebConfigReceive, object?, WebConfigModel>();
+builder.Services.RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>();
+builder.Services.RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModelDb>();
 ```
 
 Этого достаточно, что бы ответственная служба начала обрабатывать входящие команды и отвечать на них. Теперь нужен клиент, который зарегистрирован в DI так `<IRabbitClient, RabbitClient>`. Т.е. обращение к клиенту доступен через `IRabbitClient`. У службы единственный обобщённый метод `MqRemoteCall`, которому нужно указать тип возвращаемых данных и передать объект полезной нагрузки запроса для отправке серверу в виде параметра вызова. Для базовых команд эти вызовы сгруппированы в двух разных сервисах:
