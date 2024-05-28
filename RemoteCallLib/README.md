@@ -126,15 +126,15 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
 {
     /// <inheritdoc/>
     public async Task<TResponseModel<string?>> GetBotUsername()
-        => await rabbitClient.MqRemoteCall<string?>(typeof(GetBotUsernameReceive).FullName!);
+        => await rabbitClient.MqRemoteCall<string?>(GlobalStaticConstants.TransmissionQueues.GetBotUsernameReceive);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram)
-        => await rabbitClient.MqRemoteCall<int?>(typeof(SendTextMessageTelegramReceive).FullName!, message_telegram);
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive, message_telegram);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<object?>> SetWebConfig(WebConfigModel webConf)
-        => await rabbitClient.MqRemoteCall<object?>(typeof(SetWebConfigReceive).FullName!, webConf);
+        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.SetWebConfigReceive, webConf);
 }
 ```
 
@@ -147,39 +147,42 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
 {
     /// <inheritdoc/>
     public async Task<TResponseModel<object?>> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req)
-    => await rabbitClient.MqRemoteCall<object?>(typeof(TelegramJoinAccountConfirmReceive).FullName!, req);
+        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<CheckTelegramUserModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user)
-        => await rabbitClient.MqRemoteCall<CheckTelegramUserModel?>(typeof(UpdateTelegramUserReceive).FullName!, user);
+        => await rabbitClient.MqRemoteCall<CheckTelegramUserModel?>(GlobalStaticConstants.TransmissionQueues.UpdateTelegramUserReceive, user);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<object?>> TelegramJoinAccountDelete(long telegramId)
-        => await rabbitClient.MqRemoteCall<object?>(typeof(TelegramJoinAccountDeleteReceive).FullName!, telegramId);
+        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteReceive, telegramId);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<WebConfigModel?>> GetWebConfig()
-        => await rabbitClient.MqRemoteCall<WebConfigModel?>(typeof(GetWebConfigReceive).FullName!);
+        => await rabbitClient.MqRemoteCall<WebConfigModel?>(GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<object?>> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage)
-        => await rabbitClient.MqRemoteCall<object?>(typeof(UpdateTelegramMainUserMessageReceive).FullName!, setMainMessage);
+        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive, setMainMessage);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TelegramUserBaseModelDb?>> GetTelegramUser(long telegramUserId)
-        => await rabbitClient.MqRemoteCall<TelegramUserBaseModelDb?>(typeof(GetTelegramUserReceive).FullName!, telegramUserId);
+        => await rabbitClient.MqRemoteCall<TelegramUserBaseModelDb?>(GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive, telegramUserId);
 }
 ```
 
-Видно, что для вызова удалённой команды нужно указать типы данных запроса/ответа и указать имя очереди, которая соответствует полному имени типа данных обработчика.
+Видно, что для вызова удалённой команды нужно указать типы данных запроса/ответа и указать имя очереди обработчика.
 Теперь клиент с сервером готовы обмениваться командами и ответами на них.
-Что бы получить ответ на запрос от удалённой системы вызывающий клиент `<IRabbitClient, RabbitClient>` отправляемому сообщению указывает [имя очереди в которой ожидается ответ](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/base/RabbitClient.cs#L49). Имя этой очереди формируется по шаблону:
+Что бы получить ответ на запрос от удалённой системы вызывающий клиент `<IRabbitClient, RabbitClient>` отправляемому сообщению [указывает](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/base/RabbitClient.cs#L56) [имя очереди в которой ожидается ответ](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/base/RabbitClient.cs#L49). Имя этой очереди формируется по шаблону:
 ```c#
 string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}";
 ```
 Где `RabbitConfigRepo.QueueMqNamePrefixForResponse` - префикс имени очереди из конфигов (*по умолчанию*: **response.transit-**), `queue` - исходное имя очереди и GUID для контроля уникальности.
-Вот на эту временную очередь отправитель ожидает ответ.
+Вот на эту временную очередь отправитель ожидает ответ. Пример:
+```
+response.transit-Transmission.Receives\web\configuration\read_c68fbf43-0229-4df7-9d48-6bdc8a9384ef
+```
 
 [^1]: С примерами реализаций можно ознакомиться на командах, которые были реализованы в рамках данного решения. Несколько команд есть для [Telegram бота](./Receives/telegram) и некоторое количество сделано для [BlazorWebApp](./Receives/web) службы
 
-[^2]: При реализации интерфейса `IResponseReceive` статическое свойство `public static string QueueName => ` определяет какую MQ очередь будет обслуживать данный обработчик. Вызывающий сервис должен отправлять сообщения в соответствующие очереди (указывая при этом адрес для ответа в MQ заголовок ReplyTo), что бы успешно получать обратную связь. Реализация базовых инструментов: отправка команд в сторону [Telegram бота](./RemoteCallLib#telegrambot-transmissiontelegramservice) и сервера [BlazorWebApp](./RemoteCallLib#blazorwebapp-transmissionwebservice). Зарезервированные имена MQ очередей размещена в своём отдельном [public static class TransmissionQueues](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/GlobalStaticConstants.cs#L59)
+[^2]: При реализации интерфейса `IResponseReceive` статическое свойство `public static string QueueName => ` определяет какую MQ очередь будет обслуживать данный обработчик. Вызывающий сервис должен отправлять сообщения в соответствующие очереди (указывая при этом адрес для ответа в MQ заголовок [ReplyTo](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/base/RabbitClient.cs#L56)), что бы успешно получать [обратную связь](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/base/RabbitMqListenerService.cs#L88). Реализация базовых инструментов: отправка команд в сторону [Telegram бота](./RemoteCallLib#telegrambot-transmissiontelegramservice) и сервера [BlazorWebApp](./RemoteCallLib#blazorwebapp-transmissionwebservice). Зарезервированные имена MQ очередей размещена в своём отдельном [public static class TransmissionQueues](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/GlobalStaticConstants.cs#L59)
