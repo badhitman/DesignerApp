@@ -117,7 +117,7 @@ builder.Services.RegisterMqttListener<GetTelegramUserReceive, long, TelegramUser
 ```
 
 Этого достаточно, что бы ответственная служба начала обрабатывать входящие команды и отвечать на них. Теперь нужен клиент, который зарегистрирован в DI так `<IRabbitClient, RabbitClient>`. Т.е. обращение к клиенту доступен через `IRabbitClient`. У службы единственный обобщённый метод `MqRemoteCall`, которому нужно указать тип возвращаемых данных и передать объект полезной нагрузки запроса для отправке серверу в виде параметра вызова. Для базовых команд эти вызовы сгруппированы в двух разных сервисах:
-- TelegramBot - [TransmissionTelegramService](./RemoteCall/TransmissionTelegramService.cs)
+- TelegramBot - [TransmissionTelegramService](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/TransmissionTelegramService.cs)
 ```C#
 /// <summary>
 /// Удалённый вызов команд в TelegramBot службе
@@ -138,7 +138,7 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
 }
 ```
 
-- BlazorWebApp - [TransmissionWebService](./RemoteCall/TransmissionWebService.cs)
+- BlazorWebApp - [TransmissionWebService](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/TransmissionWebService.cs)
 ```c#
 /// <summary>
 /// Удалённый вызов команд в Web службе
