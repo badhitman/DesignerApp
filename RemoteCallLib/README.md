@@ -178,8 +178,11 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
 string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}";
 ```
 Где `RabbitConfigRepo.QueueMqNamePrefixForResponse` - префикс имени очереди из конфигов (*по умолчанию*: **response.transit-**), `queue` - исходное имя очереди и GUID для контроля уникальности.
-Вот на эту временную очередь отправитель ожидает ответ.
+Вот на эту временную очередь отправитель ожидает ответ. Пример:
+```
+response.transit-Transmission.Receives\web\configuration\read_c68fbf43-0229-4df7-9d48-6bdc8a9384ef
+```
 
 [^1]: С примерами реализаций можно ознакомиться на командах, которые были реализованы в рамках данного решения. Несколько команд есть для [Telegram бота](./Receives/telegram) и некоторое количество сделано для [BlazorWebApp](./Receives/web) службы
 
-[^2]: При реализации интерфейса `IResponseReceive` статическое свойство `public static string QueueName => ` определяет какую MQ очередь будет обслуживать данный обработчик. Вызывающий сервис должен отправлять сообщения в соответствующие очереди (указывая при этом адрес для ответа в MQ заголовок ReplyTo), что бы успешно получать обратную связь. Реализация базовых инструментов: отправка команд в сторону [Telegram бота](./RemoteCallLib#telegrambot-transmissiontelegramservice) и сервера [BlazorWebApp](./RemoteCallLib#blazorwebapp-transmissionwebservice). Зарезервированные имена MQ очередей размещена в своём отдельном [public static class TransmissionQueues](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/GlobalStaticConstants.cs#L59)
+[^2]: При реализации интерфейса `IResponseReceive` статическое свойство `public static string QueueName => ` определяет какую MQ очередь будет обслуживать данный обработчик. Вызывающий сервис должен отправлять сообщения в соответствующие очереди (указывая при этом адрес для ответа в MQ заголовок [ReplyTo](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/base/RabbitClient.cs#L56)), что бы успешно получать [обратную связь](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/base/RabbitMqListenerService.cs#L88). Реализация базовых инструментов: отправка команд в сторону [Telegram бота](./RemoteCallLib#telegrambot-transmissiontelegramservice) и сервера [BlazorWebApp](./RemoteCallLib#blazorwebapp-transmissionwebservice). Зарезервированные имена MQ очередей размещена в своём отдельном [public static class TransmissionQueues](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/GlobalStaticConstants.cs#L59)
