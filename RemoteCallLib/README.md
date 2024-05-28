@@ -182,4 +182,4 @@ string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}-{queue
 
 [^1]: С примерами реализаций можно ознакомиться на командах, которые были реализованы в рамках данного решения. Несколько команд есть для [Telegram бота](./Receives/telegram) и некоторое количество сделано для [BlazorWebApp](./Receives/web) службы
 
-[^2]: При реализации интерфейса `IResponseReceive` в статическое свойство `public static string QueueName => ` определяет какую MQ очередь будет обслуживать данный обработчик.
+[^2]: При реализации интерфейса `IResponseReceive` в статическое свойство `public static string QueueName => ` определяет какую MQ очередь будет обслуживать данный обработчик. Вызывающий сервис отправляет сообщения в соответствующие очереди. Реализация базовых инструментов: отправка команд в сторону [Telegram бота](../RemoteCallLib/TransmissionTelegramService.cs) и сервера [BlazorWebApp](../RemoteCallLib/TransmissionWebService.cs)
