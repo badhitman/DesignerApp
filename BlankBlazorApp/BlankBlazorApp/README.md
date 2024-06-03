@@ -38,7 +38,7 @@ public long TelegramId { get; set; }
 ```
 можно получить данные, которые проверяются/кэшируются в БД при каждом входящем запросе в TelegramBot.
 
-Постороннему пользователю в данном случае отвечает простым приветсвием: как это реализовано в базовом `ITelegramDialogService: DefaultTelegramDialogHandle`
+Постороннему пользователю в данном случае отвечает простым приветсвием: как это реализовано в базовом `DefaultTelegramDialogHandle: ITelegramDialogService`
 
 ![img](../../img/tg-not-auth.png)
 
