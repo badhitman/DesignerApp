@@ -47,9 +47,6 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
     [SupplyParameterFromForm(FormName = "change-email")]
     private NewEmailSingleModel Input { get; set; } = new();
 

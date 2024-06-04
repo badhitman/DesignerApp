@@ -34,9 +34,6 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
     [SupplyParameterFromForm]
     private PasswordSingleModel Input { get; set; } = new();
 

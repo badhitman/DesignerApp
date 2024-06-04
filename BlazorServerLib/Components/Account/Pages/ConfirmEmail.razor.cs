@@ -1,8 +1,14 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorLib;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using SharedLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BlazorLib.Components.Account.Pages;
+namespace BlazorWebLib.Components.Account.Pages;
 
 /// <summary>
 /// 
@@ -30,7 +36,7 @@ public partial class ConfirmEmail : ComponentBase
     /// <summary>
     /// 
     /// </summary>
-    List<ResultMessage> Messages = [];
+    public List<ResultMessage> Messages = [];
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

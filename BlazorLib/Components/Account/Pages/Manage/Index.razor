@@ -26,9 +26,6 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
     [SupplyParameterFromForm]
     private PhoneSingleModel Input { get; set; } = new();
 

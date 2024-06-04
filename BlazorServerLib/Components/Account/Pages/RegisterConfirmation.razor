@@ -13,14 +13,14 @@
 <p>Пожалуйста, проверьте свою электронную почту, чтобы подтвердить свою учетную запись.</p>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
     [SupplyParameterFromQuery]
     private string? Email { get; set; }
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
 
     IEnumerable<ResultMessage>? Messages;
 
