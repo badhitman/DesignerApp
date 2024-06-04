@@ -27,10 +27,10 @@
 </div>
 
 @code {
-    IEnumerable<ResultMessage>? Messages;
-
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
+
+    IEnumerable<ResultMessage>? Messages;
 
     protected override async Task OnInitializedAsync()
     {

@@ -26,9 +26,6 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
     List<ResultMessage>? Messages;
 
     private async Task OnSubmitAsync()

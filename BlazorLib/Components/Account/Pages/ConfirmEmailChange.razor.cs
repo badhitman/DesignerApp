@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using SharedLib;
 using System.Text;
@@ -21,9 +20,6 @@ public partial class ConfirmEmailChange : ComponentBase
     [Inject]
     IUsersAuthenticateService UserAuthManager { get; set; } = default!;
 
-
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromQuery]
     private string? UserId { get; set; }

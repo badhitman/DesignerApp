@@ -59,9 +59,6 @@ else
 }
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
     [SupplyParameterFromForm]
     private CodeSingleModel Input { get; set; } = new();
 

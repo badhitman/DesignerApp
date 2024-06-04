@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SharedLib;
 
@@ -18,9 +17,6 @@ public partial class ChangePassword : ComponentBase
 
     [Inject]
     IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
-
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromForm]
     private ChangePasswordModel Input { get; set; } = new();
