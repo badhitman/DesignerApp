@@ -10,6 +10,21 @@ namespace SharedLib;
 public partial interface IUsersProfilesService
 {
     /// <summary>
+    /// Get claims
+    /// </summary>
+    public Task<ClaimBaseModel[]> GetClaims(ClaimAreasEnum claimArea, string ownerId);
+
+    /// <summary>
+    /// Claim: Update or create
+    /// </summary>
+    public Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimModel claim, ClaimAreasEnum claimArea);
+
+    /// <summary>
+    /// Claim: Remove
+    /// </summary>
+    public Task<ResponseBaseModel> ClaimDelete(ClaimAreasEnum claimArea, int id);
+
+    /// <summary>
     /// Найти пользователя по <paramref name="userId"/>.
     /// Если <paramref name="userId"/> не указан, то возвращается текущий пользователь (запрос/сессия)
     /// </summary>

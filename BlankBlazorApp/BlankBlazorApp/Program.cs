@@ -165,6 +165,9 @@ app.MapRazorComponents<App>()
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
+#if DEBUG
+
+#else
 Task? init_email_notify = null;
 
 try
@@ -182,5 +185,6 @@ catch (Exception ex)
 {
     logger.Error(ex);
 }
+#endif
 
 app.Run();

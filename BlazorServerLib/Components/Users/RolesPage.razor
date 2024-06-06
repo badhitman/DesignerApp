@@ -17,7 +17,10 @@
 
 <div class="row">
     <div class="input-group input-group-sm mb-3">
-        <span class="input-group-text">Новая роль</span>
+        <span class="input-group-text">
+            @(UserInfo is null ? "Новая" : "Добавить") роль
+            Новая роль
+            </span>
         <input @bind-value="added_role_name" @bind-value:event="oninput" type="text" class="form-control" aria-label="Имя создаваемой роли">
         <button disabled="@(string.IsNullOrWhiteSpace(added_role_name))" @onclick="AddNewRole" class="btn btn-outline-secondary" type="button">
             @(UserInfo is null ? "Создать новую роль" : "Добавить роль пользователю")
@@ -118,7 +121,7 @@
     {
         if (string.IsNullOrWhiteSpace(added_role_name))
         {
-            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "не указано имя создаваемой роли" }];
+            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "Не указано имя роли" }];
             return;
         }
         ResponseBaseModel rest = !string.IsNullOrEmpty(UserInfo?.Email)
