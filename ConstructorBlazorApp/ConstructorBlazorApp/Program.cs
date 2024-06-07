@@ -13,6 +13,7 @@ using System.Globalization;
 using DbcLib;
 using Transmission.Receives.web;
 using BlazorLib;
+using RemoteCallLib;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
