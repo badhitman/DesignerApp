@@ -5,7 +5,7 @@ namespace SharedLib;
 /// <summary>
 /// Процедура привязки Telegram аккаунта к учётной записи сайта
 /// </summary>
-public class TelegramJoinAccountModelDB
+public class TelegramJoinAccountModelDb
 {
     /// <summary>
     /// Идентификатор/Key

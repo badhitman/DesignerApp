@@ -28,5 +28,5 @@ public class LayerContext(DbContextOptions options) : DbContext(options)
     /// <summary>
     /// Действия, связанные с подключения Telegram аккаунта к учётной записи сайта
     /// </summary>
-    public DbSet<TelegramJoinAccountModelDB> TelegramJoinActions { get; set; }
+    public DbSet<TelegramJoinAccountModelDb> TelegramJoinActions { get; set; }
 }
