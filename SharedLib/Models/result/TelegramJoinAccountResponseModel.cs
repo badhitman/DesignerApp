@@ -4,7 +4,7 @@
 public class TelegramJoinAccountResponseModel : ResponseBaseModel
 {
     /// <inheritdoc/>
-    public TelegramJoinAccountModelDB? TelegramJoinAccount { get; set; }
+    public TelegramJoinAccountModelDb? TelegramJoinAccount { get; set; }
 
     /// <inheritdoc/>
     public static TelegramJoinAccountResponseModel Build(ResponseBaseModel responseBaseModel)

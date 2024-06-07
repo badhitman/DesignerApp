@@ -88,7 +88,7 @@ public class TelegramWebService(
 
         DateTime lifeTime = DateTime.Now.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
-        TelegramJoinAccountModelDB? act = await mainContext.TelegramJoinActions
+        TelegramJoinAccountModelDb? act = await mainContext.TelegramJoinActions
             .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.UserIdentityId == user.ApplicationUser.Id);
 
         if (act is null)
@@ -127,13 +127,13 @@ public class TelegramWebService(
             return new TelegramJoinAccountResponseModel() { Messages = user.Messages };
 
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
-        IQueryable<TelegramJoinAccountModelDB> actions_del = mainContext.TelegramJoinActions
+        IQueryable<TelegramJoinAccountModelDb> actions_del = mainContext.TelegramJoinActions
             .Where(x => x.UserIdentityId == user.ApplicationUser.Id);
 
         if (await actions_del.AnyAsync())
             mainContext.RemoveRange(actions_del);
 
-        TelegramJoinAccountModelDB act = new()
+        TelegramJoinAccountModelDb act = new()
         {
             GuidToken = Guid.NewGuid().ToString(),
             UserIdentityId = user.ApplicationUser.Id
@@ -161,7 +161,7 @@ public class TelegramWebService(
             return ResponseBaseModel.Create(user.Messages);
 
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
-        TelegramJoinAccountModelDB[] act = await mainContext.TelegramJoinActions
+        TelegramJoinAccountModelDb[] act = await mainContext.TelegramJoinActions
             .Where(x => x.UserIdentityId == user.ApplicationUser.Id)
             .ToArrayAsync();
         if (act.Length == 0)
@@ -183,7 +183,7 @@ public class TelegramWebService(
     {
         DateTime lifeTime = DateTime.Now.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
-        TelegramJoinAccountModelDB? act = await mainContext.TelegramJoinActions
+        TelegramJoinAccountModelDb? act = await mainContext.TelegramJoinActions
            .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.GuidToken == req.Token);
         if (act is null)
             return ResponseBaseModel.CreateError("Токен не существует");
