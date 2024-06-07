@@ -1,0 +1,72 @@
+﻿@inject IUsersProfilesService UsersProfilesRepo
+
+@rendermode InteractiveServer
+
+<h3>Claims</h3>
+<StatusMessage Messages="@Messages" />
+<div class="input-group input-group-sm mb-3">
+    <span class="input-group-text" id="inputGroup-sizing-sm">Добавить Claim</span>
+    <input @bind-value="claimType" @bind-value:event="oninput" type="text" placeholder="ClaimType" aria-label="Claim type" class="form-control">
+    <input @bind-value="claimValue" @bind-value:event="oninput" type="text" placeholder="ClaimValue" aria-label="Claim value" class="form-control">
+    <button @onclick="AddClaim" disabled="@(string.IsNullOrWhiteSpace(claimType) || string.IsNullOrWhiteSpace(claimValue))" class="btn btn-outline-secondary" type="button" id="button-addon2">Добавить</button>
+</div>
+
+@if (claims.Length == 0)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Claims отсутствуют.</p>
+        </blockquote>
+    </figure>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Тип</th>
+                <th scope="col">Значение</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ClaimBaseModel claim in claims)
+            {
+                <ClaimRowComponent Claim="claim" ClaimArea="ClaimArea" OwnerId="@OwnerId" ReloadHandler="async () => {claims = await UsersProfilesRepo.GetClaims(ClaimArea, OwnerId); StateHasChanged(); }" />
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ClaimAreasEnum ClaimArea { get; set; }
+
+    [Parameter, EditorRequired]
+    public required string OwnerId { get; set; }
+
+    ClaimBaseModel[] claims = default!;
+    IEnumerable<ResultMessage>? Messages;
+    string? claimType;
+    string? claimValue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        claims = await UsersProfilesRepo.GetClaims(ClaimArea, OwnerId);
+    }
+
+    async Task AddClaim()
+    {
+        ResponseBaseModel res = await UsersProfilesRepo.ClaimUpdateOrCreate(new ClaimModel() { ClaimType = claimType?.Trim(), ClaimValue = claimValue?.Trim(), OwnerId = OwnerId }, ClaimArea);
+
+        if (!res.Success())
+        {
+            Messages = res.Messages;
+            return;
+        }
+
+        claimType = null;
+        claimValue = null;
+
+        claims = await UsersProfilesRepo.GetClaims(ClaimArea, OwnerId);
+    }
+}

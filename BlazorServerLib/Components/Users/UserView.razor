@@ -8,7 +8,12 @@
 <h3>Пользователь</h3>
 
 <div class="row">
-    <RolesPage OwnerUserId="@UserId.ToString()" />
+    <div class="col">
+        <RolesPage OwnerUserId="@UserId.ToString()" />
+    </div>
+    <div class="col">
+        <ClaimsManageComponent ClaimArea="ClaimAreasEnum.ForUser" OwnerId="@UserId.ToString()" />
+    </div>
 </div>
 
 @code {

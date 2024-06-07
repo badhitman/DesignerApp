@@ -11,7 +11,7 @@
 {
     <span class="badge rounded-pill text-bg-secondary ms-2">owned is null. error {C5FABB48-E47A-499B-894D-A0D8D9479AF6}</span>
 }
-else if(IsBusyProgress)
+else if (IsBusyProgress)
 {
     <div class="spinner-border spinner-border-sm  ms-2" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -19,7 +19,7 @@ else if(IsBusyProgress)
 }
 else
 {
-    <span @onclick="TelegramAccountRemoveJoin" class="badge text-bg-@(DeleteInit ? "danger" : "warning") ms-1" style="cursor:pointer;">@(DeleteInit ? "Подтвердить удаление" : "Удалить связь пользователя с Telegram")</span>
+    <span @onclick="TelegramAccountRemoveJoin" class="badge text-bg-@(DeleteInit ? "danger" : "warning") ms-1" style="cursor:pointer;">@(DeleteInit ? "Подтвердить?" : "Отвязать Telegram")</span>
 }
 
 @code {
