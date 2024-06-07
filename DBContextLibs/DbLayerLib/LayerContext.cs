@@ -10,7 +10,7 @@ namespace DbLayerLib;
 /// <summary>
 /// Промежуточный/общий слой контекста базы данных
 /// </summary>
-public partial class LayerContext(DbContextOptions options) : DbContext(options)
+public class LayerContext(DbContextOptions options) : DbContext(options)
 {
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder options)
