@@ -18,5 +18,5 @@ public class EntryModel : IdSwitchableModel
     /// Имя объекта
     /// </summary>
     [Required(AllowEmptyStrings = false, ErrorMessage = "Поле наименования обязательно для заполнения")]
-    public string? Name { get; set; }
+    public required string Name { get; set; }
 }

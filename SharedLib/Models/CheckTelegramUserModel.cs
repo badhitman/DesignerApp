@@ -89,7 +89,7 @@ public class CheckTelegramUserModel : TelegramUserBaseModelDb
             LastName = tgUserDb.LastName,
             TelegramId = tgUserDb.TelegramUserId,
             IsBot = tgUserDb.IsBot,
-            Name = tgUserDb.Username,
+            Name = tgUserDb.Username ?? "",
         };
     }
 
@@ -102,7 +102,7 @@ public class CheckTelegramUserModel : TelegramUserBaseModelDb
             LastName = user.LastName,
             IsBot = user.IsBot,
             TelegramId = user.TelegramUserId,
-            Name = user.Username,
+            Name = user.Username ?? "",
         };
     }
 }

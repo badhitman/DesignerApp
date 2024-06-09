@@ -81,6 +81,6 @@ public class TelegramUserBaseModelDb : EntryCreatedModel
             LastName = user.LastName,
             TelegramId = user.TelegramUserId,
             IsBot = user.IsBot,
-            Name = user.Username,
+            Name = user.Username ?? "",
         };
 }

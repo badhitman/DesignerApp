@@ -47,7 +47,7 @@ public class TelegramUserModelDb : TelegramUserBaseModelDb
             NormalizedLastName = user.LastName?.ToUpper(),
             TelegramId = user.TelegramUserId,
             IsBot = user.IsBot,
-            Name = user.Username,
+            Name = user.Username ?? "",
             NormalizedName = user.Username?.ToUpper(),
         };
 }
