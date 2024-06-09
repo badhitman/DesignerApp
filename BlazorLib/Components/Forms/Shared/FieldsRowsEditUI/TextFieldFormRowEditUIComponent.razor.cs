@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using SharedLib;
+﻿using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsRowsEditUI;
 
+/// <summary>
+/// Text field form row edit UI
+/// </summary>
 public partial class TextFieldFormRowEditUIComponent : FieldFormEditFormBaseComponent
 {
-    [Inject]
-    protected ILogger<TextFieldFormRowEditUIComponent> _logger { get; set; } = default!;
-
-
     /// <summary>
     /// Параметр текстового поля формы // (DescriptorField == PropsTypesMDFieldsEnum.None ? "Плагин отключён" : "")
     /// </summary>
@@ -29,14 +26,17 @@ public partial class TextFieldFormRowEditUIComponent : FieldFormEditFormBaseComp
         }
     }
 
+    /// <inheritdoc/>
     protected TextFieldAgentSelectorComponent? _tfAgentSelectorComponent_ref;
+    /// <inheritdoc/>
     public void SelectAgentAction(EntryAltDescriptionModel selected_element)
     {
-        ParameterField = $"{selected_element.Text} #{selected_element.Id}";
+        ParameterField = $"{selected_element.Name} #{selected_element.Id}";
         StateHasChanged();
         _tfAgentSelectorComponent_ref?.SetCurrentAgent(ParameterField);
     }
 
+    /// <inheritdoc/>
     public PropsTypesMDFieldsEnum DescriptorField
     {
         get
@@ -58,6 +58,7 @@ public partial class TextFieldFormRowEditUIComponent : FieldFormEditFormBaseComp
         }
     }
 
+    /// <inheritdoc/>
     public bool IsMultiline
     {
         get

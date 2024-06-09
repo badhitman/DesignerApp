@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Pages;
@@ -10,14 +8,9 @@ namespace BlazorLib.Components.Forms.Pages;
 /// </summary>
 public partial class QuestionnaireClientViewPage : BlazorBusyComponentBaseModel
 {
+    /// <inheritdoc/>
     [Inject]
-    protected ILogger<QuestionnaireClientViewPage> _logger { get; set; } = default!;
-
-    [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
-
-    [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -33,14 +26,14 @@ public partial class QuestionnaireClientViewPage : BlazorBusyComponentBaseModel
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalcAbstraction>();
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = await _forms.GetSessionQuestionnaire(QuestionnaireGuid.ToString());
+        FormSessionQuestionnaireResponseModel rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireGuid.ToString());
         IsBusyProgress = false;
 
         if (rest.SessionQuestionnaire is null)
             throw new Exception($"rest.SessionQuestionnaire is null. error {{AB30D092-938E-460A-B5AB-7E3BEC6A642A}}");
 
         SessionQuestionnaire = rest.SessionQuestionnaire;
-        if (SessionQuestionnaire.SessionValues?.Any() == true)
+        if (SessionQuestionnaire.SessionValues is not null && SessionQuestionnaire.SessionValues.Count != 0)
             SessionQuestionnaire.SessionValues.ForEach(x => { x.Owner ??= SessionQuestionnaire; x.OwnerId = SessionQuestionnaire.Id; });
     }
 }

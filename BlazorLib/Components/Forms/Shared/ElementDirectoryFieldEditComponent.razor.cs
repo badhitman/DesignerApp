@@ -15,10 +15,10 @@ public partial class ElementDirectoryFieldEditComponent : BlazorBusyComponentBas
     protected IJSRuntime _js_runtime { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
     public EntryModel ElementObject { get; set; } = default!;
@@ -32,10 +32,10 @@ public partial class ElementDirectoryFieldEditComponent : BlazorBusyComponentBas
     protected async Task UpdateElementOfDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await _forms.UpdateElementOfDirectory(new EntryModel() { Id = ElementObject.Id, Name = orign_name });
+        ResponseBaseModel rest = await FormsRepo.UpdateElementOfDirectory(new EntryModel() { Id = ElementObject.Id, Name = orign_name });
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         ElementObject.Name = orign_name;
         EditDoneAction();
     }

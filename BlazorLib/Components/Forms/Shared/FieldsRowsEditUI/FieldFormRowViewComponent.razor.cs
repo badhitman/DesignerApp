@@ -15,10 +15,10 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     protected IJSRuntime _js_runtime { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
     public ConstructorFormModelDB Form { get; set; } = default!;
@@ -68,7 +68,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 else
                 {
                     string msg = "ошибка {DDF60327-09D6-430D-B7B5-43F5A28D47A3}";
-                    _snackbar.Add(msg, Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                    SnackbarRepo.Add(msg, Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                     _type_name = msg;
                 }
             }
@@ -96,7 +96,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 else
                 {
                     string msg = "ошибка {EF77C0E0-B335-45FA-9A88-17DBE46DFE73}";
-                    _snackbar.Add(msg, Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                    SnackbarRepo.Add(msg, Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                     _information_field = msg;
                     return (MarkupString)_information_field;
                 }
@@ -115,7 +115,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             else if (Field is ConstructorFormDirectoryLinkModelDB df)
                 return df.SortIndex < (Form.Fields?.Count() + Form.FormsDirectoriesLinks?.Count());
             else
-                _snackbar.Add("ошибка {67959803-04BE-4F50-8E66-EA654F4309E9}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add("ошибка {67959803-04BE-4F50-8E66-EA654F4309E9}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
             return false;
         }
@@ -130,7 +130,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             else if (Field is ConstructorFormDirectoryLinkModelDB df)
                 return df.SortIndex > 1;
             else
-                _snackbar.Add("ошибка {8EFCDE7F-19C7-485C-B766-E84D5A63D7D8}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add("ошибка {8EFCDE7F-19C7-485C-B766-E84D5A63D7D8}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
             return false;
         }
@@ -151,7 +151,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                     return false;
             }
             else
-                _snackbar.Add($"`{_field_master.GetType().Name}`. ошибка {{6D69C0F1-DBF1-49A1-8250-FB4E5CAA6905}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"`{_field_master.GetType().Name}`. ошибка {{6D69C0F1-DBF1-49A1-8250-FB4E5CAA6905}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
             return true;
         }
@@ -178,10 +178,10 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     protected async Task ClearValuesForFieldName(int? session_id)
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await _forms.ClearValuesForFieldName(new() { FormId = Form.Id, FieldName = Field.Name, SessionId = session_id });
+        ResponseBaseModel rest = await FormsRepo.ClearValuesForFieldName(new() { FormId = Form.Id, FieldName = Field.Name, SessionId = session_id });
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
             return;
 
@@ -224,7 +224,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 SortIndex = sf.SortIndex,
                 TypeField = sf.TypeField
             };
-            rest = await _forms.FormFieldUpdateOrCreate(req);
+            rest = await FormsRepo.FormFieldUpdateOrCreate(req);
             act = () => { ((ConstructorFieldFormModelDB)Field).Update(sf); };
         }
         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
@@ -241,21 +241,21 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 Required = df.Required,
                 SortIndex = df.SortIndex
             };
-            rest = await _forms.FormFieldDirectoryUpdateOrCreate(req);
+            rest = await FormsRepo.FormFieldDirectoryUpdateOrCreate(req);
             act = () => { ((ConstructorFormDirectoryLinkModelDB)Field).Update(df); };
         }
         else
         {
-            _snackbar.Add("Ошибка {BB20028A-0413-4012-B2C8-A6DA579DF340}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("Ошибка {BB20028A-0413-4012-B2C8-A6DA579DF340}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = false;
             return;
         }
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{5236C09E-C4BF-4AAA-9F6B-DA3F36648B0F}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{5236C09E-C4BF-4AAA-9F6B-DA3F36648B0F}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -272,19 +272,19 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     async Task ReloadForm()
     {
         IsBusyProgress = true;
-        FormResponseModel rest = await _forms.GetForm(Field.OwnerId);
+        FormResponseModel rest = await FormsRepo.GetForm(Field.OwnerId);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{010B3124-8920-421E-B792-DF2D08CBE1C7}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{010B3124-8920-421E-B792-DF2D08CBE1C7}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         if (rest.Form?.Fields is null || rest.Form?.FormsDirectoriesLinks is null)
         {
-            _snackbar.Add($"Ошибка {{A0342E4D-3C00-4DA2-8EA3-7C1072D225F4}} rest.Content.Form?.Fields is null || rest.Content.Form?.FormsDirectoriesLinks is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{A0342E4D-3C00-4DA2-8EA3-7C1072D225F4}} rest.Content.Form?.Fields is null || rest.Content.Form?.FormsDirectoriesLinks is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -327,7 +327,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         }
         else
         {
-            _snackbar.Add($"{_field_master.GetType().FullName}. ошибка {{75A28907-ABF5-4847-B116-895A70C21B8C}}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"{_field_master.GetType().FullName}. ошибка {{75A28907-ABF5-4847-B116-895A70C21B8C}}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = false;
             return;
         }
@@ -352,22 +352,22 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         ResponseBaseModel rest;
         if (_field_master is ConstructorFieldFormModelDB sf)
-            rest = await _forms.FormFieldDelete(sf.Id);
+            rest = await FormsRepo.FormFieldDelete(sf.Id);
         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
-            rest = await _forms.FormFieldDirectoryDelete(df.Id);
+            rest = await FormsRepo.FormFieldDirectoryDelete(df.Id);
         else
         {
-            _snackbar.Add($"{_field_master.GetType().FullName}. ошибка {{B645D471-DA36-4876-9062-1F9731905001}}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"{_field_master.GetType().FullName}. ошибка {{B645D471-DA36-4876-9062-1F9731905001}}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = false;
             return;
         }
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{C8D7E842-026C-4897-A0BA-D9A04F51E2B6}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{C8D7E842-026C-4897-A0BA-D9A04F51E2B6}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
      ;
@@ -407,7 +407,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 SortIndex = df.SortIndex
             };
         else
-            _snackbar.Add("error {FF425607-1C08-48A1-9BDD-D7A3C7A1F3E2}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("error {FF425607-1C08-48A1-9BDD-D7A3C7A1F3E2}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
         _type_name = null;
         _information_field = null;
@@ -420,28 +420,28 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         FormResponseModel rest;
         if (_field_master is ConstructorFieldFormModelDB sf)
-            rest = await _forms.FieldFormMove(sf.Id, VerticalDirectionsEnum.Up);
+            rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Up);
         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
-            rest = await _forms.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Up);
+            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Up);
         else
         {
-            _snackbar.Add("ошибка {348A595E-3FC4-46A1-8BC2-76A040B22E78}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("ошибка {348A595E-3FC4-46A1-8BC2-76A040B22E78}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = false;
             return;
         }
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{7F179487-6C23-4E16-9300-847D28416251}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{7F179487-6C23-4E16-9300-847D28416251}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         if (rest.Form is null)
         {
-            _snackbar.Add($"Ошибка {{CC30C3BB-1206-46D4-92E3-926AA77B611B}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{CC30C3BB-1206-46D4-92E3-926AA77B611B}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         Form.Reload(rest.Form);
@@ -453,28 +453,28 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         FormResponseModel rest;
         if (_field_master is ConstructorFieldFormModelDB sf)
-            rest = await _forms.FieldFormMove(sf.Id, VerticalDirectionsEnum.Down);
+            rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Down);
         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
-            rest = await _forms.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Down);
+            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Down);
         else
         {
-            _snackbar.Add("ошибка {19A946C6-394D-4853-B9A8-0BA853970709}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("ошибка {19A946C6-394D-4853-B9A8-0BA853970709}", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = false;
             return;
         }
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{B75503B5-0E20-4DBD-BDF4-C9591E693E75}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{B75503B5-0E20-4DBD-BDF4-C9591E693E75}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         if (rest.Form is null)
         {
-            _snackbar.Add($"Ошибка {{6A63AC00-65E7-40C4-8487-1C586C149145}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{6A63AC00-65E7-40C4-8487-1C586C149145}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         Form.Reload(rest.Form);

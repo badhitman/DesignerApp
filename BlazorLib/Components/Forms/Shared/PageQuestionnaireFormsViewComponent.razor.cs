@@ -11,10 +11,10 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     protected ILogger<PageQuestionnaireFormsViewComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
 
     [CascadingParameter, EditorRequired]
@@ -40,18 +40,18 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            FormQuestionnairePageResponseModel rest = await _forms.GetQuestionnairePage(QuestionnairePage.Id);
+            FormQuestionnairePageResponseModel rest = await FormsRepo.GetQuestionnairePage(QuestionnairePage.Id);
             IsBusyProgress = false;
 
-            _snackbar.ShowMessagesResponse(rest.Messages);
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (!rest.Success())
             {
-                _snackbar.Add($"Ошибка {{566396FB-843B-4C07-AE89-D98D7DD268CD}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка {{566396FB-843B-4C07-AE89-D98D7DD268CD}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             if (rest.QuestionnairePage is null)
             {
-                _snackbar.Add($"Ошибка {{C58098C7-FEAA-4BD5-9E30-48FA91DBBF65}} [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка {{C58098C7-FEAA-4BD5-9E30-48FA91DBBF65}} [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             QuestionnairePage = rest.QuestionnairePage;
@@ -80,12 +80,12 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     {
         if (QuestionnairePage.JoinsForms is null)
         {
-            _snackbar.Add($"Дозагрузка `{nameof(QuestionnairePage.JoinsForms)}` в `{nameof(QuestionnairePage)} ['{QuestionnairePage.Name}' #{QuestionnairePage.Id}]`", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Дозагрузка `{nameof(QuestionnairePage.JoinsForms)}` в `{nameof(QuestionnairePage)} ['{QuestionnairePage.Name}' #{QuestionnairePage.Id}]`", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = true;
-            FormQuestionnairePageResponseModel rest = await _forms.GetQuestionnairePage(QuestionnairePage.Id);
+            FormQuestionnairePageResponseModel rest = await FormsRepo.GetQuestionnairePage(QuestionnairePage.Id);
             IsBusyProgress = false;
 
-            _snackbar.ShowMessagesResponse(rest.Messages);
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
             QuestionnairePage.JoinsForms = rest.QuestionnairePage?.JoinsForms;
         }
     }

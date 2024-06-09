@@ -8,7 +8,7 @@ public class SetValueFieldSessionQuestionnaireModel : ValueFieldSessionQuestionn
     /// <summary>
     /// Имя поля
     /// </summary>
-    public string NameField { get; set; } = default!;
+    public required string NameField { get; set; }
 
     /// <summary>
     /// Значение поля
@@ -19,4 +19,15 @@ public class SetValueFieldSessionQuestionnaireModel : ValueFieldSessionQuestionn
     /// Описание 
     /// </summary>
     public string? Description { get; set; }
+
+    internal static SetValueFieldSessionQuestionnaireModel Build(string fieldValue, string fieldName, string description, uint groupByRowNum)
+    {
+        return new()
+        {
+            FieldValue = fieldValue,
+            NameField = fieldName,
+            Description = description,
+            GroupByRowNum = groupByRowNum
+        };
+    }
 }

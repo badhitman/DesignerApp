@@ -205,7 +205,7 @@ public interface IFormsService
     /// <summary>
     /// Получить справочники/списки
     /// </summary>
-    public Task<EntriesResponseModel> GetDirectories(string? name_filter, CancellationToken cancellationToken = default);
+    public Task<EntriesResponseModel> GetDirectories(string? name_filter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/Создать справочник
@@ -222,7 +222,7 @@ public interface IFormsService
     /// <summary>
     /// Получить элементы справочника/списка
     /// </summary>
-    public Task<EntriesResponseModel> GetElementsOfDirectoriy(int directory_id, CancellationToken cancellationToken = default);
+    public Task<EntriesResponseModel> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Создать элемент справочника

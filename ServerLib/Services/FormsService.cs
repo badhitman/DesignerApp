@@ -1772,7 +1772,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<EntriesResponseModel> GetDirectories(string? name_filter, CancellationToken cancellationToken = default)
+    public async Task<EntriesResponseModel> GetDirectories(string? name_filter = null, CancellationToken cancellationToken = default)
     {
         return new EntriesResponseModel() { Entries = await context_forms.Directories.Select(x => new EntryModel() { Id = x.Id, Name = x.Name }).ToArrayAsync(cancellationToken: cancellationToken) };
     }
@@ -1859,7 +1859,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
     #region элементы справочникв/списков
     /// <inheritdoc/>
-    public async Task<EntriesResponseModel> GetElementsOfDirectoriy(int directory_id, CancellationToken cancellationToken = default)
+    public async Task<EntriesResponseModel> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
         EntriesResponseModel res = new();
         ConstructorFormDirectoryModelDB? dir = await context_forms.Directories

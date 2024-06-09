@@ -12,11 +12,11 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar snackbarInject { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
     /// <summary>
     /// Номер строки таблицы от 1 и больше.
@@ -27,7 +27,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormModelDB Form { get; set; } = default!;
+    public required ConstructorFormModelDB Form { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]
@@ -71,12 +71,12 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel
 
         if (PageJoinForm is null)
         {
-            snackbarInject.Add("PageJoinForm is null. error {3098E5B7-DEA6-4A9A-A2A0-3119194401ED}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("PageJoinForm is null. error {3098E5B7-DEA6-4A9A-A2A0-3119194401ED}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         if (SessionQuestionnaire is null)
         {
-            snackbarInject.Add("SessionQuestionnaire is null. error {C18CEBB7-C245-4E00-B9A2-CBB046DF590F}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionQuestionnaire is null. error {C18CEBB7-C245-4E00-B9A2-CBB046DF590F}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -89,17 +89,17 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel
             SessionId = SessionQuestionnaire.Id
         };
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = await _forms.SetValueFieldSessionQuestionnaire(req);
+        FormSessionQuestionnaireResponseModel rest = await FormsRepo.SetValueFieldSessionQuestionnaire(req);
         IsBusyProgress = false;
 
         if (!rest.Success())
         {
-            snackbarInject.Add($"Ошибка {{1CA79BA7-295C-40AD-BCF3-F6143DCCF2BD}}: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{1CA79BA7-295C-40AD-BCF3-F6143DCCF2BD}}: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         if (rest.SessionQuestionnaire is null)
         {
-            snackbarInject.Add($"{nameof(rest.SessionQuestionnaire)} is null. error {{13B77737-55FA-42C6-9B82-BD35F3740825}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"{nameof(rest.SessionQuestionnaire)} is null. error {{13B77737-55FA-42C6-9B82-BD35F3740825}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

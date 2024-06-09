@@ -191,7 +191,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 _stringFieldValue = "<calc>";
                 break;
             default:
-                snackbarInject.Add($"Тип данных поля не обработан. ошибка {{C2E12C0B-837B-4D67-B320-37F976B8D293}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Тип данных поля не обработан. ошибка {{C2E12C0B-837B-4D67-B320-37F976B8D293}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 break;
         }
         FieldsReferring?.Add(this);

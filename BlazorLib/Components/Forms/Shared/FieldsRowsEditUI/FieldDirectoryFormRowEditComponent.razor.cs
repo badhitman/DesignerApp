@@ -11,10 +11,10 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     protected ILogger<FieldDirectoryFormRowEditComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
     public ConstructorFormModelDB Form { get; set; } = default!;
@@ -50,16 +50,16 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        EntriesResponseModel rest = await _forms.GetDirectories();
+        EntriesResponseModel rest = await FormsRepo.GetDirectories();
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
             return;
 
         if (rest.Entries is null)
         {
-            _snackbar.Add($"Ошибка {{4BBC7550-5753-4D96-9E17-3E9B21F08493}} rest.Content.Entries is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{4BBC7550-5753-4D96-9E17-3E9B21F08493}} rest.Content.Entries is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

@@ -1,30 +1,30 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Directory elements-list view
+/// </summary>
 public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBaseModel
 {
+    /// <inheritdoc/>
     [Inject]
-    protected ILogger<DirectoryElementsListViewComponent> _logger { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
-    [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
-
-    [Inject]
-    protected IFormsService _forms { get; set; } = default!;
-
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public int SelectedDirectoryId { get; set; }
+    public required int SelectedDirectoryId { get; set; }
 
+    /// <inheritdoc/>
     protected IEnumerable<EntryModel>? EntriesElements;
 
+    /// <inheritdoc/>
     public async Task ReloadElements(int? selected_directory_id = null, bool state_has_change = false)
     {
         if (selected_directory_id is not null)
@@ -32,21 +32,22 @@ public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBas
 
         if (SelectedDirectoryId <= 0)
         {
-            _snackbar.Add($"Идентификатор справочника не может быть меньше 0 ({SelectedDirectoryId})", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Идентификатор справочника не может быть меньше 0 ({SelectedDirectoryId})", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         IsBusyProgress = true;
 
-        EntriesResponseModel rest = await _forms.GetElementsDirectories(SelectedDirectoryId);
+        EntriesResponseModel rest = await FormsRepo.GetElementsOfDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
-        EntriesElements = rest.Entries ?? Enumerable.Empty<EntryModel>();
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        EntriesElements = rest.Entries ?? [];
 
         if (state_has_change)
             StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         if (SelectedDirectoryId > 0)

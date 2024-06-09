@@ -1,4 +1,4 @@
-﻿@inherits BlazorLib.BlazorComponents.BlazorBusyComponentBaseModel
+﻿@inherits BlazorBusyComponentBaseModel
 
 <div dom-guid="{6A9146E9-E38B-471D-A07E-51EEEC537B97}" class="card d-flex flex-column flex-grow-1">
     <div class="card-header">
@@ -7,12 +7,12 @@
                 <label class="visually-hidden" for="inlineFormInputGroupSessionName">Имя ссылки (опционально)</label>
                 <div class="input-group">
                     <div class="input-group-text">Создание новой сессии/ссылки</div>
-                    <input @bind="nameSessionForCreate" type="text" class="form-control" id="inlineFormInputGroupSessionName" placeholder="Название">
+                    <input @bind="NameSessionForCreate" type="text" class="form-control" id="inlineFormInputGroupSessionName" placeholder="Название">
                 </div>
             </div>
             <div class="col-12" title="Выбранная анкета используется в том числе и для фильтрации выводимых ссылок">
                 <label class="visually-hidden" for="inlineFormSelectPref">Опрос/анкета</label>
-                <select @bind="selectedQuestionnaireId" class="form-select" id="inlineFormSelectPref">
+                <select @bind="SelectedQuestionnaireId" class="form-select" id="inlineFormSelectPref">
                     <option value="0">Выбор анкеты...</option>
                     @foreach (ConstructorFormQuestionnaireModelDB q in QuestionnairesAll)
                     {
@@ -21,12 +21,12 @@
                 </select>
             </div>
             <div class="col-12">
-                <button @onclick="CreateNewSession" disabled="@(selectedQuestionnaireId < 1)" type="button" class="btn btn@(selectedQuestionnaireId > 0 ? "" : "-outline")-primary">@CreateSessionButtonTitle</button>
+                <button @onclick="CreateNewSession" disabled="@(SelectedQuestionnaireId < 1)" type="button" class="btn btn@(SelectedQuestionnaireId > 0 ? "" : "-outline")-primary">@CreateSessionButtonTitle</button>
             </div>
-            @if (selectedQuestionnaireId > 0)
+            @if (SelectedQuestionnaireId > 0)
             {
                 <div class="col-12">
-                    <button @onclick="() => { selectedQuestionnaireId = 0; nameSessionForCreate = null; }" type="button" class="btn btn-outline-secondary">Отмена</button>
+                    <button @onclick="() => { SelectedQuestionnaireId = 0; NameSessionForCreate = null; }" type="button" class="btn btn-outline-secondary">Отмена</button>
                 </div>
             }
         </form>

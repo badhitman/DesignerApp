@@ -11,10 +11,10 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
     protected ILogger<PageQuestionnaireFormMainViewComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
 
     [CascadingParameter, EditorRequired]
@@ -44,13 +44,13 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
     protected async Task DeleteJoinForm()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await _forms.DeleteQuestionnairePageJoinForm(PageJoinForm.Id);
+        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnairePageJoinForm(PageJoinForm.Id);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{547E6D9E-0E8C-415F-BC53-9A925A8C4E90}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{547E6D9E-0E8C-415F-BC53-9A925A8C4E90}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         UpdatePageActionHandle(null);
@@ -97,13 +97,13 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
     protected async Task QuestionnairePageJoinFormMove(VerticalDirectionsEnum direct)
     {
         IsBusyProgress = true;
-        FormQuestionnairePageResponseModel rest = await _forms.QuestionnairePageJoinFormMove(PageJoinForm.Id, direct);
+        FormQuestionnairePageResponseModel rest = await FormsRepo.QuestionnairePageJoinFormMove(PageJoinForm.Id, direct);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{EC9DD6E2-5359-48EE-AEE5-04EF64BF8139}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{EC9DD6E2-5359-48EE-AEE5-04EF64BF8139}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         UpdatePageActionHandle(null);
@@ -123,13 +123,13 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
             ShowTitle = PageJoinForm.ShowTitle,
             SortIndex = PageJoinForm.SortIndex
         };
-        ResponseBaseModel rest = await _forms.CreateOrUpdateQuestionnairePageJoinForm(req);
+        ResponseBaseModel rest = await FormsRepo.CreateOrUpdateQuestionnairePageJoinForm(req);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{1380C317-88CC-42AC-9188-896C7186B133}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{1380C317-88CC-42AC-9188-896C7186B133}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -158,10 +158,10 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
         {
             _logger.LogWarning("Дозагрузка [Form] для [PageJoinForm]...");
             IsBusyProgress = true;
-            FormResponseModel rest = await _forms.GetForm(PageJoinForm.FormId);
+            FormResponseModel rest = await FormsRepo.GetForm(PageJoinForm.FormId);
             IsBusyProgress = false;
 
-            _snackbar.ShowMessagesResponse(rest.Messages);
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
             PageJoinForm.Form = rest.Form;
         }
     }

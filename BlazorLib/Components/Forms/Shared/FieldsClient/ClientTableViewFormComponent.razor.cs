@@ -19,10 +19,10 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     protected IJSRuntime _js_runtime { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
     [Parameter]
     public string? Title { get; set; }
@@ -72,7 +72,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     {
         if (SessionQuestionnaire is null)
         {
-            _snackbar.Add("SessionQuestionnaire is null. error {EAE6D2B8-7285-4F95-976A-7FA0C1F72ECF}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionQuestionnaire is null. error {EAE6D2B8-7285-4F95-976A-7FA0C1F72ECF}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -81,13 +81,13 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         InvokeAsync(async () =>
         {
             ValueFieldSessionQuestionnaireBaseModel req = new() { GroupByRowNum = row_num, JoinFormId = PageJoinForm.Id, SessionId = SessionQuestionnaire.Id };
-            ResponseBaseModel rest = await _forms.DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(req);
+            ResponseBaseModel rest = await FormsRepo.DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(req);
             IsBusyProgress = false;
 
-            _snackbar.ShowMessagesResponse(rest.Messages);
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (!rest.Success())
             {
-                _snackbar.Add($"Ошибка {{E223CBC5-5BD5-4BEC-8A68-9601391BE10F}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка {{E223CBC5-5BD5-4BEC-8A68-9601391BE10F}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             await ReloadSession();
@@ -98,7 +98,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     {
         if (SessionQuestionnaire is null)
         {
-            _snackbar.Add("SessionQuestionnaire is null. error {98E8A59C-BF72-462A-8894-29EF12245E63}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionQuestionnaire is null. error {98E8A59C-BF72-462A-8894-29EF12245E63}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -108,13 +108,13 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             SessionId = SessionQuestionnaire.Id
         };
         IsBusyProgress = true;
-        CreateObjectOfIntKeyResponseModel rest = await _forms.AddRowToTable(row_obj);
+        CreateObjectOfIntKeyResponseModel rest = await FormsRepo.AddRowToTable(row_obj);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{0F45F44B-900B-46CD-AC42-C866F8618A2E}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{0F45F44B-900B-46CD-AC42-C866F8618A2E}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         uint row_num = (uint)rest.Id;
@@ -134,7 +134,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             SessionId = SessionQuestionnaire.Id,
             IsSelf = true
         };
-        _ = await _forms.DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(req);
+        _ = await FormsRepo.DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(req);
         await ReloadSession();
     }
 
@@ -142,19 +142,19 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     {
         if (SessionQuestionnaire is null)
         {
-            _snackbar.Add("SessionQuestionnaire is null. error {E4AE03AE-85A8-4D99-8C66-2FB46B84C67E}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionQuestionnaire is null. error {E4AE03AE-85A8-4D99-8C66-2FB46B84C67E}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         IsBusyProgress = true;
         FormSessionQuestionnaireResponseModel rest = string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken)
-        ? await _forms.GetSessionQuestionnaire(SessionQuestionnaire.Id)
-        : await _forms.GetSessionQuestionnaire(SessionQuestionnaire.SessionToken);
+        ? await FormsRepo.GetSessionQuestionnaire(SessionQuestionnaire.Id)
+        : await FormsRepo.GetSessionQuestionnaire(SessionQuestionnaire.SessionToken);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{F046D8EB-DAA2-46AB-9C81-A43D5827BDA6}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{F046D8EB-DAA2-46AB-9C81-A43D5827BDA6}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

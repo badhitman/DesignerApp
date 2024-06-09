@@ -5,7 +5,7 @@ namespace BlazorLib;
 
 public static class Extensions
 {
-    public static void ShowMessagesResponse(this ISnackbar _snackbar, IEnumerable<ResultMessage> messages)
+    public static void ShowMessagesResponse(this ISnackbar SnackbarRepo, IEnumerable<ResultMessage> messages)
     {
         if (!messages.Any())
             return;
@@ -21,7 +21,7 @@ public static class Extensions
                 ResultTypesEnum.Error => Severity.Error,
                 _ => Severity.Normal
             };
-            _snackbar.Add(m.Text, _style, opt => opt.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add(m.Text, _style, opt => opt.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
         }
     }
 

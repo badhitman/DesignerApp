@@ -18,10 +18,10 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     protected IJSRuntime _js_runtime { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
     protected MudTable<ConstructorFormModelDB>? table;
 
@@ -31,13 +31,13 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     protected async Task OpenForm(ConstructorFormModelDB form)
     {
         IsBusyProgress = true;
-        FormResponseModel rest = await _forms.GetForm(form.Id);
+        FormResponseModel rest = await FormsRepo.GetForm(form.Id);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{FB0BAB08-CEAA-4153-B786-E0EA7EB79FAF}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{FB0BAB08-CEAA-4153-B786-E0EA7EB79FAF}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         StateHasChanged();
@@ -60,7 +60,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     protected async Task RestJson(int page_num = 0)
     {
         IsBusyProgress = true;
-        rest_data = await _forms.SelectForms(new() { PageNum = _table_state?.Page ?? 0, SimpleRequest = searchString, PageSize = _table_state?.PageSize ?? 10 });
+        rest_data = await FormsRepo.SelectForms(new() { PageNum = _table_state?.Page ?? 0, SimpleRequest = searchString, PageSize = _table_state?.PageSize ?? 10 });
         IsBusyProgress = false;
     }
 

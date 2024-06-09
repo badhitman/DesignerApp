@@ -50,14 +50,14 @@ public partial class GeneratorClientViewComponent : FieldComponentBaseModel
         _gen = DeclarationAbstraction.GetHandlerService(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, "")!.ToString()!) as FieldValueGeneratorAbstraction;
         if (_gen is null)
         {
-            snackbarInject.Add($"Параметры поля-генератора имеют не корректный формат. Не найден генератор.\n\n{Field.MetadataValueType}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Параметры поля-генератора имеют не корректный формат. Не найден генератор.\n\n{Field.MetadataValueType}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         if (SessionQuestionnaire is not null)
         {
             SimpleStringArrayResponseModel res_elements = _gen.GetListElements(Field, SessionQuestionnaire, PageJoinForm, GroupByRowNum);
-            snackbarInject.ShowMessagesResponse(res_elements.Messages);
+            SnackbarRepo.ShowMessagesResponse(res_elements.Messages);
             if (res_elements.Success() && res_elements.Elements is not null)
                 Elements = res_elements.Elements;
         }

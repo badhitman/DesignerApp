@@ -18,14 +18,14 @@
                         <span class="input-group-text">Справочник</span>
                         @if (IsEditDirectory)
                         {
-                            <input @bind-value="directory_name" @bind-value:event="oninput" type="text" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                            <input @bind-value="DirectoryName" @bind-value:event="oninput" type="text" class="form-control" placeholder="Имя справочника">
                         }
                         else
                         {
-                            <select disabled="@(directories_all?.Any() != true || IsEditDirectory)" @bind="selected_dir_id" class="form-select" aria-label="справочник/список">
+                            <select disabled="@(directories_all?.Any() != true || IsEditDirectory)" @bind="SelectedDirectoryId" class="form-select" aria-label="справочник/список">
                                 @if (directories_all?.Any() != true)
                                 {
-                                    <option value="-1" selected>Справочники отсутсвуют</option>
+                                    <option value="-1" selected>Справочники отсутствуют</option>
                                 }
                                 else
                                 {
@@ -45,12 +45,12 @@
         <div class="card-body">
             <nav class="navbar bg-body-tertiary">
                 <div class="container-fluid">
-                    @if (selected_dir_id > 0)
+                    @if (SelectedDirectoryId > 0)
                     {
                         <a class="navbar-brand">Элементы списка</a>
                         <div class="d-flex">
-                            <input disabled="@IsEditDirectory" @bind-value="element_directory_name" @bind-value:event="oninput" class="form-control me-2" type="text" placeholder="Новый элемент справочника" aria-label="Новый элемент справочника" size="40">
-                            <button @onclick="AddElementIntoDirectory" disabled="@(string.IsNullOrWhiteSpace(element_directory_name) || IsEditDirectory)" class="btn btn-outline-primary" type="button">Добавить</button>
+                            <input disabled="@IsEditDirectory" @bind-value="ElementDirectoryName" @bind-value:event="oninput" class="form-control me-2" type="text" placeholder="Новый элемент справочника" aria-label="Новый элемент справочника" size="40">
+                            <button @onclick="AddElementIntoDirectory" disabled="@(string.IsNullOrWhiteSpace(ElementDirectoryName) || IsEditDirectory)" class="btn btn-outline-primary" type="button">Добавить</button>
                         </div>
                     }
                     else
@@ -60,7 +60,7 @@
                 </div>
             </nav>
             <CascadingValue Value="DeleteElementOfDirectory">
-                <DirectoryElementsListViewComponent @ref="list_view_ref" SelectedDirectoryId="selected_dir_id" />
+                <DirectoryElementsListViewComponent @ref="list_view_ref" SelectedDirectoryId="SelectedDirectoryId" />
             </CascadingValue>
         </div>
     }

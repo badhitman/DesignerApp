@@ -7,7 +7,7 @@ namespace BlazorLib.Components.Forms.Shared;
 public partial class ProgrammCalcFieldFormUIComponent : ComponentBase
 {
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public ConstructorFieldFormModelDB FieldObject { get; set; } = default!;

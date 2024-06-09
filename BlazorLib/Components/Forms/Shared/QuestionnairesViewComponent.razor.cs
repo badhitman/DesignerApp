@@ -14,10 +14,10 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     protected IDialogService _dialog_service { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
 
     MudTable<ConstructorFormQuestionnaireModelDB>? table;
@@ -29,13 +29,13 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     protected async Task DeleteQuestionnaire(int questionnaire_id)
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await _forms.DeleteQuestionnaire(questionnaire_id);
+        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnaire(questionnaire_id);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{0D9D887E-A52D-49FF-8648-61E59F7D2DAA}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{0D9D887E-A52D-49FF-8648-61E59F7D2DAA}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -50,12 +50,12 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     {
         SimplePaginationRequestModel req = new();
         IsBusyProgress = true;
-        data = await _forms.RequestQuestionnaires(req);
+        data = await FormsRepo.RequestQuestionnaires(req);
         IsBusyProgress = false;
 
         if (data.Questionnaires is null)
         {
-            _snackbar.Add($"rest.Content.Questionnaires is null. error {{D03EAEDB-1430-41A0-95EA-3C2344CA0102}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.Questionnaires is null. error {{D03EAEDB-1430-41A0-95EA-3C2344CA0102}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return new TableData<ConstructorFormQuestionnaireModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
         }
 

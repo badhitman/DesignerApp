@@ -15,7 +15,7 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
     protected IJSRuntime _js_runtime { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; } = default!;

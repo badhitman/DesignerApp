@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
@@ -8,26 +6,23 @@ namespace BlazorLib.Components.Forms.Shared;
 
 public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 {
+    /// <inheritdoc/>
     [Inject]
-    protected ILogger<SessionsViewComponent> _logger { get; set; } = default!;
+    protected IDialogService DialogServiceRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
-    protected IDialogService _dialog_service { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
-
-    [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
-
-    [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
 
-    IEnumerable<ConstructorFormQuestionnaireModelDB> QuestionnairesAll = Enumerable.Empty<ConstructorFormQuestionnaireModelDB>();
+    IEnumerable<ConstructorFormQuestionnaireModelDB> QuestionnairesAll = [];
 
     int _selectedQuestionnaireId;
-    int selectedQuestionnaireId
+    int SelectedQuestionnaireId
     {
         get => _selectedQuestionnaireId;
         set
@@ -38,10 +33,11 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    string? nameSessionForCreate { get; set; }
+    string? NameSessionForCreate { get; set; }
     string? searchString = null;
 
-    protected string CreateSessionButtonTitle => selectedQuestionnaireId < 1 ? "Укажите анкету" : "Создать новую ссылку";
+    /// <inheritdoc/>
+    protected string CreateSessionButtonTitle => SelectedQuestionnaireId < 1 ? "Укажите анкету" : "Создать новую ссылку";
 
     protected private async Task<TableData<ConstructorFormSessionModelDB>> ServerReload(TableState state)
     {
@@ -50,15 +46,15 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             PageNum = state.Page,
             PageSize = state.PageSize,
             SimpleRequest = searchString,
-            QuestionnaireId = selectedQuestionnaireId
+            QuestionnaireId = SelectedQuestionnaireId
         };
         IsBusyProgress = true;
-        ConstructorFormsSessionsPaginationResponseModel rest = await _forms.RequestSessionsQuestionnaires(req);
+        ConstructorFormsSessionsPaginationResponseModel rest = await FormsRepo.RequestSessionsQuestionnaires(req);
         IsBusyProgress = false;
 
         if (rest.Sessions is null)
         {
-            _snackbar.Add($"rest.Content.Sessions is null. error {{532E45D0-7584-42CE-B15F-E3E45DDE2E0E}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.Sessions is null. error {{532E45D0-7584-42CE-B15F-E3E45DDE2E0E}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return new TableData<ConstructorFormSessionModelDB>() { TotalItems = totalItems, Items = sessions };
         }
 
@@ -68,16 +64,17 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         return new TableData<ConstructorFormSessionModelDB>() { TotalItems = totalItems, Items = sessions };
     }
 
+    /// <inheritdoc/>
     protected async Task EditSession(ConstructorFormSessionModelDB session)
     {
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = await _forms.GetSessionQuestionnaire(session.Id);
+        FormSessionQuestionnaireResponseModel rest = await FormsRepo.GetSessionQuestionnaire(session.Id);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{F0B514BB-C043-4733-A420-EC8A77C66252}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{F0B514BB-C043-4733-A420-EC8A77C66252}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         StateHasChanged();
@@ -87,18 +84,19 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             { x => x.Session, rest.SessionQuestionnaire }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await _dialog_service.Show<EditSessionDialogComponent>($"Редактирование сессии. Опрос/анкета: '{rest.SessionQuestionnaire?.Owner?.Name}'", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<EditSessionDialogComponent>($"Редактирование сессии. Опрос/анкета: '{rest.SessionQuestionnaire?.Owner?.Name}'", parameters, options).Result;
         if (table is not null)
             await table.ReloadServerData();
     }
 
-    protected async Task DeleteSession(int sesssion_id)
+    /// <inheritdoc/>
+    protected async Task DeleteSession(int session_id)
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await _forms.DeleteSessionQuestionnaire(sesssion_id);
+        ResponseBaseModel rest = await FormsRepo.DeleteSessionQuestionnaire(session_id);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
             return;
 
@@ -106,6 +104,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             await table.ReloadServerData();
     }
 
+    /// <inheritdoc/>
     protected async Task OnSearch(string text)
     {
         searchString = text;
@@ -113,30 +112,33 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             await table.ReloadServerData();
     }
 
+    /// <inheritdoc/>
     protected MudTable<ConstructorFormSessionModelDB>? table;
 
+    /// <inheritdoc/>
     protected int totalItems;
     List<ConstructorFormSessionModelDB> sessions = [];
 
+    /// <inheritdoc/>
     protected async Task CreateNewSession()
     {
         ConstructorFormSessionModelDB req = new()
         {
-            Name = nameSessionForCreate ?? "",
+            Name = NameSessionForCreate ?? "",
             SessionToken = Guid.NewGuid().ToString(),
-            OwnerId = selectedQuestionnaireId
+            OwnerId = SelectedQuestionnaireId
         };
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = await _forms.UpdateOrCreateSessionQuestionnaire(req);
+        FormSessionQuestionnaireResponseModel rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);
         IsBusyProgress = false;
 
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
             return;
 
         if (rest.SessionQuestionnaire is null)
         {
-            _snackbar.Add($"rest.Content.SessionQuestionnaire is null. error {{3B473C9F-CCE2-4CAF-B39C-7286EA0AF3A7}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.SessionQuestionnaire is null. error {{3B473C9F-CCE2-4CAF-B39C-7286EA0AF3A7}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -145,8 +147,8 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         else
             sessions.Add(rest.SessionQuestionnaire);
 
-        selectedQuestionnaireId = 0;
-        nameSessionForCreate = null;
+        SelectedQuestionnaireId = 0;
+        NameSessionForCreate = null;
 
         if (table is not null)
             await table.ReloadServerData();
@@ -155,18 +157,19 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     async Task RestUpdate()
     {
         IsBusyProgress = true;
-        ConstructorFormsQuestionnairesPaginationResponseModel rest = await _forms.RequestQuestionnaires(new() { PageNum = 0, PageSize = 1000 });
+        ConstructorFormsQuestionnairesPaginationResponseModel rest = await FormsRepo.RequestQuestionnaires(new() { PageNum = 0, PageSize = 1000 });
         IsBusyProgress = false;
 
         if (rest.Questionnaires is null)
         {
-            _snackbar.Add($"rest.Content.Questionnaires is null. error {{9183C745-5387-401E-8B5A-6D6B8D461FA7}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.Questionnaires is null. error {{9183C745-5387-401E-8B5A-6D6B8D461FA7}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         QuestionnairesAll = rest.Questionnaires;
     }
 
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await RestUpdate();

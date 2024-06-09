@@ -15,10 +15,10 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
     protected IJSRuntime _js_runtime { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
 
     [CascadingParameter, EditorRequired]
@@ -33,12 +33,12 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
     public async Task FindFields()
     {
         IsBusyProgress = true;
-        EntriesDictResponseModel rest = await _forms.FindSessionsQuestionnairesByFormFieldName(new() { FormId = Form.Id, FieldName = FieldName });
+        EntriesDictResponseModel rest = await FormsRepo.FindSessionsQuestionnairesByFormFieldName(new() { FormId = Form.Id, FieldName = FieldName });
         IsBusyProgress = false;
-        //_snackbar.ShowMessagesResponse(rest.Content.Messages);
+        //SnackbarRepo.ShowMessagesResponse(rest.Content.Messages);
         if (!rest.Success())
         {
-            _snackbar.Add($"Ошибка {{8425BABE-0EAF-44CC-925D-DBB5824EB1F3}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{8425BABE-0EAF-44CC-925D-DBB5824EB1F3}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         if (rest.Elements is not null)

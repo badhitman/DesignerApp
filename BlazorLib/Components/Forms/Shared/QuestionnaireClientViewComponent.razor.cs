@@ -11,7 +11,7 @@ public partial class QuestionnaireClientViewComponent : ComponentBase
     protected ILogger<QuestionnaireClientViewComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
     public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;

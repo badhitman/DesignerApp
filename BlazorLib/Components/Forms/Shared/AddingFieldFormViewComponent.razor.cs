@@ -11,7 +11,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
     protected ILogger<AddingFieldFormViewComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public ConstructorFieldFormBaseLowModel FieldObject { get; set; } = default!;

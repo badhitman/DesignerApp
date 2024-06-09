@@ -51,7 +51,7 @@ else
                 questionnaire_page.Owner ??= SessionQuestionnaire.Owner;
                 if (questionnaire_page.Owner is null)
                 {
-                    _snackbar.Add($"");
+                    SnackbarRepo.Add($"");
                 }
                 <MudTabPanel dom-guid="{08BA77AF-32AF-44D3-BA96-9AD164497E3C}"
                              ID="@questionnaire_page.Id"

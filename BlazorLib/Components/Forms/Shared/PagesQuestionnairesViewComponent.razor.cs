@@ -10,10 +10,10 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     protected IDialogService DialogService { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IFormsService _forms { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
 
     [Parameter, EditorRequired]
@@ -40,12 +40,12 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        ConstructorFormsPaginationResponseModel rest = await _forms.SelectForms(new() { PageSize = 1000, StrongMode = true });
+        ConstructorFormsPaginationResponseModel rest = await FormsRepo.SelectForms(new() { PageSize = 1000, StrongMode = true });
         IsBusyProgress = false;
 
         if (rest.Elements is null)
         {
-            _snackbar.Add($"Ошибка {{3E9B0E59-6DDA-47A3-B77B-25316A29EE37}} rest.Content.Elements is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка {{3E9B0E59-6DDA-47A3-B77B-25316A29EE37}} rest.Content.Elements is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         AllForms = rest.Elements;
@@ -56,17 +56,17 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         IsBusyProgress = true;
         InvokeAsync(async () =>
         {
-            FormQuestionnaireResponseModel rest = await _forms.GetQuestionnaire(Questionnaire.Id);
+            FormQuestionnaireResponseModel rest = await FormsRepo.GetQuestionnaire(Questionnaire.Id);
             IsBusyProgress = false;
-            _snackbar.ShowMessagesResponse(rest.Messages);
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (rest.Questionnaire is null)
             {
-                _snackbar.Add($"Ошибка {{1D342ED5-B3DC-4760-A684-33D875EF6AB4}} rest.Content.Questionnaire", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка {{1D342ED5-B3DC-4760-A684-33D875EF6AB4}} rest.Content.Questionnaire", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             if (!rest.Success())
             {
-                _snackbar.Add($"Ошибка {{2D3A1007-9B65-4428-BE4C-803934433B66}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка {{2D3A1007-9B65-4428-BE4C-803934433B66}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             Questionnaire = rest.Questionnaire;
@@ -78,7 +78,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     {
         if (Questionnaire.Pages?.Any() != true)
         {
-            _snackbar.Add($"Questionnaire.Pages?.Any() != true. Ошибка {{2AE5D2B1-73FF-4A57-A82D-594B278D2563}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Questionnaire.Pages?.Any() != true. Ошибка {{2AE5D2B1-73FF-4A57-A82D-594B278D2563}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         int i = Questionnaire.Pages.FindIndex(x => x.Id == init_id);
@@ -99,14 +99,14 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     {
         if (Questionnaire.Pages?.Any() != true)
         {
-            _snackbar.Add($"Questionnaire.Pages?.Any() != true. Ошибка {{894D5FAA-5390-42BB-A0FB-3E9B1FBED810}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Questionnaire.Pages?.Any() != true. Ошибка {{894D5FAA-5390-42BB-A0FB-3E9B1FBED810}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         ConstructorFormQuestionnairePageModelDB? _page = Questionnaire.Pages.FirstOrDefault(x => x.Id == id);
         if (_page is null)
         {
-            _snackbar.Add($"_page is null. Ошибка {{7165030D-4A99-4E8F-8315-BC6B1673239E}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"_page is null. Ошибка {{7165030D-4A99-4E8F-8315-BC6B1673239E}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         _page.Name = name;

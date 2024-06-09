@@ -1,32 +1,33 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Directory view
+/// </summary>
 public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 {
+    /// <inheritdoc/>
     [Inject]
-    protected ILogger<DirectoryViewComponent> _logger { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
+    protected IFormsService FormsRepo { get; set; } = default!;
 
-    [Inject]
-    protected ISnackbar _snackbar { get; set; } = default!;
-
-    [Inject]
-    protected IFormsService _forms { get; set; } = default!;
-
+    /// <inheritdoc/>
     protected DirectoryNavComponent? _creator_ref;
+    /// <inheritdoc/>
     protected IEnumerable<EntryModel>? directories_all;
+    /// <inheritdoc/>
     protected DirectoryElementsListViewComponent? list_view_ref;
+    /// <inheritdoc/>
     protected bool IsEditDirectory = false;
 
     int _selected_dir_id;
-    int selected_dir_id
+    int SelectedDirectoryId
     {
         get => _selected_dir_id;
         set
@@ -39,112 +40,119 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    string? directory_name { get; set; }
-    string? element_directory_name { get; set; }
+    string? DirectoryName { get; set; }
+    string? ElementDirectoryName { get; set; }
 
+    /// <inheritdoc/>
     protected async void AddElementIntoDirectory()
     {
-        if (string.IsNullOrWhiteSpace(element_directory_name))
+        if (string.IsNullOrWhiteSpace(ElementDirectoryName))
         {
-            _snackbar.Add("Укажите имя элемента", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("Укажите имя элемента", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         IsBusyProgress = true;
-        CreateObjectOfIntKeyResponseModel rest = await _forms.CreateElementOfDirectory(new EntryModel() { Id = selected_dir_id, Name = element_directory_name });
+        CreateObjectOfIntKeyResponseModel rest = await FormsRepo.CreateElementOfDirectory(new EntryModel() { Id = SelectedDirectoryId, Name = ElementDirectoryName });
         IsBusyProgress = false;
-        _snackbar.ShowMessagesResponse(rest.Messages);
-        element_directory_name = string.Empty;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        ElementDirectoryName = string.Empty;
         if (list_view_ref is not null)
             await InvokeAsync(async () => await list_view_ref.ReloadElements(_selected_dir_id, true));
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected void DeleteElementOfDirectory(int element_id)
     {
         IsBusyProgress = true;
         InvokeAsync(async () =>
         {
-            ResponseBaseModel rest = await _forms.DeleteElementOfDirectory(element_id);
+            ResponseBaseModel rest = await FormsRepo.DeleteElementOfDirectory(element_id);
             IsBusyProgress = false;
 
-            _snackbar.ShowMessagesResponse(rest.Messages);
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (list_view_ref is not null)
                 await list_view_ref.ReloadElements(_selected_dir_id, true);
             StateHasChanged();
         });
     }
 
+    /// <inheritdoc/>
     protected void RenameSelectedDirectoryAction(bool state)
     {
         IsEditDirectory = state;
-        directory_name = state ? directories_all?.FirstOrDefault(x => x.Id == selected_dir_id)?.Name : "";
+        DirectoryName = state ? directories_all?.FirstOrDefault(x => x.Id == SelectedDirectoryId)?.Name : "";
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected void SaveRenameDirectoryAction()
     {
-        if (string.IsNullOrWhiteSpace(directory_name))
+        if (string.IsNullOrWhiteSpace(DirectoryName))
         {
-            _snackbar.Add($"Имя справочника не может быть пустым", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Имя справочника не может быть пустым", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            CreateObjectOfIntKeyResponseModel rest = await _forms.UpdateOrCreateDirectory(new EntryModel() { Id = selected_dir_id, Name = directory_name });
+            CreateObjectOfIntKeyResponseModel rest = await FormsRepo.UpdateOrCreateDirectory(new EntryModel() { Id = SelectedDirectoryId, Name = DirectoryName });
             IsBusyProgress = false;
-            _snackbar.ShowMessagesResponse(rest.Messages);
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
             _creator_ref?.SetDirectoryNavState(DirectoryNavStatesEnum.None);
             IsEditDirectory = false;
             await ReloadDirectories();
         });
     }
 
+    /// <inheritdoc/>
     protected void DeleteSelectedDirectoryAction()
     {
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            ResponseBaseModel rest = await _forms.DeleteDirectory(selected_dir_id);
+            ResponseBaseModel rest = await FormsRepo.DeleteDirectory(SelectedDirectoryId);
 
-            _snackbar.ShowMessagesResponse(rest.Messages);
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
             await ReloadDirectories();
             StateHasChanged();
         });
     }
 
+    /// <inheritdoc/>
     protected void CreateDirectoryAction(string name)
     {
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            CreateObjectOfIntKeyResponseModel rest = await _forms.UpdateOrCreateDirectory(new EntryModel() { Name = name });
-            _snackbar.ShowMessagesResponse(rest.Messages);
-            selected_dir_id = rest.Id;
+            CreateObjectOfIntKeyResponseModel rest = await FormsRepo.UpdateOrCreateDirectory(new EntryModel() { Name = name });
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
+            SelectedDirectoryId = rest.Id;
             await ReloadDirectories();
             StateHasChanged();
         });
     }
 
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync() => await ReloadDirectories();
 
     async Task ReloadDirectories()
     {
-        element_directory_name = string.Empty;
+        ElementDirectoryName = string.Empty;
         IsBusyProgress = true;
-        EntriesResponseModel rest = await _forms.GetDirectories();
+        EntriesResponseModel rest = await FormsRepo.GetDirectories();
         IsBusyProgress = false;
-        _snackbar.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         directories_all = rest.Entries;
 
         if (directories_all?.Any() != true)
-            selected_dir_id = -1;
+            SelectedDirectoryId = -1;
 
-        if (directories_all?.Any(x => x.Id == selected_dir_id) != true)
-            selected_dir_id = directories_all?.FirstOrDefault()?.Id ?? 0;
+        if (directories_all?.Any(x => x.Id == SelectedDirectoryId) != true)
+            SelectedDirectoryId = directories_all?.FirstOrDefault()?.Id ?? 0;
 
         StateHasChanged();
     }

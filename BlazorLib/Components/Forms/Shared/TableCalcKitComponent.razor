@@ -115,13 +115,13 @@ else
                     <th scope="row">Итого: </th>
                     @foreach (ConstructorFieldFormModelDB fe in q)
                     {
-                        <td>@TableCalc?.GetTotalSummFieldForGroup(fe.Name)</td>
+                        <td>@TableCalc?.GetTotalSumFieldForGroup(fe.Name)</td>
                     }
                     @if (_conf.CalculateGroupingTable?.Any(x => x.JoinFormId == PageJoinForm.Id) == true)
                     {
                         foreach (VirtualColumnCalculateGroupingTableModel vcg in _conf.CalculateGroupingTable.Where(x => x.JoinFormId == PageJoinForm.Id))
                         {
-                            <td class="table-info" scope="col">@TableCalc?.GetTotalSummVirtualColumnForGroup(vcg)</td>
+                            <td class="table-info" scope="col">@TableCalc?.GetTotalSumVirtualColumnForGroup(vcg)</td>
                         }
                     }
                 </tr>

@@ -17,12 +17,12 @@
                     <form dom-guid="{4E240AC0-D486-445C-85A8-6B33F4BC244E}" class="row g-3">
                         <div class="col-12">
                             <label for="inputName4" class="form-label">Название</label>
-                            <input @bind-value="questionnaire_name_orign" @bind-value:event="oninput" type="text" class="form-control" id="inputName4">
+                            <input @bind-value="QuestionnaireNameOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputName4">
                         </div>
                         <div class="col-12">
                             <div class="mb-3">
                                 <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
-                                <InputRichTextComponent @bind-Value="questionnaire_description_orign" @ref="_currentTemplateInputRichText" />
+                                <InputRichTextComponent @bind-Value="QuestionnaireDescriptionOrigin" @ref="_currentTemplateInputRichText" />
                             </div>
                         </div>
                         <div class="col-12">
@@ -31,7 +31,7 @@
                                 <MudSpacer />
                                 <div>
                                     <div class="btn-group" role="group" >
-                                        <button @onclick="SaveQuestionnaire" disabled="@(string.IsNullOrWhiteSpace(questionnaire_name_orign) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
+                                        <button @onclick="SaveQuestionnaire" disabled="@(string.IsNullOrWhiteSpace(QuestionnaireNameOrigin) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
                                         @if (IsEdited)
                                         {
                                             <button @onclick="ResetQuestionnaireForm" class="btn btn-outline-primary" type="button" id="reset-form">Сброс</button>
