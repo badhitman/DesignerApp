@@ -1,6 +1,4 @@
-﻿using SharedLib;
-
-namespace ServerLib;
+﻿namespace SharedLib;
 
 /// <summary>
 /// Forms служба

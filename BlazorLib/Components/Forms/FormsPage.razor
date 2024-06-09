@@ -1,0 +1,31 @@
+﻿@page "/"
+
+<PageTitle>Формы</PageTitle>
+
+<h3>Формы</h3>
+
+<MudTabs dom-guid="{F7C4B5E5-C26B-4820-8007-F8C7E1F6428D}" Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
+    <MudTabPanel Text="Сессии">
+        <SessionsViewComponent />
+    </MudTabPanel>
+    <MudTabPanel Text="Формы">
+        <FormsViewComponent />
+    </MudTabPanel>
+    <MudTabPanel Text="Анкеты">
+        <QuestionnairesViewComponent />
+    </MudTabPanel>
+    <MudTabPanel Text="Списки">
+        <DirectoryViewComponent />
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+
+    IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
+
+    protected override Task OnInitializedAsync()
+    {
+        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalcAbstraction>();
+        return base.OnInitializedAsync();
+    }
+}

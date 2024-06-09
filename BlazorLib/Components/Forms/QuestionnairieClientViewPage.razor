@@ -1,0 +1,24 @@
+﻿@page "/questionnaire/session/{QuestionnaireGuid:guid}"
+
+@inherits BlazorBusyComponentBaseModel
+
+<span>Опрос/анкета</span>
+
+@if (IsBusyProgress || SessionQuestionnairie.Id < 1)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else
+{
+    <CascadingValue Value="Entries">
+        <CascadingValue Value="SessionQuestionnairie">
+            <CascadingValue Value="true">
+                <QuestionnairieClientViewComponent />
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+}
