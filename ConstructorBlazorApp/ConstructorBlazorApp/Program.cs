@@ -14,6 +14,7 @@ using DbcLib;
 using Transmission.Receives.web;
 using BlazorLib;
 using RemoteCallLib;
+using MudBlazor.Services;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -23,6 +24,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // NLog: Setup NLog for Dependency injection
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
+builder.Services.AddMudServices();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
