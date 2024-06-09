@@ -1,4 +1,4 @@
-﻿@if (SessionQuestionnairie.Id < 1)
+﻿@if (SessionQuestionnaire.Id < 1)
 {
     <figure class="text-center">
         <blockquote class="blockquote">
@@ -9,17 +9,17 @@
         </figcaption>
     </figure>
 }
-else if (SessionQuestionnairie.Owner?.Pages is null)
+else if (SessionQuestionnaire.Owner?.Pages is null)
 {
     <div class="alert alert-dark" role="alert">
-        SessionQuestionnairie.Owner?.Pages is null! ошибка {9C069802-5213-4697-AACB-334313BD5AD4}
+        SessionQuestionnaire.Owner?.Pages is null! ошибка {9C069802-5213-4697-AACB-334313BD5AD4}
     </div>
 }
 else
 {
     <MudDynamicTabs AddIconStyle="@AddIconStyleInUse" dom-guid="{AE409687-F43B-401A-8C51-FB1E54DDE281}" @ref="@DynamicTabs" @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
 
-        @if (!SessionQuestionnairie.Owner.Pages.Any())
+        @if (!SessionQuestionnaire.Owner.Pages.Any())
         {
             <figure class="text-center mt-3">
                 <blockquote class="blockquote">
@@ -32,9 +32,9 @@ else
         }
         else
         {
-            if (SessionQuestionnairie.ShowDescriptionAsStartPage)
+            if (SessionQuestionnaire.ShowDescriptionAsStartPage)
             {
-                if (!string.IsNullOrWhiteSpace(SessionQuestionnairie.Description) || !string.IsNullOrWhiteSpace(SessionQuestionnairie.Owner.Description))
+                if (!string.IsNullOrWhiteSpace(SessionQuestionnaire.Description) || !string.IsNullOrWhiteSpace(SessionQuestionnaire.Owner.Description))
                 {
                     <MudTabPanel ID="@int.MinValue" Text="Информация" ShowCloseIcon="@false" Icon="@Icons.Material.Filled.Info">
                         <div class="card">
@@ -46,9 +46,9 @@ else
 
                 }
             }
-            @foreach (ConstructorFormQuestionnairePageModelDB questionnaire_page in SessionQuestionnairie.Owner.Pages.OrderBy(x => x.SortIndex))
+            @foreach (ConstructorFormQuestionnairePageModelDB questionnaire_page in SessionQuestionnaire.Owner.Pages.OrderBy(x => x.SortIndex))
             {
-                questionnaire_page.Owner ??= SessionQuestionnairie.Owner;
+                questionnaire_page.Owner ??= SessionQuestionnaire.Owner;
                 if (questionnaire_page.Owner is null)
                 {
                     _snackbar.Add($"");

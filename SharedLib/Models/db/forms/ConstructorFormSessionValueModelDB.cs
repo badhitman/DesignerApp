@@ -11,7 +11,7 @@ public class ConstructorFormSessionValueModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Значение поля из формы опроса/анкеты
     /// </summary>
-    public static ConstructorFormSessionValueModelDB Build(SetValueFieldSessionQuestionnairieModel req, ConstructorFormQuestionnairePageJoinFormModelDB questionnaire_page_join, ConstructorFormSessionModelDB session)
+    public static ConstructorFormSessionValueModelDB Build(SetValueFieldSessionQuestionnaireModel req, ConstructorFormQuestionnairePageJoinFormModelDB questionnaire_page_join, ConstructorFormSessionModelDB session)
         => new()
         {
             Name = req.NameField,

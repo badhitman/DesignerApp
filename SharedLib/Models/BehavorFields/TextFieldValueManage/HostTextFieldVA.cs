@@ -15,10 +15,10 @@ public class HostTextFieldVA : TextFieldValueAgent
     static readonly Random _rnd = new();
 
     /// <inheritdoc/>
-    public override string? DefaultValueIfNull(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_questionnairie, int page_join_form_id)
+    public override string? DefaultValueIfNull(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, int page_join_form_id)
     {
         int _index_value = _rnd.Next(1000, 9999);
-        while (session_questionnairie.SessionValues?.Any(x => x.Name.Equals(field.Name) && x.Value?.Equals($"{_index_value}.host", StringComparison.OrdinalIgnoreCase) == true) == true)
+        while (session_Questionnaire.SessionValues?.Any(x => x.Name.Equals(field.Name) && x.Value?.Equals($"{_index_value}.host", StringComparison.OrdinalIgnoreCase) == true) == true)
             _rnd.Next(1000, 9999);
         return $"{_index_value}.host";
     }

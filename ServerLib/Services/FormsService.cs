@@ -19,7 +19,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
     #region public
     /// <inheritdoc/>
-    public async Task<FormSessionQuestionnairieResponseModel> GetSessionQuestionnairie(string guid_session, CancellationToken cancellationToken = default)
+    public async Task<FormSessionQuestionnaireResponseModel> GetSessionQuestionnaire(string guid_session, CancellationToken cancellationToken = default)
     {
         if (!Guid.TryParse(guid_session, out Guid guid_parsed) || guid_parsed == Guid.Empty)
             return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Токен сессии имеет не корректный формат" }] };
@@ -42,24 +42,24 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
             .AsSplitQuery();
 
-        FormSessionQuestionnairieResponseModel res = new()
+        FormSessionQuestionnaireResponseModel res = new()
         {
-            SessionQuestionnairie = await q
+            SessionQuestionnaire = await q
             .FirstOrDefaultAsync(x => x.SessionToken == guid_session, cancellationToken: cancellationToken)
         };
         string msg;
-        if (res.SessionQuestionnairie is null)
+        if (res.SessionQuestionnaire is null)
         {
             msg = $"Токен '{guid_session}' не найден или просрочен.";
             res.AddError(msg);
-            logger.LogError($"{msg} {nameof(res.SessionQuestionnairie)} is null. error {{5F3FF6DA-75AC-49B5-8608-8E909FF7C6C3}}");
+            logger.LogError($"{msg} {nameof(res.SessionQuestionnaire)} is null. error {{5F3FF6DA-75AC-49B5-8608-8E909FF7C6C3}}");
         }
 
         return res;
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetDoneSessionQuestionnairie(string token_session, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> SetDoneSessionQuestionnaire(string token_session, CancellationToken cancellationToken = default)
     {
         ConstructorFormSessionModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.SessionToken == token_session, cancellationToken: cancellationToken);
         if (sq is null)
@@ -102,31 +102,31 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormSessionQuestionnairieResponseModel> SetValueFieldSessionQuestionnairie(SetValueFieldSessionQuestionnairieModel req, CancellationToken cancellationToken = default)
+    public async Task<FormSessionQuestionnaireResponseModel> SetValueFieldSessionQuestionnaire(SetValueFieldSessionQuestionnaireModel req, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnairieResponseModel session = await GetSessionQuestionnairie(req.SessionId, cancellationToken);
+        FormSessionQuestionnaireResponseModel session = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!session.Success())
             return session;
 
-        ConstructorFormSessionModelDB? session_questionnairie = session.SessionQuestionnairie;
-        FormSessionQuestionnairieResponseModel res = new();
+        ConstructorFormSessionModelDB? session_Questionnaire = session.SessionQuestionnaire;
+        FormSessionQuestionnaireResponseModel res = new();
 
-        if (session_questionnairie?.Owner?.Pages is null || session_questionnairie.SessionValues is null)
+        if (session_Questionnaire?.Owner?.Pages is null || session_Questionnaire.SessionValues is null)
         {
             res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка {{CF37E7A0-6DFC-4007-B9C8-755783774E8E}}");
             return res;
         }
-        //var v = IsReadonly(_httpContextAccessor.HttpContext.User, session_questionnairie);
+        //var v = IsReadonly(_httpContextAccessor.HttpContext.User, session_Questionnaire);
 
-        if (session_questionnairie.SessionStatus >= SessionsStatusesEnum.Sended)
+        if (session_Questionnaire.SessionStatus >= SessionsStatusesEnum.Sended)
         {
-            res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (находиться в статусе {session_questionnairie.SessionStatus}).");
+            res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (находиться в статусе {session_Questionnaire.SessionStatus}).");
             return res;
         }
 
-        session_questionnairie.LastQuestionnaireUpdateActivity = DateTime.Now;
+        session_Questionnaire.LastQuestionnaireUpdateActivity = DateTime.Now;
 
-        ConstructorFormQuestionnairePageJoinFormModelDB? form_join = session_questionnairie.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        ConstructorFormQuestionnairePageJoinFormModelDB? form_join = session_Questionnaire.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена. ошибка {{64196795-F224-4C0F-9248-97FE46A8F07E}}");
@@ -140,10 +140,10 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             return res;
         }
 
-        ConstructorFormSessionValueModelDB? existing_value = session_questionnairie.SessionValues.FirstOrDefault(x => x.GroupByRowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.QuestionnairePageJoinFormId == form_join.Id);
+        ConstructorFormSessionValueModelDB? existing_value = session_Questionnaire.SessionValues.FirstOrDefault(x => x.GroupByRowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.QuestionnairePageJoinFormId == form_join.Id);
         if (existing_value is null)
         {
-            existing_value = ConstructorFormSessionValueModelDB.Build(req, form_join, session_questionnairie);
+            existing_value = ConstructorFormSessionValueModelDB.Build(req, form_join, session_Questionnaire);
             await context_forms.AddAsync(existing_value, cancellationToken);
         }
         else
@@ -155,17 +155,17 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        return await GetSessionQuestionnairie(req.SessionId, cancellationToken);
+        return await GetSessionQuestionnaire(req.SessionId, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task<CreateObjectOfIntKeyResponseModel> AddRowToTable(FieldSessionQuestionnairieBaseModel req, CancellationToken cancellationToken = default)
+    public async Task<CreateObjectOfIntKeyResponseModel> AddRowToTable(FieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnairieResponseModel get_s = await GetSessionQuestionnairie(req.SessionId, cancellationToken);
+        FormSessionQuestionnaireResponseModel get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!get_s.Success())
             return new CreateObjectOfIntKeyResponseModel() { Messages = get_s.Messages };
         CreateObjectOfIntKeyResponseModel res = new();
-        ConstructorFormSessionModelDB? session = get_s.SessionQuestionnairie;
+        ConstructorFormSessionModelDB? session = get_s.SessionQuestionnaire;
 
         if (session?.Owner?.Pages is null || session.SessionValues is null)
         {
@@ -203,13 +203,13 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionQuestionnairieByRowNum(ValueFieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(ValueFieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnairieResponseModel get_s = await GetSessionQuestionnairie(req.SessionId, cancellationToken);
+        FormSessionQuestionnaireResponseModel get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!get_s.Success())
             return get_s;
 
-        ConstructorFormSessionModelDB? session = get_s.SessionQuestionnairie;
+        ConstructorFormSessionModelDB? session = get_s.SessionQuestionnaire;
         if (session?.Owner?.Pages is null || session.SessionValues is null)
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка {{73DFEAA2-3020-4CB2-BED4-4523E5003BE5}}");
 
@@ -237,7 +237,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             await context_forms.SaveChangesAsync(cancellationToken);
             res.AddSuccess($"Строка №{req.GroupByRowNum} удалена ({values_for_delete.Length} значений ячеек)");
 
-            get_s = await GetSessionQuestionnairie(req.SessionId, cancellationToken);
+            get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
             uint i = 0;
             List<ConstructorFormSessionValueModelDB> values_re_sort = [];
             session.SessionValues
@@ -289,7 +289,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
     #region сессии опросов/анкет
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetStatusSessionQuestionnairie(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> SetStatusSessionQuestionnaire(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default)
     {
         ConstructorFormSessionModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken);
         if (sq is null)
@@ -320,11 +320,11 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormSessionQuestionnairieResponseModel> GetSessionQuestionnairie(int id_session, CancellationToken cancellationToken = default)
+    public async Task<FormSessionQuestionnaireResponseModel> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnairieResponseModel res = new()
+        FormSessionQuestionnaireResponseModel res = new()
         {
-            SessionQuestionnairie = await context_forms
+            SessionQuestionnaire = await context_forms
             .Sessions
             .Include(x => x.SessionValues)
 
@@ -343,9 +343,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             .FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken)
         };
         string msg;
-        if (res.SessionQuestionnairie is null)
+        if (res.SessionQuestionnaire is null)
         {
-            msg = $"for {nameof(id_session)} = [{id_session}]. {nameof(res.SessionQuestionnairie)} is null. error {{6DF75C8A-C0FD-4165-88D8-15AEEA8606ED}}";
+            msg = $"for {nameof(id_session)} = [{id_session}]. {nameof(res.SessionQuestionnaire)} is null. error {{6DF75C8A-C0FD-4165-88D8-15AEEA8606ED}}";
             logger.LogError(msg);
             res.AddError(msg);
         }
@@ -354,9 +354,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormSessionQuestionnairieResponseModel> UpdateOrCreateSessionQuestionnairie(ConstructorFormSessionModelDB session_json, CancellationToken cancellationToken = default)
+    public async Task<FormSessionQuestionnaireResponseModel> UpdateOrCreateSessionQuestionnaire(ConstructorFormSessionModelDB session_json, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnairieResponseModel res = new();
+        FormSessionQuestionnaireResponseModel res = new();
         if (!string.IsNullOrWhiteSpace(session_json.EmailsNotifications))
         {
             string[] een = session_json.EmailsNotifications.SplitToList().Where(x => !MailAddress.TryCreate(x, out _)).ToArray();
@@ -380,7 +380,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
             await context_forms.AddAsync(session_json, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
-            return new() { SessionQuestionnairie = session_json, Messages = new() { new() { TypeMessage = ResultTypesEnum.Success, Text = $"Создана сессия #{session_json.Id}" } } };
+            return new() { SessionQuestionnaire = session_json, Messages = new() { new() { TypeMessage = ResultTypesEnum.Success, Text = $"Создана сессия #{session_json.Id}" } } };
         }
         ConstructorFormSessionModelDB? session_db = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == session_json.Id, cancellationToken: cancellationToken);
         string msg;
@@ -441,7 +441,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             logger.LogInformation(msg);
             await context_forms.SaveChangesAsync(cancellationToken);
         }
-        FormSessionQuestionnairieResponseModel sr = await GetSessionQuestionnairie(session_json.Id, cancellationToken);
+        FormSessionQuestionnaireResponseModel sr = await GetSessionQuestionnaire(session_json.Id, cancellationToken);
         if (res.Messages.Count != 0)
             sr.AddRangeMessages(res.Messages);
         return sr;
@@ -487,7 +487,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
                 join _s in context_forms.Sessions on _vs.OwnerId equals _s.Id
                 join _pjf in context_forms.QuestionnairesPagesJoinForms.Where(x => x.FormId == req.FormId) on _vs.QuestionnairePageJoinFormId equals _pjf.Id
                 join _qp in context_forms.QuestionnairesPages on _pjf.OwnerId equals _qp.Id
-                select new { Value = _vs, Session = _s, QuestionnairiePageJoinForm = _pjf, QuestionnairiePage = _qp };
+                select new { Value = _vs, Session = _s, QuestionnairePageJoinForm = _pjf, QuestionnairePage = _qp };
 
         var data_rows = await q.ToArrayAsync(cancellationToken: cancellationToken);
 
@@ -581,12 +581,12 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
     #region опросы/анкеты
     /// <inheritdoc/>
-    public async Task<ConstructorFormsQuestionnairiesPaginationResponseModel> RequestQuestionnaires(SimplePaginationRequestModel req, CancellationToken cancellationToken)
+    public async Task<ConstructorFormsQuestionnairesPaginationResponseModel> RequestQuestionnaires(SimplePaginationRequestModel req, CancellationToken cancellationToken)
     {
         if (req.PageSize < 1)
             req.PageSize = 10;
 
-        ConstructorFormsQuestionnairiesPaginationResponseModel res = new(req);
+        ConstructorFormsQuestionnairesPaginationResponseModel res = new(req);
         IQueryable<ConstructorFormQuestionnaireModelDB> q =
             (from _quest in context_forms.Questionnaires
              join _page in context_forms.QuestionnairesPages on _quest.Id equals _page.OwnerId
@@ -602,7 +602,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         int[] ids = await q.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
         q = context_forms.Questionnaires.Include(x => x.Pages).Where(x => ids.Contains(x.Id)).Include(x => x.Pages).OrderBy(x => x.Name);
-        res.Questionnairies = ids.Any()
+        res.Questionnaires = ids.Any()
             ? await q.ToArrayAsync(cancellationToken: cancellationToken)
             : Enumerable.Empty<ConstructorFormQuestionnaireModelDB>();
 
@@ -686,11 +686,11 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteQuestionnaire(int questionnaire_id, CancellationToken cancellationToken = default)
     {
-        ConstructorFormQuestionnaireModelDB? questionnairie_db = await context_forms.Questionnaires.Include(x => x.Pages!).ThenInclude(x => x.JoinsForms).FirstOrDefaultAsync(x => x.Id == questionnaire_id, cancellationToken: cancellationToken);
-        if (questionnairie_db is null)
+        ConstructorFormQuestionnaireModelDB? Questionnaire_db = await context_forms.Questionnaires.Include(x => x.Pages!).ThenInclude(x => x.JoinsForms).FirstOrDefaultAsync(x => x.Id == questionnaire_id, cancellationToken: cancellationToken);
+        if (Questionnaire_db is null)
             return ResponseBaseModel.CreateError($"Опрос/анкета #{questionnaire_id} не найдена в БД");
 
-        context_forms.Remove(questionnairie_db);
+        context_forms.Remove(Questionnaire_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
         return ResponseBaseModel.CreateSuccess($"Опрос/анкета #{questionnaire_id} удалена");
@@ -1426,8 +1426,8 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         List<ConstructorFormSessionValueModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == form_field.Name)
                                                                          join session in context_forms.Sessions on val_s.OwnerId equals session.Id
-                                                                         join questionnairie in context_forms.Questionnaires on session.OwnerId equals questionnairie.Id
-                                                                         join page in context_forms.QuestionnairesPages on questionnairie.Id equals page.OwnerId
+                                                                         join Questionnaire in context_forms.Questionnaires on session.OwnerId equals Questionnaire.Id
+                                                                         join page in context_forms.QuestionnairesPages on Questionnaire.Id equals page.OwnerId
                                                                          join form_join in context_forms.QuestionnairesPagesJoinForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
                                                                          select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);
@@ -1592,8 +1592,8 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         List<ConstructorFormSessionValueModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == field_directory.Name)
                                                                          join session in context_forms.Sessions on val_s.OwnerId equals session.Id
-                                                                         join questionnairie in context_forms.Questionnaires on session.OwnerId equals questionnairie.Id
-                                                                         join page in context_forms.QuestionnairesPages on questionnairie.Id equals page.OwnerId
+                                                                         join Questionnaire in context_forms.Questionnaires on session.OwnerId equals Questionnaire.Id
+                                                                         join page in context_forms.QuestionnairesPages on Questionnaire.Id equals page.OwnerId
                                                                          join form_join in context_forms.QuestionnairesPagesJoinForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
                                                                          select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);

@@ -3,7 +3,7 @@
 /// <summary>
 /// Строки данных таблиц
 /// </summary>
-public class FieldSessionQuestionnairieBaseModel
+public class FieldSessionQuestionnaireBaseModel
 {
     /// <summary>
     /// Сессия опроса/анкеты

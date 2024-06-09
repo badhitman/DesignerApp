@@ -3,20 +3,20 @@
 /// <summary>
 /// Опросы/анкеты (с пагинацией)
 /// </summary>
-public class ConstructorFormsQuestionnairiesPaginationResponseModel : PaginationResponseModel
+public class ConstructorFormsQuestionnairesPaginationResponseModel : PaginationResponseModel
 {
     /// <summary>
     /// Опросы/анкеты (с пагинацией)
     /// </summary>
-    public ConstructorFormsQuestionnairiesPaginationResponseModel() { }
+    public ConstructorFormsQuestionnairesPaginationResponseModel() { }
 
     /// <summary>
     /// Опросы/анкеты (с пагинацией)
     /// </summary>
-    public ConstructorFormsQuestionnairiesPaginationResponseModel(PaginationRequestModel req) { }
+    public ConstructorFormsQuestionnairesPaginationResponseModel(PaginationRequestModel req) { }
 
     /// <summary>
     /// 
     /// </summary>
-    public IEnumerable<ConstructorFormQuestionnaireModelDB>? Questionnairies { get; set; }
+    public IEnumerable<ConstructorFormQuestionnaireModelDB>? Questionnaires { get; set; }
 }

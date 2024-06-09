@@ -31,7 +31,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     public ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; } = default!;
 
     [CascadingParameter]
-    public ConstructorFormSessionModelDB? SessionQuestionnairie { get; set; }
+    public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
 
     [CascadingParameter]
     public bool? InUse { get; set; }
@@ -55,7 +55,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         DialogParameters<ClientTableRowEditDialogComponent> parameters = new()
         {
             { x => x.RowNum, row_num },
-            { x => x.SessionQuestionnairie, SessionQuestionnairie },
+            { x => x.SessionQuestionnaire, SessionQuestionnaire },
             { x => x.QuestionnairePage, QuestionnairePage },
             { x => x.PageJoinForm, PageJoinForm }
         };
@@ -70,9 +70,9 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
     protected void DeleteRowAction(uint row_num)
     {
-        if (SessionQuestionnairie is null)
+        if (SessionQuestionnaire is null)
         {
-            _snackbar.Add("SessionQuestionnairie is null. error {EAE6D2B8-7285-4F95-976A-7FA0C1F72ECF}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            _snackbar.Add("SessionQuestionnaire is null. error {EAE6D2B8-7285-4F95-976A-7FA0C1F72ECF}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -80,8 +80,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         StateHasChanged();
         InvokeAsync(async () =>
         {
-            ValueFieldSessionQuestionnaireBaseModel req = new() { GroupByRowNum = row_num, JoinFormId = PageJoinForm.Id, SessionId = SessionQuestionnairie.Id };
-            ResponseBaseModel rest = await _forms.DeleteValuesFieldsByGroupSessionQuestionnairieByRowNum(req);
+            ValueFieldSessionQuestionnaireBaseModel req = new() { GroupByRowNum = row_num, JoinFormId = PageJoinForm.Id, SessionId = SessionQuestionnaire.Id };
+            ResponseBaseModel rest = await _forms.DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(req);
             IsBusyProgress = false;
 
             _snackbar.ShowMessagesResponse(rest.Messages);
@@ -96,16 +96,16 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
     protected async Task AddRowToTable()
     {
-        if (SessionQuestionnairie is null)
+        if (SessionQuestionnaire is null)
         {
-            _snackbar.Add("SessionQuestionnairie is null. error {98E8A59C-BF72-462A-8894-29EF12245E63}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            _snackbar.Add("SessionQuestionnaire is null. error {98E8A59C-BF72-462A-8894-29EF12245E63}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        FieldSessionQuestionnairieBaseModel row_obj = new()
+        FieldSessionQuestionnaireBaseModel row_obj = new()
         {
             JoinFormId = PageJoinForm.Id,
-            SessionId = SessionQuestionnairie.Id
+            SessionId = SessionQuestionnaire.Id
         };
         IsBusyProgress = true;
         CreateObjectOfIntKeyResponseModel rest = await _forms.AddRowToTable(row_obj);
@@ -121,7 +121,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         DialogParameters<ClientTableRowEditDialogComponent> parameters = new()
         {
             { x => x.RowNum, row_num },
-            { x => x.SessionQuestionnairie, SessionQuestionnairie },
+            { x => x.SessionQuestionnaire, SessionQuestionnaire },
             { x => x.QuestionnairePage, QuestionnairePage },
             { x => x.PageJoinForm, PageJoinForm }
         };
@@ -131,24 +131,24 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         {
             GroupByRowNum = row_num,
             JoinFormId = PageJoinForm.Id,
-            SessionId = SessionQuestionnairie.Id,
+            SessionId = SessionQuestionnaire.Id,
             IsSelf = true
         };
-        _ = await _forms.DeleteValuesFieldsByGroupSessionQuestionnairieByRowNum(req);
+        _ = await _forms.DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(req);
         await ReloadSession();
     }
 
     async Task ReloadSession()
     {
-        if (SessionQuestionnairie is null)
+        if (SessionQuestionnaire is null)
         {
-            _snackbar.Add("SessionQuestionnairie is null. error {E4AE03AE-85A8-4D99-8C66-2FB46B84C67E}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            _snackbar.Add("SessionQuestionnaire is null. error {E4AE03AE-85A8-4D99-8C66-2FB46B84C67E}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         IsBusyProgress = true;
-        FormSessionQuestionnairieResponseModel rest = string.IsNullOrWhiteSpace(SessionQuestionnairie.SessionToken)
-        ? await _forms.GetSessionQuestionnairie(SessionQuestionnairie.Id)
-        : await _forms.GetSessionQuestionnairie(SessionQuestionnairie.SessionToken);
+        FormSessionQuestionnaireResponseModel rest = string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken)
+        ? await _forms.GetSessionQuestionnaire(SessionQuestionnaire.Id)
+        : await _forms.GetSessionQuestionnaire(SessionQuestionnaire.SessionToken);
         IsBusyProgress = false;
 
         _snackbar.ShowMessagesResponse(rest.Messages);
@@ -158,8 +158,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        if (rest.SessionQuestionnairie is not null)
-            SessionQuestionnairie.Reload(rest.SessionQuestionnairie);
+        if (rest.SessionQuestionnaire is not null)
+            SessionQuestionnaire.Reload(rest.SessionQuestionnaire);
 
         _table_kit_ref?.Update();
 

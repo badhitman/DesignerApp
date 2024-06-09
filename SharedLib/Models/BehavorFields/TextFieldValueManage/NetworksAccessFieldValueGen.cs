@@ -32,7 +32,7 @@ public partial class NetworksAccessFieldValueGen : FieldValueGeneratorAbstractio
     static Dictionary<string, NetvorksAccessRequestModel?> _cache_ser = new();
 
     /// <inheritdoc/>
-    public override SimpleStringArrayResponseModel GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_questionnairie, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0)
+    public override SimpleStringArrayResponseModel GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0)
     {
         string? ds = field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
         string? fp = field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
@@ -53,10 +53,10 @@ public partial class NetworksAccessFieldValueGen : FieldValueGeneratorAbstractio
             }
         }
 
-        if (ar is null || session_questionnairie.Owner?.Pages is null || page_join_form is null || session_questionnairie.SessionValues is null)
+        if (ar is null || session_Questionnaire.Owner?.Pages is null || page_join_form is null || session_Questionnaire.SessionValues is null)
             return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = $"Опции не удалось десериализовать: `{fp}`. ошибка {{A5376051-47D4-4902-B336-F80D0754BC5D}}" }] };
 
-        Dictionary<string, Dictionary<uint, List<ConstructorFormSessionValueModelDB>>> pages_data = ConstructorFormQuestionnairePageModelDB.GetRowsData(session_questionnairie);
+        Dictionary<string, Dictionary<uint, List<ConstructorFormSessionValueModelDB>>> pages_data = ConstructorFormQuestionnairePageModelDB.GetRowsData(session_Questionnaire);
         if (!pages_data.ContainsKey(ar.PageNameVM) || !pages_data.ContainsKey(ar.PageNameOCP))
             return new() { Elements = Enumerable.Empty<string>(), Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Info, Text = $"В данных не хватает необходимых страниц для формирования селектора-генератора" }] };
 

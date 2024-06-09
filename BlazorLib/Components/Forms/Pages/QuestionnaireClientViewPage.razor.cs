@@ -8,10 +8,10 @@ namespace BlazorLib.Components.Forms.Pages;
 /// <summary>
 /// 
 /// </summary>
-public partial class QuestionnairieClientViewPage : BlazorBusyComponentBaseModel
+public partial class QuestionnaireClientViewPage : BlazorBusyComponentBaseModel
 {
     [Inject]
-    protected ILogger<QuestionnairieClientViewPage> _logger { get; set; } = default!;
+    protected ILogger<QuestionnaireClientViewPage> _logger { get; set; } = default!;
 
     [Inject]
     protected IJSRuntime _js_runtime { get; set; } = default!;
@@ -23,7 +23,7 @@ public partial class QuestionnairieClientViewPage : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public Guid QuestionnaireGuid { get; set; } = default!;
 
-    ConstructorFormSessionModelDB SessionQuestionnairie = default!;
+    ConstructorFormSessionModelDB SessionQuestionnaire = default!;
 
     /// <inheritdoc/>
     protected IEnumerable<EntryAltDescriptionModel> Entries = [];
@@ -33,14 +33,14 @@ public partial class QuestionnairieClientViewPage : BlazorBusyComponentBaseModel
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalcAbstraction>();
         IsBusyProgress = true;
-        FormSessionQuestionnairieResponseModel rest = await _forms.GetSessionQuestionnairie(QuestionnaireGuid.ToString());
+        FormSessionQuestionnaireResponseModel rest = await _forms.GetSessionQuestionnaire(QuestionnaireGuid.ToString());
         IsBusyProgress = false;
 
-        if (rest.SessionQuestionnairie is null)
+        if (rest.SessionQuestionnaire is null)
             throw new Exception($"rest.SessionQuestionnaire is null. error {{AB30D092-938E-460A-B5AB-7E3BEC6A642A}}");
 
-        SessionQuestionnairie = rest.SessionQuestionnairie;
-        if (SessionQuestionnairie.SessionValues?.Any() == true)
-            SessionQuestionnairie.SessionValues.ForEach(x => { x.Owner ??= SessionQuestionnairie; x.OwnerId = SessionQuestionnairie.Id; });
+        SessionQuestionnaire = rest.SessionQuestionnaire;
+        if (SessionQuestionnaire.SessionValues?.Any() == true)
+            SessionQuestionnaire.SessionValues.ForEach(x => { x.Owner ??= SessionQuestionnaire; x.OwnerId = SessionQuestionnaire.Id; });
     }
 }

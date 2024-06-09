@@ -1,24 +1,22 @@
-﻿using BlazorLib.BlazorComponents;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
 
-namespace BlazorLib.Forms.FieldsClient;
+namespace BlazorLib.Components.Forms.Shared.FieldsClient;
 
 public partial class GeneratorClientViewComponent : FieldComponentBaseModel
 {
-    [Inject]
-    protected ILogger<GeneratorClientViewComponent> _logger { get; set; } = default!;
-
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public ConstructorFieldFormModelDB Field { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public bool ReadOnly { get; set; }
 
-    IEnumerable<string> Elements = Enumerable.Empty<string>();
+    IEnumerable<string> Elements = [];
     string? _selectedElement;
+    /// <inheritdoc/>
     public string SelectedElement
     {
         get => _selectedElement ?? "";
@@ -29,21 +27,20 @@ public partial class GeneratorClientViewComponent : FieldComponentBaseModel
         }
     }
 
-    protected private async Task<IEnumerable<string>> Search1(string value)
+    protected private Task<IEnumerable<string>> SearchElements(string value)
     {
-        // In real life use an asynchronous function for fetching data from an api.
-        await Task.Delay(5);
-
-        // if text is null or empty, show complete list
         if (string.IsNullOrEmpty(value))
-            return Elements;
-        return Elements.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+            return Task.FromResult(Elements);
+        return Task.FromResult(Elements.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
     }
 
-    string? FieldValue => SessionQuestionnairie?.SessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.GroupByRowNum == GroupByRowNum)?.Value;
+    string? FieldValue => SessionQuestionnaire?.SessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.GroupByRowNum == GroupByRowNum)?.Value;
 
+    /// <inheritdoc/>
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{QuestionnairePage?.Id}-{Field.Id}";
     FieldValueGeneratorAbstraction? _gen = null;
+
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         _selectedElement = FieldValue;
@@ -57,14 +54,14 @@ public partial class GeneratorClientViewComponent : FieldComponentBaseModel
             return;
         }
 
-        if (SessionQuestionnairie is not null)
+        if (SessionQuestionnaire is not null)
         {
-            SimpleStringArrayResponseModel res_elements = _gen.GetListElements(Field, SessionQuestionnairie, PageJoinForm, GroupByRowNum);
+            SimpleStringArrayResponseModel res_elements = _gen.GetListElements(Field, SessionQuestionnaire, PageJoinForm, GroupByRowNum);
             snackbarInject.ShowMessagesResponse(res_elements.Messages);
-            if (res_elements.Success && res_elements.Elements is not null)
+            if (res_elements.Success() && res_elements.Elements is not null)
                 Elements = res_elements.Elements;
         }
 
-        FieldsReferals?.Add(this);
+        FieldsReferring?.Add(this);
     }
 }

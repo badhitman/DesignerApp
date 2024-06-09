@@ -34,14 +34,14 @@ else
                     @if (fb is ConstructorFieldFormModelDB fs)
                     {
                         <CascadingValue Value="fs">
-                            <FieldBaseClientComponent GroupByRowNum="@(RowNum ?? 0)" FieldsReferals="_fields_refs" />
+                            <FieldBaseClientComponent GroupByRowNum="@(RowNum ?? 0)" FieldsReferring="_fields_refs" />
                         </CascadingValue>
 
                     }
                     else if (fb is ConstructorFormDirectoryLinkModelDB fd)
                     {
                         <CascadingValue Value="fd">
-                            <FieldDirectoryClientComponent DirectoryObject="Directories.FirstOrDefault(x => x.Id == fd.DirectoryId)" GroupByRowNum="@(RowNum ?? 0)" FieldsReferals="_fields_refs" />
+                            <FieldDirectoryClientComponent DirectoryObject="@Directories.FirstOrDefault(x => x.Id == fd.DirectoryId)" GroupByRowNum="@(RowNum ?? 0)" FieldsReferring="_fields_refs" />
                         </CascadingValue>
                     }
                     else

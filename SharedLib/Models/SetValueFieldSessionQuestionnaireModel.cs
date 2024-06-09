@@ -3,7 +3,7 @@
 /// <summary>
 /// Установка значения поля формы
 /// </summary>
-public class SetValueFieldSessionQuestionnairieModel : ValueFieldSessionQuestionnaireBaseModel
+public class SetValueFieldSessionQuestionnaireModel : ValueFieldSessionQuestionnaireBaseModel
 {
     /// <summary>
     /// Имя поля

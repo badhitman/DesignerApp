@@ -3,10 +3,10 @@
 /// <summary>
 /// Сессия опроса/анккеты
 /// </summary>
-public class FormSessionQuestionnairieResponseModel : ResponseBaseModel
+public class FormSessionQuestionnaireResponseModel : ResponseBaseModel
 {
     /// <summary>
     /// Сессия опроса/анккеты
     /// </summary>
-    public ConstructorFormSessionModelDB? SessionQuestionnairie { get; set; }
+    public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
 }

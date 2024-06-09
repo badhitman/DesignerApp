@@ -22,7 +22,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
 
     MudTable<ConstructorFormQuestionnaireModelDB>? table;
     string? searchString;
-    ConstructorFormsQuestionnairiesPaginationResponseModel data = new() { Questionnairies = Enumerable.Empty<ConstructorFormQuestionnaireModelDB>() };
+    ConstructorFormsQuestionnairesPaginationResponseModel data = new() { Questionnaires = Enumerable.Empty<ConstructorFormQuestionnaireModelDB>() };
 
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
 
@@ -53,13 +53,13 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
         data = await _forms.RequestQuestionnaires(req);
         IsBusyProgress = false;
 
-        if (data.Questionnairies is null)
+        if (data.Questionnaires is null)
         {
-            _snackbar.Add($"rest.Content.Questionnairies is null. error {{D03EAEDB-1430-41A0-95EA-3C2344CA0102}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return new TableData<ConstructorFormQuestionnaireModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnairies };
+            _snackbar.Add($"rest.Content.Questionnaires is null. error {{D03EAEDB-1430-41A0-95EA-3C2344CA0102}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            return new TableData<ConstructorFormQuestionnaireModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
         }
 
-        return new TableData<ConstructorFormQuestionnaireModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnairies };
+        return new TableData<ConstructorFormQuestionnaireModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
     }
 
     protected async Task QuestionnaireOpenDialog(ConstructorFormQuestionnaireModelDB? questionnaire = null)

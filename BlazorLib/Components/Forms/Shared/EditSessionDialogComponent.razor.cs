@@ -104,7 +104,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
     async Task SaveForm()
     {
         IsBusyProgress = true;
-        FormSessionQuestionnairieResponseModel rest = await _forms.UpdateOrCreateSessionQuestionnairie(session_orign);
+        FormSessionQuestionnaireResponseModel rest = await _forms.UpdateOrCreateSessionQuestionnaire(session_orign);
         IsBusyProgress = false;
         _snackbar.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
@@ -113,13 +113,13 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        if (rest.SessionQuestionnairie is null)
+        if (rest.SessionQuestionnaire is null)
         {
             _snackbar.Add($"Ошибка {{B86A9186-FF44-473B-A478-0098E4B487B0}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        Session = rest.SessionQuestionnairie;
+        Session = rest.SessionQuestionnaire;
         await ResetForm();
     }
 

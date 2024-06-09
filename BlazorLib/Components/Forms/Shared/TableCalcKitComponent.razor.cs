@@ -17,7 +17,7 @@ public partial class TableCalcKitComponent : BlazorBusyComponentBaseModel
     public ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
-    public ConstructorFormSessionModelDB SessionQuestionnairie { get; set; } = default!;
+    public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
 
     protected IQueryable<ConstructorFieldFormModelDB>? q => PageJoinForm.Form?.QueryFieldsOfNumericTypes(SelectedFieldObject?.FieldName);
 
@@ -96,9 +96,9 @@ public partial class TableCalcKitComponent : BlazorBusyComponentBaseModel
         if (SelectedFieldObject is null)
             return;
         if (TableCalc is null)
-            TableCalc = new(SelectedFieldObject, PageJoinForm, SessionQuestionnairie);
+            TableCalc = new(SelectedFieldObject, PageJoinForm, SessionQuestionnaire);
         else
-            TableCalc.Update(SelectedFieldObject, PageJoinForm, SessionQuestionnairie);
+            TableCalc.Update(SelectedFieldObject, PageJoinForm, SessionQuestionnaire);
 
         StateHasChanged();
     }

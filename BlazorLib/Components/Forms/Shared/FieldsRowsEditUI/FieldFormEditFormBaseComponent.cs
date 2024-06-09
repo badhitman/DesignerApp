@@ -13,7 +13,7 @@ public class FieldFormEditFormBaseComponent : ComponentBase
     public Action<ConstructorFieldFormModelDB> StateHasChangedHandler { get; set; } = default!;
 
     [CascadingParameter]
-    public ConstructorFormSessionModelDB? SessionQuestionnairie { get; set; }
+    public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
 
     [Parameter, EditorRequired]
     public ConstructorFieldFormModelDB Field { get; set; } = default!;
@@ -21,7 +21,7 @@ public class FieldFormEditFormBaseComponent : ComponentBase
     [Inject]
     protected ISnackbar snackbar { get; set; } = default!;
 
-    public string DomID => $"{SessionQuestionnairie?.Id}_form-{Form.Id}_{Field.GetType().FullName}-{Field.Id}";
+    public string DomID => $"{SessionQuestionnaire?.Id}_form-{Form.Id}_{Field.GetType().FullName}-{Field.Id}";
 
     /// <summary>
     /// Placeholder

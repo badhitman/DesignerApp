@@ -32,9 +32,9 @@
                 </thead>
                 <tbody>
                     @{
-                        if (InUse == true && SessionQuestionnairie?.QueryCurrentTablePageFormValues(PageJoinForm.Id)?.Any() == true)
+                        if (InUse == true && SessionQuestionnaire?.QueryCurrentTablePageFormValues(PageJoinForm.Id)?.Any() == true)
                         {
-                    foreach (IGrouping<uint, ConstructorFormSessionValueModelDB> row in SessionQuestionnairie.RowsData(PageJoinForm.Id)!)
+                    foreach (IGrouping<uint, ConstructorFormSessionValueModelDB> row in SessionQuestionnaire.RowsData(PageJoinForm.Id)!)
                             {
                                 <ClientTableRowViewComponent @key=@(row) RowNum="row.Key" RowData="row.ToArray()" OpenHandle="OpenEditRowAction" DeleteHandle="DeleteRowAction" />
                             }
@@ -61,7 +61,7 @@
                     {
                         <button @onclick="() => { TableCalcKit = !TableCalcKit; }" class="btn btn-link oi oi-calculator" type="button"></button>
                     }
-                    @if (SessionQuestionnairie is not null )
+                    @if (SessionQuestionnaire is not null )
                     {
                         <button @onclick="AddRowToTable" class="btn btn-outline-primary" type="button">@(string.IsNullOrEmpty(Form.AddRowButtonTitle) ? "Добавить строку" : Form.AddRowButtonTitle)</button>
                     }

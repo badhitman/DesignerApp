@@ -11,13 +11,13 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
 {
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormDirectoryLinkModelDB Field { get; set; } = default!;
+    public required ConstructorFormDirectoryLinkModelDB Field { get; set; }
 
     /// <summary>
     /// Объект справочника/списка (вместе с его элементами)
     /// </summary>
     [Parameter, EditorRequired]
-    public EntryNestedModel? DirectoryObject { get; set; }
+    public required EntryNestedModel DirectoryObject { get; set; }
 
     int _selectedElement;
     /// <inheritdoc/>
@@ -31,7 +31,7 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
         }
     }
 
-    string? FieldValue => SessionQuestionnairie?.SessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.QuestionnairePageJoinFormId == PageJoinForm?.Id && x.GroupByRowNum == GroupByRowNum)?.Value;
+    string? FieldValue => SessionQuestionnaire?.SessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.QuestionnairePageJoinFormId == PageJoinForm?.Id && x.GroupByRowNum == GroupByRowNum)?.Value;
     
     /// <inheritdoc/>
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{QuestionnairePage?.Id}-{Field.Id}";
@@ -49,6 +49,6 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
             else
                 _selectedElement = detect_value.Id;
         }
-        FieldsReferals?.Add(this);
+        FieldsReferring?.Add(this);
     }
 }

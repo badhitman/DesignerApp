@@ -4,7 +4,7 @@
 
 <span>Опрос/анкета</span>
 
-@if (IsBusyProgress || SessionQuestionnairie.Id < 1)
+@if (IsBusyProgress || SessionQuestionnaire.Id < 1)
 {
     <div class="text-center">
         <div class="spinner-border" role="status">
@@ -15,9 +15,9 @@
 else
 {
     <CascadingValue Value="Entries">
-        <CascadingValue Value="SessionQuestionnairie">
+        <CascadingValue Value="SessionQuestionnaire">
             <CascadingValue Value="true">
-                <QuestionnairieClientViewComponent />
+                <QuestionnaireClientViewComponent />
             </CascadingValue>
         </CascadingValue>
     </CascadingValue>

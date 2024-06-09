@@ -17,7 +17,7 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
     protected IFormsService _forms { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
-    public ConstructorFormSessionModelDB SessionQuestionnairie { get; set; } = default!;
+    public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
     public bool InUse { get; set; } = default!;
@@ -26,9 +26,9 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
 
     protected async Task SetAsDone()
     {
-        if (string.IsNullOrWhiteSpace(SessionQuestionnairie.SessionToken))
+        if (string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken))
         {
-            _snackbar.Add("string.IsNullOrWhiteSpace(SessionQuestionnairie.SessionToken). error {0F19A8A7-A486-49B9-857B-C45CFC904E9D}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            _snackbar.Add("string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken). error {0F19A8A7-A486-49B9-857B-C45CFC904E9D}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -39,11 +39,11 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        ResponseBaseModel rest = await _forms.SetDoneSessionQuestionnairie(SessionQuestionnairie.SessionToken);
+        ResponseBaseModel rest = await _forms.SetDoneSessionQuestionnaire(SessionQuestionnaire.SessionToken);
         IsBusyProgress = false;
 
         _snackbar.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
-            SessionQuestionnairie.SessionStatus = SessionsStatusesEnum.Sended;
+            SessionQuestionnaire.SessionStatus = SessionsStatusesEnum.Sended;
     }
 }

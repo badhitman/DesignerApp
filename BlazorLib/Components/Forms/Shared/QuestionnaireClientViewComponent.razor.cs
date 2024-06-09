@@ -5,21 +5,21 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
-public partial class QuestionnairieClientViewComponent : ComponentBase
+public partial class QuestionnaireClientViewComponent : ComponentBase
 {
     [Inject]
-    protected ILogger<QuestionnairieClientViewComponent> _logger { get; set; } = default!;
+    protected ILogger<QuestionnaireClientViewComponent> _logger { get; set; } = default!;
 
     [Inject]
     protected ISnackbar _snackbar { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
-    public ConstructorFormSessionModelDB SessionQuestionnairie { get; set; } = default!;
+    public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
     public bool InUse { get; set; } = default!;
 
-    protected MarkupString ms => (MarkupString)(!string.IsNullOrWhiteSpace(SessionQuestionnairie.Description) ? SessionQuestionnairie.Description : SessionQuestionnairie.Owner!.Description!);
+    protected MarkupString ms => (MarkupString)(!string.IsNullOrWhiteSpace(SessionQuestionnaire.Description) ? SessionQuestionnaire.Description : SessionQuestionnaire.Owner!.Description!);
 
     public MudDynamicTabs? DynamicTabs;
     public int QuestionnaireIndex;

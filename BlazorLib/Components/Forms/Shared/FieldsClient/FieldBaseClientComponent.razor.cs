@@ -31,7 +31,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 return null;
 
             _calc_s ??= VirtualColumnCalcAbstraction.GetHandlerService(_md.CommandName) as VirtualColumnCalcAbstraction;
-            if (_calc_s is null || SessionQuestionnairie is null || PageJoinForm is null)
+            if (_calc_s is null || SessionQuestionnaire is null || PageJoinForm is null)
                 return null;
 
             Dictionary<string, double> columns = [];
@@ -59,7 +59,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
 
     IQueryable<ConstructorFieldFormModelDB>? QueryFieldsOfNumericTypes => PageJoinForm?.Form?.QueryFieldsOfNumericTypes(Field.Name);
     IEnumerable<string> FieldsNames => QueryFieldsOfNumericTypes?.Select(x => x.Name) ?? Enumerable.Empty<string>();
-    IEnumerable<ConstructorFormSessionValueModelDB> CellsValuesOfCurrentRow => SessionQuestionnairie?.RowsData(PageJoinForm!.Id)?.FirstOrDefault(x => x.Key == GroupByRowNum) ?? Enumerable.Empty<ConstructorFormSessionValueModelDB>();
+    IEnumerable<ConstructorFormSessionValueModelDB> CellsValuesOfCurrentRow => SessionQuestionnaire?.RowsData(PageJoinForm!.Id)?.FirstOrDefault(x => x.Key == GroupByRowNum) ?? Enumerable.Empty<ConstructorFormSessionValueModelDB>();
 
     string? _stringFieldValue;
     public string? StringFieldValue
@@ -149,7 +149,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
 
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{QuestionnairePage?.Id}-{Field.Id}";
 
-    public string? FieldValue => SessionQuestionnairie?.SessionValues?.FirstOrDefault(x => x.QuestionnairePageJoinFormId == PageJoinForm?.Id && x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.GroupByRowNum == GroupByRowNum)?.Value;
+    public string? FieldValue => SessionQuestionnaire?.SessionValues?.FirstOrDefault(x => x.QuestionnairePageJoinFormId == PageJoinForm?.Id && x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.GroupByRowNum == GroupByRowNum)?.Value;
 
     protected override void OnInitialized()
     {
@@ -163,8 +163,8 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 if (_current_agent is not null)
                 {
                     TextFieldValueAgent? _declaration = DeclarationAbstraction.GetHandlerService(_current_agent.Id) as TextFieldValueAgent;
-                    if (_declaration is not null && FieldValue is null && SessionQuestionnairie is not null && QuestionnairePage is not null && PageJoinForm is not null)
-                        StringFieldValue = _declaration.DefaultValueIfNull(Field, SessionQuestionnairie, PageJoinForm.Id);
+                    if (_declaration is not null && FieldValue is null && SessionQuestionnaire is not null && QuestionnairePage is not null && PageJoinForm is not null)
+                        StringFieldValue = _declaration.DefaultValueIfNull(Field, SessionQuestionnaire, PageJoinForm.Id);
                     else
                         _stringFieldValue = FieldValue;
                 }
@@ -194,6 +194,6 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 snackbarInject.Add($"Тип данных поля не обработан. ошибка {{C2E12C0B-837B-4D67-B320-37F976B8D293}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 break;
         }
-        FieldsReferals?.Add(this);
+        FieldsReferring?.Add(this);
     }
 }

@@ -9,46 +9,46 @@ public interface IFormsService
     /// <summary>
     /// Получить сессию
     /// </summary>
-    public Task<FormSessionQuestionnairieResponseModel> GetSessionQuestionnairie(string guid_session, CancellationToken cancellationToken = default);
+    public Task<FormSessionQuestionnaireResponseModel> GetSessionQuestionnaire(string guid_session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Установить значение свойства сессии
     /// </summary>
-    public Task<FormSessionQuestionnairieResponseModel> SetValueFieldSessionQuestionnairie(SetValueFieldSessionQuestionnairieModel req, CancellationToken cancellationToken = default);
+    public Task<FormSessionQuestionnaireResponseModel> SetValueFieldSessionQuestionnaire(SetValueFieldSessionQuestionnaireModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Отправить опрос на проверку (от клиента)
     /// </summary>
-    public Task<ResponseBaseModel> SetDoneSessionQuestionnairie(string token_session, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> SetDoneSessionQuestionnaire(string token_session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить набор значений сессии опроса/анкеты по номеру строки [GroupByRowNum].
     /// Если индексниже нуля - удаляютс все значения для указанной JoinForm (полная очистка таблицы или очистка всех значений всех поллей стандартной формы)
     /// </summary>
-    public Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionQuestionnairieByRowNum(ValueFieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(ValueFieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Добавить новую строку в таблицу значений
     /// </summary>
     /// <returns>Номер п/п (начиная с 1) созданной строки</returns>
-    public Task<CreateObjectOfIntKeyResponseModel> AddRowToTable(FieldSessionQuestionnairieBaseModel req, CancellationToken cancellationToken = default);
+    public Task<CreateObjectOfIntKeyResponseModel> AddRowToTable(FieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default);
     #endregion
 
     #region сессии опросов/анкет
     /// <summary>
     /// Установить статус сессии (от менеджера)
     /// </summary>
-    public Task<ResponseBaseModel> SetStatusSessionQuestionnairie(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> SetStatusSessionQuestionnaire(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить сессию
     /// </summary>
-    public Task<FormSessionQuestionnairieResponseModel> GetSessionQuestionnairie(int id_session, CancellationToken cancellationToken = default);
+    public Task<FormSessionQuestionnaireResponseModel> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить (или создать) сессию опроса/анкеты
     /// </summary>
-    public Task<FormSessionQuestionnairieResponseModel> UpdateOrCreateSessionQuestionnairie(ConstructorFormSessionModelDB session, CancellationToken cancellationToken = default);
+    public Task<FormSessionQuestionnaireResponseModel> UpdateOrCreateSessionQuestionnaire(ConstructorFormSessionModelDB session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Запросить порцию сессий (с пагинацией)
@@ -80,7 +80,7 @@ public interface IFormsService
     /// <summary>
     /// Запрос анкет/опросов
     /// </summary>
-    public Task<ConstructorFormsQuestionnairiesPaginationResponseModel> RequestQuestionnaires(SimplePaginationRequestModel req, CancellationToken cancellationToken = default);
+    public Task<ConstructorFormsQuestionnairesPaginationResponseModel> RequestQuestionnaires(SimplePaginationRequestModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить анкету/опрос

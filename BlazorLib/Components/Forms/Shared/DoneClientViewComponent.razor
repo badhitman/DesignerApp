@@ -4,10 +4,10 @@
 {
 
 }
-else if (SessionQuestionnairie.SessionStatus >= SessionsStatusesEnum.Sended)
+else if (SessionQuestionnaire.SessionStatus >= SessionsStatusesEnum.Sended)
 {
     <div class="alert alert-warning mt-3" role="alert">
-        Форма в статусе [@(SessionQuestionnairie.SessionStatus.DescriptionInfo())]. Последнее обновление: @SessionQuestionnairie.LastQuestionnaireUpdateActivity
+        Форма в статусе [@(SessionQuestionnaire.SessionStatus.DescriptionInfo())]. Последнее обновление: @SessionQuestionnaire.LastQuestionnaireUpdateActivity
     </div>
 }
 else if (IsBusyProgress)

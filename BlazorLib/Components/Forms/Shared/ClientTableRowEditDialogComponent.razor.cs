@@ -24,7 +24,7 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
     public uint RowNum { get; set; }
 
     [Parameter]
-    public ConstructorFormSessionModelDB SessionQuestionnairie { get; set; } = default!;
+    public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
 
     [Parameter]
     public ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; } = default!;

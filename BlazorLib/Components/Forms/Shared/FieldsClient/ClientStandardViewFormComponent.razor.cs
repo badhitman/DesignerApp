@@ -73,7 +73,7 @@ public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseMo
         if (form is not null)
             Form.Reload(form);
 
-        if (Form!.FormsDirectoriesLinks?.Any() == true)
+        if (Form.FormsDirectoriesLinks is not null && Form.FormsDirectoriesLinks.Count != 0)
         {
             IsBusyProgress = true;
             Directories = await FormsRepo.ReadDirectories(Form.FormsDirectoriesLinks.Select(x => x.DirectoryId).Distinct());

@@ -28,7 +28,7 @@ public partial class ClientTableRowViewComponent : ComponentBase
     public ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
-    public ConstructorFormSessionModelDB SessionQuestionnairie { get; set; } = default!;
+    public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
 
     [CascadingParameter, EditorRequired]
     public ConstructorFormModelDB Form { get; set; } = default!;
@@ -51,7 +51,7 @@ public partial class ClientTableRowViewComponent : ComponentBase
         if (_md?.Options.Any() != true)
             return null;
 
-        if (VirtualColumnCalcAbstraction.GetHandlerService(_md.CommandName) is not VirtualColumnCalcAbstraction _calc_s || SessionQuestionnairie is null || PageJoinForm is null)
+        if (VirtualColumnCalcAbstraction.GetHandlerService(_md.CommandName) is not VirtualColumnCalcAbstraction _calc_s || SessionQuestionnaire is null || PageJoinForm is null)
             return null;
 
         Dictionary<string, double> columns = [];
@@ -70,7 +70,7 @@ public partial class ClientTableRowViewComponent : ComponentBase
         if (_fbl is ConstructorFieldFormModelDB _fb && _fb.TypeField == TypesFieldsFormsEnum.ProgrammCalcDouble)
             return (MarkupString)(CalcFieldValue(_fb) ?? "&nbsp;");
 
-        ConstructorFormSessionValueModelDB? _sv = SessionQuestionnairie
+        ConstructorFormSessionValueModelDB? _sv = SessionQuestionnaire
         .SessionValues?
         .FirstOrDefault(x => x.QuestionnairePageJoinFormId == PageJoinForm.Id && x.GroupByRowNum == RowNum && x.Name.Equals(_fbl.Name, StringComparison.OrdinalIgnoreCase));
 
@@ -79,7 +79,7 @@ public partial class ClientTableRowViewComponent : ComponentBase
 
     IQueryable<ConstructorFieldFormModelDB>? query(string field_name) => PageJoinForm?.Form?.QueryFieldsOfNumericTypes(field_name);
     IEnumerable<string> fields_names(string field_name) => query(field_name)?.Select(x => x.Name) ?? Enumerable.Empty<string>();
-    IEnumerable<ConstructorFormSessionValueModelDB> CellsValuesOfCurrentRow => SessionQuestionnairie?.RowsData(PageJoinForm!.Id)?.FirstOrDefault(x => x.Key == RowNum) ?? Enumerable.Empty<ConstructorFormSessionValueModelDB>();
+    IEnumerable<ConstructorFormSessionValueModelDB> CellsValuesOfCurrentRow => SessionQuestionnaire?.RowsData(PageJoinForm!.Id)?.FirstOrDefault(x => x.Key == RowNum) ?? Enumerable.Empty<ConstructorFormSessionValueModelDB>();
 
     string CellId(ConstructorFieldFormBaseLowModel fb) => $"cell-{PageJoinForm.Id}-{RowNum}_{fb.Id}";
 

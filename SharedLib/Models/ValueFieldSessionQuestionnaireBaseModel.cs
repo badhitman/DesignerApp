@@ -3,7 +3,7 @@
 /// <summary>
 /// Базовая модель доступа значения поля формы
 /// </summary>
-public class ValueFieldSessionQuestionnaireBaseModel : FieldSessionQuestionnairieBaseModel
+public class ValueFieldSessionQuestionnaireBaseModel : FieldSessionQuestionnaireBaseModel
 {
     /// <summary>
     /// Группировка по номеру строки

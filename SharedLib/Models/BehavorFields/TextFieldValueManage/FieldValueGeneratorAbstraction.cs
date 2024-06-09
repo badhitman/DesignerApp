@@ -13,5 +13,5 @@ public abstract class FieldValueGeneratorAbstraction : DeclarationAbstraction
     /// <summary>
     /// Элементы, полученые от генератора
     /// </summary>
-    public abstract SimpleStringArrayResponseModel GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_questionnairie, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0);
+    public abstract SimpleStringArrayResponseModel GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0);
 }
