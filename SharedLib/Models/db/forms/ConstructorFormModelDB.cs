@@ -90,4 +90,60 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             AddRowButtonTitle = other.AddRowButtonTitle
         };
     }
+
+    /// <summary>
+    /// Перезагрузка
+    /// </summary>
+    public ConstructorFormModelDB Reload(ConstructorFormModelDB other)
+    {
+        Name = other.Name;
+        Description = other.Description;
+        Css = other.Css;
+        AddRowButtonTitle = other.AddRowButtonTitle;
+        int i;
+        if (other.Fields is not null)
+        {
+            Fields ??= [];
+            i = Fields.FindIndex(x => !other.Fields.Any(y => y.Id == x.Id));
+            while (i >= 0)
+            {
+                Fields.RemoveAt(i);
+                i = Fields.FindIndex(x => !other.Fields.Any(y => y.Id == x.Id));
+            }
+            ConstructorFieldFormModelDB? fo;
+            foreach (ConstructorFieldFormModelDB f in Fields)
+            {
+                fo = other.Fields.FirstOrDefault(x => x.Id == f.Id);
+                if (fo is not null)
+                    f.Update(fo);
+            }
+            ConstructorFieldFormModelDB[] _fields = other.Fields.Where(x => !Fields.Any(y => y.Id == x.Id)).ToArray();
+            if (_fields.Length != 0)
+                Fields.AddRange(_fields);
+        }
+
+        if (other.FormsDirectoriesLinks is not null)
+        {
+            FormsDirectoriesLinks ??= [];
+
+            i = FormsDirectoriesLinks.FindIndex(x => !other.FormsDirectoriesLinks.Any(y => y.Id == x.Id));
+            while (i >= 0)
+            {
+                FormsDirectoriesLinks.RemoveAt(i);
+                i = FormsDirectoriesLinks.FindIndex(x => !other.FormsDirectoriesLinks.Any(y => y.Id == x.Id));
+            }
+            ConstructorFormDirectoryLinkModelDB? fo;
+            foreach (ConstructorFormDirectoryLinkModelDB f in FormsDirectoriesLinks)
+            {
+                fo = other.FormsDirectoriesLinks.FirstOrDefault(x => x.Id == f.Id);
+                if (fo is not null)
+                    f.Update(fo);
+            }
+            ConstructorFormDirectoryLinkModelDB[] _fields = other.FormsDirectoriesLinks.Where(x => !FormsDirectoriesLinks.Any(y => y.Id == x.Id)).ToArray();
+            if (_fields.Length != 0)
+                FormsDirectoriesLinks.AddRange(_fields);
+        }
+
+        return this;
+    }
 }

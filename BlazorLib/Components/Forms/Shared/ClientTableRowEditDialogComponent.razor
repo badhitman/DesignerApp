@@ -1,0 +1,35 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<MudDialog>
+    <DialogContent>
+        @if (IsBusyProgress)
+        {
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <CascadingValue Value="PageJoinForm.Form">
+                <CascadingValue Value="SessionQuestionnairie">
+                    <CascadingValue Value="QuestionnairePage">
+                        <CascadingValue Value="PageJoinForm">
+                            <CascadingValue Value="true">
+                                <CascadingValue Value="RowNum">
+                                    <CascadingValue Value="Entries">
+                                        <ClientStandardViewFormComponent HoldFormHandler="HoldOfBusyAction" />
+                                    </CascadingValue>
+                                </CascadingValue>
+                            </CascadingValue>
+                        </CascadingValue>
+                    </CascadingValue>
+                </CascadingValue>
+            </CascadingValue>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Disabled="@IsBusyProgress" Color="Color.Primary" OnClick="Close">@(IsBusyProgress ? "Отправка данных..." : "Применить")</MudButton>
+    </DialogActions>
+</MudDialog>

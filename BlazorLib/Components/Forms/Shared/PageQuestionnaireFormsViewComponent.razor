@@ -1,0 +1,60 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (QuestionnairePage.Id < 1)
+{
+    <figure class="text-center mt-3">
+        <blockquote class="blockquote">
+            <p>Страница не записана.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Для добавления форм на страницу: <cite title="после записи страницы вы получите доступ к её управлению">запишите её</cite>
+        </figcaption>
+    </figure>
+}
+else if (QuestionnairePage.JoinsForms is null)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>QuestionnairePage.JoinsForms is null</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            ошибка <cite>{558057D2-7B6F-49EB-8AFE-A1187B237240}</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    <div dom-guid="{07C98E43-E14C-46AD-B2D4-4D78B39B8EFC}" class="card">
+        <div class="card-body">
+            @if (!QuestionnairePage.JoinsForms.Any())
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Форм нет.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        На страницу ещё не добавлены <cite title="добавьте форму на страницу опроса/анкеты">формы</cite>
+                    </figcaption>
+                </figure>
+            }
+            else
+            {
+                foreach (ConstructorFormQuestionnairePageJoinFormModelDB pjf in QuestionnairePage.JoinsForms.OrderBy(x => x.SortIndex))
+                {
+                    pjf.Owner ??= QuestionnairePage;
+                    <CascadingValue Value="pjf">
+                        <PageQuestionnaireFormMainViewComponent @key="@($"page-{QuestionnairePage.Id}_jform-{pjf.Id}")" UpdatePageActionHandle="UpdatePageAction" CurrentFormJoinEdit="_join_form_id" CanDown="@(CanDownJoinForm(pjf))" CanUp="@(CanUpJoinForm(pjf))" JoinFormHoldHandle="JoinFormHoldAction" />
+                    </CascadingValue>
+                }
+            }
+        </div>
+    </div>
+}

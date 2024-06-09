@@ -1,0 +1,180 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<tr dom-guid="{A97524ED-BECF-496E-A094-298E07D6F04E}">
+    @if (IsBusyProgress)
+    {
+        <th colspan="3">
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+            </div>
+        </th>
+    }
+    else if (IsEditRow)
+    {
+        <th dom-guid="{75B008EC-378C-4C4B-934C-D735B3158037}" colspan="3">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <form class="row g-3">
+                    <div class="col-md-4">
+                        <label for="exampleInputName1" class="form-label">Имя</label>
+                        <input @bind-value="_field_master.Name" @bind-value:event="oninput" type="text" class="form-control" id="exampleInputName1" aria-describedby="exampleInputName1Help" />
+                        <div id="exampleInputName1Help" class="form-text">Уникальное название</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="inputCSS4" class="form-label">CSS обёртки</label>
+                        <input @bind-value="_field_master.Css" @bind-value:event="oninput" type="text" class="form-control" id="inputCSS4" aria-describedby="inputCSS4Help" />
+                        <div id="inputCSS4Help" class="form-text">Стили для DIV блока-обёртки поля</div>
+                    </div>
+                    <div class="col-4">
+                        <label for="exampleInputHint1" class="form-label">Подсказка</label>
+                        <input @bind-value="_field_master.Hint" @bind-value:event="oninput" type="text" class="form-control" id="exampleInputHint1" aria-describedby="hintHelp" />
+                        <div id="hintHelp" class="form-text">Текст подсказки под полем формы</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3 form-check">
+                            <input @bind="_field_master.Required" type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">Обязательный</label>
+                        </div>
+                    </div>
+                    <div dom-guid="{BCD2433A-F66F-4117-967B-8F09C2BBC4CC}" class="col-12">
+                        <div class="mb-3">
+                            <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
+                            <InputRichTextComponent @bind-Value="_field_master.Description" @ref="_currentTemplateInputRichText" />
+                        </div>
+                    </div>
+                    <CascadingValue Value="SetFieldAction">
+                        @if (_field_master is ConstructorFieldFormModelDB sf)
+                        {
+                            <FieldFormRowEditComponent Field="sf" @ref="FieldEditUI" />
+                        }
+                        else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+                        {
+                            <FieldDirectoryFormRowEditComponent Field="df" @ref="FieldDirUI" />
+                        }
+                        else
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                `@(_field_master.GetType().Name)`. Ошибка {40D1AE3C-6FA4-49D9-AD32-DE50560B0D35}
+                            </div>
+                        }
+                    </CascadingValue>
+                    <div dom-guid="{E25713CD-773E-4A37-B76E-208C8FACE8DA}" class="col-12">
+                        <div class="hstack mt-3">
+                            <div></div>
+                            <MudSpacer />
+                            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                @if (!Field.Equals(_field_master) && CanSave)
+                                {
+                                    <button @onclick="ResetEditField" type="button" class="btn btn-outline-primary">Сброс</button>
+                                    <button @onclick="SaveEditField" type="button" class="btn btn-outline-primary">Сохранить</button>
+                                }
+                                else
+                                {
+                                    <button disabled type="button" class="btn btn-primary">Сохранить</button>
+                                }
+                                <SessionsValuesOfFieldViewComponent @ref="_sessionsValuesOfFieldViewComponent_Ref" FieldName="@Field.Name" ShowReferalsHandler="ShowReferals" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                @if (_elements?.Any() == true)
+                {
+                    <hr />
+                    <MudAlert ShowCloseIcon="true" CloseIconClicked="(() => _elements = null)" Class="d-flex flex-column flex-grow-1">
+                        <MudSimpleTable Style="overflow-x: auto;" Class="d-flex flex-column flex-grow-1">
+                            <thead>
+                                <tr>
+                                    <th>Ссылка</th>
+                                    <th>Создан</th>
+                                    <th>Наблюдатели</th>
+                                    <th>Информация</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (EntryDictModel row in _elements)
+                                {
+                                    Dictionary<string, object>? _d = row.Tag;
+                                    int? _count = _d?[nameof(Enumerable.Count)] as int?;
+                                    DateTime? _created_at = _d?[nameof(ConstructorFormSessionModelDB.CreatedAt)] as DateTime?;
+                                    DateTime? _deadline_date = _d?.GetValueOrDefault(nameof(ConstructorFormSessionModelDB.DeadlineDate)) as DateTime?;
+                                    DateTime? _last_questionnaire_update_activity = _d?.GetValueOrDefault(nameof(ConstructorFormSessionModelDB.LastQuestionnaireUpdateActivity)) as DateTime?;
+                                    string? _emails_notifications = _d?[nameof(ConstructorFormSessionModelDB.EmailsNotifications)].ToString();
+                                    SessionsStatusesEnum? _mark_as_done = _d?[nameof(ConstructorFormSessionModelDB.SessionStatus)] as SessionsStatusesEnum?;
+
+                                    <tr>
+                                        <td>
+                                            @row.Name
+                                        </td>
+                                        <td>@_created_at</td>
+                                        <td>@_emails_notifications</td>
+                                        <td>
+                                            <div class="hstack gap-3">
+                                                <div>
+                                                    @(GetInfoRow(_mark_as_done, _deadline_date!.Value))
+                                                </div>
+                                                <MudSpacer />
+                                                <button @onclick="async () => await ClearValuesForFieldName(row.Id)" type="button" class="btn btn-link">Удалить</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+                        <div class="d-grid gap-2 mt-2">
+                            <button @onclick="async () => await ClearValuesForFieldName(null)" class="btn btn-outline-danger" type="button">Очистить все</button>
+                        </div>
+                    </MudAlert>
+                }
+                <button @onclick="() => { IsEditRow = false; }" type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+        </th>
+    }
+    else
+    {
+        <th dom-guid="{E32602AE-F87E-471B-9FEE-7587EBF72C64}" scope="row">
+            @_field_master.Name
+            @if (_field_master.Required)
+            {
+                <sup class="ms-1 text-danger h6">*</sup>
+            }
+        </th>
+        <td dom-guid="{5269FFEC-485A-4DB8-97FD-45C7CC242A20}">
+            @TypeNameMS
+        </td>
+        <td dom-guid="{F8489900-898F-403D-BE84-FFEA6E578A15}">
+            <MudStack Row="true">
+                <span>
+                    @InformationField
+                    @if (_field_master is ConstructorFieldFormModelDB sf)
+                    {
+                        if (!string.IsNullOrEmpty(sf.Hint))
+                        {
+                            <sup class="me-2" title="подсказка">[@sf.Hint]</sup>
+                        }
+                    }
+                    else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+                    {
+                        if (!string.IsNullOrEmpty(df.Hint))
+                        {
+                            <sup class="me-2" title="подсказка">[@df.Hint]</sup>
+                        }
+                    }
+                    else
+                    {
+                        <sup class="me-2">Ошибка определения типа данных поля `@(_field_master.GetType().Name)` {5F73D277-EB4F-41D7-81A7-ADF5ABA5D0AA}</sup>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(_field_master.Css))
+                    {
+                        <sub title="html css class" class="text-secondary">css:<u>@_field_master.Css</u></sub>
+                    }
+                </span>
+                <MudSpacer />
+                <MudIconButton OnClick="MoveFieldUp" Disabled="!CanUp" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowDropUp" aria-label="Выше" />
+                <MudIconButton OnClick="MoveFieldDown" Disabled="!CanDown" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowDropDown" aria-label="Ниже" />
+                <MudIconButton OnClick="() => { IsEditRow = true; }" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" Color="@(Color.Dark)" aria-label="Редактировать" />
+                <MudIconButton OnClick="DeleteClick" Size="Size.Small" Icon="@Icons.Material.Filled.DeleteOutline" Color="@(Color.Warning)" aria-label="Удалить" />
+            </MudStack>
+        </td>
+    }
+</tr>

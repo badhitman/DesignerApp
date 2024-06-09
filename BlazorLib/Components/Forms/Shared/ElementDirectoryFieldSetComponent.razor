@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using SharedLib;
+
+@if (IsEdit)
+{
+    <div dom-guid="{1440E81E-0FBA-47BA-A02A-75BC77089BDC}" class="input-group input-group-sm">
+        <ElementDirectoryFieldEditComponent EditDoneAction="EditDoneHandle" />
+        <button @onclick="() => { IsEdit = false; }" class="btn btn-outline-secondary" type="button" id="button-addon1">Отмена</button>
+    </div>
+}
+else
+{
+    <div dom-guid="{82FFCBEC-00B0-43C4-89CF-A4451FD7B0E1}" class="flex-grow-1">@ElementObject.Name</div>
+    <span @onclick="() => { IsEdit = true; }" class="link-primary">✍️</span>
+    <span @onclick="() => { DeleteElementOfDirectoryHandler(ElementObject.Id); }" class="link-primary">❌</span>
+}
+
+@code {
+    [CascadingParameter, EditorRequired]
+    public EntryModel ElementObject { get; set; } = default!;
+
+    [CascadingParameter, EditorRequired]
+    public Action<int> DeleteElementOfDirectoryHandler { get; set; } = default!;
+
+    bool IsEdit = false;
+    void EditDoneHandle()
+    {
+        IsEdit = false;
+        StateHasChanged();
+    }
+}

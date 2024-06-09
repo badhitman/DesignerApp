@@ -1,0 +1,54 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<MudDialog>
+    <DialogContent>
+        @if (IsBusyProgress)
+        {
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <TabSetComponent>
+                <TabComponent Tooltip="Базовые настройки" Title="Параметры">
+                    <form dom-guid="{4E240AC0-D486-445C-85A8-6B33F4BC244E}" class="row g-3">
+                        <div class="col-12">
+                            <label for="inputName4" class="form-label">Название</label>
+                            <input @bind-value="questionnaire_name_orign" @bind-value:event="oninput" type="text" class="form-control" id="inputName4">
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
+                                <InputRichTextComponent @bind-Value="questionnaire_description_orign" @ref="_currentTemplateInputRichText" />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="hstack gap-3">
+                                <div></div>
+                                <MudSpacer />
+                                <div>
+                                    <div class="btn-group" role="group" >
+                                        <button @onclick="SaveQuestionnaire" disabled="@(string.IsNullOrWhiteSpace(questionnaire_name_orign) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
+                                        @if (IsEdited)
+                                        {
+                                            <button @onclick="ResetQuestionnaireForm" class="btn btn-outline-primary" type="button" id="reset-form">Сброс</button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </TabComponent>
+                <TabComponent IsDisabled="@(Questionnaire.Id < 1)" Tooltip="Состав опроса/анкеты" Title="Страницы">
+                    <PagesQuestionnairesViewComponent @ref="pages_questionnaires_view_ref" Questionnaire="Questionnaire" />
+                </TabComponent>
+            </TabSetComponent>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Disabled="@(IsEdited && Questionnaire.Id > 0)" Color="Color.Primary" OnClick="Close">@(IsEdited && Questionnaire.Id > 0 ? "Опрос/анкета изменена" : "Закрыть")</MudButton>
+    </DialogActions>
+</MudDialog>

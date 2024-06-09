@@ -1,0 +1,69 @@
+﻿@if (SessionQuestionnairie.Id < 1)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Ошибка {86E16297-E7A8-4A9D-A703-64845F3F8610}.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            попробуйте <cite title="F5">перезагрузить страницу</cite>
+        </figcaption>
+    </figure>
+}
+else if (SessionQuestionnairie.Owner?.Pages is null)
+{
+    <div class="alert alert-dark" role="alert">
+        SessionQuestionnairie.Owner?.Pages is null! ошибка {9C069802-5213-4697-AACB-334313BD5AD4}
+    </div>
+}
+else
+{
+    <MudDynamicTabs AddIconStyle="@AddIconStyleInUse" dom-guid="{AE409687-F43B-401A-8C51-FB1E54DDE281}" @ref="@DynamicTabs" @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+
+        @if (!SessionQuestionnairie.Owner.Pages.Any())
+        {
+            <figure class="text-center mt-3">
+                <blockquote class="blockquote">
+                    <p>Нет ни одной страницы</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    добавьте первую <cite>страницу</cite>
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            if (SessionQuestionnairie.ShowDescriptionAsStartPage)
+            {
+                if (!string.IsNullOrWhiteSpace(SessionQuestionnairie.Description) || !string.IsNullOrWhiteSpace(SessionQuestionnairie.Owner.Description))
+                {
+                    <MudTabPanel ID="@int.MinValue" Text="Информация" ShowCloseIcon="@false" Icon="@Icons.Material.Filled.Info">
+                        <div class="card">
+                            <div class="card-body">
+                                @ms
+                            </div>
+                        </div>
+                    </MudTabPanel>
+
+                }
+            }
+            @foreach (ConstructorFormQuestionnairePageModelDB questionnaire_page in SessionQuestionnairie.Owner.Pages.OrderBy(x => x.SortIndex))
+            {
+                questionnaire_page.Owner ??= SessionQuestionnairie.Owner;
+                if (questionnaire_page.Owner is null)
+                {
+                    _snackbar.Add($"");
+                }
+                <MudTabPanel dom-guid="{08BA77AF-32AF-44D3-BA96-9AD164497E3C}"
+                             ID="@questionnaire_page.Id"
+                             Text="@questionnaire_page.Name"
+                             ShowCloseIcon="@(questionnaire_page.Id < 1)"
+                             BadgeDot="@(questionnaire_page.Id < 1)">
+                    <CascadingValue Value="questionnaire_page">
+                        <PageQuestionnaireFormsViewComponent />
+                    </CascadingValue>
+                </MudTabPanel>
+            }
+        }
+    </MudDynamicTabs>
+    <DoneClientViewComponent />
+}

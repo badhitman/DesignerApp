@@ -1,0 +1,57 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (!Form.AllFields.Any())
+{
+    <figure dom-guid="{6B416CEA-50FE-48CF-B33D-C35EFB350977}" class="text-center">
+        <blockquote class="blockquote">
+            <p>Полей в форме нет.</p>
+            @if (!string.IsNullOrWhiteSpace(Title))
+            {
+                <p class="h5 mt-4">@Title</p>
+            }
+        </blockquote>
+    </figure>
+}
+else
+{
+    if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <p class="h5 mt-4">@Title</p>
+    }
+    <CascadingValue Value="BusyEscalationAction">
+        <form dom-guid="{8FED67CF-301A-4BFB-95C9-3E4196D170C8}" class="@Form.Css">
+            @foreach (ConstructorFieldFormBaseLowModel fb in Form.AllFields)
+            {
+                <div class="@fb.Css mb-3">
+                    @if (fb is ConstructorFieldFormModelDB fs)
+                    {
+                        <CascadingValue Value="fs">
+                            <FieldBaseClientComponent GroupByRowNum="@(RowNum ?? 0)" FieldsReferals="_fields_refs" />
+                        </CascadingValue>
+
+                    }
+                    else if (fb is ConstructorFormDirectoryLinkModelDB fd)
+                    {
+                        <CascadingValue Value="fd">
+                            <FieldDirectoryClientComponent DirectoryObject="Directories.FirstOrDefault(x => x.Id == fd.DirectoryId)" GroupByRowNum="@(RowNum ?? 0)" FieldsReferals="_fields_refs" />
+                        </CascadingValue>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            ошибка {982F6C43-54B8-403E-9062-5203A4E837BA}
+                        </div>
+                    }
+                </div>
+            }
+        </form>
+    </CascadingValue>
+}

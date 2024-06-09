@@ -1,0 +1,28 @@
+﻿<tr @key="@($"tr-{PageJoinForm.Id}-{RowNum}")">
+    @{
+        int i = 0;
+        foreach (ConstructorFieldFormBaseLowModel fb in PageJoinForm.Form!.AllFields)
+        {
+            i++;
+            <td>
+                @if (i < TotalColsCount)
+                {
+                    <div @key="@CellId(fb)">
+                        @GetValue(fb)
+                    </div>
+                }
+                else
+                {
+                    <div @key="@CellId(fb)" class="hstack">
+                        <div>@GetValue(fb)</div>
+                        <MudSpacer />
+                        <div>
+                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="OpenEditAction"></MudIconButton>
+                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="DeletAction"></MudIconButton>
+                        </div>
+                    </div>
+                }
+            </td>
+        }
+    }
+</tr>

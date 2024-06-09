@@ -1,0 +1,49 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<style>
+    .list-group-item .link-primary {
+        cursor: pointer;
+    }
+</style>
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (EntriesElements is null)
+{
+    if (SelectedDirectoryId >= 0)
+    {
+        <text>EntriesElements is null {365EF29E-B13E-4602-8B48-BC08F3B6BB2F}</text>
+    }
+}
+else if (!EntriesElements.Any())
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Пусто.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            В справочнике <cite title="Создайте первый элемент справочника">нет элементов</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    <ul dom-guid="{4C6386B9-DA46-4694-B8D1-800B2AB6E92E}" class="list-group list-group-flush">
+        @foreach (EntryModel e in EntriesElements)
+        {
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <CascadingValue Value="e">
+                        <ElementDirectoryFieldSetComponent @key="@($"element-os/{SelectedDirectoryId}/{e.Id}")" />
+                    </CascadingValue>
+                </div>
+            </li>
+        }
+    </ul>
+}

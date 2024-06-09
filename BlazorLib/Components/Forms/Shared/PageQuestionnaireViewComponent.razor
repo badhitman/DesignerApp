@@ -1,0 +1,66 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<TabSetComponent AsPills="true" NavFill="true">
+    <TabComponent Tooltip="Базовые параметры" Title="Настройки">
+        <div dom-guid="{00622022-C152-407C-93DD-9B4A5336FB91}" class="input-group mb-3">
+            <span class="input-group-text">Имя страницы</span>
+            <input @bind-value="Name" @bind-value:event="oninput" type="text" class="form-control" aria-label="Имя страницы опроса/анкеты">
+        </div>
+        <div dom-guid="{A23DA059-EC73-4142-BAEC-00381D497012}" class="mb-3">
+            <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
+            <InputRichTextComponent @bind-Value="Description" @ref="_currentTemplateInputRichText" />
+        </div>
+
+        <div class="d-grid gap-2 mb-3">
+            <button @onclick="SavePage" disabled="@CantSave" class="btn btn@(CantSave ? "-outline" : "")-primary" type="button">Сохранить</button>
+            @if (IsEdited || IsInitDelete)
+            {
+                <button @onclick="CancelEditing" class="btn btn-outline-secondary" type="button">Отмена</button>
+            }
+            @if (QuestionnairePage.Id > 0)
+            {
+                <button @onclick="Delete" class="btn btn@(IsInitDelete ? "" : "-outline")-danger" type="button">@(IsInitDelete ? "Подтвердить удаление" : "Удалить")</button>
+                @if (QuestionnairePage.Owner?.Pages!.Any(x => x.Id < 1) == true)
+                {
+                    <figure class="text-center">
+                        <blockquote class="blockquote">
+                            <p>Есть не записанные листы.</p>
+                        </blockquote>
+                        <figcaption class="blockquote-footer">
+                            Запишите листы <cite title="Если в опросе есть не записанные листы, то их нельзя перемещать (влево/вправо)">что бы получить доступ к перемещению</cite>
+                        </figcaption>
+                    </figure>
+                }
+                else
+                {
+                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="btn-group" role="group" aria-label="First group">
+                            <button @onclick="() => MoveRow(VerticalDirectionsEnum.Up)" disabled="@(!CanUpMove || IsEdited)" type="button" class="btn btn-outline-@(CanUpMove ? "primary" : "secondary")">Сдвинуть страницу левее</button>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="First group">
+                            <button @onclick="() => MoveRow(VerticalDirectionsEnum.Down)" disabled="@(!CanDownMove || IsEdited)" type="button" class="btn btn-outline-@(CanDownMove ? "primary" : "secondary")">Сдвинуть страницу правее</button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </TabComponent>
+    <TabComponent IsDisabled="@(QuestionnairePage.Id < 1)" Tooltip="Формы на странице" Title="Формы">
+        <div dom-guid="{1DA52601-DE53-45DA-935B-88D9DAB67DD6}" class="input-group mb-3">
+            <label class="input-group-text" for="inputGroupSelect01">Добавление формы</label>
+            <select @bind="SelectedFormForAdding" disabled="@(QuestionnairePage.Id < 1)" class="form-select" id="inputGroupSelect01">
+                <option disabled="@(SelectedFormForAdding > 0)" value="0">Выбор формы...</option>
+                @foreach (ConstructorFormBaseModel f in AllForms)
+                {
+                    <option value="@f.Id">@f.Name</option>
+                }
+            </select>
+            <button @onclick="AddFormToPage" disabled="@(SelectedFormForAdding < 1)" class="btn btn-outline-success" type="button">Добавить</button>
+            @if (SelectedFormForAdding > 0)
+            {
+                <button @onclick="() => { SelectedFormForAdding = 0; }" class="btn btn-outline-secondary" type="button">Отмена</button>
+            }
+        </div>
+        <PageQuestionnaireFormsViewComponent />
+    </TabComponent>
+</TabSetComponent>

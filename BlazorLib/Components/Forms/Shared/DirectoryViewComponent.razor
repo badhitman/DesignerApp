@@ -1,0 +1,67 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<div dom-guid="{D1C5E3C0-EFB0-463D-8231-83F1F71D7B41}" class="card d-flex flex-column flex-grow-1">
+    @if (IsBusyProgress)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card-header">
+            <MudPaper Elevation="25">
+                <MudToolBar>
+                    <div class="input-group me-4">
+                        <span class="input-group-text">Справочник</span>
+                        @if (IsEditDirectory)
+                        {
+                            <input @bind-value="directory_name" @bind-value:event="oninput" type="text" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        }
+                        else
+                        {
+                            <select disabled="@(directories_all?.Any() != true || IsEditDirectory)" @bind="selected_dir_id" class="form-select" aria-label="справочник/список">
+                                @if (directories_all?.Any() != true)
+                                {
+                                    <option value="-1" selected>Справочники отсутсвуют</option>
+                                }
+                                else
+                                {
+                                    foreach (EntryModel el in directories_all)
+                                    {
+                                        <option value="@el.Id">@(el.Name)</option>
+                                    }
+                                }
+                            </select>
+                        }
+                    </div>
+                    <MudSpacer />
+                    <DirectoryNavComponent @ref="_creator_ref" CreateDirectoryHandler="CreateDirectoryAction" RenameSelectedDirectoryHandler="RenameSelectedDirectoryAction" DeleteSelectedDirectoryHandler="DeleteSelectedDirectoryAction" CanDeleteCurrentDirectory="@(_selected_dir_id > 0)" SaveRenameSelectedDirectoryHandler="SaveRenameDirectoryAction" />
+                </MudToolBar>
+            </MudPaper>
+        </div>
+        <div class="card-body">
+            <nav class="navbar bg-body-tertiary">
+                <div class="container-fluid">
+                    @if (selected_dir_id > 0)
+                    {
+                        <a class="navbar-brand">Элементы списка</a>
+                        <div class="d-flex">
+                            <input disabled="@IsEditDirectory" @bind-value="element_directory_name" @bind-value:event="oninput" class="form-control me-2" type="text" placeholder="Новый элемент справочника" aria-label="Новый элемент справочника" size="40">
+                            <button @onclick="AddElementIntoDirectory" disabled="@(string.IsNullOrWhiteSpace(element_directory_name) || IsEditDirectory)" class="btn btn-outline-primary" type="button">Добавить</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="navbar-brand">Не выбран справочник</a>
+                    }
+                </div>
+            </nav>
+            <CascadingValue Value="DeleteElementOfDirectory">
+                <DirectoryElementsListViewComponent @ref="list_view_ref" SelectedDirectoryId="selected_dir_id" />
+            </CascadingValue>
+        </div>
+    }
+</div>

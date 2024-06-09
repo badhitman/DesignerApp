@@ -1,0 +1,55 @@
+﻿@inherits FieldFormEditFormBaseComponent
+
+<div dom-guid="{6624F0AF-C43D-4373-BD11-0E2F0B018A35}" class="mb-3 col-12">
+    <label for="inputSelect-@(DomID)" class="form-label">Тип поля</label>
+    <select @bind="SelectedTypeFieldForEdirRow" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help">
+        @foreach (TypesFieldsFormsEnum tf in Enum.GetValues(typeof(TypesFieldsFormsEnum)))
+        {
+            <option class="@(tf == TypesFieldsFormsEnum.ProgrammCalcDouble ? "text-primary" : (tf == TypesFieldsFormsEnum.Generator ? "text-info" : ""))" value="@tf">@tf.DescriptionInfo()</option>
+        }
+    </select>
+    <div id="@(DomID)Help" class="form-text">Укажите тип поля</div>
+</div>
+@if (SelectedTypeFieldForEdirRow == TypesFieldsFormsEnum.Text)
+{
+    <TextFieldFormRowEditUIComponent Field="Field" @ref="FieldTextUI" />
+}
+else if (SelectedTypeFieldForEdirRow == TypesFieldsFormsEnum.Generator)
+{
+    <GeneratorFieldFormRowEditUIComponent Field="Field" @ref="FieldGeneratorUI" />
+}
+else if (SelectedTypeFieldForEdirRow == TypesFieldsFormsEnum.ProgrammCalcDouble)
+{
+    <div class="col-md-6">
+        <label for="inputSelect2-@(DomID)" class="form-label">Метод</label>
+        <select dom-guid="{EBF42928-9F78-4C92-A8D1-30403A9DD515}" id="inputSelect2-@(DomID)" @bind="SelectedProgrammCalcField" class="form-select">
+            @foreach (EntryAltDescriptionModel e in Entries)
+            {
+                <option value="@e.Id">
+                    <MudTooltip Text="@e.Description">
+                        @e.Text
+                    </MudTooltip>
+                </option>
+            }
+        </select>
+        <div id="@(DomID)Help" class="form-text">Функция обработки</div>
+    </div>
+    <div class="col-md-6">
+        <label for="input3-@(DomID)" class="form-label">Имена полей</label>
+        <input title="Имена полей в формате Json массива" @bind-value="FieldsNames" @bind-value:event="oninput" type="text" placeholder='["Имя поля 1", "Имя поля 2", ...]' class="form-control" id="input3-@(DomID)">
+        <div id="@(DomID)Help" class="form-text">Имена полей в формате Json массива</div>
+    </div>
+    <div class="card border-info col-12">
+        <div class="card-body">
+            @(Descr(_dc?.About))
+        </div>
+    </div>
+}
+
+@if (!new[] { TypesFieldsFormsEnum.Bool, TypesFieldsFormsEnum.ProgrammCalcDouble, TypesFieldsFormsEnum.Generator }.Contains(SelectedTypeFieldForEdirRow))
+{
+    <div class="col-12">
+        <label for="inputPlaceholder_@($"{Form.Id}/{Field.Id}")" class="form-label">Placeholder</label>
+        <input @bind-value="Placeholder" @bind-value:event="oninput" type="text" class="form-control" id="inputPlaceholder_@($"{Form.Id}/{Field.Id}")">
+    </div>
+}

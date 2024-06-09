@@ -1,0 +1,46 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@if (Questionnaire.Pages is null)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Questionnaire.Pages is null</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            ошибка <cite>{ABB6C74E-7266-460D-BC4A-04EA8B27AC71}</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    <MudDynamicTabs dom-guid="{97DBD411-2A3E-4822-BC21-1C70C2733E94}" @ref="@DynamicTabs" @bind-ActivePanelIndex="@QuestionnaireIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+     @if (!Questionnaire.Pages.Any())
+        {
+            <figure class="text-center mt-3">
+                <blockquote class="blockquote">
+                    <p>Нет ни одной страницы</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    добавьте первую <cite>страницу</cite>
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            foreach (ConstructorFormQuestionnairePageModelDB questionnaire_page in Questionnaire.Pages.OrderBy(x => x.SortIndex))
+            {
+                questionnaire_page.Owner = Questionnaire;
+                <MudTabPanel dom-guid="{08BA77AF-32AF-44D3-BA96-9AD164497E3C}"
+                             ID="@questionnaire_page.Id"
+                             Text="@questionnaire_page.Name"
+                             Disabled="@TabIsDisabled(questionnaire_page.Id)"
+                             ShowCloseIcon="@(questionnaire_page.Id < 1)"
+                             BadgeDot="@(questionnaire_page.Id < 1)">
+                    <CascadingValue Value="questionnaire_page">
+                        <PageQuestionnaireViewComponent AllForms="AllForms" CanUpMove="@(CanUpPage(questionnaire_page))" CanDownMove="@(CanDownPage(questionnaire_page))" SetHoldHandle="SetHoldAction" UpdateQuestionnaireHandle="Update" QuestionnaireReloadHandle="QuestionnaireReloadAction" SetNameForPageHandle="SetNameForPage" SetIdForPageHandle="SetIdForPageAction" />
+                    </CascadingValue>
+                </MudTabPanel>
+            }
+        }
+    </MudDynamicTabs>
+}

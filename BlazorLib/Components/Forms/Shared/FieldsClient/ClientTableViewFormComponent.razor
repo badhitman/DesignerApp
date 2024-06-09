@@ -1,0 +1,77 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+        @if (!PageJoinForm.Form!.AllFields.Any())
+        {
+            <figure dom-guid="{7469B6DF-7298-4A4E-9097-CE46A8C8660C}" class="text-center">
+                <blockquote class="blockquote">
+                    <p>Полей в таблице нет.</p>
+                    @if (!string.IsNullOrWhiteSpace(Title))
+                    {
+                        <p class="h5 mt-4">@Title</p>
+                    }
+                </blockquote>
+            </figure>
+        }
+        else
+        {
+
+            <table dom-guid="{A435B56C-1DDA-4B62-902F-0FDFAD234ADA}" class="table table-sm table-hover table-striped table-bordered caption-top">
+                @if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <caption>@Title</caption>
+                }
+                <thead>
+                    <tr>
+                @foreach (ConstructorFieldFormBaseLowModel fb in PageJoinForm.Form!.AllFields)
+                        {
+                            <th scope="col" class="text-center align-middle">
+                                @fb.Name
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (InUse == true && SessionQuestionnairie?.QueryCurrentTablePageFormValues(PageJoinForm.Id)?.Any() == true)
+                        {
+                    foreach (IGrouping<uint, ConstructorFormSessionValueModelDB> row in SessionQuestionnairie.RowsData(PageJoinForm.Id)!)
+                            {
+                                <ClientTableRowViewComponent @key=@(row) RowNum="row.Key" RowData="row.ToArray()" OpenHandle="OpenEditRowAction" DeleteHandle="DeleteRowAction" />
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="@(PageJoinForm.Form!.AllFields.Count())">
+                                    <figure class="text-center">
+                                        <blockquote class="blockquote">
+                                            <p>@(InUse == true ? "В таблице нет данных." : "Режим демонстрации")</p>
+                                        </blockquote>
+                                    </figure>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            @if (InUse == true)
+            {
+                <div dom-guid="{941BE27E-B95F-4008-A086-E517F1F0DF55}" class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    @if (PageJoinForm.Form.Fields?.Any(x => x.TypeField == TypesFieldsFormsEnum.Double || x.TypeField == TypesFieldsFormsEnum.Int || x.TypeField == TypesFieldsFormsEnum.ProgrammCalcDouble) == true)
+                    {
+                        <button @onclick="() => { TableCalcKit = !TableCalcKit; }" class="btn btn-link oi oi-calculator" type="button"></button>
+                    }
+                    @if (SessionQuestionnairie is not null )
+                    {
+                        <button @onclick="AddRowToTable" class="btn btn-outline-primary" type="button">@(string.IsNullOrEmpty(Form.AddRowButtonTitle) ? "Добавить строку" : Form.AddRowButtonTitle)</button>
+                    }
+                </div>
+            }
+            @if (TableCalcKit)
+            {
+                <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="() => { TableCalcKit = !TableCalcKit; }"></button>
+                    <TableCalcKitComponent @ref="_table_kit_ref" />
+                </div>
+            }
+        }

@@ -1,0 +1,101 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (PageJoinForm.Form is null)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>pjf.Form is null</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            ошибка <cite>{BA071133-CFA0-4477-981E-851D12B87994}</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    <div dom-guid="{08F6310A-6B3A-4CE1-B4D5-D8B178669ECD}" @key="@($"{PageJoinForm.GetType().FullName}{PageJoinForm.Id}")" class="card @(InUse ? "" : "border-dark ")mb-3@(CurrentFormJoinEdit> 0 && CurrentFormJoinEdit != PageJoinForm.Id ? " opacity-25" : "")">
+        @if (!InUse)
+        {
+            <div class="card-header">
+                <div class="hstack gap-3">
+                    <div>
+                        Форма: <span title="Название формы">'@PageJoinForm.Form.Name'</span>
+                        <sup title="Идентификатор связи формы со страницей опроса">join #@PageJoinForm.Id</sup>
+                    </div>
+                    <form class="row gy-2 gx-3 align-items-center">
+                        <div class="col-auto">
+                            <div class="form-check mt-2">
+                                <input @bind="SetTitleForm" disabled="@IsDisabled" class="form-check-input" type="checkbox" id="@($"setFormTitleCheck_{QuestionnairePage.Id}")">
+                                <label class="form-check-label" for="@($"setFormTitleCheck_{QuestionnairePage.Id}")">
+                                    Отображать заголовок
+                                </label>
+                            </div>
+                        </div>
+                        @if (SetTitleForm)
+                        {
+                            <div class="col-auto">
+                                <label class="visually-hidden" for="@($"autoSizingInput_{QuestionnairePage.Id}")">Name</label>
+                                <input @bind-value="PageJoinFormName" @bind-value:event="oninput" type="text" class="form-control" id="@($"autoSizingInput_{QuestionnairePage.Id}")" placeholder="Отображаемое имя" aria-describedby="@($"nameFormHelpInline_{QuestionnairePage.Id}")">
+                            </div>
+                            @if (string.IsNullOrWhiteSpace(PageJoinFormName))
+                            {
+                                <div class="col-auto">
+                                    <span title="@PageJoinForm.Form.Name" id="@($"nameFormHelpInline_{QuestionnairePage.Id}")" class="form-text">
+                                        по умолчанию (имя формы)
+                                    </span>
+                                </div>
+                            }
+                        }
+                        <div class="col-auto">
+                            <div class="hstack">
+                                <div>
+                                    <div class="form-check mt-2">
+                                        <input @bind="IsTable" disabled="@IsDisabled" class="form-check-input" type="checkbox" id="@($"setFormAsTable_{QuestionnairePage.Id}")">
+                                        <label class="form-check-label" for="@($"setFormAsTable_{QuestionnairePage.Id}")">
+                                            Таблица
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @if (IsEdited)
+                        {
+                            <div class="col-auto">
+                                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                    <button @onclick="SaveJoinForm" disabled="@(!IsEdited)" type="button" class="btn btn-primary">Сохранить</button>
+                                    <button @onclick="ResetFormJoin" type="button" class="btn btn-secondary">Сброс</button>
+                                </div>
+                            </div>
+                        }
+                    </form>
+                    <MudSpacer />
+                    <div dom-guid="{178A9706-C966-4908-BFE2-ECD8CCD2A025}">
+                        <MudIconButton OnClick="DeleteJoinForm" Disabled="@(IsEdited || IsDisabled)" Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" Size="Size.Small" />
+                        <MudIconButton OnClick="async () => { await QuestionnairePageJoinFormMove( VerticalDirectionsEnum.Down); }" Disabled="@(IsEdited || IsDisabled || !CanDown)" Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Primary" Size="Size.Small" />
+                        <MudIconButton OnClick="async () => { await QuestionnairePageJoinFormMove( VerticalDirectionsEnum.Up); }" Disabled="@(IsEdited || IsDisabled || !CanUp)" Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Primary" Size="Size.Small" />
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="card-body">
+            <CascadingValue Value="PageJoinForm.Form">
+                @if (IsTable)
+                {
+                    <ClientTableViewFormComponent Title="@TitleFormJoin" />
+                }
+                else
+                {
+                    <ClientStandardViewFormComponent Title="@TitleFormJoin" />
+                }
+            </CascadingValue>
+        </div>
+    </div>
+}

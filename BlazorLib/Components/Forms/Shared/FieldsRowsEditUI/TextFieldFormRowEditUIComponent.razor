@@ -1,0 +1,43 @@
+﻿@inherits FieldFormEditFormBaseComponent
+
+<style>
+    .selector-agent-dd:hover {
+        text-decoration: underline;
+    }
+
+    .selector-agent-dd {
+        cursor: pointer;
+    }
+</style>
+
+<div dom-guid="{7A8A455F-88E9-4A52-AED8-5B62D57514A2}" class="col-12">
+    <div class="form-check form-switch">
+        <input disabled="@(!string.IsNullOrWhiteSpace(ParameterField) || DescriptorField == PropsTypesMDFieldsEnum.TextMask)" @bind="IsMultiline" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault_@(DomID)" name="flexSwitchCheckDefault_@(DomID)" aria-describedby="@($"flexSwitchCheckDefault_{DomID}Help")">
+        <label class="form-check-label" for="flexSwitchCheckDefault_@DomID)">Многострочный</label>
+    </div>
+</div>
+
+<div dom-guid="{22814B38-1AD9-468C-AE3D-8632E3124559}" class="col-md-6 border-bottom border-top py-2 border-start">
+    <label for="exampleInputParameter2_@(DomID)" class="form-label">Режим</label>
+    <select @bind="DescriptorField" class="form-select" aria-label="Режим работы текстового поля" id="exampleInputParameter2_@(DomID)" name="exampleInputParameter2_@(DomID)" aria-describedby="@($"exampleInputParameter2_{DomID}Help")">
+        <option value="@PropsTypesMDFieldsEnum.None">@PropsTypesMDFieldsEnum.None.DescriptionInfo()</option>
+        <option title="Статический текст или приминение агентов" value="@PropsTypesMDFieldsEnum.Template">@PropsTypesMDFieldsEnum.Template.DescriptionInfo()</option>
+        <option title="@(IsMultiline ? "Что бы установить маску: отключите мультистрочность" : "Маска значения")" disabled="@IsMultiline" value="@PropsTypesMDFieldsEnum.TextMask">@PropsTypesMDFieldsEnum.TextMask.DescriptionInfo()</option>
+    </select>
+    <div id="@($"exampleInputParameter2_{DomID}Help")" class="form-text">
+        Поведение поля
+    </div>
+</div>
+<div dom-guid="{6D08BA13-AE65-43E2-B59F-02CE3066F66E}" class="col-md-6 border-top border-bottom py-2 border-end rounded-end @(DescriptorField == PropsTypesMDFieldsEnum.None ? "opacity-25" : "")">
+    <label for="exampleInputParameter1_@(DomID)" class="form-label">
+        @(DescriptorField == PropsTypesMDFieldsEnum.TextMask ? "Маска для вводимого значения" : "Параметры")
+        @if (DescriptorField == PropsTypesMDFieldsEnum.Template)
+        {
+            <TextFieldAgentSelectorComponent @ref="_tfAgentSelectorComponent_ref" SelectAgentHandle="SelectAgentAction" SelectedAgent="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString())" />
+        }
+    </label>
+    <input disabled="@(IsMultiline || DescriptorField == PropsTypesMDFieldsEnum.None)" @bind-value="ParameterField" @bind-value:event="oninput" type="text" class="form-control" id="exampleInputParameter1_@(DomID)" name="exampleInputParameter1_@(DomID)" aria-describedby="@($"exampleInputParameter1_{DomID}Help")">
+    <div id="@($"exampleInputParameter1_{DomID}Help")" class="@(DescriptorField == PropsTypesMDFieldsEnum.Template ? "text-danger":"form-text")">
+        @(DescriptorField == PropsTypesMDFieldsEnum.None ? "Плагин отключён" : (DescriptorField == PropsTypesMDFieldsEnum.TextMask ? "Спецификация: a - это буквы, 0 - цифры и * - любой символ. остальные символы - как [разделители]" : "Опции вызова обработки"))
+    </div>
+</div>

@@ -1,0 +1,75 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<MudDialog>
+    <DialogContent>
+        @if (IsBusyProgress)
+        {
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                <MudTabPanel Text="Параметры">
+                    <form dom-guid="{C5FC524B-C1B9-4ACB-8181-79EFC839C3FA}" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="inputName4" class="form-label">Название</label>
+                            <input @bind-value="FormNameOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" placeholder="Наименование">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputCSS4" class="form-label">CSS</label>
+                            <input @bind-value="FormCssOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputCSS4">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputBtn5" class="form-label">Текст кнопки создания</label>
+                            <input @bind-value="AddRowButtonTitleOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputBtn5" placeholder="Добавить строку">
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
+                                <InputRichTextComponent @bind-Value="FormDescriptionOrigin" @ref="_currentTemplateInputRichText" />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="hstack gap-3">
+                                <div></div>
+                                <MudSpacer />
+                                <div>
+                                    <div class="btn-group" role="group" >
+                                        <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(FormNameOrigin) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
+                                        @if (IsEdited)
+                                        {
+                                            <button @onclick="ResetForm" class="btn btn-outline-primary" type="button" id="reset-form">Сброс</button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </MudTabPanel>
+                <MudTabPanel Disabled="@(Form.Id < 1)" Text="Поля формы">
+                    @if (Form.FormsDirectoriesLinks is null || Form.Fields is null)
+                    {
+                        <blockquote dom-guid="{337160C5-4F39-40C5-B3F5-ECA519A5D361}" class="blockquote">
+                            <p>Form.FormsDirectoriesLinks is null || Form.Fields is null</p>
+                        </blockquote>
+                    }
+                    else
+                    {
+                        <CascadingValue Value="Entries">
+                            <CascadingValue Value="Form">
+                                <FieldsFormViewComponent @ref="_fields_view_ref" />
+                            </CascadingValue>
+                        </CascadingValue>
+                    }
+                </MudTabPanel>
+            </MudTabs>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Disabled="@(IsEdited && Form.Id > 0)" Color="Color.Primary" OnClick="Close">@(IsEdited && Form.Id > 0 ? "Форма изменена" : "Закрыть")</MudButton>
+    </DialogActions>
+</MudDialog>

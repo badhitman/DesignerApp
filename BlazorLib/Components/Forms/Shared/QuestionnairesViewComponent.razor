@@ -1,0 +1,63 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<MudTable dom-guid="{3405EC30-E3D0-43BB-96A5-1352D4E5760F}" Class="d-flex flex-column flex-grow-1" Loading="IsBusyProgress" ServerData="@(new Func<TableState, Task<TableData<ConstructorFormQuestionnaireModelDB>>>(ServerReload))" Dense="true" Hover="true" Striped="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Анкеты</MudText>
+        <MudIconButton Title="Создать новый опрос/анкету" OnClick="() => QuestionnaireOpenDialog()" Icon="@Icons.Material.Filled.AddBox"></MudIconButton>
+        <MudSpacer />
+        <MudTextField Disabled="IsBusyProgress" T="string" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Поиск по имени опроса, вкладки или формы" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>
+            <span @onclick="() => QuestionnaireOpenDialog(context)" style="cursor:pointer;">
+                @context.Name
+                <sup>#@context.Id</sup>
+            </span>
+            @if (context.Pages is null)
+            {
+                <span>error {577353B7-17CA-43A6-8DFC-C10895EA849E}</span>
+            }
+            else
+            {
+                foreach (ConstructorFormQuestionnairePageModelDB qp in context.Pages.OrderBy(x => x.SortIndex))
+                {
+                    if (string.IsNullOrWhiteSpace(qp.Description))
+                    {
+                        <span dom-guid="{E8560FB8-B0D0-48E0-A668-86E88AA2E791}" class="badge bg-secondary ms-1 badge-outer-fix">@qp.Name</span>
+                    }
+                    else
+                    {
+                        <MudTooltip>
+                            <ChildContent>
+                                <span dom-guid="{A5ED4277-748A-4203-A14A-5E2E7DBFA053}" class="badge bg-secondary badge-outer-fix">@qp.Name</span>
+                            </ChildContent>
+                            <TooltipContent>
+                                @Descr(qp.Description)
+                            </TooltipContent>
+                        </MudTooltip>
+                    }
+                }
+            }
+        </MudTd>
+        <MudTd>
+            <div class="hstack gap-3">
+                <div>&nbsp;</div>
+                <MudSpacer />
+                <MudIconButton Title="Удалить опрос/анкету" OnClick="() => DeleteQuestionnaire(context.Id)" Icon="@Icons.Material.Filled.Delete" aria-label="Delete" Size="Size.Small"></MudIconButton>
+            </div>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Анкет/опросов нет</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

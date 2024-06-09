@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using SharedLib;
 
-namespace BlazorLib.Components.Forms;
+namespace BlazorLib.Components.Forms.Pages;
 
 /// <summary>
 /// 

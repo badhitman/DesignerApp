@@ -1,0 +1,10 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<label for="inputSelect-@(dom_id)" class="form-label">Тип справочника</label>
+<select dom-guid="{A05D09CA-35C3-467F-9C9C-2609AEBD8851}" @bind="SelectedDirectoryField" class="form-select" id="inputSelect-@(dom_id)" aria-describedby="@(dom_id)Help">
+    @foreach (EntryModel e in Entries)
+    {
+        <option value="@e.Id">@e.Name</option>
+    }
+</select>
+<div id="@(dom_id)Help" class="form-text">Укажите справочник/список для поля</div>

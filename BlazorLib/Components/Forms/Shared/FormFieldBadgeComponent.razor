@@ -1,0 +1,76 @@
+﻿@if (string.IsNullOrWhiteSpace(Field.Description))
+{
+    if (Field is ConstructorFormDirectoryLinkModelDB _fd)
+    {
+        <span title="словарь/список" class="position-absolute top-0 start-100 translate-middle p-2 bg-success border border-light rounded-circle">
+            <span class="visually-hidden">Directory ID: @_fd.DirectoryId</span>
+        </span>
+    }
+    else if (Field is ConstructorFieldFormModelDB _f)
+    {
+        string _t = $"{_f.TypeField.DescriptionInfo()}";
+        Dictionary<MetadataExtensionsFormFieldsEnum, object?> _dict = _f.MetadataValueTypeGet();
+        if (_dict.ContainsKey(MetadataExtensionsFormFieldsEnum.Descriptor))
+            _t += $" &#10149; <b>{_dict[MetadataExtensionsFormFieldsEnum.Descriptor]}</b>";
+
+        if (_dict.ContainsKey(MetadataExtensionsFormFieldsEnum.Parameter))
+            _t += $" &#9776; <u>{_dict[MetadataExtensionsFormFieldsEnum.Parameter]}</u>";
+
+        KeyValuePair<MetadataExtensionsFormFieldsEnum, object?>[] _dict_echo = _dict.Where(x => !new[] { MetadataExtensionsFormFieldsEnum.Descriptor, MetadataExtensionsFormFieldsEnum.Parameter }.Contains(x.Key)).ToArray();
+        if(_dict_echo.Any())
+        {
+            _t += ": ";
+            foreach (KeyValuePair<MetadataExtensionsFormFieldsEnum, object?> de_kvp in _dict_echo)
+                _t += $"[<span class='font-monospace'>{de_kvp.Key.DescriptionInfo()}</span> = {de_kvp.Value}]; ";
+        }
+
+        <span title="@Descr(_t.Trim())" class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgrammCalcDouble => "primary", TypesFieldsFormsEnum.Generator => "info", _=> "secondary" }) border border-light rounded-circle">
+            <span class="visually-hidden">Тип поля: @_f.TypeField</span>
+        </span>
+    }
+    else
+    {
+        <span>error {91554355-5285-4E56-AF9A-CFEA10030451}</span>
+    }
+}
+else
+{
+    <MudTooltip>
+        <ChildContent>
+            @if (Field is ConstructorFormDirectoryLinkModelDB _fd)
+            {
+                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-info border border-light rounded-circle">
+                    <span class="visually-hidden">Directory ID: @_fd.DirectoryId</span>
+                </span>
+            }
+            else if (Field is ConstructorFieldFormModelDB _f)
+            {
+                if (_f.TypeField == TypesFieldsFormsEnum.Generator || _f.TypeField == TypesFieldsFormsEnum.ProgrammCalcDouble)
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgrammCalcDouble => "warning", TypesFieldsFormsEnum.Generator => "primary", _=> "body" }) border border-light rounded-circle">
+                        <span class="visually-hidden">Тип поля: @_f.TypeField</span>
+                    </span>
+                }
+            }
+            else
+            {
+                <span>error {1B5E5D44-C838-4B35-A877-01C202C6BF94}</span>
+            }
+        </ChildContent>
+        <TooltipContent>
+            @if (Field is ConstructorFormDirectoryLinkModelDB _fd)
+            {
+                <MudText Typo="Typo.h6">словарь/список</MudText>
+            }
+            else if (Field is ConstructorFieldFormModelDB _f)
+            {
+                <MudText Typo="Typo.h6">@_f.TypeField.DescriptionInfo() // @_f.MetadataValueType</MudText>
+            }
+            else
+            {
+                <span>error {873E732C-197F-4477-A273-02B79FE7DFDE}</span>
+            }
+            @Descr(Field.Description)
+        </TooltipContent>
+    </MudTooltip>
+}

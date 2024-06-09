@@ -1,0 +1,39 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<MudTable dom-guid="{D0D39CE0-9251-4F14-8C2D-E127C6610EAE}" Loading="IsBusyProgress" ServerData="@(new Func<TableState, Task<TableData<ConstructorFormModelDB>>>(ServerReload))" Class="d-flex flex-column flex-grow-1" Dense="true" Hover="true" Striped="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Формы</MudText>
+        <MudIconButton Title="Создать новую форму" OnClick="OpenDialogCreateForm" Icon="@Icons.Material.Filled.AddBox"></MudIconButton>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Поиск по имени формы или поля" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>
+            <p style="cursor:pointer;" @onclick="async () => { await OpenForm(context); }">
+                @context.Name
+                <sup class="ms-1">#@context.Id</sup>
+            </p>
+            <div class="d-flex flex-wrap">
+                @foreach (ConstructorFieldFormBaseLowModel fb in context.AllFields)
+                {
+                    <span dom-guid="{1EDD5C5C-C51F-4DFB-8ED9-523A0CC41236}" class="badge rounded-pill bg-secondary position-relative badge-outer-fix" style="margin-right: 15px ;margin-bottom: 15px;">
+                        <span>@fb.Name</span>
+                        <FormFieldBadgeComponent Field="fb" />
+                    </span>
+                }
+            </div>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Ни чего не найдено</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

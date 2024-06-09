@@ -1,0 +1,13 @@
+﻿@inherits InputTextArea
+
+<style>
+    .ck-content ul {
+        list-style-type: circle;
+        padding-left: 2rem;
+    }
+</style>
+
+<textarea @attributes="AdditionalAttributes"
+          id="@UID"
+          class="@CssClass"
+          value="@CurrentValue" disabled="@ReadOnly"></textarea>
