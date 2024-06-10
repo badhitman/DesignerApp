@@ -26,16 +26,16 @@ else
             </div>
             break;
         case (int)TypesFieldsFormsEnum.Text:
-            <TextFieldFormUIComponent @ref="FieldTextUI" FieldObject="FieldObjectStandart" />
+            <TextFieldFormUIComponent @ref="FieldTextUI" FieldObject="FieldObjectStandard" />
             break;
         case (int)TypesFieldsFormsEnum.ProgrammCalcDouble:
             <div class="col-auto">
-                <ProgrammCalcFieldFormUIComponent @ref="FieldProgrammCalcDouble" FieldObject="FieldObjectStandart" />
+                <ProgramCalculationFieldFormUIComponent @ref="FieldProgramCalculationDouble" FieldObject="FieldObjectStandard" />
             </div>
             break;
         case (int)TypesFieldsFormsEnum.Generator:
             <div class="col-auto">
-                <GeneratorFieldFormUIComponent @ref="FieldGeneratorUI" FieldObject="FieldObjectStandart" />
+                <GeneratorFieldFormUIComponent @ref="FieldGeneratorUI" FieldObject="FieldObjectStandard" />
             </div>
             break;
     }
@@ -48,7 +48,7 @@ else
     {
         <div dom-guid="{A10A03CC-0488-41AF-B025-646A3EEA5128}" class="col-auto">
             <div class="form-check form-switch mt-2">
-                <input @bind="FildIsRequired" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <input @bind="FieldIsRequired" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
                 <label class="form-check-label" for="flexSwitchCheckDefault">Обязательный</label>
             </div>
         </div>

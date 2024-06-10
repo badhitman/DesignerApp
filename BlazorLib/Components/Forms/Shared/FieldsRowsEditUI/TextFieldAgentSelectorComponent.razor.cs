@@ -5,17 +5,21 @@ namespace BlazorLib.Components.Forms.Shared.FieldsRowsEditUI;
 
 public partial class TextFieldAgentSelectorComponent : ComponentBase
 {
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public Action<EntryAltDescriptionModel> SelectAgentHandle { get; set; } = default!;
+    public required Action<EntryAltDescriptionModel> SelectAgentHandle { get; set; }
 
+    /// <inheritdoc/>
     [Parameter]
     public string? SelectedAgent { get; set; }
 
+    /// <inheritdoc/>
     public void SetCurrentAgent(string? selected_agent)
     {
         SelectedAgent = selected_agent;
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected bool IsOpenMenu = false;
 }

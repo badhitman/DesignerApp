@@ -3,9 +3,13 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsRowsEditUI;
 
+/// <summary>
+/// Field form row edit
+/// </summary>
 public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
 {
-    public TypesFieldsFormsEnum SelectedTypeFieldForEdirRow
+    /// <inheritdoc/>
+    public TypesFieldsFormsEnum SelectedTypeFieldForEditRow
     {
         get
         {
@@ -24,6 +28,7 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
         }
     }
 
+    /// <inheritdoc/>
     protected string? FieldsNames
     {
         get => (string?)Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "");
@@ -37,11 +42,14 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
         }
     }
 
+    /// <inheritdoc/>
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
 
+    /// <inheritdoc/>
     protected DeclarationAbstraction? _dc = null;
 
-    public string? SelectedProgrammCalcField
+    /// <inheritdoc/>
+    public string? SelectedProgramCalculationField
     {
         get => (string?)Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, "");
         private set
@@ -53,18 +61,22 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
 
             Field.UnsetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter);
             StateHasChangedHandler(Field);
-            if (!string.IsNullOrWhiteSpace(SelectedProgrammCalcField))
-                _dc = DeclarationAbstraction.GetHandlerService(SelectedProgrammCalcField);
+            if (!string.IsNullOrWhiteSpace(SelectedProgramCalculationField))
+                _dc = DeclarationAbstraction.GetHandlerService(SelectedProgramCalculationField);
         }
     }
 
+    /// <inheritdoc/>
     protected IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
 
     ConstructorFieldFormModelDB _field_copy = default!;
 
+    /// <inheritdoc/>
     protected TextFieldFormRowEditUIComponent? FieldTextUI;
+    /// <inheritdoc/>
     protected GeneratorFieldFormRowEditUIComponent? FieldGeneratorUI;
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         _field_copy = new ConstructorFieldFormModelDB()
@@ -82,10 +94,11 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
             TypeField = Field.TypeField
         };
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
-        if (!string.IsNullOrWhiteSpace(SelectedProgrammCalcField))
-            _dc = DeclarationAbstraction.GetHandlerService(SelectedProgrammCalcField);
+        if (!string.IsNullOrWhiteSpace(SelectedProgramCalculationField))
+            _dc = DeclarationAbstraction.GetHandlerService(SelectedProgramCalculationField);
     }
 
+    /// <inheritdoc/>
     public override void Update(ConstructorFieldFormModelDB field)
     {
         base.Update(field);

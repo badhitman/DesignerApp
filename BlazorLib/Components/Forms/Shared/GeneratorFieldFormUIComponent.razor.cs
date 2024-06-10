@@ -4,16 +4,20 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <inheritdoc/>
 public partial class GeneratorFieldFormUIComponent : ComponentBase
 {
+    /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public ConstructorFieldFormModelDB FieldObject { get; set; } = default!;
+    public required ConstructorFieldFormModelDB FieldObject { get; set; }
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
+    public required Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; }
 
     string? _generation_options;
     string? OptionsGeneration
@@ -28,8 +32,10 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
         }
     }
 
-    IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
+    IEnumerable<EntryAltDescriptionModel> Entries = [];
     string? selected_generator_field;
+
+    /// <inheritdoc/>
     public string? SelectedGeneratorField
     {
         get => selected_generator_field;
@@ -42,6 +48,7 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<FieldValueGeneratorAbstraction>().ToArray();
@@ -50,6 +57,7 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
             SelectedGeneratorField = Entries.First().Id;
     }
 
+    /// <inheritdoc/>
     public void Update(ConstructorFieldFormBaseLowModel field)
     {
         FieldObject.Update(field);

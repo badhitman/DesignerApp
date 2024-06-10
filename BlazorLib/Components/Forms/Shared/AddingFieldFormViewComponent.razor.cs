@@ -1,22 +1,19 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Adding field form view
+/// </summary>
 public partial class AddingFieldFormViewComponent : ComponentBase
 {
-    [Inject]
-    protected ILogger<AddingFieldFormViewComponent> _logger { get; set; } = default!;
-
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public ConstructorFieldFormBaseLowModel FieldObject { get; set; } = default!;
     ConstructorFieldFormBaseLowModel _field_object_master = default!;
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
 
@@ -45,7 +42,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         }
     }
 
-    ConstructorFieldFormModelDB FieldObjectStandart
+    ConstructorFieldFormModelDB FieldObjectStandard
     {
         get
         {
@@ -71,9 +68,13 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         }
     }
 
-    public ProgrammCalcFieldFormUIComponent? FieldProgrammCalcDouble;
+    /// <inheritdoc/>
+    public ProgramCalculationFieldFormUIComponent? FieldProgramCalculationDouble;
+    /// <inheritdoc/>
     public DirectoryFieldFormUIComponent? FieldDirUI;
+    /// <inheritdoc/>
     public TextFieldFormUIComponent? FieldTextUI;
+    /// <inheritdoc/>
     public GeneratorFieldFormUIComponent? FieldGeneratorUI;
 
     int _selected_type_field;
@@ -89,7 +90,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
 
             _field_object_master = int.MaxValue == _selected_type_field
             ? FieldObjectForDirectory
-            : FieldObjectStandart;
+            : FieldObjectStandard;
             StateHasChangedHandler(_field_object_master, this.GetType());
         }
     }
@@ -105,24 +106,24 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         {
             _field_name = value;
             _field_object_master.Name = _field_name ?? "";
-            _field_object_master.Required = _fild_is_required;
+            _field_object_master.Required = _field_is_required;
             ChildUpdates();
 
             StateHasChangedHandler(_field_object_master, this.GetType());
         }
     }
 
-    bool _fild_is_required;
+    bool _field_is_required;
     /// <summary>
     /// Признак [required] для поля формы
     /// </summary>
-    public bool FildIsRequired
+    public bool FieldIsRequired
     {
-        get => _fild_is_required;
+        get => _field_is_required;
         private set
         {
-            _fild_is_required = value;
-            _field_object_master.Required = _fild_is_required;
+            _field_is_required = value;
+            _field_object_master.Required = _field_is_required;
             _field_object_master.Name = _field_name ?? "";
             ChildUpdates();
             StateHasChangedHandler(_field_object_master, this.GetType());
@@ -133,28 +134,31 @@ public partial class AddingFieldFormViewComponent : ComponentBase
     {
         FieldDirUI?.Update(_field_object_master);
         FieldTextUI?.Update(_field_object_master);
-        FieldProgrammCalcDouble?.Update(_field_object_master);
+        FieldProgramCalculationDouble?.Update(_field_object_master);
     }
 
+    /// <inheritdoc/>
     public void Update(ConstructorFieldFormBaseLowModel field)
     {
         _field_object_master.Update(field);
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     public void SetTypeField(int field_type = 0)
     {
         SelectedTypeFieldForAdding = field_type;
         if (field_type == 0)
         {
             _field_object_master = (ConstructorFieldFormBaseLowModel)EntryDescriptionModel.Build("");
-            _fild_is_required = false;
+            _field_is_required = false;
             _field_name = "";
         }
 
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         _field_object_master = GlobalUtils.CreateDeepCopy(FieldObject);

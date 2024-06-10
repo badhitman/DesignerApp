@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
-public partial class ProgrammCalcFieldFormUIComponent : ComponentBase
+/// <summary>
+/// Program calculation field form UI
+/// </summary>
+public partial class ProgramCalculationFieldFormUIComponent : ComponentBase
 {
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public ConstructorFieldFormModelDB FieldObject { get; set; } = default!;
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
 
@@ -22,34 +23,37 @@ public partial class ProgrammCalcFieldFormUIComponent : ComponentBase
         set
         {
             _fields_names = value;
-            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, SelectedProgrammCalcField);
+            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, SelectedProgramCalculationField);
             FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, FieldsNames);
             StateHasChangedHandler(FieldObject, GetType());
         }
     }
 
     IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
-    string? selected_programm_calc_field;
-    public string? SelectedProgrammCalcField
+    string? selected_program_calculation_field;
+    /// <inheritdoc/>
+    public string? SelectedProgramCalculationField
     {
-        get => selected_programm_calc_field;
+        get => selected_program_calculation_field;
         private set
         {
-            selected_programm_calc_field = value;
-            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, SelectedProgrammCalcField);
+            selected_program_calculation_field = value;
+            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, SelectedProgramCalculationField);
             FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, FieldsNames);
             StateHasChangedHandler(FieldObject, GetType());
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
 
         if (Entries.Any())
-            SelectedProgrammCalcField = Entries.First().Id;
+            SelectedProgramCalculationField = Entries.First().Id;
     }
 
+    /// <inheritdoc/>
     public void Update(ConstructorFieldFormBaseLowModel field)
     {
         FieldObject.Update(field);

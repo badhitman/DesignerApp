@@ -1,16 +1,16 @@
 ﻿<div class="hstack">
-    <select dom-guid="{C087B0B4-3A5D-42F1-ABDD-DDA2EBB8CE06}" @bind="SelectedProgrammCalcField" class="form-select">
+    <select dom-guid="{C087B0B4-3A5D-42F1-ABDD-DDA2EBB8CE06}" @bind="SelectedProgramCalculationField" class="form-select">
         @foreach (EntryAltDescriptionModel e in Entries)
         {
             <option value="@e.Id">
                 <MudTooltip Text="@e.Description">
-                    @e.Text
+                    @e.Name
                 </MudTooltip>
             </option>
         }
     </select>
     <div class="ms-1">
-        <MudTooltip Text="Массив имён полей в формате Json">
+        <MudTooltip Text="Массив имён полей в формате JSON">
             <input @bind-value="FieldsNames" @bind-value:event="oninput" placeholder='["Имя поля 1", "Ещё", ...]' type="text" id="inputName" class="form-control">
         </MudTooltip>
     </div>

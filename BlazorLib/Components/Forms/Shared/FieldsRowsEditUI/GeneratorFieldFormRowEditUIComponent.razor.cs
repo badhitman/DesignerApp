@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsRowsEditUI;
 
+/// <summary>
+/// Generator field form row edit UI
+/// </summary>
 public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBaseComponent
 {
-    [Inject]
-    protected ILogger<GeneratorFieldFormRowEditUIComponent> _logger { get; set; } = default!;
-
     /// <summary>
     /// Параметры генератора
     /// </summary>
@@ -29,9 +28,12 @@ public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBas
         }
     }
 
+    /// <inheritdoc/>
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
+
     DeclarationAbstraction? _dc = null;
     IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
+
     string? GeneratorClass
     {
         get
@@ -63,8 +65,10 @@ public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBas
         }
     }
 
+    /// <inheritdoc/>
     protected object RequestModel = new();
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<FieldValueGeneratorAbstraction>().ToArray();

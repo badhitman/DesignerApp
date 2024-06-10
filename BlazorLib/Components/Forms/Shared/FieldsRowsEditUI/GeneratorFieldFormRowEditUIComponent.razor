@@ -5,7 +5,7 @@
     <select @bind="GeneratorClass" class="form-select" aria-label="Программа" id="exampleInputParameter2_@(DomID)" name="exampleInputParameter2_@(DomID)" aria-describedby="@($"exampleInputParameter2_{DomID}Help")">
         @foreach (EntryAltDescriptionModel gen_element in Entries)
         {
-            <option title="@gen_element.Description" value="@gen_element.Id">@gen_element.Text</option>
+            <option title="@gen_element.Description" value="@gen_element.Id">@gen_element.Name</option>
         }
     </select>
     <div id="@($"exampleInputParameter2_{DomID}Help")" class="form-text">
