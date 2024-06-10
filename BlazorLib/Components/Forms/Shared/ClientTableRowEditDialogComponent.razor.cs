@@ -35,12 +35,6 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
     protected IEnumerable<EntryAltDescriptionModel> Entries = [];
 
     /// <inheritdoc/>
-    protected void HoldOfBusyAction(bool is_hold)
-    {
-        IsBusyProgress = is_hold;
-    }
-
-    /// <inheritdoc/>
     protected void Close() => InvokeAsync(async () =>
     {
         while (IsBusyProgress)
@@ -53,6 +47,5 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
     protected override void OnInitialized()
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
-        base.OnInitialized();
     }
 }

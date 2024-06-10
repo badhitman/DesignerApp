@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace SharedLib;
 
 /// <summary>
@@ -37,15 +36,15 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
     {
         get
         {
-            List<(ConstructorFieldFormBaseLowModel obj, int sort)> res = new();
-            if (Fields?.Any() == true)
+            List<(ConstructorFieldFormBaseLowModel obj, int sort)> res = [];
+            if (Fields is not null && Fields.Count != 0)
                 foreach (ConstructorFieldFormModelDB f in Fields)
                 {
                     f.Owner ??= this;
                     f.OwnerId = Id;
                     res.Add((f, f.SortIndex));
                 }
-            if (FormsDirectoriesLinks?.Any() == true)
+            if (FormsDirectoriesLinks is not null && FormsDirectoriesLinks.Count != 0)
                 foreach (ConstructorFormDirectoryLinkModelDB dl in FormsDirectoriesLinks)
                 {
                     dl.Owner ??= this;
@@ -105,7 +104,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
         {
             Fields ??= [];
             i = Fields.FindIndex(x => !other.Fields.Any(y => y.Id == x.Id));
-            while (i >= 0)
+            while (i != -1)
             {
                 Fields.RemoveAt(i);
                 i = Fields.FindIndex(x => !other.Fields.Any(y => y.Id == x.Id));
@@ -127,7 +126,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             FormsDirectoriesLinks ??= [];
 
             i = FormsDirectoriesLinks.FindIndex(x => !other.FormsDirectoriesLinks.Any(y => y.Id == x.Id));
-            while (i >= 0)
+            while (i != -1)
             {
                 FormsDirectoriesLinks.RemoveAt(i);
                 i = FormsDirectoriesLinks.FindIndex(x => !other.FormsDirectoriesLinks.Any(y => y.Id == x.Id));

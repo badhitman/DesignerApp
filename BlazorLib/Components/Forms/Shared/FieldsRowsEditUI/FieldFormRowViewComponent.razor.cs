@@ -347,6 +347,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             FieldDirUI?.Update(df);
     }
 
+    /// <summary>
+    /// Удаление поля
+    /// </summary>
     protected async Task DeleteClick()
     {
         IsBusyProgress = true;
@@ -415,6 +418,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Сдвиг поля на одну позицию в сторону конца
+    /// </summary>
     protected async Task MoveFieldUp()
     {
         IsBusyProgress = true;
@@ -447,7 +453,10 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         Form.Reload(rest.Form);
         ReloadFieldsHandler(Form);
     }
-
+        
+    /// <summary>
+    /// Сдвиг поля на одну позицию в сторону конца
+    /// </summary>
     protected async Task MoveFieldDown()
     {
         IsBusyProgress = true;

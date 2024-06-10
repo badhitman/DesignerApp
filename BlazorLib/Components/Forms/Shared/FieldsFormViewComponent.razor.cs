@@ -5,15 +5,16 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Fields form view
+/// </summary>
 public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
-    /// <inheritdoc/>
     [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -41,6 +42,9 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 IsBusyProgress = false;
                 SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
+                if (rest.Form is null)
+                    SnackbarRepo.Add($"Ошибка {{0B2C8557-E22F-4A00-A7CA-7EC1FE445784}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+
                 if (!rest.Success())
                 {
                     SnackbarRepo.Add($"Ошибка {{C166EB84-FEF0-4377-9765-C8B9EE1F1065}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -48,10 +52,8 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 }
 
                 if (rest.Form is null)
-                {
-                    SnackbarRepo.Add($"Ошибка {{0B2C8557-E22F-4A00-A7CA-7EC1FE445784}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                     return;
-                }
+
                 Form.Reload(rest.Form);
                 if (client_standard_ref is not null)
                     await client_standard_ref.Update(Form);
@@ -172,8 +174,9 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
         else
         {
-            SnackbarRepo.Add("Тип поля не определён {2D298C68-338E-409F-8290-A01FECFDF91D}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            _field_master = _sender;
+            string msg = $"Тип поля не распознан: {_sender.GetType().FullName}";
+            SnackbarRepo.Add($"{msg} {{2D298C68-338E-409F-8290-A01FECFDF91D}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            throw new Exception(msg);
         }
 
         StateHasChanged();

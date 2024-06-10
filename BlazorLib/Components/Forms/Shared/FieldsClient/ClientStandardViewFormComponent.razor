@@ -26,32 +26,31 @@ else
     {
         <p class="h5 mt-4">@Title</p>
     }
-    <CascadingValue Value="BusyEscalationAction">
-        <form dom-guid="{8FED67CF-301A-4BFB-95C9-3E4196D170C8}" class="@Form.Css">
-            @foreach (ConstructorFieldFormBaseLowModel fb in Form.AllFields)
-            {
-                <div class="@fb.Css mb-3">
-                    @if (fb is ConstructorFieldFormModelDB fs)
-                    {
-                        <CascadingValue Value="fs">
-                            <FieldBaseClientComponent GroupByRowNum="@(RowNum ?? 0)" FieldsReferring="_fields_refs" />
-                        </CascadingValue>
 
-                    }
-                    else if (fb is ConstructorFormDirectoryLinkModelDB fd)
-                    {
-                        <CascadingValue Value="fd">
-                            <FieldDirectoryClientComponent DirectoryObject="@Directories.FirstOrDefault(x => x.Id == fd.DirectoryId)" GroupByRowNum="@(RowNum ?? 0)" FieldsReferring="_fields_refs" />
-                        </CascadingValue>
-                    }
-                    else
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            ошибка {982F6C43-54B8-403E-9062-5203A4E837BA}
-                        </div>
-                    }
-                </div>
-            }
-        </form>
-    </CascadingValue>
+    <form dom-guid="{8FED67CF-301A-4BFB-95C9-3E4196D170C8}" class="@Form.Css">
+        @foreach (ConstructorFieldFormBaseLowModel fb in Form.AllFields)
+        {
+            <div class="@fb.Css mb-3">
+                @if (fb is ConstructorFieldFormModelDB fs)
+                {
+                    <CascadingValue Value="fs">
+                        <FieldBaseClientComponent GroupByRowNum="@RowNum" FieldsReferring="FieldsReferring" />
+                    </CascadingValue>
+
+                }
+                else if (fb is ConstructorFormDirectoryLinkModelDB fd)
+                {
+                    <CascadingValue Value="fd">
+                        <FieldDirectoryClientComponent DirectoryObject="@Directories.FirstOrDefault(x => x.Id == fd.DirectoryId)" GroupByRowNum="@RowNum" FieldsReferring="FieldsReferring" />
+                    </CascadingValue>
+                }
+                else
+                {
+                    <div class="alert alert-danger" role="alert">
+                        ошибка {982F6C43-54B8-403E-9062-5203A4E837BA}
+                    </div>
+                }
+            </div>
+        }
+    </form>
 }

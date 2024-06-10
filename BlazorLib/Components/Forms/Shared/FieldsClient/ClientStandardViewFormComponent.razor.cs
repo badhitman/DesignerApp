@@ -15,38 +15,23 @@ public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseMo
     [Parameter]
     public string? Title { get; set; }
 
-    /// <inheritdoc/>
-    [Parameter]
-    public Action<bool>? HoldFormHandler { get; set; }
-
     /// <summary>
-    /// Номер строки таблицы данных (0 - если не таблица)
+    /// Номер строки таблицы данных (0 - если форма обычная, а не не таблица/многострочная)
     /// </summary>
     [CascadingParameter]
-    public uint? RowNum { get; set; }
+    public uint RowNum { get; set; } = 0;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public ConstructorFormModelDB Form { get; set; } = default!;
 
-    /// <inheritdoc/>
-    protected List<FieldComponentBaseModel?> _fields_refs = [];
+    /// <summary>
+    /// Доступ к перечню полей формы. Каждое поле формы добавляет себя к этому перечню при инициализации (в <c>OnInitialized()</c>) базового <cref name="FieldBaseClientComponent">компонента</cref>
+    /// </summary>
+    protected List<FieldComponentBaseModel?> FieldsReferring = [];
 
     /// <inheritdoc/>
     protected IEnumerable<EntryNestedModel> Directories = default!;
-
-    int BusyEscalationBalance = default;
-    /// <inheritdoc/>
-    protected void BusyEscalationAction(VerticalDirectionsEnum toggle)
-    {
-        if (toggle == VerticalDirectionsEnum.Up)
-            Interlocked.Increment(ref BusyEscalationBalance);
-        else
-            Interlocked.Decrement(ref BusyEscalationBalance);
-
-        if (HoldFormHandler is not null)
-            HoldFormHandler(!BusyEscalationBalance.Equals(default));
-    }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

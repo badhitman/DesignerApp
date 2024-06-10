@@ -4,23 +4,37 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsRowsEditUI;
 
-public class FieldFormEditFormBaseComponent : ComponentBase
+/// <summary>
+/// Field form edit form base
+/// </summary>
+public class FieldFormEditFormBaseComponent : ComponentBase, IDomBaseComponent
 {
-    [CascadingParameter, EditorRequired]
-    public ConstructorFormModelDB Form { get; set; } = default!;
+    /// <summary>
+    /// Snackbar
+    /// </summary>
+    [Inject]
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
-    [CascadingParameter, EditorRequired]
-    public Action<ConstructorFieldFormModelDB> StateHasChangedHandler { get; set; } = default!;
 
+    /// <inheritdoc/>
+    [Parameter, EditorRequired]
+    public required ConstructorFieldFormModelDB Field { get; set; }
+
+    /// <summary>
+    /// Форма
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required ConstructorFormModelDB Form { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required Action<ConstructorFieldFormModelDB> StateHasChangedHandler { get; set; }
+
+    /// <inheritdoc/>
     [CascadingParameter]
     public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
 
-    [Parameter, EditorRequired]
-    public ConstructorFieldFormModelDB Field { get; set; } = default!;
-
-    [Inject]
-    protected ISnackbar snackbar { get; set; } = default!;
-
+    /// <inheritdoc/>
     public string DomID => $"{SessionQuestionnaire?.Id}_form-{Form.Id}_{Field.GetType().FullName}-{Field.Id}";
 
     /// <summary>
@@ -42,6 +56,9 @@ public class FieldFormEditFormBaseComponent : ComponentBase
         }
     }
 
+    /// <summary>
+    /// Update field + <c>StateHasChanged()</c>
+    /// </summary>
     public virtual void Update(ConstructorFieldFormModelDB field)
     {
         Field.Update(field);
