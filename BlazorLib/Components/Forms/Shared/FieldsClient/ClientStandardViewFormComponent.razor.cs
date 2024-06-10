@@ -8,9 +8,8 @@ namespace BlazorLib.Components.Forms.Shared.FieldsClient;
 /// </summary>
 public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
     [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter]
@@ -25,18 +24,6 @@ public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseMo
     /// </summary>
     [CascadingParameter]
     public uint? RowNum { get; set; }
-
-    /// <inheritdoc/>
-    [CascadingParameter]
-    public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
-
-    /// <inheritdoc/>
-    [CascadingParameter]
-    public bool? InUse { get; set; }
-
-    /// <inheritdoc/>
-    [CascadingParameter]
-    public ConstructorFormQuestionnairePageModelDB? QuestionnairePage { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]

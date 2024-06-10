@@ -3,7 +3,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// Связь формы со страницей опросоа/анкеты
+/// Связь формы со страницей опроса/анкеты
 /// </summary>
 [Index(nameof(SortIndex)), Index(nameof(IsTable))]
 public class ConstructorFormQuestionnairePageJoinFormModelDB : EntryDescriptionOwnedModel

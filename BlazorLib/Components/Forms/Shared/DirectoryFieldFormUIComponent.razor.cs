@@ -22,8 +22,8 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     public required ConstructorFormDirectoryLinkModelDB FieldObject { get; set; }
 
     /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; }
+    [CascadingParameter]
+    public Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
 
     /// <inheritdoc/>
     protected IEnumerable<EntryModel> Entries = [];

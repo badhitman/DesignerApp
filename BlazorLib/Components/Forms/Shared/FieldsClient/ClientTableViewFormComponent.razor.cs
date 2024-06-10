@@ -5,6 +5,9 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsClient;
 
+/// <summary>
+/// Client table view form
+/// </summary>
 public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
@@ -51,7 +54,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected bool TableCalcKit { get; set; } = false;
+    protected bool TableCalculationKit { get; set; } = false;
     
     /// <inheritdoc/>
     protected TableCalculationKitComponent? _table_kit_ref;

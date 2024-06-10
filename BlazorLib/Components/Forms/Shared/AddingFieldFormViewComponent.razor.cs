@@ -13,9 +13,8 @@ public partial class AddingFieldFormViewComponent : ComponentBase
     public ConstructorFieldFormBaseLowModel FieldObject { get; set; } = default!;
     ConstructorFieldFormBaseLowModel _field_object_master = default!;
 
-    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
+    Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
 
     ConstructorFormDirectoryLinkModelDB FieldObjectForDirectory
     {

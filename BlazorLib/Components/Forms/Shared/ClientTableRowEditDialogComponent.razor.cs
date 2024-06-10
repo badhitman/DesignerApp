@@ -1,47 +1,46 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Client table row edit dialog
+/// </summary>
 public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBaseModel
 {
-    [Inject]
-    protected ILogger<ClientTableRowEditDialogComponent> _logger { get; set; } = default!;
-
-    [Inject]
-    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
-
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public uint RowNum { get; set; }
 
+    /// <inheritdoc/>
     [Parameter]
     public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Parameter]
     public ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; } = default!;
 
+    /// <inheritdoc/>
     protected List<ConstructorFormSessionValueModelDB> RowValuesSet = [];
 
-    protected IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
+    /// <inheritdoc/>
+    protected IEnumerable<EntryAltDescriptionModel> Entries = [];
 
+    /// <inheritdoc/>
     protected void HoldOfBusyAction(bool is_hold)
     {
         IsBusyProgress = is_hold;
-        // StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected void Close() => InvokeAsync(async () =>
     {
         while (IsBusyProgress)
@@ -50,6 +49,7 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
         MudDialog.Close(DialogResult.Ok(RowValuesSet));
     });
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();

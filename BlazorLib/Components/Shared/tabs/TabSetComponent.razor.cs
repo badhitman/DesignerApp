@@ -2,6 +2,9 @@
 
 namespace BlazorLib.Components.Shared.tabs;
 
+/// <summary>
+/// TabSet
+/// </summary>
 public partial class TabSetComponent : ComponentBase
 {
     /// <inheritdoc/>

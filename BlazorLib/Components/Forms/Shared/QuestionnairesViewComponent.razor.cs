@@ -1,31 +1,36 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Questionnaires view
+/// </summary>
 public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
 {
+    /// <inheritdoc/>
     [Inject]
-    protected ILogger<QuestionnairesViewComponent> _logger { get; set; } = default!;
+    protected IDialogService DialogServiceRepo { get; set; } = default!;
 
-    [Inject]
-    protected IDialogService _dialog_service { get; set; } = default!;
-
+    /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
 
-
     MudTable<ConstructorFormQuestionnaireModelDB>? table;
-    string? searchString;
+
+    /// <inheritdoc/>
+    protected string? searchString;
     ConstructorFormsQuestionnairesPaginationResponseModel data = new() { Questionnaires = Enumerable.Empty<ConstructorFormQuestionnaireModelDB>() };
 
+    /// <inheritdoc/>
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
 
+    /// <inheritdoc/>
     protected async Task DeleteQuestionnaire(int questionnaire_id)
     {
         IsBusyProgress = true;
@@ -62,6 +67,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
         return new TableData<ConstructorFormQuestionnaireModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
     }
 
+    /// <inheritdoc/>
     protected async Task QuestionnaireOpenDialog(ConstructorFormQuestionnaireModelDB? questionnaire = null)
     {
         questionnaire ??= (ConstructorFormQuestionnaireModelDB)EntryDescriptionModel.Build("");
@@ -69,11 +75,12 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
         parameters.Add(x => x.Questionnaire, questionnaire);
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await _dialog_service.Show<EditQuestionnaireDialogComponent>(questionnaire.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{questionnaire.Id}", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<EditQuestionnaireDialogComponent>(questionnaire.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{questionnaire.Id}", parameters, options).Result;
         if (table is not null)
             await table.ReloadServerData();
     }
 
+    /// <inheritdoc/>
     protected async Task OnSearch(string text)
     {
         searchString = text;

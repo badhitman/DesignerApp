@@ -4,39 +4,48 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Pages questionnaires view
+/// </summary>
 public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseModel
 {
-    [Inject]
-    protected IDialogService DialogService { get; set; } = default!;
-
+    /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
 
-
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public ConstructorFormQuestionnaireModelDB Questionnaire { get; set; } = default!;
+    public required ConstructorFormQuestionnaireModelDB Questionnaire { get; set; }
 
+    /// <inheritdoc/>
     public MudDynamicTabs? DynamicTabs;
+    /// <inheritdoc/>
     protected bool _stateHasChanged;
+    /// <inheritdoc/>
     public int QuestionnaireIndex;
 
-    protected IEnumerable<ConstructorFormBaseModel> AllForms = Enumerable.Empty<ConstructorFormBaseModel>();
+    /// <inheritdoc/>
+    protected IEnumerable<ConstructorFormBaseModel> AllForms = default!;
 
     bool _tabs_is_hold = false;
+    /// <inheritdoc/>
     protected void SetHoldAction(bool _is_hold)
     {
         _tabs_is_hold = _is_hold;
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected bool TabIsDisabled(int questionnaire_page_id)
     {
         return _tabs_is_hold && Questionnaire.Pages?.FindIndex(x => x.Id == questionnaire_page_id) != QuestionnaireIndex;
     }
 
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
@@ -44,13 +53,12 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         IsBusyProgress = false;
 
         if (rest.Elements is null)
-        {
-            SnackbarRepo.Add($"Ошибка {{3E9B0E59-6DDA-47A3-B77B-25316A29EE37}} rest.Content.Elements is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return;
-        }
+            throw new Exception($"Ошибка {{3E9B0E59-6DDA-47A3-B77B-25316A29EE37}} rest.Content.Elements is null");
+
         AllForms = rest.Elements;
     }
 
+    /// <inheritdoc/>
     protected void QuestionnaireReloadAction()
     {
         IsBusyProgress = true;
@@ -74,14 +82,15 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         });
     }
 
+    /// <inheritdoc/>
     protected void SetIdForPageAction(int init_id, ConstructorFormQuestionnairePageModelDB new_page)
     {
-        if (Questionnaire.Pages?.Any() != true)
+        if (PagesNotExist)
         {
-            SnackbarRepo.Add($"Questionnaire.Pages?.Any() != true. Ошибка {{2AE5D2B1-73FF-4A57-A82D-594B278D2563}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"PagesNotExist. Ошибка {{2AE5D2B1-73FF-4A57-A82D-594B278D2563}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
-        int i = Questionnaire.Pages.FindIndex(x => x.Id == init_id);
+        int i = Questionnaire.Pages!.FindIndex(x => x.Id == init_id);
         if (i >= 0 && init_id != new_page.Id)
             new_page.Id = i;
 
@@ -92,18 +101,23 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected bool CanUpPage(ConstructorFormQuestionnairePageModelDB questionnaire_page) => questionnaire_page.SortIndex > (Questionnaire.Pages!.Any(x => x.Id != questionnaire_page.Id) ? Questionnaire.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Min(y => y.SortIndex) : 1) && !Questionnaire.Pages!.Any(x => x.Id < 1);
+    /// <inheritdoc/>
     protected bool CanDownPage(ConstructorFormQuestionnairePageModelDB questionnaire_page) => questionnaire_page.SortIndex < (Questionnaire.Pages!.Any(x => x.Id != questionnaire_page.Id) ? Questionnaire.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Max(y => y.SortIndex) : Questionnaire.Pages!.Count) && !Questionnaire.Pages!.Any(x => x.Id < 1);
 
+    bool PagesNotExist => Questionnaire.Pages is null || Questionnaire.Pages.Count == 0;
+
+    /// <inheritdoc/>
     protected void SetNameForPage(int id, string name)
     {
-        if (Questionnaire.Pages?.Any() != true)
+        if (PagesNotExist)
         {
-            SnackbarRepo.Add($"Questionnaire.Pages?.Any() != true. Ошибка {{894D5FAA-5390-42BB-A0FB-3E9B1FBED810}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"PagesNotExist. Ошибка {{894D5FAA-5390-42BB-A0FB-3E9B1FBED810}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        ConstructorFormQuestionnairePageModelDB? _page = Questionnaire.Pages.FirstOrDefault(x => x.Id == id);
+        ConstructorFormQuestionnairePageModelDB? _page = Questionnaire.Pages!.FirstOrDefault(x => x.Id == id);
         if (_page is null)
         {
             SnackbarRepo.Add($"_page is null. Ошибка {{7165030D-4A99-4E8F-8315-BC6B1673239E}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -113,10 +127,14 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     public void AddTab()
     {
         Questionnaire.Pages ??= [];
-        int new_page_id = Questionnaire.Pages.Any() ? Questionnaire.Pages.Min(x => x.Id) - 1 : 0;
+        int new_page_id = PagesNotExist 
+            ? 0 
+            : Questionnaire.Pages.Min(x => x.Id) - 1;
+
         if (new_page_id > 0)
             new_page_id = 0;
 
@@ -129,6 +147,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         _stateHasChanged = true;
     }
 
+    /// <inheritdoc/>
     public void Update(ConstructorFormQuestionnaireModelDB questionnaire, ConstructorFormQuestionnairePageModelDB? page = null)
     {
         Questionnaire = questionnaire;
@@ -137,6 +156,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     public void RemoveTab(int id)
     {
         ConstructorFormQuestionnairePageModelDB? tabView = Questionnaire.Pages!.SingleOrDefault((t) => Equals(t.Id, id));
@@ -146,5 +166,6 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
             _stateHasChanged = true;
         }
     }
+    /// <inheritdoc/>
     protected void CloseTabCallback(MudTabPanel panel) => RemoveTab((int)panel.ID);
 }

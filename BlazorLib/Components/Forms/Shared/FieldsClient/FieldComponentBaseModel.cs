@@ -6,9 +6,9 @@ using SharedLib;
 namespace BlazorLib.Components.Forms.Shared.FieldsClient;
 
 /// <summary>
-/// Field component base model
+/// Базовая модель поля формы
 /// </summary>
-public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel
+public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, IDomBaseComponent
 {
     /// <inheritdoc/>
     [Inject]
@@ -25,23 +25,32 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel
     [Parameter]
     public uint GroupByRowNum { get; set; }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Форма
+    /// </summary>
     [CascadingParameter, EditorRequired]
     public required ConstructorFormModelDB Form { get; set; }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Документ/сессия
+    /// </summary>
     [CascadingParameter]
     public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Страница/Таб документа
+    /// </summary>
     [CascadingParameter]
     public ConstructorFormQuestionnairePageModelDB? QuestionnairePage { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter]
-    public bool? InUse { get; set; }
+    /// <summary>
+    /// Признак того, что поле находится в состоянии реального использования, а не в конструкторе или режим demo
+    /// </summary>
+    public bool InUse => PageJoinForm is not null && SessionQuestionnaire is not null;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Связь формы со страницей опроса/анкеты. В режиме DEMO тут NULL
+    /// </summary>
     [CascadingParameter]
     public ConstructorFormQuestionnairePageJoinFormModelDB? PageJoinForm { get; set; }
 
@@ -49,59 +58,56 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel
     [CascadingParameter]
     public IEnumerable<EntryAltDescriptionModel> CalculationsAsEntries { get; set; } = default!;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Доступ к перечню полей формы. Каждое поле формы добавляет себя к этому перечню при инициализации (в <c>OnInitialized()</c>) базового <cref name="FieldBaseClientComponent">компонента</cref>
+    /// </summary>
     [Parameter]
     public List<FieldComponentBaseModel?>? FieldsReferring { get; set; }
 
     /// <inheritdoc/>
     public abstract string DomID { get; }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Проверка доступности редактирования поля. Поле формы в некоторых случаях не доступна для редактирования
+    /// </summary>
     public static bool IsReadonly(ClaimsPrincipal clp, ConstructorFormSessionModelDB sq)
     {
         string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email, StringComparison.OrdinalIgnoreCase))?.Value;
-        return !clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && (x.Value.Equals("Admin", StringComparison.OrdinalIgnoreCase))) && sq.SessionStatus >= SessionsStatusesEnum.Sended && !sq.CreatorEmail.Equals(email, StringComparison.OrdinalIgnoreCase);
+        return !clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && (x.Value.Equals("admin", StringComparison.OrdinalIgnoreCase))) && sq.SessionStatus >= SessionsStatusesEnum.Sended && !sq.CreatorEmail.Equals(email, StringComparison.OrdinalIgnoreCase);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Установить значение поля
+    /// </summary>
+    /// <param name="valAsString">Значение поля</param>
+    /// <param name="fieldName">Имя поля</param>
+    /// <exception cref="InvalidOperationException">В процессе установки значения не был возвращён объект сессии/документа, который необходим для обновления состояния <see cref="SessionQuestionnaire" />.</exception>
+    /// <exception cref="NullReferenceException">Ошибка в случае если отсутствует <cref cref="PageJoinForm">связь</cref> (например: в режиме 'demo'). Полноценно инициированное поле формы должно так же иметь объект сессии <see cref="SessionQuestionnaire" />.</exception>
     public async Task SetValue(string? valAsString, string fieldName)
     {
-        if (InUse != true)
-            return;
-
-        if (PageJoinForm is null)
-        {
-            SnackbarRepo.Add("PageJoinForm is null. error {3098E5B7-DEA6-4A9A-A2A0-3119194401ED}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return;
-        }
-        if (SessionQuestionnaire is null)
-        {
-            SnackbarRepo.Add("SessionQuestionnaire is null. error {C18CEBB7-C245-4E00-B9A2-CBB046DF590F}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return;
-        }
+        if (!InUse)
+            throw new NullReferenceException("Форма не инициализирована.");
 
         SetValueFieldSessionQuestionnaireModel req = new()
         {
             FieldValue = valAsString,
             GroupByRowNum = GroupByRowNum,
-            JoinFormId = PageJoinForm.Id,
+            JoinFormId = PageJoinForm!.Id,
             NameField = fieldName,
-            SessionId = SessionQuestionnaire.Id
+            SessionId = SessionQuestionnaire!.Id
         };
         IsBusyProgress = true;
         FormSessionQuestionnaireResponseModel rest = await FormsRepo.SetValueFieldSessionQuestionnaire(req);
         IsBusyProgress = false;
 
         if (!rest.Success())
-        {
             SnackbarRepo.Add($"Ошибка {{1CA79BA7-295C-40AD-BCF3-F6143DCCF2BD}}: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return;
-        }
+
         if (rest.SessionQuestionnaire is null)
-        {
-            SnackbarRepo.Add($"{nameof(rest.SessionQuestionnaire)} is null. error {{13B77737-55FA-42C6-9B82-BD35F3740825}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            throw new InvalidOperationException($"Данные сессии '{nameof(rest.SessionQuestionnaire)}': IsNull");
+
+        if (!rest.Success())
             return;
-        }
 
         SessionQuestionnaire.Reload(rest.SessionQuestionnaire);
 

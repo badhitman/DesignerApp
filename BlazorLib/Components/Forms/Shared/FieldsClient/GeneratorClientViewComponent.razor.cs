@@ -4,6 +4,9 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsClient;
 
+/// <summary>
+/// Generator client view
+/// </summary>
 public partial class GeneratorClientViewComponent : FieldComponentBaseModel
 {
     /// <inheritdoc/>

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsClient;
@@ -21,7 +20,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     {
         get
         {
-            if (InUse != true)
+            if (!InUse)
                 return "<калькуляция>";
             else if (string.IsNullOrWhiteSpace(Field.MetadataValueType) || !CellsValuesOfCurrentRow.Any() || QueryFieldsOfNumericTypes is null)
                 return null;
@@ -200,8 +199,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 _stringFieldValue = "<calculator>";
                 break;
             default:
-                SnackbarRepo.Add($"Тип данных поля не обработан. ошибка {{C2E12C0B-837B-4D67-B320-37F976B8D293}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-                break;
+                throw new Exception($"Тип данных поля не обработан. ошибка {{C2E12C0B-837B-4D67-B320-37F976B8D293}}");
         }
         FieldsReferring?.Add(this);
     }

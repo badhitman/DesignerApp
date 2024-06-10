@@ -1,4 +1,4 @@
-﻿<tr @key="@($"tr-{PageJoinForm.Id}-{RowNum}")">
+﻿<tr @key="@DomID">
     @{
         int i = 0;
         foreach (ConstructorFieldFormBaseLowModel fb in PageJoinForm.Form!.AllFields)
@@ -18,7 +18,7 @@
                         <MudSpacer />
                         <div>
                             <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="OpenEditAction"></MudIconButton>
-                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="DeletAction"></MudIconButton>
+                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="DeleteAction"></MudIconButton>
                         </div>
                     </div>
                 }

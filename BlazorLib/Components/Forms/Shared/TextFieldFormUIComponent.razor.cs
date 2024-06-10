@@ -3,14 +3,20 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Text field form UI
+/// </summary>
 public partial class TextFieldFormUIComponent : ComponentBase
 {
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public ConstructorFieldFormModelDB FieldObject { get; set; } = default!;
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
 
+    /// <inheritdoc/>
     public bool IsMultiline
     {
         get => (bool?)FieldObject.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true;
@@ -34,6 +40,7 @@ public partial class TextFieldFormUIComponent : ComponentBase
         }
     }
 
+    /// <inheritdoc/>
     public void Update(ConstructorFieldFormBaseLowModel field)
     {
         FieldObject.Update(field);

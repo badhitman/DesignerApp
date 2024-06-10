@@ -3,8 +3,12 @@ using MudBlazor;
 
 namespace BlazorLib;
 
+/// <summary>
+/// Extensions
+/// </summary>
 public static class Extensions
 {
+    /// <inheritdoc/>
     public static void ShowMessagesResponse(this ISnackbar SnackbarRepo, IEnumerable<ResultMessage> messages)
     {
         if (!messages.Any())
@@ -25,6 +29,7 @@ public static class Extensions
         }
     }
 
+    /// <inheritdoc/>
     public static VerticalDirectionsEnum GetVerticalDirection(this SortDirection sort_direction)
     {
         return sort_direction switch

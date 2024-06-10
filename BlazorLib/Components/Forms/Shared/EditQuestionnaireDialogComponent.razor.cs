@@ -5,6 +5,9 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Edit questionnaire dialog
+/// </summary>
 public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>

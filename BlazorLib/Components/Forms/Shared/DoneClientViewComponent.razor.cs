@@ -1,29 +1,33 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Done client view
+/// </summary>
 public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
 {
-    [Inject]
-    protected ILogger<DoneClientViewComponent> _logger { get; set; } = default!;
-
+    /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
 
-    [CascadingParameter, EditorRequired]
-    public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
+    /// <inheritdoc/>
+    [CascadingParameter]
+    public required ConstructorFormSessionModelDB SessionQuestionnaire { get; set; }
 
-    [CascadingParameter, EditorRequired]
-    public bool InUse { get; set; } = default!;
+    /// <inheritdoc/>
+    [CascadingParameter]
+    public required bool InUse { get; set; }
 
     bool InitSend = false;
 
+    /// <inheritdoc/>
     protected async Task SetAsDone()
     {
         if (string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken))

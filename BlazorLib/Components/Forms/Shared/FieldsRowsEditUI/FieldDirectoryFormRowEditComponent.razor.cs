@@ -1,34 +1,41 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsRowsEditUI;
 
-public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBaseModel
+/// <summary>
+/// Field directory form row edit
+/// </summary>
+public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBaseModel, IDomBaseComponent
 {
-    [Inject]
-    protected ILogger<FieldDirectoryFormRowEditComponent> _logger { get; set; } = default!;
-
+    /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
 
-    [CascadingParameter, EditorRequired]
-    public ConstructorFormModelDB Form { get; set; } = default!;
+    ///// <inheritdoc/>
+    //[CascadingParameter, EditorRequired]
+    //public ConstructorFormModelDB Form { get; set; } = default!;
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public Action<ConstructorFormDirectoryLinkModelDB> StateHasChangedHandler { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public ConstructorFormDirectoryLinkModelDB Field { get; set; } = default!;
 
-    protected IEnumerable<EntryModel> Entries = Enumerable.Empty<EntryModel>();
+    /// <inheritdoc/>
+    protected IEnumerable<EntryModel> Entries = default!;
 
-    protected string dom_id => $"{Field.GetType().FullName}_{Field.Id}";
+    /// <inheritdoc/>
+    public string DomID => $"{Field.GetType().FullName}_{Field.Id}";
 
+    /// <inheritdoc/>
     public int SelectedDirectoryField
     {
         get => Field.DirectoryId;
@@ -41,12 +48,14 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
         }
     }
 
+    /// <inheritdoc/>
     public void Update(ConstructorFormDirectoryLinkModelDB field)
     {
         Field.Update(field);
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
@@ -58,10 +67,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
             return;
 
         if (rest.Entries is null)
-        {
-            SnackbarRepo.Add($"Ошибка {{4BBC7550-5753-4D96-9E17-3E9B21F08493}} rest.Content.Entries is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return;
-        }
+            throw new Exception($"Ошибка {{4BBC7550-5753-4D96-9E17-3E9B21F08493}} rest.Content.Entries is null");
 
         Entries = rest.Entries;
         StateHasChanged();

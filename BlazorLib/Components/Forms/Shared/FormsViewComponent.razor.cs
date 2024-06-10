@@ -12,7 +12,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     protected ILogger<FormsViewComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected IDialogService _dialog_service { get; set; } = default!;
+    protected IDialogService DialogServiceRepo { get; set; } = default!;
 
     [Inject]
     protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
@@ -44,7 +44,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
         DialogParameters<EditFormDialogComponent> parameters = new();
         parameters.Add(x => x.Form, rest.Form);
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await _dialog_service.Show<EditFormDialogComponent>($"Редактирование формы #{rest.Form?.Id}", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>($"Редактирование формы #{rest.Form?.Id}", parameters, options).Result;
 
         if (table is not null)
             await table.ReloadServerData();
@@ -69,7 +69,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
         DialogParameters<EditFormDialogComponent> parameters = new();
         parameters.Add(x => x.Form, (ConstructorFormModelDB)EntryDescriptionModel.Build(""));
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await _dialog_service.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;
 
         if (table is not null)
             await table.ReloadServerData();

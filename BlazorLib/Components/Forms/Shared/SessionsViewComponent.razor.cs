@@ -4,6 +4,9 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Sessions view
+/// </summary>
 public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>

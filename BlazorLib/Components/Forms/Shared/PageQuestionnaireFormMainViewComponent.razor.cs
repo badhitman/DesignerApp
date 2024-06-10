@@ -5,42 +5,57 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Page questionnaire form main view
+/// </summary>
 public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponentBaseModel
 {
+    /// <inheritdoc/>
     [Inject]
-    protected ILogger<PageQuestionnaireFormMainViewComponent> _logger { get; set; } = default!;
+    protected ILogger<PageQuestionnaireFormMainViewComponent> LoggerRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
 
 
-    [CascadingParameter, EditorRequired]
-    public ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; } = default!;
+    /// <inheritdoc/>
+    [CascadingParameter]
+    public required ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; }
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; } = default!;
+    public required ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; }
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public bool CanUp { get; set; }
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public bool CanDown { get; set; }
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public int CurrentFormJoinEdit { get; set; }
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public Action<int> JoinFormHoldHandle { get; set; } = default!;
+    public required Action<int> JoinFormHoldHandle { get; set; }
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public Action<ConstructorFormQuestionnairePageModelDB?> UpdatePageActionHandle { get; set; } = default!;
+    public required Action<ConstructorFormQuestionnairePageModelDB?> UpdatePageActionHandle { get; set; }
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public bool InUse { get; set; } = default!;
 
+    /// <inheritdoc/>
     protected async Task DeleteJoinForm()
     {
         IsBusyProgress = true;
@@ -56,9 +71,10 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
         UpdatePageActionHandle(null);
     }
 
+    /// <inheritdoc/>
     protected string TitleFormJoin => PageJoinForm.ShowTitle == true ? string.IsNullOrWhiteSpace(PageJoinForm.Name) ? PageJoinForm.Form!.Name : PageJoinForm.Name : "";
 
-    bool _join_set_title_orign = false;
+    bool _join_set_title_origin = false;
     bool SetTitleForm
     {
         get => PageJoinForm.ShowTitle == true;
@@ -69,7 +85,7 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
         }
     }
 
-    string _join_name_orign = "";
+    string _join_name_origin = "";
     string PageJoinFormName
     {
         get => PageJoinForm.Name;
@@ -80,7 +96,7 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
         }
     }
 
-    bool _is_table_orign;
+    bool _is_table_origin;
     bool IsTable
     {
         get => PageJoinForm.IsTable;
@@ -91,9 +107,11 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
         }
     }
 
+    /// <inheritdoc/>
     protected bool IsDisabled => CurrentFormJoinEdit > 0 && CurrentFormJoinEdit != PageJoinForm.Id;
-    bool IsEdited => _join_name_orign != PageJoinFormName || SetTitleForm != _join_set_title_orign || IsTable != _is_table_orign;
+    bool IsEdited => _join_name_origin != PageJoinFormName || SetTitleForm != _join_set_title_origin || IsTable != _is_table_origin;
 
+    /// <inheritdoc/>
     protected async Task QuestionnairePageJoinFormMove(VerticalDirectionsEnum direct)
     {
         IsBusyProgress = true;
@@ -109,6 +127,7 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
         UpdatePageActionHandle(null);
     }
 
+    /// <inheritdoc/>
     protected async Task SaveJoinForm()
     {
         IsBusyProgress = true;
@@ -133,30 +152,32 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
             return;
         }
 
-        _join_name_orign = PageJoinForm.Name;
-        _join_set_title_orign = PageJoinForm.ShowTitle == true;
-        _is_table_orign = PageJoinForm.IsTable;
+        _join_name_origin = PageJoinForm.Name;
+        _join_set_title_origin = PageJoinForm.ShowTitle == true;
+        _is_table_origin = PageJoinForm.IsTable;
         JoinFormHoldHandle(IsEdited ? PageJoinForm.Id : 0);
         UpdatePageActionHandle(null);
     }
 
+    /// <inheritdoc/>
     protected void ResetFormJoin()
     {
-        PageJoinForm.Name = _join_name_orign;
-        PageJoinForm.ShowTitle = _join_set_title_orign;
-        PageJoinForm.IsTable = _is_table_orign;
+        PageJoinForm.Name = _join_name_origin;
+        PageJoinForm.ShowTitle = _join_set_title_origin;
+        PageJoinForm.IsTable = _is_table_origin;
         JoinFormHoldHandle(0);
     }
 
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        _join_name_orign = PageJoinForm.Name;
-        _join_set_title_orign = PageJoinForm.ShowTitle == true;
-        _is_table_orign = PageJoinForm.IsTable;
+        _join_name_origin = PageJoinForm.Name;
+        _join_set_title_origin = PageJoinForm.ShowTitle == true;
+        _is_table_origin = PageJoinForm.IsTable;
 
         if (PageJoinForm.Form is null)
         {
-            _logger.LogWarning("Дозагрузка [Form] для [PageJoinForm]...");
+            LoggerRepo.LogWarning("Дозагрузка [Form] для [PageJoinForm]...");
             IsBusyProgress = true;
             FormResponseModel rest = await FormsRepo.GetForm(PageJoinForm.FormId);
             IsBusyProgress = false;
