@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using System.Security.Claims;
-using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
@@ -9,47 +7,56 @@ namespace BlazorLib.Components.Forms.Shared.FieldsClient;
 
 public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 {
+    /// <inheritdoc/>
     [Inject]
-    protected ILogger<ClientTableViewFormComponent> _logger { get; set; } = default!;
+    protected IDialogService DialogServiceRepo { get; set; } = default!;
 
-    [Inject]
-    protected IDialogService _dialog_service { get; set; } = default!;
-
-    [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
-
+    /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Parameter]
     public string? Title { get; set; }
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; } = default!;
+    public required ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; }
 
+    /// <inheritdoc/>
     [CascadingParameter]
     public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
 
+    /// <inheritdoc/>
     [CascadingParameter]
     public bool? InUse { get; set; }
 
+    /// <inheritdoc/>
     [CascadingParameter]
     public ConstructorFormQuestionnairePageModelDB? QuestionnairePage { get; set; }
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormModelDB Form { get; set; } = default!;
+    public required ConstructorFormModelDB Form { get; set; }
 
+    /// <inheritdoc/>
     protected static bool IsReadonly(ClaimsPrincipal clp, ConstructorFormSessionModelDB sq)
     {
         string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
         return !clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && (x.Value.Equals("Admin", StringComparison.OrdinalIgnoreCase))) && sq.SessionStatus >= SessionsStatusesEnum.Sended && !sq.CreatorEmail.Equals(email, StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <inheritdoc/>
     protected bool TableCalcKit { get; set; } = false;
-    protected TableCalcKitComponent? _table_kit_ref;
+    
+    /// <inheritdoc/>
+    protected TableCalculationKitComponent? _table_kit_ref;
+    
+    /// <inheritdoc/>
     protected void OpenEditRowAction(uint row_num)
     {
         DialogParameters<ClientTableRowEditDialogComponent> parameters = new()
@@ -61,13 +68,14 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        InvokeAsync(async () =>
+        _ = InvokeAsync(async () =>
         {
-            DialogResult result = await _dialog_service.Show<ClientTableRowEditDialogComponent>($"Редактирование строки данных №:{row_num}", parameters, options).Result;
+            DialogResult result = await DialogServiceRepo.Show<ClientTableRowEditDialogComponent>($"Редактирование строки данных №:{row_num}", parameters, options).Result;
             await ReloadSession();
         });
     }
 
+    /// <inheritdoc/>
     protected void DeleteRowAction(uint row_num)
     {
         if (SessionQuestionnaire is null)
@@ -78,7 +86,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
         IsBusyProgress = true;
         StateHasChanged();
-        InvokeAsync(async () =>
+        _ = InvokeAsync(async () =>
         {
             ValueFieldSessionQuestionnaireBaseModel req = new() { GroupByRowNum = row_num, JoinFormId = PageJoinForm.Id, SessionId = SessionQuestionnaire.Id };
             ResponseBaseModel rest = await FormsRepo.DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(req);
@@ -94,6 +102,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         });
     }
 
+    /// <inheritdoc/>
     protected async Task AddRowToTable()
     {
         if (SessionQuestionnaire is null)
@@ -126,7 +135,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             { x => x.PageJoinForm, PageJoinForm }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await _dialog_service.Show<ClientTableRowEditDialogComponent>($"Созданная строка данных №{rest.Id}", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<ClientTableRowEditDialogComponent>($"Созданная строка данных №{rest.Id}", parameters, options).Result;
         ValueFieldSessionQuestionnaireBaseModel req = new()
         {
             GroupByRowNum = row_num,

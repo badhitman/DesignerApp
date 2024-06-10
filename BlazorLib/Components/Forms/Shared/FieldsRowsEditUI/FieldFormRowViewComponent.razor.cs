@@ -12,7 +12,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     protected ILogger<FieldFormRowViewComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
+    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
@@ -201,7 +201,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         SetFieldAction(Field);
         ChildUpdates();
         if (_currentTemplateInputRichText is not null)
-            await _js_runtime.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, _field_master.Description);
+            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, _field_master.Description);
     }
 
     protected async Task SaveEditField()

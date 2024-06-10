@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using SharedLib;
 
@@ -7,8 +8,14 @@ namespace BlazorLib.Components.Forms.Shared;
 /// <summary>
 /// Table calculation kit
 /// </summary>
-public partial class TableCalcKitComponent : BlazorBusyComponentBaseModel
+public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
 {
+    /// <inheritdoc/>
+    [Inject]
+    protected IOptions<VirtualColumnCalculateGroupingTableModel[]> CalculationConfig { get; set; } = default!;
+    /// <inheritdoc/>
+    protected VirtualColumnCalculateGroupingTableModel[] _conf => CalculationConfig.Value;
+
     /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
@@ -21,7 +28,8 @@ public partial class TableCalcKitComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
 
-    protected IQueryable<ConstructorFieldFormModelDB>? q => PageJoinForm.Form?.QueryFieldsOfNumericTypes(SelectedFieldObject?.FieldName);
+    /// <inheritdoc/>
+    protected IQueryable<ConstructorFieldFormModelDB>? QueryFieldsOfNumericTypes => PageJoinForm.Form?.QueryFieldsOfNumericTypes(SelectedFieldObject?.FieldName);
 
     const string _separator = ":";
     /// <inheritdoc/>
@@ -56,7 +64,7 @@ public partial class TableCalcKitComponent : BlazorBusyComponentBaseModel
         return new() { FieldType = fb.GetType(), FieldId = fb.Id, FieldName = fb.Name };
     }
 
-    FormTableCalcManager? TableCalc;
+    FormTableCalcManager? TableCalculation;
 
     SelectedFieldModel? SelectedFieldObject = null;
     /// <inheritdoc/>
@@ -92,19 +100,20 @@ public partial class TableCalcKitComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    IQueryable<ConstructorFieldFormModelDB>? Query(string? field_name) => PageJoinForm?.Form?.QueryFieldsOfNumericTypes(field_name);
+    IQueryable<ConstructorFieldFormModelDB>? GetQueryFieldsOfNumericTypesForFieldName(string? field_name) => PageJoinForm.Form?.QueryFieldsOfNumericTypes(field_name);
+    
     /// <inheritdoc/>
-    protected IEnumerable<string> FieldsNames(string? field_name) => Query(field_name)?.Select(x => x.Name) ?? Enumerable.Empty<string>();
+    protected IEnumerable<string> FieldsNames(string? field_name) => GetQueryFieldsOfNumericTypesForFieldName(field_name)?.Select(x => x.Name) ?? Enumerable.Empty<string>();
 
     /// <inheritdoc/>
     public void Update()
     {
         if (SelectedFieldObject is null)
             return;
-        if (TableCalc is null)
-            TableCalc = new(SelectedFieldObject, PageJoinForm, SessionQuestionnaire);
+        if (TableCalculation is null)
+            TableCalculation = new(SelectedFieldObject, PageJoinForm, SessionQuestionnaire);
         else
-            TableCalc.Update(SelectedFieldObject, PageJoinForm, SessionQuestionnaire);
+            TableCalculation.Update(SelectedFieldObject, PageJoinForm, SessionQuestionnaire);
 
         StateHasChanged();
     }

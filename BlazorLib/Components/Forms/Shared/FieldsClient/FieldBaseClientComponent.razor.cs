@@ -1,22 +1,23 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsClient;
 
+/// <summary>
+/// Field base client
+/// </summary>
 public partial class FieldBaseClientComponent : FieldComponentBaseModel
 {
-    [Inject]
-    protected ILogger<FieldBaseClientComponent> _logger { get; set; } = default!;
-
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public ConstructorFieldFormModelDB Field { get; set; } = default!;
 
-    VirtualColumnCalcAbstraction? _calc_s;
+    VirtualColumnCalculationAbstraction? _calculation_service;
     CommandsAsEntriesModel? _md;
-    public string AboutCalcFieldValue => $"{CalculationsAsEntries.FirstOrDefault(x => x.Id == Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString())?.Name ?? "ошибка B13A35C0"}: {Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
-    string? CalcFieldValue
+    /// <inheritdoc/>
+    public string AboutCalculationFieldValue => $"{CalculationsAsEntries.FirstOrDefault(x => x.Id == Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString())?.Name ?? "ошибка E565515A-AA2F-4D79-BEDF-7271CF7ABC06"}: {Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
+    string? CalculateFieldValue
     {
         get
         {
@@ -30,8 +31,8 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
             if (_md?.Options.Any() != true)
                 return null;
 
-            _calc_s ??= VirtualColumnCalcAbstraction.GetHandlerService(_md.CommandName) as VirtualColumnCalcAbstraction;
-            if (_calc_s is null || SessionQuestionnaire is null || PageJoinForm is null)
+            _calculation_service ??= (DeclarationAbstraction.GetHandlerService(_md.CommandName) as VirtualColumnCalculationAbstraction);
+            if (_calculation_service is null || SessionQuestionnaire is null || PageJoinForm is null)
                 return null;
 
             Dictionary<string, double> columns = [];
@@ -42,10 +43,10 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
             if (columns.Count == 0)
                 return null;
 
-            return _calc_s.Calc(columns, _md.Options).ToString();
+            return _calculation_service.Calculate(columns, _md.Options).ToString();
         }
     }
-    static IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
+    static IEnumerable<EntryAltDescriptionModel> Entries = [];
 
     /// <summary>
     /// Вид параметра
@@ -53,7 +54,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     string? Descriptor => Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
 
     /// <summary>
-    /// Параметер
+    /// Параметре
     /// </summary>
     string? Parameter => Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
 
@@ -62,6 +63,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     IEnumerable<ConstructorFormSessionValueModelDB> CellsValuesOfCurrentRow => SessionQuestionnaire?.RowsData(PageJoinForm!.Id)?.FirstOrDefault(x => x.Key == GroupByRowNum) ?? Enumerable.Empty<ConstructorFormSessionValueModelDB>();
 
     string? _stringFieldValue;
+    /// <inheritdoc/>
     public string? StringFieldValue
     {
         get => _stringFieldValue;
@@ -79,6 +81,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     }
 
     bool? _boolFieldValue;
+    /// <inheritdoc/>
     public bool? BoolFieldValue
     {
         get => _boolFieldValue;
@@ -96,6 +99,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     }
 
     DateTime? _dateTimeFieldValue;
+    /// <inheritdoc/>
     public DateTime? DateTimeFieldValue
     {
         get => _dateTimeFieldValue;
@@ -113,6 +117,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     }
 
     double? _doubleFieldValue;
+    /// <inheritdoc/>
     public double? DoubleFieldValue
     {
         get => _doubleFieldValue;
@@ -131,6 +136,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     }
 
     int? _intFieldValue;
+    /// <inheritdoc/>
     public int? IntFieldValue
     {
         get => _intFieldValue;
@@ -147,10 +153,13 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         }
     }
 
+    /// <inheritdoc/>
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{QuestionnairePage?.Id}-{Field.Id}";
 
+    /// <inheritdoc/>
     public string? FieldValue => SessionQuestionnaire?.SessionValues?.FirstOrDefault(x => x.QuestionnairePageJoinFormId == PageJoinForm?.Id && x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.GroupByRowNum == GroupByRowNum)?.Value;
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         if (!Entries.Any())
@@ -159,7 +168,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         switch (Field.TypeField)
         {
             case TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password or TypesFieldsFormsEnum.Time or TypesFieldsFormsEnum.Generator:
-                EntryAltDescriptionModel? _current_agent = Entries.FirstOrDefault(x => $"{x.Text} #{x.Id}".Equals(Parameter));
+                EntryAltDescriptionModel? _current_agent = Entries.FirstOrDefault(x => $"{x.Name} #{x.Id}".Equals(Parameter));
                 if (_current_agent is not null)
                 {
                     TextFieldValueAgent? _declaration = DeclarationAbstraction.GetHandlerService(_current_agent.Id) as TextFieldValueAgent;
@@ -188,7 +197,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                     _dateTimeFieldValue = _out_dt;
                 break;
             case TypesFieldsFormsEnum.ProgrammCalcDouble:
-                _stringFieldValue = "<calc>";
+                _stringFieldValue = "<calculator>";
                 break;
             default:
                 SnackbarRepo.Add($"Тип данных поля не обработан. ошибка {{C2E12C0B-837B-4D67-B320-37F976B8D293}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);

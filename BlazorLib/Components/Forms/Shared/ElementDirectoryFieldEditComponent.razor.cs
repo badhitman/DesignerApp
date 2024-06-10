@@ -12,7 +12,7 @@ public partial class ElementDirectoryFieldEditComponent : BlazorBusyComponentBas
     protected ILogger<ElementDirectoryFieldEditComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
+    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;

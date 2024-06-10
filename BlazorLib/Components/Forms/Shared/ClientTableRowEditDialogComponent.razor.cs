@@ -12,7 +12,7 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
     protected ILogger<ClientTableRowEditDialogComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
+    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
@@ -52,7 +52,7 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
 
     protected override void OnInitialized()
     {
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalcAbstraction>();
+        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         base.OnInitialized();
     }
 }

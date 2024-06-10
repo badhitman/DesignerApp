@@ -1,0 +1,129 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<h5>Группировка/суммирование</h5>
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (PageJoinForm.Form?.AllFields.Any() != true)
+{
+    <p class="lead">
+        Отсутствуют данные полей. Ошибка {E9F57009-91F5-4416-B7B5-F5E85C71527F}
+    </p>
+}
+else
+{
+    <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupSelect01">Поле для группировки</label>
+        <select @bind="SelectedFieldValue" class="form-select" id="inputGroupSelect01">
+            @foreach (ConstructorFieldFormBaseLowModel f in PageJoinForm.Form.AllFields)
+            {
+                <option value="@getFieldVal(f)">@f.Name</option>
+            }
+        </select>
+    </div>
+}
+
+@if (QueryFieldsOfNumericTypes?.Any() == true)
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th class="table-primary" scope="col">@SelectedFieldObject!.FieldName</th>
+                @foreach (ConstructorFieldFormModelDB fe in QueryFieldsOfNumericTypes)
+                {
+                    <th scope="col">@fe.Name</th>
+                }
+                @if (_conf?.Any(x => x.JoinFormId == PageJoinForm.Id) == true)
+                {
+                    foreach (VirtualColumnCalculateGroupingTableModel vcg in _conf.Where(x => x.JoinFormId == PageJoinForm.Id))
+                    {
+                        <th class="table-info" scope="col">@vcg.ColumnName</th>
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (TableCalculation is null)
+            {
+                <tr>
+                    <td colspan="@(QueryFieldsOfNumericTypes.Count() + 1)">
+                        <p class="lead">
+                            Нет данных.
+                        </p>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach ((string MainGroupingValue, int CountRows) mc in TableCalculation.MainCol)
+                {
+                    Dictionary<string, double> grv = TableCalculation.GetRow(mc.MainGroupingValue);
+                    <tr>
+                        <th class="table-primary" scope="row">
+                            <div class="hstack">
+                                <span>
+                                    @if (string.IsNullOrWhiteSpace(mc.MainGroupingValue))
+                                    {
+                                        @((MarkupString)"&nbsp;")
+                                    }
+                                    else
+                                    {
+                                        <text>@mc.MainGroupingValue</text>
+                                    }
+                                </span>
+                                <MudSpacer />
+                                <sup style="color: #959595">
+                                    <MudTooltip Text="Количество строк в группировке">
+                                        @mc.CountRows
+                                    </MudTooltip>
+                                </sup>
+                            </div>
+                        </th>
+                        @foreach (ConstructorFieldFormModelDB fe in QueryFieldsOfNumericTypes)
+                        {
+                            <td>
+                                @if (grv.ContainsKey(fe.Name))
+                                {
+                                    @grv[fe.Name]
+                                }
+                                else
+                                {
+                                    <span class="text-muted">0</span>
+                                }
+                            </td>
+                        }
+                        @if (_conf?.Any(x => x.JoinFormId == PageJoinForm.Id) == true)
+                        {
+                            foreach (VirtualColumnCalculateGroupingTableModel vcg in _conf.Where(x => x.JoinFormId == PageJoinForm.Id))
+                            {
+                                <td class="table-info" scope="col">@TableCalculation.CalcVirtualColumn(vcg, mc.MainGroupingValue)</td>
+                            }
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th scope="row">Итого: </th>
+                @foreach (ConstructorFieldFormModelDB fe in QueryFieldsOfNumericTypes)
+                {
+                    <td>@TableCalculation?.GetTotalSumFieldForGroup(fe.Name)</td>
+                }
+                @if (_conf?.Any(x => x.JoinFormId == PageJoinForm.Id) == true)
+                {
+                    foreach (VirtualColumnCalculateGroupingTableModel vcg in _conf.Where(x => x.JoinFormId == PageJoinForm.Id))
+                    {
+                        <td class="table-info" scope="col">@TableCalculation?.GetTotalSumVirtualColumnForGroup(vcg)</td>
+                    }
+                }
+            </tr>
+        </tfoot>
+    </table>
+}

@@ -66,7 +66,7 @@ public class FormTableCalcManager
     /// <inheritdoc/>
     public double CalcVirtualColumn(VirtualColumnCalculateGroupingTableModel vcg, string row_master_value)
     {
-        if (DeclarationAbstraction.GetHandlerService(vcg.CalculationName) is not VirtualColumnCalcAbstraction _calc_s)
+        if (DeclarationAbstraction.GetHandlerService(vcg.CalculationName) is not VirtualColumnCalculationAbstraction _calc_s)
             return 0;
 
         Dictionary<string, double> columns = [];
@@ -76,7 +76,7 @@ public class FormTableCalcManager
             else
                 columns.Add(_kvp.Key, _kvp.Value);
 
-        return _calc_s.Calc(columns, vcg.FieldsNames);
+        return _calc_s.Calculate(columns, vcg.FieldsNames);
     }
 
     /// <summary>

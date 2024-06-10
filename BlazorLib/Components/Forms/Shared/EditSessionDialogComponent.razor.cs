@@ -1,84 +1,96 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Edit session dialog
+/// </summary>
 public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
 {
+    /// <inheritdoc/>
     [Inject]
-    protected ILogger<EditSessionDialogComponent> _logger { get; set; } = default!;
+    protected NavigationManager NavManagerRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
-    protected NavigationManager _nav { get; set; } = default!;
+    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
-    [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
-
+    /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
     [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; } = default!;
+    public MudDialogInstance MudDialog { get; set; } = default!;
 
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public ConstructorFormSessionModelDB Session { get; set; } = default!;
+    public required ConstructorFormSessionModelDB Session { get; set; }
 
-    string _uri => $"{_nav.BaseUri}{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{Session.SessionToken}";
+    string UrlSession => $"{NavManagerRepo.BaseUri}{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{Session.SessionToken}";
 
+    /// <inheritdoc/>
     protected async Task ClipboardCopyHandle()
     {
-        await _js_runtime.InvokeVoidAsync("clipboardCopy.copyText", _uri);
+        await JsRuntimeRepo.InvokeVoidAsync("clipboardCopy.copyText", UrlSession);
         SnackbarRepo.Add($"Ссылка {Session.SessionToken} скопирована в буфер обмена", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
     }
 
+    /// <inheritdoc/>
     protected async Task DestroyLinkAccess()
     {
-        session_orign.SessionToken = null;
+        session_origin.SessionToken = null;
         await SaveForm();
         SnackbarRepo.Add($"Ссылка аннулирована", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
     }
 
+    /// <inheritdoc/>
     protected async Task ReGenerate()
     {
-        session_orign.SessionToken = Guid.Empty.ToString();
+        session_origin.SessionToken = Guid.Empty.ToString();
         await SaveForm();
         SnackbarRepo.Add($"Ссылка перевыпущена", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
     }
 
-    protected bool IsEdited => Session.Name != session_orign.Name || Session.SessionStatus != session_orign.SessionStatus || (Session.Description ?? "") != (session_orign.Description ?? "") || Session.EmailsNotifications != session_orign.EmailsNotifications || Session.ShowDescriptionAsStartPage != session_orign.ShowDescriptionAsStartPage || Session.DeadlineDate != session_orign.DeadlineDate;
+    /// <inheritdoc/>
+    protected bool IsEdited => Session.Name != session_origin.Name || Session.SessionStatus != session_origin.SessionStatus || (Session.Description ?? "") != (session_origin.Description ?? "") || Session.EmailsNotifications != session_origin.EmailsNotifications || Session.ShowDescriptionAsStartPage != session_origin.ShowDescriptionAsStartPage || Session.DeadlineDate != session_origin.DeadlineDate;
 
+    /// <inheritdoc/>
     protected InputRichTextComponent? _currentTemplateInputRichText;
 
-    ConstructorFormSessionModelDB session_orign = default!;
+    ConstructorFormSessionModelDB session_origin = default!;
 
+    /// <inheritdoc/>
     protected string GetHelperTextForDeadlineDate
     {
         get
         {
             string _res = "Срок действия токена";
-            if (!session_orign.DeadlineDate.HasValue || Session.SessionStatus >= SessionsStatusesEnum.Sended)
+            if (!session_origin.DeadlineDate.HasValue || Session.SessionStatus >= SessionsStatusesEnum.Sended)
                 return _res;
 
-            if (session_orign.DeadlineDate.Value < DateTime.Now)
-                _res += $": просрочен [{(DateTime.Now - session_orign.DeadlineDate.Value):%d}] дней";
-            else if (session_orign.DeadlineDate.Value > DateTime.Now)
-                _res += $": осталось {(session_orign.DeadlineDate.Value - DateTime.Now):%d} дней";
+            if (session_origin.DeadlineDate.Value < DateTime.Now)
+                _res += $": просрочен [{(DateTime.Now - session_origin.DeadlineDate.Value):%d}] дней";
+            else if (session_origin.DeadlineDate.Value > DateTime.Now)
+                _res += $": осталось {(session_origin.DeadlineDate.Value - DateTime.Now):%d} дней";
 
             return _res;
         }
     }
 
+    /// <inheritdoc/>
     protected void Close() => MudDialog.Close(DialogResult.Ok(Session));
 
     async Task ResetForm()
     {
-        session_orign = new()
+        session_origin = new()
         {
             Id = Session.Id,
             CreatedAt = Session.CreatedAt,
@@ -96,7 +108,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
         };
 
         if (_currentTemplateInputRichText is not null)
-            await _js_runtime.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, session_orign.Description);
+            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, session_origin.Description);
 
         StateHasChanged();
     }
@@ -104,7 +116,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
     async Task SaveForm()
     {
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(session_orign);
+        FormSessionQuestionnaireResponseModel rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(session_origin);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
@@ -123,7 +135,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
         await ResetForm();
     }
 
-/// <inheritdoc/>
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await ResetForm();

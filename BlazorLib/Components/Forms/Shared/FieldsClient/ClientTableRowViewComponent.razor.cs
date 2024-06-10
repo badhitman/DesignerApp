@@ -51,7 +51,7 @@ public partial class ClientTableRowViewComponent : ComponentBase
         if (_md?.Options.Any() != true)
             return null;
 
-        if (VirtualColumnCalcAbstraction.GetHandlerService(_md.CommandName) is not VirtualColumnCalcAbstraction _calc_s || SessionQuestionnaire is null || PageJoinForm is null)
+        if (VirtualColumnCalculationAbstraction.GetHandlerService(_md.CommandName) is not VirtualColumnCalculationAbstraction _calc_s || SessionQuestionnaire is null || PageJoinForm is null)
             return null;
 
         Dictionary<string, double> columns = [];
@@ -62,7 +62,7 @@ public partial class ClientTableRowViewComponent : ComponentBase
         if (columns.Count == 0)
             return null;
 
-        return _calc_s.Calc(columns, _md.Options).ToString();
+        return _calc_s.Calculate(columns, _md.Options).ToString();
     }
 
     MarkupString GetValue(ConstructorFieldFormBaseLowModel _fbl)

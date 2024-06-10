@@ -24,7 +24,7 @@ public partial class QuestionnaireClientViewPage : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalcAbstraction>();
+        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         IsBusyProgress = true;
         FormSessionQuestionnaireResponseModel rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireGuid.ToString());
         IsBusyProgress = false;

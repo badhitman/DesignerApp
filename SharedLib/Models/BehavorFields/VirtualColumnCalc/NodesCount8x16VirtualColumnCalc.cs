@@ -3,7 +3,7 @@
 /// <summary>
 /// Вычисление требуемого количества нод
 /// </summary>
-public class NodesCount8x16VirtualColumnCalc : VirtualColumnCalcAbstraction
+public class NodesCount8x16VirtualColumnCalc : VirtualColumnCalculationAbstraction
 {
     /// <inheritdoc/>
     public override string About => "Вычисление требуемого количества нод кратно (cpu:8 && ram:16). Входящие имена полей должны иметь следующий порядок: количество_CPU, количество_RAM, количество_реплик. Имена колонок могут быть любыми, но их порядок обязательно такой.";
@@ -12,7 +12,7 @@ public class NodesCount8x16VirtualColumnCalc : VirtualColumnCalcAbstraction
     public override string Name => "Кол-во нод (C8 R16)";
 
     /// <inheritdoc/>
-    public override double Calc(Dictionary<string, double> row_cells_data, IEnumerable<string> calc_cells)
+    public override double Calculate(Dictionary<string, double> row_cells_data, IEnumerable<string> calc_cells)
     {
         if (calc_cells.Count() != 3 || calc_cells.Any(x => !row_cells_data.Any(y => x.Equals(y.Key))))
             return 0;

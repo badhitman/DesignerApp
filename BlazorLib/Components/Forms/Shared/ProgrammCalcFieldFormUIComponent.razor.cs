@@ -44,7 +44,7 @@ public partial class ProgrammCalcFieldFormUIComponent : ComponentBase
 
     protected override void OnInitialized()
     {
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalcAbstraction>();
+        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
 
         if (Entries.Any())
             SelectedProgrammCalcField = Entries.First().Id;

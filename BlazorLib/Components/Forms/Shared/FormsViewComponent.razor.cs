@@ -15,7 +15,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     protected IDialogService _dialog_service { get; set; } = default!;
 
     [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
+    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;

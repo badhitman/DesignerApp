@@ -6,7 +6,7 @@ namespace BlazorLib.Components;
 
 public partial class InputRichTextComponent : InputTextArea
 {
-    [Inject] IJSRuntime _js_runtime { get; set; } = default!;
+    [Inject] IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Parameter]
     public bool ReadOnly { get; set; } = false;
@@ -17,11 +17,11 @@ public partial class InputRichTextComponent : InputTextArea
     {
         if (firstRender)
         {
-            await _js_runtime.InvokeVoidAsync("CKEditorInterop.init", UID, ReadOnly, DotNetObjectReference.Create(this));
+            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.init", UID, ReadOnly, DotNetObjectReference.Create(this));
         }
         else
         {
-            await _js_runtime.InvokeVoidAsync("CKEditorInterop.isReadOnly", UID, ReadOnly);
+            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.isReadOnly", UID, ReadOnly);
         }
     }
 
@@ -35,7 +35,7 @@ public partial class InputRichTextComponent : InputTextArea
 
     protected override void Dispose(bool disposing)
     {
-        _ = InvokeAsync(async () => { await _js_runtime.InvokeVoidAsync("CKEditorInterop.destroy", UID); });
+        _ = InvokeAsync(async () => { await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.destroy", UID); });
         base.Dispose(disposing);
     }
 }

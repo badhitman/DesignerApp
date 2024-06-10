@@ -5,15 +5,15 @@
         <form dom-guid="{B032BD0A-7F57-452C-BF07-58A117E9CEDE}" class="row g-3">
             <div class="col-md-3">
                 <label for="inputName4" class="form-label">Название</label>
-                <input disabled="@IsBusyProgress" @bind-value="session_orign.Name" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" aria-describedby="nameHelp">
+                <input disabled="@IsBusyProgress" @bind-value="session_origin.Name" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" aria-describedby="nameHelp">
                 <div id="nameHelp" class="form-text">Опционально.</div>
             </div>
             <div class="col-md-2">
-                <MudTextField @bind-Value="session_orign.DeadlineDate" T="DateTime?" Style="margin-top: 27px;" Format="s" InputType="InputType.DateTimeLocal" Label="Действует до" HelperText="@GetHelperTextForDeadlineDate" />
+                <MudTextField @bind-Value="session_origin.DeadlineDate" T="DateTime?" Style="margin-top: 27px;" Format="s" InputType="InputType.DateTimeLocal" Label="Действует до" HelperText="@GetHelperTextForDeadlineDate" />
             </div>
             <div class="col-md-7">
                 <label for="inputEmailsNotify4" class="form-label">Наблюдатели</label>
-                <input disabled="@IsBusyProgress" @bind-value="session_orign.EmailsNotifications" @bind-value:event="oninput" type="text" class="form-control" id="inputEmailsNotify4" aria-describedby="emailsNotifyHelp">
+                <input disabled="@IsBusyProgress" @bind-value="session_origin.EmailsNotifications" @bind-value:event="oninput" type="text" class="form-control" id="inputEmailsNotify4" aria-describedby="emailsNotifyHelp">
                 <div title="Адреса email через любой разделитель" id="emailsNotifyHelp" class="form-text">Адреса Email для уведомлений изменений.</div>
             </div>
             <div class="col-md-6">
@@ -28,7 +28,7 @@
                     <label for="basic-url" class="form-label">Доступ к опросу (ссылка)</label>
                     <div class="input-group mb-3">
                         <button @onclick="ClipboardCopyHandle" class="btn btn-outline-primary" type="button">Copy</button>
-                        <input type="text" readonly class="form-control" id="basic-url" aria-describedby="basic-addon3" value="@_uri">
+                        <input type="text" readonly class="form-control" id="basic-url" aria-describedby="basic-addon3" value="@UrlSession">
                         <button @onclick="DestroyLinkAccess" title="Удалене токена заблокирует доступ к текущему опросу" class="btn btn-outline-dark" type="button">Очистить</button>
                         <button @onclick="ReGenerate" title="Выпустить новый токен для доступа к текущему опросу" class="btn btn-outline-success" type="button">Перевыпуск</button>
                     </div>
@@ -36,7 +36,7 @@
             </div>
             <div class="col-md-6">
                 <label for="inputGroupSelect03" class="form-label">Статус</label>
-                <select @bind="session_orign.SessionStatus" class="form-select" id="inputGroupSelect03" aria-label="Статус сессии">
+                <select @bind="session_origin.SessionStatus" class="form-select" id="inputGroupSelect03" aria-label="Статус сессии">
                     @foreach (SessionsStatusesEnum sse in Enum.GetValues(typeof(SessionsStatusesEnum)).Cast<SessionsStatusesEnum>())
                     {
                         <option value="@sse">@sse.DescriptionInfo()</option>
@@ -45,12 +45,12 @@
             </div>
             <div class="col-12">
                 <div class="form-check">
-                    <input disabled="@(IsBusyProgress || (string.IsNullOrWhiteSpace(session_orign.Description) && string.IsNullOrWhiteSpace(Session.Owner?.Description) && !session_orign.ShowDescriptionAsStartPage))" @bind="session_orign.ShowDescriptionAsStartPage" class="form-check-input" type="checkbox" value="" id="flexCheckDefault" aria-describedby="infoPageHelp">
+                    <input disabled="@(IsBusyProgress || (string.IsNullOrWhiteSpace(session_origin.Description) && string.IsNullOrWhiteSpace(Session.Owner?.Description) && !session_origin.ShowDescriptionAsStartPage))" @bind="session_origin.ShowDescriptionAsStartPage" class="form-check-input" type="checkbox" value="" id="flexCheckDefault" aria-describedby="infoPageHelp">
                     <label style="margin-top: 2px;" class="form-check-label" for="flexCheckDefault">
                         Добавить информационную вкладку (из описания)
                     </label>
                     <div id="infoPageHelp" class="form-text">
-                        @if (!string.IsNullOrWhiteSpace(session_orign.Description))
+                        @if (!string.IsNullOrWhiteSpace(session_origin.Description))
                         {
                             <span>Информация для пользователя.</span>
                         }
@@ -64,7 +64,7 @@
             <div class="col-12">
                 <div class="mb-3">
                     <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
-                    <InputRichTextComponent ReadOnly="IsBusyProgress" @bind-Value="session_orign.Description" @ref="_currentTemplateInputRichText" />
+                    <InputRichTextComponent ReadOnly="IsBusyProgress" @bind-Value="session_origin.Description" @ref="_currentTemplateInputRichText" />
                 </div>
             </div>
             <div class="col-12">
@@ -73,7 +73,7 @@
                     <MudSpacer />
                     <div>
                         <div class="btn-group" role="group" >
-                            <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(session_orign.Name) || !IsEdited || IsBusyProgress)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
+                            <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(session_origin.Name) || !IsEdited || IsBusyProgress)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
                             @if (IsEdited)
                             {
                                 <button disabled="@IsBusyProgress" @onclick="ResetForm" class="btn btn-outline-primary" type="button" id="reset-form">Сброс</button>

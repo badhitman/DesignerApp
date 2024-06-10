@@ -12,7 +12,7 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
     protected ILogger<SessionsValuesOfFieldViewComponent> _logger { get; set; } = default!;
 
     [Inject]
-    protected IJSRuntime _js_runtime { get; set; } = default!;
+    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;

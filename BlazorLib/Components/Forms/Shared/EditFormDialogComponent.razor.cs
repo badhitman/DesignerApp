@@ -83,7 +83,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalcAbstraction>();
+        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         await ResetForm();
         base.OnInitialized();
     }

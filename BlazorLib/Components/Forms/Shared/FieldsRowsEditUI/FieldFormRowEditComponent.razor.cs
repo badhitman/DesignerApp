@@ -81,7 +81,7 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
             SortIndex = Field.SortIndex,
             TypeField = Field.TypeField
         };
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalcAbstraction>();
+        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         if (!string.IsNullOrWhiteSpace(SelectedProgrammCalcField))
             _dc = DeclarationAbstraction.GetHandlerService(SelectedProgrammCalcField);
     }

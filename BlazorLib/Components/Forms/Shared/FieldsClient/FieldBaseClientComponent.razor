@@ -1,98 +1,49 @@
 ﻿@inherits FieldComponentBaseModel
 
-
-        @switch (Field.TypeField)
+@switch (Field.TypeField)
+{
+    case TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password:
+        if (!string.IsNullOrEmpty(Parameter))
         {
-            case TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password:
-                if (!string.IsNullOrEmpty(Parameter))
-                {
-                    switch (Descriptor)
-                    {
-                        case nameof(PropsTypesMDFieldsEnum.TextMask):
-                            <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" Placeholder="@Parameter" Class="mb-3" Mask="@(new PatternMask(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString()))" Label="@Field.Name" HelperText="@Field.Hint" @bind-Value="StringFieldValue" Variant="@Variant.Text" Clearable />
-                            break;
-                        case nameof(PropsTypesMDFieldsEnum.Template):
-                            <label for="@DomID" class="form-label">
-                                @if (string.IsNullOrWhiteSpace(Field.Name))
-                                {
-                                    @((MarkupString)"&nbsp;")
-                                }
-                                else
-                                {
-                                    <text>@Field.Name</text>
-                                }
-                                @if (Field.Required)
-                                {
-                                    <sup class="text-danger">*</sup>
-                                }
-                            </label>
-                            EntryAltDescriptionModel? _current_agent = Entries.FirstOrDefault(x => $"{x.Text} #{x.Id}".Equals(Parameter, StringComparison.OrdinalIgnoreCase));
-                            if (_current_agent is null)
-                            {
-                                <input type="text" readonly class="form-control-plaintext" id="@DomID" value="@Parameter" aria-describedby="@($"{DomID}Help")" dom-guid="{B3D0957F-5C2D-46E1-980D-BED02C5AFF4E}">
-                            }
-                            else
-                            {
-                                DeclarationAbstraction? _declaration = DeclarationAbstraction.GetHandlerService(_current_agent.Id);
-                                @if (_declaration is null)
-                                {
-                                    <input type="text" readonly class="form-control-plaintext" id="@DomID" value="@Parameter" aria-describedby="@($"{DomID}Help")" dom-guid="{78B3F85C-E386-4BAC-A6AB-4E0964223B36}">
-                                }
-                                else
-                                {
-                                    <input type="text" readonly="@(SessionQuestionnaire is null)" class="form-control" id="@DomID" @bind="@StringFieldValue" aria-describedby="@($"{DomID}Help")" dom-guid="{0F979C77-E0F7-45D0-AA3E-322C26EF42BE}">
-                                }
-                            }
-                            <div id="@($"{DomID}Help")" class="form-text">
-                                @if (string.IsNullOrWhiteSpace(Field.Hint))
-                                {
-                                    @((MarkupString)"&nbsp;")
-                                }
-                                else
-                                {
-                                    <text>@Field.Hint</text>
-                                }
-                            </div>
-
-                            break;
-                        default:
-                            <span>error {7796B061-4E44-400A-A39E-B6B418C4BEDC}: descriptor = [@Descriptor]; parameter = [@Parameter];</span>
-                            break;
-                    }
-                }
-                else
-                {
-                    bool _disabled = (Descriptor?.Equals(nameof(PropsTypesMDFieldsEnum.Template)) == true && (string.IsNullOrWhiteSpace(Parameter) || DeclarationAbstraction.GetHandlerService(Parameter) is null));
-                    string css_class = $"form-control{(_disabled ? "-plaintext" : "")}";
-
-                    <label for="@($"{DomID}")" class="form-label">
+            switch (Descriptor)
+            {
+                case nameof(PropsTypesMDFieldsEnum.TextMask):
+                    <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" Placeholder="@Parameter" Class="mb-3" Mask="@(new PatternMask(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString()))" Label="@Field.Name" HelperText="@Field.Hint" @bind-Value="StringFieldValue" Variant="@Variant.Text" Clearable />
+                    break;
+                case nameof(PropsTypesMDFieldsEnum.Template):
+                    <label for="@DomID" class="form-label">
                         @if (string.IsNullOrWhiteSpace(Field.Name))
                         {
                             @((MarkupString)"&nbsp;")
                         }
                         else
                         {
-                            <text>
-                                @Field.Name
-                            </text>
+                            <text>@Field.Name</text>
                         }
                         @if (Field.Required)
                         {
                             <sup class="text-danger">*</sup>
                         }
                     </label>
-
-                    @if (Field.TypeField == TypesFieldsFormsEnum.Text && (bool?)Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true)
+                    EntryAltDescriptionModel? _current_agent = Entries.FirstOrDefault(x => $"{x.Name} #{x.Id}".Equals(Parameter, StringComparison.OrdinalIgnoreCase));
+                    if (_current_agent is null)
                     {
-                        <textarea @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" class="@css_class" id="@DomID" name="@DomID" rows="5" dom-guid="{5B45687E-A6BE-456E-8C0C-06F5409B4FE0}" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" aria-describedby="@($"{DomID}Help")"></textarea>
+                        <input type="text" readonly class="form-control-plaintext" id="@DomID" value="@Parameter" aria-describedby="@($"{DomID}Help")" dom-guid="{B3D0957F-5C2D-46E1-980D-BED02C5AFF4E}">
                     }
                     else
                     {
-                        <input @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" type="@Field.TypeField.ToString()" class="@css_class" dom-guid="{4058D1E4-F747-409F-9A80-6C953EA1652E}" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
+                        DeclarationAbstraction? _declaration = DeclarationAbstraction.GetHandlerService(_current_agent.Id);
+                        @if (_declaration is null)
+                        {
+                            <input type="text" readonly class="form-control-plaintext" id="@DomID" value="@Parameter" aria-describedby="@($"{DomID}Help")" dom-guid="{78B3F85C-E386-4BAC-A6AB-4E0964223B36}">
+                        }
+                        else
+                        {
+                            <input type="text" readonly="@(SessionQuestionnaire is null)" class="form-control" id="@DomID" @bind="@StringFieldValue" aria-describedby="@($"{DomID}Help")" dom-guid="{0F979C77-E0F7-45D0-AA3E-322C26EF42BE}">
+                        }
                     }
-
-                    <div id="@($"{DomID}Help")" class="form-text" hidden="@string.IsNullOrEmpty(Field.Hint)">
-                        @if (string.IsNullOrEmpty(Field.Hint))
+                    <div id="@($"{DomID}Help")" class="form-text">
+                        @if (string.IsNullOrWhiteSpace(Field.Hint))
                         {
                             @((MarkupString)"&nbsp;")
                         }
@@ -101,61 +52,109 @@
                             <text>@Field.Hint</text>
                         }
                     </div>
-                }
-                break;
-            case TypesFieldsFormsEnum.Int:
-                <MudNumericField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="IntFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" Class="mb-3" Label="@Field.Name" HelperText="@Field.Hint" Variant="Variant.Text" Min="0" HideSpinButtons="true" />
-                break;
-            case TypesFieldsFormsEnum.Double:
-                <MudNumericField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DoubleFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" Class="mb-3" Label="@Field.Name" HelperText="@Field.Hint" Variant="Variant.Filled" Min="0.0" HideSpinButtons="true" />
-                break;
-            case TypesFieldsFormsEnum.Bool:
-                <MudCheckBox ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" Class="mb-3" @bind-Checked="@BoolFieldValue" Label="@Field.Name"></MudCheckBox>
-                break;
-            case TypesFieldsFormsEnum.DateTime:
-                <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DateTimeFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="DateTime?" Format="s" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.DateTimeLocal" />
-                break;
-            case TypesFieldsFormsEnum.Date:
-                <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DateTimeFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="DateTime?" Format="yyyy-MM-dd" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.Date" />
-                break;
-            case TypesFieldsFormsEnum.Time:
-                <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="StringFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="string" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.Time" />
-                break;
-            case TypesFieldsFormsEnum.ProgrammCalcDouble:
-                <label for="@($"{DomID}")" class="form-label">
-                    @if (string.IsNullOrWhiteSpace(Field.Name))
-                    {
-                        @((MarkupString)"&nbsp;")
-                    }
-                    else
-                    {
-                        <text>
-                            @Field.Name
-                        </text>
-                    }
-                    @if (Field.Required)
-                    {
-                        <sup class="text-danger">*</sup>
-                    }
-                </label>
-                <input value="@CalcFieldValue" type="text" readonly class="form-control-plaintext" title="@AboutCalcFieldValue" dom-guid="{BF75F4BE-594B-4E55-805B-5CB56F30E524}" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
-                <div id="@($"{DomID}Help")" class="form-text" hidden="@string.IsNullOrEmpty(Field.Hint)">
-                    @if (string.IsNullOrEmpty(Field.Hint))
-                    {
-                        @((MarkupString)"&nbsp;")
-                    }
-                    else
-                    {
-                        <text>@Field.Hint</text>
-                    }
-                </div>
-                break;
-            case TypesFieldsFormsEnum.Generator:
-                <GeneratorClientViewComponent ReadOnly="@(SessionQuestionnaire is null)" GroupByRowNum="GroupByRowNum" />
-                break;
-            default:
-                <div class="alert alert-warning mb-2" role="alert">
-                    `@Field.TypeField/@Field.TypeField.DescriptionInfo()`. ошибка {6627B1E4-A5D8-4D2C-99E8-4252957B02E8}
-                </div>
-                break;
+
+                    break;
+                default:
+                    <span>error {7796B061-4E44-400A-A39E-B6B418C4BEDC}: descriptor = [@Descriptor]; parameter = [@Parameter];</span>
+                    break;
+            }
         }
+        else
+        {
+            bool _disabled = (Descriptor?.Equals(nameof(PropsTypesMDFieldsEnum.Template)) == true && (string.IsNullOrWhiteSpace(Parameter) || DeclarationAbstraction.GetHandlerService(Parameter) is null));
+            string css_class = $"form-control{(_disabled ? "-plaintext" : "")}";
+
+            <label for="@($"{DomID}")" class="form-label">
+                @if (string.IsNullOrWhiteSpace(Field.Name))
+                {
+                    @((MarkupString)"&nbsp;")
+                }
+                else
+                {
+                    <text>
+                        @Field.Name
+                    </text>
+                }
+                @if (Field.Required)
+                {
+                    <sup class="text-danger">*</sup>
+                }
+            </label>
+
+            @if (Field.TypeField == TypesFieldsFormsEnum.Text && (bool?)Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true)
+            {
+                <textarea @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" class="@css_class" id="@DomID" name="@DomID" rows="5" dom-guid="{5B45687E-A6BE-456E-8C0C-06F5409B4FE0}" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" aria-describedby="@($"{DomID}Help")"></textarea>
+            }
+            else
+            {
+                <input @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" type="@Field.TypeField.ToString()" class="@css_class" dom-guid="{4058D1E4-F747-409F-9A80-6C953EA1652E}" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
+            }
+
+            <div id="@($"{DomID}Help")" class="form-text" hidden="@string.IsNullOrEmpty(Field.Hint)">
+                @if (string.IsNullOrEmpty(Field.Hint))
+                {
+                    @((MarkupString)"&nbsp;")
+                }
+                else
+                {
+                    <text>@Field.Hint</text>
+                }
+            </div>
+        }
+        break;
+    case TypesFieldsFormsEnum.Int:
+        <MudNumericField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="IntFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" Class="mb-3" Label="@Field.Name" HelperText="@Field.Hint" Variant="Variant.Text" Min="0" HideSpinButtons="true" />
+        break;
+    case TypesFieldsFormsEnum.Double:
+        <MudNumericField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DoubleFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" Class="mb-3" Label="@Field.Name" HelperText="@Field.Hint" Variant="Variant.Filled" Min="0.0" HideSpinButtons="true" />
+        break;
+    case TypesFieldsFormsEnum.Bool:
+        <MudCheckBox ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" Class="mb-3" @bind-Value="@BoolFieldValue" Label="@Field.Name"></MudCheckBox>
+        break;
+    case TypesFieldsFormsEnum.DateTime:
+        <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DateTimeFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="DateTime?" Format="s" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.DateTimeLocal" />
+        break;
+    case TypesFieldsFormsEnum.Date:
+        <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DateTimeFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="DateTime?" Format="yyyy-MM-dd" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.Date" />
+        break;
+    case TypesFieldsFormsEnum.Time:
+        <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="StringFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="string" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.Time" />
+        break;
+    case TypesFieldsFormsEnum.ProgrammCalcDouble:
+        <label for="@($"{DomID}")" class="form-label">
+            @if (string.IsNullOrWhiteSpace(Field.Name))
+            {
+                @((MarkupString)"&nbsp;")
+            }
+            else
+            {
+                <text>
+                    @Field.Name
+                </text>
+            }
+            @if (Field.Required)
+            {
+                <sup class="text-danger">*</sup>
+            }
+        </label>
+        <input value="@CalculateFieldValue" type="text" readonly class="form-control-plaintext" title="@AboutCalculationFieldValue" dom-guid="{BF75F4BE-594B-4E55-805B-5CB56F30E524}" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
+        <div id="@($"{DomID}Help")" class="form-text" hidden="@string.IsNullOrEmpty(Field.Hint)">
+            @if (string.IsNullOrEmpty(Field.Hint))
+            {
+                @((MarkupString)"&nbsp;")
+            }
+            else
+            {
+                <text>@Field.Hint</text>
+            }
+        </div>
+        break;
+    case TypesFieldsFormsEnum.Generator:
+        <GeneratorClientViewComponent ReadOnly="@(SessionQuestionnaire is null)" GroupByRowNum="GroupByRowNum" />
+        break;
+    default:
+        <div class="alert alert-warning mb-2" role="alert">
+            `@Field.TypeField/@Field.TypeField.DescriptionInfo()`. ошибка {6627B1E4-A5D8-4D2C-99E8-4252957B02E8}
+        </div>
+        break;
+}

@@ -52,7 +52,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
             return;
         }
         IsBusyProgress = true;
-        CreateObjectOfIntKeyResponseModel rest = await FormsRepo.CreateElementOfDirectory(new EntryModel() { Id = SelectedDirectoryId, Name = ElementDirectoryName });
+        CreateObjectOfIntKeyResponseModel rest = await FormsRepo.CreateElementForDirectory(ElementDirectoryName, SelectedDirectoryId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         ElementDirectoryName = string.Empty;
@@ -67,7 +67,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         InvokeAsync(async () =>
         {
-            ResponseBaseModel rest = await FormsRepo.DeleteElementOfDirectory(element_id);
+            ResponseBaseModel rest = await FormsRepo.DeleteElementFromDirectory(element_id);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
