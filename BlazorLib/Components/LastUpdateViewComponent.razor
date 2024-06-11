@@ -1,0 +1,28 @@
+﻿@if (LastUpdateDate is null || Delta is null)
+{
+    <small>нет</small>
+}
+else if (Delta.Value.TotalMinutes < 1)
+{
+    <span>@(Reverse ? "уже пора" : "только что")</span>
+}
+else if (Delta.Value.TotalMinutes < 60)
+{
+    <span>
+        @(Reverse ? "осталось" : "") @(Math.Round(Delta.Value.TotalMinutes)) мин. @(Reverse ? "" : "назад")
+        <sub class="ms-2">@LastUpdateDate</sub>
+    </span>
+}
+else if (Delta.Value.TotalHours < 12)
+{
+    <span>
+        @(Reverse ? "осталось" : "") @Math.Round(Delta.Value.TotalHours) ч. @(Reverse ? "" : "назад")
+    </span>
+}
+else
+{
+    <span>
+        @(Reverse ? "осталось" : "") @Math.Round(Delta.Value.TotalDays) дн. @(Reverse ? "" : "назад")
+        <sub class="ms-2">@LastUpdateDate</sub>
+    </span>
+}
