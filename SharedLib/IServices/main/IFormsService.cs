@@ -43,7 +43,7 @@ public interface IFormsService
     /// <summary>
     /// Получить сессию
     /// </summary>
-    public Task<FormSessionQuestionnaireResponseModel> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<ConstructorFormSessionModelDB>> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить (или создать) сессию опроса/анкеты

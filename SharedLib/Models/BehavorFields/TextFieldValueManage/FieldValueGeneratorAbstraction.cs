@@ -11,7 +11,7 @@ public abstract class FieldValueGeneratorAbstraction : DeclarationAbstraction
     public object RequestModel = new();
 
     /// <summary>
-    /// Элементы, полученые от генератора
+    /// Элементы, полученные от генератора
     /// </summary>
-    public abstract SimpleStringArrayResponseModel GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0);
+    public abstract TResponseModel<string[]> GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0);
 }

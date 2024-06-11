@@ -12,8 +12,8 @@ public class PagesFieldValueGen : FieldValueGeneratorAbstraction
     public override string? About => "Получить перечень имён вклдок опроса/анкеты. Будет генерироваться список из имён вкладок текущего опроса";
 
     /// <inheritdoc/>
-    public override SimpleStringArrayResponseModel GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0)
+    public override TResponseModel<string[]> GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0)
     {
-        return new() { Elements = session_Questionnaire.Owner?.Pages?.OrderBy(x => x.SortIndex).Select(x => x.Name).Distinct().ToArray() };
+        return new() { Response = session_Questionnaire.Owner?.Pages?.OrderBy(x => x.SortIndex).Select(x => x.Name).Distinct().ToArray() };
     }
 }

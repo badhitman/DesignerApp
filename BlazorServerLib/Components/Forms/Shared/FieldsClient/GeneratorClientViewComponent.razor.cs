@@ -59,10 +59,10 @@ public partial class GeneratorClientViewComponent : FieldComponentBaseModel
 
         if (SessionQuestionnaire is not null)
         {
-            SimpleStringArrayResponseModel res_elements = _gen.GetListElements(Field, SessionQuestionnaire, PageJoinForm, GroupByRowNum);
+            TResponseModel<string[]> res_elements = _gen.GetListElements(Field, SessionQuestionnaire, PageJoinForm, GroupByRowNum);
             SnackbarRepo.ShowMessagesResponse(res_elements.Messages);
-            if (res_elements.Success() && res_elements.Elements is not null)
-                Elements = res_elements.Elements;
+            if (res_elements.Success() && res_elements.Response is not null)
+                Elements = res_elements.Response;
         }
 
         FieldsReferring?.Add(this);

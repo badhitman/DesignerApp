@@ -32,7 +32,7 @@ public partial class NetworksAccessFieldValueGen : FieldValueGeneratorAbstractio
     static Dictionary<string, NetvorksAccessRequestModel?> _cache_ser = new();
 
     /// <inheritdoc/>
-    public override SimpleStringArrayResponseModel GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0)
+    public override TResponseModel<string[]> GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0)
     {
         string? ds = field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
         string? fp = field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
@@ -58,7 +58,7 @@ public partial class NetworksAccessFieldValueGen : FieldValueGeneratorAbstractio
 
         Dictionary<string, Dictionary<uint, List<ConstructorFormSessionValueModelDB>>> pages_data = ConstructorFormQuestionnairePageModelDB.GetRowsData(session_Questionnaire);
         if (!pages_data.ContainsKey(ar.PageNameVM) || !pages_data.ContainsKey(ar.PageNameOCP))
-            return new() { Elements = Enumerable.Empty<string>(), Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Info, Text = $"В данных не хватает необходимых страниц для формирования селектора-генератора" }] };
+            return new() { Response = [], Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Info, Text = $"В данных не хватает необходимых страниц для формирования селектора-генератора" }] };
 
         List<string> elements_gen = [];
         KeyValuePair<uint, List<ConstructorFormSessionValueModelDB>>[] _page_data_ocp = [.. pages_data[ar.PageNameOCP]];
@@ -92,6 +92,6 @@ public partial class NetworksAccessFieldValueGen : FieldValueGeneratorAbstractio
                 elements_gen.Add($"{rv_runtime_role.Value} ({rv_runtime_runtime.Value}) {rv_runtime_tech.Value}");
         }
 
-        return new() { Elements = elements_gen.Distinct().ToArray() };
+        return new() { Response = elements_gen.Distinct().ToArray() };
     }
 }
