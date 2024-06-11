@@ -1,6 +1,6 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<tr dom-guid="5580BB5B-20DB-4C91-9CF4-891E1CFD14D2">
+<tr>
     @if (IsBusyProgress)
     {
         <th colspan="3">
@@ -37,7 +37,7 @@
                             <label class="form-check-label" for="exampleCheck1">Обязательный</label>
                         </div>
                     </div>
-                    <div dom-guid="D43272BE-1A8F-4517-87EA-4029D3C9C92D" class="col-12">
+                    <div class="col-12">
                         <div class="mb-3">
                             <label for="@(_currentTemplateInputRichText_ref?.UID)" class="form-label">Описание</label>
                             <InputRichTextComponent @bind-Value="_field_master.Description" @ref="_currentTemplateInputRichText_ref" />
@@ -59,7 +59,7 @@
                             </div>
                         }
                     </CascadingValue>
-                    <div dom-guid="5D265519-669F-4C0D-9D72-B671A51FC8BA" class="col-12">
+                    <div class="col-12">
                         <div class="hstack mt-3">
                             <div></div>
                             <MudSpacer />
@@ -132,17 +132,17 @@
     }
     else
     {
-        <th dom-guid="9477DD23-D903-4C20-8598-4FCB8AAB8E18" scope="row">
+        <th scope="row">
             @_field_master.Name
             @if (_field_master.Required)
             {
                 <sup class="ms-1 text-danger h6">*</sup>
             }
         </th>
-        <td dom-guid="449DD979-3260-40ED-85DA-5AA81A82697E">
+        <td>
             @TypeNameMS
         </td>
-        <td dom-guid="5535BFE7-221D-4950-907A-123D3AD55093">
+        <td>
             <MudStack Row="true">
                 <span>
                     @InformationField
