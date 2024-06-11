@@ -69,7 +69,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
             return;
 
         if (rest.Response is null)
-            throw new Exception($"Ошибка {{4BBC7550-5753-4D96-9E17-3E9B21F08493}} rest.Content.Entries is null");
+            throw new Exception($"Ошибка 5FD74BE6-EA6E-4FBE-90D4-F6D3C2BF18C5 rest.Content.Entries is null");
 
         Entries = rest.Response;
         StateHasChanged();

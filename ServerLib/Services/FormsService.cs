@@ -52,7 +52,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         {
             msg = $"Токен '{guid_session}' не найден или просрочен.";
             res.AddError(msg);
-            logger.LogError($"{msg} res.SessionQuestionnaire is null. error {{5F3FF6DA-75AC-49B5-8608-8E909FF7C6C3}}");
+            logger.LogError($"{msg} res.SessionQuestionnaire is null. error 61362F88-21C8-431A-9038-475B4C52B759");
         }
 
         return res;
@@ -63,7 +63,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     {
         ConstructorFormSessionModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.SessionToken == token_session, cancellationToken: cancellationToken);
         if (sq is null)
-            return ResponseBaseModel.CreateError($"Сессия [{token_session}] не найдена в БД. ошибка {{B4DE6F2E-9F6F-4FEB-B2B9-426493C9A464}}");
+            return ResponseBaseModel.CreateError($"Сессия [{token_session}] не найдена в БД. ошибка 638FB569-BB5E-43C2-9263-2DCB76F7D88E");
 
         if (sq.SessionStatus >= SessionsStatusesEnum.Sended)
             return ResponseBaseModel.CreateSuccess("Сессия уже отмечена как выполненная и не требует вмешательства");
@@ -78,8 +78,8 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             }
             catch (Exception ex)
             {
-                logger.LogError($"error 6C359E53-9817-4CF4-AB51-79199FE3FBA0: {ex.Message}\n: {ex.StackTrace}");
-                res.AddWarning($"Не удалось отправить уведомление наблюдателям [{sq.EmailsNotifications}]. Возникло исключение {{6C359E53-9817-4CF4-AB51-79199FE3FBA0}}: {ex.Message}");
+                logger.LogError($"error : {ex.Message}\n: {ex.StackTrace}");
+                res.AddWarning($"Не удалось отправить уведомление наблюдателям [{sq.EmailsNotifications}]. Возникло исключение D2D8892C-C018-4069-A978-560A90E7A882: {ex.Message}");
             }
         }
 
@@ -109,7 +109,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         if (session_Questionnaire?.Owner?.Pages is null || session_Questionnaire.SessionValues is null)
         {
-            res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка {{CF37E7A0-6DFC-4007-B9C8-755783774E8E}}");
+            res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка B3AC5AAF-A786-4190-9C61-A272F174D940");
             return res;
         }
         //var v = IsReadonly(_httpContextAccessor.HttpContext.User, session_Questionnaire);
@@ -125,14 +125,14 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         ConstructorFormQuestionnairePageJoinFormModelDB? form_join = session_Questionnaire.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null)
         {
-            res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена. ошибка {{64196795-F224-4C0F-9248-97FE46A8F07E}}");
+            res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена. ошибка 2494D4D2-24E1-48D4-BC9C-C27D327D98B8");
             return res;
         }
 
         ConstructorFieldFormBaseLowModel? field_by_name = form_join.Form.AllFields.FirstOrDefault(x => x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase));
         if (field_by_name is null)
         {
-            res.AddError($"Поле '{req.NameField}' не найдено в форме #{form_join.Form.Id} '{form_join.Form.Name}'. ошибка {{BF95A8F0-9B7B-4BB1-843E-57DC2A753FDD}}");
+            res.AddError($"Поле '{req.NameField}' не найдено в форме #{form_join.Form.Id} '{form_join.Form.Name}'. ошибка 98371573-83A3-41A3-97C2-F8F775BFFD2D");
             return res;
         }
 
@@ -165,7 +165,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         if (session?.Owner?.Pages is null || session.SessionValues is null)
         {
-            res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка {{DB52DC58-6B50-495D-9DE8-201E93A3FB3E}}");
+            res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка 14504D03-88B5-4D1B-AFF2-8DB8D4EB757F");
             return res;
         }
 
@@ -175,7 +175,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         ConstructorFormQuestionnairePageJoinFormModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null || !form_join.IsTable)
         {
-            res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка {{8596931B-110E-4D33-9F98-AC5AFC96284B}}");
+            res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 6342356D-0491-45BC-A33D-B95F5D7DCB5F");
             return res;
         }
         IQueryable<ConstructorFormSessionValueModelDB> q = session.SessionValues.Where(x => x.QuestionnairePageJoinFormId == form_join.Id && x.GroupByRowNum > 0).AsQueryable();
@@ -207,14 +207,14 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         ConstructorFormSessionModelDB? session = get_s.Response;
         if (session?.Owner?.Pages is null || session.SessionValues is null)
-            return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка {{73DFEAA2-3020-4CB2-BED4-4523E5003BE5}}");
+            return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка 5DF6598B-18FF-4E76-AE33-6CE78ACE5442");
 
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (статус {session.SessionStatus}).");
 
         ConstructorFormQuestionnairePageJoinFormModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null || !form_join.IsTable)
-            return ResponseBaseModel.CreateError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка {{C829EC71-39DB-4AAD-8CD9-FD8B025D61F5}}");
+            return ResponseBaseModel.CreateError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 66A38A11-CD9B-4F9E-8B5C-49E60109442D");
 
         ConstructorFormSessionValueModelDB[] values_for_delete = session.SessionValues.Where(x => x.GroupByRowNum == req.GroupByRowNum && x.QuestionnairePageJoinFormId == form_join.Id).ToArray();
 
@@ -289,7 +289,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     {
         ConstructorFormSessionModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken);
         if (sq is null)
-            return ResponseBaseModel.CreateError($"Сессия [{id_session}] не найдена в БД. ошибка {{8EE510F9-57BD-4764-AB38-040BBE2B0AD6}}");
+            return ResponseBaseModel.CreateError($"Сессия [{id_session}] не найдена в БД. ошибка A85733AF-56F4-45D2-A16C-729352D1645B");
 
         if (sq.SessionStatus == status)
             return ResponseBaseModel.CreateSuccess($"Сессия уже переведена в статус [{status}] и не требует обработки");
@@ -307,8 +307,8 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             }
             catch (Exception ex)
             {
-                logger.LogError($"error 2366356C-7416-47F8-A365-DEAEB6F71F41: {ex.Message}\n: {ex.StackTrace}");
-                res.AddWarning($"Не удалось отправить уведомление наблюдателям [{sq.EmailsNotifications}]. Возникло исключение {{DF39BB22-E1E1-45FC-925F-D7664DE842BE}}: {ex.Message}");
+                logger.LogError($"error : {ex.Message}\n: {ex.StackTrace}");
+                res.AddWarning($"Не удалось отправить уведомление наблюдателям [{sq.EmailsNotifications}]. Возникло исключение 7F67AA0A-7F5F-499D-8680-73A665106D8E: {ex.Message}");
             }
         }
 
@@ -341,7 +341,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         string msg;
         if (res.Response is null)
         {
-            msg = $"for {nameof(id_session)} = [{id_session}]. SessionQuestionnaire is null. error {{6DF75C8A-C0FD-4165-88D8-15AEEA8606ED}}";
+            msg = $"for {nameof(id_session)} = [{id_session}]. SessionQuestionnaire is null. error 965BED19-5E30-4AA5-8FBD-1B3EFEFC5B1D";
             logger.LogError(msg);
             res.AddError(msg);
         }
@@ -358,7 +358,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             string[] een = session_json.EmailsNotifications.SplitToList().Where(x => !MailAddress.TryCreate(x, out _)).ToArray();
             if (een.Length != 0)
             {
-                res.AddError($"Не корректные адреса получателей. {JsonConvert.SerializeObject(een)}. error {{BC1B3DA4-0952-4937-8FB8-A99BD22019C3}}");
+                res.AddError($"Не корректные адреса получателей. {JsonConvert.SerializeObject(een)}. error AFDDD9DE-F36E-4FB0-9C10-ACDAF48409A8");
                 return res;
             }
         }
@@ -366,7 +366,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         {
             if (!MailAddress.TryCreate(session_json.CreatorEmail, out _))
             {
-                res.AddError("Ошибка! Ваш email не корректен. {FF1C3CB2-697F-4F77-A42A-5D827D12DA9F}");
+                res.AddError("Ошибка! Ваш email не корректен. 4BFD1BFC-CAAE-4508-9FFE-20562661C368");
                 return res;
             }
 
@@ -706,7 +706,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         if (questionnaire_db is null)
         {
-            res.AddError($"Страница опроса/анкеты #{questionnaire_page_id} отсутствует в БД. ошибка {{14C5D6E8-2DCB-4B72-8691-BEFB773C7A73}}");
+            res.AddError($"Страница опроса/анкеты #{questionnaire_page_id} отсутствует в БД. ошибка B68F235F-B4B3-4CB7-A77A-BAA007A7C412");
             return res;
         }
         questionnaire_db.Owner!.Pages = questionnaire_db.Owner.Pages!.OrderBy(x => x.SortIndex).ToList();
@@ -714,7 +714,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         ConstructorFormQuestionnairePageModelDB? _fns = questionnaire_db.Owner.GetOutermostPage(direct, questionnaire_db.SortIndex);
 
         if (_fns is null)
-            res.AddError("Не удалось выполнить перемещение. ошибка {50CCAF13-65B2-4702-B0F0-88A0C39CF62A}");
+            res.AddError("Не удалось выполнить перемещение. ошибка 7BA66820-1DDF-42B0-AF6D-F8F0C920A40E");
         else
         {
             res.AddInfo($"Страницы опроса/анкеты меняются индексами сортировки: #{_fns.Id} i:{_fns.SortIndex} '{_fns.Name}' && #{questionnaire_db.Id} i:{questionnaire_db.SortIndex} '{questionnaire_db.Name}'");
@@ -897,14 +897,14 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         if (questionnaire_page_join_db?.Owner?.JoinsForms is null)
         {
-            res.AddError($"Форма для страницы опроса/анкеты #{questionnaire_page_join_form_id} отсутствует в БД. ошибка {{9CF1B33A-B26C-4A60-B0CD-35EECB756431}}");
+            res.AddError($"Форма для страницы опроса/анкеты #{questionnaire_page_join_form_id} отсутствует в БД. ошибка 66CB7541-20AE-4C26-A020-3A9546457C3D");
             return res;
         }
 
         ConstructorFormQuestionnairePageJoinFormModelDB? _fns = questionnaire_page_join_db.Owner.GetOutermostJoinForm(direct, questionnaire_page_join_db.SortIndex);
 
         if (_fns is null)
-            res.AddError("Не удалось выполнить перемещение. ошибка {F68A183D-FE97-479D-8C86-AFACE8329C3D}");
+            res.AddError("Не удалось выполнить перемещение. ошибка ED601887-8BB3-4FB7-96C7-1563FD9B1FCD");
         else
         {
             res.AddInfo($"Формы для страницы опроса/анкеты меняются индексами сортировки: #{_fns.Id} i:{_fns.SortIndex} '{_fns.Name}' && #{questionnaire_page_join_db.Id} i:{questionnaire_page_join_db.SortIndex} '{questionnaire_page_join_db.Name}'");
@@ -1253,13 +1253,13 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         if (field_db is null)
         {
-            res.AddError($"Поле формы (простого типа) #{field_id} не найден в БД. ошибка {{22BE3288-025D-49D3-BCBF-745ECB75DAC3}}");
+            res.AddError($"Поле формы (простого типа) #{field_id} не найден в БД. ошибка D4B94965-1C93-478E-AC8A-8F75C0D6455E");
             return res;
         }
 
         if ((field_db.SortIndex <= 1 && direct == VerticalDirectionsEnum.Up) || (field_db.SortIndex >= field_db.Owner!.AllFields.Count() && direct == VerticalDirectionsEnum.Down))
         {
-            res.AddWarning($"Поле формы (простого типа) #{field_id} не может быть перемещено: оно уже в крайнем положении. ошибка {{F0344B5E-4C57-445E-A434-86C15DB36FEE}}");
+            res.AddWarning($"Поле формы (простого типа) #{field_id} не может быть перемещено: оно уже в крайнем положении. ошибка D46E662C-F643-467E-9EDC-528B0674C66A");
             return res;
         }
 
@@ -1286,7 +1286,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             context_forms.Update(_fnsd);
         }
         else
-            res.AddError("Не удалось выполнить перемещение. ошибка {233A4FF6-8E60-4689-985E-C11C54CF13EE}");
+            res.AddError("Не удалось выполнить перемещение. ошибка 24D882A6-8A0E-44B6-BFAD-4916A7372582");
 
         if (res.Success())
         {
@@ -1317,13 +1317,13 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         if (field_db is null)
         {
-            res.AddError($"Поле формы (тип: справочник) #{field_id} не найден в БД. ошибка {{0A4F1C04-A1EB-4915-9610-54AECD441C10}}");
+            res.AddError($"Поле формы (тип: справочник) #{field_id} не найден в БД. ошибка 39253612-8DD9-40B3-80AA-CF6589288E06");
             return res;
         }
 
         if ((field_db.SortIndex <= 1 && direct == VerticalDirectionsEnum.Up) || (field_db.SortIndex >= field_db.Owner!.AllFields.Count() && direct == VerticalDirectionsEnum.Down))
         {
-            res.AddWarning($"Поле формы (тип: справочник) #{field_id} не может быть перемещено: оно уже в крайнем положении. ошибка {{353527CD-793C-45A9-B616-7FC8036E27F1}}");
+            res.AddWarning($"Поле формы (тип: справочник) #{field_id} не может быть перемещено: оно уже в крайнем положении. ошибка 4DA195B0-F0B1-43AB-96F5-F282CB74FFF5");
             return res;
         }
 
@@ -1350,7 +1350,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             context_forms.Update(_fnsd);
         }
         else
-            res.AddError("Не удалось выполнить перемещение. ошибка {1A869633-2DC7-49E5-A604-257CE5EE6357}");
+            res.AddError("Не удалось выполнить перемещение. ошибка 4DC24323-5F46-4EC5-AD6B-3C57B7400883");
 
         if (res.Success())
         {
@@ -1390,7 +1390,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         if (form_field.Id < 1)
         {
             if (form_db.AllFields.Any(x => x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)))
-                return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка {3EE86A19-152B-4581-941B-834D81AA1F5F}");
+                return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка 0A3CBE24-148C-4EC4-9F45-7CCCF866C185");
 
             int _sort_index = form_db.FormsDirectoriesLinks!.Any() ? form_db.FormsDirectoriesLinks!.Max(x => x.SortIndex) : 0;
             _sort_index = Math.Max(_sort_index, form_db.Fields!.Any() ? form_db.Fields!.Max(x => x.SortIndex) : 0);
@@ -1406,7 +1406,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         }
 
         if (form_db.AllFields.Any(x => (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(ConstructorFieldFormModelDB)) && x.Id != form_field.Id && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)))
-            return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка {D923339F-E340-48FB-9136-15A65B2A2E5C}");
+            return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка 28A55C71-3625-48C0-BB62-A44548AED0DD");
 
         form_field_db = form_db.Fields!.FirstOrDefault(x => x.Id == form_field.Id);
 
@@ -1546,7 +1546,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         if (field_directory.Id < 1)
         {
             if (form_db.AllFields.Any(x => x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)))
-                return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка {97767B59-6CBA-49EC-BB09-DD673AD07C84}");
+                return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка 0D2E58E1-8F3F-4CE1-AF55-794644E07D45");
 
             int _sort_index = form_db.FormsDirectoriesLinks!.Any() ? form_db.FormsDirectoriesLinks!.Max(x => x.SortIndex) : 0;
             _sort_index = Math.Max(_sort_index, form_db.Fields!.Any() ? form_db.Fields!.Max(x => x.SortIndex) : 0);
@@ -1573,7 +1573,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         }
 
         if (form_db.AllFields.Any(x => (x.GetType() == typeof(ConstructorFieldFormModelDB) && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && x.Id != field_directory.Id && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase))))
-            return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка {B5062132-5EDD-434F-9FB7-C34F9EF92DCA}");
+            return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка E1848D9D-32D1-4EA1-B6B0-5EC8D60D39C4");
 
         form_fieldd_db = form_db.FormsDirectoriesLinks!.FirstOrDefault(x => x.Id == field_directory.Id);
         if (form_fieldd_db is null)
@@ -1805,7 +1805,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             }
             catch (Exception ex)
             {
-                res.AddError($"exception {{63552C0A-CC7B-4F9C-A26A-23B22952DA2D}}: {ex.Message}");
+                res.AddError($"exception 20227A6B-E705-4EF3-9D3B-5F54677CA7F3: {ex.Message}");
                 return res;
             }
 
@@ -1905,7 +1905,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         }
         catch (Exception ex)
         {
-            res.AddError($"exception {{FE27D0BC-E1DA-4DE6-AB35-BB514A71D944}}: {ex.Message}");
+            res.AddError($"exception A708CE72-AB9D-430D-8CB0-40C522F2D91A: {ex.Message}");
             return res;
         }
 

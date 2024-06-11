@@ -76,7 +76,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
 
         if (rest.Response is null)
         {
-            SnackbarRepo.Add($"Ошибка {{266FF830-05BC-442A-B277-16FAEACB0F4A}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка B64393D8-9C60-4A84-9790-15EFA6A74ABB rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

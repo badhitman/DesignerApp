@@ -84,7 +84,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     {
         if (SessionQuestionnaire is null)
         {
-            SnackbarRepo.Add("SessionQuestionnaire is null. error {EAE6D2B8-7285-4F95-976A-7FA0C1F72ECF}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionQuestionnaire is null. error 6146B0D1-0BF3-4CA5-BBF5-5EA64ACA709E", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -99,7 +99,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (!rest.Success())
             {
-                SnackbarRepo.Add($"Ошибка {{E223CBC5-5BD5-4BEC-8A68-9601391BE10F}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка E7BD5ADD-8CAF-434B-8AB8-94167CCB3337 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             await ReloadSession();
@@ -111,7 +111,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     {
         if (SessionQuestionnaire is null)
         {
-            SnackbarRepo.Add("SessionQuestionnaire is null. error {98E8A59C-BF72-462A-8894-29EF12245E63}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionQuestionnaire is null. error DDD591F2-F3DE-4BF1-91DB-B0C4E5D7C93C", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -127,7 +127,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{0F45F44B-900B-46CD-AC42-C866F8618A2E}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка B4812CDF-E4F0-46D5-981B-422DC3F966D7 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         uint row_num = (uint)rest.Response;
@@ -155,7 +155,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     {
         if (SessionQuestionnaire is null)
         {
-            SnackbarRepo.Add("SessionQuestionnaire is null. error {E4AE03AE-85A8-4D99-8C66-2FB46B84C67E}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionQuestionnaire is null. error BCBB2599-4CC1-433A-A5BC-21114935105F", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         IsBusyProgress = true;
@@ -167,7 +167,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{F046D8EB-DAA2-46AB-9C81-A43D5827BDA6}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 3755827F-4811-4927-8ABC-66896D12803B Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

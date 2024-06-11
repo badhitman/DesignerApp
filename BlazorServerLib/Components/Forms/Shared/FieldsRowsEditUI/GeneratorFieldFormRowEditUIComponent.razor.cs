@@ -58,7 +58,7 @@ public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBas
                         RequestModel = new object();
                 }
                 else
-                    SnackbarRepo.Add($"Тип данных не определён `{value}`. error {{85A5E044-20F1-4875-AA90-5430A4BE7BBF}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                    SnackbarRepo.Add($"Тип данных не определён `{value}`. error BD37DC45-22F0-4D78-B879-0897611F681A", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             }
 
             StateHasChangedHandler(Field);

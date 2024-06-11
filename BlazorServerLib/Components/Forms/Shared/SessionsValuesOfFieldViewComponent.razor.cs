@@ -45,7 +45,7 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
         
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{8425BABE-0EAF-44CC-925D-DBB5824EB1F3}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 8BDC72AC-AAE3-4EB0-93D3-F510D2324A78 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         if (rest.Response is not null)

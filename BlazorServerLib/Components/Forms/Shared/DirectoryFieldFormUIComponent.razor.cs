@@ -57,13 +57,13 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{C66CD9F5-27EB-4FC6-91CB-61B7307E5858}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 4EDB5A8E-E5E6-4DA3-A269-1C5128C1A2E9 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         if (rest.Response is null)
         {
-            SnackbarRepo.Add($"Ошибка {{20785094-5951-4F8E-AE4F-98D49C68B602}} rest.Entries is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 71E3091D-2EFE-43E8-A4CE-43934A73A8CF rest.Entries is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

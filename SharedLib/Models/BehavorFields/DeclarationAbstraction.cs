@@ -30,10 +30,10 @@ public abstract class DeclarationAbstraction
         return types.Select(x =>
         {
             if (Activator.CreateInstance(x) is not T obj)
-                throw new Exception("error {7F5A6D54-FEC2-4845-8B19-AF862322DA1D}");
+                throw new Exception("error 919F8FF2-B902-4112-8680-67352F369F0C");
 
             if (obj is not DeclarationAbstraction _set)
-                throw new Exception("error {C57B30A2-F65F-4D23-9676-7EE51D42104B}");
+                throw new Exception("error EF8D4F4A-F578-44C6-B78C-BA7685662938");
 
             return new EntryAltDescriptionModel() { Id = x.Name, Name = _set.Name, Description = _set.About };
         });

@@ -103,7 +103,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
         IsBusyProgress = false;
 
         if (!rest.Success())
-            SnackbarRepo.Add($"Ошибка {{1CA79BA7-295C-40AD-BCF3-F6143DCCF2BD}}: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка B449F13A-7316-4BBB-96F0-DD2A7E6D6699: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
         if (rest.Response is null)
             throw new InvalidOperationException($"Данные сессии 'SessionQuestionnaire': IsNull");

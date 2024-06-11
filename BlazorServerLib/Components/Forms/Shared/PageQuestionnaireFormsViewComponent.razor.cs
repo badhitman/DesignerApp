@@ -53,12 +53,12 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (!rest.Success())
             {
-                SnackbarRepo.Add($"Ошибка {{566396FB-843B-4C07-AE89-D98D7DD268CD}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка 16188CA3-EC20-4743-A31C-DA497CABDEB5 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             if (rest.QuestionnairePage is null)
             {
-                SnackbarRepo.Add($"Ошибка {{C58098C7-FEAA-4BD5-9E30-48FA91DBBF65}} [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка E7427B3A-68CB-4560-B2E0-4AF69F2EDA72 [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             QuestionnairePage = rest.QuestionnairePage;

@@ -58,7 +58,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
         if (rest.Sessions is null)
         {
-            SnackbarRepo.Add($"rest.Content.Sessions is null. error {{532E45D0-7584-42CE-B15F-E3E45DDE2E0E}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.Sessions is null. error B1F8BCC4-952B-4C5E-B573-6FA5AD7F3A8A", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return new TableData<ConstructorFormSessionModelDB>() { TotalItems = totalItems, Items = sessions };
         }
 
@@ -78,7 +78,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{F0B514BB-C043-4733-A420-EC8A77C66252}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка E42D6754-5044-4D2E-BB8B-549CA385CCC2 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         StateHasChanged();
@@ -142,7 +142,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
         if (rest.Response is null)
         {
-            SnackbarRepo.Add($"rest.Content.SessionQuestionnaire is null. error {{3B473C9F-CCE2-4CAF-B39C-7286EA0AF3A7}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.SessionQuestionnaire is null. error 9B2E03C0-0434-4F1A-B4E9-7020575DBDDF", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -166,7 +166,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
         if (rest.Questionnaires is null)
         {
-            SnackbarRepo.Add($"rest.Content.Questionnaires is null. error {{9183C745-5387-401E-8B5A-6D6B8D461FA7}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.Questionnaires is null. error 0A875193-08AA-4678-824D-213BCE33080F", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

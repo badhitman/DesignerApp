@@ -36,7 +36,7 @@ public class FormTableCalcManager
     public Dictionary<string, double> GetRow(string row_master_value)
     {
         if (!_data.TryGetValue(row_master_value, out List<Dictionary<string, double>>? row_data) || row_data is null)
-            throw new InvalidOperationException($"Данные не найдены по ключу мастер-значения '{row_master_value}'. error {{165DEC5B-6237-4BE5-97E6-9414C8424A73}}");
+            throw new InvalidOperationException($"Данные не найдены по ключу мастер-значения '{row_master_value}'. error 9E75DE61-1BCD-42D2-957F-B6A871A1A559");
         Dictionary<string, double> res = [];
         foreach (KeyValuePair<string, double> _kvp in row_data.SelectMany(x => x))
         {
@@ -123,7 +123,7 @@ public class FormTableCalcManager
             else if (double.TryParse(val.Value, out double dv))
                 row.Add(val.Name, dv);
             else
-                throw new Exception($"Не корректное значение '{val.Value}'. error {{74C2A308-E2C0-4266-B44F-175F909A3799}}");
+                throw new Exception($"Не корректное значение '{val.Value}'. error 9BBBD859-5AF4-469C-863F-D99BA6FE6E6C");
         }
         _data[_pos].Add(row);
     }

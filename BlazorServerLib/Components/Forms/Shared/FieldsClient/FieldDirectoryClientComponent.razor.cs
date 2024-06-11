@@ -26,7 +26,7 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
         set
         {
             _selectedElement = value;
-            InvokeAsync(async () => await SetValue(DirectoryObject?.Childs.FirstOrDefault(x => x.Id == _selectedElement)?.Name ?? "error {5DEEC1C9-2648-472B-BFAF-AF305336CFC4}", Field.Name));
+            InvokeAsync(async () => await SetValue(DirectoryObject?.Childs.FirstOrDefault(x => x.Id == _selectedElement)?.Name ?? "error {D21CC2F7-0B44-4BB3-A755-5A9C598D6E15}", Field.Name));
         }
     }
 
@@ -44,7 +44,7 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
             detect_value = DirectoryObject?.Childs.Any() == true ? DirectoryObject.Childs.FirstOrDefault(x => x.Name.Equals(FieldValue, StringComparison.OrdinalIgnoreCase)) : null;
 
             if (detect_value is null)
-                SnackbarRepo.Add($"{nameof(detect_value)} is null for '{FieldValue}'. error {{E43F1279-7687-434D-AD94-9D554D6AD669}}", MudBlazor.Severity.Error, c => c.DuplicatesBehavior = MudBlazor.SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"{nameof(detect_value)} is null for '{FieldValue}'. error 2357552A-D878-4849-ADC5-98C070EC279F", MudBlazor.Severity.Error, c => c.DuplicatesBehavior = MudBlazor.SnackbarDuplicatesBehavior.Allow);
             else
                 _selectedElement = detect_value.Id;
         }

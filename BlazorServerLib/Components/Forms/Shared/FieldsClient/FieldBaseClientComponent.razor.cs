@@ -15,7 +15,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     VirtualColumnCalculationAbstraction? _calculation_service;
     CommandsAsEntriesModel? _md;
     /// <inheritdoc/>
-    public string AboutCalculationFieldValue => $"{CalculationsAsEntries.FirstOrDefault(x => x.Id == Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString())?.Name ?? "ошибка E565515A-AA2F-4D79-BEDF-7271CF7ABC06"}: {Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
+    public string AboutCalculationFieldValue => $"{CalculationsAsEntries.FirstOrDefault(x => x.Id == Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString())?.Name ?? "ошибка 99A9A8C3-4748-45BD-B4C9-A34BA6C13ECF"}: {Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
     string? CalculateFieldValue
     {
         get
@@ -199,7 +199,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 _stringFieldValue = "<calculator>";
                 break;
             default:
-                throw new Exception($"Тип данных поля не обработан. ошибка {{C2E12C0B-837B-4D67-B320-37F976B8D293}}");
+                throw new Exception($"Тип данных поля не обработан. ошибка {{A715B8B4-80B0-4B18-ACAE-CD88E4307B35}}");
         }
         FieldsReferring?.Add(this);
     }

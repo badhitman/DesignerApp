@@ -128,12 +128,12 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{0C0C4DB1-0F94-48C6-88DE-9BF67A1DEA73}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 7E9B8C63-E3A8-4628-8343-993BF1E3BED0 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         if (rest.Response is null)
         {
-            SnackbarRepo.Add($"Ошибка {{66DE90D2-4BFD-4B1F-84B2-5E75B679B1F0}} Content [rest.Questionnaire is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 671CB343-ADD5-46AE-91F8-24175FBF2592 Content [rest.Questionnaire is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -157,7 +157,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{7B42BBCA-F6F0-4707-AD61-89A1171663BE}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 909F66CD-4B54-4F27-8675-2D7748E5E4DF Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         QuestionnaireReloadHandle();
@@ -191,7 +191,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{16CFB88A-36B6-4D01-A7C7-059AAC0520EF}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка D6166A6D-65D4-49FC-88AE-9D6B3FA79E39 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -211,12 +211,12 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{AF08ECED-2FDA-44BC-8E14-28ABC241833A}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 58DBC730-D7BC-481D-A7EF-10CD20489C5E Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         if (rest.QuestionnairePage is null)
         {
-            SnackbarRepo.Add($"Ошибка {{5EB116FA-4949-41DC-B491-B1373147C87F}} rest.Content.QuestionnairePage is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 07653445-0B30-46CB-9B79-3B068BAB9AEB rest.Content.QuestionnairePage is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         int i = QuestionnairePage.Id;
@@ -242,12 +242,12 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{15A928CA-3C53-42D4-9442-3C5EBA7037DA}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 815BCE17-9180-4C27-8016-BEB5244A3454 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         if (rest.QuestionnairePage is null)
         {
-            SnackbarRepo.Add($"Ошибка {{B456FDD7-B0A4-45CA-88CB-F54759041B8B}} Content [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 5B879025-EC6E-4989-9A75-5844BD20DF0B Content [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

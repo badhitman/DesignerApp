@@ -41,7 +41,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{0D9D887E-A52D-49FF-8648-61E59F7D2DAA}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка F1AADB25-31FF-4305-90A9-4B71184434CC Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -61,7 +61,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
 
         if (data.Questionnaires is null)
         {
-            SnackbarRepo.Add($"rest.Content.Questionnaires is null. error {{D03EAEDB-1430-41A0-95EA-3C2344CA0102}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.Questionnaires is null. error 62D3109B-7349-48E8-932B-762D5B0EA585", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return new TableData<ConstructorFormQuestionnaireModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
         }
 
@@ -72,8 +72,10 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     protected async Task QuestionnaireOpenDialog(ConstructorFormQuestionnaireModelDB? questionnaire = null)
     {
         questionnaire ??= (ConstructorFormQuestionnaireModelDB)EntryDescriptionModel.Build("");
-        DialogParameters<EditQuestionnaireDialogComponent> parameters = new();
-        parameters.Add(x => x.Questionnaire, questionnaire);
+        DialogParameters<EditQuestionnaireDialogComponent> parameters = new()
+        {
+            { x => x.Questionnaire, questionnaire }
+        };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         DialogResult result = await DialogServiceRepo.Show<EditQuestionnaireDialogComponent>(questionnaire.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{questionnaire.Id}", parameters, options).Result;

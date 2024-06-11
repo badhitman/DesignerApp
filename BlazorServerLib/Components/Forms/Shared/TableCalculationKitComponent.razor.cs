@@ -43,14 +43,14 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
         int i = f.IndexOf(_separator);
         if (i <= 0 || i == (f.Length - 1))
         {
-            SnackbarRepo.Add($"В значении '{f}' не найден символ-сепаратор '{_separator}' (либо его позиция: крайняя). error {{296AF571-9F55-48A2-A3ED-3B6FD5938B30}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"В значении '{f}' не найден символ-сепаратор '{_separator}' (либо его позиция: крайняя). error A3D99C8E-2645-4148-A88A-95F8431F933D", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return null;
         }
         string id_str = f[..i];
 
         if (!int.TryParse(id_str, out int id_int) || id_int <= 0)
         {
-            SnackbarRepo.Add($"Строка '{id_str}' не является [Int числом], либо его значение меньше нуля. error {{591E4EC7-7C67-495A-8D4B-20C6C7DBED2D}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Строка '{id_str}' не является [Int числом], либо его значение меньше нуля. error 2ADDB354-B526-43BF-86F5-1891FE950C02", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return null;
         }
 
@@ -59,7 +59,7 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
 
         if (fb is null)
         {
-            SnackbarRepo.Add($"Поле [{f}] не найдено в форме. error {{B749538D-C9FC-44DF-A1E4-F00C30B960DA}}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Поле [{f}] не найдено в форме. error 7BC10674-769F-4D9C-B99E-D235646A2E79", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return null;
         }
         return new() { FieldType = fb.GetType(), FieldId = fb.Id, FieldName = fb.Name };

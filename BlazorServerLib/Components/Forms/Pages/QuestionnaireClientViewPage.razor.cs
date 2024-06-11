@@ -31,7 +31,7 @@ public partial class QuestionnaireClientViewPage : BlazorBusyComponentBaseModel
         IsBusyProgress = false;
 
         if (rest.Response is null)
-            throw new Exception($"rest.SessionQuestionnaire is null. error {{AB30D092-938E-460A-B5AB-7E3BEC6A642A}}");
+            throw new Exception("rest.SessionQuestionnaire is null. error 5E20961A-3F1A-4409-9481-FA623F818918");
 
         SessionQuestionnaire = rest.Response;
         if (SessionQuestionnaire.SessionValues is not null && SessionQuestionnaire.SessionValues.Count != 0)

@@ -33,7 +33,7 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
     {
         if (string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken))
         {
-            SnackbarRepo.Add("string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken). error {0F19A8A7-A486-49B9-857B-C45CFC904E9D}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken). error 5E2D7979-53E7-4130-8DF2-53C00D378BEA", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

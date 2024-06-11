@@ -54,7 +54,7 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (rest.Response is null)
             {
-                SnackbarRepo.Add($"rest.Content.Questionnaire is null. error {{2ECBE6F2-628E-4516-A0C4-B464BF1C915E}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"rest.Content.Questionnaire is null. error 84DC51AA-74C1-4FA1-B9C6-B60548C10820", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             Questionnaire = rest.Response;
@@ -77,13 +77,13 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{633F788F-4E1C-4008-8ADC-6DA4D8D836AA}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка C7172378-05A5-4547-ADA4-EA15B84C2CE1 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         if (rest.Response is null)
         {
-            SnackbarRepo.Add($"Ошибка {{B38A414C-4DBA-4F11-BB34-AA71F079F98D}} rest.Content.Questionnaire is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка FCB62EA3-689E-4222-9D59-8D1DEF18CFC5 rest.Content.Questionnaire is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

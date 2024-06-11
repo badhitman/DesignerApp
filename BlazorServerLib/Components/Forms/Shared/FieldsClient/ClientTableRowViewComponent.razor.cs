@@ -44,7 +44,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
     protected override void OnInitialized()
     {
         if (PageJoinForm.Form is null)
-            throw new Exception("данные формы не загружены. error {C52C6C6B-1DDE-4CF8-B1FD-F8A3B2D99D17}");
+            throw new Exception("данные формы не загружены. error 4551A862-30F4-49BB-85AF-9B7BCEE85EE9");
     }
 
     string? CalculateFieldValue(ConstructorFieldFormBaseModel _fb)

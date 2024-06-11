@@ -44,11 +44,11 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
                 if (rest.Response is null)
-                    SnackbarRepo.Add($"Ошибка {{0B2C8557-E22F-4A00-A7CA-7EC1FE445784}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                    SnackbarRepo.Add($"Ошибка 129E30BB-F331-4EA1-961C-33F52E13443F rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
                 if (!rest.Success())
                 {
-                    SnackbarRepo.Add($"Ошибка {{C166EB84-FEF0-4377-9765-C8B9EE1F1065}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                    SnackbarRepo.Add($"Ошибка 32E7BE10-7C10-4FC0-80A0-23CF9D176278 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                     return;
                 }
 
@@ -79,7 +79,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     {
         if (_field_master is null)
         {
-            SnackbarRepo.Add("child_field_form is null. error {1234C070-6C85-48A3-903F-11A872EE67D1}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("child_field_form is null. error FEF46EC6-F26F-4FE2-B569-FFA5D8470171", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         ResponseBaseModel rest;
@@ -113,7 +113,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
         else
         {
-            SnackbarRepo.Add("Тип поля не определён {C23F9885-8BF1-49C9-A4A8-2CBC4352A099}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("Тип поля не определён 050A59F3-028D-41C8-81AC-34F66EBF3840", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = false;
             return;
         }
@@ -123,7 +123,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка {{2B43DA23-8284-4A91-A868-4710A3EB780D}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 624403DB-C86D-421D-9C5D-098FA81DC6A8 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -176,7 +176,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         else
         {
             string msg = $"Тип поля не распознан: {_sender.GetType().FullName}";
-            SnackbarRepo.Add($"{msg} {{2D298C68-338E-409F-8290-A01FECFDF91D}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"{msg} 7AC47E91-6CA2-433F-A981-E1E585E04695", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             throw new Exception(msg);
         }
 
