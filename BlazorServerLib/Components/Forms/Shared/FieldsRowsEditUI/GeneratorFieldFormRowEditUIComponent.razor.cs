@@ -52,9 +52,9 @@ public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBas
                 _dc = DeclarationAbstraction.GetHandlerService(value);
                 if (_dc is not null)
                 {
-                    if (_dc is NetworksAccessFieldValueGen na)
-                        RequestModel = na.RequestModel;
-                    else
+                    //if (_dc is NetvorksAccessFieldValueGen na)
+                    //    RequestModel = na.RequestModel;
+                    //else
                         RequestModel = new object();
                 }
                 else
@@ -77,8 +77,8 @@ public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBas
             _dc = DeclarationAbstraction.GetHandlerService(GeneratorClass);
             if (_dc is not null)
             {
-                if (_dc is NetworksAccessFieldValueGen na)
-                    RequestModel = na.RequestModel;
+                //if (_dc is NetworksAccessFieldValueGen na)
+                //    RequestModel = na.RequestModel;
             }
         }
     }
