@@ -14,12 +14,12 @@ public interface ITelegramWebService
     /// Получить состояние процедуры привязки аккаунта Telegram к учётной записи сайта (если есть).
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
-    public Task<TelegramJoinAccountResponseModel> TelegramJoinAccountState(bool email_notify = false, string? userId = null);
+    public Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(bool email_notify = false, string? userId = null);
 
     /// <summary>
     /// Инициировать новую процедуру привязки Telegram аккаунта к учётной записи сайта
     /// </summary>
-    public Task<TelegramJoinAccountResponseModel> TelegramJoinAccountCreate(string? userId = null);
+    public Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountCreate(string? userId = null);
 
     /// <summary>
     /// Удалить текущую процедуру привязки Telegram аккаунта к учётной записи сайта

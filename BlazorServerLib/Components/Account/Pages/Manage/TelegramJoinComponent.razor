@@ -74,22 +74,22 @@ else
     async Task ReadState(bool notify_email)
     {
         IsBusyProgress = true;
-        TelegramJoinAccountResponseModel rest = await tgWebRepo.TelegramJoinAccountState(notify_email, User.UserId);
+        TResponseModel<TelegramJoinAccountModelDb> rest = await tgWebRepo.TelegramJoinAccountState(notify_email, User.UserId);
         IsBusyProgress = false;
         if (!rest.Success())
         {
             Messages = rest.Messages;
             throw new Exception("can`t get: TelegramJoinAccount. error {656F9472-7C6E-4A9B-81C8-E739D96E9E00}");
         }
-        TelegramJoinAccount = rest.TelegramJoinAccount;
+        TelegramJoinAccount = rest.Response;
     }
 
     async Task CreateToken()
     {
         IsBusyProgress = true;
-        TelegramJoinAccountResponseModel rest = await tgWebRepo.TelegramJoinAccountCreate();
+        TResponseModel<TelegramJoinAccountModelDb> rest = await tgWebRepo.TelegramJoinAccountCreate();
         Messages = rest.Messages;
-        TelegramJoinAccount = rest.TelegramJoinAccount;
+        TelegramJoinAccount = rest.Response;
         IsBusyProgress = false;
     }
 
@@ -98,9 +98,9 @@ else
         IsBusyProgress = true;
         ResponseBaseModel rest = await tgWebRepo.TelegramJoinAccountDeleteAction();
         Messages = rest.Messages;
-        TelegramJoinAccountResponseModel rest_state = await tgWebRepo.TelegramJoinAccountState(false, User.UserId);
+        TResponseModel<TelegramJoinAccountModelDb> rest_state = await tgWebRepo.TelegramJoinAccountState(false, User.UserId);
         IsBusyProgress = false;
-        TelegramJoinAccount = rest_state.TelegramJoinAccount;
+        TelegramJoinAccount = rest_state.Response;
 
         if (!rest_state.Success())
             Messages.AddRange(rest_state.Messages);
