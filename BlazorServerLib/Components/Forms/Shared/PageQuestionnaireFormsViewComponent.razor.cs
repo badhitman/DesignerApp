@@ -1,0 +1,106 @@
+﻿using BlazorLib;
+using Microsoft.AspNetCore.Components;
+using MudBlazor;
+using SharedLib;
+
+namespace BlazorWebLib.Components.Forms.Shared;
+
+/// <summary>
+/// Page questionnaire forms - view
+/// </summary>
+public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBaseModel
+{
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
+
+    [Inject]
+    IFormsService FormsRepo { get; set; } = default!;
+
+    /// <summary>
+    /// Questionnaire page
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; }
+
+    int _join_form_id;
+
+    /// <summary>
+    /// Join form
+    /// </summary>
+    protected void JoinFormHoldAction(int join_form_id)
+    {
+        _join_form_id = join_form_id;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Update page
+    /// </summary>
+    protected void UpdatePageAction(ConstructorFormQuestionnairePageModelDB? page = null)
+    {
+        if (page is not null)
+        {
+            QuestionnairePage = page;
+            StateHasChanged();
+            return;
+        }
+        IsBusyProgress = true;
+        _ = InvokeAsync(async () =>
+        {
+            FormQuestionnairePageResponseModel rest = await FormsRepo.GetQuestionnairePage(QuestionnairePage.Id);
+            IsBusyProgress = false;
+
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
+            if (!rest.Success())
+            {
+                SnackbarRepo.Add($"Ошибка {{566396FB-843B-4C07-AE89-D98D7DD268CD}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                return;
+            }
+            if (rest.QuestionnairePage is null)
+            {
+                SnackbarRepo.Add($"Ошибка {{C58098C7-FEAA-4BD5-9E30-48FA91DBBF65}} [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                return;
+            }
+            QuestionnairePage = rest.QuestionnairePage;
+            QuestionnairePage.JoinsForms = QuestionnairePage.JoinsForms?.OrderBy(x => x.SortIndex).ToList();
+            StateHasChanged();
+        });
+    }
+
+    /// <summary>
+    /// Форму можно сдвинуть выше?
+    /// </summary>
+    protected bool CanUpJoinForm(ConstructorFormQuestionnairePageJoinFormModelDB pjf)
+    {
+        int min_index = QuestionnairePage.JoinsForms?.Any(x => x.Id != pjf.Id) == true
+        ? QuestionnairePage.JoinsForms.Where(x => x.Id != pjf.Id).Min(x => x.SortIndex)
+        : 1;
+        return _join_form_id == 0 && pjf.SortIndex > min_index;
+    }
+
+    /// <summary>
+    /// Форму можно сдвинуть ниже?
+    /// </summary>
+    protected bool CanDownJoinForm(ConstructorFormQuestionnairePageJoinFormModelDB pjf)
+    {
+        int max_index = QuestionnairePage.JoinsForms?.Any(x => x.Id != pjf.Id) == true
+        ? QuestionnairePage.JoinsForms.Where(x => x.Id != pjf.Id).Max(x => x.SortIndex)
+        : 1;
+        return _join_form_id == 0 && pjf.SortIndex < max_index;
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        if (QuestionnairePage.JoinsForms is null)
+        {
+            SnackbarRepo.Add($"Дозагрузка `{nameof(QuestionnairePage.JoinsForms)}` в `{nameof(QuestionnairePage)} ['{QuestionnairePage.Name}' #{QuestionnairePage.Id}]`", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            IsBusyProgress = true;
+            FormQuestionnairePageResponseModel rest = await FormsRepo.GetQuestionnairePage(QuestionnairePage.Id);
+            IsBusyProgress = false;
+
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
+            QuestionnairePage.JoinsForms = rest.QuestionnairePage?.JoinsForms;
+        }
+    }
+}
