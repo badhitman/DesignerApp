@@ -28,11 +28,4 @@ public class ServerConfigModel
     /// Конфигурация Redis
     /// </summary>
     public RedisConfigModel RedisConfig { get; set; } = new RedisConfigModel();
-
-
-    /// <summary>
-    /// Срок жизни создаваемой сессии опроса/анкеты (в минутах)
-    /// </summary>
-    public int TimeActualityQuestionnaireSessionMinutes { get; set; }
-
 }

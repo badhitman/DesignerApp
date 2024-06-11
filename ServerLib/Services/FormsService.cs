@@ -13,7 +13,7 @@ namespace ServerLib;
 /// <summary>
 /// Forms служба
 /// </summary>
-public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> logger, IOptions<ServerConfigModel> _conf) : IFormsService
+public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> logger, IOptions<ServerConstructorConfigModel> _conf) : IFormsService
 {
     static readonly Random r = new();
 

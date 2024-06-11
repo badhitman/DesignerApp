@@ -71,7 +71,6 @@ builder.Services
     .Configure<ServerConfigModel>(builder.Configuration.GetSection("ServerConfig"))
     .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
     .Configure<WebConfigModel>(builder.Configuration.GetSection("WebConfig"))
-    .Configure<VirtualColumnCalculateGroupingTableModel[]>(builder.Configuration.GetSection("VirtualColumnCalculateGroupingTable"))
     ;
 
 string connectionIdentityString = builder.Configuration.GetConnectionString("IdentityConnection") ?? throw new InvalidOperationException("Connection string 'IdentityConnection' not found.");
