@@ -36,12 +36,6 @@
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link px-3" href="constructor">
-                <span aria-hidden="true"></span> Constructor
-            </NavLink>
-        </div>
-
         <AuthorizeView Roles="admin">
             <Authorized>
                 <div class="nav-item px-3">
@@ -54,6 +48,11 @@
 
         <AuthorizeView>
             <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link px-3" href="constructor">
+                        <span aria-hidden="true"></span> Конструктор
+                    </NavLink>
+                </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link px-3" href="Account/Manage">
                         <span aria-hidden="true"></span> @context.User.Identity?.Name

@@ -28,6 +28,8 @@ public partial class LayerContext
     /// </summary>
     public DbSet<ElementOfEnumEntryModelDb> ElementsOfEnumerations { get; set; }
 
+
+
     /// <summary>
     /// Формы
     /// </summary>

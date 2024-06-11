@@ -23,8 +23,8 @@ else if (DirectoryNavState == DirectoryNavStatesEnum.Rename)
 }
 else
 {
-    <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Rename; RenameSelectedDirectoryHandler(true); }" Icon="@Icons.Material.Outlined.Edit" />
-    <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Create; }" Icon="@Icons.Material.Outlined.Add" />
+    <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Rename; RenameSelectedDirectoryHandler(true); }" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" />
+    <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Create; }" Icon="@Icons.Material.Outlined.Add" Size="Size.Small" />
     @if (CanDeleteCurrentDirectory)
     {
         <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Delete; }" Icon="@Icons.Material.Outlined.Delete" />

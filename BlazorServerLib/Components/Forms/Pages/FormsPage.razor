@@ -1,21 +1,24 @@
 ﻿@page "/constructor"
 @rendermode InteractiveServer
 
-<PageTitle>Формы</PageTitle>
+<PageTitle>Конструктор</PageTitle>
 
-<h3>Формы</h3>
+<h3>Конструктор</h3>
 
-<MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
-    <MudTabPanel Text="Сессии">
-        <SessionsViewComponent />
+<MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">    
+    <MudTabPanel Text="Проекты">
+        <ProjectsComponent />
+    </MudTabPanel>
+    <MudTabPanel Text="Списки">
+        <DirectoryViewComponent />
     </MudTabPanel>
     <MudTabPanel Text="Формы">
         <FormsViewComponent />
     </MudTabPanel>
-    <MudTabPanel Text="Анкеты">
+    <MudTabPanel Text="Документы">
         <QuestionnairesViewComponent />
     </MudTabPanel>
-    <MudTabPanel Text="Списки">
-        <DirectoryViewComponent />
+    <MudTabPanel Text="Сессии">
+        <SessionsViewComponent />
     </MudTabPanel>
 </MudTabs>
