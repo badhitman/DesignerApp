@@ -19,7 +19,7 @@ namespace ServerLib;
 /// <summary>
 /// Сервис работы с аутентификацией пользователей
 /// </summary>
-public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRepo, IUsersProfilesService usersProfilesRepo, UserManager<ApplicationUser> userManager, IUserStore<ApplicationUser> userStore, IEmailSender<ApplicationUser> emailSender, SignInManager<ApplicationUser> signInManager, IOptions<UserManageConfigModel> userManageConfig/*, IHttpContextAccessor httpContext*/) : IUsersAuthenticateService
+public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRepo, IUsersProfilesService usersProfilesRepo, UserManager<ApplicationUser> userManager, IUserStore<ApplicationUser> userStore, IEmailSender<ApplicationUser> emailSender, SignInManager<ApplicationUser> signInManager, IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {
     UserManageConfigModel UserConfMan => userManageConfig.Value;
 
