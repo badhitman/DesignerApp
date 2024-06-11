@@ -1,7 +1,7 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
 <label for="inputSelect-@(DomID)" class="form-label">Тип справочника</label>
-<select dom-guid="{A05D09CA-35C3-467F-9C9C-2609AEBD8851}" @bind="SelectedDirectoryField" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help">
+<select @bind="SelectedDirectoryField" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help">
     @foreach (EntryModel e in Entries)
     {
         <option value="@e.Id">@e.Name</option>

@@ -1,7 +1,7 @@
 ﻿@using Newtonsoft.Json
 @inherits FieldFormEditFormBaseComponent
 
-<div dom-guid="{17683B62-4164-4D15-857D-C189C1057BAF}" class="col-md-6 border-bottom border-top py-2 border-start">
+<div class="col-md-6 border-bottom border-top py-2 border-start">
     <label for="exampleInputParameter2_@(DomID)" class="form-label">Программа</label>
     <select @bind="GeneratorClass" class="form-select" aria-label="Программа" id="exampleInputParameter2_@(DomID)" name="exampleInputParameter2_@(DomID)" aria-describedby="@($"exampleInputParameter2_{DomID}Help")">
         @foreach (EntryAltDescriptionModel gen_element in Entries)
@@ -13,7 +13,7 @@
         Обработчик запроса
     </div>
 </div>
-<div dom-guid="{2DAD5F6B-5C3A-43B4-9A5C-46CD4E9D0B37}" class="col-md-6 border-top border-bottom py-2 border-end rounded-end">
+<div class="col-md-6 border-top border-bottom py-2 border-end rounded-end">
     <label for="exampleInputParameter1_@(DomID)" class="form-label">
         Опции/параметры
     </label>

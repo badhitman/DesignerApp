@@ -14,7 +14,7 @@
         {
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                 <MudTabPanel Text="Параметры">
-                    <form dom-guid="{C5FC524B-C1B9-4ACB-8181-79EFC839C3FA}" class="row g-3">
+                    <form class="row g-3">
                         <div class="col-md-4">
                             <label for="inputName4" class="form-label">Название</label>
                             <input @bind-value="FormNameOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" placeholder="Наименование">
@@ -53,7 +53,7 @@
                 <MudTabPanel Disabled="@(Form.Id < 1)" Text="Поля формы">
                     @if (Form.FormsDirectoriesLinks is null || Form.Fields is null)
                     {
-                        <blockquote dom-guid="{337160C5-4F39-40C5-B3F5-ECA519A5D361}" class="blockquote">
+                        <blockquote class="blockquote">
                             <p>Form.FormsDirectoriesLinks is null || Form.Fields is null</p>
                         </blockquote>
                     }

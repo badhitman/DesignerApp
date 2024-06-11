@@ -1,6 +1,6 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<div dom-guid="{6A9146E9-E38B-471D-A07E-51EEEC537B97}" class="card d-flex flex-column flex-grow-1">
+<div class="card d-flex flex-column flex-grow-1">
     <div class="card-header">
         <form class="row row-cols-lg-auto g-3 align-items-center">
             <div class="col-12">
@@ -31,7 +31,7 @@
             }
         </form>
     </div>
-    <div dom-guid="{C4C56880-4018-4909-B6D9-6E72D6CB85FA}" class="card-body">
+    <div class="card-body">
         <MudTable ServerData="@(new Func<TableState, Task<TableData<ConstructorFormSessionModelDB>>>(ServerReload))" Loading="IsBusyProgress" Dense="true" Hover="true" Striped="true" @ref="table">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Ссылки/сессии</MudText>
@@ -52,7 +52,7 @@
                 </MudTd>
                 <MudTd><span title="Адреса для получения уведомлений при смене статуса">@context.EmailsNotifications</span></MudTd>
                 <MudTd>
-                    <div dom-guid="{7405623A-9C49-4223-BE51-81EAA9DC49E3}" class="hstack gap-3">
+                    <div class="hstack gap-3">
                         @if (string.IsNullOrEmpty(context.SessionToken) || context.SessionStatus == SessionsStatusesEnum.None)
                         {
                             <MudChip Variant="Variant.Outlined" Size="Size.Small">

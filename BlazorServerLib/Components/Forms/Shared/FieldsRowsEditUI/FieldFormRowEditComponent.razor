@@ -1,6 +1,6 @@
 ﻿@inherits FieldFormEditFormBaseComponent
 
-<div dom-guid="{6624F0AF-C43D-4373-BD11-0E2F0B018A35}" class="mb-3 col-12">
+<div class="mb-3 col-12">
     <label for="inputSelect-@(DomID)" class="form-label">Тип поля</label>
     <select @bind="SelectedTypeFieldForEditRow" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help">
         @foreach (TypesFieldsFormsEnum tf in Enum.GetValues(typeof(TypesFieldsFormsEnum)))
@@ -22,7 +22,7 @@ else if (SelectedTypeFieldForEditRow == TypesFieldsFormsEnum.ProgrammCalcDouble)
 {
     <div class="col-md-6">
         <label for="inputSelect2-@(DomID)" class="form-label">Метод</label>
-        <select dom-guid="{EBF42928-9F78-4C92-A8D1-30403A9DD515}" id="inputSelect2-@(DomID)" @bind="SelectedProgramCalculationField" class="form-select">
+        <select id="inputSelect2-@(DomID)" @bind="SelectedProgramCalculationField" class="form-select">
             @foreach (EntryAltDescriptionModel e in Entries)
             {
                 <option value="@e.Id">

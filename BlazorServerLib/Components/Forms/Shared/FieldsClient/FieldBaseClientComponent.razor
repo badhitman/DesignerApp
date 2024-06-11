@@ -28,18 +28,18 @@
                     EntryAltDescriptionModel? _current_agent = Entries.FirstOrDefault(x => $"{x.Name} #{x.Id}".Equals(Parameter, StringComparison.OrdinalIgnoreCase));
                     if (_current_agent is null)
                     {
-                        <input type="text" readonly class="form-control-plaintext" id="@DomID" value="@Parameter" aria-describedby="@($"{DomID}Help")" dom-guid="{B3D0957F-5C2D-46E1-980D-BED02C5AFF4E}">
+                        <input type="text" readonly class="form-control-plaintext" id="@DomID" value="@Parameter" aria-describedby="@($"{DomID}Help")">
                     }
                     else
                     {
                         DeclarationAbstraction? _declaration = DeclarationAbstraction.GetHandlerService(_current_agent.Id);
                         @if (_declaration is null)
                         {
-                            <input type="text" readonly class="form-control-plaintext" id="@DomID" value="@Parameter" aria-describedby="@($"{DomID}Help")" dom-guid="{78B3F85C-E386-4BAC-A6AB-4E0964223B36}">
+                            <input type="text" readonly class="form-control-plaintext" id="@DomID" value="@Parameter" aria-describedby="@($"{DomID}Help")">
                         }
                         else
                         {
-                            <input type="text" readonly="@(SessionQuestionnaire is null)" class="form-control" id="@DomID" @bind="@StringFieldValue" aria-describedby="@($"{DomID}Help")" dom-guid="{0F979C77-E0F7-45D0-AA3E-322C26EF42BE}">
+                            <input type="text" readonly="@(SessionQuestionnaire is null)" class="form-control" id="@DomID" @bind="@StringFieldValue" aria-describedby="@($"{DomID}Help")">
                         }
                     }
                     <div id="@($"{DomID}Help")" class="form-text">
@@ -55,7 +55,7 @@
 
                     break;
                 default:
-                    <span>error {7796B061-4E44-400A-A39E-B6B418C4BEDC}: descriptor = [@Descriptor]; parameter = [@Parameter];</span>
+                    <span>error D0D8973F-3A0F-4214-B0FD-EB395CBBEC72: descriptor = [@Descriptor]; parameter = [@Parameter];</span>
                     break;
             }
         }
@@ -83,11 +83,11 @@
 
             @if (Field.TypeField == TypesFieldsFormsEnum.Text && (bool?)Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true)
             {
-                <textarea @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" class="@css_class" id="@DomID" name="@DomID" rows="5" dom-guid="{5B45687E-A6BE-456E-8C0C-06F5409B4FE0}" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" aria-describedby="@($"{DomID}Help")"></textarea>
+                <textarea @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" class="@css_class" id="@DomID" name="@DomID" rows="5" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" aria-describedby="@($"{DomID}Help")"></textarea>
             }
             else
             {
-                <input @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" type="@Field.TypeField.ToString()" class="@css_class" dom-guid="{4058D1E4-F747-409F-9A80-6C953EA1652E}" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
+                <input @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" type="@Field.TypeField.ToString()" class="@css_class" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
             }
 
             <div id="@($"{DomID}Help")" class="form-text" hidden="@string.IsNullOrEmpty(Field.Hint)">
@@ -137,7 +137,7 @@
                 <sup class="text-danger">*</sup>
             }
         </label>
-        <input value="@CalculateFieldValue" type="text" readonly class="form-control-plaintext" title="@AboutCalculationFieldValue" dom-guid="{BF75F4BE-594B-4E55-805B-5CB56F30E524}" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
+        <input value="@CalculateFieldValue" type="text" readonly class="form-control-plaintext" title="@AboutCalculationFieldValue" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
         <div id="@($"{DomID}Help")" class="form-text" hidden="@string.IsNullOrEmpty(Field.Hint)">
             @if (string.IsNullOrEmpty(Field.Hint))
             {
@@ -154,7 +154,7 @@
         break;
     default:
         <div class="alert alert-warning mb-2" role="alert">
-            `@Field.TypeField/@Field.TypeField.DescriptionInfo()`. ошибка {6627B1E4-A5D8-4D2C-99E8-4252957B02E8}
+            `@Field.TypeField/@Field.TypeField.DescriptionInfo()`. ошибка 6EE0B6BC-44E6-436A-BEE2-AF89B4C72303
         </div>
         break;
 }

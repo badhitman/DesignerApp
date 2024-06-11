@@ -2,7 +2,7 @@
 {
     <figure class="text-center">
         <blockquote class="blockquote">
-            <p>Ошибка {86E16297-E7A8-4A9D-A703-64845F3F8610}.</p>
+            <p>Ошибка 2490B8C9-270C-4E84-8C3E-D5342CDC456E.</p>
         </blockquote>
         <figcaption class="blockquote-footer">
             попробуйте <cite title="F5">перезагрузить страницу</cite>
@@ -12,12 +12,12 @@
 else if (SessionQuestionnaire.Owner?.Pages is null)
 {
     <div class="alert alert-dark" role="alert">
-        SessionQuestionnaire.Owner?.Pages is null! ошибка {9C069802-5213-4697-AACB-334313BD5AD4}
+        SessionQuestionnaire.Owner?.Pages is null! ошибка 58539246-ACB4-46F0-A9E9-7EF06EEE10E6
     </div>
 }
 else
 {
-    <MudDynamicTabs AddIconStyle="@AddIconStyleInUse" dom-guid="{AE409687-F43B-401A-8C51-FB1E54DDE281}" @ref="@DynamicTabs_ref" @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+    <MudDynamicTabs AddIconStyle="@AddIconStyleInUse" @ref="@DynamicTabs_ref" @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
 
         @if (!SessionQuestionnaire.Owner.Pages.Any())
         {
@@ -53,7 +53,7 @@ else
                 {
                     SnackbarRepo.Add($"");
                 }
-                <MudTabPanel dom-guid="{08BA77AF-32AF-44D3-BA96-9AD164497E3C}"
+                <MudTabPanel
                              ID="@questionnaire_page.Id"
                              Text="@questionnaire_page.Name"
                              ShowCloseIcon="@(questionnaire_page.Id < 1)"

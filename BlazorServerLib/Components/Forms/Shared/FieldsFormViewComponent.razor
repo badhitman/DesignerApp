@@ -1,6 +1,6 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<div @key="@($"{Form.Id}")" dom-guid="{C5F74635-20C8-4765-8820-DF39CF9EFECD}" class="card">
+<div @key="@($"{Form.Id}")" dom-guid="{}" class="card">
     <div class="card-header">
         <div class="row g-3 align-items-center">
             <div class="col-auto">
@@ -12,7 +12,7 @@
             @if (field_creating_field_ref?.SelectedTypeFieldForAdding > 0)
             {
                 <div class="col-auto">
-                    <div dom-guid="{D670EBE1-7569-4010-95FD-88344DCBB96C}" class="btn-group btn-group-sm" role="group" aria-label="...">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
                         <button @onclick="() => field_creating_field_ref?.SetTypeField()" type="button" class="btn btn-outline-secondary">Отмена</button>
                         <button @onclick="CreateField" disabled="@(!CanSave)" type="button" class="btn btn-outline-primary">Добавить</button>
                     </div>
@@ -21,7 +21,7 @@
         </div>
     </div>
     <div class="card-body">
-        <table dom-guid="{0B8AF358-7206-4B2F-BCBB-C7427E9F3AF6}" class="table table-striped table-hover">
+        <table class="table table-striped table-hover">
             <thead>
                 <tr>
                     <th scope="col">Имя</th>
@@ -39,7 +39,7 @@
     </div>
 </div>
 
-<div dom-guid="{EA2FB496-D1A0-430A-AC65-7D2D04C3E4FC}" class="card mt-4">
+<div class="card mt-4">
     <div class="card-body">
         <h5 class="card-title">Demo</h5>
         <h6 class="card-subtitle mb-2 text-muted">Как это увидит клиент</h6>

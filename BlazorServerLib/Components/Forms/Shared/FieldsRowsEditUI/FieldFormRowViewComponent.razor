@@ -1,6 +1,6 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<tr dom-guid="{A97524ED-BECF-496E-A094-298E07D6F04E}">
+<tr dom-guid="5580BB5B-20DB-4C91-9CF4-891E1CFD14D2">
     @if (IsBusyProgress)
     {
         <th colspan="3">
@@ -13,7 +13,7 @@
     }
     else if (IsEditRow)
     {
-        <th dom-guid="{75B008EC-378C-4C4B-934C-D735B3158037}" colspan="3">
+        <th colspan="3">
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <form class="row g-3">
                     <div class="col-md-4">
@@ -37,7 +37,7 @@
                             <label class="form-check-label" for="exampleCheck1">Обязательный</label>
                         </div>
                     </div>
-                    <div dom-guid="{BCD2433A-F66F-4117-967B-8F09C2BBC4CC}" class="col-12">
+                    <div dom-guid="D43272BE-1A8F-4517-87EA-4029D3C9C92D" class="col-12">
                         <div class="mb-3">
                             <label for="@(_currentTemplateInputRichText_ref?.UID)" class="form-label">Описание</label>
                             <InputRichTextComponent @bind-Value="_field_master.Description" @ref="_currentTemplateInputRichText_ref" />
@@ -55,11 +55,11 @@
                         else
                         {
                             <div class="alert alert-danger" role="alert">
-                                `@(_field_master.GetType().Name)`. Ошибка {40D1AE3C-6FA4-49D9-AD32-DE50560B0D35}
+                                `@(_field_master.GetType().Name)`. Ошибка 66CB949A-9E66-4312-899E-DCA358E8574B
                             </div>
                         }
                     </CascadingValue>
-                    <div dom-guid="{E25713CD-773E-4A37-B76E-208C8FACE8DA}" class="col-12">
+                    <div dom-guid="5D265519-669F-4C0D-9D72-B671A51FC8BA" class="col-12">
                         <div class="hstack mt-3">
                             <div></div>
                             <MudSpacer />
@@ -132,17 +132,17 @@
     }
     else
     {
-        <th dom-guid="{E32602AE-F87E-471B-9FEE-7587EBF72C64}" scope="row">
+        <th dom-guid="9477DD23-D903-4C20-8598-4FCB8AAB8E18" scope="row">
             @_field_master.Name
             @if (_field_master.Required)
             {
                 <sup class="ms-1 text-danger h6">*</sup>
             }
         </th>
-        <td dom-guid="{5269FFEC-485A-4DB8-97FD-45C7CC242A20}">
+        <td dom-guid="449DD979-3260-40ED-85DA-5AA81A82697E">
             @TypeNameMS
         </td>
-        <td dom-guid="{F8489900-898F-403D-BE84-FFEA6E578A15}">
+        <td dom-guid="5535BFE7-221D-4950-907A-123D3AD55093">
             <MudStack Row="true">
                 <span>
                     @InformationField
@@ -162,7 +162,7 @@
                     }
                     else
                     {
-                        <sup class="me-2">Ошибка определения типа данных поля `@(_field_master.GetType().Name)` {5F73D277-EB4F-41D7-81A7-ADF5ABA5D0AA}</sup>
+                        <sup class="me-2">Ошибка определения типа данных поля `@(_field_master.GetType().Name)` A522A48F-045A-4032-B657-CBCF2ED770CF</sup>
                     }
                     @if (!string.IsNullOrWhiteSpace(_field_master.Css))
                     {

@@ -1,5 +1,5 @@
 ﻿<div class="hstack">
-    <select dom-guid="{C087B0B4-3A5D-42F1-ABDD-DDA2EBB8CE06}" @bind="SelectedGeneratorField" class="form-select">
+    <select @bind="SelectedGeneratorField" class="form-select">
         @foreach (EntryAltDescriptionModel e in Entries)
         {
             <option value="@e.Id">

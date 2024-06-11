@@ -2,11 +2,11 @@
 
 <TabSetComponent AsPills="true" NavFill="true">
     <TabComponent Tooltip="Базовые параметры" Title="Настройки">
-        <div dom-guid="{00622022-C152-407C-93DD-9B4A5336FB91}" class="input-group mb-3">
+        <div class="input-group mb-3">
             <span class="input-group-text">Имя страницы</span>
             <input @bind-value="Name" @bind-value:event="oninput" type="text" class="form-control" aria-label="Имя страницы опроса/анкеты">
         </div>
-        <div dom-guid="{A23DA059-EC73-4142-BAEC-00381D497012}" class="mb-3">
+        <div class="mb-3">
             <label for="@(_currentTemplateInputRichText_ref?.UID)" class="form-label">Описание</label>
             <InputRichTextComponent @bind-Value="Description" @ref="_currentTemplateInputRichText_ref" />
         </div>
@@ -46,7 +46,7 @@
         </div>
     </TabComponent>
     <TabComponent IsDisabled="@(QuestionnairePage.Id < 1)" Tooltip="Формы на странице" Title="Формы">
-        <div dom-guid="{1DA52601-DE53-45DA-935B-88D9DAB67DD6}" class="input-group mb-3">
+        <div class="input-group mb-3">
             <label class="input-group-text" for="inputGroupSelect01">Добавление формы</label>
             <select @bind="SelectedFormForAdding" disabled="@(QuestionnairePage.Id < 1)" class="form-select" id="inputGroupSelect01">
                 <option disabled="@(SelectedFormForAdding > 0)" value="0">Выбор формы...</option>

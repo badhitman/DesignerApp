@@ -1,4 +1,4 @@
-﻿<div dom-guid="{2E5C7F2B-DA50-459F-A4C3-1D4F82212F7B}" class="col-auto">
+﻿<div class="col-auto">
     <div class="form-check mt-2">
         <input disabled="@(!string.IsNullOrWhiteSpace(FieldParameter))" @bind="IsMultiline" class="form-check-input" type="checkbox" id="gridCheck">
         <label class="form-check-label" for="gridCheck">
@@ -7,6 +7,6 @@
     </div>
 </div>
 
-<div dom-guid="{CD53A764-B1F1-4D6F-901F-C741C73DF97A}" class="col-auto">
+<div class="col-auto">
     <input disabled="@IsMultiline" @bind-value="FieldParameter" @bind-value:event="oninput" type="text" placeholder="опция: маска, шаблон" id="inputMask" class="form-control" aria-describedby="maskHelpInline">
 </div>

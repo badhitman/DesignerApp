@@ -14,7 +14,7 @@
         <sup class="text-danger">*</sup>
     }
 </label>
-<select disabled="@(SessionQuestionnaire is null)" dom-guid="{4913F308-E267-41C3-86FB-BE9DDF0E2DA2}" @bind="SelectedElement" id="@($"{DomID}")" name="@($"{DomID}")" class="form-select @Field.Css" aria-label="@Field.Name" aria-describedby="@($"{DomID}Help")">
+<select disabled="@(SessionQuestionnaire is null)" @bind="SelectedElement" id="@($"{DomID}")" name="@($"{DomID}")" class="form-select @Field.Css" aria-label="@Field.Name" aria-describedby="@($"{DomID}Help")">
     @if (DirectoryObject?.Childs.Any() == true)
     {
         EntryModel? esf = DirectoryObject.Childs.FirstOrDefault(x => x.Name.Equals(FieldValue));

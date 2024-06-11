@@ -1,4 +1,4 @@
-﻿<div dom-guid="{1C583238-E963-4691-8882-24FFF2D8D5DE}" class="col-auto">
+﻿<div class="col-auto">
     <select title="Тип добавляемого поля" @bind="SelectedTypeFieldForAdding" class="form-select" name="adding-new-field-to-form" id="adding-new-field-to-form">
         <option value="0" disabled="@(SelectedTypeFieldForAdding > 0)">Выбор типа поля...</option>
         @foreach (TypesFieldsFormsEnum tf in Enum.GetValues(typeof(TypesFieldsFormsEnum)))
@@ -46,7 +46,7 @@ else
 
     @if (SelectedTypeFieldForAdding != (int)TypesFieldsFormsEnum.ProgrammCalcDouble)
     {
-        <div dom-guid="{A10A03CC-0488-41AF-B025-646A3EEA5128}" class="col-auto">
+        <div class="col-auto">
             <div class="form-check form-switch mt-2">
                 <input @bind="FieldIsRequired" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
                 <label class="form-check-label" for="flexSwitchCheckDefault">Обязательный</label>

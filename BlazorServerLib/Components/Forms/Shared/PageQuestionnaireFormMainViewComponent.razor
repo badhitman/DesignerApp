@@ -15,13 +15,13 @@ else if (PageJoinForm.Form is null)
             <p>pjf.Form is null</p>
         </blockquote>
         <figcaption class="blockquote-footer">
-            ошибка <cite>{BA071133-CFA0-4477-981E-851D12B87994}</cite>
+            ошибка <cite>46CC4029-4375-48DE-8D1B-C2E7A66DB10E</cite>
         </figcaption>
     </figure>
 }
 else
 {
-    <div dom-guid="{08F6310A-6B3A-4CE1-B4D5-D8B178669ECD}" @key="@($"{PageJoinForm.GetType().FullName}{PageJoinForm.Id}")" class="card @(InUse ? "" : "border-dark ")mb-3@(CurrentFormJoinEdit> 0 && CurrentFormJoinEdit != PageJoinForm.Id ? " opacity-25" : "")">
+    <div dom-guid="{}" @key="@($"{PageJoinForm.GetType().FullName}{PageJoinForm.Id}")" class="card @(InUse ? "" : "border-dark ")mb-3@(CurrentFormJoinEdit> 0 && CurrentFormJoinEdit != PageJoinForm.Id ? " opacity-25" : "")">
         @if (!InUse)
         {
             <div class="card-header">
@@ -77,7 +77,7 @@ else
                         }
                     </form>
                     <MudSpacer />
-                    <div dom-guid="{178A9706-C966-4908-BFE2-ECD8CCD2A025}">
+                    <div>
                         <MudIconButton OnClick="DeleteJoinForm" Disabled="@(IsEdited || IsDisabled)" Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" Size="Size.Small" />
                         <MudIconButton OnClick="async () => { await QuestionnairePageJoinFormMove( VerticalDirectionsEnum.Down); }" Disabled="@(IsEdited || IsDisabled || !CanDown)" Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Primary" Size="Size.Small" />
                         <MudIconButton OnClick="async () => { await QuestionnairePageJoinFormMove( VerticalDirectionsEnum.Up); }" Disabled="@(IsEdited || IsDisabled || !CanUp)" Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Primary" Size="Size.Small" />

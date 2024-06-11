@@ -1,6 +1,6 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<MudTable dom-guid="{3405EC30-E3D0-43BB-96A5-1352D4E5760F}" Class="d-flex flex-column flex-grow-1" Loading="IsBusyProgress" ServerData="@(new Func<TableState, Task<TableData<ConstructorFormQuestionnaireModelDB>>>(ServerReload))" Dense="true" Hover="true" Striped="true" @ref="table">
+<MudTable Class="d-flex flex-column flex-grow-1" Loading="IsBusyProgress" ServerData="@(new Func<TableState, Task<TableData<ConstructorFormQuestionnaireModelDB>>>(ServerReload))" Dense="true" Hover="true" Striped="true" @ref="table">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Анкеты</MudText>
         <MudIconButton Title="Создать новый опрос/анкету" OnClick="() => QuestionnaireOpenDialog()" Icon="@Icons.Material.Filled.AddBox"></MudIconButton>
@@ -19,7 +19,7 @@
             </span>
             @if (context.Pages is null)
             {
-                <span>error {577353B7-17CA-43A6-8DFC-C10895EA849E}</span>
+                <span>error 0D40AC25-9774-4CFF-B8D7-4C9EB2F1937B</span>
             }
             else
             {
@@ -27,13 +27,13 @@
                 {
                     if (string.IsNullOrWhiteSpace(qp.Description))
                     {
-                        <span dom-guid="{E8560FB8-B0D0-48E0-A668-86E88AA2E791}" class="badge bg-secondary ms-1 badge-outer-fix">@qp.Name</span>
+                        <span class="badge bg-secondary ms-1 badge-outer-fix">@qp.Name</span>
                     }
                     else
                     {
                         <MudTooltip>
                             <ChildContent>
-                                <span dom-guid="{A5ED4277-748A-4203-A14A-5E2E7DBFA053}" class="badge bg-secondary badge-outer-fix">@qp.Name</span>
+                                <span class="badge bg-secondary badge-outer-fix">@qp.Name</span>
                             </ChildContent>
                             <TooltipContent>
                                 @Descr(qp.Description)

@@ -7,13 +7,13 @@
             <p>Questionnaire.Pages is null</p>
         </blockquote>
         <figcaption class="blockquote-footer">
-            ошибка <cite>{ABB6C74E-7266-460D-BC4A-04EA8B27AC71}</cite>
+            ошибка <cite>E112BEFB-5709-4D5A-89A5-987F19FB0371</cite>
         </figcaption>
     </figure>
 }
 else
 {
-    <MudDynamicTabs dom-guid="{97DBD411-2A3E-4822-BC21-1C70C2733E94}" @ref="@DynamicTabs" @bind-ActivePanelIndex="@QuestionnaireIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+    <MudDynamicTabs @ref="@DynamicTabs" @bind-ActivePanelIndex="@QuestionnaireIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
      @if (!Questionnaire.Pages.Any())
         {
             <figure class="text-center mt-3">
@@ -30,7 +30,7 @@ else
             foreach (ConstructorFormQuestionnairePageModelDB questionnaire_page in Questionnaire.Pages.OrderBy(x => x.SortIndex))
             {
                 questionnaire_page.Owner = Questionnaire;
-                <MudTabPanel dom-guid="{08BA77AF-32AF-44D3-BA96-9AD164497E3C}"
+                <MudTabPanel
                              ID="@questionnaire_page.Id"
                              Text="@questionnaire_page.Name"
                              Disabled="@TabIsDisabled(questionnaire_page.Id)"

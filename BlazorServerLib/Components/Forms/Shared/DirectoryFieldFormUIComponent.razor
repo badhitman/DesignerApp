@@ -10,7 +10,7 @@
 }
 else
 {
-    <select dom-guid="{B4B00222-DEAD-4EF8-90CE-0D4D57EDFB0A}" @bind="SelectedDirectoryField" class="form-select" id="inputGroupSelect01">
+    <select @bind="SelectedDirectoryField" class="form-select" id="inputGroupSelect01">
         <option value="0" selected disabled="@(SelectedDirectoryField > 0)">Выбор справочника...</option>
         @foreach (EntryModel e in Entries)
         {
