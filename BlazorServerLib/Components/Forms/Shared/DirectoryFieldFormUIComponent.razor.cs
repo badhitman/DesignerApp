@@ -50,7 +50,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        EntriesResponseModel rest = await FormsRepo.GetDirectories();
+        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories();
         IsBusyProgress = false;
         StateHasChangedHandler(FieldObject, GetType());
 
@@ -61,12 +61,12 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
             return;
         }
 
-        if (rest.Entries is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"Ошибка {{20785094-5951-4F8E-AE4F-98D49C68B602}} rest.Entries is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        Entries = rest.Entries;
+        Entries = rest.Response;
     }
 }

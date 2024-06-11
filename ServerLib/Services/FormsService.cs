@@ -155,12 +155,12 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<CreateObjectOfIntKeyResponseModel> AddRowToTable(FieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<int>> AddRowToTable(FieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
     {
         TResponseModel<ConstructorFormSessionModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!get_s.Success())
-            return new CreateObjectOfIntKeyResponseModel() { Messages = get_s.Messages };
-        CreateObjectOfIntKeyResponseModel res = new();
+            return new TResponseStrictModel<int>() { Messages = get_s.Messages, Response = 0 };
+        TResponseStrictModel<int> res = new() { Response = 0 };
         ConstructorFormSessionModelDB? session = get_s.Response;
 
         if (session?.Owner?.Pages is null || session.SessionValues is null)
@@ -170,7 +170,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         }
 
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
-            return (CreateObjectOfIntKeyResponseModel)ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (в статусе {session.SessionStatus}).");
+            return (TResponseStrictModel<int>)ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (в статусе {session.SessionStatus}).");
 
         ConstructorFormQuestionnairePageJoinFormModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null || !form_join.IsTable)
@@ -179,11 +179,11 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             return res;
         }
         IQueryable<ConstructorFormSessionValueModelDB> q = session.SessionValues.Where(x => x.QuestionnairePageJoinFormId == form_join.Id && x.GroupByRowNum > 0).AsQueryable();
-        res.Id = (int)(q.Any() ? (q.Max(x => x.GroupByRowNum) + 1) : 1);
+        res.Response = (int)(q.Any() ? (q.Max(x => x.GroupByRowNum) + 1) : 1);
 
         await context_forms.AddRangeAsync(form_join.Form.AllFields.Where(ScolarOnly).Select(x => new ConstructorFormSessionValueModelDB()
         {
-            GroupByRowNum = (uint)res.Id,
+            GroupByRowNum = (uint)res.Response,
             Name = x.Name,
             Owner = session,
             OwnerId = session.Id,
@@ -193,7 +193,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         session.LastQuestionnaireUpdateActivity = DateTime.Now;
 
         await context_forms.SaveChangesAsync(cancellationToken);
-        res.AddSuccess($"Добавлена строка в таблицу: №п/п {res.Id}");
+        res.AddSuccess($"Добавлена строка в таблицу: №п/п {res.Response}");
 
         return res;
     }
@@ -470,9 +470,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<EntriesDictResponseModel> FindSessionsQuestionnairesByFormFieldName(FormFieldModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<EntryDictModel[]>> FindSessionsQuestionnairesByFormFieldName(FormFieldModel req, CancellationToken cancellationToken = default)
     {
-        EntriesDictResponseModel res = new();
+        TResponseModel<EntryDictModel[]> res = new();
         if (string.IsNullOrWhiteSpace(req.FieldName))
         {
             res.AddError("Не указано имя поля/колонки");
@@ -487,7 +487,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         var data_rows = await q.ToArrayAsync(cancellationToken: cancellationToken);
 
-        res.Elements = data_rows
+        res.Response = data_rows
             .GroupBy(x => x.Session.Id)
             .Select(x =>
             {
@@ -520,7 +520,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
                     Tag = _d
                 };
             }).ToArray();
-        res.AddInfo($"Получено ссылок {res.Elements.Count()}");
+        res.AddInfo($"Получено ссылок {res.Response.Length}");
         return res;
     }
 
@@ -1044,11 +1044,11 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormQuestionnairePageJoinFormResponseModel> GetQuestionnairePageJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormQuestionnairePageJoinFormModelDB>> GetQuestionnairePageJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default)
     {
-        FormQuestionnairePageJoinFormResponseModel res = new()
+        TResponseModel<ConstructorFormQuestionnairePageJoinFormModelDB> res = new()
         {
-            QuestionnairePageJoinForm = await context_forms
+            Response = await context_forms
             .QuestionnairesPagesJoinForms
             .Include(x => x.Form)
             .Include(x => x.Owner)
@@ -1056,10 +1056,10 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             .FirstOrDefaultAsync(x => x.Id == questionnaire_page_join_form_id, cancellationToken: cancellationToken)
         };
 
-        if (res.QuestionnairePageJoinForm is null)
+        if (res.Response is null)
             res.AddError($"Связь #{questionnaire_page_join_form_id} (форма<->опрос/анкета) не найдена в БД");
-        else if (res.QuestionnairePageJoinForm.Owner?.JoinsForms is not null)
-            res.QuestionnairePageJoinForm.Owner.JoinsForms = res.QuestionnairePageJoinForm.Owner.JoinsForms.OrderBy(x => x.SortIndex).ToList();
+        else if (res.Response.Owner?.JoinsForms is not null)
+            res.Response.Owner.JoinsForms = res.Response.Owner.JoinsForms.OrderBy(x => x.SortIndex).ToList();
 
         return res;
     }
@@ -1768,15 +1768,15 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<EntriesResponseModel> GetDirectories(string? name_filter = null, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<EntryModel[]>> GetDirectories(string? name_filter = null, CancellationToken cancellationToken = default)
     {
-        return new EntriesResponseModel() { Entries = await context_forms.Directories.Select(x => new EntryModel() { Id = x.Id, Name = x.Name }).ToArrayAsync(cancellationToken: cancellationToken) };
+        return new TResponseModel<EntryModel[]>() { Response = await context_forms.Directories.Select(x => new EntryModel() { Id = x.Id, Name = x.Name }).ToArrayAsync(cancellationToken: cancellationToken) };
     }
 
     /// <inheritdoc/>
-    public async Task<CreateObjectOfIntKeyResponseModel> UpdateOrCreateDirectory(EntryModel _dir, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryModel _dir, CancellationToken cancellationToken = default)
     {
-        CreateObjectOfIntKeyResponseModel res = new();
+        TResponseStrictModel<int> res = new() { Response = 0 };
         string msg;
         if (string.IsNullOrWhiteSpace(_dir.Name))
         {
@@ -1809,7 +1809,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
                 return res;
             }
 
-            res.AddSuccess($"Справочник успешно создан #{res.Id}");
+            res.AddSuccess($"Справочник успешно создан #{res.Response}");
         }
         else
         {
@@ -1835,7 +1835,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
                 res.AddSuccess(msg);
             }
         }
-        res.Id = ne.Id;
+        res.Response = ne.Id;
         return res;
     }
 
@@ -1855,9 +1855,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
     #region элементы справочникв/списков
     /// <inheritdoc/>
-    public async Task<EntriesResponseModel> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<EntryModel[]>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
-        EntriesResponseModel res = new();
+        TResponseModel<EntryModel[]> res = new();
         ConstructorFormDirectoryModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
             .FirstOrDefaultAsync(x => x.Id == directory_id, cancellationToken: cancellationToken);
@@ -1868,15 +1868,15 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             return res;
         }
 
-        res.Entries = dir.Elements?.ToArray();
+        res.Response = dir.Elements?.ToArray();
         return res;
     }
 
     /// <inheritdoc/>
-    public async Task<CreateObjectOfIntKeyResponseModel> CreateElementForDirectory(string name_element_of_dir, int directory_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<int>> CreateElementForDirectory(string name_element_of_dir, int directory_id, CancellationToken cancellationToken = default)
     {
         name_element_of_dir = Regex.Replace(name_element_of_dir, @"\s+", " ").Trim();
-        CreateObjectOfIntKeyResponseModel res = new();
+        TResponseStrictModel<int> res = new() { Response = 0 };
         ConstructorFormDirectoryModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
             .FirstOrDefaultAsync(x => x.Id == directory_id, cancellationToken: cancellationToken);
@@ -1909,8 +1909,8 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             return res;
         }
 
-        res.Id = ne.Id;
-        res.AddSuccess($"Элемент справочника успешно создан #{res.Id}");
+        res.Response = ne.Id;
+        res.AddSuccess($"Элемент справочника успешно создан #{res.Response}");
 
         return res;
     }

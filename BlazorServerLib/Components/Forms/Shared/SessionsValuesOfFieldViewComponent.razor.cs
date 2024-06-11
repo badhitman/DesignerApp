@@ -40,7 +40,7 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
     public async Task FindFields()
     {
         IsBusyProgress = true;
-        EntriesDictResponseModel rest = await FormsRepo.FindSessionsQuestionnairesByFormFieldName(new() { FormId = Form.Id, FieldName = FieldName });
+        TResponseModel<EntryDictModel[]> rest = await FormsRepo.FindSessionsQuestionnairesByFormFieldName(new() { FormId = Form.Id, FieldName = FieldName });
         IsBusyProgress = false;
         
         if (!rest.Success())
@@ -48,7 +48,7 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
             SnackbarRepo.Add($"Ошибка {{8425BABE-0EAF-44CC-925D-DBB5824EB1F3}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
-        if (rest.Elements is not null)
-            ShowReferralsHandler(rest.Elements);
+        if (rest.Response is not null)
+            ShowReferralsHandler(rest.Response);
     }
 }

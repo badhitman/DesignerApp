@@ -38,11 +38,11 @@ public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBas
         }
         IsBusyProgress = true;
 
-        EntriesResponseModel rest = await FormsRepo.GetElementsOfDirectory(SelectedDirectoryId);
+        TResponseModel<EntryModel[]> rest = await FormsRepo.GetElementsOfDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        EntriesElements = rest.Entries ?? [];
+        EntriesElements = rest.Response ?? [];
 
         if (state_has_change)
             StateHasChanged();

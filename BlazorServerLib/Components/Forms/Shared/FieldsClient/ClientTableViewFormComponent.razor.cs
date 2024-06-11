@@ -121,7 +121,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             SessionId = SessionQuestionnaire.Id
         };
         IsBusyProgress = true;
-        CreateObjectOfIntKeyResponseModel rest = await FormsRepo.AddRowToTable(row_obj);
+        TResponseStrictModel<int> rest = await FormsRepo.AddRowToTable(row_obj);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -130,7 +130,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             SnackbarRepo.Add($"Ошибка {{0F45F44B-900B-46CD-AC42-C866F8618A2E}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
-        uint row_num = (uint)rest.Id;
+        uint row_num = (uint)rest.Response;
         DialogParameters<ClientTableRowEditDialogComponent> parameters = new()
         {
             { x => x.RowNum, row_num },
@@ -139,7 +139,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             { x => x.PageJoinForm, PageJoinForm }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await DialogServiceRepo.Show<ClientTableRowEditDialogComponent>($"Созданная строка данных №{rest.Id}", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<ClientTableRowEditDialogComponent>($"Созданная строка данных №{rest.Response}", parameters, options).Result;
         ValueFieldSessionQuestionnaireBaseModel req = new()
         {
             GroupByRowNum = row_num,

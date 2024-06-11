@@ -31,7 +31,7 @@ public interface IFormsService
     /// Добавить новую строку в таблицу значений
     /// </summary>
     /// <returns>Номер п/п (начиная с 1) созданной строки</returns>
-    public Task<CreateObjectOfIntKeyResponseModel> AddRowToTable(FieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> AddRowToTable(FieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default);
     #endregion
 
     #region сессии опросов/анкет
@@ -58,7 +58,7 @@ public interface IFormsService
     /// <summary>
     /// Найти порцию сессий по имени поля (с пагинацией)
     /// </summary>
-    public Task<EntriesDictResponseModel> FindSessionsQuestionnairesByFormFieldName(FormFieldModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<EntryDictModel[]>> FindSessionsQuestionnairesByFormFieldName(FormFieldModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить значения (введённые в сессиях) по имени поля
@@ -129,7 +129,7 @@ public interface IFormsService
     /// <summary>
     /// Получить данные по связи [формы] со [страницей анкеты/опроса]
     /// </summary>
-    public Task<FormQuestionnairePageJoinFormResponseModel> GetQuestionnairePageJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<ConstructorFormQuestionnairePageJoinFormModelDB>> GetQuestionnairePageJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить связь [формы] со [страницей анкеты/опроса]
@@ -205,12 +205,12 @@ public interface IFormsService
     /// <summary>
     /// Получить справочники/списки
     /// </summary>
-    public Task<EntriesResponseModel> GetDirectories(string? name_filter = null, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<EntryModel[]>> GetDirectories(string? name_filter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/Создать справочник
     /// </summary>
-    public Task<CreateObjectOfIntKeyResponseModel> UpdateOrCreateDirectory(EntryModel _dir, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryModel _dir, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить справочник/список (со всеми элементами и связями)
@@ -222,7 +222,7 @@ public interface IFormsService
     /// <summary>
     /// Получить элементы справочника/списка
     /// </summary>
-    public Task<EntriesResponseModel> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<EntryModel[]>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Создать элемент справочника
@@ -230,7 +230,7 @@ public interface IFormsService
     /// <param name="name_element_of_dir">Имя элемента (создаваемого)</param>
     /// <param name="directory_id">Справочник в который будет добавлен элемент</param>
     /// <param name="cancellationToken"></param>
-    public Task<CreateObjectOfIntKeyResponseModel> CreateElementForDirectory(string name_element_of_dir, int directory_id, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> CreateElementForDirectory(string name_element_of_dir, int directory_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить элемент справочника

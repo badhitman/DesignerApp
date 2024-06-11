@@ -61,17 +61,17 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        EntriesResponseModel rest = await FormsRepo.GetDirectories();
+        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories();
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
             return;
 
-        if (rest.Entries is null)
+        if (rest.Response is null)
             throw new Exception($"Ошибка {{4BBC7550-5753-4D96-9E17-3E9B21F08493}} rest.Content.Entries is null");
 
-        Entries = rest.Entries;
+        Entries = rest.Response;
         StateHasChanged();
     }
 }

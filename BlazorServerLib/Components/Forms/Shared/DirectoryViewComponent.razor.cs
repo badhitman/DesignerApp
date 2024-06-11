@@ -53,7 +53,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
             return;
         }
         IsBusyProgress = true;
-        CreateObjectOfIntKeyResponseModel rest = await FormsRepo.CreateElementForDirectory(ElementDirectoryName, SelectedDirectoryId);
+        TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(ElementDirectoryName, SelectedDirectoryId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         ElementDirectoryName = string.Empty;
@@ -98,7 +98,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            CreateObjectOfIntKeyResponseModel rest = await FormsRepo.UpdateOrCreateDirectory(new EntryModel() { Id = SelectedDirectoryId, Name = DirectoryName });
+            TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryModel() { Id = SelectedDirectoryId, Name = DirectoryName });
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
             _creator_ref?.SetDirectoryNavState(DirectoryNavStatesEnum.None);
@@ -128,9 +128,9 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            CreateObjectOfIntKeyResponseModel rest = await FormsRepo.UpdateOrCreateDirectory(new EntryModel() { Name = name });
+            TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryModel() { Name = name });
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            SelectedDirectoryId = rest.Id;
+            SelectedDirectoryId = rest.Response;
             await ReloadDirectories();
             StateHasChanged();
         });
@@ -143,11 +143,11 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     {
         ElementDirectoryName = string.Empty;
         IsBusyProgress = true;
-        EntriesResponseModel rest = await FormsRepo.GetDirectories();
+        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories();
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
-        directories_all = rest.Entries;
+        directories_all = rest.Response;
 
         if (directories_all?.Any() != true)
             SelectedDirectoryId = -1;
