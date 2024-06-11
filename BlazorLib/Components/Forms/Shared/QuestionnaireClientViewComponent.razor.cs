@@ -1,28 +1,44 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Questionnaire client view
+/// </summary>
 public partial class QuestionnaireClientViewComponent : ComponentBase
 {
     [Inject]
-    protected ILogger<QuestionnaireClientViewComponent> _logger { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
+    /// <summary>
+    /// Session questionnaire
+    /// </summary>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
+    public required ConstructorFormSessionModelDB SessionQuestionnaire { get; set; }
 
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public bool InUse { get; set; } = default!;
 
-    protected MarkupString ms => (MarkupString)(!string.IsNullOrWhiteSpace(SessionQuestionnaire.Description) ? SessionQuestionnaire.Description : SessionQuestionnaire.Owner!.Description!);
+    /// <summary>
+    /// Информация
+    /// </summary>
+    protected MarkupString Information => (MarkupString)(!string.IsNullOrWhiteSpace(SessionQuestionnaire.Description) ? SessionQuestionnaire.Description : SessionQuestionnaire.Owner!.Description!);
 
-    public MudDynamicTabs? DynamicTabs;
+    /// <summary>
+    /// Dynamic tabs - ref
+    /// </summary>
+    public MudDynamicTabs? DynamicTabs_ref;
+
+    /// <summary>
+    /// Questionnaire index
+    /// </summary>
     public int QuestionnaireIndex;
 
+    /// <summary>
+    /// В зависимости режима (InUse) стили, которые добавятся к кнопке добавления: Если документ используется для реального заполнения, то кнопка скрывается.
+    /// </summary>
     protected string AddIconStyleInUse => InUse ? "display:none;" : "";
 }

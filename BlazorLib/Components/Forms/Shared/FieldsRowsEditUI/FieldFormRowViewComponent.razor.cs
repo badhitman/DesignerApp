@@ -1,44 +1,58 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsRowsEditUI;
 
+/// <summary>
+/// Field form row view
+/// </summary>
 public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    protected ILogger<FieldFormRowViewComponent> _logger { get; set; } = default!;
+    IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Inject]
-    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
-    [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
-
+    /// <summary>
+    /// Форма
+    /// </summary>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormModelDB Form { get; set; } = default!;
+    public required ConstructorFormModelDB Form { get; set; }
 
+    /// <summary>
+    /// Поле формы
+    /// </summary>
     [Parameter, EditorRequired]
-    public ConstructorFieldFormBaseLowModel Field { get; set; } = default!;
+    public required ConstructorFieldFormBaseLowModel Field { get; set; }
+
+    /// <summary>
+    /// Перезагрузка полей (обработчик события)
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required Action<ConstructorFormModelDB?> ReloadFieldsHandler { get; set; }
+
     ConstructorFieldFormBaseLowModel _field_master = default!;
 
-    [Parameter, EditorRequired]
-    public Action<ConstructorFormModelDB?> ReloadFieldsHandler { get; set; } = default!;
+    /// <inheritdoc/>
+    protected FieldDirectoryFormRowEditComponent? FieldDirUI_ref;
+    /// <inheritdoc/>
+    protected FieldFormRowEditComponent? FieldEditUI_ref;
 
-    protected FieldDirectoryFormRowEditComponent? FieldDirUI;
-    protected FieldFormRowEditComponent? FieldEditUI;
-
-    protected InputRichTextComponent? _currentTemplateInputRichText;
+    /// <inheritdoc/>
+    protected InputRichTextComponent? _currentTemplateInputRichText_ref;
+    /// <inheritdoc/>
     protected SessionsValuesOfFieldViewComponent? _sessionsValuesOfFieldViewComponent_Ref;
     IEnumerable<EntryDictModel>? _elements = null;
 
     #region row of table (visual)
 
+    /// <inheritdoc/>
     protected MarkupString TypeNameMS => (MarkupString)TypeName;
 
     string? _type_name;
@@ -79,6 +93,8 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     }
 
     string? _information_field;
+
+    /// <inheritdoc/>
     protected MarkupString InformationField
     {
         get
@@ -106,6 +122,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
+    /// <inheritdoc/>
     protected bool CanDown
     {
         get
@@ -121,6 +138,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
+    /// <inheritdoc/>
     protected bool CanUp
     {
         get
@@ -137,6 +155,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     }
     #endregion
 
+    /// <inheritdoc/>
     protected bool CanSave
     {
         get
@@ -157,8 +176,10 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
+    /// <inheritdoc/>
     protected bool IsEditRow = false;
 
+    /// <inheritdoc/>
     protected static string GetInfoRow(SessionsStatusesEnum? _mark_as_done, DateTime deadline_date)
     {
         switch (_mark_as_done)
@@ -175,6 +196,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
+    /// <inheritdoc/>
     protected async Task ClearValuesForFieldName(int? session_id)
     {
         IsBusyProgress = true;
@@ -190,20 +212,23 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             await _sessionsValuesOfFieldViewComponent_Ref.FindFields();
     }
 
-    protected void ShowReferals(IEnumerable<EntryDictModel> elements)
+    /// <inheritdoc/>
+    protected void ShowReferrals(IEnumerable<EntryDictModel> elements)
     {
         _elements = elements;
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     protected async Task ResetEditField()
     {
         SetFieldAction(Field);
         ChildUpdates();
-        if (_currentTemplateInputRichText is not null)
-            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, _field_master.Description);
+        if (_currentTemplateInputRichText_ref is not null)
+            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText_ref.UID, _field_master.Description);
     }
 
+    /// <inheritdoc/>
     protected async Task SaveEditField()
     {
         ResponseBaseModel rest;
@@ -333,6 +358,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         SetFieldAction(Field);
@@ -342,9 +368,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     void ChildUpdates()
     {
         if (_field_master is ConstructorFieldFormModelDB sf)
-            FieldEditUI?.Update(sf);
+            FieldEditUI_ref?.Update(sf);
         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
-            FieldDirUI?.Update(df);
+            FieldDirUI_ref?.Update(df);
     }
 
     /// <summary>
@@ -453,7 +479,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         Form.Reload(rest.Form);
         ReloadFieldsHandler(Form);
     }
-        
+
     /// <summary>
     /// Сдвиг поля на одну позицию в сторону конца
     /// </summary>

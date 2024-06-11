@@ -3,6 +3,9 @@ using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared.FieldsRowsEditUI;
 
+/// <summary>
+/// Text field agent selector
+/// </summary>
 public partial class TextFieldAgentSelectorComponent : ComponentBase
 {
     /// <inheritdoc/>

@@ -17,7 +17,7 @@ else if (SessionQuestionnaire.Owner?.Pages is null)
 }
 else
 {
-    <MudDynamicTabs AddIconStyle="@AddIconStyleInUse" dom-guid="{AE409687-F43B-401A-8C51-FB1E54DDE281}" @ref="@DynamicTabs" @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+    <MudDynamicTabs AddIconStyle="@AddIconStyleInUse" dom-guid="{AE409687-F43B-401A-8C51-FB1E54DDE281}" @ref="@DynamicTabs_ref" @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
 
         @if (!SessionQuestionnaire.Owner.Pages.Any())
         {
@@ -39,7 +39,7 @@ else
                     <MudTabPanel ID="@int.MinValue" Text="Информация" ShowCloseIcon="@false" Icon="@Icons.Material.Filled.Info">
                         <div class="card">
                             <div class="card-body">
-                                @ms
+                                @Information
                             </div>
                         </div>
                     </MudTabPanel>

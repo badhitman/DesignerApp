@@ -1,33 +1,37 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Forms view
+/// </summary>
 public partial class FormsViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    protected ILogger<FormsViewComponent> _logger { get; set; } = default!;
+    IDialogService DialogServiceRepo { get; set; } = default!;
 
     [Inject]
-    protected IDialogService DialogServiceRepo { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
-
+    /// <summary>
+    /// Таблица
+    /// </summary>
     protected MudTable<ConstructorFormModelDB>? table;
 
+    /// <summary>
+    /// Строка поиска
+    /// </summary>
     protected string? searchString = null;
-    protected ConstructorFormsPaginationResponseModel rest_data = new();
+    ConstructorFormsPaginationResponseModel rest_data = new();
 
+    /// <summary>
+    /// Открыть форму
+    /// </summary>
     protected async Task OpenForm(ConstructorFormModelDB form)
     {
         IsBusyProgress = true;
@@ -50,24 +54,28 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             await table.ReloadServerData();
     }
 
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
-    {
-        IsBusyProgress = true;
-        await RestJson();
-    }
+    => await RestJson();
 
-    protected TableState? _table_state;
-    protected async Task RestJson(int page_num = 0)
+
+    TableState? _table_state;
+    async Task RestJson()
     {
         IsBusyProgress = true;
         rest_data = await FormsRepo.SelectForms(new() { PageNum = _table_state?.Page ?? 0, SimpleRequest = searchString, PageSize = _table_state?.PageSize ?? 10 });
         IsBusyProgress = false;
     }
 
+    /// <summary>
+    /// Открыть диалог создания формы
+    /// </summary>
     protected async Task OpenDialogCreateForm()
     {
-        DialogParameters<EditFormDialogComponent> parameters = new();
-        parameters.Add(x => x.Form, (ConstructorFormModelDB)EntryDescriptionModel.Build(""));
+        DialogParameters<EditFormDialogComponent> parameters = new()
+        {
+            { x => x.Form, (ConstructorFormModelDB)EntryDescriptionModel.Build("") }
+        };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;
 
@@ -75,6 +83,9 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             await table.ReloadServerData();
     }
 
+    /// <summary>
+    /// Загрузка данных форм
+    /// </summary>
     protected async Task<TableData<ConstructorFormModelDB>> ServerReload(TableState state)
     {
         _table_state = state;
@@ -82,6 +93,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
         return new TableData<ConstructorFormModelDB>() { TotalItems = rest_data.TotalRowsCount, Items = rest_data.Elements };
     }
 
+    /// <inheritdoc/>
     protected private async Task OnSearch(string text)
     {
         searchString = text;

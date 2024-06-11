@@ -1,34 +1,40 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Page questionnaire forms - view
+/// </summary>
 public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    protected ILogger<PageQuestionnaireFormsViewComponent> _logger { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
-    [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
-
-
+    /// <summary>
+    /// Questionnaire page
+    /// </summary>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; } = default!;
-
-    protected bool SetTitleForm { get; set; }
+    public required ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; }
 
     int _join_form_id;
+
+    /// <summary>
+    /// Join form
+    /// </summary>
     protected void JoinFormHoldAction(int join_form_id)
     {
         _join_form_id = join_form_id;
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Update page
+    /// </summary>
     protected void UpdatePageAction(ConstructorFormQuestionnairePageModelDB? page = null)
     {
         if (page is not null)
@@ -60,6 +66,9 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
         });
     }
 
+    /// <summary>
+    /// Форму можно сдвинуть выше?
+    /// </summary>
     protected bool CanUpJoinForm(ConstructorFormQuestionnairePageJoinFormModelDB pjf)
     {
         int min_index = QuestionnairePage.JoinsForms?.Any(x => x.Id != pjf.Id) == true
@@ -68,6 +77,9 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
         return _join_form_id == 0 && pjf.SortIndex > min_index;
     }
 
+    /// <summary>
+    /// Форму можно сдвинуть ниже?
+    /// </summary>
     protected bool CanDownJoinForm(ConstructorFormQuestionnairePageJoinFormModelDB pjf)
     {
         int max_index = QuestionnairePage.JoinsForms?.Any(x => x.Id != pjf.Id) == true
@@ -76,6 +88,7 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
         return _join_form_id == 0 && pjf.SortIndex < max_index;
     }
 
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         if (QuestionnairePage.JoinsForms is null)

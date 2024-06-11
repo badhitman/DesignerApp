@@ -1,47 +1,53 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Sessions values of field view
+/// </summary>
 public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    protected ILogger<SessionsValuesOfFieldViewComponent> _logger { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
-
-
+    /// <summary>
+    /// Форма
+    /// </summary>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormModelDB Form { get; set; } = default!;
+    public required ConstructorFormModelDB Form { get; set; }
 
+    /// <summary>
+    /// Имя поля
+    /// </summary>
     [Parameter, EditorRequired]
-    public string FieldName { get; set; } = default!;
+    public required string FieldName { get; set; }
 
+    /// <summary>
+    /// Show referrals -  handler action
+    /// </summary>
     [Parameter, EditorRequired]
-    public Action<IEnumerable<EntryDictModel>> ShowReferalsHandler { get; set; } = default!;
+    public required Action<IEnumerable<EntryDictModel>> ShowReferralsHandler { get; set; }
 
+    /// <summary>
+    /// Найти использование полей (заполненные данными), связанные с данным документом/сессией
+    /// </summary>
     public async Task FindFields()
     {
         IsBusyProgress = true;
         EntriesDictResponseModel rest = await FormsRepo.FindSessionsQuestionnairesByFormFieldName(new() { FormId = Form.Id, FieldName = FieldName });
         IsBusyProgress = false;
-        //SnackbarRepo.ShowMessagesResponse(rest.Content.Messages);
+        
         if (!rest.Success())
         {
             SnackbarRepo.Add($"Ошибка {{8425BABE-0EAF-44CC-925D-DBB5824EB1F3}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         if (rest.Elements is not null)
-            ShowReferalsHandler(rest.Elements);
+            ShowReferralsHandler(rest.Elements);
     }
 }

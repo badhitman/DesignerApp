@@ -39,18 +39,18 @@
                     </div>
                     <div dom-guid="{BCD2433A-F66F-4117-967B-8F09C2BBC4CC}" class="col-12">
                         <div class="mb-3">
-                            <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
-                            <InputRichTextComponent @bind-Value="_field_master.Description" @ref="_currentTemplateInputRichText" />
+                            <label for="@(_currentTemplateInputRichText_ref?.UID)" class="form-label">Описание</label>
+                            <InputRichTextComponent @bind-Value="_field_master.Description" @ref="_currentTemplateInputRichText_ref" />
                         </div>
                     </div>
                     <CascadingValue Value="SetFieldAction">
                         @if (_field_master is ConstructorFieldFormModelDB sf)
                         {
-                            <FieldFormRowEditComponent Field="sf" @ref="FieldEditUI" />
+                            <FieldFormRowEditComponent Field="sf" @ref="FieldEditUI_ref" />
                         }
                         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
                         {
-                            <FieldDirectoryFormRowEditComponent Field="df" @ref="FieldDirUI" />
+                            <FieldDirectoryFormRowEditComponent Field="df" @ref="FieldDirUI_ref" />
                         }
                         else
                         {
@@ -73,7 +73,7 @@
                                 {
                                     <button disabled type="button" class="btn btn-primary">Сохранить</button>
                                 }
-                                <SessionsValuesOfFieldViewComponent @ref="_sessionsValuesOfFieldViewComponent_Ref" FieldName="@Field.Name" ShowReferalsHandler="ShowReferals" />
+                                <SessionsValuesOfFieldViewComponent @ref="_sessionsValuesOfFieldViewComponent_Ref" FieldName="@Field.Name" ShowReferralsHandler="ShowReferrals" />
                             </div>
                         </div>
                     </div>

@@ -1,52 +1,83 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.Forms.Shared;
 
+/// <summary>
+/// Page questionnaire view
+/// </summary>
 public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    protected ILogger<PageQuestionnaireViewComponent> _logger { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
-    [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
-
-
+    /// <summary>
+    /// Questionnaire page
+    /// </summary>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; } = default!;
+    public required ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; }
 
+    /// <summary>
+    /// All forms
+    /// </summary>
     [Parameter, EditorRequired]
-    public IEnumerable<ConstructorFormBaseModel> AllForms { get; set; } = default!;
+    public required IEnumerable<ConstructorFormBaseModel> AllForms { get; set; }
 
+    /// <summary>
+    /// Can up move
+    /// </summary>
     [Parameter, EditorRequired]
-    public bool CanUpMove { get; set; }
+    public required bool CanUpMove { get; set; }
 
+    /// <summary>
+    /// Can down move
+    /// </summary>
     [Parameter, EditorRequired]
     public bool CanDownMove { get; set; }
 
+    /// <summary>
+    /// Set id for page -  handle action
+    /// </summary>
     [Parameter, EditorRequired]
-    public Action<int, ConstructorFormQuestionnairePageModelDB> SetIdForPageHandle { get; set; } = default!;
+    public required Action<int, ConstructorFormQuestionnairePageModelDB> SetIdForPageHandle { get; set; }
 
+    /// <summary>
+    /// Set name for page - handle action
+    /// </summary>
     [Parameter, EditorRequired]
     public Action<int, string?> SetNameForPageHandle { get; set; } = default!;
 
+    /// <summary>
+    /// Questionnaire reload - handle action
+    /// </summary>
     [Parameter, EditorRequired]
     public Action QuestionnaireReloadHandle { get; set; } = default!;
 
+    /// <summary>
+    /// Set hold handle - action
+    /// </summary>
     [Parameter, EditorRequired]
     public Action<bool> SetHoldHandle { get; set; } = default!;
 
+    /// <summary>
+    /// Update questionnaire - handle action
+    /// </summary>
     [Parameter, EditorRequired]
     public Action<ConstructorFormQuestionnaireModelDB, ConstructorFormQuestionnairePageModelDB?> UpdateQuestionnaireHandle { get; set; } = default!;
 
+    /// <summary>
+    /// Selected form for adding
+    /// </summary>
     protected int SelectedFormForAdding { get; set; }
 
-    string? _name_orign { get; set; }
+    string? NameOrigin { get; set; }
+    /// <summary>
+    /// Name
+    /// </summary>
     protected string? Name
     {
         get => QuestionnairePage.Name;
@@ -57,10 +88,13 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
             SetHoldHandle(IsEdited);
         }
     }
-    public string? _description_orign { get; set; }
+    string? DescriptionOrigin { get; set; }
+    /// <summary>
+    /// Описание
+    /// </summary>
     public string? Description
     {
-        get => _description_orign;
+        get => DescriptionOrigin;
         set
         {
             QuestionnairePage.Description = value;
@@ -70,11 +104,20 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
 
     bool IsInitDelete = false;
 
-    protected InputRichTextComponent? _currentTemplateInputRichText;
+    /// <summary>
+    /// Current Template InputRichText ref
+    /// </summary>
+    protected InputRichTextComponent? _currentTemplateInputRichText_ref;
 
-    protected bool CantSave => string.IsNullOrWhiteSpace(QuestionnairePage.Name) || (QuestionnairePage.Id > 0 && QuestionnairePage.Name == _name_orign && QuestionnairePage.Description == _description_orign && QuestionnairePage.Description == _description_orign);
-    bool IsEdited => QuestionnairePage.Name != _name_orign || QuestionnairePage.Description != _description_orign;
+    /// <summary>
+    /// Can`t save?
+    /// </summary>
+    protected bool CantSave => string.IsNullOrWhiteSpace(QuestionnairePage.Name) || (QuestionnairePage.Id > 0 && QuestionnairePage.Name == NameOrigin && QuestionnairePage.Description == DescriptionOrigin && QuestionnairePage.Description == DescriptionOrigin);
+    bool IsEdited => QuestionnairePage.Name != NameOrigin || QuestionnairePage.Description != DescriptionOrigin;
 
+    /// <summary>
+    /// Перемещение страницы опроса/анкеты (сортировка страниц внутри опроса/анкеты)
+    /// </summary>
     protected async Task MoveRow(VerticalDirectionsEnum direct)
     {
         IsBusyProgress = true;
@@ -96,6 +139,9 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         UpdateQuestionnaireHandle(rest.Questionnaire, QuestionnairePage);
     }
 
+    /// <summary>
+    /// Delete
+    /// </summary>
     protected async Task Delete()
     {
         if (!IsInitDelete)
@@ -116,14 +162,20 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         QuestionnaireReloadHandle();
     }
 
+    /// <summary>
+    /// Отмена редактирования
+    /// </summary>
     protected void CancelEditing()
     {
         IsInitDelete = false;
-        QuestionnairePage.Name = _name_orign ?? "";
-        QuestionnairePage.Description = _description_orign;
+        QuestionnairePage.Name = NameOrigin ?? "";
+        QuestionnairePage.Description = DescriptionOrigin;
         SetHoldHandle(IsEdited);
     }
 
+    /// <summary>
+    /// Add form to page
+    /// </summary>
     protected async Task AddFormToPage()
     {
         IsBusyProgress = true;
@@ -146,6 +198,9 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         await ReloadPage();
     }
 
+    /// <summary>
+    /// Save page
+    /// </summary>
     protected async Task SavePage()
     {
         IsBusyProgress = true;
@@ -167,8 +222,8 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         QuestionnairePage.Id = rest.QuestionnairePage.Id;
         SetIdForPageHandle(i, rest.QuestionnairePage);
 
-        _description_orign = Description;
-        _name_orign = Name;
+        DescriptionOrigin = Description;
+        NameOrigin = Name;
         IsInitDelete = false;
 
         SetHoldHandle(IsEdited);
@@ -201,28 +256,11 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         StateHasChanged();
     }
 
-    protected bool CheckRest(FormQuestionnairePageResponseModel rest)
-    {
-
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        if (!rest.Success())
-        {
-            SnackbarRepo.Add($"Ошибка {{15A928CA-3C53-42D4-9442-3C5EBA7037DA}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return false;
-        }
-        if (rest.QuestionnairePage is null)
-        {
-            SnackbarRepo.Add($"Ошибка {{B456FDD7-B0A4-45CA-88CB-F54759041B8B}} Content [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return false;
-        }
-
-        return true;
-    }
-
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await ReloadPage();
-        _name_orign = QuestionnairePage.Name;
-        _description_orign = QuestionnairePage.Description;
+        NameOrigin = QuestionnairePage.Name;
+        DescriptionOrigin = QuestionnairePage.Description;
     }
 }

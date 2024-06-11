@@ -7,8 +7,8 @@
             <input @bind-value="Name" @bind-value:event="oninput" type="text" class="form-control" aria-label="Имя страницы опроса/анкеты">
         </div>
         <div dom-guid="{A23DA059-EC73-4142-BAEC-00381D497012}" class="mb-3">
-            <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
-            <InputRichTextComponent @bind-Value="Description" @ref="_currentTemplateInputRichText" />
+            <label for="@(_currentTemplateInputRichText_ref?.UID)" class="form-label">Описание</label>
+            <InputRichTextComponent @bind-Value="Description" @ref="_currentTemplateInputRichText_ref" />
         </div>
 
         <div class="d-grid gap-2 mb-3">
