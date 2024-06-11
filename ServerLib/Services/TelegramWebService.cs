@@ -80,11 +80,11 @@ public class TelegramWebService(
     }
 
     /// <inheritdoc/>
-    public async Task<TelegramJoinAccountResponseModel> TelegramJoinAccountState(bool email_notify = false, string? userId = null)
+    public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(bool email_notify = false, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TelegramJoinAccountResponseModel() { Messages = user.Messages };
+            return new TResponseModel<TelegramJoinAccountModelDb>() { Messages = user.Messages };
 
         DateTime lifeTime = DateTime.Now.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
@@ -92,7 +92,7 @@ public class TelegramWebService(
             .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.UserIdentityId == user.ApplicationUser.Id);
 
         if (act is null)
-            return TelegramJoinAccountResponseModel.Build(ResponseBaseModel.CreateWarning("Токена нет"));
+            return TResponseModel<TelegramJoinAccountModelDb>.Build(ResponseBaseModel.CreateWarning("Токена нет"));
 
         if (email_notify)
         {
@@ -112,7 +112,7 @@ public class TelegramWebService(
                 LoggerRepo.LogError($"Ошибка уведомления на Email: {user.ApplicationUser.Email} - email не валидный. error {{BB9E05A4-37A3-4FBB-800B-9AED947A2B3B}}");
         }
 
-        TelegramJoinAccountResponseModel res = new() { TelegramJoinAccount = act };
+        TResponseModel<TelegramJoinAccountModelDb> res = new() { Response = act };
         if (email_notify)
             res.AddAlert($"Проверьте свой ящик Email. Информация вам отправлена");
 
@@ -120,11 +120,11 @@ public class TelegramWebService(
     }
 
     /// <inheritdoc/>
-    public async Task<TelegramJoinAccountResponseModel> TelegramJoinAccountCreate(string? userId = null)
+    public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountCreate(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TelegramJoinAccountResponseModel() { Messages = user.Messages };
+            return new TResponseModel<TelegramJoinAccountModelDb>() { Messages = user.Messages };
 
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
         IQueryable<TelegramJoinAccountModelDb> actions_del = mainContext.TelegramJoinActions
@@ -150,7 +150,7 @@ public class TelegramWebService(
             await mailRepo.SendEmailAsync(user.ApplicationUser.Email, "Статус привязки Telegram к у/з", msg);
         }
 
-        return new TelegramJoinAccountResponseModel() { TelegramJoinAccount = act, Messages = [new() { TypeMessage = ResultTypesEnum.Success, Text = "Токен сформирован" }] };
+        return new TResponseModel<TelegramJoinAccountModelDb>() { Response = act, Messages = [new() { TypeMessage = ResultTypesEnum.Success, Text = "Токен сформирован" }] };
     }
 
     /// <inheritdoc/>

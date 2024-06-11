@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+
 namespace SharedLib;
 
 /// <summary>
@@ -17,4 +18,10 @@ public class TResponseModel<T> : ResponseBaseModel
 
     /// <inheritdoc/>
     public T? Response { get; set; }
+
+    /// <inheritdoc/>
+    public static TResponseModel<T> Build(ResponseBaseModel sender)
+    {
+        return new TResponseModel<T>() { Messages = sender.Messages };
+    }
 }
