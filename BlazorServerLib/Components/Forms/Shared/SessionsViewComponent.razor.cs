@@ -72,7 +72,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     protected async Task EditSession(ConstructorFormSessionModelDB session)
     {
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = await FormsRepo.GetSessionQuestionnaire(session.Id);
+        TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.GetSessionQuestionnaire(session.Id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -85,10 +85,10 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
         DialogParameters<EditSessionDialogComponent> parameters = new()
         {
-            { x => x.Session, rest.SessionQuestionnaire }
+            { x => x.Session, rest.Response }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await DialogServiceRepo.Show<EditSessionDialogComponent>($"Редактирование сессии. Опрос/анкета: '{rest.SessionQuestionnaire?.Owner?.Name}'", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<EditSessionDialogComponent>($"Редактирование сессии. Опрос/анкета: '{rest.Response?.Owner?.Name}'", parameters, options).Result;
         if (table is not null)
             await table.ReloadServerData();
     }
@@ -133,23 +133,23 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             OwnerId = SelectedQuestionnaireId
         };
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);
+        TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
             return;
 
-        if (rest.SessionQuestionnaire is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"rest.Content.SessionQuestionnaire is null. error {{3B473C9F-CCE2-4CAF-B39C-7286EA0AF3A7}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         if (sessions.Count != 0)
-            sessions.Insert(0, rest.SessionQuestionnaire);
+            sessions.Insert(0, rest.Response);
         else
-            sessions.Add(rest.SessionQuestionnaire);
+            sessions.Add(rest.Response);
 
         SelectedQuestionnaireId = 0;
         NameSessionForCreate = null;

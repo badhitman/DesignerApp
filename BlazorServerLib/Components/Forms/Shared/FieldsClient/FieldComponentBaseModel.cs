@@ -99,19 +99,19 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
             SessionId = SessionQuestionnaire!.Id
         };
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = await FormsRepo.SetValueFieldSessionQuestionnaire(req);
+        TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.SetValueFieldSessionQuestionnaire(req);
         IsBusyProgress = false;
 
         if (!rest.Success())
             SnackbarRepo.Add($"Ошибка {{1CA79BA7-295C-40AD-BCF3-F6143DCCF2BD}}: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
-        if (rest.SessionQuestionnaire is null)
-            throw new InvalidOperationException($"Данные сессии '{nameof(rest.SessionQuestionnaire)}': IsNull");
+        if (rest.Response is null)
+            throw new InvalidOperationException($"Данные сессии 'SessionQuestionnaire': IsNull");
 
         if (!rest.Success())
             return;
 
-        SessionQuestionnaire.Reload(rest.SessionQuestionnaire);
+        SessionQuestionnaire.Reload(rest.Response);
 
         FieldsReferring?
             .Where(x => x?.DomID.Equals(DomID, StringComparison.Ordinal) != true)

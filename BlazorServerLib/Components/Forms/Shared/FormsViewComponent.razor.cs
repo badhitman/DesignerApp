@@ -36,7 +36,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     protected async Task OpenForm(ConstructorFormModelDB form)
     {
         IsBusyProgress = true;
-        FormResponseModel rest = await FormsRepo.GetForm(form.Id);
+        TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.GetForm(form.Id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -46,10 +46,12 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             return;
         }
         StateHasChanged();
-        DialogParameters<EditFormDialogComponent> parameters = new();
-        parameters.Add(x => x.Form, rest.Form);
+        DialogParameters<EditFormDialogComponent> parameters = new()
+        {
+            { x => x.Form, rest.Response }
+        };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>($"Редактирование формы #{rest.Form?.Id}", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>($"Редактирование формы #{rest.Response?.Id}", parameters, options).Result;
 
         if (table is not null)
             await table.ReloadServerData();

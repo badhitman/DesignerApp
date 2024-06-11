@@ -122,7 +122,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     protected async Task MoveRow(VerticalDirectionsEnum direct)
     {
         IsBusyProgress = true;
-        FormQuestionnaireResponseModel rest = await FormsRepo.QuestionnairePageMove(QuestionnairePage.Id, direct);
+        TResponseModel<ConstructorFormQuestionnaireModelDB> rest = await FormsRepo.QuestionnairePageMove(QuestionnairePage.Id, direct);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -131,13 +131,13 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
             SnackbarRepo.Add($"Ошибка {{0C0C4DB1-0F94-48C6-88DE-9BF67A1DEA73}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
-        if (rest.Questionnaire is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"Ошибка {{66DE90D2-4BFD-4B1F-84B2-5E75B679B1F0}} Content [rest.Questionnaire is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        UpdateQuestionnaireHandle(rest.Questionnaire, QuestionnairePage);
+        UpdateQuestionnaireHandle(rest.Response, QuestionnairePage);
     }
 
     /// <summary>

@@ -68,19 +68,19 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected async Task SaveForm()
     {
         IsBusyProgress = true;
-        FormResponseModel rest = await FormsRepo.FormUpdateOrCreate(new ConstructorFormBaseModel() { Id = Form.Id, Name = FormNameOrigin, Css = FormCssOrigin, Description = FormDescriptionOrigin, AddRowButtonTitle = AddRowButtonTitleOrigin });
+        TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.FormUpdateOrCreate(new ConstructorFormBaseModel() { Id = Form.Id, Name = FormNameOrigin, Css = FormCssOrigin, Description = FormDescriptionOrigin, AddRowButtonTitle = AddRowButtonTitleOrigin });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
             return;
 
-        if (rest.Form is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"Ошибка {{266FF830-05BC-442A-B277-16FAEACB0F4A}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        Form.Reload(rest.Form);
+        Form.Reload(rest.Response);
         await ResetForm();
     }
 

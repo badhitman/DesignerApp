@@ -159,7 +159,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             return;
         }
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken)
+        TResponseModel<ConstructorFormSessionModelDB> rest = string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken)
         ? await FormsRepo.GetSessionQuestionnaire(SessionQuestionnaire.Id)
         : await FormsRepo.GetSessionQuestionnaire(SessionQuestionnaire.SessionToken);
         IsBusyProgress = false;
@@ -171,8 +171,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        if (rest.SessionQuestionnaire is not null)
-            SessionQuestionnaire.Reload(rest.SessionQuestionnaire);
+        if (rest.Response is not null)
+            SessionQuestionnaire.Reload(rest.Response);
 
         _table_kit_ref?.Update();
 

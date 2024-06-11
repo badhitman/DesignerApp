@@ -19,7 +19,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
     #region public
     /// <inheritdoc/>
-    public async Task<FormSessionQuestionnaireResponseModel> GetSessionQuestionnaire(string guid_session, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormSessionModelDB>> GetSessionQuestionnaire(string guid_session, CancellationToken cancellationToken = default)
     {
         if (!Guid.TryParse(guid_session, out Guid guid_parsed) || guid_parsed == Guid.Empty)
             return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Токен сессии имеет не корректный формат" }] };
@@ -42,17 +42,17 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
             .AsSplitQuery();
 
-        FormSessionQuestionnaireResponseModel res = new()
+        TResponseModel<ConstructorFormSessionModelDB> res = new()
         {
-            SessionQuestionnaire = await q
+            Response = await q
             .FirstOrDefaultAsync(x => x.SessionToken == guid_session, cancellationToken: cancellationToken)
         };
         string msg;
-        if (res.SessionQuestionnaire is null)
+        if (res.Response is null)
         {
             msg = $"Токен '{guid_session}' не найден или просрочен.";
             res.AddError(msg);
-            logger.LogError($"{msg} {nameof(res.SessionQuestionnaire)} is null. error {{5F3FF6DA-75AC-49B5-8608-8E909FF7C6C3}}");
+            logger.LogError($"{msg} res.SessionQuestionnaire is null. error {{5F3FF6DA-75AC-49B5-8608-8E909FF7C6C3}}");
         }
 
         return res;
@@ -66,11 +66,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             return ResponseBaseModel.CreateError($"Сессия [{token_session}] не найдена в БД. ошибка {{B4DE6F2E-9F6F-4FEB-B2B9-426493C9A464}}");
 
         if (sq.SessionStatus >= SessionsStatusesEnum.Sended)
-            return ResponseBaseModel.CreateSuccess("Сессия уже отмечена как выполненая и не требует вмешательства");
-
-        //await context_forms.Sessions
-        //        .Where(x => x.Id == sq.Id)
-        //        .ExecuteUpdateAsync(s => s.SetProperty(b => b.SessionStatus, SessionsStatusesEnum.Sended).SetProperty(b => b.Editors, editors), cancellationToken: cancellationToken);
+            return ResponseBaseModel.CreateSuccess("Сессия уже отмечена как выполненная и не требует вмешательства");
 
         string msg = $"Сессия опросника/анкетирования `{token_session}` отправлена на проверку";
         ResponseBaseModel res = new();
@@ -102,14 +98,14 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormSessionQuestionnaireResponseModel> SetValueFieldSessionQuestionnaire(SetValueFieldSessionQuestionnaireModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormSessionModelDB>> SetValueFieldSessionQuestionnaire(SetValueFieldSessionQuestionnaireModel req, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnaireResponseModel session = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        TResponseModel<ConstructorFormSessionModelDB> session = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!session.Success())
             return session;
 
-        ConstructorFormSessionModelDB? session_Questionnaire = session.SessionQuestionnaire;
-        FormSessionQuestionnaireResponseModel res = new();
+        ConstructorFormSessionModelDB? session_Questionnaire = session.Response;
+        TResponseModel<ConstructorFormSessionModelDB> res = new();
 
         if (session_Questionnaire?.Owner?.Pages is null || session_Questionnaire.SessionValues is null)
         {
@@ -161,11 +157,11 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     /// <inheritdoc/>
     public async Task<CreateObjectOfIntKeyResponseModel> AddRowToTable(FieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnaireResponseModel get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        TResponseModel<ConstructorFormSessionModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!get_s.Success())
             return new CreateObjectOfIntKeyResponseModel() { Messages = get_s.Messages };
         CreateObjectOfIntKeyResponseModel res = new();
-        ConstructorFormSessionModelDB? session = get_s.SessionQuestionnaire;
+        ConstructorFormSessionModelDB? session = get_s.Response;
 
         if (session?.Owner?.Pages is null || session.SessionValues is null)
         {
@@ -205,11 +201,11 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(ValueFieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnaireResponseModel get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        TResponseModel<ConstructorFormSessionModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!get_s.Success())
             return get_s;
 
-        ConstructorFormSessionModelDB? session = get_s.SessionQuestionnaire;
+        ConstructorFormSessionModelDB? session = get_s.Response;
         if (session?.Owner?.Pages is null || session.SessionValues is null)
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка {{73DFEAA2-3020-4CB2-BED4-4523E5003BE5}}");
 
@@ -320,11 +316,11 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormSessionQuestionnaireResponseModel> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormSessionModelDB>> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnaireResponseModel res = new()
+        TResponseModel<ConstructorFormSessionModelDB> res = new()
         {
-            SessionQuestionnaire = await context_forms
+            Response = await context_forms
             .Sessions
             .Include(x => x.SessionValues)
 
@@ -343,9 +339,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             .FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken)
         };
         string msg;
-        if (res.SessionQuestionnaire is null)
+        if (res.Response is null)
         {
-            msg = $"for {nameof(id_session)} = [{id_session}]. {nameof(res.SessionQuestionnaire)} is null. error {{6DF75C8A-C0FD-4165-88D8-15AEEA8606ED}}";
+            msg = $"for {nameof(id_session)} = [{id_session}]. SessionQuestionnaire is null. error {{6DF75C8A-C0FD-4165-88D8-15AEEA8606ED}}";
             logger.LogError(msg);
             res.AddError(msg);
         }
@@ -354,9 +350,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormSessionQuestionnaireResponseModel> UpdateOrCreateSessionQuestionnaire(ConstructorFormSessionModelDB session_json, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormSessionModelDB>> UpdateOrCreateSessionQuestionnaire(ConstructorFormSessionModelDB session_json, CancellationToken cancellationToken = default)
     {
-        FormSessionQuestionnaireResponseModel res = new();
+        TResponseModel<ConstructorFormSessionModelDB> res = new();
         if (!string.IsNullOrWhiteSpace(session_json.EmailsNotifications))
         {
             string[] een = session_json.EmailsNotifications.SplitToList().Where(x => !MailAddress.TryCreate(x, out _)).ToArray();
@@ -380,7 +376,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
             await context_forms.AddAsync(session_json, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
-            return new() { SessionQuestionnaire = session_json, Messages = new() { new() { TypeMessage = ResultTypesEnum.Success, Text = $"Создана сессия #{session_json.Id}" } } };
+            return new() { Response = session_json, Messages = new() { new() { TypeMessage = ResultTypesEnum.Success, Text = $"Создана сессия #{session_json.Id}" } } };
         }
         ConstructorFormSessionModelDB? session_db = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == session_json.Id, cancellationToken: cancellationToken);
         string msg;
@@ -441,7 +437,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             logger.LogInformation(msg);
             await context_forms.SaveChangesAsync(cancellationToken);
         }
-        FormSessionQuestionnaireResponseModel sr = await GetSessionQuestionnaire(session_json.Id, cancellationToken);
+        TResponseModel<ConstructorFormSessionModelDB> sr = await GetSessionQuestionnaire(session_json.Id, cancellationToken);
         if (res.Messages.Count != 0)
             sr.AddRangeMessages(res.Messages);
         return sr;
@@ -610,29 +606,29 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormQuestionnaireResponseModel> GetQuestionnaire(int questionnaire_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> GetQuestionnaire(int questionnaire_id, CancellationToken cancellationToken = default)
     {
-        FormQuestionnaireResponseModel res = new()
+        TResponseModel<ConstructorFormQuestionnaireModelDB> res = new()
         {
-            Questionnaire = await context_forms
+            Response = await context_forms
            .Questionnaires
            .Include(x => x.Pages!)
            .ThenInclude(x => x.JoinsForms)
            .FirstOrDefaultAsync(x => x.Id == questionnaire_id, cancellationToken: cancellationToken)
         };
 
-        if (res.Questionnaire is null)
+        if (res.Response is null)
             res.AddError($"Опрос/анкета #{questionnaire_id} отсутствует в БД");
 
         return res;
     }
 
     /// <inheritdoc/>
-    public async Task<FormQuestionnaireResponseModel> UpdateOrCreateQuestionnaire(EntryDescriptionModel questionnaire, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> UpdateOrCreateQuestionnaire(EntryDescriptionModel questionnaire, CancellationToken cancellationToken = default)
     {
         questionnaire.Name = Regex.Replace(questionnaire.Name, @"\s+", " ").Trim();
 
-        FormQuestionnaireResponseModel res = new();
+        TResponseModel<ConstructorFormQuestionnaireModelDB> res = new();
         ConstructorFormQuestionnaireModelDB? questionnaire_db = await context_forms.Questionnaires.FirstOrDefaultAsync(x => x.Id != questionnaire.Id && EF.Functions.Like(x.Name, questionnaire.Name), cancellationToken: cancellationToken);
         string msg;
         if (questionnaire_db is not null)
@@ -650,7 +646,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             msg = $"Опрос/анкета создана #{questionnaire_db.Id}";
             res.AddSuccess(msg);
             logger.LogInformation(msg);
-            res.Questionnaire = questionnaire_db;
+            res.Response = questionnaire_db;
             return res;
         }
         questionnaire_db = await context_forms.Questionnaires.FirstOrDefaultAsync(x => x.Id == questionnaire.Id, cancellationToken: cancellationToken);
@@ -699,9 +695,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
     #region страницы опросов/анкет
     /// <inheritdoc/>
-    public async Task<FormQuestionnaireResponseModel> QuestionnairePageMove(int questionnaire_page_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> QuestionnairePageMove(int questionnaire_page_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
     {
-        FormQuestionnaireResponseModel res = new();
+        TResponseModel<ConstructorFormQuestionnaireModelDB> res = new();
         ConstructorFormQuestionnairePageModelDB? questionnaire_db = await context_forms
             .QuestionnairesPages
             .Include(x => x.Owner)
@@ -745,7 +741,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         if (!res.Success())
             return res;
 
-        res.Questionnaire = await context_forms
+        res.Response = await context_forms
             .Questionnaires
             .Include(x => x.Pages)
             .FirstAsync(x => x.Id == questionnaire_db.OwnerId, cancellationToken: cancellationToken);
@@ -753,7 +749,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         int i = 0;
         bool is_upd = false;
-        foreach (ConstructorFormQuestionnairePageModelDB p in res.Questionnaire.Pages!)
+        foreach (ConstructorFormQuestionnairePageModelDB p in res.Response.Pages!)
         {
             i++;
             is_upd = is_upd || p.SortIndex != i;
@@ -763,7 +759,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         if (is_upd)
         {
             res.AddWarning("Исправлена пересортица");
-            context_forms.UpdateRange(res.Questionnaire.Pages!);
+            context_forms.UpdateRange(res.Response.Pages!);
             await context_forms.SaveChangesAsync(cancellationToken);
         }
 
@@ -1115,11 +1111,11 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormResponseModel> GetForm(int form_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormModelDB>> GetForm(int form_id, CancellationToken cancellationToken = default)
     {
-        FormResponseModel res = new()
+        TResponseModel<ConstructorFormModelDB> res = new()
         {
-            Form = await context_forms
+            Response = await context_forms
             .Forms
             .Include(x => x.Fields)
             .Include(x => x.FormsDirectoriesLinks!)
@@ -1127,16 +1123,16 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             .FirstOrDefaultAsync(x => x.Id == form_id, cancellationToken: cancellationToken)
         };
 
-        if (res.Form is null)
+        if (res.Response is null)
             res.AddError($"Форма #{form_id} не найдена в БД");
         else
         {
-            if (res.Form.Fields is not null)
+            if (res.Response.Fields is not null)
             {
                 string msg;
-                List<ConstructorFieldFormModelDB> _upd = new();
+                List<ConstructorFieldFormModelDB> _upd = [];
                 Dictionary<MetadataExtensionsFormFieldsEnum, object?> mdvs;
-                foreach (ConstructorFieldFormModelDB f in res.Form.Fields)
+                foreach (ConstructorFieldFormModelDB f in res.Response.Fields)
                 {
                     if (f.MetadataValueType?.Equals("{}") == true)
                     {
@@ -1174,10 +1170,10 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormResponseModel> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormModelDB>> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default)
     {
         form.Name = Regex.Replace(form.Name, @"\s+", " ").Trim();
-        FormResponseModel res = new();
+        TResponseModel<ConstructorFormModelDB> res = new();
         ConstructorFormModelDB? form_db = await context_forms.Forms.FirstOrDefaultAsync(x => x.Id != form.Id && EF.Functions.Like(x.Name, form.Name), cancellationToken: cancellationToken);
         string msg;
         if (form_db is not null)
@@ -1195,7 +1191,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             msg = $"Форма создана #{form_db.Id}";
             res.AddSuccess(msg);
             logger.LogInformation(msg);
-            res.Form = form_db;
+            res.Response = form_db;
             return res;
         }
         form_db = await context_forms.Forms.FirstOrDefaultAsync(x => x.Id == form.Id, cancellationToken: cancellationToken);
@@ -1226,7 +1222,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             logger.LogInformation(msg);
             await context_forms.SaveChangesAsync(cancellationToken);
         }
-        res.Form = await context_forms
+        res.Response = await context_forms
             .Forms
             .Include(x => x.Fields)
             .Include(x => x.FormsDirectoriesLinks)
@@ -1244,9 +1240,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
     #region поля форм
     /// <inheritdoc/>
-    public async Task<FormResponseModel> FieldFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormModelDB>> FieldFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
     {
-        FormResponseModel res = new();
+        TResponseModel<ConstructorFormModelDB> res = new();
         ConstructorFieldFormModelDB? field_db = await context_forms
             .Fields
             .Include(x => x.Owner)
@@ -1295,7 +1291,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         if (res.Success())
         {
             await context_forms.SaveChangesAsync(cancellationToken);
-            res.Form = await context_forms
+            res.Response = await context_forms
                 .Forms
                 .Include(x => x.Fields)
                 .Include(x => x.FormsDirectoriesLinks)
@@ -1306,9 +1302,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormResponseModel> FieldDirectoryFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormModelDB>> FieldDirectoryFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
     {
-        FormResponseModel res = new();
+        TResponseModel<ConstructorFormModelDB> res = new();
         ConstructorFormDirectoryLinkModelDB? field_db = await context_forms
             .FormsDirectoriesLinks
             //.Include(x => x.Directory)
@@ -1359,7 +1355,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         if (res.Success())
         {
             await context_forms.SaveChangesAsync(cancellationToken);
-            res.Form = await context_forms
+            res.Response = await context_forms
                 .Forms
                 .Include(x => x.Fields)
                 .Include(x => x.FormsDirectoriesLinks)
@@ -1709,9 +1705,9 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<FormResponseModel> CheckAndNormalizeSortIndex(ConstructorFormModelDB form, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormModelDB>> CheckAndNormalizeSortIndex(ConstructorFormModelDB form, CancellationToken cancellationToken = default)
     {
-        FormResponseModel res = new();
+        TResponseModel<ConstructorFormModelDB> res = new();
         int i = 0;
         List<ConstructorFormDirectoryLinkModelDB> fields_dir = new();
         List<ConstructorFieldFormModelDB> fields_st = new();
@@ -1748,7 +1744,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
         else
             res.AddInfo("Пересортица отсутствует");
 
-        res.Form = context_forms
+        res.Response = context_forms
             .Forms
             .Include(x => x.Fields)
             .Include(x => x.FormsDirectoriesLinks!)

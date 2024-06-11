@@ -33,7 +33,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     {
         if (Form.Id < 1)
             return;
-        FormResponseModel rest;
+        TResponseModel<ConstructorFormModelDB> rest;
         if (form is null)
         {
             IsBusyProgress = true;
@@ -43,7 +43,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 IsBusyProgress = false;
                 SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
-                if (rest.Form is null)
+                if (rest.Response is null)
                     SnackbarRepo.Add($"Ошибка {{0B2C8557-E22F-4A00-A7CA-7EC1FE445784}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
                 if (!rest.Success())
@@ -52,10 +52,10 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                     return;
                 }
 
-                if (rest.Form is null)
+                if (rest.Response is null)
                     return;
 
-                Form.Reload(rest.Form);
+                Form.Reload(rest.Response);
                 if (client_standard_ref is not null)
                     await client_standard_ref.Update(Form);
                 StateHasChanged();

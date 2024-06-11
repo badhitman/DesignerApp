@@ -298,7 +298,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     async Task ReloadForm()
     {
         IsBusyProgress = true;
-        FormResponseModel rest = await FormsRepo.GetForm(Field.OwnerId);
+        TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.GetForm(Field.OwnerId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -308,19 +308,19 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        if (rest.Form?.Fields is null || rest.Form?.FormsDirectoriesLinks is null)
+        if (rest.Response?.Fields is null || rest.Response?.FormsDirectoriesLinks is null)
         {
             SnackbarRepo.Add($"Ошибка {{A0342E4D-3C00-4DA2-8EA3-7C1072D225F4}} rest.Content.Form?.Fields is null || rest.Content.Form?.FormsDirectoriesLinks is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        ReloadFieldsHandler(rest.Form);
+        ReloadFieldsHandler(rest.Response);
 
         if (_field_master is ConstructorFieldFormModelDB sf)
         {
-            if (rest.Form.Fields.Any(x => x.Id == _field_master.Id))
+            if (rest.Response.Fields.Any(x => x.Id == _field_master.Id))
             {
-                Field.Update(rest.Form.Fields.First(x => x.Id == _field_master.Id));
+                Field.Update(rest.Response.Fields.First(x => x.Id == _field_master.Id));
                 _field_master = new ConstructorFieldFormModelDB()
                 {
                     Css = Field.Css,
@@ -335,9 +335,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         }
         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
         {
-            if (rest.Form.FormsDirectoriesLinks.Any(x => x.Id == _field_master.Id))
+            if (rest.Response.FormsDirectoriesLinks.Any(x => x.Id == _field_master.Id))
             {
-                Field.Update(rest.Form.FormsDirectoriesLinks.First(x => x.Id == _field_master.Id));
+                Field.Update(rest.Response.FormsDirectoriesLinks.First(x => x.Id == _field_master.Id));
                 _field_master = new ConstructorFormDirectoryLinkModelDB()
                 {
                     Css = Field.Css,
@@ -451,7 +451,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     protected async Task MoveFieldUp()
     {
         IsBusyProgress = true;
-        FormResponseModel rest;
+        TResponseModel<ConstructorFormModelDB> rest;
         if (_field_master is ConstructorFieldFormModelDB sf)
             rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Up);
         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
@@ -472,12 +472,12 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        if (rest.Form is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"Ошибка {{CC30C3BB-1206-46D4-92E3-926AA77B611B}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
-        Form.Reload(rest.Form);
+        Form.Reload(rest.Response);
         ReloadFieldsHandler(Form);
     }
 
@@ -487,7 +487,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     protected async Task MoveFieldDown()
     {
         IsBusyProgress = true;
-        FormResponseModel rest;
+        TResponseModel<ConstructorFormModelDB> rest;
         if (_field_master is ConstructorFieldFormModelDB sf)
             rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Down);
         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
@@ -508,12 +508,12 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        if (rest.Form is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"Ошибка {{6A63AC00-65E7-40C4-8487-1C586C149145}} rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
-        Form.Reload(rest.Form);
+        Form.Reload(rest.Response);
         ReloadFieldsHandler(Form);
     }
 }

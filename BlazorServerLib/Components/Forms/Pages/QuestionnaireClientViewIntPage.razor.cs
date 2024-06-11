@@ -25,13 +25,13 @@ public partial class QuestionnaireClientViewIntPage : BlazorBusyComponentBaseMod
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         IsBusyProgress = true;
-        FormSessionQuestionnaireResponseModel rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireId);
+        TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireId);
         IsBusyProgress = false;
 
-        if (rest.SessionQuestionnaire is null)
+        if (rest.Response is null)
             throw new Exception($"rest.Content.SessionQuestionnaire is null. error {{AB30D092-938E-460A-B5AB-7E3BEC6A642A}}");
 
-        SessionQuestionnaire = rest.SessionQuestionnaire;
+        SessionQuestionnaire = rest.Response;
         if (SessionQuestionnaire.SessionValues is not null && SessionQuestionnaire.SessionValues.Count != 0)
             SessionQuestionnaire.SessionValues.ForEach(x => { x.Owner ??= SessionQuestionnaire; x.OwnerId = SessionQuestionnaire.Id; });
     }

@@ -48,16 +48,16 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
         if (Questionnaire.Id > 0)
         {
             IsBusyProgress = true;
-            FormQuestionnaireResponseModel rest = await FormsRepo.GetQuestionnaire(Questionnaire.Id);
+            TResponseModel<ConstructorFormQuestionnaireModelDB> rest = await FormsRepo.GetQuestionnaire(Questionnaire.Id);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            if (rest.Questionnaire is null)
+            if (rest.Response is null)
             {
                 SnackbarRepo.Add($"rest.Content.Questionnaire is null. error {{2ECBE6F2-628E-4516-A0C4-B464BF1C915E}}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
-            Questionnaire = rest.Questionnaire;
+            Questionnaire = rest.Response;
         }
 
         QuestionnaireNameOrigin = Questionnaire.Name;
@@ -71,7 +71,7 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
     protected async Task SaveQuestionnaire()
     {
         IsBusyProgress = true;
-        FormQuestionnaireResponseModel rest = await FormsRepo.UpdateOrCreateQuestionnaire(new EntryDescriptionModel() { Id = Questionnaire.Id, Name = QuestionnaireNameOrigin, Description = QuestionnaireDescriptionOrigin });
+        TResponseModel<ConstructorFormQuestionnaireModelDB> rest = await FormsRepo.UpdateOrCreateQuestionnaire(new EntryDescriptionModel() { Id = Questionnaire.Id, Name = QuestionnaireNameOrigin, Description = QuestionnaireDescriptionOrigin });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -81,13 +81,13 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
             return;
         }
 
-        if (rest.Questionnaire is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"Ошибка {{B38A414C-4DBA-4F11-BB34-AA71F079F98D}} rest.Content.Questionnaire is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        Questionnaire = rest.Questionnaire;
+        Questionnaire = rest.Response;
     }
 
     /// <inheritdoc/>

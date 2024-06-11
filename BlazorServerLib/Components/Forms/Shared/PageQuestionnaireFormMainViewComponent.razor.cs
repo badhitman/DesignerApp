@@ -180,11 +180,11 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
         {
             LoggerRepo.LogWarning("Дозагрузка [Form] для [PageJoinForm]...");
             IsBusyProgress = true;
-            FormResponseModel rest = await FormsRepo.GetForm(PageJoinForm.FormId);
+            TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.GetForm(PageJoinForm.FormId);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            PageJoinForm.Form = rest.Form;
+            PageJoinForm.Form = rest.Response;
         }
     }
 }

@@ -65,10 +65,10 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         IsBusyProgress = true;
         InvokeAsync(async () =>
         {
-            FormQuestionnaireResponseModel rest = await FormsRepo.GetQuestionnaire(Questionnaire.Id);
+            TResponseModel<ConstructorFormQuestionnaireModelDB> rest = await FormsRepo.GetQuestionnaire(Questionnaire.Id);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            if (rest.Questionnaire is null)
+            if (rest.Response is null)
             {
                 SnackbarRepo.Add($"Ошибка {{1D342ED5-B3DC-4760-A684-33D875EF6AB4}} rest.Content.Questionnaire", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
@@ -78,7 +78,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
                 SnackbarRepo.Add($"Ошибка {{2D3A1007-9B65-4428-BE4C-803934433B66}} Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
-            Questionnaire = rest.Questionnaire;
+            Questionnaire = rest.Response;
             StateHasChanged();
         });
     }
