@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/constructor"
 
 <PageTitle>Формы</PageTitle>
 
@@ -21,11 +21,11 @@
 
 @code {
 
-    IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
+    // IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
 
-    protected override Task OnInitializedAsync()
-    {
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
-        return base.OnInitializedAsync();
-    }
+    // protected override Task OnInitializedAsync()
+    // {
+    //     Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
+    //     return base.OnInitializedAsync();
+    // }
 }

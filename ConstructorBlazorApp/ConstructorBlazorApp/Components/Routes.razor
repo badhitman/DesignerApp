@@ -1,6 +1,6 @@
 ﻿<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(BlazorWebLib._Imports).Assembly, typeof(Client._Imports).Assembly }">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(BlazorLib.Components.Shared.Layouts.MainLayout)">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(BlazorLib.Components.Shared.Layouts.MainLayoutConstructor)">
             <NotAuthorized>
                 <RedirectToLogin />
             </NotAuthorized>
