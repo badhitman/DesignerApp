@@ -3,7 +3,7 @@
 /// <summary>
 /// Формы
 /// </summary>
-public class ConstructorFormBaseModel : EntryDescriptionModel
+public class ConstructorFormBaseModel : SystemEntryModel
 {
     /// <summary>
     /// CSS класс формы

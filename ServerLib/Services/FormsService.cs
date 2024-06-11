@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SharedLib;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -1760,7 +1761,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     public async Task<IEnumerable<EntryNestedModel>> ReadDirectories(IEnumerable<int> ids, CancellationToken cancellationToken = default)
     {
         if (!ids.Any())
-            return Enumerable.Empty<EntryNestedModel>();
+            return [];
 
         ConstructorFormDirectoryModelDB[] res = await context_forms.Directories.Include(x => x.Elements).Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken: cancellationToken);
 
@@ -1774,7 +1775,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryModel _dir, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(SystemEntryModel _dir, CancellationToken cancellationToken = default)
     {
         TResponseStrictModel<int> res = new() { Response = 0 };
         string msg;
@@ -1786,7 +1787,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             return res;
         }
         _dir.Name = Regex.Replace(_dir.Name, @"\s+", " ").Trim();
-        ConstructorFormDirectoryModelDB? ne = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id != _dir.Id && EF.Functions.Like(x.Name, _dir.Name), cancellationToken: cancellationToken);
+        ConstructorFormDirectoryModelDB? ne = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id != _dir.Id && x.Name == _dir.Name, cancellationToken: cancellationToken);
         if (ne is not null)
         {
             msg = $"Справочник с именем '{ne.Name}' уже существует под идентификатором `#{ne.Id}`";
@@ -1797,7 +1798,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
 
         if (_dir.Id < 1)
         {
-            ne = new() { Name = _dir.Name };
+            ne = (ConstructorFormDirectoryModelDB)_dir;
             try
             {
                 await context_forms.AddAsync(ne, cancellationToken);

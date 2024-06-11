@@ -19,14 +19,20 @@ public partial class LayerContext
     public DbSet<MemberOfProjectModelDb> MembersOfProjects { get; set; }
 
     /// <summary>
-    /// Enumerations
+    /// Справочники/списки
     /// </summary>
-    public DbSet<EnumEntryModelDb> Enumerations { get; set; }
+    public DbSet<ConstructorFormDirectoryModelDB> Directories { get; set; }
 
     /// <summary>
-    /// Elements of enumerations
+    /// Элементы справочников/списков
     /// </summary>
-    public DbSet<ElementOfEnumEntryModelDb> ElementsOfEnumerations { get; set; }
+    public DbSet<ConstructorFormDirectoryElementModelDB> DirectoriesElements { get; set; }
+
+    /// <summary>
+    /// Связи форм со списками/справочниками
+    /// </summary>
+    public DbSet<ConstructorFormDirectoryLinkModelDB> FormsDirectoriesLinks { get; set; }
+
 
 
 
@@ -39,21 +45,6 @@ public partial class LayerContext
     /// Поля форм
     /// </summary>
     public DbSet<ConstructorFieldFormModelDB> Fields { get; set; }
-
-    /// <summary>
-    /// Связи форм со списками/справочниками
-    /// </summary>
-    public DbSet<ConstructorFormDirectoryLinkModelDB> FormsDirectoriesLinks { get; set; }
-
-    /// <summary>
-    /// Справочники/списки
-    /// </summary>
-    public DbSet<ConstructorFormDirectoryModelDB> Directories { get; set; }
-
-    /// <summary>
-    /// Элементы справочников/списков
-    /// </summary>
-    public DbSet<ConstructorFormDirectoryElementModelDB> DirectoriesElements { get; set; }
 
 
 

@@ -98,7 +98,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryModel() { Id = SelectedDirectoryId, Name = DirectoryName });
+            TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Id = SelectedDirectoryId, Name = DirectoryName });
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
             _creator_ref?.SetDirectoryNavState(DirectoryNavStatesEnum.None);

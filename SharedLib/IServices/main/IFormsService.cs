@@ -210,7 +210,7 @@ public interface IFormsService
     /// <summary>
     /// Обновить/Создать справочник
     /// </summary>
-    public Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryModel _dir, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(SystemEntryModel _dir, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить справочник/список (со всеми элементами и связями)

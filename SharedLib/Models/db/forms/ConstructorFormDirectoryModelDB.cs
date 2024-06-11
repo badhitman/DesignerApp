@@ -3,10 +3,10 @@
 namespace SharedLib;
 
 /// <summary>
-/// Справоник/список
+/// Справочник/список
 /// </summary>
 [Index(nameof(Name), IsUnique = true)]
-public class ConstructorFormDirectoryModelDB : EntryDescriptionModel
+public class ConstructorFormDirectoryModelDB : SystemEntryModel
 {
     /// <summary>
     /// Элементы справочника/списка

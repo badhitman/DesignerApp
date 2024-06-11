@@ -34,19 +34,13 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected FieldsFormViewComponent? _fields_view_ref;
 
     /// <inheritdoc/>
-    protected bool IsEdited => Form.Name != FormNameOrigin || Form.Description != FormDescriptionOrigin || Form.Css != FormCssOrigin || Form.AddRowButtonTitle != AddRowButtonTitleOrigin;
+    protected bool IsEdited => !Form.Equals(FormEditObject);
 
     /// <inheritdoc/>
-    protected InputRichTextComponent? _currentTemplateInputRichText;
+    protected InputRichTextComponent _currentTemplateInputRichText = default!;
 
     /// <inheritdoc/>
-    protected string FormNameOrigin { get; set; } = "";
-    /// <inheritdoc/>
-    protected string? FormDescriptionOrigin { get; set; }
-    /// <inheritdoc/>
-    protected string? FormCssOrigin { get; set; }
-    /// <inheritdoc/>
-    protected string? AddRowButtonTitleOrigin { get; set; }
+    protected ConstructorFormModelDB FormEditObject = default!;
 
     /// <inheritdoc/>
     protected IEnumerable<EntryAltDescriptionModel> Entries = default!;
@@ -56,19 +50,15 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
 
     async Task ResetForm()
     {
-        FormNameOrigin = Form.Name;
-        FormDescriptionOrigin = Form.Description;
-        FormCssOrigin = Form.Css;
-        AddRowButtonTitleOrigin = Form.AddRowButtonTitle;
-        if (_currentTemplateInputRichText is not null)
-            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, FormDescriptionOrigin);
+        FormEditObject = ConstructorFormModelDB.Build(Form);
+        await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, FormEditObject.Description);
     }
 
     /// <inheritdoc/>
     protected async Task SaveForm()
     {
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.FormUpdateOrCreate(new ConstructorFormBaseModel() { Id = Form.Id, Name = FormNameOrigin, Css = FormCssOrigin, Description = FormDescriptionOrigin, AddRowButtonTitle = AddRowButtonTitleOrigin });
+        TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.FormUpdateOrCreate(FormEditObject);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
@@ -89,6 +79,5 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         await ResetForm();
-        base.OnInitialized();
     }
 }

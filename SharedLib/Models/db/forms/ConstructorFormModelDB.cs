@@ -27,7 +27,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
     public List<ConstructorFormDirectoryLinkModelDB>? FormsDirectoriesLinks { get; set; }
 
     /// <summary>
-    /// Все поля формы (единым списком + отсортирован)
+    /// Все поля формы (единым списком + сквозная сортировка)
     /// </summary>
     [NotMapped]
     [System.Text.Json.Serialization.JsonIgnore]
@@ -71,6 +71,11 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             AddRowButtonTitle = other.AddRowButtonTitle,
             Fields = other.Fields,
             FormsDirectoriesLinks = other.FormsDirectoriesLinks,
+            SystemName = other.SystemName,
+            Id = other.Id,
+            IsDeleted = other.IsDeleted,
+            ProjectId = other.ProjectId,
+            Project = other.Project,
         };
 
     /// <summary>
@@ -79,19 +84,24 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
     public static ConstructorFormModelDB Build(ConstructorFormBaseModel other)
     {
         if (other is ConstructorFormModelDB form)
-            return form;
+            return Build(form);
 
         return new()
         {
             Name = other.Name,
             Description = other.Description,
             Css = other.Css,
-            AddRowButtonTitle = other.AddRowButtonTitle
+            AddRowButtonTitle = other.AddRowButtonTitle,
+            SystemName = other.SystemName,
+            ProjectId = other.ProjectId,
+            Project = other.Project,
+            IsDeleted = other.IsDeleted,
+            Id = other.Id,
         };
     }
 
     /// <summary>
-    /// Перезагрузка
+    /// Перезагрузка данных объекта
     /// </summary>
     public ConstructorFormModelDB Reload(ConstructorFormModelDB other)
     {
@@ -99,15 +109,24 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
         Description = other.Description;
         Css = other.Css;
         AddRowButtonTitle = other.AddRowButtonTitle;
+        SystemName = other.SystemName;
+        Id = other.Id;
+        IsDeleted = other.IsDeleted;
+        ProjectId = other.ProjectId;
+        Project = other.Project;
+
         int i;
-        if (other.Fields is not null)
+        if (other.Fields is null)
+            Fields = null;
+        else
         {
             Fields ??= [];
-            i = Fields.FindIndex(x => !other.Fields.Any(y => y.Id == x.Id));
+            int find_field_for_remove_action() => Fields.FindIndex(x => !other.Fields.Any(y => y.Id == x.Id));
+            i = find_field_for_remove_action();
             while (i != -1)
             {
                 Fields.RemoveAt(i);
-                i = Fields.FindIndex(x => !other.Fields.Any(y => y.Id == x.Id));
+                i = find_field_for_remove_action();
             }
             ConstructorFieldFormModelDB? fo;
             foreach (ConstructorFieldFormModelDB f in Fields)
@@ -125,11 +144,12 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
         {
             FormsDirectoriesLinks ??= [];
 
-            i = FormsDirectoriesLinks.FindIndex(x => !other.FormsDirectoriesLinks.Any(y => y.Id == x.Id));
+            int findDirectory_link_for_remove_action() => FormsDirectoriesLinks.FindIndex(x => !other.FormsDirectoriesLinks.Any(y => y.Id == x.Id));
+            i = findDirectory_link_for_remove_action();
             while (i != -1)
             {
                 FormsDirectoriesLinks.RemoveAt(i);
-                i = FormsDirectoriesLinks.FindIndex(x => !other.FormsDirectoriesLinks.Any(y => y.Id == x.Id));
+                i = findDirectory_link_for_remove_action();
             }
             ConstructorFormDirectoryLinkModelDB? fo;
             foreach (ConstructorFormDirectoryLinkModelDB f in FormsDirectoriesLinks)
@@ -145,4 +165,38 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
 
         return this;
     }
+
+    /// <summary>
+    /// Сравнение с другой формой
+    /// </summary>
+    public override bool Equals(object? obj)
+    {
+        if (obj is ConstructorFormModelDB other)
+            return
+                Id == other.Id &&
+                SystemName.Equals(other.SystemName) &&
+                Name.Equals(other.Name) &&
+                Description == other.Description &&
+                Css == other.Css &&
+                AddRowButtonTitle == other.AddRowButtonTitle &&
+                IsDeleted == other.IsDeleted &&
+                ProjectId == other.ProjectId;
+
+        if (obj is ConstructorFormBaseModel base_other)
+            return
+                Id == base_other.Id &&
+                SystemName.Equals(base_other.SystemName) &&
+                Name.Equals(base_other.Name) &&
+                Description == base_other.Description &&
+                Css == base_other.Css &&
+                AddRowButtonTitle == base_other.AddRowButtonTitle &&
+                IsDeleted == base_other.IsDeleted &&
+                ProjectId == base_other.ProjectId;
+
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+        => $"{Id} {SystemName} {Name} {Description} {Css} {AddRowButtonTitle} {IsDeleted} {ProjectId}".GetHashCode();
 }

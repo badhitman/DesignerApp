@@ -17,20 +17,20 @@
                     <form class="row g-3">
                         <div class="col-md-4">
                             <label for="inputName4" class="form-label">Название</label>
-                            <input @bind-value="FormNameOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" placeholder="Наименование">
+                            <input @bind-value="FormEditObject.Name" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" placeholder="Наименование">
                         </div>
                         <div class="col-md-4">
                             <label for="inputCSS4" class="form-label">CSS</label>
-                            <input @bind-value="FormCssOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputCSS4">
+                            <input @bind-value="FormEditObject.Css" @bind-value:event="oninput" type="text" class="form-control" id="inputCSS4">
                         </div>
                         <div class="col-md-4">
                             <label for="inputBtn5" class="form-label">Текст кнопки создания</label>
-                            <input @bind-value="AddRowButtonTitleOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputBtn5" placeholder="Добавить строку">
+                            <input @bind-value="FormEditObject.AddRowButtonTitle" @bind-value:event="oninput" type="text" class="form-control" id="inputBtn5" placeholder="Добавить строку">
                         </div>
                         <div class="col-12">
                             <div class="mb-3">
                                 <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
-                                <InputRichTextComponent @bind-Value="FormDescriptionOrigin" @ref="_currentTemplateInputRichText" />
+                                <InputRichTextComponent @bind-Value="FormEditObject.Description" @ref="_currentTemplateInputRichText" />
                             </div>
                         </div>
                         <div class="col-12">
@@ -39,7 +39,7 @@
                                 <MudSpacer />
                                 <div>
                                     <div class="btn-group" role="group" >
-                                        <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(FormNameOrigin) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
+                                        <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(FormEditObject.Name) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
                                         @if (IsEdited)
                                         {
                                             <button @onclick="ResetForm" class="btn btn-outline-primary" type="button" id="reset-form">Сброс</button>
