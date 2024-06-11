@@ -73,6 +73,13 @@ builder.Services
     .Configure<WebConfigModel>(builder.Configuration.GetSection("WebConfig"))
     ;
 
+/*
+ /// <summary>
+    /// Конфигурация Redis
+    /// </summary>
+    public RedisConfigModel RedisConfig { get; set; } = new RedisConfigModel();
+ */
+
 string connectionIdentityString = builder.Configuration.GetConnectionString("IdentityConnection") ?? throw new InvalidOperationException("Connection string 'IdentityConnection' not found.");
 builder.Services.AddDbContextFactory<IdentityAppDbContext>(opt =>
     opt.UseSqlite(connectionIdentityString));

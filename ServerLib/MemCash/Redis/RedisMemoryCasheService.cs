@@ -17,21 +17,21 @@ namespace SharedLib.MemCash
         /// <summary>
         /// Адрес сервреа Redis
         /// </summary>
-        public string RedisServerAddress => _config?.Value?.RedisConfig?.EndPoint ?? "localhost:6379";
+        public string RedisServerAddress => _config?.Value?.EndPoint ?? "localhost:6379";
         private readonly ILogger<RedisMemoryCasheService> _logger;
         private readonly RedisUtil _redis;
-        private readonly IOptions<ServerConfigModel> _config;
+        private readonly IOptions<RedisConfigModel> _config;
 
         /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="set_config"></param>
         /// <param name="set_logger"></param>
-        public RedisMemoryCasheService(IOptions<ServerConfigModel> set_config, ILogger<RedisMemoryCasheService> set_logger)
+        public RedisMemoryCasheService(IOptions<RedisConfigModel> set_config, ILogger<RedisMemoryCasheService> set_logger)
         {
             _config = set_config;
             _logger = set_logger;
-            _redis = new RedisUtil(_config.Value.RedisConfig);
+            _redis = new RedisUtil(_config.Value);
         }
 
         /// <inheritdoc/>

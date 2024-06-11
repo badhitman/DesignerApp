@@ -23,9 +23,4 @@ public class ServerConfigModel
     /// Конфигурация reCaptcha
     /// </summary>
     public ReCaptchaConfigClientModel? ReCaptchaConfig { get; set; }
-
-    /// <summary>
-    /// Конфигурация Redis
-    /// </summary>
-    public RedisConfigModel RedisConfig { get; set; } = new RedisConfigModel();
 }
