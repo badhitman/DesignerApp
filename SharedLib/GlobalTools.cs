@@ -14,7 +14,7 @@ namespace SharedLib;
 /// <summary>
 /// Глобальные утилиты
 /// </summary>
-public static class GlobalUtils
+public static class GlobalTools
 {
     /// <summary>
     /// Перемешать список элементов
