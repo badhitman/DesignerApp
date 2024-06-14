@@ -10,13 +10,11 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// </summary>
 public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
-    /// <inheritdoc/>
     [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     protected DirectoryNavComponent? _creator_ref;
@@ -98,7 +96,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Id = SelectedDirectoryId, Name = DirectoryName });
+            TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Id = SelectedDirectoryId, Name = DirectoryName, SystemName = "" });
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
             _creator_ref?.SetDirectoryNavState(DirectoryNavStatesEnum.None);
@@ -123,17 +121,17 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected void CreateDirectoryAction(string name)
+    protected async void CreateDirectoryAction((string Name, string SystemName) dir)
     {
         IsBusyProgress = true;
-        _ = InvokeAsync(async () =>
-        {
-            TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryModel() { Name = name });
-            SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            SelectedDirectoryId = rest.Response;
-            await ReloadDirectories();
-            StateHasChanged();
-        });
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Name = dir.Name, SystemName = dir.SystemName });
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (!rest.Success())
+            return;
+
+        SelectedDirectoryId = rest.Response;
+        await ReloadDirectories();
+        StateHasChanged();
     }
 
     /// <inheritdoc/>

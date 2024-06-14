@@ -2,8 +2,9 @@
 {
     <div class="input-group">
         <span class="input-group-text">новый:</span>
-        <input @bind-value="NameNewDict" @bind-value:event="oninput" type="text" aria-label="First name" class="form-control" size="100">
-        <button disabled="@(string.IsNullOrWhiteSpace(NameNewDict))" @onclick="() => { CreateDirectoryHandler(NameNewDict ?? string.Empty); DirectoryNavState = DirectoryNavStatesEnum.None; NameNewDict = string.Empty; }" class="btn btn-outline-success" type="button" id="button-addon1">@(string.IsNullOrWhiteSpace(NameNewDict) ? "Введите название" : "Создать")</button>
+        <input @bind-value="NameNewDict" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника">
+        <input @bind-value="SystemCodeNewDict" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя">
+        <button disabled="@(string.IsNullOrWhiteSpace(NameNewDict))" @onclick="() => { CreateDirectoryHandler((Name: NameNewDict ?? string.Empty, SystemName: SystemCodeNewDict)); DirectoryNavState = DirectoryNavStatesEnum.None; NameNewDict = string.Empty; }" class="btn btn-outline-success" type="button" id="button-addon1">@(string.IsNullOrWhiteSpace(NameNewDict) ? "Введите название" : "Создать")</button>
         <button @onclick="() => { NameNewDict = string.Empty; DirectoryNavState = DirectoryNavStatesEnum.None; }" class="btn btn-outline-secondary" type="button" id="button-addon2">Отмена</button>
     </div>
 }
@@ -23,10 +24,10 @@ else if (DirectoryNavState == DirectoryNavStatesEnum.Rename)
 }
 else
 {
-    <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Rename; RenameSelectedDirectoryHandler(true); }" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" />
-    <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Create; }" Icon="@Icons.Material.Outlined.Add" Size="Size.Small" />
-    @if (CanDeleteCurrentDirectory)
+    @if (IsSelectedDirectory)
     {
+        <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Rename; RenameSelectedDirectoryHandler(true); }" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" />
         <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Delete; }" Icon="@Icons.Material.Outlined.Delete" />
     }
+    <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Create; }" Icon="@Icons.Material.Outlined.Add" Size="Size.Small" />
 }

@@ -12,7 +12,7 @@ public partial class DirectoryNavComponent : ComponentBase
     /// Create directory handler
     /// </summary>
     [Parameter, EditorRequired]
-    public Action<string> CreateDirectoryHandler { get; set; } = default!;
+    public required Action<(string Name, string SystemName)> CreateDirectoryHandler { get; set; }
 
     /// <summary>
     /// Delete selected directory handler
@@ -33,15 +33,20 @@ public partial class DirectoryNavComponent : ComponentBase
     public Action SaveRenameSelectedDirectoryHandler { get; set; } = default!;
 
     /// <summary>
-    /// Can delete current directory
+    /// Directory is selected
     /// </summary>
     [Parameter, EditorRequired]
-    public bool CanDeleteCurrentDirectory { get; set; }
+    public bool IsSelectedDirectory { get; set; }
 
     /// <summary>
     /// Имя создаваемого словаря
     /// </summary>
     protected string? NameNewDict;
+
+    /// <summary>
+    /// Системное код-имя создаваемого словаря
+    /// </summary>
+    protected string? SystemCodeNewDict;
 
     /// <summary>
     /// Directory navigation state
@@ -54,7 +59,7 @@ public partial class DirectoryNavComponent : ComponentBase
     public void StateHasChangedAction(bool? can_delete_current_directory = null)
     {
         if (can_delete_current_directory.HasValue)
-            CanDeleteCurrentDirectory = can_delete_current_directory.Value;
+            IsSelectedDirectory = can_delete_current_directory.Value;
 
         StateHasChanged();
     }

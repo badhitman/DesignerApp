@@ -38,7 +38,7 @@
                         }
                     </div>
                     <MudSpacer />
-                    <DirectoryNavComponent @ref="_creator_ref" CreateDirectoryHandler="CreateDirectoryAction" RenameSelectedDirectoryHandler="RenameSelectedDirectoryAction" DeleteSelectedDirectoryHandler="DeleteSelectedDirectoryAction" CanDeleteCurrentDirectory="@(_selected_dir_id > 0)" SaveRenameSelectedDirectoryHandler="SaveRenameDirectoryAction" />
+                    <DirectoryNavComponent @ref="_creator_ref" CreateDirectoryHandler="CreateDirectoryAction" RenameSelectedDirectoryHandler="RenameSelectedDirectoryAction" DeleteSelectedDirectoryHandler="DeleteSelectedDirectoryAction" IsSelectedDirectory="@(_selected_dir_id > 0)" SaveRenameSelectedDirectoryHandler="SaveRenameDirectoryAction" />
                 </MudToolBar>
             </MudPaper>
         </div>

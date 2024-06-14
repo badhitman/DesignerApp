@@ -160,6 +160,6 @@ public partial class AddingFieldFormViewComponent : ComponentBase
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        _field_object_master = GlobalUtils.CreateDeepCopy(FieldObject);
+        _field_object_master = GlobalTools.CreateDeepCopy(FieldObject);
     }
 }

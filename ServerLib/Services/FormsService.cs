@@ -794,7 +794,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             int _sort_index = questionnaire_db.Pages!.Any() ? questionnaire_db.Pages!.Max(x => x.SortIndex) : 0;
 
             questionnaire_page_db = ConstructorFormQuestionnairePageModelDB.Build(questionnaire_page, questionnaire_db, _sort_index + 1);
-            
+
             await context_forms.AddAsync(questionnaire_page_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
             msg = $"Страница анкеты/опроса создано #{questionnaire_page_db.Id}";
@@ -984,7 +984,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             int _sort_index = questionnaire_page_db.JoinsForms!.Any() ? questionnaire_page_db.JoinsForms!.Max(x => x.SortIndex) : 0;
 
             questionnaire_page_join_db = ConstructorFormQuestionnairePageJoinFormModelDB.Build(page_join_form);
-            
+
             await context_forms.AddAsync(questionnaire_page_join_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
             msg = $"Создана связь форма и страницы анкеты/опроса #{questionnaire_page_db.Id}";
@@ -1397,7 +1397,7 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
             _sort_index = Math.Max(_sort_index, form_db.Fields!.Any() ? form_db.Fields!.Max(x => x.SortIndex) : 0);
 
             form_field_db = ConstructorFieldFormModelDB.Build(form_field, form_db, _sort_index + 1);
-            
+
             await context_forms.AddAsync(form_field_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
             msg = $"Поле (простого типа) создано #{form_field_db.Id}";
@@ -1778,6 +1778,13 @@ public class FormsService(MainDbAppContext context_forms, ILogger<FormsService> 
     public async Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(SystemEntryModel _dir, CancellationToken cancellationToken = default)
     {
         TResponseStrictModel<int> res = new() { Response = 0 };
+        var (IsValid, ValidationResults) = GlobalTools.ValidateObject(_dir);
+        if (!IsValid)
+        {
+            res.AddRangeMessages(ValidationResults.Select(x => new ResultMessage() { Text = x.ToString(), TypeMessage = ResultTypesEnum.Error }));
+            return res;
+        }
+
         string msg;
         if (string.IsNullOrWhiteSpace(_dir.Name))
         {

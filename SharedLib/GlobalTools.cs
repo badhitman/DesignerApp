@@ -4,6 +4,7 @@
 
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
@@ -31,6 +32,15 @@ public static class GlobalTools
             list[k] = list[n];
             list[n] = value;
         }
+    }
+
+    /// <summary>
+    /// Валидация модели объекта
+    /// </summary>
+    public static (bool IsValid, List<ValidationResult> ValidationResults) ValidateObject(object object_for_validate)
+    {
+        List<ValidationResult> validationResults = [];
+        return (IsValid: Validator.TryValidateObject(object_for_validate, new ValidationContext(object_for_validate), validationResults, true),ValidationResults: validationResults);
     }
 
     /// <summary>

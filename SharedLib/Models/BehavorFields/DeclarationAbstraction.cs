@@ -61,7 +61,7 @@ public abstract class DeclarationAbstraction
             if (_calc_cache.TryGetValue(type_name, out DeclarationAbstraction? _vcc))
                 return _vcc;
 
-            Type? t = GlobalUtils.GetType($"{typeof(DeclarationAbstraction).Namespace}.{type_name}");
+            Type? t = GlobalTools.GetType($"{typeof(DeclarationAbstraction).Namespace}.{type_name}");
             if (t is null)
                 return null;
 
