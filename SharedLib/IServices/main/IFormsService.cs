@@ -242,4 +242,55 @@ public interface IFormsService
     /// </summary>
     public Task<ResponseBaseModel> DeleteElementFromDirectory(int element_id, CancellationToken cancellationToken = default);
     #endregion
+
+    #region проекты
+    /// <summary>
+    /// Получить проекты
+    /// </summary>
+    /// <param name="name_filter">фильтр по имени</param>
+    /// <param name="for_user_id">чъи проекты (по умолчанию null - значит свои проекты)</param>
+    public Task<EntryDescriptionModel[]> GetProjects(string for_user_id, string? name_filter = null);
+
+    /// <summary>
+    /// Прочитать данные проекта
+    /// </summary>
+    public Task<ProjectConstructorModelDb?> ReadProject(int project_id);
+
+    /// <summary>
+    /// Создать проект
+    /// </summary>
+    public Task<TResponseModel<int>> CreateProject(string name, string system_code, string owner_user_id);
+
+    /// <summary>
+    /// Установить проекту признак <c>IsDeleted</c>.
+    /// </summary>
+    public Task<ResponseBaseModel> SetMarkerDeleteProject(int project_id, bool is_deleted);
+
+    /// <summary>
+    /// Обновить проект
+    /// </summary>
+    public Task<ResponseBaseModel> UpdateProject(int project_id, string system_name, string name, string? description);
+
+    /// <summary>
+    /// Добавить участника к проекту
+    /// </summary>
+    public Task<ResponseBaseModel> AddMemberToProject(int project_id, string member_email);
+
+    /// <summary>
+    /// Исключить участника из проекта
+    /// </summary>
+    public Task<ResponseBaseModel> DeleteMemberFromProject(int project_id, string member_email);
+
+    /// <summary>
+    /// Установить проект как основной/используемый для пользователя.
+    /// </summary>
+    /// <param name="project_id">проект</param>
+    /// <param name="member_email">если null, то для текущего пользователя</param>
+    public Task<ResponseBaseModel> SetProjectAsMain(int project_id, string? member_email = null);
+
+    /// <summary>
+    /// Получить текущий основной/используемый проект. Если <paramref name="user_email"/> == null, то для текущего пользователя
+    /// </summary>
+    public Task<TResponseModel<EntryDescriptionModel>> GetCurrentMainProject(string? user_email = null);
+    #endregion
 }

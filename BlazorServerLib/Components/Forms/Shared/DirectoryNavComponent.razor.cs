@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using SharedLib;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
@@ -52,6 +53,20 @@ public partial class DirectoryNavComponent : ComponentBase
     /// Directory navigation state
     /// </summary>
     protected DirectoryNavStatesEnum DirectoryNavState = DirectoryNavStatesEnum.None;
+
+    /// <summary>
+    /// Текст кнопки создания справочника
+    /// </summary>
+    protected string GetTitleForButtonCreate
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict))
+                return "Введите название";
+
+            return "Создать";
+        }
+    }
 
     /// <summary>
     /// State has changed action

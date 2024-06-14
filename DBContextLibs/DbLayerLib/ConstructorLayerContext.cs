@@ -19,6 +19,11 @@ public partial class LayerContext
     public DbSet<MemberOfProjectModelDb> MembersOfProjects { get; set; }
 
     /// <summary>
+    /// Используемые проекты
+    /// </summary>
+    public DbSet<ProjectUseModelDb> ProjectsUse { get; set; }
+
+    /// <summary>
     /// Справочники/списки
     /// </summary>
     public DbSet<ConstructorFormDirectoryModelDB> Directories { get; set; }

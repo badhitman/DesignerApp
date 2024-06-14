@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
 /// <summary>
-/// Member of project
+/// Признак проекта как используемого
 /// </summary>
-public class MemberOfProjectModelDb
+[Index(nameof(UserId), nameof(ProjectId), IsUnique = true)]
+public class ProjectUseModelDb
 {
     /// <summary>
     /// Идентификатор/Key
@@ -21,7 +23,7 @@ public class MemberOfProjectModelDb
     /// <summary>
     /// Project
     /// </summary>
-    public ProjectConstructorModelDb? Project {  get; set; }
+    public ProjectConstructorModelDb? Project { get; set; }
 
     /// <summary>
     /// Project
