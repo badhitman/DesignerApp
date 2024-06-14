@@ -71,7 +71,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task QuestionnaireOpenDialog(ConstructorFormQuestionnaireModelDB? questionnaire = null)
     {
-        questionnaire ??= (ConstructorFormQuestionnaireModelDB)EntryDescriptionModel.Build("");
+        questionnaire ??= ConstructorFormQuestionnaireModelDB.BuildEmpty();
         DialogParameters<EditQuestionnaireDialogComponent> parameters = new()
         {
             { x => x.Questionnaire, questionnaire }

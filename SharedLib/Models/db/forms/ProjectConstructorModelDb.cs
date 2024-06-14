@@ -7,6 +7,7 @@ namespace SharedLib;
 /// Project (for constructor)
 /// </summary>
 [Index(nameof(OwnerUserId))]
+[Index(nameof(OwnerUserId), nameof(SystemName), IsUnique = true)]
 public class ProjectConstructorModelDb : EntryDescriptionModel
 {
     /// <summary>

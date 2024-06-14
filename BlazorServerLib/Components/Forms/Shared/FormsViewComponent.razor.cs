@@ -77,7 +77,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     {
         DialogParameters<EditFormDialogComponent> parameters = new()
         {
-            { x => x.Form, (ConstructorFormModelDB)EntryDescriptionModel.Build("") }
+            { x => x.Form, ConstructorFormModelDB.BuildEmpty() }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;

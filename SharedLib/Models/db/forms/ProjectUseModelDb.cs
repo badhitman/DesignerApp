@@ -6,7 +6,7 @@ namespace SharedLib;
 /// <summary>
 /// Признак проекта как используемого
 /// </summary>
-[Index(nameof(UserId), nameof(ProjectId), IsUnique = true)]
+[Index(nameof(UserId), IsUnique = true)]
 public class ProjectUseModelDb
 {
     /// <summary>

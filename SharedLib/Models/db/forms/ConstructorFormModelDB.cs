@@ -9,6 +9,10 @@ namespace SharedLib;
 [Index(nameof(Name), IsUnique = true)]
 public class ConstructorFormModelDB : ConstructorFormBaseModel
 {
+    /// <inheritdoc/>
+    public static ConstructorFormModelDB BuildEmpty()
+        => new() { Name = "", SystemName = "" };
+
     /// <summary>
     /// Поля формы
     /// </summary>

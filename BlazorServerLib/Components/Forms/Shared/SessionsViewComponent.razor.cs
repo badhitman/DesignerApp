@@ -22,6 +22,8 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
 
+    [CascadingParameter]
+    EntryDescriptionModel? CurrentMainProject { get; set; }
 
     IEnumerable<ConstructorFormQuestionnaireModelDB> QuestionnairesAll = [];
 
@@ -41,7 +43,20 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     string? searchString = null;
 
     /// <inheritdoc/>
-    protected string CreateSessionButtonTitle => SelectedQuestionnaireId < 1 ? "Укажите анкету" : "Создать новую ссылку";
+    protected string CreateSessionButtonTitle
+    {
+        get
+        {
+            if (CurrentMainProject is null)
+                return "Не указан проект";
+
+            if (SelectedQuestionnaireId < 1)
+                return "Укажите анкету";
+
+            return "Создать новую ссылку";
+        }
+    }
+    //CurrentMainProject is null
 
     protected private async Task<TableData<ConstructorFormSessionModelDB>> ServerReload(TableState state)
     {

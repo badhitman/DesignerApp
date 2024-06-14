@@ -4,6 +4,7 @@ using SharedLib;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
+/// <inheritdoc/>
 public partial class ProjectsComponent : BlazorBusyComponentBaseModel
 {
     [Inject]

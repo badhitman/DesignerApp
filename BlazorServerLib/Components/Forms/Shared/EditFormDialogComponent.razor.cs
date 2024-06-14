@@ -37,7 +37,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected bool IsEdited => !Form.Equals(FormEditObject);
 
     /// <inheritdoc/>
-    protected InputRichTextComponent _currentTemplateInputRichText = default!;
+    protected InputRichTextComponent? _currentTemplateInputRichText;
 
     /// <inheritdoc/>
     protected ConstructorFormModelDB FormEditObject = default!;
@@ -51,7 +51,8 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     async Task ResetForm()
     {
         FormEditObject = ConstructorFormModelDB.Build(Form);
-        await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, FormEditObject.Description);
+        if (_currentTemplateInputRichText is not null)
+            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, FormEditObject.Description);
     }
 
     /// <inheritdoc/>

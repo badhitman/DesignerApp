@@ -8,9 +8,14 @@ namespace SharedLib;
 [Index(nameof(Name), IsUnique = true)]
 public class ConstructorFormQuestionnaireModelDB : EntryDescriptionModel
 {
-    /// <summary>
-    /// Опрос/Анкета
-    /// </summary>
+    /// <inheritdoc/>
+    public static ConstructorFormQuestionnaireModelDB BuildEmpty()
+        => new()
+        {
+            Name = ""
+        };
+
+    /// <inheritdoc/>
     public static ConstructorFormQuestionnaireModelDB Build(EntryDescriptionModel questionnaire)
         => new()
         {

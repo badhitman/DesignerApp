@@ -274,23 +274,23 @@ public interface IFormsService
     /// <summary>
     /// Добавить участника к проекту
     /// </summary>
-    public Task<ResponseBaseModel> AddMemberToProject(int project_id, string member_email);
+    public Task<ResponseBaseModel> AddMemberToProject(int project_id, string member_user_id);
 
     /// <summary>
     /// Исключить участника из проекта
     /// </summary>
-    public Task<ResponseBaseModel> DeleteMemberFromProject(int project_id, string member_email);
+    public Task<ResponseBaseModel> DeleteMemberFromProject(int project_id, string member_user_id);
 
     /// <summary>
     /// Установить проект как основной/используемый для пользователя.
     /// </summary>
     /// <param name="project_id">проект</param>
-    /// <param name="member_email">если null, то для текущего пользователя</param>
-    public Task<ResponseBaseModel> SetProjectAsMain(int project_id, string? member_email = null);
+    /// <param name="user_id">если null, то для текущего пользователя</param>
+    public Task<ResponseBaseModel> SetProjectAsMain(int project_id, string user_id);
 
     /// <summary>
-    /// Получить текущий основной/используемый проект. Если <paramref name="user_email"/> == null, то для текущего пользователя
+    /// Получить текущий основной/используемый проект. Если <paramref name="user_id"/> == null, то для текущего пользователя
     /// </summary>
-    public Task<TResponseModel<EntryDescriptionModel>> GetCurrentMainProject(string? user_email = null);
+    public Task<TResponseModel<EntryDescriptionModel>> GetCurrentMainProject(string user_id);
     #endregion
 }

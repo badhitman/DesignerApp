@@ -1,4 +1,6 @@
 ﻿using DbcLib;
+using IdentityLib;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,7 +16,7 @@ namespace ServerLib;
 /// <summary>
 /// Forms служба
 /// </summary>
-public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, ILogger<FormsService> logger, IOptions<ServerConstructorConfigModel> _conf) : IFormsService
+public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDbContextFactory<IdentityAppDbContext> identityDbFactory, ILogger<FormsService> logger, IOptions<ServerConstructorConfigModel> _conf) : IFormsService
 {
     static readonly Random r = new();
 
@@ -25,7 +27,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, ILo
         if (!Guid.TryParse(guid_session, out Guid guid_parsed) || guid_parsed == Guid.Empty)
             return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Токен сессии имеет не корректный формат" }] };
 
-       using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<ConstructorFormSessionModelDB> q = context_forms
             .Sessions
@@ -116,7 +118,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, ILo
             res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка B3AC5AAF-A786-4190-9C61-A272F174D940");
             return res;
         }
-        
+
         if (session_Questionnaire.SessionStatus >= SessionsStatusesEnum.Sended)
         {
             res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (находиться в статусе {session_Questionnaire.SessionStatus}).");
@@ -881,7 +883,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, ILo
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteQuestionnairePage(int questionnaire_page_id, CancellationToken cancellationToken = default)
     {
-using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormQuestionnairePageModelDB? questionnaire_page_db = await context_forms
             .QuestionnairesPages
             .Include(x => x.JoinsForms)
@@ -889,7 +891,7 @@ using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
         if (questionnaire_page_db is null)
             return ResponseBaseModel.CreateError($"Страница опроса/анкеты #{questionnaire_page_id} не найден в БД");
-        
+
         context_forms.Remove(questionnaire_page_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
@@ -2011,7 +2013,7 @@ using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         IQueryable<EntryDescriptionModel> q = context_forms
             .Projects
-            .Where(x => x.OwnerUserId == user_id)
+            .Where(x => x.OwnerUserId == user_id || context_forms.MembersOfProjects.Any(y => y.ProjectId == x.Id && y.UserId == user_id))
             .Select(x => new EntryDescriptionModel() { Id = x.Id, Name = x.Name, Description = x.Description, IsDeleted = x.IsDeleted })
             .AsQueryable();
 
@@ -2034,51 +2036,203 @@ using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> CreateProject(string name, string system_code, string owner_user_id)
     {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+
         TResponseModel<int> res = new();
-        ProjectConstructorModelDb project = new()
+        ApplicationUser? userDb = await identityContext.Users
+            .FirstOrDefaultAsync(x => x.Id == owner_user_id);
+        if (userDb is null)
+        {
+            res.AddError($"Пользователь #{owner_user_id} не найден в БД");
+            return res;
+        }
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        ProjectConstructorModelDb? project = await context_forms
+            .Projects
+            .FirstOrDefaultAsync(x => x.OwnerUserId == userDb.Id && (x.Name == name || x.SystemName == system_code));
+
+        if (project is not null)
+        {
+            res.AddError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{project.Id} '{project.Name}' ({project.SystemName})");
+            return res;
+        }
+
+        project = new()
         {
             Name = name,
             SystemName = system_code,
-            OwnerUserId = owner_user_id,
+            OwnerUserId = userDb.Id,
         };
 
-        throw new NotImplementedException();
+        await context_forms.AddAsync(project);
+        await context_forms.SaveChangesAsync();
+        res.Response = project.Id;
+        return res;
     }
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetMarkerDeleteProject(int project_id, bool is_deleted)
     {
-        throw new NotImplementedException();
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+
+        ProjectConstructorModelDb? project = await context_forms
+            .Projects
+            .FirstOrDefaultAsync(x => x.Id == project_id);
+
+        if (project is null)
+            return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
+
+        project.IsDeleted = is_deleted;
+        context_forms.Update(project);
+        await context_forms.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess($"Метка удаления установлена в [{is_deleted}]");
     }
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> UpdateProject(int project_id, string system_name, string name, string? description)
     {
-        throw new NotImplementedException();
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+
+        ProjectConstructorModelDb? project = await context_forms
+            .Projects
+            .FirstOrDefaultAsync(x => x.Id != project_id && (x.Name == name || x.SystemName == system_name));
+
+        if (project is not null)
+            return ResponseBaseModel.CreateError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{project.Id} '{project.Name}' ({project.SystemName})");
+
+        project = await context_forms
+            .Projects
+            .FirstOrDefaultAsync(x => x.Id == project_id);
+
+        if (project is null)
+            return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
+
+        if (project.Name == name && project.SystemName == system_name && project.Description == description)
+            return ResponseBaseModel.CreateInfo("Объект не изменён");
+
+        project.Name = name;
+        project.SystemName = system_name;
+        project.Description = description;
+
+        context_forms.Update(project);
+        await context_forms.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess("Проект обновлён");
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> AddMemberToProject(int project_id, string member_email)
+    public async Task<ResponseBaseModel> AddMemberToProject(int project_id, string member_user_id)
     {
-        throw new NotImplementedException();
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        ApplicationUser? userDb = await identityContext.Users
+            .FirstOrDefaultAsync(x => x.Id == member_user_id);
+
+        if (userDb is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{member_user_id} не найден в БД");
+
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        MemberOfProjectModelDb? memberDb = await context_forms
+            .MembersOfProjects
+            .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == userDb.Id);
+
+        if (memberDb is not null)
+            return ResponseBaseModel.CreateInfo("Пользователь уже является участником проекта");
+
+        ProjectConstructorModelDb? projectDb = await context_forms
+            .Projects
+            .FirstOrDefaultAsync(x => x.Id == project_id);
+
+        if (projectDb is null)
+            return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
+
+        memberDb = new()
+        {
+            Project = projectDb,
+            ProjectId = projectDb.Id,
+            UserId = userDb.Id
+        };
+        await identityContext.AddAsync(memberDb);
+        await identityContext.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess($"Пользователь/участник добавлен к проекту '{projectDb.Name}' ({projectDb.SystemName})");
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteMemberFromProject(int project_id, string member_email)
+    public async Task<ResponseBaseModel> DeleteMemberFromProject(int project_id, string member_user_id)
     {
-        throw new NotImplementedException();
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        ApplicationUser? userDb = await identityContext.Users
+            .FirstOrDefaultAsync(x => x.Id == member_user_id);
+
+        if (userDb is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{member_user_id} не найден в БД");
+
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        MemberOfProjectModelDb? memberDb = await context_forms
+            .MembersOfProjects
+            .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == userDb.Id);
+        if (memberDb is null)
+            return ResponseBaseModel.CreateInfo("Пользователь не является участником проекта. Удаление не требуется");
+
+        context_forms.Remove(memberDb);
+        await identityContext.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess("Пользователь успешно исключён из проекта");
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetProjectAsMain(int project_id, string? member_email = null)
+    public async Task<ResponseBaseModel> SetProjectAsMain(int project_id, string user_id)
     {
-        throw new NotImplementedException();
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        ApplicationUser? userDb = await identityContext.Users
+            .FirstOrDefaultAsync(x => x.Id == user_id);
+
+        if (userDb is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{user_id} не найден в БД");
+
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        ProjectConstructorModelDb? projectDb = await context_forms.Projects.FirstOrDefaultAsync(x => x.Id == project_id);
+        if (projectDb is null)
+            return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
+
+        ProjectUseModelDb? mainProjectDb = await context_forms.ProjectsUse.FirstOrDefaultAsync(x => x.UserId == user_id);
+        if (mainProjectDb is null)
+        {
+            mainProjectDb = new ProjectUseModelDb() { UserId = user_id, ProjectId = project_id, Project = projectDb };
+            await context_forms.AddAsync(mainProjectDb);
+        }
+        else
+        {
+            mainProjectDb.Project = projectDb;
+            mainProjectDb.ProjectId = project_id;
+            context_forms.Update(mainProjectDb);
+        }
+        await context_forms.SaveChangesAsync();
+        return ResponseBaseModel.CreateSuccess("Запрос успешно выполнен");
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryDescriptionModel>> GetCurrentMainProject(string? user_email = null)
+    public async Task<TResponseModel<EntryDescriptionModel>> GetCurrentMainProject(string user_id)
     {
-        throw new NotImplementedException();
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        ApplicationUser? userDb = await identityContext.Users
+            .FirstOrDefaultAsync(x => x.Id == user_id);
+
+        TResponseModel<EntryDescriptionModel> res = new();
+        if (userDb is null)
+        {
+            res.AddError($"Пользователь #{user_id} не найден в БД");
+            return res;
+        }
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        res.Response = await context_forms
+            .ProjectsUse
+            .Include(x => x.Project)
+            .Select(x => new EntryDescriptionModel() { Name = x.Project!.Name, Description = x.Project.Description, Id = x.Project.Id, IsDeleted = x.Project.IsDeleted })
+            .FirstOrDefaultAsync();
+
+        return res;
     }
     #endregion
 }
