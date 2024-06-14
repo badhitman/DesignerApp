@@ -1,8 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" @rendermode="RenderMode.InteractiveServer" />
+<MudDialogProvider @rendermode="RenderMode.InteractiveServer" />
+<MudSnackbarProvider @rendermode="RenderMode.InteractiveServer" />
 
 <div class="page">
     <div class="sidebar">
