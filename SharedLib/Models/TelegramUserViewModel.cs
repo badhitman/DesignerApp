@@ -31,7 +31,7 @@ public class TelegramUserViewModel : TelegramUserBaseModelDb
             UserId = id,
             Id = user.Id,
             IsBot = user.IsBot,
-            IsDeleted = user.IsDeleted,
+            IsDisabled = user.IsDisabled,
             TelegramId = user.TelegramId,
             Name = user.Name,
             DialogTelegramTypeHandler = user.DialogTelegramTypeHandler,

@@ -26,4 +26,16 @@ public class ProjectConstructorModelDb : EntryDescriptionModel
     /// Members
     /// </summary>
     public List<MemberOfProjectModelDb>? Members { get; set; }
+
+    /// <summary>
+    /// Reload
+    /// </summary>
+    public void Reload(ProjectViewModel project)
+    {
+
+        Name = project.Name;
+        SystemName = project.SystemName;
+        Description = project.Description;
+
+    }
 }

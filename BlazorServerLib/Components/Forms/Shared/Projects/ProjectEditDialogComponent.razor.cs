@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorWebLib.Components.Forms.Pages;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using BlazorLib;
 using MudBlazor;
@@ -26,21 +27,29 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required ProjectViewModel ProjectForEdit { get; set; }
-    ProjectViewModel ProjectEditObject = default!;
+    ProjectViewModel projectObject = default!;
 
     /// <inheritdoc/>
-    protected bool CanSave => !string.IsNullOrWhiteSpace(ProjectEditObject.Name) && !string.IsNullOrWhiteSpace(ProjectEditObject.SystemName) && (!ProjectForEdit.Equals(ProjectEditObject) || ProjectForEdit.Id < 1);
+    [Parameter, EditorRequired]
+    public required ProjectsListComponent ParentListProjects { get; set; }
+
+    /// <inheritdoc/>
+    protected bool CanSave => !string.IsNullOrWhiteSpace(projectObject.Name) && !string.IsNullOrWhiteSpace(projectObject.SystemName) && (!ProjectForEdit.Equals(projectObject) || ProjectForEdit.Id < 1);
 
     async Task ResetForm()
     {
-        ProjectEditObject = ProjectViewModel.Build(ProjectForEdit);
+        if (projectObject is null)
+            projectObject = ProjectViewModel.Build(ProjectForEdit);
+        else
+            projectObject.Reload(ProjectForEdit);
+
         if (_currentTemplateInputRichText is not null)
-            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, ProjectEditObject.Description);
+            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, projectObject.Description);
     }
 
     /// <inheritdoc/>
@@ -53,16 +62,33 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     protected InputRichTextComponent? _currentTemplateInputRichText;
 
     /// <inheritdoc/>
-    protected async Task Submit()
+    protected async Task SaveProject()
     {
         IsBusyProgress = true;
-        TResponseModel<int> res = await FormsRepo.CreateProject(ProjectForEdit, CurrentUser.UserId);
-        IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (res.Success())
+        if (projectObject.Id < 1)
         {
-            ProjectForEdit.Id = res.Response;
-            ProjectEditObject.Reload(ProjectForEdit);
+            TResponseModel<int> res = await FormsRepo.CreateProject(projectObject, ParentFormsPage.CurrentUser.UserId);
+            IsBusyProgress = false;
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+            if (res.Success())
+            {
+                ProjectForEdit.Id = res.Response;
+                projectObject.Reload(ProjectForEdit);
+                await ParentListProjects.ReloadListProjects();
+                ParentListProjects.StateHasChangedCall();
+            }
+        }
+        else
+        {
+            ResponseBaseModel res = await FormsRepo.UpdateProject(projectObject);
+            IsBusyProgress = false;
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+            if (res.Success())
+            {
+                ProjectForEdit.Reload(projectObject);
+                await ParentListProjects.ReloadListProjects();
+                ParentListProjects.StateHasChangedCall();
+            }
         }
         // MudDialog.Close(DialogResult.Ok(true));
     }

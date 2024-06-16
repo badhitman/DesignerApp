@@ -269,7 +269,7 @@ public interface IFormsService
     /// <summary>
     /// Обновить проект
     /// </summary>
-    public Task<ResponseBaseModel> UpdateProject(int project_id, string system_name, string name, string? description);
+    public Task<ResponseBaseModel> UpdateProject(ProjectViewModel project);
 
     /// <summary>
     /// Добавить участника к проекту

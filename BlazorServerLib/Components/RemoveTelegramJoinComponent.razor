@@ -3,7 +3,7 @@
 @inject ITelegramWebService telegramWebRepo;
 @inject NavigationManager navManager
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <StatusMessage Messages="@Messages" />
 

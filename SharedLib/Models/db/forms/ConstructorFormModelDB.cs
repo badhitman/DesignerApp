@@ -77,7 +77,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             FormsDirectoriesLinks = other.FormsDirectoriesLinks,
             SystemName = other.SystemName,
             Id = other.Id,
-            IsDeleted = other.IsDeleted,
+            IsDisabled = other.IsDisabled,
             ProjectId = other.ProjectId,
             Project = other.Project,
         };
@@ -99,7 +99,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             SystemName = other.SystemName,
             ProjectId = other.ProjectId,
             Project = other.Project,
-            IsDeleted = other.IsDeleted,
+            IsDisabled = other.IsDisabled,
             Id = other.Id,
         };
     }
@@ -115,7 +115,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
         AddRowButtonTitle = other.AddRowButtonTitle;
         SystemName = other.SystemName;
         Id = other.Id;
-        IsDeleted = other.IsDeleted;
+        IsDisabled = other.IsDisabled;
         ProjectId = other.ProjectId;
         Project = other.Project;
 
@@ -183,7 +183,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
                 Description == other.Description &&
                 Css == other.Css &&
                 AddRowButtonTitle == other.AddRowButtonTitle &&
-                IsDeleted == other.IsDeleted &&
+                IsDisabled == other.IsDisabled &&
                 ProjectId == other.ProjectId;
 
         if (obj is ConstructorFormBaseModel base_other)
@@ -194,7 +194,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
                 Description == base_other.Description &&
                 Css == base_other.Css &&
                 AddRowButtonTitle == base_other.AddRowButtonTitle &&
-                IsDeleted == base_other.IsDeleted &&
+                IsDisabled == base_other.IsDisabled &&
                 ProjectId == base_other.ProjectId;
 
         return false;
@@ -202,5 +202,5 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
 
     /// <inheritdoc/>
     public override int GetHashCode()
-        => $"{Id} {SystemName} {Name} {Description} {Css} {AddRowButtonTitle} {IsDeleted} {ProjectId}".GetHashCode();
+        => $"{Id} {SystemName} {Name} {Description} {Css} {AddRowButtonTitle} {IsDisabled} {ProjectId}".GetHashCode();
 }

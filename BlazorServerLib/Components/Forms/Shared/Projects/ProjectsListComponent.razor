@@ -6,11 +6,19 @@
         <div class="hstack d-flex">
             <h4 class="me-auto">Ваши проекты</h4>
             <MudTooltip Text="Создать проект">
-                <MudFab StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="CreateProject" />
+                <MudFab Disabled="IsBusyProgress" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="CreateProject" />
             </MudTooltip>
         </div>
     </div>
-    @if (ProjectsOfUser.Length == 0)
+    @if (IsBusyProgress)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+    }
+    else if (ProjectsOfUser.Length == 0)
     {
         <figure class="text-center">
             <blockquote class="blockquote">

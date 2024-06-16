@@ -28,22 +28,14 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     public required ProjectViewModel ProjectRow { get; set; }
 
     /// <summary>
-    /// Текущий пользователь
-    /// </summary>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
-
-    /// <summary>
     /// Ссылка на 
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ProjectsComponent FormsListComponentRef { get; set; }
+    public required ProjectsListComponent ProjectsListComponentRef { get; set; }
 
-    /// <summary>
-    /// Основной/используемый проект
-    /// </summary>
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ProjectViewModel MainProject { get; set; }
+    public required FormsPage OwnerFormsPage { get; set; }
 
     /// <inheritdoc/>
     protected async Task EditProject()
@@ -51,31 +43,34 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
         DialogParameters<ProjectEditDialogComponent> parameters = new()
         {
              { x => x.ProjectForEdit, ProjectRow },
-             { x => x.CurrentUser, CurrentUser },
+             { x => x.ParentFormsPage, OwnerFormsPage },
+             { x => x.ParentListProjects, ProjectsListComponentRef },
         };
-        DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
-        await DialogService.ShowAsync<ProjectEditDialogComponent>("Редактирование проекта", parameters, options);
-        await FormsListComponentRef.ReloadListProjects();
+        DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.Large };
+        IDialogReference res = await DialogService.ShowAsync<ProjectEditDialogComponent>("Редактирование проекта", parameters, options);
+        await ProjectsListComponentRef.ReloadListProjects();
     }
 
     /// <inheritdoc/>
     protected async Task DeleteProject()
     {
         IsBusyProgress = true;
-        ResponseBaseModel res = await FormsRepo.SetMarkerDeleteProject(ProjectRow.Id, !ProjectRow.IsDeleted);
+        ResponseBaseModel res = await FormsRepo.SetMarkerDeleteProject(ProjectRow.Id, !ProjectRow.IsDisabled);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        await FormsListComponentRef.ReloadListProjects();
+        await ProjectsListComponentRef.ReloadListProjects();
     }
 
     /// <inheritdoc/>
     protected async Task SetMainProjectHandle()
     {
         IsBusyProgress = true;
-        ResponseBaseModel res = await FormsRepo.SetProjectAsMain(ProjectRow.Id, CurrentUser.UserId);
+        ResponseBaseModel res = await FormsRepo.SetProjectAsMain(ProjectRow.Id, OwnerFormsPage.CurrentUser.UserId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        //if (!res.Success())
-        //    SetMainProjectAction(ProjectRow);
+        if (res.Success())
+        {
+            await OwnerFormsPage.ReadCurrentMainProject();
+        }
     }
 }

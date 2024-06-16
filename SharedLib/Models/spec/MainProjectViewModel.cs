@@ -14,7 +14,7 @@ public class MainProjectViewModel : EntryDescriptionModel
     {
         Name = other.Name;
         Description = other.Description;
-        IsDeleted = other.IsDeleted;
+        IsDisabled = other.IsDisabled;
         Id = other.Id;
     }
 }

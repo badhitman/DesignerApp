@@ -1,6 +1,6 @@
 ﻿@inject IUsersProfilesService UsersProfilesRepo
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <h3>Claims</h3>
 <StatusMessage Messages="@Messages" />

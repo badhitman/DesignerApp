@@ -2039,16 +2039,16 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 .ToArrayAsync();
         }
 
-        EntryAltModel[]? ReadMembersData(List<MemberOfProjectModelDb>? members)
+        List<EntryAltModel>? ReadMembersData(List<MemberOfProjectModelDb>? members)
         {
             if (members is null || usersIdentity is null)
                 return null;
 
             return usersIdentity
                 .Where(identityUser => members.Any(memberOfProject => memberOfProject.UserId == identityUser.Id))
-                .ToArray();
+                .ToList();
         }
-        return raw_data.Select(x => new ProjectViewModel() { Name = x.Name, SystemName = x.SystemName, Description = x.Description, Id = x.Id, IsDeleted = x.IsDeleted, Members = ReadMembersData(x.Members) }).ToArray();
+        return raw_data.Select(x => new ProjectViewModel() { Name = x.Name, SystemName = x.SystemName, Description = x.Description, Id = x.Id, IsDisabled = x.IsDisabled, Members = ReadMembersData(x.Members) }).ToArray();
     }
 
     /// <inheritdoc/>
@@ -2091,7 +2091,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             SystemName = project.SystemName,
             OwnerUserId = userDb.Id,
             Description = project.Description,
-            IsDeleted = project.IsDeleted,
+            IsDisabled = project.IsDisabled,
         };
 
         await context_forms.AddAsync(projectDb);
@@ -2114,7 +2114,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (project is null)
             return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
 
-        project.IsDeleted = is_deleted;
+        project.IsDisabled = is_deleted;
         context_forms.Update(project);
         await context_forms.SaveChangesAsync();
 
@@ -2122,32 +2122,30 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> UpdateProject(int project_id, string system_name, string name, string? description)
+    public async Task<ResponseBaseModel> UpdateProject(ProjectViewModel project)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
-        ProjectConstructorModelDb? project = await context_forms
+        ProjectConstructorModelDb? projectDb = await context_forms
             .Projects
-            .FirstOrDefaultAsync(x => x.Id != project_id && (x.Name == name || x.SystemName == system_name));
+            .FirstOrDefaultAsync(x => x.Id != project.Id && (x.Name == project.Name || x.SystemName == project.SystemName));
 
-        if (project is not null)
-            return ResponseBaseModel.CreateError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{project.Id} '{project.Name}' ({project.SystemName})");
+        if (projectDb is not null)
+            return ResponseBaseModel.CreateError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{projectDb.Id} '{projectDb.Name}' ({projectDb.SystemName})");
 
-        project = await context_forms
+        projectDb = await context_forms
             .Projects
-            .FirstOrDefaultAsync(x => x.Id == project_id);
+            .FirstOrDefaultAsync(x => x.Id == project.Id);
 
-        if (project is null)
-            return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
+        if (projectDb is null)
+            return ResponseBaseModel.CreateError($"Проект #{project.Id} не найден в БД");
 
-        if (project.Name == name && project.SystemName == system_name && project.Description == description)
+        if (project.Name == projectDb.Name && project.SystemName == projectDb.SystemName && project.Description == projectDb.Description)
             return ResponseBaseModel.CreateInfo("Объект не изменён");
 
-        project.Name = name;
-        project.SystemName = system_name;
-        project.Description = description;
+        projectDb.Reload(project);
 
-        context_forms.Update(project);
+        context_forms.Update(projectDb);
         await context_forms.SaveChangesAsync();
 
         return ResponseBaseModel.CreateSuccess("Проект обновлён");
@@ -2241,7 +2239,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             context_forms.Update(mainProjectDb);
         }
         await context_forms.SaveChangesAsync();
-        return ResponseBaseModel.CreateSuccess("Запрос успешно выполнен");
+        return ResponseBaseModel.CreateSuccess($"Проект '{projectDb.Name}' успешно установлен в роли основного/используемого");
     }
 
     /// <inheritdoc/>
@@ -2261,7 +2259,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         res.Response = await context_forms
             .ProjectsUse
             .Include(x => x.Project)
-            .Select(x => new MainProjectViewModel() { Name = x.Project!.Name, Description = x.Project.Description, Id = x.Project.Id, IsDeleted = x.Project.IsDeleted })
+            .Select(x => new MainProjectViewModel() { Name = x.Project!.Name, Description = x.Project.Description, Id = x.Project.Id, IsDisabled = x.Project.IsDisabled })
             .FirstOrDefaultAsync();
 
         return res;

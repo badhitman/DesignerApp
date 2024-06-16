@@ -17,25 +17,34 @@ public partial class FormsPage : ComponentBase
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     /// <inheritdoc/>
-    protected UserInfoModel CurrentUser = default!;
+    public UserInfoModel CurrentUser { get; private set; } = default!;
 
     /// <inheritdoc/>
-    protected MainProjectViewModel? CurrentMainProject = null;
-    
+    public MainProjectViewModel? MainProject { get; set; }
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        TResponseModel<UserInfoModel?> restUser = await UsersProfiles.FindByIdAsync();
-        if (restUser.Response is null)
+        TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
+        if (currentUser.Response is null)
             throw new Exception("Current user is null");
 
-        if (!restUser.Success())
-            SnackbarRepo.ShowMessagesResponse(restUser.Messages);
-        CurrentUser = restUser.Response;
+        CurrentUser = currentUser.Response;
+        if (!currentUser.Success())
+            SnackbarRepo.ShowMessagesResponse(currentUser.Messages);
 
-        TResponseModel<MainProjectViewModel> restProject = await FormsRepo.GetCurrentMainProject(CurrentUser.UserId);
-        CurrentMainProject = restProject.Response;
-        if (!restProject.Success())
-            SnackbarRepo.ShowMessagesResponse(restProject.Messages);
+        await ReadCurrentMainProject();
+    }
+
+    /// <summary>
+    /// Прочитать данные о текущем/основном проекте
+    /// </summary>
+    public async Task ReadCurrentMainProject()
+    {
+        TResponseModel<MainProjectViewModel> currentMainProject = await FormsRepo.GetCurrentMainProject(CurrentUser.UserId);
+        if (!currentMainProject.Success())
+            SnackbarRepo.ShowMessagesResponse(currentMainProject.Messages);
+
+        MainProject = currentMainProject.Response;
     }
 }

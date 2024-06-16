@@ -2,34 +2,32 @@
 
 @using BlazorWebLib.Components.Forms.Shared.Projects
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Конструктор</PageTitle>
 
 <h3>Конструктор</h3>
-<CascadingValue Value="CurrentMainProject">
-    <CascadingValue Value="CurrentUser">
-        <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
-            <MudTabPanel Text="Проекты">
-                <ProjectsComponent />
-            </MudTabPanel>
-            <MudTabPanel Disabled="@(CurrentMainProject is null)" Text="Списки">
-                <DirectoryViewComponent />
-            </MudTabPanel>
-            <MudTabPanel Disabled="@(CurrentMainProject is null)" Text="Формы">
-                <FormsViewComponent />
-            </MudTabPanel>
-            <MudTabPanel Disabled="@(CurrentMainProject is null)" Text="Документы">
-                <QuestionnairesViewComponent />
-            </MudTabPanel>
-            <MudTabPanel Text="Ссылки">
-                <SessionsViewComponent />
-            </MudTabPanel>
-        </MudTabs>
-    </CascadingValue>
+<CascadingValue Value="this">
+    <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
+        <MudTabPanel Text="Проекты">
+            <ProjectsListComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null)" Text="Списки">
+            <DirectoryViewComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null)" Text="Формы">
+            <FormsViewComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null)" Text="Документы">
+            <QuestionnairesViewComponent />
+        </MudTabPanel>
+        <MudTabPanel Text="Ссылки">
+            <SessionsViewComponent />
+        </MudTabPanel>
+    </MudTabs>
 </CascadingValue>
 
-@if (CurrentMainProject is null)
+@if (MainProject is null)
 {
     <div class="alert alert-success mt-2" role="alert">
         <h4 class="alert-heading">Не выбран проект</h4>

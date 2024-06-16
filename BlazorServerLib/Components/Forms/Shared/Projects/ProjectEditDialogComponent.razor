@@ -6,40 +6,40 @@
         <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
             <MudTabPanel Text="Параметры">
                 <form class="row">
+                    <div class="col-12">
+                    </div>
                     <div class="col-md-6">
                         <label for="inputProjectName4" class="form-label">Название</label>
-                        <input type="text" class="form-control" id="inputProjectName4" @bind-value="ProjectEditObject.Name" @bind-value:event="oninput" placeholder="Наименование проекта">
+                        <input type="text" class="form-control" id="inputProjectName4" @bind-value="projectObject.Name" @bind-value:event="oninput" placeholder="Наименование проекта">
                     </div>
                     <div class="col-md-6">
                         <label for="inputSystemCode4" class="form-label">Системное имя</label>
-                        <input type="text" class="form-control" id="inputSystemCode4" @bind-value="ProjectEditObject.SystemName" @bind-value:event="oninput" placeholder="Системный код объекта">
+                        <input type="text" class="form-control" id="inputSystemCode4" @bind-value="projectObject.SystemName" @bind-value:event="oninput" placeholder="Системный код объекта">
                     </div>
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
-                            <InputRichTextComponent @bind-Value="ProjectEditObject.Description" @ref="_currentTemplateInputRichText" />
-                        </div>
+                    <div class="col-12 mb-3">
+                        <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
+                        <InputRichTextComponent @bind-Value="projectObject.Description" @ref="_currentTemplateInputRichText" />
                     </div>
-                    @if (ProjectEditObject.Id > 0)
+                    @if (projectObject.Id > 0)
                     {
                         <div class="form-check" title="Деактивация проекта блокирует работы по нему для соучастников">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckIsDeleted" @bind="ProjectEditObject.IsDeleted">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckIsDeleted" @bind="projectObject.IsDisabled">
                             <label class="form-check-label" for="flexCheckIsDeleted">
-                                @(ProjectEditObject.IsDeleted ? "Выключен. Включить?" : "Активен. Выключить?")
+                                @(projectObject.IsDisabled ? "Выключен. Включить?" : "Активен. Выключить?")
                             </label>
                         </div>
                     }
                 </form>
             </MudTabPanel>
-            <MudTabPanel Text="Участники" Disabled="@(ProjectEditObject.Id < 1)" ToolTip="@(ProjectEditObject.Id < 1 ? "Проект не записан" : "Участники проекта")">
-                <MembersOfProjectComponent ProjectId="ProjectEditObject.Id" />
+            <MudTabPanel Text="Участники" Disabled="@(projectObject.Id < 1)" ToolTip="@(projectObject.Id < 1 ? "Проект не записан" : "Участники проекта")">
+                <MembersOfProjectComponent ProjectId="projectObject.Id" />
             </MudTabPanel>
         </MudTabs>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Закрыть</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!CanSave)">Записать</MudButton>
-        @if (ProjectEditObject.Id > 0 && !ProjectEditObject.Equals(ProjectForEdit))
+        <MudButton Color="Color.Primary" OnClick="SaveProject" Disabled="@(!CanSave)">Записать</MudButton>
+        @if (projectObject.Id > 0 && !projectObject.Equals(ProjectForEdit))
         {
             <MudTooltip Text="Отменить редактирование">
                 <MudButton Color="Color.Info" OnClick="ResetForm" Disabled="@(!CanSave)">Отменить</MudButton>

@@ -1,7 +1,7 @@
 ﻿@using Microsoft.Extensions.Options
 
 @inherits BlazorBusyComponentBaseModel
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @inject ITelegramWebService tgWebRepo
 @inject ITelegramRemoteTransmissionService tgRepo
