@@ -31,7 +31,7 @@ public abstract class GetUserServiceAbstract(IHttpContextAccessor httpContextAcc
             if (user_id is null)
             {
                 msg = $"HttpContext is null (текущий пользователь) не авторизован. error {{D485BA3C-081C-4E2F-954D-759A181DCE78}}";
-                return (ApplicationUserResponseModel)ResponseBaseModel.CreateError(msg);
+                return new ApplicationUserResponseModel() { Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Info, Text = msg }] };
             }
             else
             {
