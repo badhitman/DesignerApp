@@ -20,8 +20,8 @@ public partial class FormsPage : ComponentBase
     protected UserInfoModel CurrentUser = default!;
 
     /// <inheritdoc/>
-    protected EntryDescriptionModel? CurrentMainProject = null;
-
+    protected MainProjectViewModel? CurrentMainProject = null;
+    
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -33,9 +33,9 @@ public partial class FormsPage : ComponentBase
             SnackbarRepo.ShowMessagesResponse(restUser.Messages);
         CurrentUser = restUser.Response;
 
-        TResponseModel<EntryDescriptionModel> restProject = await FormsRepo.GetCurrentMainProject(CurrentUser.UserId);
+        TResponseModel<MainProjectViewModel> restProject = await FormsRepo.GetCurrentMainProject(CurrentUser.UserId);
         CurrentMainProject = restProject.Response;
-        if(!restProject.Success())
+        if (!restProject.Success())
             SnackbarRepo.ShowMessagesResponse(restProject.Messages);
     }
 }

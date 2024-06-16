@@ -1,5 +1,5 @@
-﻿using BlazorLib;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -23,7 +23,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     protected IFormsService FormsRepo { get; set; } = default!;
 
     [CascadingParameter]
-    EntryDescriptionModel? CurrentMainProject { get; set; }
+    MainProjectViewModel? CurrentMainProject { get; set; }
 
     IEnumerable<ConstructorFormQuestionnaireModelDB> QuestionnairesAll = [];
 
@@ -48,7 +48,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         get
         {
             if (CurrentMainProject is null)
-                return "Не указан проект";
+                return "Не выбран основной/рабочий проект";
 
             if (SelectedQuestionnaireId < 1)
                 return "Укажите анкету";

@@ -1,27 +1,32 @@
 ﻿@page "/constructor"
+
+@using BlazorWebLib.Components.Forms.Shared.Projects
+
 @rendermode InteractiveServer
 
 <PageTitle>Конструктор</PageTitle>
 
 <h3>Конструктор</h3>
 <CascadingValue Value="CurrentMainProject">
-    <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
-        <MudTabPanel Text="Проекты">
-            <ProjectsComponent />
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(CurrentMainProject is null)" Text="Списки">
-            <DirectoryViewComponent />
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(CurrentMainProject is null)" Text="Формы">
-            <FormsViewComponent />
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(CurrentMainProject is null)" Text="Документы">
-            <QuestionnairesViewComponent />
-        </MudTabPanel>
-        <MudTabPanel Text="Ссылки">
-            <SessionsViewComponent />
-        </MudTabPanel>
-    </MudTabs>
+    <CascadingValue Value="CurrentUser">
+        <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
+            <MudTabPanel Text="Проекты">
+                <ProjectsComponent />
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(CurrentMainProject is null)" Text="Списки">
+                <DirectoryViewComponent />
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(CurrentMainProject is null)" Text="Формы">
+                <FormsViewComponent />
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(CurrentMainProject is null)" Text="Документы">
+                <QuestionnairesViewComponent />
+            </MudTabPanel>
+            <MudTabPanel Text="Ссылки">
+                <SessionsViewComponent />
+            </MudTabPanel>
+        </MudTabs>
+    </CascadingValue>
 </CascadingValue>
 
 @if (CurrentMainProject is null)

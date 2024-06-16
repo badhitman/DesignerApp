@@ -2008,19 +2008,47 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
     #region проекты
     /// <inheritdoc/>
-    public async Task<EntryDescriptionModel[]> GetProjects(string user_id, string? name_filter = null)
+    public async Task<ProjectViewModel[]> GetProjects(string user_id, string? name_filter = null)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        IQueryable<EntryDescriptionModel> q = context_forms
+        IQueryable<ProjectConstructorModelDb> q = context_forms
             .Projects
             .Where(x => x.OwnerUserId == user_id || context_forms.MembersOfProjects.Any(y => y.ProjectId == x.Id && y.UserId == user_id))
-            .Select(x => new EntryDescriptionModel() { Id = x.Id, Name = x.Name, Description = x.Description, IsDeleted = x.IsDeleted })
+            .Include(x => x.Members)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(name_filter))
-            q = q.Where(x => EF.Functions.Like($"%{name_filter.ToUpper()}%", x.Name.ToUpper()));
+            q = q.Where(x => EF.Functions.Like($"%{name_filter.ToUpper()}%", x.Name.ToUpper()) || EF.Functions.Like($"%{name_filter.ToUpper()}%", x.SystemName.ToUpper()));
 
-        return await q.ToArrayAsync();
+        ProjectConstructorModelDb[] raw_data = await q.ToArrayAsync();
+
+        string[] usersIds = raw_data
+            .Where(x => x.Members is not null)
+            .SelectMany(x => x.Members!)
+            .Select(x => x.UserId)
+            .ToArray();
+
+        EntryAltModel[]? usersIdentity = null;
+        if (usersIds.Length != 0)
+        {
+            using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+            usersIdentity = await identityContext
+                .Users
+                .Where(x => usersIds.Contains(x.Id))
+                .Select(x => new EntryAltModel { Id = x.Id, Name = x.UserName })
+                .ToArrayAsync();
+        }
+
+        EntryAltModel[]? ReadMembersData(List<MemberOfProjectModelDb>? members)
+        {
+            if (members is null || usersIdentity is null)
+                return null;
+
+            return usersIdentity
+                .Where(identityUser => members.Any(memberOfProject => memberOfProject.UserId == identityUser.Id))
+                .ToArray();
+        }
+        return raw_data.Select(x => new ProjectViewModel() { Name = x.Name, SystemName = x.SystemName, Description = x.Description, Id = x.Id, IsDeleted = x.IsDeleted, Members = ReadMembersData(x.Members) }).ToArray();
     }
 
     /// <inheritdoc/>
@@ -2034,7 +2062,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> CreateProject(string name, string system_code, string owner_user_id)
+    public async Task<TResponseModel<int>> CreateProject(ProjectViewModel project, string owner_user_id)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
 
@@ -2047,26 +2075,30 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ProjectConstructorModelDb? project = await context_forms
+        ProjectConstructorModelDb? projectDb = await context_forms
             .Projects
-            .FirstOrDefaultAsync(x => x.OwnerUserId == userDb.Id && (x.Name == name || x.SystemName == system_code));
+            .FirstOrDefaultAsync(x => x.OwnerUserId == userDb.Id && (x.Name == project.Name || x.SystemName == project.SystemName));
 
-        if (project is not null)
+        if (projectDb is not null)
         {
-            res.AddError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{project.Id} '{project.Name}' ({project.SystemName})");
+            res.AddError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{projectDb.Id} '{projectDb.Name}' ({projectDb.SystemName})");
             return res;
         }
 
-        project = new()
+        projectDb = new()
         {
-            Name = name,
-            SystemName = system_code,
+            Name = project.Name,
+            SystemName = project.SystemName,
             OwnerUserId = userDb.Id,
+            Description = project.Description,
+            IsDeleted = project.IsDeleted,
         };
 
-        await context_forms.AddAsync(project);
+        await context_forms.AddAsync(projectDb);
         await context_forms.SaveChangesAsync();
-        res.Response = project.Id;
+        res.Response = projectDb.Id;
+        res.AddSuccess("Проект создан");
+
         return res;
     }
 
@@ -2213,13 +2245,13 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryDescriptionModel>> GetCurrentMainProject(string user_id)
+    public async Task<TResponseModel<MainProjectViewModel>> GetCurrentMainProject(string user_id)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         ApplicationUser? userDb = await identityContext.Users
             .FirstOrDefaultAsync(x => x.Id == user_id);
 
-        TResponseModel<EntryDescriptionModel> res = new();
+        TResponseModel<MainProjectViewModel> res = new();
         if (userDb is null)
         {
             res.AddError($"Пользователь #{user_id} не найден в БД");
@@ -2229,7 +2261,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         res.Response = await context_forms
             .ProjectsUse
             .Include(x => x.Project)
-            .Select(x => new EntryDescriptionModel() { Name = x.Project!.Name, Description = x.Project.Description, Id = x.Project.Id, IsDeleted = x.Project.IsDeleted })
+            .Select(x => new MainProjectViewModel() { Name = x.Project!.Name, Description = x.Project.Description, Id = x.Project.Id, IsDeleted = x.Project.IsDeleted })
             .FirstOrDefaultAsync();
 
         return res;

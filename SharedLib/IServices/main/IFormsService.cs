@@ -249,7 +249,7 @@ public interface IFormsService
     /// </summary>
     /// <param name="name_filter">фильтр по имени</param>
     /// <param name="for_user_id">чъи проекты (по умолчанию null - значит свои проекты)</param>
-    public Task<EntryDescriptionModel[]> GetProjects(string for_user_id, string? name_filter = null);
+    public Task<ProjectViewModel[]> GetProjects(string for_user_id, string? name_filter = null);
 
     /// <summary>
     /// Прочитать данные проекта
@@ -259,7 +259,7 @@ public interface IFormsService
     /// <summary>
     /// Создать проект
     /// </summary>
-    public Task<TResponseModel<int>> CreateProject(string name, string system_code, string owner_user_id);
+    public Task<TResponseModel<int>> CreateProject(ProjectViewModel project, string owner_user_id);
 
     /// <summary>
     /// Установить проекту признак <c>IsDeleted</c>.
@@ -291,6 +291,6 @@ public interface IFormsService
     /// <summary>
     /// Получить текущий основной/используемый проект. Если <paramref name="user_id"/> == null, то для текущего пользователя
     /// </summary>
-    public Task<TResponseModel<EntryDescriptionModel>> GetCurrentMainProject(string user_id);
+    public Task<TResponseModel<MainProjectViewModel>> GetCurrentMainProject(string user_id);
     #endregion
 }

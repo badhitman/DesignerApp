@@ -1,0 +1,27 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<tr>
+    <th scope="row"><code>@ProjectRow.SystemName</code> @ProjectRow.Name</th>
+    <td>
+        @if (ProjectRow.Members is null || ProjectRow.Members.Length == 0)
+        {
+            <span class="invisible">участников нет</span>
+        }
+        else
+        {
+            @(string.Join(";", ProjectRow.Members.Select(x => x.Name)))
+        }
+    </td>
+    <td>
+        @if (ProjectRow.Id == MainProject.Id)
+        {
+            <MudIcon Icon="@Icons.Material.Filled.Delete" aria-label="delete" Color="Color.Default" Size="Size.Small" Title="Нельзя удалить проект, который выбран как основной/используемый"></MudIcon>
+        }
+        else
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" Size="Size.Small" Title="Удаление проекта" OnClick="DeleteProject"></MudIconButton>
+        }
+        <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" Title="Редактирование проекта" OnClick="EditProject"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Сделать основным" OnClick="SetMainProjectHandle"></MudIconButton>
+    </td>
+</tr>

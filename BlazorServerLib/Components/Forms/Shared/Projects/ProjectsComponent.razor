@@ -1,0 +1,44 @@
+﻿@using BlazorWebLib.Components.Forms.Shared.Projects
+@inherits BlazorBusyComponentBaseModel
+
+<div class="vstack">
+    <div class="p-2">
+        <div class="hstack d-flex">
+            <h4 class="me-auto">Ваши проекты</h4>
+            <MudTooltip Text="Создать проект">
+                <MudFab StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="CreateProject" />
+            </MudTooltip>
+        </div>
+    </div>
+    @if (ProjectsOfUser.Length == 0)
+    {
+        <figure class="text-center">
+            <blockquote class="blockquote">
+                <p>У вас нет ни одного проекта.</p>
+            </blockquote>
+            <figcaption class="blockquote-footer">
+                Создайте свой первый <cite>проект</cite>
+            </figcaption>
+        </figure>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Наименование</th>
+                    <th scope="col">Участники</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <CascadingValue Value="this">
+                <tbody>
+                    @foreach (ProjectViewModel pr in ProjectsOfUser)
+                    {
+                        <ProjectTableRowComponent ProjectRow="pr" />
+                    }
+                </tbody>
+            </CascadingValue>
+        </table>
+    }
+</div>
