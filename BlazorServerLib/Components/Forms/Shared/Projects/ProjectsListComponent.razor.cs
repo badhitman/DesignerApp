@@ -48,7 +48,7 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
              { x => x.ParentFormsPage, OwnerFormsPage },
              { x => x.ParentListProjects, this },
         };
-        DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.Large };
+        DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraExtraLarge };
         IDialogReference res = await DialogService.ShowAsync<ProjectEditDialogComponent>("Создание проекта", parameters, options);
 
         await ReloadListProjects();

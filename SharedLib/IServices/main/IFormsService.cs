@@ -282,6 +282,11 @@ public interface IFormsService
     public Task<ResponseBaseModel> DeleteMemberFromProject(int project_id, string member_user_id);
 
     /// <summary>
+    /// Получить участников проекта (за исключением владельца, который хранится в самом проекте)
+    /// </summary>
+    public Task<EntryAltModel[]> GetMembersOfProject(int project_id);
+
+    /// <summary>
     /// Установить проект как основной/используемый для пользователя.
     /// </summary>
     /// <param name="project_id">проект</param>

@@ -46,7 +46,7 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
              { x => x.ParentFormsPage, OwnerFormsPage },
              { x => x.ParentListProjects, ProjectsListComponentRef },
         };
-        DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.Large };
+        DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraExtraLarge };
         IDialogReference res = await DialogService.ShowAsync<ProjectEditDialogComponent>("Редактирование проекта", parameters, options);
         await ProjectsListComponentRef.ReloadListProjects();
     }

@@ -3,7 +3,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" po>
             <MudTabPanel Text="Параметры">
                 <form class="row">
                     <div class="col-12">
@@ -31,8 +31,8 @@
                     }
                 </form>
             </MudTabPanel>
-            <MudTabPanel Text="Участники" Disabled="@(projectObject.Id < 1)" ToolTip="@(projectObject.Id < 1 ? "Проект не записан" : "Участники проекта")">
-                <MembersOfProjectComponent ProjectId="projectObject.Id" />
+            <MudTabPanel Text="Участники" Disabled="@(projectObject.Id < 1)" BadgeData="@(projectObject.Members?.Count.ToString() ?? "0")" ToolTip="@(projectObject.Id < 1 ? "Проект не записан" : "Участники проекта")">
+                <MembersOfProjectComponent ProjectView="projectObject" />
             </MudTabPanel>
         </MudTabs>
     </DialogContent>

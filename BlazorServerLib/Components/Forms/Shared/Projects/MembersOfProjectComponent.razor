@@ -1,3 +1,25 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<h3>MembersOfProjectComponent</h3>
+<div class="input-group mb-3">
+    <span class="input-group-text" id="inputGroup-sizing-default">Добавить соучастника по его Email</span>
+    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Добавить</button>
+</div>
+
+@if (ProjectView.Members is null)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>В проекте отсутствуют участники.</p>
+        </blockquote>
+    </figure>
+}
+else
+{
+    <MudChipSet AllClosable="true">
+        @foreach (EntryAltModel member in ProjectView.Members)
+        {
+            <MudChip Text="@member.Name" OnClose="() => RemoveMember(member.Id)"></MudChip>
+        }
+    </MudChipSet>
+}

@@ -2152,6 +2152,28 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
+    public async Task<EntryAltModel[]> GetMembersOfProject(int project_id)
+    {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+
+        string[] members_users_ids = await context_forms
+            .MembersOfProjects
+            .Where(x => x.ProjectId == project_id)
+            .Select(x => x.UserId)
+            .ToArrayAsync();
+
+        if (members_users_ids.Length == 0)
+            return [];
+
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        return await identityContext
+            .Users
+            .Where(x => members_users_ids.Contains(x.Id))
+            .Select(x => new EntryAltModel() { Id = x.Id, Name = x.UserName })
+            .ToArrayAsync();
+    }
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> AddMemberToProject(int project_id, string member_user_id)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
