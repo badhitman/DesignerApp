@@ -64,13 +64,6 @@ Add-Migration IdentityContext001 -Context IdentityAppDbContext -Project Identity
 Update-Database -Context IdentityAppDbContext -Project IdentityLib -StartupProject ConstructorBlazorApp
 ```
 
-> Для контекста `MainDbAppContext` в [*консоль диспетчера пакетов*] установите [**проект по умолчанию**] `DbSqliteLib` и выполните команды:
-```Batchfile
-Add-Migration MainContext001 -Context MainDbAppContext
-Update-Database -Context MainDbAppContext
-```
-Запускаемым проектом используйте BlazorWebApp службу.
-
 ### PostgreSQL
 - Для использования **PostgreSQL** в библиотеке `IdentityLib` добавьте пакет `Npgsql.EntityFrameworkCore.PostgreSQL`. Пример настроек проекта `IdentityLib` в таком случае:
 ```csproj
