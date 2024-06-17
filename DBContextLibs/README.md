@@ -41,7 +41,7 @@
   }
 }
 ```
-В общем такие строки подключения могут оказаться и в **appsettings.json**, но тогда имейте ввиду, что строки подключения в секретах имеют больший приоритет. Если они указаны в секретах, то указанные в **appsettings.json** переназначаются.
+В общем такие строки подключения могут оказаться и в **appsettings.json**, но тогда имейте ввиду, что строки подключения в секретах имеют больший приоритет. Если строки подключений указаны в секретах, тогда строки из **appsettings.json** будут проигнорированы.
 - В библиотеке `ServerLib` установите зависимость на `..\DBContextLibs\DbSqliteLib\DbSqliteLib.csproj`. Убедитесь, что отсутствуют зависимости от двух других `DBContextLibs` библиотек: `DbPostgreLib` и `DbMySQLLib`. Зависимость одновременно от разных `DBContextLibs` библиотек не допускается.
 - Установите нужный `Use` в **BlazorWebApp** `Program.cs` : в случае **SQLite** будет UseSqlite. Пример:
 ```c#
@@ -55,20 +55,14 @@ builder.Services.AddDbContextFactory<MainDbAppContext>(opt =>
 builder.Services.AddDbContext<MainDbAppContext>();
 ```
 > [!TIP]
-> В исходном состоянии установлен именно SQLite, поэтому предварительных настроек не требуется, а вот миграции нужно/можно использовать. 
-
-> Для контекста `IdentityAppDbContext` в [*консоль диспетчера пакетов*] установите [**проект по умолчанию**] `IdentityLib` и выполните команды:
+> В исходном состоянии установлен именно SQLite, поэтому предварительных настроек не требуется, а вот миграции нужно/можно использовать.
 ```Batchfile
-Add-Migration IdentityContext001 -Context IdentityAppDbContext
-Update-Database -Context IdentityAppDbContext
-```
+Add-Migration MainContext001 -Context MainDbAppContext -Project DbSqliteLib -StartupProject ConstructorBlazorApp
+Update-Database -Context MainDbAppContext -Project DbSqliteLib -StartupProject ConstructorBlazorApp
 
-> Для контекста `MainDbAppContext` в [*консоль диспетчера пакетов*] установите [**проект по умолчанию**] `DbSqliteLib` и выполните команды:
-```Batchfile
-Add-Migration MainContext001 -Context MainDbAppContext
-Update-Database -Context MainDbAppContext
+Add-Migration IdentityContext001 -Context IdentityAppDbContext -Project IdentityLib -StartupProject ConstructorBlazorApp
+Update-Database -Context IdentityAppDbContext -Project IdentityLib -StartupProject ConstructorBlazorApp
 ```
-Запускаемым проектом используйте BlazorWebApp службу.
 
 ### PostgreSQL
 - Для использования **PostgreSQL** в библиотеке `IdentityLib` добавьте пакет `Npgsql.EntityFrameworkCore.PostgreSQL`. Пример настроек проекта `IdentityLib` в таком случае:
