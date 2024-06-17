@@ -59,10 +59,7 @@ builder.Services.AddDbContext<MainDbAppContext>();
 ```Batchfile
 Add-Migration MainContext001 -Context MainDbAppContext -Project DbSqliteLib -StartupProject ConstructorBlazorApp
 Update-Database -Context MainDbAppContext -Project DbSqliteLib -StartupProject ConstructorBlazorApp
-```
 
-> Для контекста `IdentityAppDbContext` в [*консоль диспетчера пакетов*] установите [**проект по умолчанию**] `IdentityLib` и выполните команды:
-```Batchfile
 Add-Migration IdentityContext001 -Context IdentityAppDbContext -Project IdentityLib -StartupProject ConstructorBlazorApp
 Update-Database -Context IdentityAppDbContext -Project IdentityLib -StartupProject ConstructorBlazorApp
 ```
