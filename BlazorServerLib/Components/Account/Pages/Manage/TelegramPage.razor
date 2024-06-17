@@ -7,7 +7,7 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Telegram</PageTitle>
 <h3>Telegram</h3>

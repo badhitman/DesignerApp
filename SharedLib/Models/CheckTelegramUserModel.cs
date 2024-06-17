@@ -74,7 +74,7 @@ public class CheckTelegramUserModel : TelegramUserBaseModelDb
             IsBot = tgUserDb.IsBot,
             Id = tgUserDb.Id,
             CreatedAt = tgUserDb.CreatedAt,
-            IsDeleted = tgUserDb.IsDeleted,
+            IsDisabled = tgUserDb.IsDisabled,
             DialogTelegramTypeHandler = tgUserDb.DialogTelegramTypeHandler,
             MainTelegramMessageId = tgUserDb.MainTelegramMessageId,
         };

@@ -68,7 +68,7 @@ public class TelegramUserBaseModelDb : EntryCreatedModel
             Name = user.Name,
             CreatedAt = user.CreatedAt,
             Id = user.Id,
-            IsDeleted = user.IsDeleted,
+            IsDisabled = user.IsDisabled,
             DialogTelegramTypeHandler = user.DialogTelegramTypeHandler,
             MainTelegramMessageId = user.MainTelegramMessageId,
         };

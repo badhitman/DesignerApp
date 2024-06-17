@@ -18,7 +18,7 @@ public abstract class IdSwitchableModel
     public int Id { get; set; }
 
     /// <summary>
-    /// Объект удалён
+    /// Объект отключён
     /// </summary>
-    public bool IsDeleted { get; set; } = false;
+    public bool IsDisabled { get; set; } = false;
 }
