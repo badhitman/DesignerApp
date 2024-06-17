@@ -1,10 +1,10 @@
 ﻿@using BlazorWebLib.Components.Forms.Shared.Projects
 @inherits BlazorBusyComponentBaseModel
 
-<MudDialog>
+<MudDialog Style="min-width:100%">
     <DialogContent>
-        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" po>
-            <MudTabPanel Text="Параметры">
+        <TabSetComponent>
+            <TabComponent Tooltip="Базовые настройки" Title="Параметры">
                 <form class="row">
                     <div class="col-12">
                     </div>
@@ -30,11 +30,11 @@
                         </div>
                     }
                 </form>
-            </MudTabPanel>
-            <MudTabPanel Text="Участники" Disabled="@(projectObject.Id < 1)" BadgeData="@(projectObject.Members?.Count.ToString() ?? "0")" ToolTip="@(projectObject.Id < 1 ? "Проект не записан" : "Участники проекта")">
+            </TabComponent>
+            <TabComponent Tooltip="Базовые настройки" Title="Участники" IsDisabled="@(projectObject.Id < 1)">
                 <MembersOfProjectComponent ProjectView="projectObject" />
-            </MudTabPanel>
-        </MudTabs>
+            </TabComponent>
+        </TabSetComponent>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Закрыть</MudButton>
