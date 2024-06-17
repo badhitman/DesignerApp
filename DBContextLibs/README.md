@@ -55,12 +55,16 @@ builder.Services.AddDbContextFactory<MainDbAppContext>(opt =>
 builder.Services.AddDbContext<MainDbAppContext>();
 ```
 > [!TIP]
-> В исходном состоянии установлен именно SQLite, поэтому предварительных настроек не требуется, а вот миграции нужно/можно использовать. 
+> В исходном состоянии установлен именно SQLite, поэтому предварительных настроек не требуется, а вот миграции нужно/можно использовать.
+```Batchfile
+Add-Migration MainContext001 -Context MainDbAppContext -Project DbSqliteLib -StartupProject ConstructorBlazorApp
+Update-Database -Context MainDbAppContext -Project DbSqliteLib -StartupProject ConstructorBlazorApp
+```
 
 > Для контекста `IdentityAppDbContext` в [*консоль диспетчера пакетов*] установите [**проект по умолчанию**] `IdentityLib` и выполните команды:
 ```Batchfile
-Add-Migration IdentityContext001 -Context IdentityAppDbContext
-Update-Database -Context IdentityAppDbContext
+Add-Migration IdentityContext001 -Context IdentityAppDbContext -Project IdentityLib -StartupProject ConstructorBlazorApp
+Update-Database -Context IdentityAppDbContext -Project IdentityLib -StartupProject ConstructorBlazorApp
 ```
 
 > Для контекста `MainDbAppContext` в [*консоль диспетчера пакетов*] установите [**проект по умолчанию**] `DbSqliteLib` и выполните команды:
