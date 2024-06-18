@@ -9,5 +9,12 @@
 <h1>Вы прошли аутентификацию</h1>
 
 <AuthorizeView>
-    Здравствуйте @context.User.Identity?.Name!
+    Привет @context.User.Identity?.Name!
+    <ul>
+
+        @foreach (var c in context.User.Claims)
+        {
+            <li>[@c.Type] @c.Value</li>
+        }
+    </ul>
 </AuthorizeView>
