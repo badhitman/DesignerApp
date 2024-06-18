@@ -6,7 +6,33 @@
 
 <PageTitle>Конструктор</PageTitle>
 
-<h3>Конструктор</h3>
+<h3>
+    Конструктор
+    <MudTooltip>
+        <ChildContent>
+            <sup>
+                @(MainProject is null ? "[проект не выбран]" : $"проект: '{MainProject.Name}'")
+            </sup>
+        </ChildContent>
+        <TooltipContent>
+            @if (MainProject is null)
+            {
+                <p>не выбран <b>текущий/основной</b> проект контекста конструктора</p>
+            }
+            else
+            {
+                <p>
+                    конструктор работает в контексте основного/текущего проекта
+                    @if (!string.IsNullOrWhiteSpace(MainProject.Description))
+                    {
+                        @((MarkupString)MainProject.Description)
+                   }
+                </p>
+            }
+        </TooltipContent>
+    </MudTooltip>
+
+</h3>
 <CascadingValue Value="this">
     <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
         <MudTabPanel Text="Проекты">

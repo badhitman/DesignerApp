@@ -2204,8 +2204,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             ProjectId = projectDb.Id,
             UserId = userDb.Id
         };
-        await identityContext.AddAsync(memberDb);
-        await identityContext.SaveChangesAsync();
+
+        await context_forms.AddAsync(memberDb);
+        await context_forms.SaveChangesAsync();
 
         return ResponseBaseModel.CreateSuccess($"Пользователь/участник добавлен к проекту '{projectDb.Name}' ({projectDb.SystemName})");
     }
