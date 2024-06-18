@@ -1,4 +1,6 @@
-﻿@inject IUsersProfilesService UsersProfilesRepo
+﻿@inherits BlazorBusyComponentBaseModel
+
+@inject IUsersProfilesService UsersProfilesRepo
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
@@ -8,9 +10,10 @@
         <th scope="row" colspan="2">
             <div class="input-group input-group-sm mb-3">
                 <span class="input-group-text" id="inputGroup-sizing-sm">Claim</span>
-                <input @bind-value="claimType" @bind-value:event="oninput" type="text" placeholder="ClaimType" aria-label="Claim type" class="form-control">
-                <input @bind-value="claimValue" @bind-value:event="oninput" type="text" placeholder="ClaimValue" aria-label="Claim value" class="form-control">
-                <button @onclick="SaveClaim" disabled="@(CantSave || Claim.Equals(claimType, claimValue))" class="btn btn-outline-@(CantSave ? "secondary" : "success")" type="button" id="button-addon2">Сохранить</button>
+                <input disabled="@IsBusyProgress" @bind-value="claimType" @bind-value:event="oninput" type="text" placeholder="ClaimType" aria-label="Claim type" class="form-control">
+                <input disabled="@IsBusyProgress" @bind-value="claimValue" @bind-value:event="oninput" type="text" placeholder="ClaimValue" aria-label="Claim value" class="form-control">
+                <button @onclick="SaveClaim" disabled="@(CantSave || Claim.Equals(claimType, claimValue) || IsBusyProgress)" class="btn btn-outline-@(CantSave ? "secondary" : "success")" type="button" id="button-addon2">Сохранить</button>
+                <button @onclick="CancelEdit" disabled="@IsBusyProgress" class="btn btn-outline-info" type="button" id="button-addon2">Отмена</button>
             </div>
         </th>
     }
@@ -19,8 +22,12 @@
         <th scope="row">@Claim.ClaimType</th>
         <td>
             @Claim.ClaimValue
-            <span class="ps-1 badge text-bg-primary my-btn" @onclick="() => { isEdit = true; }">edit</span>
-            <span class="ps-1 badge text-bg-warning my-btn" @onclick="RemoveClaim">delete</span>
+            <span class="ms-1 badge text-bg-@(IsBusyProgress? "secondary" : "primary") my-btn" @onclick="() => { if(!IsBusyProgress) { isEdit = true; } }">изменить</span>
+            <span class="ms-1 badge text-bg-@(IsBusyProgress ? "secondary" : (initRemoveClaim ? "danger" : "warning")) my-btn" @onclick="() => { if(!IsBusyProgress) { RemoveClaim(); } }">@(initRemoveClaim ? "подтвердить удаление?" : "удалить")</span>
+            @if (initRemoveClaim)
+            {
+                <span class="ms-1 badge text-bg-light my-btn" @onclick="() => { if(!IsBusyProgress) { initRemoveClaim = false; } }">не удалять</span>
+            }
         </td>
     }
 </tr>
@@ -46,14 +53,21 @@
 
     protected override void OnInitialized()
     {
+        CancelEdit();
+    }
+
+    void CancelEdit()
+    {
         claimType = Claim.ClaimType;
         claimValue = Claim.ClaimValue;
-        base.OnInitialized();
+        isEdit = false;
     }
 
     async Task SaveClaim()
     {
+        IsBusyProgress = true;
         ResponseBaseModel res = await UsersProfilesRepo.ClaimUpdateOrCreate(ClaimModel.Build(Claim.Id, claimType, claimValue, OwnerId), ClaimArea);
+        IsBusyProgress = false;
         if (!res.Success())
             throw new Exception(res.Message());
 
@@ -61,9 +75,19 @@
         ReloadHandler();
     }
 
+    bool initRemoveClaim = false;
     async Task RemoveClaim()
     {
+        if (!initRemoveClaim)
+        {
+            initRemoveClaim = true;
+            return;
+        }
+
+        IsBusyProgress = true;
         ResponseBaseModel res = await UsersProfilesRepo.ClaimDelete(ClaimArea, Claim.Id);
+        IsBusyProgress = false;
+        initRemoveClaim = false;
         if (!res.Success())
             throw new Exception(res.Message());
 
