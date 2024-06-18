@@ -1,4 +1,5 @@
 ﻿using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
@@ -26,6 +27,14 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required ProjectViewModel ProjectView { get; set; }
 
+
+    /// <summary>
+    /// Ссылка на 
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required ProjectsListComponent ProjectsList { get; set; }
+
+
     string? emailForAddMember;
 
     /// <inheritdoc/>
@@ -46,7 +55,11 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
         }
         IsBusyProgress = false;
         emailForAddMember = null;
+
         ProjectView.Members = new(await FormsRepo.GetMembersOfProject(ProjectView.Id));
+
+        await ProjectsList.ReloadListProjects();
+        ProjectsList.StateHasChangedCall();
     }
 
     /// <inheritdoc/>
@@ -58,5 +71,8 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         ProjectView.Members = new(await FormsRepo.GetMembersOfProject(ProjectView.Id));
+
+        await ProjectsList.ReloadListProjects();
+        ProjectsList.StateHasChangedCall();
     }
 }

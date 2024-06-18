@@ -23,7 +23,7 @@
         <td>
             @Claim.ClaimValue
             <span class="ms-1 badge text-bg-@(IsBusyProgress? "secondary" : "primary") my-btn" @onclick="() => { if(!IsBusyProgress) { isEdit = true; } }">изменить</span>
-            <span class="ms-1 badge text-bg-@(IsBusyProgress ? "secondary" : (initRemoveClaim ? "danger" : "warning")) my-btn" @onclick="() => { if(!IsBusyProgress) { RemoveClaim(); } }">@(initRemoveClaim ? "подтвердить удаление?" : "удалить")</span>
+            <span class="ms-1 badge text-bg-@(IsBusyProgress ? "secondary" : (initRemoveClaim ? "danger" : "warning")) my-btn" @onclick="async () => { if(!IsBusyProgress) { await RemoveClaim(); } }">@(initRemoveClaim ? "подтвердить удаление?" : "удалить")</span>
             @if (initRemoveClaim)
             {
                 <span class="ms-1 badge text-bg-light my-btn" @onclick="() => { if(!IsBusyProgress) { initRemoveClaim = false; } }">не удалять</span>

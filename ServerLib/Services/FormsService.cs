@@ -2198,6 +2198,15 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (projectDb is null)
             return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
 
+        ApplicationUser? ownerProject = await identityContext.Users
+            .FirstOrDefaultAsync(x => x.Id == projectDb.OwnerUserId);
+
+        if (ownerProject is null)
+            return ResponseBaseModel.CreateError($"Владелец проекта #{projectDb.OwnerUserId} не найден в БД");
+
+        if (ownerProject.Email?.Equals(userDb.Email) == true)
+            return ResponseBaseModel.CreateInfo($"Пользователь {userDb.Email} является владельцем проекта, поэтому не может быть добавлен как участник.");
+
         memberDb = new()
         {
             Project = projectDb,
@@ -2208,7 +2217,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         await context_forms.AddAsync(memberDb);
         await context_forms.SaveChangesAsync();
 
-        return ResponseBaseModel.CreateSuccess($"Пользователь/участник добавлен к проекту '{projectDb.Name}' ({projectDb.SystemName})");
+        return ResponseBaseModel.CreateSuccess($"Пользователь/участник {userDb.UserName} добавлен к проекту '{projectDb.Name}' ({projectDb.SystemName})");
     }
 
     /// <inheritdoc/>
@@ -2224,6 +2233,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         MemberOfProjectModelDb? memberDb = await context_forms
             .MembersOfProjects
+            .Include(x => x.Project)
             .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == userDb.Id);
         if (memberDb is null)
             return ResponseBaseModel.CreateInfo("Пользователь не является участником проекта. Удаление не требуется");
@@ -2231,7 +2241,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         context_forms.Remove(memberDb);
         await context_forms.SaveChangesAsync();
 
-        return ResponseBaseModel.CreateSuccess("Пользователь успешно исключён из проекта");
+        return ResponseBaseModel.CreateSuccess($"Пользователь {userDb.UserName} успешно исключён из проекта '{memberDb.Project!.Name}' ({memberDb.Project.SystemName})");
     }
 
     /// <inheritdoc/>

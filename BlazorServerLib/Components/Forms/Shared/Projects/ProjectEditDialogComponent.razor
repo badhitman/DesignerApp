@@ -32,7 +32,7 @@
                 </form>
             </TabComponent>
             <TabComponent Tooltip="Базовые настройки" Title="Участники" IsDisabled="@(projectObject.Id < 1)">
-                <MembersOfProjectComponent ProjectView="projectObject" />
+                <MembersOfProjectComponent ProjectView="projectObject" ProjectsList="ParentListProjects" />
             </TabComponent>
         </TabSetComponent>
     </DialogContent>

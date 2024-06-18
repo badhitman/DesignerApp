@@ -27,16 +27,18 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
-
-    /// <inheritdoc/>
-    [Parameter, EditorRequired]
     public required ProjectViewModel ProjectForEdit { get; set; }
     ProjectViewModel projectObject = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required ProjectsListComponent ParentListProjects { get; set; }
+
+
+    /// <inheritdoc/>
+    [Parameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
+
 
     /// <inheritdoc/>
     protected bool CanSave => !string.IsNullOrWhiteSpace(projectObject.Name) && !string.IsNullOrWhiteSpace(projectObject.SystemName) && (!ProjectForEdit.Equals(projectObject) || ProjectForEdit.Id < 1);
