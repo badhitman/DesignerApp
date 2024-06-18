@@ -2,20 +2,13 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using DbcLib;
 using IdentityLib;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using SharedLib;
-using StackExchange.Redis;
-using System.Diagnostics;
 using System.Net.Mail;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -523,7 +516,10 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> TryAddRolesToUser(IEnumerable<string> addRoles, string? userId = null)
     {
-        addRoles = addRoles.Where(x => !string.IsNullOrWhiteSpace(x));
+        addRoles = addRoles
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .DistinctBy(x => x.ToLower());
+
         if (!addRoles.Any())
             return ResponseBaseModel.CreateError("Не указаны роли для добавления");
 
@@ -531,35 +527,46 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         if (!user.Success() || user.ApplicationUser is null)
             return new ResponseBaseModel() { Messages = user.Messages };
 
-        // роли, которые есть в БД (поиск по именам)
-        string?[] roles = await roleManager.Roles
-            .Where(x => addRoles.Any(y => y == x.Name))
+        string[] roles_for_add_normalized = addRoles.Select(r => userManager.NormalizeName(r)).ToArray();
+
+        IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        // роли, которые есть в БД
+        string?[] roles_that_are_in_db = await identityContext.Roles
+            .Where(x => roles_for_add_normalized.Contains(x.NormalizedName))
             .Select(x => x.Name)
             .ToArrayAsync();
 
-        // роли, которых нет в бд вообще
-        IList<string> roles_names = addRoles
-            .Where(x => !roles.Any(y => y?.Equals(x) == true))
-            .ToList();
+        // роли, которых не хватает в бд
+        string[] roles_that_need_add_in_db = addRoles
+            .Where(x => !roles_that_are_in_db.Any(y => y?.Equals(x, StringComparison.OrdinalIgnoreCase) == true))
+            .ToArray();
 
-        foreach (string r in roles_names)
-            try
-            {
-                await roleManager.CreateAsync(new ApplicationRole() { Name = r, NormalizedName = userManager.NormalizeName(r) });
-            }
-            catch (Exception ex)
-            {
-                LoggerRepo.LogError(ex, $"Ошибка создания роли '{r}'. error D0BD6816-A325-421C-BF75-EA402D3704C3");
-            }
+        if (roles_that_need_add_in_db.Length != 0)
+        {
+            await identityContext
+                .AddRangeAsync(roles_that_need_add_in_db.Select(r => new IdentityRole() { Name = r, NormalizedName = userManager.NormalizeName(r) }));
+            await identityContext.SaveChangesAsync();
+        }
 
         IList<string> user_roles = await userManager.GetRolesAsync(user.ApplicationUser);
 
         // роли, которые требуется добавить пользователю
-        roles_names = addRoles.Where(x => !user_roles.Any(y => y.Equals(x) == true)).ToList();
-        if (roles_names.Count > 0)
-            await userManager.AddToRolesAsync(user.ApplicationUser, roles_names);
+        roles_that_need_add_in_db = roles_for_add_normalized
+            .Where(x => !user_roles.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase) == true))
+            .ToArray();
 
-        return ResponseBaseModel.CreateSuccess($"Добавлено {roles_names.Count} ролей пользователю");
+        if (roles_that_need_add_in_db.Length != 0)
+        { // добавляем пользователю ролей
+            roles_that_need_add_in_db = await identityContext
+                .Roles
+                .Where(x => roles_that_need_add_in_db.Contains(x.NormalizedName))
+                .Select(x => x.Id)
+                .ToArrayAsync();
+
+            await identityContext.AddRangeAsync(roles_that_need_add_in_db.Select(x => new IdentityUserRole<string>() { RoleId = x, UserId = userId! }));
+            await identityContext.SaveChangesAsync();
+        }
+        return ResponseBaseModel.CreateSuccess($"Добавлено {addRoles.Count()} ролей пользователю");
     }
 
     /// <inheritdoc/>
