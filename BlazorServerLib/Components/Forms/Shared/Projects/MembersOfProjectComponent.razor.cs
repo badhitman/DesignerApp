@@ -45,7 +45,7 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
             SnackbarRepo.ShowMessagesResponse(adding_member.Messages);
         }
         IsBusyProgress = false;
-
+        emailForAddMember = null;
         ProjectView.Members = new(await FormsRepo.GetMembersOfProject(ProjectView.Id));
     }
 

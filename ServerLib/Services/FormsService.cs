@@ -2229,7 +2229,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return ResponseBaseModel.CreateInfo("Пользователь не является участником проекта. Удаление не требуется");
 
         context_forms.Remove(memberDb);
-        await identityContext.SaveChangesAsync();
+        await context_forms.SaveChangesAsync();
 
         return ResponseBaseModel.CreateSuccess("Пользователь успешно исключён из проекта");
     }
