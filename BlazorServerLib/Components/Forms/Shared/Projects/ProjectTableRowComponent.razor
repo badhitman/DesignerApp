@@ -17,16 +17,16 @@
     <td>
         @if (ProjectRow.Id == ParentFormsPage.MainProject?.Id)
         {
-            <MudIcon Class="ms-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Основной/используемый проект контекста" Color="Color.Secondary"></MudIcon>
+            <MudIcon Class="me-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Основной/используемый проект контекста" Color="Color.Secondary"></MudIcon>
         }
         else
         {
-            <MudIconButton Class="ms-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Сделать основным" OnClick="SetMainProjectHandle"></MudIconButton>
+            <MudIconButton Class="me-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Сделать основным" OnClick="SetMainProjectHandle"></MudIconButton>
         }
         @if (ParentFormsPage.CurrentUser.UserId == ProjectRow.OwnerUserId)
         {
-            <MudIconButton Icon="@(ProjectRow.IsDisabled ? Icons.Material.Filled.FlashOff : Icons.Material.Filled.FlashOn)" aria-label="delete" Size="Size.Small" Title="@(ProjectRow.IsDisabled? "Включение проекта":"Отключение проекта")" OnClick="DeleteProject"></MudIconButton>
-            <MudIconButton Class="ms-2" Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" Title="Редактирование проекта" OnClick="EditProject"></MudIconButton>
+            <MudIconButton Class="me-2" Color="@(ProjectRow.IsDisabled ? Color.Info : Color.Default)" Icon="@(ProjectRow.IsDisabled ? Icons.Material.Filled.FlashOff : Icons.Material.Filled.FlashOn)" aria-label="disable" Size="Size.Small" Title="@(ProjectRow.IsDisabled? "Включение проекта":"Отключение проекта")" OnClick="DeleteProject"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" Title="Редактирование проекта" OnClick="EditProject"></MudIconButton>
         }
     </td>
 </tr>

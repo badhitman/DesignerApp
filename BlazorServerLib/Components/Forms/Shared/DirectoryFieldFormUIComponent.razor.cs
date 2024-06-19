@@ -26,6 +26,12 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     [CascadingParameter]
     public Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
 
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required ConstructorFormModelDB Form { get; set; }
+
+
     /// <inheritdoc/>
     protected IEnumerable<EntryModel> Entries = [];
     /// <inheritdoc/>
@@ -50,7 +56,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories();
+        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories(Form.ProjectId);
         IsBusyProgress = false;
         StateHasChangedHandler(FieldObject, GetType());
 

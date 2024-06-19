@@ -1794,10 +1794,17 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryModel[]>> GetDirectories(string? name_filter = null, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        return new TResponseModel<EntryModel[]>() { Response = await context_forms.Directories.Select(x => new EntryModel() { Id = x.Id, Name = x.Name }).ToArrayAsync(cancellationToken: cancellationToken) };
+
+        IQueryable<EntryModel> query = context_forms
+            .Directories
+            .Where(x => x.ProjectId == project_id)
+            .Select(x => new EntryModel() { Id = x.Id, Name = x.Name })
+            .AsQueryable();
+
+        return new TResponseModel<EntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
     }
 
     /// <inheritdoc/>
@@ -1930,7 +1937,6 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
 
         ConstructorFormDirectoryElementModelDB? ne = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == directory_id && EF.Functions.Like(x.Name, name_element_of_dir), cancellationToken: cancellationToken);
-
 
         if (ne is not null)
         {
@@ -2279,6 +2285,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<TResponseModel<MainProjectViewModel>> GetCurrentMainProject(string user_id)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+
         ApplicationUser? userDb = await identityContext.Users
             .FirstOrDefaultAsync(x => x.Id == user_id);
 
@@ -2289,8 +2296,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+
         res.Response = await context_forms
             .ProjectsUse
+            .Where(x => x.UserId == user_id)
             .Include(x => x.Project)
             .Select(x => new MainProjectViewModel() { Name = x.Project!.Name, Description = x.Project.Description, Id = x.Project.Id, IsDisabled = x.Project.IsDisabled })
             .FirstOrDefaultAsync();

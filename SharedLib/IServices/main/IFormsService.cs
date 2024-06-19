@@ -203,9 +203,9 @@ public interface IFormsService
     public Task<IEnumerable<EntryNestedModel>> ReadDirectories(IEnumerable<int> ids, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Получить справочники/списки
+    /// Получить справочники/списки для проекта
     /// </summary>
-    public Task<TResponseModel<EntryModel[]>> GetDirectories(string? name_filter = null, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/Создать справочник

@@ -1,4 +1,5 @@
 ﻿using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
@@ -15,6 +16,12 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
+
+    /// <summary>
+    /// Родительская страница форм
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     protected DirectoryNavComponent? _creator_ref;
@@ -139,19 +146,26 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 
     async Task ReloadDirectories()
     {
+        if (ParentFormsPage.MainProject is null)
+        {
+            SnackbarRepo.Add("Не выбран основной/используемый проект", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            return;
+        }
+
         ElementDirectoryName = string.Empty;
         IsBusyProgress = true;
-        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories();
+        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories(ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         directories_all = rest.Response;
 
         if (directories_all?.Any() != true)
             SelectedDirectoryId = -1;
-
-        if (directories_all?.Any(x => x.Id == SelectedDirectoryId) != true)
-            SelectedDirectoryId = directories_all?.FirstOrDefault()?.Id ?? 0;
+        else if (directories_all.Any(x => x.Id == SelectedDirectoryId) != true)
+        {
+            SnackbarRepo.Add($"Выбранный справочник #{SelectedDirectoryId} больше не существует!", Severity.Warning, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SelectedDirectoryId = directories_all.FirstOrDefault()?.Id ?? 0;
+        }
 
         StateHasChanged();
     }

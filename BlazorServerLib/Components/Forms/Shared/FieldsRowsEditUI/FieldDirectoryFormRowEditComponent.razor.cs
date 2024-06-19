@@ -31,6 +31,12 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     [Parameter, EditorRequired]
     public ConstructorFormDirectoryLinkModelDB Field { get; set; } = default!;
 
+    /// <summary>
+    /// Форма
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required ConstructorFormModelDB Form { get; set; }
+
     /// <inheritdoc/>
     protected IEnumerable<EntryModel> Entries = default!;
 
@@ -61,7 +67,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories();
+        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories(Form.ProjectId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
