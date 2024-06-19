@@ -1,5 +1,5 @@
 ﻿@page "/Account/Manage/Disable2fa"
-
+@attribute [Authorize]
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<Disable2fa> Logger
 @inject IUsersProfilesService UsersProfilesRepo
