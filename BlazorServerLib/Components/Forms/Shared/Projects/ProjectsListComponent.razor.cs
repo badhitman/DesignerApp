@@ -17,7 +17,7 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required FormsPage OwnerFormsPage { get; set; }
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <summary>
     /// Проекты пользователя
@@ -36,7 +36,7 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
     public async Task ReloadListProjects()
     {
         IsBusyProgress = true;
-        ProjectsOfUser = await FormsRepo.GetProjects(OwnerFormsPage.CurrentUser.UserId);
+        ProjectsOfUser = await FormsRepo.GetProjects(ParentFormsPage.CurrentUser.UserId);
         IsBusyProgress = false;
     }
 
@@ -44,8 +44,8 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
     {
         DialogParameters<ProjectEditDialogComponent> parameters = new()
         {
-             { x => x.ProjectForEdit, new ProjectViewModel() { Name = "Новый проект", SystemName = "NewProject" } },
-             { x => x.ParentFormsPage, OwnerFormsPage },
+             { x => x.ProjectForEdit, new ProjectViewModel() { Name = "Новый проект", SystemName = "NewProject", OwnerUserId = ParentFormsPage.CurrentUser.UserId } },
+             { x => x.ParentFormsPage, ParentFormsPage },
              { x => x.ParentListProjects, this },
         };
         DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraExtraLarge };

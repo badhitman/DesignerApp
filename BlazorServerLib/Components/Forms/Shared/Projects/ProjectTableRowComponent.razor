@@ -1,7 +1,9 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
 <tr>
-    <th scope="row"><code title="Системное имя проекта">@ProjectRow.SystemName</code> <span title="">@ProjectRow.Name</span></th>
+    <th scope="row" class="@(ProjectRow.IsDisabled ? "text-decoration-line-through" : "")">
+        <code class="@(ProjectRow.IsDisabled ? "text-secondary" : "")" title="Системное имя проекта">@ProjectRow.SystemName</code> <span title="">@ProjectRow.Name</span>
+    </th>
     <td>
         @if (ProjectRow.Members is null || ProjectRow.Members.Count == 0)
         {
@@ -13,17 +15,18 @@
         }
     </td>
     <td>
-        @if (ProjectRow.Id == OwnerFormsPage.MainProject?.Id)
+        @if (ProjectRow.Id == ParentFormsPage.MainProject?.Id)
         {
-            <MudIcon Icon="@Icons.Material.Filled.DeleteOutline" aria-label="delete" Color="Color.Default" Size="Size.Small" Title="Нельзя удалить проект, который выбран как основной/используемый"></MudIcon>
             <MudIcon Class="ms-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Основной/используемый проект контекста" Color="Color.Secondary"></MudIcon>
         }
         else
         {
-            <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" Size="Size.Small" Title="Удаление проекта" OnClick="DeleteProject"></MudIconButton>
             <MudIconButton Class="ms-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Сделать основным" OnClick="SetMainProjectHandle"></MudIconButton>
         }
-        <MudIconButton Class="ms-2" Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" Title="Редактирование проекта" OnClick="EditProject"></MudIconButton>
-        
+        @if (ParentFormsPage.CurrentUser.UserId == ProjectRow.OwnerUserId)
+        {
+            <MudIconButton Icon="@(ProjectRow.IsDisabled ? Icons.Material.Filled.FlashOff : Icons.Material.Filled.FlashOn)" aria-label="delete" Size="Size.Small" Title="@(ProjectRow.IsDisabled? "Включение проекта":"Отключение проекта")" OnClick="DeleteProject"></MudIconButton>
+            <MudIconButton Class="ms-2" Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" Title="Редактирование проекта" OnClick="EditProject"></MudIconButton>
+        }
     </td>
 </tr>

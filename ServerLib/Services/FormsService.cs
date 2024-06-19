@@ -2048,7 +2048,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 .Where(identityUser => members.Any(memberOfProject => memberOfProject.UserId == identityUser.Id))
                 .ToList();
         }
-        return raw_data.Select(x => new ProjectViewModel() { Name = x.Name, SystemName = x.SystemName, Description = x.Description, Id = x.Id, IsDisabled = x.IsDisabled, Members = ReadMembersData(x.Members) }).ToArray();
+        return raw_data.Select(x => new ProjectViewModel() { OwnerUserId = x.OwnerUserId, Name = x.Name, SystemName = x.SystemName, Description = x.Description, Id = x.Id, IsDisabled = x.IsDisabled, Members = ReadMembersData(x.Members) }).ToArray();
     }
 
     /// <inheritdoc/>
@@ -2118,7 +2118,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         context_forms.Update(project);
         await context_forms.SaveChangesAsync();
 
-        return ResponseBaseModel.CreateSuccess($"Метка удаления установлена в [{is_deleted}]");
+        return ResponseBaseModel.CreateSuccess($"Проект '{project.Name}' [{project.SystemName}] {(is_deleted ? "выключен" : "включён")}");
     }
 
     /// <inheritdoc/>

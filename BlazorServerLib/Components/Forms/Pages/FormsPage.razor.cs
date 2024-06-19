@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorLib;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Forms.Pages;
 
 /// <inheritdoc/>
-public partial class FormsPage : ComponentBase
+public partial class FormsPage : BlazorBusyComponentBaseModel
 {
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;

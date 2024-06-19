@@ -11,6 +11,7 @@ public class ProjectViewModel : EntryDescriptionModel
     {
         return new()
         {
+            OwnerUserId = other.OwnerUserId,
             Name = other.Name,
             SystemName = other.SystemName,
             Description = other.Description,
@@ -19,6 +20,11 @@ public class ProjectViewModel : EntryDescriptionModel
             Members = other.Members,
         };
     }
+
+    /// <summary>
+    /// Владелец проекта (Identity user id)
+    /// </summary>
+    public required string OwnerUserId { get; set; }
 
     /// <inheritdoc/>
     [Required(AllowEmptyStrings = false)]

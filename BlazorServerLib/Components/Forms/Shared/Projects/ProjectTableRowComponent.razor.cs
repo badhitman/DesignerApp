@@ -31,11 +31,11 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     /// Ссылка на 
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ProjectsListComponent ProjectsListComponentRef { get; set; }
+    public required ProjectsListComponent ParentProjectsList { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required FormsPage OwnerFormsPage { get; set; }
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     protected async Task EditProject()
@@ -43,12 +43,12 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
         DialogParameters<ProjectEditDialogComponent> parameters = new()
         {
              { x => x.ProjectForEdit, ProjectRow },
-             { x => x.ParentFormsPage, OwnerFormsPage },
-             { x => x.ParentListProjects, ProjectsListComponentRef },
+             { x => x.ParentFormsPage, ParentFormsPage },
+             { x => x.ParentListProjects, ParentProjectsList },
         };
         DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraExtraLarge };
         IDialogReference res = await DialogService.ShowAsync<ProjectEditDialogComponent>("Редактирование проекта", parameters, options);
-        await ProjectsListComponentRef.ReloadListProjects();
+        await ParentProjectsList.ReloadListProjects();
     }
 
     /// <inheritdoc/>
@@ -58,19 +58,21 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
         ResponseBaseModel res = await FormsRepo.SetMarkerDeleteProject(ProjectRow.Id, !ProjectRow.IsDisabled);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        await ProjectsListComponentRef.ReloadListProjects();
+        await ParentProjectsList.ReloadListProjects();
+        ParentProjectsList.StateHasChangedCall();
     }
 
     /// <inheritdoc/>
     protected async Task SetMainProjectHandle()
     {
         IsBusyProgress = true;
-        ResponseBaseModel res = await FormsRepo.SetProjectAsMain(ProjectRow.Id, OwnerFormsPage.CurrentUser.UserId);
+        ResponseBaseModel res = await FormsRepo.SetProjectAsMain(ProjectRow.Id, ParentFormsPage.CurrentUser.UserId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success())
         {
-            await OwnerFormsPage.ReadCurrentMainProject();
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
         }
     }
 }
