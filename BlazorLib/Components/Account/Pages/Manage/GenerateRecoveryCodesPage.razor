@@ -1,7 +1,6 @@
 ﻿@page "/Account/Manage/GenerateRecoveryCodes"
 
 @inject IdentityRedirectManager RedirectManager
-@inject ILogger<GenerateRecoveryCodes> Logger
 @inject IUsersProfilesService UsersProfilesRepo
 
 <PageTitle>Генерация кодов восстановления двухфакторной аутентификации (2FA).</PageTitle>
@@ -78,6 +77,5 @@ else
 
         message = "Вы сгенерировали новые коды восстановления.";
         Messages.Add(new() { TypeMessage = ResultTypesEnum.Warning, Text = message });
-        Logger.LogInformation("Пользователь с идентификатором '{UserId}' сгенерировал новые коды восстановления 2FA.", user.UserId);
     }
 }

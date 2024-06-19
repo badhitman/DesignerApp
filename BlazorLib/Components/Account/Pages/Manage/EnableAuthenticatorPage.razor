@@ -2,7 +2,6 @@
 
 @inject UrlEncoder UrlEncoder
 @inject IdentityRedirectManager RedirectManager
-@inject ILogger<EnableAuthenticator> Logger
 @inject IUsersProfilesService UsersProfilesRepo
 
 <PageTitle>Настроить приложение для аутентификации</PageTitle>
@@ -105,7 +104,6 @@ else
         if (!stf_res.Success())
             return;
 
-        Logger.LogInformation("Пользователь с идентификатором '{UserId}' включил 2FA с помощью приложения для проверки подлинности.", user.UserId);
         Messages.Add(new ResultMessage() { TypeMessage = ResultTypesEnum.Success, Text = "Ваше приложение-аутентификатор проверено." });
 
         TResponseModel<int?> cnt_rc = await UsersProfilesRepo.CountRecoveryCodesAsync();

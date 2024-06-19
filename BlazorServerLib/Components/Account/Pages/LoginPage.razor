@@ -4,7 +4,6 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IUsersAuthenticateService UserAuthManage
-@inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
@@ -114,7 +113,6 @@
         Messages.AddRange(result.Messages);
         if (result.Success())
         {
-            Logger.LogInformation("User logged in.");
             RedirectManager.RedirectTo(ReturnUrl);
         }
         else if (result.RequiresTwoFactor == true)
@@ -125,7 +123,6 @@
         }
         else if (result.IsLockedOut == true)
         {
-            Logger.LogWarning("User account locked out.");
             RedirectManager.RedirectTo("Account/Lockout");
         }
     }

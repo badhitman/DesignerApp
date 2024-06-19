@@ -1,7 +1,6 @@
 ﻿@page "/Account/Register"
 
 @inject IUsersAuthenticateService UserAuthRepo
-@inject ILogger<Register> LoggerRepo
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
@@ -65,7 +64,6 @@
         if (!result.Success())
             return;
 
-        LoggerRepo.LogInformation($"Пользователь #{result.Response} создал новую учетную запись с паролем.");
         if (!string.IsNullOrWhiteSpace(ReturnUrl))
             RedirectManager.RedirectTo(ReturnUrl);
     }

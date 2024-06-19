@@ -8,7 +8,7 @@ namespace BlazorWebLib.Components.Account.Pages;
 /// <summary>
 /// 
 /// </summary>
-public partial class ConfirmEmail : ComponentBase
+public partial class ConfirmEmailPage : ComponentBase
 {
     [Inject]
     IUsersProfilesService UserProfilesManage { get; set; } = default!;
