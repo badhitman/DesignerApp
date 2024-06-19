@@ -1,7 +1,6 @@
 ﻿@page "/Account/Manage/DeletePersonalData"
 @attribute [Authorize]
 @inject IdentityRedirectManager RedirectManager
-@inject ILogger<DeletePersonalData> LoggerRepo
 @inject IUsersProfilesService UsersProfilesRepo
 @inject IUsersAuthenticateService UserAuthRepo
 
@@ -66,7 +65,6 @@
         }
 
         await UserAuthRepo.SignOutAsync();
-        LoggerRepo.LogInformation("Пользователь с идентификатором '{UserId}' удалил свои данные.", user?.UserId);
         RedirectManager.RedirectToCurrentPage();
     }
 }

@@ -6,7 +6,7 @@ namespace BlazorLib.Components.Account.Pages.Manage;
 /// <summary>
 /// 
 /// </summary>
-public partial class ChangePassword : ComponentBase
+public partial class ChangePasswordPage : ComponentBase
 {
     [Inject]
     IdentityRedirectManager RedirectManager { get; set; } = default!;

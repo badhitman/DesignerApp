@@ -8,7 +8,7 @@ namespace BlazorLib.Components.Account.Pages;
 /// <summary>
 /// ConfirmEmailChange
 /// </summary>
-public partial class ConfirmEmailChange : ComponentBase
+public partial class ConfirmEmailChangePage : ComponentBase
 {
 
     [Inject]
