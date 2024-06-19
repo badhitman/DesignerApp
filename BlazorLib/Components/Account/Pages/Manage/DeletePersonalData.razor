@@ -1,5 +1,5 @@
 ﻿@page "/Account/Manage/DeletePersonalData"
-
+@attribute [Authorize]
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<DeletePersonalData> LoggerRepo
 @inject IUsersProfilesService UsersProfilesRepo

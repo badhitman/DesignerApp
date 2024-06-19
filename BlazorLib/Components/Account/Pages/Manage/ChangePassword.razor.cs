@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using SharedLib;
 
 namespace BlazorLib.Components.Account.Pages.Manage;
@@ -13,22 +12,18 @@ public partial class ChangePassword : ComponentBase
     IdentityRedirectManager RedirectManager { get; set; } = default!;
 
     [Inject]
-    ILogger<ChangePassword> Logger { get; set; } = default!;
-
-    [Inject]
     IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
 
     [SupplyParameterFromForm]
     private ChangePasswordModel Input { get; set; } = new();
 
     IEnumerable<ResultMessage>? Messages;
-    UserInfoModel? user;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         UserBooleanResponseModel rest = await UsersProfilesRepo.UserHasPasswordAsync();
-        user = rest.UserInfo;
+        //user = rest.UserInfo;
         Messages = rest.Messages;
         if (rest.Response != true)
         {
