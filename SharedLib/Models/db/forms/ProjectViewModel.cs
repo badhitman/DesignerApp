@@ -28,7 +28,7 @@ public class ProjectViewModel : EntryDescriptionModel
 
     /// <inheritdoc/>
     [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = "Системное имя не корректное. Оно должно начинаться с буквы. Может содержать: буквы и цифры")]
+    [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = "Системное имя не корректное. Оно может содержать латинские буквы и цифры. Первым символом должна идти буква")]
     public required string SystemName { get; set; }
 
     /// <summary>

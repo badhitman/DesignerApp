@@ -1794,7 +1794,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
@@ -1804,7 +1804,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .Select(x => new EntryModel() { Id = x.Id, Name = x.Name })
             .AsQueryable();
 
-        return new TResponseModel<EntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
+        return new TResponseStrictModel<EntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
     }
 
     /// <inheritdoc/>

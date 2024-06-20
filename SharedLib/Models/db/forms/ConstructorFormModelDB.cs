@@ -10,8 +10,8 @@ namespace SharedLib;
 public class ConstructorFormModelDB : ConstructorFormBaseModel
 {
     /// <inheritdoc/>
-    public static ConstructorFormModelDB BuildEmpty()
-        => new() { Name = "", SystemName = "" };
+    public static ConstructorFormModelDB BuildEmpty(int projectId)
+        => new() { Name = "", SystemName = "", ProjectId = projectId };
 
     /// <summary>
     /// Поля формы

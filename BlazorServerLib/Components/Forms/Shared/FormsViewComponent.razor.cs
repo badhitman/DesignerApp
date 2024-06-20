@@ -1,4 +1,5 @@
 ﻿using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
@@ -18,6 +19,13 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
 
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
+
+
+    /// <summary>
+    /// Родительская страница форм
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <summary>
     /// Таблица
@@ -75,9 +83,15 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     protected async Task OpenDialogCreateForm()
     {
+        if (ParentFormsPage.MainProject is null)
+        {
+            SnackbarRepo.Add("Не выбран основной/текущий проект", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            return;
+        }
+
         DialogParameters<EditFormDialogComponent> parameters = new()
         {
-            { x => x.Form, ConstructorFormModelDB.BuildEmpty() }
+            { x => x.Form, ConstructorFormModelDB.BuildEmpty(ParentFormsPage.MainProject.Id) }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;

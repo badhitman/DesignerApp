@@ -205,7 +205,7 @@ public interface IFormsService
     /// <summary>
     /// Получить справочники/списки для проекта
     /// </summary>
-    public Task<TResponseModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/Создать справочник

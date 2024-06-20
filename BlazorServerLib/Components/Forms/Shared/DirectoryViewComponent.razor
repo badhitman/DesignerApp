@@ -18,7 +18,8 @@
                         <span class="input-group-text">Справочник</span>
                         @if (IsEditDirectory)
                         {
-                            <input @bind-value="DirectoryName" @bind-value:event="oninput" type="text" class="form-control" placeholder="Имя справочника">
+                            <input @bind-value="DirectoryName" @bind-value:event="oninput" type="text" class="form-control" placeholder="Название">
+                            <input @bind-value="DirectorySystemName" @bind-value:event="oninput" type="text" class="form-control" placeholder="Системное имя">
                         }
                         else
                         {

@@ -56,22 +56,9 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories(Form.ProjectId);
+        TResponseStrictModel<EntryModel[]> rest = await FormsRepo.GetDirectories(Form.ProjectId);
         IsBusyProgress = false;
         StateHasChangedHandler(FieldObject, GetType());
-
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        if (!rest.Success())
-        {
-            SnackbarRepo.Add($"Ошибка 4EDB5A8E-E5E6-4DA3-A269-1C5128C1A2E9 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return;
-        }
-
-        if (rest.Response is null)
-        {
-            SnackbarRepo.Add($"Ошибка 71E3091D-2EFE-43E8-A4CE-43934A73A8CF rest.Entries is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return;
-        }
 
         Entries = rest.Response;
     }

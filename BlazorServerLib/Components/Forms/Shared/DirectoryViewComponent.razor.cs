@@ -1,8 +1,9 @@
-﻿using BlazorLib;
-using BlazorWebLib.Components.Forms.Pages;
+﻿using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using SharedLib;
+using BlazorLib;
+using MudBlazor;
+using System.Text.RegularExpressions;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
@@ -26,7 +27,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected DirectoryNavComponent? _creator_ref;
     /// <inheritdoc/>
-    protected IEnumerable<EntryModel>? directories_all;
+    protected EntryModel[] directories_all = default!;
     /// <inheritdoc/>
     protected DirectoryElementsListViewComponent? list_view_ref;
     /// <inheritdoc/>
@@ -47,6 +48,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     }
 
     string? DirectoryName { get; set; }
+    string? DirectorySystemName { get; set; }
     string? ElementDirectoryName { get; set; }
 
     /// <inheritdoc/>
@@ -92,24 +94,33 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected void SaveRenameDirectoryAction()
+    protected async void SaveRenameDirectoryAction()
     {
         if (string.IsNullOrWhiteSpace(DirectoryName))
         {
-            SnackbarRepo.Add($"Имя справочника не может быть пустым", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Название справочника не может быть пустым", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(DirectorySystemName) || !Regex.IsMatch(DirectorySystemName, GlobalStaticConstants.NAME_SPACE_TEMPLATE))
+        {
+            SnackbarRepo.Add($"Системное имя не корректное. Оно может содержать латинские буквы и цифры. Первым символом должна идти буква", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            return;
+        }
+
+        if (ParentFormsPage.MainProject is null)
+        {
+            SnackbarRepo.Add("Не выбран текущий/основной проект", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         IsBusyProgress = true;
-        _ = InvokeAsync(async () =>
-        {
-            TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Id = SelectedDirectoryId, Name = DirectoryName, SystemName = "" });
-            IsBusyProgress = false;
-            SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            _creator_ref?.SetDirectoryNavState(DirectoryNavStatesEnum.None);
-            IsEditDirectory = false;
-            await ReloadDirectories();
-        });
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Id = SelectedDirectoryId, Name = DirectoryName, SystemName = DirectorySystemName, ProjectId = ParentFormsPage.MainProject.Id });
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        _creator_ref?.SetDirectoryNavState(DirectoryNavStatesEnum.None);
+        IsEditDirectory = false;
+        await ReloadDirectories();
     }
 
     /// <inheritdoc/>
@@ -130,8 +141,14 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async void CreateDirectoryAction((string Name, string SystemName) dir)
     {
+        if (ParentFormsPage.MainProject is null)
+        {
+            SnackbarRepo.Add("Не выбран текущий/основной проект", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            return;
+        }
+
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Name = dir.Name, SystemName = dir.SystemName });
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Name = dir.Name, SystemName = dir.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
             return;
@@ -154,12 +171,12 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 
         ElementDirectoryName = string.Empty;
         IsBusyProgress = true;
-        TResponseModel<EntryModel[]> rest = await FormsRepo.GetDirectories(ParentFormsPage.MainProject.Id);
+        TResponseStrictModel<EntryModel[]> rest = await FormsRepo.GetDirectories(ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
         directories_all = rest.Response;
 
-        if (directories_all?.Any() != true)
+        if (directories_all.Length == 0)
             SelectedDirectoryId = -1;
         else if (directories_all.Any(x => x.Id == SelectedDirectoryId) != true)
         {

@@ -4,8 +4,8 @@
         <span class="input-group-text">новый:</span>
         <input @bind-value="NameNewDict" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника">
         <input @bind-value="SystemCodeNewDict" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя">
-        <button disabled="@(string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict))" @onclick="() => { CreateDirectoryHandler((Name: NameNewDict ?? string.Empty, SystemName: SystemCodeNewDict)); DirectoryNavState = DirectoryNavStatesEnum.None; NameNewDict = string.Empty; SystemCodeNewDict = string.Empty; }" class="btn btn-outline-success" type="button" id="button-addon1">@GetTitleForButtonCreate</button>
-        <button @onclick="() => { NameNewDict = string.Empty; SystemCodeNewDict = string.Empty; DirectoryNavState = DirectoryNavStatesEnum.None; }" class="btn btn-outline-secondary" type="button" id="button-addon2">Отмена</button>
+        <button disabled="@(string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict))" @onclick="TryCreateDirectory" class="btn btn-outline-success" type="button" id="button-addon1">@GetTitleForButtonCreate</button>
+        <button @onclick="ResetNavForm" class="btn btn-outline-secondary" type="button" id="button-addon2">Отмена</button>
     </div>
 }
 else if (DirectoryNavState == DirectoryNavStatesEnum.Delete)

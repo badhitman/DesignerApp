@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using SharedLib;
-using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
@@ -9,6 +10,11 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// </summary>
 public partial class DirectoryNavComponent : ComponentBase
 {
+    /// <inheritdoc/>
+    [Inject]
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
+
+
     /// <summary>
     /// Create directory handler
     /// </summary>
@@ -53,6 +59,25 @@ public partial class DirectoryNavComponent : ComponentBase
     /// Directory navigation state
     /// </summary>
     protected DirectoryNavStatesEnum DirectoryNavState = DirectoryNavStatesEnum.None;
+
+    void TryCreateDirectory()
+    {
+        if (string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict) || !Regex.IsMatch(SystemCodeNewDict, GlobalStaticConstants.NAME_SPACE_TEMPLATE))
+        {
+            SnackbarRepo.Add("Системное имя не корректное. Оно может содержать латинские буквы и цифры. Первым символом должна идти буква", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            return;
+        }
+
+        CreateDirectoryHandler((Name: NameNewDict, SystemName: SystemCodeNewDict));
+        ResetNavForm();
+    }
+
+    void ResetNavForm()
+    {
+        NameNewDict = null;
+        SystemCodeNewDict = null;
+        DirectoryNavState = DirectoryNavStatesEnum.None;
+    }
 
     /// <summary>
     /// Текст кнопки создания справочника
