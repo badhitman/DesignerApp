@@ -3,7 +3,7 @@
 /// <summary>
 /// Элемент перечисления
 /// </summary>
-public class ElementOfEnumEntryModelDb : SystemEntryModel
+public class ElementOfEnumEntryModelDb : EntryConstructedModel
 {
     /// <summary>
     /// Owner enumeration

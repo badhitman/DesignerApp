@@ -205,12 +205,12 @@ public interface IFormsService
     /// <summary>
     /// Получить справочники/списки для проекта
     /// </summary>
-    public Task<TResponseStrictModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<SystemEntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/Создать справочник
     /// </summary>
-    public Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(SystemEntryModel _dir, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryConstructedModel _dir, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить справочник/список (со всеми элементами и связями)

@@ -27,7 +27,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected DirectoryNavComponent? _creator_ref;
     /// <inheritdoc/>
-    protected EntryModel[] directories_all = default!;
+    protected SystemEntryModel[] directories_all = default!;
     /// <inheritdoc/>
     protected DirectoryElementsListViewComponent? list_view_ref;
     /// <inheritdoc/>
@@ -89,7 +89,13 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     protected void RenameSelectedDirectoryAction(bool state)
     {
         IsEditDirectory = state;
-        DirectoryName = state ? directories_all?.FirstOrDefault(x => x.Id == SelectedDirectoryId)?.Name : "";
+        if (IsEditDirectory)
+        {
+            SystemEntryModel current_directory = directories_all.First(x => x.Id == SelectedDirectoryId);
+            DirectoryName = current_directory.Name;
+            DirectorySystemName = current_directory.SystemName;
+        }
+
         StateHasChanged();
     }
 
@@ -115,7 +121,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Id = SelectedDirectoryId, Name = DirectoryName, SystemName = DirectorySystemName, ProjectId = ParentFormsPage.MainProject.Id });
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Id = SelectedDirectoryId, Name = DirectoryName, SystemName = DirectorySystemName, ProjectId = ParentFormsPage.MainProject.Id });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         _creator_ref?.SetDirectoryNavState(DirectoryNavStatesEnum.None);
@@ -148,7 +154,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new SystemEntryModel() { Name = dir.Name, SystemName = dir.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = dir.Name, SystemName = dir.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
             return;
@@ -171,7 +177,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 
         ElementDirectoryName = string.Empty;
         IsBusyProgress = true;
-        TResponseStrictModel<EntryModel[]> rest = await FormsRepo.GetDirectories(ParentFormsPage.MainProject.Id);
+        TResponseStrictModel<SystemEntryModel[]> rest = await FormsRepo.GetDirectories(ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
         directories_all = rest.Response;
@@ -180,7 +186,8 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
             SelectedDirectoryId = -1;
         else if (directories_all.Any(x => x.Id == SelectedDirectoryId) != true)
         {
-            SnackbarRepo.Add($"Выбранный справочник #{SelectedDirectoryId} больше не существует!", Severity.Warning, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            if (SelectedDirectoryId != 0)
+                SnackbarRepo.Add($"Выбранный справочник #{SelectedDirectoryId} больше не существует!", Severity.Warning, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             SelectedDirectoryId = directories_all.FirstOrDefault()?.Id ?? 0;
         }
 

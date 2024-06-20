@@ -6,10 +6,10 @@ namespace SharedLib;
 /// Справочник/список
 /// </summary>
 [Index(nameof(Name), IsUnique = true)]
-public class ConstructorFormDirectoryModelDB : SystemEntryModel
+public class ConstructorFormDirectoryModelDB : EntryConstructedModel
 {
     /// <inheritdoc/>
-    public static ConstructorFormDirectoryModelDB Build(SystemEntryModel entry)
+    public static ConstructorFormDirectoryModelDB Build(EntryConstructedModel entry)
         => new()
         {
             Name = entry.Name,

@@ -3,7 +3,7 @@
 /// <summary>
 /// Перечисление
 /// </summary>
-public class EnumEntryModelDb : SystemEntryModel
+public class EnumEntryModelDb : EntryConstructedModel
 {
     /// <summary>
     /// Elements of enum

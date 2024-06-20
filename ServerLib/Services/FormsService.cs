@@ -1794,21 +1794,21 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<SystemEntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
-        IQueryable<EntryModel> query = context_forms
+        IQueryable<SystemEntryModel> query = context_forms
             .Directories
             .Where(x => x.ProjectId == project_id)
-            .Select(x => new EntryModel() { Id = x.Id, Name = x.Name })
+            .Select(x => new SystemEntryModel() { Id = x.Id, Name = x.Name, SystemName = x.SystemName })
             .AsQueryable();
 
-        return new TResponseStrictModel<EntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
+        return new TResponseStrictModel<SystemEntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(SystemEntryModel _dir, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryConstructedModel _dir, CancellationToken cancellationToken = default)
     {
         TResponseStrictModel<int> res = new() { Response = 0 };
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(_dir);
@@ -1867,14 +1867,15 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 res.AddError(msg);
                 return res;
             }
-            if (ne.Name.Equals(_dir.Name))
+            if (ne.Name.Equals(_dir.Name) && ne.SystemName.Equals(_dir.SystemName))
             {
-                res.AddInfo("Имя не требует изменения");
+                res.AddInfo("Справочник не требует изменения");
             }
             else
             {
                 msg = $"Справочник #{_dir.Id} переименован: `{ne.Name}` -> `{_dir.Name}`";
                 ne.Name = _dir.Name;
+                ne.SystemName = _dir.SystemName;
                 context_forms.Update(ne);
                 await context_forms.SaveChangesAsync(cancellationToken);
                 logger.LogInformation(msg);
