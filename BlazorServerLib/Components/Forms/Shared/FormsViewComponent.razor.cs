@@ -73,8 +73,14 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     TableState? _table_state;
     async Task RestJson()
     {
+        if (_table_state is null)
+            return;
+
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Проект не выбран.");
+
         IsBusyProgress = true;
-        rest_data = await FormsRepo.SelectForms(new() { PageNum = _table_state?.Page ?? 0, SimpleRequest = searchString, PageSize = _table_state?.PageSize ?? 10 });
+        rest_data = await FormsRepo.SelectForms(AltSimplePaginationRequestModel.Build(searchString, _table_state.PageSize, _table_state.Page), ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
     }
 

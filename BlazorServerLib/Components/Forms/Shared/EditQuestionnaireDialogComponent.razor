@@ -43,7 +43,7 @@
                     </form>
                 </TabComponent>
                 <TabComponent IsDisabled="@(Questionnaire.Id < 1)" Tooltip="Состав опроса/анкеты" Title="Страницы">
-                    <PagesQuestionnairesViewComponent @ref="pages_questionnaires_view_ref" Questionnaire="Questionnaire" />
+                    <PagesQuestionnairesViewComponent @ref="pages_questionnaires_view_ref" Questionnaire="Questionnaire" ParentFormsPage="ParentFormsPage" />
                 </TabComponent>
             </TabSetComponent>
         }

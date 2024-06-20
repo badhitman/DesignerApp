@@ -1,4 +1,5 @@
 ﻿using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
@@ -21,6 +22,10 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
 
     MudTable<ConstructorFormQuestionnaireModelDB>? table;
 
@@ -74,7 +79,8 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
         questionnaire ??= ConstructorFormQuestionnaireModelDB.BuildEmpty();
         DialogParameters<EditQuestionnaireDialogComponent> parameters = new()
         {
-            { x => x.Questionnaire, questionnaire }
+            { x => x.Questionnaire, questionnaire },
+            { x => x.ParentFormsPage, ParentFormsPage },
         };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };

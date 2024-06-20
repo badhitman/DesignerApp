@@ -1100,7 +1100,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
     #region формы
     /// <inheritdoc/>
-    public async Task<ConstructorFormsPaginationResponseModel> SelectForms(AltSimplePaginationRequestModel req, CancellationToken cancellationToken = default)
+    public async Task<ConstructorFormsPaginationResponseModel> SelectForms(AltSimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormsPaginationResponseModel res = new(req);
@@ -1848,10 +1848,6 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             catch (Exception ex)
             {
                 res.AddError(ex.Message);
-#if DEBUG
-                if (!string.IsNullOrWhiteSpace(ex.StackTrace))
-                    res.AddError(ex.StackTrace);
-#endif
                 return res;
             }
 

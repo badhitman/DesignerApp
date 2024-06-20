@@ -1,4 +1,5 @@
 ﻿using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -29,6 +30,12 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required ConstructorFormQuestionnaireModelDB Questionnaire { get; set; }
+
+
+    /// <inheritdoc/>
+    [Parameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
+
 
     /// <inheritdoc/>
     protected bool IsEdited => Questionnaire.Name != QuestionnaireNameOrigin || Questionnaire.Description != QuestionnaireDescriptionOrigin;

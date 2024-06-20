@@ -1,4 +1,5 @@
 ﻿using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
@@ -21,6 +22,11 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required ConstructorFormQuestionnaireModelDB Questionnaire { get; set; }
+
+    /// <inheritdoc/>
+    [Parameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
+
 
     /// <inheritdoc/>
     public MudDynamicTabs? DynamicTabs;
@@ -49,8 +55,11 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран основной/используемый проект");
+
         IsBusyProgress = true;
-        ConstructorFormsPaginationResponseModel rest = await FormsRepo.SelectForms(new() { PageSize = 1000, StrongMode = true });
+        ConstructorFormsPaginationResponseModel rest = await FormsRepo.SelectForms(AltSimplePaginationRequestModel.Build(null, int.MaxValue, 0, true), ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
         if (rest.Elements is null)
@@ -132,8 +141,8 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     public void AddTab()
     {
         Questionnaire.Pages ??= [];
-        int new_page_id = PagesNotExist 
-            ? 0 
+        int new_page_id = PagesNotExist
+            ? 0
             : Questionnaire.Pages.Min(x => x.Id) - 1;
 
         if (new_page_id > 0)
