@@ -16,12 +16,16 @@ public partial class AddingFieldFormViewComponent : ComponentBase
     [CascadingParameter, EditorRequired]
     Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
 
-    ConstructorFormDirectoryLinkModelDB? FieldObjectForDirectory
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required ConstructorFormModelDB Form { get; set; }
+
+    ConstructorFormDirectoryLinkModelDB FieldObjectForDirectory
     {
         get
         {
             if (_field_object_master is null)
-                return null;
+                return new() { Name = "", OwnerId = Form.Id };
 
             ConstructorFormDirectoryLinkModelDB res = new()
             {
@@ -44,12 +48,12 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         }
     }
 
-    ConstructorFieldFormModelDB? FieldObjectStandard
+    ConstructorFieldFormModelDB FieldObjectStandard
     {
         get
         {
             if (_field_object_master is null)
-                return null;
+                return new() { Name = "", OwnerId = Form.Id };
 
             ConstructorFieldFormModelDB res = new()
             {
@@ -177,11 +181,5 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         }
 
         StateHasChanged();
-    }
-
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        _field_object_master = GlobalTools.CreateDeepCopy(FieldObject);
     }
 }
