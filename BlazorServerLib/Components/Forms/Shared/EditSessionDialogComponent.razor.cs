@@ -89,7 +89,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected void Close() => MudDialog.Close(DialogResult.Ok(Session));
 
-    async Task ResetForm()
+    void ResetForm()
     {
         session_origin = new()
         {
@@ -108,8 +108,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
             ShowDescriptionAsStartPage = Session.ShowDescriptionAsStartPage
         };
 
-        if (_currentTemplateInputRichText is not null)
-            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, session_origin.Description);
+        _currentTemplateInputRichText?.SetValue(session_origin.Description);
 
         StateHasChanged();
     }
@@ -133,13 +132,12 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
         }
 
         Session = rest.Response;
-        await ResetForm();
+        ResetForm();
     }
 
     /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await ResetForm();
-        base.OnInitialized();
+        ResetForm();
     }
 }

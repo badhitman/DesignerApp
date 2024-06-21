@@ -70,8 +70,7 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
         QuestionnaireNameOrigin = Questionnaire.Name;
         QuestionnaireDescriptionOrigin = Questionnaire.Description;
         pages_questionnaires_view_ref?.Update(Questionnaire);
-        if (_currentTemplateInputRichText is not null)
-            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, QuestionnaireDescriptionOrigin);
+        _currentTemplateInputRichText?.SetValue(QuestionnaireDescriptionOrigin);
     }
 
     /// <inheritdoc/>

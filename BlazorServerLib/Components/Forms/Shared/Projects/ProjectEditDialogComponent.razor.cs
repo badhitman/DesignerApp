@@ -43,21 +43,20 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected bool CanSave => !string.IsNullOrWhiteSpace(projectObject.Name) && !string.IsNullOrWhiteSpace(projectObject.SystemName) && (!ProjectForEdit.Equals(projectObject) || ProjectForEdit.Id < 1);
 
-    async Task ResetForm()
+    void ResetForm()
     {
         if (projectObject is null)
             projectObject = ProjectViewModel.Build(ProjectForEdit);
         else
             projectObject.Reload(ProjectForEdit);
 
-        if (_currentTemplateInputRichText is not null)
-            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, projectObject.Description);
+        _currentTemplateInputRichText?.SetValue(projectObject.Description);
     }
 
     /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await ResetForm();
+        ResetForm();
     }
 
     /// <inheritdoc/>

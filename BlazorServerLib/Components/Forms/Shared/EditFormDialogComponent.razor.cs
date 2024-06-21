@@ -48,11 +48,10 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected void Close() => MudDialog.Close(DialogResult.Ok(Form));
 
-    async Task ResetForm()
+    void ResetForm()
     {
         FormEditObject = ConstructorFormModelDB.Build(Form);
-        if (_currentTemplateInputRichText is not null)
-            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText.UID, FormEditObject.Description);
+        _currentTemplateInputRichText?.SetValue(FormEditObject.Description);
     }
 
     /// <inheritdoc/>
@@ -67,18 +66,18 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
 
         if (rest.Response is null)
         {
-            SnackbarRepo.Add($"Ошибка B64393D8-9C60-4A84-9790-15EFA6A74ABB rest.Content.Form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка B64393D8-9C60-4A84-9790-15EFA6A74ABB rest content form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         Form.Reload(rest.Response);
-        await ResetForm();
+        ResetForm();
     }
 
     /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
-        await ResetForm();
+        ResetForm();
     }
 }

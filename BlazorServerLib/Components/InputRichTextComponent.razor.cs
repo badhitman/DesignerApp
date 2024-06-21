@@ -9,7 +9,8 @@ namespace BlazorWebLib.Components;
 /// </summary>
 public partial class InputRichTextComponent : InputTextArea
 {
-    [Inject] IJSRuntime JsRuntimeRepo { get; set; } = default!;
+    [Inject]
+    IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter]
@@ -17,7 +18,13 @@ public partial class InputRichTextComponent : InputTextArea
 
     /// <inheritdoc/>
     public readonly string UID = $"CKEditor_{Guid.NewGuid().ToString().ToLower().Replace("-", "")}";
-    
+
+    /// <inheritdoc/>
+    public void SetValue(string? value)
+    {
+        InvokeAsync(async () => await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", UID, value ?? ""));
+    }
+
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

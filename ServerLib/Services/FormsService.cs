@@ -1196,9 +1196,13 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<TResponseModel<ConstructorFormModelDB>> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default)
     {
         form.Name = Regex.Replace(form.Name, @"\s+", " ").Trim();
+
         TResponseModel<ConstructorFormModelDB> res = new();
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+#pragma warning disable CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
         ConstructorFormModelDB? form_db = await context_forms.Forms.FirstOrDefaultAsync(x => x.Id != form.Id && x.Name.ToUpper() == form.Name.ToUpper(), cancellationToken: cancellationToken);
+#pragma warning restore CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
         string msg;
         if (form_db is not null)
         {

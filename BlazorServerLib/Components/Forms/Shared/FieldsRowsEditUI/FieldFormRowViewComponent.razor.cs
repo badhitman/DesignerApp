@@ -221,12 +221,11 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected async Task ResetEditField()
+    protected void ResetEditField()
     {
         SetFieldAction(Field);
         ChildUpdates();
-        if (_currentTemplateInputRichText_ref is not null)
-            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", _currentTemplateInputRichText_ref.UID, _field_master.Description);
+        _currentTemplateInputRichText_ref?.SetValue(_field_master.Description);
     }
 
     /// <inheritdoc/>

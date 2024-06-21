@@ -64,7 +64,7 @@ public partial class DirectoryNavComponent : ComponentBase
     {
         if (string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict) || !Regex.IsMatch(SystemCodeNewDict, GlobalStaticConstants.NAME_SPACE_TEMPLATE))
         {
-            SnackbarRepo.Add("Системное имя не корректное. Оно может содержать латинские буквы и цифры. Первым символом должна идти буква", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add(GlobalStaticConstants.NAME_SPACE_TEMPLATE_MESSAGE, Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

@@ -11,7 +11,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
 {
     /// <inheritdoc/>
     public static ConstructorFormModelDB BuildEmpty(int projectId)
-        => new() { Name = "", SystemName = "", ProjectId = projectId };
+        => new() { Name = "", ProjectId = projectId };
 
     /// <summary>
     /// Поля формы
@@ -75,7 +75,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             AddRowButtonTitle = other.AddRowButtonTitle,
             Fields = other.Fields,
             FormsDirectoriesLinks = other.FormsDirectoriesLinks,
-            SystemName = other.SystemName,
             Id = other.Id,
             IsDisabled = other.IsDisabled,
             ProjectId = other.ProjectId,
@@ -96,7 +95,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             Description = other.Description,
             Css = other.Css,
             AddRowButtonTitle = other.AddRowButtonTitle,
-            SystemName = other.SystemName,
             ProjectId = other.ProjectId,
             Project = other.Project,
             IsDisabled = other.IsDisabled,
@@ -113,7 +111,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
         Description = other.Description;
         Css = other.Css;
         AddRowButtonTitle = other.AddRowButtonTitle;
-        SystemName = other.SystemName;
         Id = other.Id;
         IsDisabled = other.IsDisabled;
         ProjectId = other.ProjectId;
@@ -178,7 +175,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
         if (obj is ConstructorFormModelDB other)
             return
                 Id == other.Id &&
-                SystemName.Equals(other.SystemName) &&
                 Name.Equals(other.Name) &&
                 Description == other.Description &&
                 Css == other.Css &&
@@ -189,7 +185,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
         if (obj is ConstructorFormBaseModel base_other)
             return
                 Id == base_other.Id &&
-                SystemName.Equals(base_other.SystemName) &&
                 Name.Equals(base_other.Name) &&
                 Description == base_other.Description &&
                 Css == base_other.Css &&
@@ -202,5 +197,5 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
 
     /// <inheritdoc/>
     public override int GetHashCode()
-        => $"{Id} {SystemName} {Name} {Description} {Css} {AddRowButtonTitle} {IsDisabled} {ProjectId}".GetHashCode();
+        => $"{Id} {Name} {Description} {Css} {AddRowButtonTitle} {IsDisabled} {ProjectId}".GetHashCode();
 }
