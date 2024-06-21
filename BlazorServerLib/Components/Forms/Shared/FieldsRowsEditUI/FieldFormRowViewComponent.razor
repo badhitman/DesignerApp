@@ -145,29 +145,29 @@
         <td>
             <MudStack Row="true">
                 <span>
-                    @InformationField
+                    @if (!string.IsNullOrWhiteSpace(_field_master.Css))
+                    {
+                        <sub title="html css class" class="text-secondary me-1">css:<u>@_field_master.Css</u></sub>
+                    }
                     @if (_field_master is ConstructorFieldFormModelDB sf)
                     {
-                        if (!string.IsNullOrEmpty(sf.Hint))
+                        @* if (!string.IsNullOrEmpty(sf.Hint))
                         {
                             <sup class="me-2" title="подсказка">[@sf.Hint]</sup>
-                        }
+                        } *@
                     }
                     else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
                     {
-                        if (!string.IsNullOrEmpty(df.Hint))
+                        @* if (!string.IsNullOrEmpty(df.Hint))
                         {
                             <sup class="me-2" title="подсказка">[@df.Hint]</sup>
-                        }
+                        } *@
                     }
                     else
                     {
                         <sup class="me-2">Ошибка определения типа данных поля `@(_field_master.GetType().Name)` A522A48F-045A-4032-B657-CBCF2ED770CF</sup>
                     }
-                    @if (!string.IsNullOrWhiteSpace(_field_master.Css))
-                    {
-                        <sub title="html css class" class="text-secondary">css:<u>@_field_master.Css</u></sub>
-                    }
+                    @InformationField
                 </span>
                 <MudSpacer />
                 <MudIconButton OnClick="MoveFieldUp" Disabled="!CanUp" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowDropUp" aria-label="Выше" />

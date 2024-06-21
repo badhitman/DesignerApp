@@ -84,7 +84,19 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
         {
             MetadataValueType = _f.MetadataValueType;
             TypeField = _f.TypeField;
+
+            Owner = _f.Owner;
+            SortIndex = _f.SortIndex;
+            IsDisabled = _f.IsDisabled;
         }
+        else if (form_field is ConstructorFieldFormBaseModel bf)
+        {
+            MetadataValueType = bf.MetadataValueType;
+            TypeField = bf.TypeField;
+            IsDisabled = bf.IsDisabled;
+        }
+        else
+            throw new ArgumentException($"Тип поля не корректный: {form_field.GetType().FullName}", nameof(form_field));
     }
 
     /// <inheritdoc/>
