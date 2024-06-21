@@ -120,7 +120,7 @@
     case TypesFieldsFormsEnum.Time:
         <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="StringFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="string" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.Time" />
         break;
-    case TypesFieldsFormsEnum.ProgrammCalcDouble:
+    case TypesFieldsFormsEnum.ProgramCalcDouble:
         <label for="@($"{DomID}")" class="form-label">
             @if (string.IsNullOrWhiteSpace(Field.Name))
             {

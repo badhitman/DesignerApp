@@ -138,6 +138,9 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected void AddingFieldStateHasChangedAction(ConstructorFieldFormBaseLowModel _sender, Type initiator)
     {
+        if (_field_master is null)
+            throw new Exception("Поле формы не инициализировано");
+
         field_creating_field_ref?.Update(_sender);
         if (_sender is ConstructorFormDirectoryLinkModelDB directory_field)
         {

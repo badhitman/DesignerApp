@@ -5,7 +5,7 @@
     <select @bind="SelectedTypeFieldForEditRow" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help">
         @foreach (TypesFieldsFormsEnum tf in Enum.GetValues(typeof(TypesFieldsFormsEnum)))
         {
-            <option class="@(tf == TypesFieldsFormsEnum.ProgrammCalcDouble ? "text-primary" : (tf == TypesFieldsFormsEnum.Generator ? "text-info" : ""))" value="@tf">@tf.DescriptionInfo()</option>
+            <option class="@(tf == TypesFieldsFormsEnum.ProgramCalcDouble ? "text-primary" : (tf == TypesFieldsFormsEnum.Generator ? "text-info" : ""))" value="@tf">@tf.DescriptionInfo()</option>
         }
     </select>
     <div id="@(DomID)Help" class="form-text">Укажите тип поля</div>
@@ -18,7 +18,7 @@ else if (SelectedTypeFieldForEditRow == TypesFieldsFormsEnum.Generator)
 {
     <GeneratorFieldFormRowEditUIComponent Field="Field" @ref="FieldGeneratorUI" />
 }
-else if (SelectedTypeFieldForEditRow == TypesFieldsFormsEnum.ProgrammCalcDouble)
+else if (SelectedTypeFieldForEditRow == TypesFieldsFormsEnum.ProgramCalcDouble)
 {
     <div class="col-md-6">
         <label for="inputSelect2-@(DomID)" class="form-label">Метод</label>
@@ -46,7 +46,7 @@ else if (SelectedTypeFieldForEditRow == TypesFieldsFormsEnum.ProgrammCalcDouble)
     </div>
 }
 
-@if (!new[] { TypesFieldsFormsEnum.Bool, TypesFieldsFormsEnum.ProgrammCalcDouble, TypesFieldsFormsEnum.Generator }.Contains(SelectedTypeFieldForEditRow))
+@if (!new[] { TypesFieldsFormsEnum.Bool, TypesFieldsFormsEnum.ProgramCalcDouble, TypesFieldsFormsEnum.Generator }.Contains(SelectedTypeFieldForEditRow))
 {
     <div class="col-12">
         <label for="inputPlaceholder_@($"{Form.Id}/{Field.Id}")" class="form-label">Placeholder</label>
