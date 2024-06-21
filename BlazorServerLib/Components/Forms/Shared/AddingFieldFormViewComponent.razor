@@ -3,7 +3,7 @@
         <option value="0" disabled="@(SelectedTypeFieldForAdding > 0)">Выбор типа поля...</option>
         @foreach (TypesFieldsFormsEnum tf in Enum.GetValues(typeof(TypesFieldsFormsEnum)))
         {
-            <option class="@(tf == TypesFieldsFormsEnum.ProgramCalcDouble ? "text-primary" : (tf == TypesFieldsFormsEnum.Generator ? "text-info" : ""))" value="@((int)tf)">@tf.DescriptionInfo()</option>
+            <option class="@GetStyleClassForOption(tf)" value="@((int)tf)">@tf.DescriptionInfo()</option>
         }
         <option class="text-success" value="@int.MaxValue">Список/Справочник</option>
     </select>

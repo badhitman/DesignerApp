@@ -159,6 +159,17 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         FieldProgramCalculationDouble?.Update(_field_object_master);
     }
 
+    static string GetStyleClassForOption(TypesFieldsFormsEnum tf)
+    {
+        return tf switch
+        {
+            TypesFieldsFormsEnum.Text => "text-danger-emphasis",
+            TypesFieldsFormsEnum.ProgramCalcDouble => "text-primary",
+            TypesFieldsFormsEnum.Generator => "text-info",
+            _ => ""
+        };
+    }
+
     /// <inheritdoc/>
     public void Update(ConstructorFieldFormBaseLowModel field)
     {
@@ -175,7 +186,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         SelectedTypeFieldForAdding = field_type;
         if (field_type == 0)
         {
-            _field_object_master = (ConstructorFieldFormBaseLowModel)EntryDescriptionModel.Build("");
+            _field_object_master = null;
             _field_is_required = false;
             _field_name = "";
         }
