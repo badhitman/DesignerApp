@@ -80,7 +80,7 @@ public interface IFormsService
     /// <summary>
     /// Запрос анкет/опросов
     /// </summary>
-    public Task<ConstructorFormsQuestionnairesPaginationResponseModel> RequestQuestionnaires(SimplePaginationRequestModel req, CancellationToken cancellationToken = default);
+    public Task<ConstructorFormsQuestionnairesPaginationResponseModel> RequestQuestionnaires(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить анкету/опрос

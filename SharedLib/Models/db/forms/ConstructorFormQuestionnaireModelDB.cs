@@ -35,7 +35,7 @@ public class ConstructorFormQuestionnaireModelDB : EntryDescriptionModel
     /// </summary>
     public ConstructorFormQuestionnairePageModelDB? GetOutermostPage(VerticalDirectionsEnum direct, int restriction_sort_index)
     {
-        if (Pages?.Any() != true)
+        if (Pages is null || Pages.Count == 0)
             return null;
 
         return direct == VerticalDirectionsEnum.Down

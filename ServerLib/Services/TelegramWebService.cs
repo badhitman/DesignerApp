@@ -317,22 +317,22 @@ public class TelegramWebService(
     public async Task<TelegramUsersPaginationModel> FindUsersTelegramAsync(FindRequestModel req)
     {
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
-        IQueryable<TelegramUserModelDb> q = mainContext.TelegramUsers
+        IQueryable<TelegramUserModelDb> query = mainContext.TelegramUsers
            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(req.FindQuery))
         {
-            string FindQuery = req.FindQuery.ToUpper();
-            q = q.Where(x =>
-            EF.Functions.Like(x.NormalizedFirstName, $"%{FindQuery.ToUpper()}%") ||
-            (x.NormalizedName != null && EF.Functions.Like(x.NormalizedName, $"%{FindQuery.ToUpper()}%")) ||
-            (x.NormalizedLastName != null && EF.Functions.Like(x.NormalizedLastName, $"%{FindQuery.ToUpper()}%")));
+            string find_query = req.FindQuery.ToUpper();
+            query = query.Where(x =>
+            EF.Functions.Like(x.NormalizedFirstName, $"%{find_query.ToUpper()}%") ||
+            (x.NormalizedName != null && EF.Functions.Like(x.NormalizedName, $"%{find_query.ToUpper()}%")) ||
+            (x.NormalizedLastName != null && EF.Functions.Like(x.NormalizedLastName, $"%{find_query.ToUpper()}%")));
         }
 
-        int total = q.Count();
-        q = q.Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        int total = query.Count();
+        query = query.Skip(req.PageNum * req.PageSize).Take(req.PageSize);
 
-        TelegramUserModelDb[] users_tg = await q.ToArrayAsync();
+        TelegramUserModelDb[] users_tg = await query.ToArrayAsync();
         if (users_tg.Length == 0)
             return new TelegramUsersPaginationModel() { TelegramUsers = [] };
 

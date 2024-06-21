@@ -59,9 +59,12 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     protected async Task<TableData<ConstructorFormQuestionnaireModelDB>> ServerReload(TableState state)
     {
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран основной/используемый проект");
+
         SimplePaginationRequestModel req = new();
         IsBusyProgress = true;
-        data = await FormsRepo.RequestQuestionnaires(req);
+        data = await FormsRepo.RequestQuestionnaires(req, ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
         if (data.Questionnaires is null)

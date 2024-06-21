@@ -47,7 +47,7 @@
         <MudTabPanel Disabled="@(MainProject is null)" Text="Документы">
             <QuestionnairesViewComponent />
         </MudTabPanel>
-        <MudTabPanel Text="Ссылки">
+        <MudTabPanel Disabled="@(MainProject is null)" Text="Ссылки">
             <SessionsViewComponent />
         </MudTabPanel>
     </MudTabs>

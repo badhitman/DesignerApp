@@ -43,7 +43,7 @@ public class ConstructorFormQuestionnairePageModelDB : EntryDescriptionOwnedMode
     /// </summary>
     public ConstructorFormQuestionnairePageJoinFormModelDB? GetOutermostJoinForm(VerticalDirectionsEnum direct, int restriction_sort_index)
     {
-        if (JoinsForms?.Any() != true)
+        if (JoinsForms is null || JoinsForms.Count == 0)
             return null;
 
         return direct == VerticalDirectionsEnum.Down
@@ -71,8 +71,8 @@ public class ConstructorFormQuestionnairePageModelDB : EntryDescriptionOwnedMode
     /// </summary>
     public static Dictionary<string, Dictionary<uint, List<ConstructorFormSessionValueModelDB>>> GetRowsData(ConstructorFormSessionModelDB session)
     {
-        Dictionary<string, Dictionary<uint, List<ConstructorFormSessionValueModelDB>>> res = new();
-        if (session.SessionValues?.Any() != true)
+        Dictionary<string, Dictionary<uint, List<ConstructorFormSessionValueModelDB>>> res = [];
+        if (session.SessionValues is null || session.SessionValues.Count == 0)
             return res;
 
         foreach (ConstructorFormSessionValueModelDB val in session.SessionValues)
@@ -81,9 +81,9 @@ public class ConstructorFormQuestionnairePageModelDB : EntryDescriptionOwnedMode
                 continue;
 
             if (!res.ContainsKey(val.QuestionnairePageJoinForm.Owner.Name))
-                res.Add(val.QuestionnairePageJoinForm.Owner.Name, new());
+                res.Add(val.QuestionnairePageJoinForm.Owner.Name, []);
             if (!res[val.QuestionnairePageJoinForm.Owner.Name].ContainsKey(val.GroupByRowNum))
-                res[val.QuestionnairePageJoinForm.Owner.Name].Add(val.GroupByRowNum, new());
+                res[val.QuestionnairePageJoinForm.Owner.Name].Add(val.GroupByRowNum, []);
 
             res[val.QuestionnairePageJoinForm.Owner.Name][val.GroupByRowNum].Add(val);
         }

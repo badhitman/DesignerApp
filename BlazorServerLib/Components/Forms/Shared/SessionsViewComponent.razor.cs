@@ -2,6 +2,7 @@
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using BlazorWebLib.Components.Forms.Pages;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
@@ -22,8 +23,9 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
 
-    [CascadingParameter]
-    MainProjectViewModel? CurrentMainProject { get; set; }
+    /// <inheritdoc/>
+    [CascadingParameter,EditorRequired]
+    public required FormsPage CurrentMainProject { get; set; }
 
     IEnumerable<ConstructorFormQuestionnaireModelDB> QuestionnairesAll = [];
 
@@ -175,8 +177,11 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
     async Task RestUpdate()
     {
+        if (CurrentMainProject.MainProject is null)
+            throw new Exception("Не выбран основной/используемый проект");
+
         IsBusyProgress = true;
-        ConstructorFormsQuestionnairesPaginationResponseModel rest = await FormsRepo.RequestQuestionnaires(new() { PageNum = 0, PageSize = 1000 });
+        ConstructorFormsQuestionnairesPaginationResponseModel rest = await FormsRepo.RequestQuestionnaires(new() { PageNum = 0, PageSize = 1000 }, CurrentMainProject.MainProject.Id);
         IsBusyProgress = false;
 
         if (rest.Questionnaires is null)

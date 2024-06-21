@@ -456,24 +456,25 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormsSessionsPaginationResponseModel res = new(req);
-        IQueryable<ConstructorFormSessionModelDB> q = context_forms
+        IQueryable<ConstructorFormSessionModelDB> query = context_forms
             .Sessions
             .Include(x => x.Owner)
             .OrderByDescending(x => x.CreatedAt)
             .AsQueryable();
 
         if (req.QuestionnaireId > 0)
-            q = q.Where(x => x.OwnerId == req.QuestionnaireId);
+            query = query.Where(x => x.OwnerId == req.QuestionnaireId);
 
         if (!string.IsNullOrWhiteSpace(req.SimpleRequest))
-            q = q.Where(x => (x.Name != null && x.Name.Contains(req.SimpleRequest, StringComparison.CurrentCultureIgnoreCase)) || x.SessionToken == req.SimpleRequest || (!string.IsNullOrWhiteSpace(x.EmailsNotifications) && EF.Functions.Like(x.EmailsNotifications, $"%{req.SimpleRequest}%")));
+            query = query.Where(x => (x.Name != null && x.Name.Contains(req.SimpleRequest, StringComparison.CurrentCultureIgnoreCase)) || x.SessionToken == req.SimpleRequest || (!string.IsNullOrWhiteSpace(x.EmailsNotifications) && EF.Functions.Like(x.EmailsNotifications, $"%{req.SimpleRequest}%")));
 
-        res.TotalRowsCount = await q.CountAsync(cancellationToken: cancellationToken);
-        q = q.Skip(req.PageSize * req.PageNum).Take(req.PageSize);
+        res.TotalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
+        query = query.Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
-        res.Sessions = await q.ToArrayAsync(cancellationToken: cancellationToken);
+        res.Sessions = await query.ToArrayAsync(cancellationToken: cancellationToken);
         return res;
     }
 
@@ -587,29 +588,31 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
     #region опросы/анкеты
     /// <inheritdoc/>
-    public async Task<ConstructorFormsQuestionnairesPaginationResponseModel> RequestQuestionnaires(SimplePaginationRequestModel req, CancellationToken cancellationToken)
+    public async Task<ConstructorFormsQuestionnairesPaginationResponseModel> RequestQuestionnaires(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken)
     {
         if (req.PageSize < 1)
             req.PageSize = 10;
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormsQuestionnairesPaginationResponseModel res = new(req);
-        IQueryable<ConstructorFormQuestionnaireModelDB> q =
+        IQueryable<ConstructorFormQuestionnaireModelDB> query =
             (from _quest in context_forms.Questionnaires
              join _page in context_forms.QuestionnairesPages on _quest.Id equals _page.OwnerId
              join _join_form in context_forms.QuestionnairesPagesJoinForms on _page.Id equals _join_form.OwnerId
              join _form in context_forms.Forms on _join_form.FormId equals _form.Id
-             where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name, req.SimpleRequest) || EF.Functions.Like(_quest.Name, req.SimpleRequest) || EF.Functions.Like(_page.Name, req.SimpleRequest)
+             where _form.ProjectId == projectId
+             where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(_quest.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(_page.Name, $"%{req.SimpleRequest}%")
              group _quest by _quest into g
              select g.Key)
             .AsQueryable();
 
-        res.TotalRowsCount = await q.CountAsync(cancellationToken: cancellationToken);
-        q = q.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
+        res.TotalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
+        query = query.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
-        int[] ids = await q.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
-        q = context_forms.Questionnaires.Include(x => x.Pages).Where(x => ids.Contains(x.Id)).Include(x => x.Pages).OrderBy(x => x.Name);
-        res.Questionnaires = ids.Any()
-            ? await q.ToArrayAsync(cancellationToken: cancellationToken)
+        int[] ids = await query.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
+        query = context_forms.Questionnaires.Include(x => x.Pages).Where(x => ids.Contains(x.Id)).Include(x => x.Pages).OrderBy(x => x.Name);
+        res.Questionnaires = ids.Length != 0
+            ? await query.ToArrayAsync(cancellationToken: cancellationToken)
             : Enumerable.Empty<ConstructorFormQuestionnaireModelDB>();
 
         return res;
@@ -640,7 +643,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         questionnaire.Name = Regex.Replace(questionnaire.Name, @"\s+", " ").Trim();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         TResponseModel<ConstructorFormQuestionnaireModelDB> res = new();
-        ConstructorFormQuestionnaireModelDB? questionnaire_db = await context_forms.Questionnaires.FirstOrDefaultAsync(x => x.Id != questionnaire.Id && EF.Functions.Like(x.Name, questionnaire.Name), cancellationToken: cancellationToken);
+        ConstructorFormQuestionnaireModelDB? questionnaire_db = await context_forms.Questionnaires.FirstOrDefaultAsync(x => x.Id != questionnaire.Id && x.Name.ToUpper() == questionnaire.Name.ToUpper(), cancellationToken: cancellationToken);
         string msg;
         if (questionnaire_db is not null)
         {
@@ -1105,7 +1108,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormsPaginationResponseModel res = new(req);
         IQueryable<ConstructorFormModelDB> q =
-            (from _form in context_forms.Forms
+            (from _form in context_forms.Forms.Where(x => x.ProjectId == projectId)
              join _field in context_forms.Fields on _form.Id equals _field.OwnerId
              where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(_field.Name, $"%{req.SimpleRequest}%")
              group _form by _form into g
@@ -1195,7 +1198,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         form.Name = Regex.Replace(form.Name, @"\s+", " ").Trim();
         TResponseModel<ConstructorFormModelDB> res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormModelDB? form_db = await context_forms.Forms.FirstOrDefaultAsync(x => x.Id != form.Id && EF.Functions.Like(x.Name, form.Name), cancellationToken: cancellationToken);
+        ConstructorFormModelDB? form_db = await context_forms.Forms.FirstOrDefaultAsync(x => x.Id != form.Id && x.Name.ToUpper() == form.Name.ToUpper(), cancellationToken: cancellationToken);
         string msg;
         if (form_db is not null)
         {
@@ -1804,6 +1807,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .Select(x => new SystemEntryModel() { Id = x.Id, Name = x.Name, SystemName = x.SystemName })
             .AsQueryable();
 
+        if (!string.IsNullOrWhiteSpace(name_filter))
+            query = query.Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{name_filter.ToUpper()}%") || EF.Functions.Like(x.SystemName.ToUpper(), $"%{name_filter.ToUpper()}%"));
+
         return new TResponseStrictModel<SystemEntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
     }
 
@@ -1933,7 +1939,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFormDirectoryElementModelDB? ne = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == directory_id && EF.Functions.Like(x.Name, name_element_of_dir), cancellationToken: cancellationToken);
+        ConstructorFormDirectoryElementModelDB? ne = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == directory_id && x.Name.ToUpper() == name_element_of_dir.ToUpper(), cancellationToken: cancellationToken);
 
         if (ne is not null)
         {
@@ -1981,7 +1987,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        if (await context_forms.DirectoriesElements.AnyAsync(x => x.Id != element.Id && EF.Functions.Like(element_db.Name, element.Name) && x.ParentId == element_db.ParentId, cancellationToken: cancellationToken))
+        if (await context_forms.DirectoriesElements.AnyAsync(x => x.Id != element.Id && element_db.Name.ToUpper() == element.Name.ToUpper() && x.ParentId == element_db.ParentId, cancellationToken: cancellationToken))
         {
             res.AddError("Элемент с таким именем уже существует в справочнике");
             return res;
@@ -2021,7 +2027,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(name_filter))
-            q = q.Where(x => EF.Functions.Like($"%{name_filter.ToUpper()}%", x.Name.ToUpper()) || EF.Functions.Like($"%{name_filter.ToUpper()}%", x.SystemName.ToUpper()));
+            q = q.Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{name_filter.ToUpper()}%") || EF.Functions.Like(x.SystemName.ToUpper(), $"%{name_filter.ToUpper()}%"));
 
         ProjectConstructorModelDb[] raw_data = await q.ToArrayAsync();
 
@@ -2029,6 +2035,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .Where(x => x.Members is not null)
             .SelectMany(x => x.Members!)
             .Select(x => x.UserId)
+            .Distinct()
             .ToArray();
 
         EntryAltModel[]? usersIdentity = null;
@@ -2065,16 +2072,16 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> CreateProject(ProjectViewModel project, string owner_user_id)
+    public async Task<TResponseModel<int>> CreateProject(ProjectViewModel project, string user_id)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
 
         TResponseModel<int> res = new();
         ApplicationUser? userDb = await identityContext.Users
-            .FirstOrDefaultAsync(x => x.Id == owner_user_id);
+            .FirstOrDefaultAsync(x => x.Id == user_id);
         if (userDb is null)
         {
-            res.AddError($"Пользователь #{owner_user_id} не найден в БД");
+            res.AddError($"Пользователь #{user_id} не найден в БД");
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
