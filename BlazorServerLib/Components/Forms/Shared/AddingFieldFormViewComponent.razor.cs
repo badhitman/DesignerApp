@@ -10,8 +10,8 @@ public partial class AddingFieldFormViewComponent : ComponentBase
 {
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public ConstructorFieldFormBaseLowModel FieldObject { get; set; } = default!;
-    ConstructorFieldFormBaseLowModel _field_object_master = default!;
+    public ConstructorFieldFormBaseLowModel? FieldObject { get; set; }
+    ConstructorFieldFormBaseLowModel? _field_object_master;
 
     [CascadingParameter, EditorRequired]
     Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
@@ -57,10 +57,10 @@ public partial class AddingFieldFormViewComponent : ComponentBase
                 Css = _field_object_master.Css
             };
 
-            if (_field_object_master is ConstructorFieldFormModelDB standart_field)
+            if (_field_object_master is ConstructorFieldFormModelDB standard_field)
             {
-                res.MetadataValueType = standart_field.MetadataValueType;
-                res.SortIndex = standart_field.SortIndex;
+                res.MetadataValueType = standard_field.MetadataValueType;
+                res.SortIndex = standard_field.SortIndex;
             }
 
             return res;
@@ -105,7 +105,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         {
             _field_name = value;
             _field_object_master.Name = _field_name ?? "";
-            _field_object_master.Required = _field_is_required;
+            _field_object_master.Required = FieldIsRequired;
             ChildUpdates();
 
             StateHasChangedHandler(_field_object_master, this.GetType());

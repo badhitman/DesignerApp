@@ -74,6 +74,8 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
+    ConstructorFieldFormBaseLowModel? _field_master;
+
     /// <inheritdoc/>
     protected async Task CreateField()
     {
@@ -132,8 +134,6 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         if (client_standard_ref is not null)
             await client_standard_ref.Update(Form);
     }
-
-    ConstructorFieldFormBaseLowModel _field_master = new() { Name = "" };
 
     /// <inheritdoc/>
     protected void AddingFieldStateHasChangedAction(ConstructorFieldFormBaseLowModel _sender, Type initiator)

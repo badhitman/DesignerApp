@@ -265,7 +265,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         return res;
     }
 
-    static bool ScalarOnly(ConstructorFieldFormBaseLowModel x) => !(x is ConstructorFieldFormModelDB _f && _f.TypeField == TypesFieldsFormsEnum.ProgrammCalcDouble);
+    static bool ScalarOnly(ConstructorFieldFormBaseLowModel x) => !(x is ConstructorFieldFormModelDB _f && _f.TypeField == TypesFieldsFormsEnum.ProgramCalcDouble);
 
     static string? EditorsGenerate(ConstructorFormSessionModelDB session, string editor)
     {
@@ -1469,7 +1469,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 return res;
             }
 
-            if (form_field.TypeField == TypesFieldsFormsEnum.ProgrammCalcDouble && form_field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, null) is null)
+            if (form_field.TypeField == TypesFieldsFormsEnum.ProgramCalcDouble && form_field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, null) is null)
             {
                 msg = $"";
                 res.AddError(msg);

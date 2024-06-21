@@ -70,7 +70,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                         case TypesFieldsFormsEnum.Generator:
                             _type_name = $"<span class='badge bg-info text-dark text-wrap'>{sf.TypeField.DescriptionInfo()}</span>";
                             break;
-                        case TypesFieldsFormsEnum.ProgrammCalcDouble:
+                        case TypesFieldsFormsEnum.ProgramCalcDouble:
                             _type_name = $"<span class='badge bg-primary text-wrap'>{sf.TypeField.DescriptionInfo()}</span>";
                             break;
                         default:

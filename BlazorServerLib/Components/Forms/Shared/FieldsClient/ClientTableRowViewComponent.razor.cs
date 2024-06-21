@@ -75,7 +75,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
 
     MarkupString GetValue(ConstructorFieldFormBaseLowModel _fbl)
     {
-        if (_fbl is ConstructorFieldFormModelDB _fb && _fb.TypeField == TypesFieldsFormsEnum.ProgrammCalcDouble)
+        if (_fbl is ConstructorFieldFormModelDB _fb && _fb.TypeField == TypesFieldsFormsEnum.ProgramCalcDouble)
             return (MarkupString)(CalculateFieldValue(_fb) ?? "&nbsp;");
 
         ConstructorFormSessionValueModelDB? _sv = SessionQuestionnaire

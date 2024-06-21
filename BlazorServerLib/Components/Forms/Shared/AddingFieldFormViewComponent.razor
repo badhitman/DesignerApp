@@ -3,7 +3,7 @@
         <option value="0" disabled="@(SelectedTypeFieldForAdding > 0)">Выбор типа поля...</option>
         @foreach (TypesFieldsFormsEnum tf in Enum.GetValues(typeof(TypesFieldsFormsEnum)))
         {
-            <option class="@(tf == TypesFieldsFormsEnum.ProgrammCalcDouble ? "text-primary" : (tf == TypesFieldsFormsEnum.Generator ? "text-info" : ""))" value="@((int)tf)">@tf.DescriptionInfo()</option>
+            <option class="@(tf == TypesFieldsFormsEnum.ProgramCalcDouble ? "text-primary" : (tf == TypesFieldsFormsEnum.Generator ? "text-info" : ""))" value="@((int)tf)">@tf.DescriptionInfo()</option>
         }
         <option class="text-success" value="@int.MaxValue">Список/Справочник</option>
     </select>
@@ -28,7 +28,7 @@ else
         case (int)TypesFieldsFormsEnum.Text:
             <TextFieldFormUIComponent @ref="FieldTextUI" FieldObject="FieldObjectStandard" />
             break;
-        case (int)TypesFieldsFormsEnum.ProgrammCalcDouble:
+        case (int)TypesFieldsFormsEnum.ProgramCalcDouble:
             <div class="col-auto">
                 <ProgramCalculationFieldFormUIComponent @ref="FieldProgramCalculationDouble" FieldObject="FieldObjectStandard" />
             </div>
@@ -44,7 +44,7 @@ else
         <input @bind-value="FieldName" @bind-value:event="oninput" placeholder="Название" type="text" id="inputName" class="form-control">
     </div>
 
-    @if (SelectedTypeFieldForAdding != (int)TypesFieldsFormsEnum.ProgrammCalcDouble)
+    @if (SelectedTypeFieldForAdding != (int)TypesFieldsFormsEnum.ProgramCalcDouble)
     {
         <div class="col-auto">
             <div class="form-check form-switch mt-2">

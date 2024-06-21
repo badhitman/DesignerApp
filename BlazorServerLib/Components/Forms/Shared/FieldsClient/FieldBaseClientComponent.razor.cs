@@ -195,7 +195,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 if (DateTime.TryParse(FieldValue, out DateTime _out_dt))
                     _dateTimeFieldValue = _out_dt;
                 break;
-            case TypesFieldsFormsEnum.ProgrammCalcDouble:
+            case TypesFieldsFormsEnum.ProgramCalcDouble:
                 _stringFieldValue = "<calculator>";
                 break;
             default:
