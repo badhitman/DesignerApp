@@ -320,16 +320,18 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             if (rest.Response.Fields.Any(x => x.Id == _field_master.Id))
             {
                 Field.Update(rest.Response.Fields.First(x => x.Id == _field_master.Id));
-                _field_master = new ConstructorFieldFormModelDB()
-                {
-                    Css = Field.Css,
-                    Description = Field.Description,
-                    Hint = Field.Hint,
-                    Id = Field.Id,
-                    Name = Field.Name,
-                    OwnerId = Field.OwnerId,
-                    Required = Field.Required
-                };
+                //_field_master.Update(Field);
+                _field_master = ConstructorFieldFormModelDB.Build(Field);
+                //_field_master = new ConstructorFieldFormModelDB()
+                //{
+                //    Css = Field.Css,
+                //    Description = Field.Description,
+                //    Hint = Field.Hint,
+                //    Id = Field.Id,
+                //    Name = Field.Name,
+                //    OwnerId = Field.OwnerId,
+                //    Required = Field.Required
+                //};
             }
         }
         else if (_field_master is ConstructorFormDirectoryLinkModelDB df)

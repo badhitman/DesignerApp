@@ -26,22 +26,60 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
             SortIndex = sortIndex
         };
 
+    /// <inheritdoc/>
+    public static ConstructorFieldFormModelDB Build(ConstructorFieldFormBaseLowModel form_field)
+    {
+        if (form_field is ConstructorFieldFormBaseModel bf)
+        {
+            return new ConstructorFieldFormModelDB()
+            {
+                Name = bf.Name,
+                Css = bf.Css,
+                OwnerId = bf.OwnerId,
+                Hint = bf.Hint,
+                MetadataValueType = bf.MetadataValueType,
+                Required = bf.Required,
+                TypeField = bf.TypeField,
+                Description = bf.Description,
+                Id = bf.Id,
+                IsDisabled = bf.IsDisabled
+            };
+        }
+        else if (form_field is ConstructorFieldFormModelDB ff)
+        {
+            return new ConstructorFieldFormModelDB()
+            {
+                Name = ff.Name,
+                SortIndex = ff.SortIndex,
+                Css = ff.Css,
+                Description = ff.Description,
+                Hint = ff.Hint,
+                Id = ff.Id,
+                IsDisabled = ff.IsDisabled,
+                MetadataValueType = ff.MetadataValueType,
+                Owner = ff.Owner,
+                OwnerId = ff.OwnerId,
+                Required = ff.Required,
+                TypeField = ff.TypeField,
+            };
+        }
+        else
+            throw new ArgumentException($"Тип поля не корректный: {form_field.GetType().FullName}", nameof(form_field));
+    }
+
     /// <summary>
     /// Сортировка 
     /// </summary>
     public int SortIndex { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc/>
     public ConstructorFormModelDB? Owner { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc/>
     public override void Update(ConstructorFieldFormBaseLowModel form_field)
     {
         base.Update(form_field);
+
         if (form_field is ConstructorFieldFormModelDB _f)
         {
             MetadataValueType = _f.MetadataValueType;

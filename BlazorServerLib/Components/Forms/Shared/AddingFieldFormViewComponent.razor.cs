@@ -53,7 +53,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         get
         {
             if (_field_object_master is null)
-                return new() { Name = "", OwnerId = Form.Id };
+                return new() { Name = "", OwnerId = Form.Id, TypeField = (TypesFieldsFormsEnum)SelectedTypeFieldForAdding };
 
             ConstructorFieldFormModelDB res = new()
             {

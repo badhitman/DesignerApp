@@ -199,7 +199,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 _stringFieldValue = "<calculator>";
                 break;
             default:
-                throw new Exception($"Тип данных поля не обработан. ошибка {{A715B8B4-80B0-4B18-ACAE-CD88E4307B35}}");
+                throw new Exception($"Тип данных поля [{Field.TypeField}] не обработан. ошибка {{A715B8B4-80B0-4B18-ACAE-CD88E4307B35}}");
         }
         FieldsReferring?.Add(this);
     }

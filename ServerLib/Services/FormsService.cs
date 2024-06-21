@@ -1537,7 +1537,6 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         {
             context_forms.Update(form_field_db);
             msg = $"Поле (простого типа) формы #{form_field.Id} обновлено в БД";
-            res.AddInfo(msg);
             logger.LogInformation(msg);
             await context_forms.SaveChangesAsync(cancellationToken);
             transaction.Commit();
