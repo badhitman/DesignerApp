@@ -1,6 +1,6 @@
-﻿using BlazorLib;
-using BlazorWebLib.Components.Forms.Shared.FieldsClient;
+﻿using BlazorWebLib.Components.Forms.Shared.FieldsClient;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -133,7 +133,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
             await client_standard_ref.Update(Form);
     }
 
-    ConstructorFieldFormBaseLowModel _field_master = default!;
+    ConstructorFieldFormBaseLowModel _field_master = new() { Name = "" };
 
     /// <inheritdoc/>
     protected void AddingFieldStateHasChangedAction(ConstructorFieldFormBaseLowModel _sender, Type initiator)

@@ -1109,8 +1109,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         ConstructorFormsPaginationResponseModel res = new(req);
         IQueryable<ConstructorFormModelDB> q =
             (from _form in context_forms.Forms.Where(x => x.ProjectId == projectId)
-             join _field in context_forms.Fields on _form.Id equals _field.OwnerId
-             where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(_field.Name, $"%{req.SimpleRequest}%")
+             join _field in context_forms.Fields on _form.Id equals _field.OwnerId into ps_field
+             from field in ps_field.DefaultIfEmpty()
+             where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(field.Name, $"%{req.SimpleRequest}%")
              group _form by _form into g
              select g.Key)
              .OrderBy(x => x.Name)
