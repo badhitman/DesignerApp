@@ -44,6 +44,8 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     protected InputRichTextComponent? _currentTemplateInputRichText;
 
+
+    string QuestionnaireSystemNameOrigin { get; set; } = "";
     string QuestionnaireNameOrigin { get; set; } = "";
     string? QuestionnaireDescriptionOrigin { get; set; }
 
@@ -67,8 +69,10 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
             Questionnaire = rest.Response;
         }
 
+        QuestionnaireSystemNameOrigin = Questionnaire.SystemName;
         QuestionnaireNameOrigin = Questionnaire.Name;
         QuestionnaireDescriptionOrigin = Questionnaire.Description;
+
         pages_questionnaires_view_ref?.Update(Questionnaire);
         _currentTemplateInputRichText?.SetValue(QuestionnaireDescriptionOrigin);
     }
@@ -76,8 +80,11 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     protected async Task SaveQuestionnaire()
     {
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран основной/используемый проект");
+
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormQuestionnaireModelDB> rest = await FormsRepo.UpdateOrCreateQuestionnaire(new EntryDescriptionModel() { Id = Questionnaire.Id, Name = QuestionnaireNameOrigin, Description = QuestionnaireDescriptionOrigin });
+        TResponseModel<ConstructorFormQuestionnaireModelDB> rest = await FormsRepo.UpdateOrCreateQuestionnaire(new EntryConstructedModel() { Id = Questionnaire.Id, SystemName = QuestionnaireSystemNameOrigin, Name = QuestionnaireNameOrigin, Description = QuestionnaireDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

@@ -15,9 +15,13 @@
             <TabSetComponent>
                 <TabComponent Tooltip="Базовые настройки" Title="Параметры">
                     <form class="row g-3">
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <label for="inputName4" class="form-label">Название</label>
                             <input @bind-value="QuestionnaireNameOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputName4">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputName5" class="form-label">Системное имя</label>
+                            <input @bind-value="QuestionnaireSystemNameOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputName5">
                         </div>
                         <div class="col-12">
                             <div class="mb-3">
@@ -30,7 +34,7 @@
                                 <div></div>
                                 <MudSpacer />
                                 <div>
-                                    <div class="btn-group" role="group" >
+                                    <div class="btn-group" role="group">
                                         <button @onclick="SaveQuestionnaire" disabled="@(string.IsNullOrWhiteSpace(QuestionnaireNameOrigin) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
                                         @if (IsEdited)
                                         {

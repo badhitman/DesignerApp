@@ -1,11 +1,9 @@
 ﻿using DbcLib;
 using IdentityLib;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.X509;
 using SharedLib;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
@@ -659,7 +657,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> UpdateOrCreateQuestionnaire(EntryDescriptionModel questionnaire, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> UpdateOrCreateQuestionnaire(EntryConstructedModel questionnaire, CancellationToken cancellationToken = default)
     {
         questionnaire.Name = Regex.Replace(questionnaire.Name, @"\s+", " ").Trim();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
@@ -675,7 +673,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         if (questionnaire.Id < 1)
         {
-            questionnaire_db = ConstructorFormQuestionnaireModelDB.Build(questionnaire, questionnaire_db.ProjectId);
+            questionnaire_db = ConstructorFormQuestionnaireModelDB.Build(questionnaire, questionnaire.ProjectId);
             await context_forms.AddAsync(questionnaire_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
             msg = $"Опрос/анкета создана #{questionnaire_db.Id}";
@@ -694,7 +692,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        if (questionnaire_db.Name != questionnaire.Name && questionnaire_db.Description != questionnaire.Description)
+        if (questionnaire_db.Name == questionnaire.Name && questionnaire_db.Description == questionnaire.Description)
         {
             msg = $"Опрос/анкета #{questionnaire.Id} не требует изменений в БД";
             res.AddInfo(msg);
@@ -1981,8 +1979,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .Select(x => x.SortIndex)
             .ToArrayAsync(cancellationToken: cancellationToken);
 
-        int current_index = current_indexes.Length == 0 
-            ? 0 
+        int current_index = current_indexes.Length == 0
+            ? 0
             : current_indexes.Max();
 
         dictionary_element_db = new() { Name = name_element_of_dir, ParentId = dir.Id, Parent = dir, SortIndex = current_index + 1 };
@@ -2050,6 +2048,57 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         await context_forms.SaveChangesAsync(cancellationToken);
 
         return ResponseBaseModel.CreateSuccess($"Элемент справочника #{element_id} успешно удалён из БД");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> UpMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
+    {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        ConstructorFormDirectoryElementModelDB? el = await context_forms
+            .DirectoriesElements
+            .Include(x => x.Parent)
+            .ThenInclude(x => x!.Elements)
+            .FirstOrDefaultAsync(x => x.Id == element_id, cancellationToken: cancellationToken);
+
+        if (el is null)
+            return ResponseBaseModel.CreateError($"Элемент справочника #{element_id} не найден в БД");
+
+        int i = el.Parent!.Elements!.FindIndex(x => x.Id == element_id);
+        if (i == 0)
+            return ResponseBaseModel.CreateWarning($"Элемент '{el.Name}' не может быть выше. Он в крайнем положении");
+
+        el.Parent!.Elements![i].SortIndex--;
+        el.Parent!.Elements![i - 1].SortIndex++;
+
+        context_forms.UpdateRange(new ConstructorFormDirectoryElementModelDB[] { el.Parent!.Elements![i], el.Parent!.Elements![i - 1] });
+        await context_forms.SaveChangesAsync(cancellationToken);
+
+        return ResponseBaseModel.CreateSuccess("Элемент сдвинут");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> DownMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
+    {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        ConstructorFormDirectoryElementModelDB? el = await context_forms
+            .DirectoriesElements
+            .Include(x => x.Parent)
+            .ThenInclude(x => x!.Elements)
+            .FirstOrDefaultAsync(x => x.Id == element_id, cancellationToken: cancellationToken);
+        if (el is null)
+            return ResponseBaseModel.CreateError($"Элемент справочника #{element_id} не найден в БД");
+
+        int i = el.Parent!.Elements!.FindIndex(x => x.Id == element_id);
+        if (i == el.Parent!.Elements!.Count - 1)
+            return ResponseBaseModel.CreateWarning($"Элемент '{el.Name}' не может быть ниже. Он в крайнем положении");
+
+        el.Parent!.Elements![i].SortIndex++;
+        el.Parent!.Elements![i + 1].SortIndex--;
+
+        context_forms.UpdateRange(new ConstructorFormDirectoryElementModelDB[] { el.Parent!.Elements![i], el.Parent!.Elements![i + 1] });
+        await context_forms.SaveChangesAsync(cancellationToken);
+
+        return ResponseBaseModel.CreateSuccess("Элемент сдвинут");
     }
 
     /// <inheritdoc/>

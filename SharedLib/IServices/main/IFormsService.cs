@@ -75,7 +75,7 @@ public interface IFormsService
     /// <summary>
     /// Обновить (или создать) анкету/опрос
     /// </summary>
-    public Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> UpdateOrCreateQuestionnaire(EntryDescriptionModel questionnaire, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> UpdateOrCreateQuestionnaire(EntryConstructedModel questionnaire, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Запрос анкет/опросов
@@ -241,6 +241,16 @@ public interface IFormsService
     /// Удалить элемент справочника/списка
     /// </summary>
     public Task<ResponseBaseModel> DeleteElementFromDirectory(int element_id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Сдвинуть выше элемент справочника/списка
+    /// </summary>
+    public Task<ResponseBaseModel> UpMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Сдвинуть ниже элемент справочника/списка
+    /// </summary>
+    public Task<ResponseBaseModel> DownMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Нормализовать индексы сортировки элементов справочника.

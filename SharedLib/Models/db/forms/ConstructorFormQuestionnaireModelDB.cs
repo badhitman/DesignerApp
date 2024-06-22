@@ -6,18 +6,19 @@ namespace SharedLib;
 /// Опрос/Анкета
 /// </summary>
 [Index(nameof(Name), IsUnique = true)]
-public class ConstructorFormQuestionnaireModelDB : EntryDescriptionModel
+public class ConstructorFormQuestionnaireModelDB : EntryConstructedModel
 {
     /// <inheritdoc/>
     public static ConstructorFormQuestionnaireModelDB BuildEmpty(int projectId)
         => new()
         {
             Name = "",
+            SystemName = "",
             ProjectId = projectId,
         };
 
     /// <inheritdoc/>
-    public static ConstructorFormQuestionnaireModelDB Build(EntryDescriptionModel questionnaire, int projectId)
+    public static ConstructorFormQuestionnaireModelDB Build(EntryConstructedModel questionnaire, int projectId)
         => new()
         {
             Id = questionnaire.Id,
@@ -25,18 +26,10 @@ public class ConstructorFormQuestionnaireModelDB : EntryDescriptionModel
             Description = questionnaire.Description,
             Pages = [],
             ProjectId = projectId,
+            SystemName = questionnaire.SystemName,
+            IsDisabled = questionnaire.IsDisabled,
+            Project = questionnaire.Project,
         };
-
-
-    /// <summary>
-    /// Project
-    /// </summary>
-    public ProjectConstructorModelDb? Project { get; set; }
-
-    /// <summary>
-    /// Project
-    /// </summary>
-    public required int ProjectId { get; set; }
 
     /// <summary>
     /// Страницы
