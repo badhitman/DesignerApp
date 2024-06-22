@@ -1,33 +1,77 @@
-﻿@if (DirectoryNavState == DirectoryNavStatesEnum.Create)
+﻿@inherits BlazorBusyComponentBaseModel
+
+<div class="input-group me-4">
+    <span class="input-group-text">Справочник</span>
+    @if (IsEditDirectoryMode)
+    {
+        <input @bind-value="EditDirectoryObject!.Name" @bind-value:event="oninput" type="text" class="form-control" placeholder="Название">
+        <input @bind-value="EditDirectoryObject!.SystemName" @bind-value:event="oninput" type="text" class="form-control" placeholder="Системное имя">
+    }
+    else
+    {
+        <select disabled="@(allDirectories.Any() != true)" @bind="SelectedDirectoryId" class="form-select" aria-label="справочник/список">
+            @if (allDirectories.Any() != true)
+            {
+                <option value="-1" selected>Справочники отсутствуют</option>
+            }
+            else
+            {
+                foreach (EntryModel el in allDirectories)
+                {
+                    <option value="@el.Id">@(el.Name)</option>
+                }
+            }
+        </select>
+    }
+</div>
+<MudSpacer />
+@if (DirectoryNavState == DirectoryNavStatesEnum.Create)
 {
     <div class="input-group">
         <span class="input-group-text">новый:</span>
-        <input @bind-value="NameNewDict" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника">
-        <input @bind-value="SystemCodeNewDict" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя">
-        <button disabled="@(string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict))" @onclick="TryCreateDirectory" class="btn btn-outline-success" type="button" id="button-addon1">@GetTitleForButtonCreate</button>
-        <button @onclick="ResetNavForm" class="btn btn-outline-secondary" type="button" id="button-addon2">Отмена</button>
+        <input @bind-value="EditDirectoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника">
+        <input @bind-value="EditDirectoryObject.SystemName" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя">
+        <button disabled="@(string.IsNullOrWhiteSpace(EditDirectoryObject.Name) || string.IsNullOrWhiteSpace(EditDirectoryObject.SystemName))" @onclick="TryCreateDirectory" class="btn btn-outline-success" type="button" id="button-addon1">@GetTitleForButtonCreate</button>
+        <button @onclick="() => ResetNavForm()" class="btn btn-outline-secondary" type="button" id="button-addon2">Отмена</button>
     </div>
 }
 else if (DirectoryNavState == DirectoryNavStatesEnum.Delete)
 {
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-        <button @onclick="DeleteSelectedDirectoryHandler" class="btn btn-outline-danger" type="button" id="button-addon1">Удалить</button>
-        <button @onclick="() => { DirectoryNavState = DirectoryNavStatesEnum.None; }" class="btn btn-outline-secondary" type="button" id="button-addon2">Отмена</button>
+    <div class="btn-group" role="group">
+        <button class="btn btn-outline-danger" type="button" id="button-addon1">Удалить</button>
+        <button class="btn btn-outline-secondary" type="button" id="button-addon2">Отмена</button>
     </div>
 }
 else if (DirectoryNavState == DirectoryNavStatesEnum.Rename)
 {
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-        <button @onclick="SaveRenameSelectedDirectoryHandler" class="btn btn-outline-secondary" type="button" id="button-addon1">Сохранить</button>
-        <button @onclick="() => { DirectoryNavState = DirectoryNavStatesEnum.None; RenameSelectedDirectoryHandler(false); }" class="btn btn-outline-secondary" type="button" id="button-addon1">Отмена</button>
+    <div class="btn-group" role="group">
+        <button class="btn btn-outline-secondary" type="button" id="button-addon1">Сохранить</button>
+        <button @onclick="() => ResetNavForm()" class="btn btn-outline-secondary" type="button" id="button-addon1">Отмена</button>
     </div>
 }
 else
 {
-    @if (IsSelectedDirectory)
+    @* @if (IsSelectedDirectory)
     {
         <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Rename; RenameSelectedDirectoryHandler(true); }" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" />
         <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Delete; }" Icon="@Icons.Material.Outlined.Delete" />
-    }
+    } *@
     <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Create; }" Icon="@Icons.Material.Outlined.Add" Size="Size.Small" />
 }
+<nav class="navbar bg-body-tertiary">
+    <div class="container-fluid">
+        @if (SelectedDirectoryId > 0)
+        {
+            <a class="navbar-brand">Элементы списка</a>
+            <div class="d-flex">
+                <input @bind-value="elementForDict.Name" @bind-value:event="oninput" class="form-control me-2" type="text" placeholder="Название элемента" size="40">
+                <input @bind-value="elementForDict.SystemName" @bind-value:event="oninput" class="form-control me-2" type="text" placeholder="Системное имя" size="40">
+                <button @onclick="AddElementIntoDirectoryAction" disabled="@(!GlobalTools.ValidateObject(elementForDict).IsValid)" class="btn btn-outline-primary" type="button">Добавить</button>
+            </div>
+        }
+        else
+        {
+            <a class="navbar-brand">Не выбран справочник</a>
+        }
+    </div>
+</nav>

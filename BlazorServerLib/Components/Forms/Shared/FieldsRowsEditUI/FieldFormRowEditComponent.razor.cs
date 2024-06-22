@@ -81,6 +81,7 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
     {
         _field_copy = new ConstructorFieldFormModelDB()
         {
+            SystemName = Field.SystemName,
             Css = Field.Css,
             Description = Field.Description,
             Hint = Field.Hint,

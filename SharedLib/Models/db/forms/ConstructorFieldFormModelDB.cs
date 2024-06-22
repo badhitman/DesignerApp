@@ -9,11 +9,22 @@ namespace SharedLib;
 public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
 {
     /// <summary>
+    /// Сортировка 
+    /// </summary>
+    public int SortIndex { get; set; }
+
+    /// <inheritdoc/>
+    public ConstructorFormModelDB? Owner { get; set; }
+
+
+
+    /// <summary>
     /// Поле формы
     /// </summary>
     public static ConstructorFieldFormModelDB Build(ConstructorFieldFormBaseModel form_field, ConstructorFormModelDB form_db, int sortIndex)
         => new()
         {
+            SystemName = form_field.SystemName,
             Name = form_field.Name,
             Description = form_field.Description,
             Css = form_field.Css,
@@ -33,6 +44,7 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
         {
             return new ConstructorFieldFormModelDB()
             {
+                SystemName = bf.SystemName,
                 Name = bf.Name,
                 Css = bf.Css,
                 OwnerId = bf.OwnerId,
@@ -49,6 +61,7 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
         {
             return new ConstructorFieldFormModelDB()
             {
+                SystemName = ff.SystemName,
                 Name = ff.Name,
                 SortIndex = ff.SortIndex,
                 Css = ff.Css,
@@ -67,13 +80,6 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
             throw new ArgumentException($"Тип поля не корректный: {form_field.GetType().FullName}", nameof(form_field));
     }
 
-    /// <summary>
-    /// Сортировка 
-    /// </summary>
-    public int SortIndex { get; set; }
-
-    /// <inheritdoc/>
-    public ConstructorFormModelDB? Owner { get; set; }
 
     /// <inheritdoc/>
     public override void Update(ConstructorFieldFormBaseLowModel form_field)

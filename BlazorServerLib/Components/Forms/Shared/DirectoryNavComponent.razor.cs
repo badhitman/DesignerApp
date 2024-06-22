@@ -1,83 +1,64 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
-using System.Text.RegularExpressions;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
 /// <summary>
 /// Directory Navigation
 /// </summary>
-public partial class DirectoryNavComponent : ComponentBase
+public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
+    [Inject]
+    IFormsService FormsRepo { get; set; } = default!;
 
     /// <summary>
-    /// Create directory handler
+    /// Родительская страница форм
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
+
+    /// <summary>
+    /// Событие изменения выбранного справочника/списка
     /// </summary>
     [Parameter, EditorRequired]
-    public required Action<(string Name, string SystemName)> CreateDirectoryHandler { get; set; }
+    public required Action<int> SelectedDirectoryChangeHandler { get; set; }
+
+    SystemEntryModel[] allDirectories = default!;
+
 
     /// <summary>
-    /// Delete selected directory handler
+    /// Выбранный справочник/список
     /// </summary>
-    [Parameter, EditorRequired]
-    public Action DeleteSelectedDirectoryHandler { get; set; } = default!;
+    public int SelectedDirectoryId
+    {
+        get => _selected_dir_id;
+        private set
+        {
+            if (_selected_dir_id != value)
+                SelectedDirectoryChangeHandler(value);
 
-    /// <summary>
-    /// Rename selected directory handler
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Action<bool> RenameSelectedDirectoryHandler { get; set; } = default!;
+            _selected_dir_id = value;
+        }
+    }
+    int _selected_dir_id;
 
-    /// <summary>
-    /// Save rename selected directory handler
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Action SaveRenameSelectedDirectoryHandler { get; set; } = default!;
+    /// <inheritdoc/>
+    protected bool IsEditDirectoryMode = false;
 
-    /// <summary>
-    /// Directory is selected
-    /// </summary>
-    [Parameter, EditorRequired]
-    public bool IsSelectedDirectory { get; set; }
-
-    /// <summary>
-    /// Имя создаваемого словаря
-    /// </summary>
-    protected string? NameNewDict;
-
-    /// <summary>
-    /// Системное код-имя создаваемого словаря
-    /// </summary>
-    protected string? SystemCodeNewDict;
+    SystemEntryModel EditDirectoryObject = default!;
+    SystemOwnedNameModel elementForDict = default!;
 
     /// <summary>
     /// Directory navigation state
     /// </summary>
     protected DirectoryNavStatesEnum DirectoryNavState = DirectoryNavStatesEnum.None;
-
-    void TryCreateDirectory()
-    {
-        if (string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict) || !Regex.IsMatch(SystemCodeNewDict, GlobalStaticConstants.NAME_SPACE_TEMPLATE))
-        {
-            SnackbarRepo.Add(GlobalStaticConstants.NAME_SPACE_TEMPLATE_MESSAGE, Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return;
-        }
-
-        CreateDirectoryHandler((Name: NameNewDict, SystemName: SystemCodeNewDict));
-        ResetNavForm();
-    }
-
-    void ResetNavForm()
-    {
-        NameNewDict = null;
-        SystemCodeNewDict = null;
-        DirectoryNavState = DirectoryNavStatesEnum.None;
-    }
 
     /// <summary>
     /// Текст кнопки создания справочника
@@ -86,30 +67,96 @@ public partial class DirectoryNavComponent : ComponentBase
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict))
+            if (elementForDict is null)
+                throw new ArgumentNullException(nameof(elementForDict), "Элемент справочника/списка не инициализирован");
+
+            if (string.IsNullOrWhiteSpace(elementForDict.Name) || string.IsNullOrWhiteSpace(elementForDict.SystemName))
                 return "Введите название";
 
             return "Создать";
         }
     }
 
-    /// <summary>
-    /// State has changed action
-    /// </summary>
-    public void StateHasChangedAction(bool? can_delete_current_directory = null)
-    {
-        if (can_delete_current_directory.HasValue)
-            IsSelectedDirectory = can_delete_current_directory.Value;
 
-        StateHasChanged();
+    /// <inheritdoc/>
+    protected async void AddElementIntoDirectoryAction()
+    {
+        if (SelectedDirectoryId < 1)
+            throw new Exception("Не выбран справочник/список");
+
+        IsBusyProgress = true;
+        TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(elementForDict, SelectedDirectoryId);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
     }
 
+
     /// <summary>
-    /// Установить состояние навигации по каталогу
+    /// Перезагрузить селектор справочников/списков
     /// </summary>
-    public void SetDirectoryNavState(DirectoryNavStatesEnum dir_NavState)
+    public async Task ReloadDirectories(bool stateHasChanged = false)
     {
-        DirectoryNavState = dir_NavState;
-        StateHasChanged();
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран основной/используемый проект");
+
+        ResetNavForm();
+
+        IsBusyProgress = true;
+        TResponseStrictModel<SystemEntryModel[]> rest = await FormsRepo.GetDirectories(ParentFormsPage.MainProject.Id);
+        IsBusyProgress = false;
+
+        allDirectories = rest.Response;
+
+        if (allDirectories.Length == 0)
+            SelectedDirectoryId = -1;
+        else if (allDirectories.Any(x => x.Id == SelectedDirectoryId) != true)
+            SelectedDirectoryId = allDirectories.FirstOrDefault()?.Id ?? 0;
+
+        if (stateHasChanged)
+            StateHasChanged();
+    }
+
+    void TryCreateDirectory()
+    {
+        //if (string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict))
+        //{
+        //    SnackbarRepo.Add("Системное имя и название обязательны", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+        //    return;
+        //}
+
+        //CreateDirectoryHandler((Name: NameNewDict, SystemName: SystemCodeNewDict));
+        //ResetNavForm();
+    }
+
+    /// <inheritdoc/>
+    protected async void SaveRenameDirectoryAction()
+    {
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран текущий/основной проект");
+
+        IsBusyProgress = true;
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(EditDirectoryObject, ParentFormsPage.MainProject.Id));
+        IsBusyProgress = false;
+        //SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        //_creator_ref?.SetDirectoryNavState(DirectoryNavStatesEnum.None);
+        //IsEditDirectory = false;
+        //EditDirectoryObject = null;
+        //await ReloadDirectories();
+    }
+
+    void ResetNavForm(bool stateHasChanged = false)
+    {
+        EditDirectoryObject = SystemEntryModel.BuildEmpty();
+        elementForDict = SystemOwnedNameModel.BuildEmpty(SelectedDirectoryId);
+        DirectoryNavState = DirectoryNavStatesEnum.None;
+
+        if (stateHasChanged)
+            StateHasChanged();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadDirectories();
     }
 }

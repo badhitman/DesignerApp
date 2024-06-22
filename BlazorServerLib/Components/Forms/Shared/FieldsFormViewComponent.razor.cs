@@ -90,6 +90,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         {
             rest = await FormsRepo.FormFieldDirectoryUpdateOrCreate(new ConstructorFormDirectoryLinkModelDB()
             {
+                SystemName = directory_field.SystemName,
                 Description = directory_field.Description,
                 DirectoryId = directory_field.DirectoryId,
                 Hint = directory_field.Hint,
@@ -103,6 +104,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         {
             rest = await FormsRepo.FormFieldUpdateOrCreate(new ConstructorFieldFormBaseModel()
             {
+                SystemName = standard_field.SystemName,
                 Description = standard_field.Description,
                 Hint = standard_field.Hint,
                 Id = standard_field.Id,

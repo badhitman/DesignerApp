@@ -10,10 +10,12 @@ namespace SharedLib;
 public class EntryDescriptionModel : EntryModel
 {
     /// <inheritdoc/>
-    public static new EntryDescriptionModel Build(string name) => new() { Name = name };
+    public static new EntryDescriptionModel Build(string name) 
+        => new() { Name = name };
 
     /// <inheritdoc/>
-    public static EntryDescriptionModel Build(string name, string description) => new() { Name = name, Description = description };
+    public static EntryDescriptionModel Build(string name, string description) 
+        => new() { Name = name, Description = description };
 
     /// <summary>
     /// Описание/примечание для объекта

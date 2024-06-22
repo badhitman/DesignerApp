@@ -7,18 +7,19 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// Базовая модель с поддержкой -> int:Id +string:Name +string:SystemName +bool:IsDeleted
+/// EntryDescriptionOwnedModel
 /// </summary>
-public class SystemEntryModel : EntryModel
+public class EntrySystemDescriptionOwnedModel : EntryDescriptionModel
 {
+    /// <summary>
+    /// Форма
+    /// </summary>
+    public int OwnerId { get; set; }
+
     /// <summary>
     /// System name
     /// </summary>
     [Required(AllowEmptyStrings = false)]
     [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = GlobalStaticConstants.NAME_SPACE_TEMPLATE_MESSAGE)]
     public required string SystemName { get; set; }
-
-    /// <inheritdoc/>
-    public static SystemEntryModel BuildEmpty()
-        => new() { Name = "", SystemName = "" };
 }

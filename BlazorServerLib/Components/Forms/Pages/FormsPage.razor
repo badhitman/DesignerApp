@@ -10,8 +10,15 @@
     Конструктор
     <MudTooltip>
         <ChildContent>
-            <sup>
-                @(MainProject is null ? "[проект не выбран]" : $"проект: '{MainProject.Name}'")
+            <sup class="@(MainProject is null ? "text-secondary" : "text-primary-emphasis")">
+                @if (MainProject is null)
+                {
+                    <text>[проект не выбран]</text>
+                }
+                else
+                {
+                    <text>"@MainProject.Name"</text>
+                }
             </sup>
         </ChildContent>
         <TooltipContent>

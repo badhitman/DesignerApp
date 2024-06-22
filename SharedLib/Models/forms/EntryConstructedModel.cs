@@ -30,4 +30,10 @@ public class EntryConstructedModel : EntryDescriptionModel
     /// Project
     /// </summary>
     public required int ProjectId { get; set; }
+
+    /// <inheritdoc/>
+    public static EntryConstructedModel Build(SystemEntryModel sender, int projectId)
+    {
+        return new() { Name = sender.Name, SystemName = sender.SystemName, ProjectId = projectId };
+    }
 }

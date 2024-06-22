@@ -173,7 +173,7 @@ public interface IFormsService
     /// <summary>
     /// Проверить сортировку и нормализовать в случае рассинхрона
     /// </summary>
-    public Task<TResponseModel<ConstructorFormModelDB>> CheckAndNormalizeSortIndex(ConstructorFormModelDB form, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<ConstructorFormModelDB>> CheckAndNormalizeSortIndexFrmFields(ConstructorFormModelDB form, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/создать поле формы (простой тип)
@@ -227,10 +227,7 @@ public interface IFormsService
     /// <summary>
     /// Создать элемент справочника
     /// </summary>
-    /// <param name="name_element_of_dir">Имя элемента (создаваемого)</param>
-    /// <param name="directory_id">Справочник в который будет добавлен элемент</param>
-    /// <param name="cancellationToken"></param>
-    public Task<TResponseStrictModel<int>> CreateElementForDirectory(string name_element_of_dir, int directory_id, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> CreateElementForDirectory(SystemNameModel element, int directory_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить элемент справочника
@@ -255,7 +252,7 @@ public interface IFormsService
     /// <summary>
     /// Нормализовать индексы сортировки элементов справочника.
     /// </summary>
-    public Task<ResponseBaseModel> NormalizeSortIndexesForElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> CheckAndNormalizeSortIndexForElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
     #endregion
 
     #region проекты

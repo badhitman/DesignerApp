@@ -7,9 +7,9 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// Базовая модель с поддержкой -> int:Id +string:Name +string:SystemName +bool:IsDeleted
+/// SystemNamed
 /// </summary>
-public class SystemEntryModel : EntryModel
+public class SystemNameModel
 {
     /// <summary>
     /// System name
@@ -18,7 +18,9 @@ public class SystemEntryModel : EntryModel
     [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = GlobalStaticConstants.NAME_SPACE_TEMPLATE_MESSAGE)]
     public required string SystemName { get; set; }
 
-    /// <inheritdoc/>
-    public static SystemEntryModel BuildEmpty()
-        => new() { Name = "", SystemName = "" };
+    /// <summary>
+    /// Имя объекта
+    /// </summary>
+    [Required(AllowEmptyStrings = false, ErrorMessage = "Поле наименования обязательно для заполнения")]
+    public required string Name { get; set; }
 }

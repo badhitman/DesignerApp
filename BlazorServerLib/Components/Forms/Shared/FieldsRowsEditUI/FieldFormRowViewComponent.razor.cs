@@ -238,6 +238,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         {
             ConstructorFieldFormModelDB req = new()
             {
+                SystemName = sf.SystemName,
                 Css = sf.Css,
                 Description = sf.Description,
                 Hint = sf.Hint,
@@ -256,6 +257,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         {
             ConstructorFormDirectoryLinkModelDB req = new()
             {
+                SystemName = df.SystemName,
                 Id = df.Id,
                 Name = df.Name,
                 Description = df.Description,
@@ -341,6 +343,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 Field.Update(rest.Response.FormsDirectoriesLinks.First(x => x.Id == _field_master.Id));
                 _field_master = new ConstructorFormDirectoryLinkModelDB()
                 {
+                    SystemName = Field.SystemName,
                     Css = Field.Css,
                     Description = Field.Description,
                     Hint = Field.Hint,
@@ -410,6 +413,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         if (field is ConstructorFieldFormModelDB sf)
             _field_master = new ConstructorFieldFormModelDB()
             {
+                SystemName = sf.SystemName,
                 Css = sf.Css,
                 Description = sf.Description,
                 Hint = sf.Hint,
@@ -425,6 +429,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         else if (field is ConstructorFormDirectoryLinkModelDB df)
             _field_master = new ConstructorFormDirectoryLinkModelDB()
             {
+                SystemName = df.SystemName,
                 Css = df.Css,
                 Description = df.Description,
                 Directory = df.Directory,

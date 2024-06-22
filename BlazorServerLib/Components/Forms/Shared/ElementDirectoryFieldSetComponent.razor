@@ -1,4 +1,6 @@
-﻿@if (IsEdit)
+﻿@inherits BlazorBusyComponentBaseModel
+
+@if (IsEdit)
 {
     <div class="input-group input-group-sm">
         <ElementDirectoryFieldEditComponent EditDoneAction="EditDoneHandle" />
@@ -9,20 +11,5 @@ else
 {
     <div class="flex-grow-1">@ElementObject.Name</div>
     <span @onclick="() => { IsEdit = true; }" class="link-primary bi bi-pen me-2" title="Редактирование элемента"></span>
-    <span @onclick="() => { DeleteElementOfDirectoryHandler(ElementObject.Id); }" class="link-primary bi bi-trash text-warning" title="Удаление элемента"></span>
-}
-
-@code {
-    [CascadingParameter, EditorRequired]
-    public EntryModel ElementObject { get; set; } = default!;
-
-    [CascadingParameter, EditorRequired]
-    public Action<int> DeleteElementOfDirectoryHandler { get; set; } = default!;
-
-    bool IsEdit = false;
-    void EditDoneHandle()
-    {
-        IsEdit = false;
-        StateHasChanged();
-    }
+    <span @onclick="DeleteElementOfDirectory" class="link-primary bi bi-trash text-warning" title="Удаление элемента"></span>
 }

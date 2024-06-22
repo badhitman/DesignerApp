@@ -6,7 +6,7 @@ namespace SharedLib;
 /// Поле формы (тип: справочник/список)
 /// </summary>
 [Index(nameof(Required))]
-public class ConstructorFieldFormBaseLowModel : EntryDescriptionOwnedModel
+public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
 {
     /// <summary>
     /// Подсказка

@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlazorWebLib.Components.Forms.Shared.Projects;
 
@@ -12,9 +13,6 @@ namespace BlazorWebLib.Components.Forms.Shared.Projects;
 /// </summary>
 public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
 {
-    [Inject]
-    IJSRuntime JsRuntimeRepo { get; set; } = default!;
-
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 

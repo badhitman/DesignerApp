@@ -25,10 +25,11 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         get
         {
             if (_field_object_master is null)
-                return new() { Name = "", OwnerId = Form.Id };
+                return new() { SystemName = "", Name = "", OwnerId = Form.Id };
 
             ConstructorFormDirectoryLinkModelDB res = new()
             {
+                SystemName = _field_object_master.SystemName,
                 Id = _field_object_master.Id,
                 Description = _field_object_master.Description,
                 Hint = _field_object_master.Hint,
@@ -53,10 +54,11 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         get
         {
             if (_field_object_master is null)
-                return new() { Name = "", OwnerId = Form.Id, TypeField = (TypesFieldsFormsEnum)SelectedTypeFieldForAdding };
+                return new() { SystemName = "", Name = "", OwnerId = Form.Id, TypeField = (TypesFieldsFormsEnum)SelectedTypeFieldForAdding };
 
             ConstructorFieldFormModelDB res = new()
             {
+                SystemName = _field_object_master.SystemName,
                 Id = _field_object_master.Id,
                 Description = _field_object_master.Description,
                 Hint = _field_object_master.Hint,

@@ -44,7 +44,7 @@ public class ConstructorFormSessionModelDB : EntryDescriptionOwnedModel
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     /// <summary>
-    /// Последнее обновление даннык опроса/анкеты (последняя активность по вводу значений)
+    /// Последнее обновление данных опроса/анкеты (последняя активность по вводу значений)
     /// </summary>
     public DateTime? LastQuestionnaireUpdateActivity { get; set; }
 
@@ -102,7 +102,7 @@ public class ConstructorFormSessionModelDB : EntryDescriptionOwnedModel
         Description = other.Description;
         if (other.SessionValues is not null)
         {
-            SessionValues ??= new();
+            SessionValues ??= [];
 
             int i = SessionValues.FindIndex(x => !other.SessionValues.Any(y => y.Id == x.Id));
             while (i >= 0)

@@ -359,6 +359,14 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<TResponseModel<ConstructorFormSessionModelDB>> UpdateOrCreateSessionQuestionnaire(ConstructorFormSessionModelDB session_json, CancellationToken cancellationToken = default)
     {
         TResponseModel<ConstructorFormSessionModelDB> res = new();
+
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(session_json);
+        if (!IsValid)
+        {
+            res.Messages.InjectException(ValidationResults);
+            return res;
+        }
+
         if (!string.IsNullOrWhiteSpace(session_json.EmailsNotifications))
         {
             string[] een = session_json.EmailsNotifications.SplitToList().Where(x => !MailAddress.TryCreate(x, out _)).ToArray();
@@ -660,8 +668,16 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> UpdateOrCreateQuestionnaire(EntryConstructedModel questionnaire, CancellationToken cancellationToken = default)
     {
         questionnaire.Name = Regex.Replace(questionnaire.Name, @"\s+", " ").Trim();
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+
         TResponseModel<ConstructorFormQuestionnaireModelDB> res = new();
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(questionnaire);
+        if (!IsValid)
+        {
+            res.Messages.InjectException(ValidationResults);
+            return res;
+        }
+
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormQuestionnaireModelDB? questionnaire_db = await context_forms.Questionnaires.FirstOrDefaultAsync(x => x.Id != questionnaire.Id && x.Name.ToUpper() == questionnaire.Name.ToUpper(), cancellationToken: cancellationToken);
         string msg;
         if (questionnaire_db is not null)
@@ -809,7 +825,16 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             questionnaire_page.Id = 0;
 
         questionnaire_page.Name = Regex.Replace(questionnaire_page.Name, @"\s+", " ").Trim();
+
         FormQuestionnairePageResponseModel res = new();
+
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(questionnaire_page);
+        if (!IsValid)
+        {
+            res.Messages.InjectException(ValidationResults);
+            return res;
+        }
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormQuestionnaireModelDB? questionnaire_db = await context_forms
             .Questionnaires
@@ -999,6 +1024,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     {
         page_join_form.Name = Regex.Replace(page_join_form.Name, @"\s+", " ").Trim();
         page_join_form.Description = page_join_form.Description?.Trim();
+
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(page_join_form);
+        if (!IsValid)
+            return ResponseBaseModel.CreateError(ValidationResults);
+
         ResponseBaseModel res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormQuestionnairePageModelDB? questionnaire_page_db = await context_forms
@@ -1216,18 +1246,26 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /// <inheritdoc/>
     public async Task<TResponseModel<ConstructorFormModelDB>> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default)
     {
-        form.Name = Regex.Replace(form.Name, @"\s+", " ").Trim();
-
         TResponseModel<ConstructorFormModelDB> res = new();
+        form.Name = Regex.Replace(form.Name, @"\s+", " ").Trim();
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(form);
+        if (!IsValid)
+        {
+            res.Messages.InjectException(ValidationResults);
+            return res;
+        }
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 #pragma warning disable CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
-        ConstructorFormModelDB? form_db = await context_forms.Forms.FirstOrDefaultAsync(x => x.Id != form.Id && x.Name.ToUpper() == form.Name.ToUpper(), cancellationToken: cancellationToken);
+        ConstructorFormModelDB? form_db = await context_forms
+            .Forms
+            .FirstOrDefaultAsync(x => x.Id != form.Id && x.ProjectId == form.ProjectId && (x.Name.ToUpper() == form.Name.ToUpper() || x.SystemName.ToUpper() == form.SystemName.ToUpper()), cancellationToken: cancellationToken);
 #pragma warning restore CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
+
         string msg;
         if (form_db is not null)
         {
-            msg = $"Форма с таким именем уже существует: #{form_db.Id} '{form_db.Name}'";
+            msg = $"Такая форма уже существует: #{form_db.Id} '{form_db.Name}' [{form_db.SystemName}]";
             res.AddError(msg);
             logger.LogError(msg);
             return res;
@@ -1421,6 +1459,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     {
         form_field.Name = Regex.Replace(form_field.Name, @"\s+", " ").Trim();
         form_field.MetadataValueType = form_field.MetadataValueType?.Trim();
+
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(form_field);
+        if (!IsValid)
+            return ResponseBaseModel.CreateError(ValidationResults);
+
         ResponseBaseModel res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormModelDB? form_db = await context_forms
@@ -1568,8 +1611,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(ConstructorFormDirectoryLinkModelDB field_directory, CancellationToken cancellationToken = default)
     {
         field_directory.Name = Regex.Replace(field_directory.Name, @"\s+", " ").Trim();
-        if (string.IsNullOrEmpty(field_directory.Name))
-            return ResponseBaseModel.CreateError("Имя поля не может быть пустым");
+
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(field_directory);
+        if (!IsValid)
+            return ResponseBaseModel.CreateError(ValidationResults);
 
         ResponseBaseModel res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
@@ -1592,7 +1637,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFormDirectoryLinkModelDB? form_fieldd_db;
+        ConstructorFormDirectoryLinkModelDB? form_field_db;
         if (field_directory.Id < 1)
         {
             if (form_db.AllFields.Any(x => x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)))
@@ -1601,8 +1646,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             int _sort_index = form_db.FormsDirectoriesLinks!.Any() ? form_db.FormsDirectoriesLinks!.Max(x => x.SortIndex) : 0;
             _sort_index = Math.Max(_sort_index, form_db.Fields!.Any() ? form_db.Fields!.Max(x => x.SortIndex) : 0);
 
-            form_fieldd_db = new()
+            form_field_db = new()
             {
+                SystemName = field_directory.SystemName,
                 Name = field_directory.Name,
                 Css = field_directory.Css,
                 OwnerId = field_directory.OwnerId,
@@ -1614,9 +1660,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 DirectoryId = dir_db.Id,
                 SortIndex = _sort_index + 1
             };
-            await context_forms.AddAsync(form_fieldd_db, cancellationToken);
+            await context_forms.AddAsync(form_field_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
-            msg = $"Поле (списочного типа) создано #{form_fieldd_db.Id}";
+            msg = $"Поле (списочного типа) создано #{form_field_db.Id}";
             res.AddSuccess(msg);
             logger.LogInformation(msg);
             return res;
@@ -1625,8 +1671,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (form_db.AllFields.Any(x => (x.GetType() == typeof(ConstructorFieldFormModelDB) && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && x.Id != field_directory.Id && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase))))
             return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка E1848D9D-32D1-4EA1-B6B0-5EC8D60D39C4");
 
-        form_fieldd_db = form_db.FormsDirectoriesLinks!.FirstOrDefault(x => x.Id == field_directory.Id);
-        if (form_fieldd_db is null)
+        form_field_db = form_db.FormsDirectoriesLinks!.FirstOrDefault(x => x.Id == field_directory.Id);
+        if (form_field_db is null)
         {
             msg = $"Поле (списочного типа) формы #{field_directory.Id} не найдено в БД";
             res.AddError(msg);
@@ -1644,23 +1690,23 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                                                                          select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);
 
-        if (form_fieldd_db.DirectoryId != field_directory.DirectoryId)
+        if (form_field_db.DirectoryId != field_directory.DirectoryId)
         {
             if (values_updates.Any())
             {
-                msg = $"Тип поля (списочного типа) формы #{field_directory.Id} не может быть изменён ([{form_fieldd_db.DirectoryId}] -> [{field_directory.DirectoryId}]): найдены ссылки введёных значений ({values_updates.Count} штук) для этого поля";
+                msg = $"Тип поля (списочного типа) формы #{field_directory.Id} не может быть изменён ([{form_field_db.DirectoryId}] -> [{field_directory.DirectoryId}]): найдены ссылки введёных значений ({values_updates.Count} штук) для этого поля";
                 res.AddError(msg);
                 logger.LogError(msg);
                 return res;
             }
 
-            msg = $"Подтип поля (списочного типа) формы #{field_directory.Id} изменился: [{form_fieldd_db.DirectoryId}] -> [{field_directory.DirectoryId}]";
+            msg = $"Подтип поля (списочного типа) формы #{field_directory.Id} изменился: [{form_field_db.DirectoryId}] -> [{field_directory.DirectoryId}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            form_fieldd_db.DirectoryId = field_directory.DirectoryId;
+            form_field_db.DirectoryId = field_directory.DirectoryId;
         }
 
-        if (form_fieldd_db.Name != field_directory.Name)
+        if (form_field_db.Name != field_directory.Name)
         {
             if (values_updates.Any())
             {
@@ -1668,43 +1714,43 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 context_forms.UpdateRange(values_updates);
             }
 
-            msg = $"Имя поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_fieldd_db.Name}] -> [{field_directory.Name}]";
+            msg = $"Имя поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.Name}] -> [{field_directory.Name}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            form_fieldd_db.Name = field_directory.Name;
+            form_field_db.Name = field_directory.Name;
         }
-        if (form_fieldd_db.Css != field_directory.Css)
+        if (form_field_db.Css != field_directory.Css)
         {
-            msg = $"CSS поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_fieldd_db.Css}] -> [{field_directory.Css}]";
+            msg = $"CSS поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.Css}] -> [{field_directory.Css}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            form_fieldd_db.Css = field_directory.Css;
+            form_field_db.Css = field_directory.Css;
         }
-        if (form_fieldd_db.Description != field_directory.Description)
+        if (form_field_db.Description != field_directory.Description)
         {
             msg = $"Описание поля (списочного типа) формы #{field_directory.Id} изменилось";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            form_fieldd_db.Description = field_directory.Description;
+            form_field_db.Description = field_directory.Description;
         }
-        if (form_fieldd_db.Hint != field_directory.Hint)
+        if (form_field_db.Hint != field_directory.Hint)
         {
-            msg = $"Подсказка поля (списочного типа) формы #{field_directory.Id} изменилась: [{form_fieldd_db.Hint}] -> [{field_directory.Hint}]";
+            msg = $"Подсказка поля (списочного типа) формы #{field_directory.Id} изменилась: [{form_field_db.Hint}] -> [{field_directory.Hint}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            form_fieldd_db.Hint = field_directory.Hint;
+            form_field_db.Hint = field_directory.Hint;
         }
-        if (form_fieldd_db.Required != field_directory.Required)
+        if (form_field_db.Required != field_directory.Required)
         {
-            msg = $"Признак [{nameof(form_fieldd_db.Required)}] поля (списочного типа) формы #{field_directory.Id} изменился: [{form_fieldd_db.Required}] -> [{field_directory.Required}]";
+            msg = $"Признак [{nameof(form_field_db.Required)}] поля (списочного типа) формы #{field_directory.Id} изменился: [{form_field_db.Required}] -> [{field_directory.Required}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            form_fieldd_db.Required = field_directory.Required;
+            form_field_db.Required = field_directory.Required;
         }
 
         if (res.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Warning))
         {
-            context_forms.Update(form_fieldd_db);
+            context_forms.Update(form_field_db);
             msg = $"Поле (списочного типа) формы #{field_directory.Id} обновлено в БД";
             res.AddInfo(msg);
             logger.LogInformation(msg);
@@ -1757,7 +1803,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormModelDB>> CheckAndNormalizeSortIndex(ConstructorFormModelDB form, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<ConstructorFormModelDB>> CheckAndNormalizeSortIndexFrmFields(ConstructorFormModelDB form, CancellationToken cancellationToken = default)
     {
         TResponseModel<ConstructorFormModelDB> res = new();
         int i = 0;
@@ -1840,28 +1886,22 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /// <inheritdoc/>
     public async Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryConstructedModel _dir, CancellationToken cancellationToken = default)
     {
+        _dir.Name = Regex.Replace(_dir.Name, @"\s+", " ").Trim();
         TResponseStrictModel<int> res = new() { Response = 0 };
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(_dir);
         if (!IsValid)
         {
-            res.AddRangeMessages(ValidationResults.Select(x => new ResultMessage() { Text = x.ToString(), TypeMessage = ResultTypesEnum.Error }));
+            res.Messages.InjectException(ValidationResults);
             return res;
         }
 
         string msg;
-        if (string.IsNullOrWhiteSpace(_dir.Name))
-        {
-            msg = $"Имя справочника #{_dir.Id} не может быть пустым";
-            res.AddError(msg);
-            logger.LogError(msg);
-            return res;
-        }
-        _dir.Name = Regex.Replace(_dir.Name, @"\s+", " ").Trim();
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryModelDB? ne = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id != _dir.Id && (x.Name == _dir.Name || x.SystemName == _dir.SystemName), cancellationToken: cancellationToken);
-        if (ne is not null)
+        ConstructorFormDirectoryModelDB? directory_db = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id != _dir.Id && x.ProjectId == _dir.ProjectId && (x.Name == _dir.Name || x.SystemName == _dir.SystemName), cancellationToken: cancellationToken);
+        if (directory_db is not null)
         {
-            msg = $"Справочник '{ne.Name}' ({ne.SystemName}) уже существует `#{ne.Id}`";
+            msg = $"Справочник '{directory_db.Name}' ({directory_db.SystemName}) уже существует `#{directory_db.Id}`";
             logger.LogError(msg);
             res.AddError(msg);
             return res;
@@ -1869,10 +1909,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         if (_dir.Id < 1)
         {
-            ne = ConstructorFormDirectoryModelDB.Build(_dir);
+            directory_db = ConstructorFormDirectoryModelDB.Build(_dir);
             try
             {
-                await context_forms.AddAsync(ne, cancellationToken);
+                await context_forms.AddAsync(directory_db, cancellationToken);
                 await context_forms.SaveChangesAsync(cancellationToken: cancellationToken);
             }
             catch (Exception ex)
@@ -1885,30 +1925,30 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         else
         {
-            ne = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id == _dir.Id, cancellationToken: cancellationToken);
-            if (ne is null)
+            directory_db = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id == _dir.Id, cancellationToken: cancellationToken);
+            if (directory_db is null)
             {
                 msg = $"Справочник #{_dir.Id} не найден в БД";
                 logger.LogError(msg);
                 res.AddError(msg);
                 return res;
             }
-            if (ne.Name.Equals(_dir.Name) && ne.SystemName.Equals(_dir.SystemName))
+            if (directory_db.Name.Equals(_dir.Name) && directory_db.SystemName.Equals(_dir.SystemName))
             {
                 res.AddInfo("Справочник не требует изменения");
             }
             else
             {
-                msg = $"Справочник #{_dir.Id} переименован: `{ne.Name}` -> `{_dir.Name}`";
-                ne.Name = _dir.Name;
-                ne.SystemName = _dir.SystemName;
-                context_forms.Update(ne);
+                msg = $"Справочник #{_dir.Id} переименован: `{directory_db.Name}` -> `{_dir.Name}`";
+                directory_db.Name = _dir.Name;
+                directory_db.SystemName = _dir.SystemName;
+                context_forms.Update(directory_db);
                 await context_forms.SaveChangesAsync(cancellationToken);
                 logger.LogInformation(msg);
                 res.AddSuccess(msg);
             }
         }
-        res.Response = ne.Id;
+        res.Response = directory_db.Id;
         return res;
     }
 
@@ -1951,10 +1991,18 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<int>> CreateElementForDirectory(string name_element_of_dir, int directory_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<int>> CreateElementForDirectory(SystemNameModel element, int directory_id, CancellationToken cancellationToken = default)
     {
-        name_element_of_dir = Regex.Replace(name_element_of_dir, @"\s+", " ").Trim();
+        element.Name = Regex.Replace(element.Name, @"\s+", " ").Trim();
         TResponseStrictModel<int> res = new() { Response = 0 };
+
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(element);
+        if (!IsValid)
+        {
+            res.Messages.InjectException(ValidationResults);
+            return res;
+        }
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormDirectoryModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
@@ -1966,7 +2014,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFormDirectoryElementModelDB? dictionary_element_db = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == directory_id && x.Name.ToUpper() == name_element_of_dir.ToUpper(), cancellationToken: cancellationToken);
+        ConstructorFormDirectoryElementModelDB? dictionary_element_db = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == directory_id && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()), cancellationToken: cancellationToken);
 
         if (dictionary_element_db is not null)
         {
@@ -1984,7 +2032,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             ? 0
             : current_indexes.Max();
 
-        dictionary_element_db = new() { Name = name_element_of_dir, ParentId = dir.Id, Parent = dir, SortIndex = current_index + 1 };
+        dictionary_element_db = new() { Name = element.Name, SystemName = element.SystemName, ParentId = dir.Id, Parent = dir, SortIndex = current_index + 1 };
 
         try
         {
@@ -2006,8 +2054,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> UpdateElementOfDirectory(EntryModel element, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(element.Name))
-            return ResponseBaseModel.CreateError("Имя элемента не может быть пустым");
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(element);
+        if (!IsValid)
+            return ResponseBaseModel.CreateError(ValidationResults);
+
         element.Name = Regex.Replace(element.Name, @"\s+", " ").Trim();
         ResponseBaseModel res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
@@ -2103,7 +2153,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> NormalizeSortIndexesForElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> CheckAndNormalizeSortIndexForElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         List<ConstructorFormDirectoryElementModelDB> elements = await context_forms
@@ -2193,9 +2243,17 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> CreateProject(ProjectViewModel project, string user_id)
     {
+        TResponseModel<int> res = new();
+
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(project);
+        if (!IsValid)
+        {
+            res.Messages.InjectException(ValidationResults);
+            return res;
+        }
+
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
 
-        TResponseModel<int> res = new();
         ApplicationUser? userDb = await identityContext.Users
             .FirstOrDefaultAsync(x => x.Id == user_id);
         if (userDb is null)
@@ -2253,11 +2311,15 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> UpdateProject(ProjectViewModel project)
     {
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(project);
+        if (!IsValid)
+            return ResponseBaseModel.CreateError(ValidationResults);
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
         ProjectConstructorModelDb? projectDb = await context_forms
             .Projects
-            .FirstOrDefaultAsync(x => x.Id != project.Id && (x.Name == project.Name || x.SystemName == project.SystemName));
+            .FirstOrDefaultAsync(x => x.Id != project.Id && (x.Name.ToUpper() == project.Name.ToUpper() || x.SystemName.ToUpper() == project.SystemName.ToUpper()));
 
         if (projectDb is not null)
             return ResponseBaseModel.CreateError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{projectDb.Id} '{projectDb.Name}' ({projectDb.SystemName})");

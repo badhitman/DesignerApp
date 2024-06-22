@@ -26,7 +26,7 @@ public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBas
     protected IEnumerable<EntryModel>? EntriesElements;
 
     /// <inheritdoc/>
-    public async Task ReloadElements(int? selected_directory_id = null, bool state_has_change = false)
+    public async Task ReloadElements(int? selected_directory_id = 0, bool state_has_change = false)
     {
         if (selected_directory_id is not null)
             SelectedDirectoryId = selected_directory_id.Value;
@@ -39,12 +39,16 @@ public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBas
         TResponseModel<EntryModel[]> rest = await FormsRepo.GetElementsOfDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
 
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (!rest.Success())
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
+
         EntriesElements = rest.Response ?? [];
 
         if (state_has_change)
             StateHasChanged();
     }
+
+
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

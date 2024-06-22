@@ -1,4 +1,5 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using System.Text.RegularExpressions
+@inherits BlazorBusyComponentBaseModel
 
 <MudDialog>
     <DialogContent>
@@ -42,8 +43,8 @@
                                 <div></div>
                                 <MudSpacer />
                                 <div>
-                                    <div class="btn-group" role="group" >
-                                        <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(FormEditObject.Name) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
+                                    <div class="btn-group" role="group">
+                                        <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(FormEditObject.Name) || !Regex.IsMatch(FormEditObject.SystemName, GlobalStaticConstants.NAME_SPACE_TEMPLATE) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
                                         @if (IsEdited)
                                         {
                                             <button @onclick="ResetForm" class="btn btn-outline-primary" type="button" id="reset-form">Сброс</button>
