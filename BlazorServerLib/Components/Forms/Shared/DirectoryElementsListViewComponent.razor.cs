@@ -32,10 +32,8 @@ public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBas
             SelectedDirectoryId = selected_directory_id.Value;
 
         if (SelectedDirectoryId <= 0)
-        {
-            SnackbarRepo.Add($"Идентификатор справочника не может быть меньше 0 ({SelectedDirectoryId})", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
-        }
+
         IsBusyProgress = true;
 
         TResponseModel<EntryModel[]> rest = await FormsRepo.GetElementsOfDirectory(SelectedDirectoryId);

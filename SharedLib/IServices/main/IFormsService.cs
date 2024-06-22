@@ -241,6 +241,11 @@ public interface IFormsService
     /// Удалить элемент справочника/списка
     /// </summary>
     public Task<ResponseBaseModel> DeleteElementFromDirectory(int element_id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Нормализовать индексы сортировки элементов справочника.
+    /// </summary>
+    public Task<ResponseBaseModel> NormalizeSortIndexesForElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
     #endregion
 
     #region проекты

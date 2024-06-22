@@ -70,19 +70,17 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected void DeleteElementOfDirectory(int element_id)
+    protected async void DeleteElementOfDirectory(int element_id)
     {
         IsBusyProgress = true;
-        InvokeAsync(async () =>
-        {
-            ResponseBaseModel rest = await FormsRepo.DeleteElementFromDirectory(element_id);
-            IsBusyProgress = false;
+        ResponseBaseModel rest = await FormsRepo.DeleteElementFromDirectory(element_id);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        _ = await FormsRepo.NormalizeSortIndexesForElementsOfDirectory(SelectedDirectoryId);
+        IsBusyProgress = false;
 
-            SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            if (list_view_ref is not null)
-                await list_view_ref.ReloadElements(_selected_dir_id, true);
-            StateHasChanged();
-        });
+        if (list_view_ref is not null)
+            await list_view_ref.ReloadElements(SelectedDirectoryId, true);
+        StateHasChanged();
     }
 
     /// <inheritdoc/>

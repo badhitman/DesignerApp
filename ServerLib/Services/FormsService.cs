@@ -1944,7 +1944,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        res.Response = dir.Elements?.ToArray();
+        res.Response = dir.Elements?
+            .OrderBy(x => x.SortIndex)
+            .ToArray();
+
         return res;
     }
 
@@ -1964,19 +1967,29 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFormDirectoryElementModelDB? ne = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == directory_id && x.Name.ToUpper() == name_element_of_dir.ToUpper(), cancellationToken: cancellationToken);
+        ConstructorFormDirectoryElementModelDB? dictionary_element_db = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == directory_id && x.Name.ToUpper() == name_element_of_dir.ToUpper(), cancellationToken: cancellationToken);
 
-        if (ne is not null)
+        if (dictionary_element_db is not null)
         {
             res.AddError("Такой элемент справочника уже существует");
             return res;
         }
 
-        ne = new() { Name = name_element_of_dir, ParentId = dir.Id, Parent = dir };
+        int[] current_indexes = await context_forms
+            .DirectoriesElements
+            .Where(x => x.ParentId == directory_id)
+            .Select(x => x.SortIndex)
+            .ToArrayAsync(cancellationToken: cancellationToken);
+
+        int current_index = current_indexes.Length == 0 
+            ? 0 
+            : current_indexes.Max();
+
+        dictionary_element_db = new() { Name = name_element_of_dir, ParentId = dir.Id, Parent = dir, SortIndex = current_index + 1 };
 
         try
         {
-            await context_forms.AddAsync(ne, cancellationToken);
+            await context_forms.AddAsync(dictionary_element_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken: cancellationToken);
         }
         catch (Exception ex)
@@ -1985,7 +1998,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        res.Response = ne.Id;
+        res.Response = dictionary_element_db.Id;
         res.AddSuccess($"Элемент справочника успешно создан #{res.Response}");
 
         return res;
@@ -2037,6 +2050,37 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         await context_forms.SaveChangesAsync(cancellationToken);
 
         return ResponseBaseModel.CreateSuccess($"Элемент справочника #{element_id} успешно удалён из БД");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> NormalizeSortIndexesForElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
+    {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        List<ConstructorFormDirectoryElementModelDB> elements = await context_forms
+            .DirectoriesElements
+            .Where(x => x.ParentId == directory_id)
+            .ToListAsync();
+
+        if (elements.Count == 0)
+            return ResponseBaseModel.CreateWarning("Элементов в справочнике нет");
+
+        bool need_update = false;
+        int i = 1;
+        elements.ForEach(x =>
+        {
+            need_update = need_update || x.SortIndex != i;
+            x.SortIndex = i;
+            i++;
+        });
+
+        if (need_update)
+        {
+            context_forms.UpdateRange(elements);
+            await context_forms.SaveChangesAsync(cancellationToken);
+            return ResponseBaseModel.CreateSuccess("Сортировка обновлена");
+        }
+
+        return ResponseBaseModel.CreateInfo("Обновления не потребовались. Сортировка в порядке.");
     }
     #endregion
 

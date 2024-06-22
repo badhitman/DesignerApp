@@ -22,5 +22,5 @@ public class ConstructorFormDirectoryElementModelDB : EntryDescriptionModel
     /// <summary>
     /// Сортировка
     /// </summary>
-    public int SortIndex { get; set; }
+    public required int SortIndex { get; set; }
 }
