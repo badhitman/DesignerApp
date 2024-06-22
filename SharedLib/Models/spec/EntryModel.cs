@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -9,6 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// Базовая DB модель объекта с поддержкой -> int:Id +string:Name +bool:IsDeleted
 /// </summary>
+[Index(nameof(Name))]
 public class EntryModel : IdSwitchableModel
 {
     /// <inheritdoc/>

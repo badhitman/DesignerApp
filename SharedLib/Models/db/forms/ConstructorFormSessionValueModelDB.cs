@@ -5,7 +5,7 @@ namespace SharedLib;
 /// <summary>
 /// Значение поля из формы опроса/анкеты
 /// </summary>
-[Index(nameof(Name)), Index(nameof(GroupByRowNum))]
+[Index(nameof(GroupByRowNum))]
 public class ConstructorFormSessionValueModelDB : EntryDescriptionOwnedModel
 {
     /// <summary>

@@ -5,7 +5,7 @@ namespace SharedLib;
 /// <summary>
 /// связь формы со списком/справочником
 /// </summary>
-[Index(nameof(Name)), Index(nameof(SortIndex))]
+[Index(nameof(SortIndex))]
 public class ConstructorFormDirectoryLinkModelDB : ConstructorFieldFormBaseLowModel
 {
     /// <summary>
@@ -14,21 +14,21 @@ public class ConstructorFormDirectoryLinkModelDB : ConstructorFieldFormBaseLowMo
     public int SortIndex { get; set; }
 
     /// <summary>
-    /// 
+    /// Справочник/список
     /// </summary>
     public int DirectoryId { get; set; }
     /// <summary>
-    /// 
+    /// Справочник/список
     /// </summary>
     public ConstructorFormDirectoryModelDB? Directory { get; set; }
 
     /// <summary>
-    /// 
+    /// Форма
     /// </summary>
     public ConstructorFormModelDB? Owner { get; set; }
 
     /// <summary>
-    /// 
+    /// Update
     /// </summary>
     public void Update(ConstructorFormDirectoryLinkModelDB field)
     {

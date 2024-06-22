@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.X509;
 using SharedLib;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
@@ -595,16 +596,36 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormsQuestionnairesPaginationResponseModel res = new(req);
-        IQueryable<ConstructorFormQuestionnaireModelDB> query =
-            (from _quest in context_forms.Questionnaires
-             join _page in context_forms.QuestionnairesPages on _quest.Id equals _page.OwnerId
-             join _join_form in context_forms.QuestionnairesPagesJoinForms on _page.Id equals _join_form.OwnerId
-             join _form in context_forms.Forms on _join_form.FormId equals _form.Id
-             where _form.ProjectId == projectId
-             where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(_quest.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(_page.Name, $"%{req.SimpleRequest}%")
-             group _quest by _quest into g
-             select g.Key)
+
+        IQueryable<ConstructorFormQuestionnaireModelDB> query = context_forms
+            .Questionnaires
+            .Where(x => x.ProjectId == projectId)
             .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.SimpleRequest))
+        {
+            query = (from _quest in query
+                     join _page in context_forms.QuestionnairesPages on _quest.Id equals _page.OwnerId into j_pages
+                     from j_page in j_pages.DefaultIfEmpty()
+                     join _join_form in context_forms.QuestionnairesPagesJoinForms on j_page.Id equals _join_form.OwnerId into j_join_forms
+                     from j_join_form in j_join_forms.DefaultIfEmpty()
+                     join _form in context_forms.Forms on j_join_form.FormId equals _form.Id into j_forms
+                     from j_form in j_forms.DefaultIfEmpty()
+                     where EF.Functions.Like(_quest.Name.ToUpper(), $"%{req.SimpleRequest.ToUpper()}%") || EF.Functions.Like(j_form.Name.ToUpper(), $"%{req.SimpleRequest.ToUpper()}%") || EF.Functions.Like(j_page.Name.ToUpper(), $"%{req.SimpleRequest.ToUpper()}%")
+                     group _quest by _quest into g
+                     select g.Key)
+                        .AsQueryable();
+        }
+
+        //IQueryable<ConstructorFormQuestionnaireModelDB> query =
+        //    (from _quest in context_forms.Questionnaires.Where(x => x.ProjectId == projectId)
+        //     join _page in context_forms.QuestionnairesPages on _quest.Id equals _page.OwnerId
+        //     join _join_form in context_forms.QuestionnairesPagesJoinForms on _page.Id equals _join_form.OwnerId
+        //     join _form in context_forms.Forms on _join_form.FormId equals _form.Id
+        //     where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(_quest.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(_page.Name, $"%{req.SimpleRequest}%")
+        //     group _quest by _quest into g
+        //     select g.Key)
+        //    .AsQueryable();
 
         res.TotalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
         query = query.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
@@ -654,7 +675,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         if (questionnaire.Id < 1)
         {
-            questionnaire_db = ConstructorFormQuestionnaireModelDB.Build(questionnaire);
+            questionnaire_db = ConstructorFormQuestionnaireModelDB.Build(questionnaire, questionnaire_db.ProjectId);
             await context_forms.AddAsync(questionnaire_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
             msg = $"Опрос/анкета создана #{questionnaire_db.Id}";

@@ -5,7 +5,7 @@ namespace SharedLib;
 /// <summary>
 /// Поле формы
 /// </summary>
-[Index(nameof(Name)), Index(nameof(SortIndex))]
+[Index(nameof(SortIndex))]
 public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
 {
     /// <summary>

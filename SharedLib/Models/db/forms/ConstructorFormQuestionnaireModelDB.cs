@@ -9,21 +9,34 @@ namespace SharedLib;
 public class ConstructorFormQuestionnaireModelDB : EntryDescriptionModel
 {
     /// <inheritdoc/>
-    public static ConstructorFormQuestionnaireModelDB BuildEmpty()
+    public static ConstructorFormQuestionnaireModelDB BuildEmpty(int projectId)
         => new()
         {
-            Name = ""
+            Name = "",
+            ProjectId = projectId,
         };
 
     /// <inheritdoc/>
-    public static ConstructorFormQuestionnaireModelDB Build(EntryDescriptionModel questionnaire)
+    public static ConstructorFormQuestionnaireModelDB Build(EntryDescriptionModel questionnaire, int projectId)
         => new()
         {
             Id = questionnaire.Id,
             Name = questionnaire.Name,
             Description = questionnaire.Description,
-            Pages = []
+            Pages = [],
+            ProjectId = projectId,
         };
+
+
+    /// <summary>
+    /// Project
+    /// </summary>
+    public ProjectConstructorModelDb? Project { get; set; }
+
+    /// <summary>
+    /// Project
+    /// </summary>
+    public required int ProjectId { get; set; }
 
     /// <summary>
     /// Страницы
@@ -31,8 +44,10 @@ public class ConstructorFormQuestionnaireModelDB : EntryDescriptionModel
     public List<ConstructorFormQuestionnairePageModelDB>? Pages { get; set; }
 
     /// <summary>
-    /// 
+    /// Получить крайнюю (последнюю или первую) страницу документа с учётом ограничения индекса сортировки
     /// </summary>
+    /// <param name="direct">Направление определения (первая или последняя)</param>
+    /// <param name="restriction_sort_index">Индекс сортировки от которого следует отталкиваться</param>
     public ConstructorFormQuestionnairePageModelDB? GetOutermostPage(VerticalDirectionsEnum direct, int restriction_sort_index)
     {
         if (Pages is null || Pages.Count == 0)

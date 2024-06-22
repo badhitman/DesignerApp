@@ -79,7 +79,10 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task QuestionnaireOpenDialog(ConstructorFormQuestionnaireModelDB? questionnaire = null)
     {
-        questionnaire ??= ConstructorFormQuestionnaireModelDB.BuildEmpty();
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран основной/используемый проект");
+
+        questionnaire ??= ConstructorFormQuestionnaireModelDB.BuildEmpty(ParentFormsPage.MainProject.Id);
         DialogParameters<EditQuestionnaireDialogComponent> parameters = new()
         {
             { x => x.Questionnaire, questionnaire },
