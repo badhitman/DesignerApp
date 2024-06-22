@@ -1,8 +1,11 @@
-﻿namespace SharedLib;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SharedLib;
 
 /// <summary>
 /// Поле формы (тип: справочник/список)
 /// </summary>
+[Index(nameof(Required))]
 public class ConstructorFieldFormBaseLowModel : EntryDescriptionOwnedModel
 {
     /// <summary>

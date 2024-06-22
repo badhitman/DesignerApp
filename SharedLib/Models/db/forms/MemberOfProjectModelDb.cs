@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
 /// <summary>
 /// Member of project
 /// </summary>
+[Index(nameof(UserId))]
 public class MemberOfProjectModelDb
 {
     /// <summary>

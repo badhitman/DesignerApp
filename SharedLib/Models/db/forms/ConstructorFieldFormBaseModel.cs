@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace SharedLib;
 
 /// <summary>
 /// Поле формы (простой тип)
 /// </summary>
+[Index(nameof(TypeField))]
 public class ConstructorFieldFormBaseModel : ConstructorFieldFormBaseLowModel
 {
     /// <summary>
@@ -23,7 +25,7 @@ public class ConstructorFieldFormBaseModel : ConstructorFieldFormBaseLowModel
     public Dictionary<MetadataExtensionsFormFieldsEnum, object?> MetadataValueTypeGet()
     {
         if (string.IsNullOrWhiteSpace(MetadataValueType))
-            return new();
+            return [];
 
         try
         {
@@ -32,7 +34,7 @@ public class ConstructorFieldFormBaseModel : ConstructorFieldFormBaseLowModel
         catch
         {
             MetadataValueType = null;
-            return new();
+            return [];
         }
     }
 

@@ -11,6 +11,7 @@ namespace SharedLib;
 /// System entry
 /// </summary>
 [Index(nameof(SystemName), nameof(ProjectId), IsUnique = true)]
+[Index(nameof(SystemName))]
 public class EntryConstructedModel : EntryDescriptionModel
 {
     /// <summary>

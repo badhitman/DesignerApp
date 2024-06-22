@@ -9,6 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// Telegram пользователь
 /// </summary>
+[Index(nameof(NormalizedName)), Index(nameof(NormalizedFirstName)), Index(nameof(NormalizedLastName))]
 public class TelegramUserModelDb : TelegramUserBaseModelDb
 {
     /// <summary>
