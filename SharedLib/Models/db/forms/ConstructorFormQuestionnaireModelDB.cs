@@ -22,11 +22,11 @@ public class ConstructorFormQuestionnaireModelDB : EntryConstructedModel
         => new()
         {
             Id = questionnaire.Id,
+            SystemName = questionnaire.SystemName,
             Name = questionnaire.Name,
             Description = questionnaire.Description,
             Pages = [],
             ProjectId = projectId,
-            SystemName = questionnaire.SystemName,
             IsDisabled = questionnaire.IsDisabled,
             Project = questionnaire.Project,
         };
@@ -58,7 +58,12 @@ public class ConstructorFormQuestionnaireModelDB : EntryConstructedModel
     {
         Name = other.Name;
         Description = other.Description;
-        if (other.Pages is not null)
+        SystemName = other.SystemName;
+        ProjectId = other.ProjectId;
+        Project = other.Project;
+        if (other.Pages is null)
+            Pages = null;
+        else
         {
             Pages ??= [];
             int i = Pages.FindIndex(x => !other.Pages.Any(y => y.Id == x.Id));

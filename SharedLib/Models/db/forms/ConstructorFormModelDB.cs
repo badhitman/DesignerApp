@@ -11,7 +11,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
 {
     /// <inheritdoc/>
     public static ConstructorFormModelDB BuildEmpty(int projectId)
-        => new() { Name = "", ProjectId = projectId };
+        => new() { SystemName = "", Name = "", ProjectId = projectId };
 
     /// <summary>
     /// Поля формы
@@ -63,9 +63,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc/>
     public static ConstructorFormModelDB Build(ConstructorFormModelDB other)
         => new()
         {
@@ -79,11 +77,10 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             IsDisabled = other.IsDisabled,
             ProjectId = other.ProjectId,
             Project = other.Project,
+            SystemName = other.SystemName,
         };
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc/>
     public static ConstructorFormModelDB Build(ConstructorFormBaseModel other)
     {
         if (other is ConstructorFormModelDB form)
@@ -99,6 +96,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             Project = other.Project,
             IsDisabled = other.IsDisabled,
             Id = other.Id,
+            SystemName = other.SystemName,
         };
     }
 
@@ -174,6 +172,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
     {
         if (obj is ConstructorFormModelDB other)
             return
+                SystemName == other.SystemName &&
                 Id == other.Id &&
                 Name.Equals(other.Name) &&
                 Description == other.Description &&
@@ -184,6 +183,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
 
         if (obj is ConstructorFormBaseModel base_other)
             return
+                SystemName == base_other.SystemName &&
                 Id == base_other.Id &&
                 Name.Equals(base_other.Name) &&
                 Description == base_other.Description &&
@@ -197,5 +197,5 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
 
     /// <inheritdoc/>
     public override int GetHashCode()
-        => $"{Id} {Name} {Description} {Css} {AddRowButtonTitle} {IsDisabled} {ProjectId}".GetHashCode();
+        => $"{Id} {SystemName} {Name} {Description} {Css} {AddRowButtonTitle} {IsDisabled} {ProjectId}".GetHashCode();
 }

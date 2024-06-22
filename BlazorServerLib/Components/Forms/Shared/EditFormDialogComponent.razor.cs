@@ -1,6 +1,6 @@
-﻿using BlazorLib;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -13,15 +13,12 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Inject]
-    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
+
 
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; } = default!;
@@ -29,6 +26,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public ConstructorFormModelDB Form { get; set; } = default!;
+
 
     /// <inheritdoc/>
     protected FieldsFormViewComponent? _fields_view_ref;

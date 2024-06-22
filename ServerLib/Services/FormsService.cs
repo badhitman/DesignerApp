@@ -692,7 +692,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        if (questionnaire_db.Name == questionnaire.Name && questionnaire_db.Description == questionnaire.Description)
+        if (questionnaire_db.SystemName == questionnaire.SystemName && questionnaire_db.Name == questionnaire.Name && questionnaire_db.Description == questionnaire.Description)
         {
             msg = $"Опрос/анкета #{questionnaire.Id} не требует изменений в БД";
             res.AddInfo(msg);
@@ -700,6 +700,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         else
         {
+            questionnaire_db.SystemName = questionnaire.SystemName;
             questionnaire_db.Name = questionnaire.Name;
             questionnaire_db.Description = questionnaire.Description;
             context_forms.Update(questionnaire_db);

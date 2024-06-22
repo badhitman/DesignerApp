@@ -38,7 +38,7 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
 
 
     /// <inheritdoc/>
-    protected bool IsEdited => Questionnaire.Name != QuestionnaireNameOrigin || Questionnaire.Description != QuestionnaireDescriptionOrigin;
+    protected bool IsEdited => Questionnaire.SystemName != QuestionnaireSystemNameOrigin || Questionnaire.Name != QuestionnaireNameOrigin || Questionnaire.Description != QuestionnaireDescriptionOrigin;
     /// <inheritdoc/>
     protected PagesQuestionnairesViewComponent? pages_questionnaires_view_ref;
     /// <inheritdoc/>

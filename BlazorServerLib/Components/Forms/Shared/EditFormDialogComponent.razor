@@ -15,15 +15,19 @@
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                 <MudTabPanel Text="Параметры">
                     <form class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="inputName4" class="form-label">Название</label>
                             <input @bind-value="FormEditObject.Name" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" placeholder="Наименование">
                         </div>
-                        <div class="col-md-4" title="Классы стилей, которые будут применены к форме">
+                        <div class="col-md-3">
+                            <label for="inputSystemName5" class="form-label">Системное имя</label>
+                            <input @bind-value="FormEditObject.Name" @bind-value:event="oninput" type="text" class="form-control" id="inputSystemName5" placeholder="Системное имя">
+                        </div>
+                        <div class="col-md-3" title="Классы стилей, которые будут применены к форме">
                             <label for="inputCSS4" class="form-label">CSS</label>
                             <input @bind-value="FormEditObject.Css" @bind-value:event="oninput" type="text" class="form-control" id="inputCSS4">
                         </div>
-                        <div class="col-md-4" title="Текст кнопки для режима многострочной/табличной части документа">
+                        <div class="col-md-3" title="Текст кнопки для режима многострочной/табличной части документа">
                             <label for="inputBtn5" class="form-label">Текст кнопки создания</label>
                             <input @bind-value="FormEditObject.AddRowButtonTitle" @bind-value:event="oninput" type="text" class="form-control" id="inputBtn5" placeholder="Добавить строку">
                         </div>
