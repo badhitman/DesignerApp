@@ -1153,24 +1153,30 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
     #region формы
     /// <inheritdoc/>
-    public async Task<ConstructorFormsPaginationResponseModel> SelectForms(AltSimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default)
+    public async Task<ConstructorFormsPaginationResponseModel> SelectForms(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormsPaginationResponseModel res = new(req);
-        IQueryable<ConstructorFormModelDB> q =
-            (from _form in context_forms.Forms.Where(x => x.ProjectId == projectId)
-             join _field in context_forms.Fields on _form.Id equals _field.OwnerId into ps_field
-             from field in ps_field.DefaultIfEmpty()
-             where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name, $"%{req.SimpleRequest}%") || EF.Functions.Like(field.Name, $"%{req.SimpleRequest}%")
-             group _form by _form into g
-             select g.Key)
+
+        IQueryable<ConstructorFormModelDB> q;
+
+        q = context_forms.Forms.Where(x => x.ProjectId == projectId).OrderBy(x => x.Name);
+
+        if (!string.IsNullOrWhiteSpace(req.SimpleRequest))
+        {
+            q = (from _form in q
+                 join _field in context_forms.Fields on _form.Id equals _field.OwnerId into ps_field
+                 from field in ps_field.DefaultIfEmpty()
+                 where
+                 EF.Functions.Like(_form.Name, $"%{req.SimpleRequest}%") ||
+                 EF.Functions.Like(field.Name, $"%{req.SimpleRequest}%") ||
+                 EF.Functions.Like(_form.SystemName, $"%{req.SimpleRequest}%") ||
+                 EF.Functions.Like(field.SystemName, $"%{req.SimpleRequest}%")
+                 group _form by _form into g
+                 select g.Key)
              .OrderBy(x => x.Name)
             .AsQueryable();
-
-        if (req.StrongMode)
-            q = from ss in q
-                where context_forms.Fields.Any(x => x.OwnerId == ss.Id)
-                select ss;
+        }
 
         res.TotalRowsCount = await q.CountAsync(cancellationToken: cancellationToken);
         q = q.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);

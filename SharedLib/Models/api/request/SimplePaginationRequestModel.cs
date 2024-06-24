@@ -9,4 +9,15 @@ public class SimplePaginationRequestModel : PaginationRequestModel
     /// Строка запроса
     /// </summary>
     public string? SimpleRequest { get; set; }
+
+    /// <inheritdoc/>
+    public static SimplePaginationRequestModel Build(string? searchString, int pageSize, int page)
+    {
+        return new()
+        {
+            SimpleRequest = searchString,
+            PageSize = pageSize,
+            PageNum = page,
+        };
+    }
 }

@@ -80,7 +80,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             throw new Exception("Проект не выбран.");
 
         IsBusyProgress = true;
-        rest_data = await FormsRepo.SelectForms(AltSimplePaginationRequestModel.Build(searchString, _table_state.PageSize, _table_state.Page), ParentFormsPage.MainProject.Id);
+        rest_data = await FormsRepo.SelectForms(SimplePaginationRequestModel.Build(searchString, _table_state.PageSize, _table_state.Page), ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
     }
 

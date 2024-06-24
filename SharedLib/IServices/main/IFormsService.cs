@@ -141,7 +141,7 @@ public interface IFormsService
     /// <summary>
     /// Подобрать формы
     /// </summary>
-    public Task<ConstructorFormsPaginationResponseModel> SelectForms(AltSimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default);
+    public Task<ConstructorFormsPaginationResponseModel> SelectForms(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить форму
