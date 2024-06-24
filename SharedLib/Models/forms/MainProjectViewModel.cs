@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Текущий/основной проект
 /// </summary>
-public class MainProjectViewModel : EntryDescriptionModel
+public class MainProjectViewModel : EntryDescriptionSwitchableModel
 {
     /// <inheritdoc/>
     public void Reload(MainProjectViewModel other)

@@ -1972,9 +1972,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
     #region элементы справочникв/списков
     /// <inheritdoc/>
-    public async Task<TResponseModel<SystemEntryModel[]>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<List<SystemEntryModel>>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
-        TResponseModel<SystemEntryModel[]> res = new();
+        TResponseModel<List<SystemEntryModel>> res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormDirectoryModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
@@ -1988,8 +1988,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         res.Response = dir.Elements?
             .OrderBy(x => x.SortIndex)
-            .Select(x => new SystemEntryModel() { Name = x.Name, SystemName = x.SystemName, IsDisabled = x.IsDisabled, Id = x.Id })
-            .ToArray();
+            .Select(x => new SystemEntryModel() { Name = x.Name, SystemName = x.SystemName, Id = x.Id })
+            .ToList();
 
         return res;
     }
@@ -2058,33 +2058,46 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> UpdateElementOfDirectory(SystemEntryModel element, CancellationToken cancellationToken = default)
     {
+        element.Name = Regex.Replace(element.Name, @"\s+", " ").Trim();
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(element);
         if (!IsValid)
             return ResponseBaseModel.CreateError(ValidationResults);
 
-        element.Name = Regex.Replace(element.Name, @"\s+", " ").Trim();
         ResponseBaseModel res = new();
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryElementModelDB? element_db = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.Id == element.Id, cancellationToken: cancellationToken);
+
+        ConstructorFormDirectoryElementModelDB? element_db;
+
+        element_db = await context_forms
+            .DirectoriesElements
+            .FirstOrDefaultAsync(x => x.Id == element.Id, cancellationToken: cancellationToken);
+
         if (element_db is null)
         {
             res.AddError($"Элемент справочника #{element.Id} не найден в БД");
             return res;
         }
 
-        if (element_db.Name.Equals(element.Name))
+        if (element_db.Name.Equals(element.Name) && element_db.SystemName.Equals(element.SystemName))
         {
             res.AddInfo("Изменений нет - обновления не требуется");
             return res;
         }
 
-        if (await context_forms.DirectoriesElements.AnyAsync(x => x.Id != element.Id && element_db.Name.ToUpper() == element.Name.ToUpper() && x.ParentId == element_db.ParentId, cancellationToken: cancellationToken))
+        ConstructorFormDirectoryElementModelDB? duplicate_check;
+        IQueryable<ConstructorFormDirectoryElementModelDB> duplicate_check_query = context_forms.DirectoriesElements.Where(x => x.Id != element.Id && x.ParentId == element_db.ParentId && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()));
+#if DEBUG
+        duplicate_check = await duplicate_check_query.FirstOrDefaultAsync();
+#endif
+        if (await duplicate_check_query.AnyAsync())
         {
             res.AddError("Элемент с таким именем уже существует в справочнике");
             return res;
         }
 
         element_db.Name = element.Name;
+        element_db.SystemName = element.SystemName;
         context_forms.Update(element_db);
         await context_forms.SaveChangesAsync(cancellationToken);
         res.AddSuccess("Элемент справочника успешно обновлён");
@@ -2115,8 +2128,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .ThenInclude(x => x!.Elements)
             .FirstOrDefaultAsync(x => x.Id == element_id, cancellationToken: cancellationToken);
 
-        if (el is null)
+        if (el?.Parent?.Elements is null)
             return ResponseBaseModel.CreateError($"Элемент справочника #{element_id} не найден в БД");
+
+        el.Parent.Elements = [.. el.Parent.Elements.OrderBy(x => x.SortIndex)];
 
         int i = el.Parent!.Elements!.FindIndex(x => x.Id == element_id);
         if (i == 0)
@@ -2140,8 +2155,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .Include(x => x.Parent)
             .ThenInclude(x => x!.Elements)
             .FirstOrDefaultAsync(x => x.Id == element_id, cancellationToken: cancellationToken);
-        if (el is null)
+
+        if (el?.Parent?.Elements is null)
             return ResponseBaseModel.CreateError($"Элемент справочника #{element_id} не найден в БД");
+
+        el.Parent.Elements = [.. el.Parent.Elements.OrderBy(x => x.SortIndex)];
 
         int i = el.Parent!.Elements!.FindIndex(x => x.Id == element_id);
         if (i == el.Parent!.Elements!.Count - 1)

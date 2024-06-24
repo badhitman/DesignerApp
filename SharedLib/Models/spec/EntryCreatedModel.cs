@@ -10,7 +10,7 @@ namespace SharedLib;
 /// Базовая DB модель объекта с поддержкой -> int:Id +string:Name +DateTime:CreatedAt +bool:IsDeleted
 /// </summary>
 [Index(nameof(CreatedAt))]
-public class EntryCreatedModel : EntryModel
+public class EntryCreatedModel : EntrySwitchableModel
 {
     /// <inheritdoc/>
     public static new EntryCreatedModel Build(string name) => new() { Name = name };

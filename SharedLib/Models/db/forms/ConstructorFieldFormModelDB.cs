@@ -54,7 +54,6 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
                 TypeField = bf.TypeField,
                 Description = bf.Description,
                 Id = bf.Id,
-                IsDisabled = bf.IsDisabled
             };
         }
         else if (form_field is ConstructorFieldFormModelDB ff)
@@ -68,7 +67,6 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
                 Description = ff.Description,
                 Hint = ff.Hint,
                 Id = ff.Id,
-                IsDisabled = ff.IsDisabled,
                 MetadataValueType = ff.MetadataValueType,
                 Owner = ff.Owner,
                 OwnerId = ff.OwnerId,
@@ -93,13 +91,11 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
 
             Owner = _f.Owner;
             SortIndex = _f.SortIndex;
-            IsDisabled = _f.IsDisabled;
         }
         else if (form_field is ConstructorFieldFormBaseModel bf)
         {
             MetadataValueType = bf.MetadataValueType;
             TypeField = bf.TypeField;
-            IsDisabled = bf.IsDisabled;
         }
         else
             throw new ArgumentException($"Тип поля не корректный: {form_field.GetType().FullName}", nameof(form_field));

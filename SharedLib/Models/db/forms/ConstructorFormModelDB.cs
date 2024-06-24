@@ -74,7 +74,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             Fields = other.Fields,
             FormsDirectoriesLinks = other.FormsDirectoriesLinks,
             Id = other.Id,
-            IsDisabled = other.IsDisabled,
             ProjectId = other.ProjectId,
             Project = other.Project,
             SystemName = other.SystemName,
@@ -94,7 +93,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
             AddRowButtonTitle = other.AddRowButtonTitle,
             ProjectId = other.ProjectId,
             Project = other.Project,
-            IsDisabled = other.IsDisabled,
             Id = other.Id,
             SystemName = other.SystemName,
         };
@@ -110,7 +108,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
         Css = other.Css;
         AddRowButtonTitle = other.AddRowButtonTitle;
         Id = other.Id;
-        IsDisabled = other.IsDisabled;
         ProjectId = other.ProjectId;
         Project = other.Project;
 
@@ -178,7 +175,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
                 Description == other.Description &&
                 Css == other.Css &&
                 AddRowButtonTitle == other.AddRowButtonTitle &&
-                IsDisabled == other.IsDisabled &&
                 ProjectId == other.ProjectId;
 
         if (obj is ConstructorFormBaseModel base_other)
@@ -189,7 +185,6 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
                 Description == base_other.Description &&
                 Css == base_other.Css &&
                 AddRowButtonTitle == base_other.AddRowButtonTitle &&
-                IsDisabled == base_other.IsDisabled &&
                 ProjectId == base_other.ProjectId;
 
         return false;
@@ -197,5 +192,5 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
 
     /// <inheritdoc/>
     public override int GetHashCode()
-        => $"{Id} {SystemName} {Name} {Description} {Css} {AddRowButtonTitle} {IsDisabled} {ProjectId}".GetHashCode();
+        => $"{Id} /{SystemName} *{Name}* ({Description}) '{Css}' `{AddRowButtonTitle}` [{ProjectId}]".GetHashCode();
 }

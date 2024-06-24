@@ -12,7 +12,7 @@ namespace SharedLib;
 /// </summary>
 [Index(nameof(SystemName), nameof(ProjectId), IsUnique = true)]
 [Index(nameof(SystemName))]
-public class EntryConstructedModel : EntryDescriptionModel
+public class EntryConstructedSwitchableModel : EntryDescriptionSwitchableModel
 {
     /// <summary>
     /// System name
@@ -32,7 +32,7 @@ public class EntryConstructedModel : EntryDescriptionModel
     public required int ProjectId { get; set; }
 
     /// <inheritdoc/>
-    public static EntryConstructedModel Build(SystemEntryModel sender, int projectId)
+    public static EntryConstructedSwitchableModel Build(SystemEntrySwitchableModel sender, int projectId)
     {
         return new()
         {
@@ -40,6 +40,7 @@ public class EntryConstructedModel : EntryDescriptionModel
             Name = sender.Name,
             SystemName = sender.SystemName,
             ProjectId = projectId,
+            IsDisabled = sender.IsDisabled,
         };
     }
 }

@@ -12,9 +12,9 @@
             }
             else
             {
-                foreach (EntryModel el in allDirectories)
+                foreach (SystemEntryModel el in allDirectories)
                 {
-                    <option value="@el.Id">@(el.Name)</option>
+                    <option value="@el.Id">@($"{el.Name} [{el.SystemName}]")</option>
                 }
             }
         </select>

@@ -8,17 +8,11 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// Базовая DB модель объекта с поддержкой -> int:Id +string:Name
+/// Базовая DB модель объекта с поддержкой -> int:Id +string:Name +bool:IsDeleted
 /// </summary>
 [Index(nameof(Name))]
-public class EntryModel
+public class EntrySwitchableModel : IdSwitchableModel
 {
-    /// <summary>
-    /// Идентификатор/Key
-    /// </summary>
-    [Key]
-    public int Id { get; set; }
-
     /// <inheritdoc/>
     public static EntryModel Build(string name) => new() { Name = name };
 

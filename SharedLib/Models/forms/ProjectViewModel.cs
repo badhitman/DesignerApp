@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <inheritdoc/>
-public class ProjectViewModel : EntryDescriptionModel
+public class ProjectViewModel : EntryDescriptionSwitchableModel
 {
     /// <inheritdoc/>
     public static ProjectViewModel Build(ProjectViewModel other)

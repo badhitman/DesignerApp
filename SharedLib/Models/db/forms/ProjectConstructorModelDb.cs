@@ -9,7 +9,7 @@ namespace SharedLib;
 [Index(nameof(OwnerUserId))]
 [Index(nameof(SystemName))]
 [Index(nameof(OwnerUserId), nameof(SystemName), IsUnique = true)]
-public class ProjectConstructorModelDb : EntryDescriptionModel
+public class ProjectConstructorModelDb : EntryDescriptionSwitchableModel
 {
     /// <summary>
     /// System name

@@ -2,7 +2,7 @@
 
 <label for="inputSelect-@(DomID)" class="form-label">Тип справочника</label>
 <select @bind="SelectedDirectoryField" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help">
-    @foreach (EntryModel e in Entries)
+    @foreach (SystemEntryModel e in Entries)
     {
         <option value="@e.Id">@e.Name</option>
     }

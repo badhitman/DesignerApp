@@ -242,10 +242,10 @@ public static class GlobalStaticConstants
     /// <summary>
     /// Шаблон пространства имён
     /// </summary>
-    public const string NAME_SPACE_TEMPLATE = @"^[a-zA-Z][a-zA-Z0-9_]{1,72}[a-zA-Z0-9]{1,128}$";
+    public const string NAME_SPACE_TEMPLATE = @"^[a-zA-Z][a-zA-Z0-9_]{1,72}[a-zA-Z0-9]{0,128}$";
 
     /// <summary>
     /// Сообщение для шаблона пространства имён
     /// </summary>
-    public const string NAME_SPACE_TEMPLATE_MESSAGE = "Системное имя не корректное. Оно может содержать латинские буквы и цифры. Первым символом должна идти буква";
+    public const string NAME_SPACE_TEMPLATE_MESSAGE = "Системное имя не корректное. Оно может содержать латинские буквы и цифры. Первым символом должна идти буква. Минимум 2 символа!";
 }

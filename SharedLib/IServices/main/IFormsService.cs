@@ -222,7 +222,7 @@ public interface IFormsService
     /// <summary>
     /// Получить элементы справочника/списка
     /// </summary>
-    public Task<TResponseModel<SystemEntryModel[]>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<List<SystemEntryModel>>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Создать элемент справочника

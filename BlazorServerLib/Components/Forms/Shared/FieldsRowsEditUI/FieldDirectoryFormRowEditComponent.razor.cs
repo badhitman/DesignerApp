@@ -38,7 +38,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     public required ConstructorFormModelDB Form { get; set; }
 
     /// <inheritdoc/>
-    protected IEnumerable<EntryModel> Entries = default!;
+    protected IEnumerable<SystemEntryModel> Entries = default!;
 
     /// <inheritdoc/>
     public string DomID => $"{Field.GetType().FullName}_{Field.Id}";

@@ -7,9 +7,9 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// Базовая модель с поддержкой -> int:Id +string:Name +string:SystemName
+/// Базовая модель с поддержкой -> int:Id +string:Name +string:SystemName +bool:IsDeleted
 /// </summary>
-public class SystemEntryModel : EntryModel
+public class SystemEntrySwitchableModel : EntrySwitchableModel
 {
     /// <summary>
     /// System name
@@ -20,9 +20,10 @@ public class SystemEntryModel : EntryModel
 
 
     /// <inheritdoc/>
-    public void Update(SystemEntryModel other)
+    public void Update(SystemEntrySwitchableModel other)
     {
         Id = other.Id;
+        IsDisabled = other.IsDisabled;
         Name = other.Name;
         SystemName = other.SystemName;
     }
@@ -33,21 +34,22 @@ public class SystemEntryModel : EntryModel
         if (obj is null)
             return base.Equals(obj);
 
-        if (obj is SystemEntryModel se)
-            return Id == se.Id && Name == se.Name && SystemName == se.SystemName;
+        if (obj is SystemEntrySwitchableModel se)
+            return Id == se.Id && IsDisabled == se.IsDisabled && Name == se.Name && SystemName == se.SystemName;
 
         return base.Equals(obj);
     }
 
     /// <inheritdoc/>
-    public static SystemEntryModel BuildEmpty()
+    public static SystemEntrySwitchableModel BuildEmpty()
         => new() { Name = "", SystemName = "" };
 
     /// <inheritdoc/>
-    public static SystemEntryModel Build(SystemEntryModel sender)
+    public static SystemEntrySwitchableModel Build(SystemEntrySwitchableModel sender)
         => new()
         {
             Id = sender.Id,
+            IsDisabled = sender.IsDisabled,
             Name = sender.Name,
             SystemName = sender.SystemName
         };
@@ -55,6 +57,6 @@ public class SystemEntryModel : EntryModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{Id} {Name} /{SystemName}".GetHashCode();
+        return $"{Id} {IsDisabled} {Name} /{SystemName}".GetHashCode();
     }
 }

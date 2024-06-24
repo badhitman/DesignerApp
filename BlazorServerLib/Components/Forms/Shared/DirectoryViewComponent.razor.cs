@@ -42,7 +42,8 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(createNewElementForDict);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        if (rest.Success())
+        createNewElementForDict = SystemOwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
+        if (rest.Success() && directoryNav_ref is not null)
             await elementsListOfDirectoryView_ref.ReloadElements(directoryNav_ref.SelectedDirectoryId, true);
     }
 

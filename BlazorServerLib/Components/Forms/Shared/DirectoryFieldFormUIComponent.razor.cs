@@ -33,7 +33,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
 
 
     /// <inheritdoc/>
-    protected IEnumerable<EntryModel> Entries = [];
+    protected IEnumerable<SystemEntryModel> Entries = [];
     /// <inheritdoc/>
     public int SelectedDirectoryField
     {

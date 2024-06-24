@@ -4,7 +4,9 @@
 {
     <span class="input-group-text" id="inputGroup-sizing-sm">Новое имя элемента</span>
 }
-<input @bind-value="ElementObjectEdit.Name" @bind-value:event="oninput" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+<input @bind-value="ElementObjectEdit.Name" @bind-value:event="oninput" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm">
+<input @bind-value="ElementObjectEdit.SystemName" @bind-value:event="oninput" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm">
+
 @if (IsEdited)
 {
     <button @onclick="() => { ElementObjectEdit.Update(ElementObject); }" disabled="@(ElementObjectEdit.Equals(ElementObject))" class="btn btn-outline-primary" type="button" id="button-addon1">Сброс</button>

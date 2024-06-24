@@ -16,7 +16,6 @@ public class ConstructorFormDirectoryModelDB : EntryConstructedModel
             SystemName = entry.SystemName,
             Description = entry.Description,
             Id = entry.Id,
-            IsDisabled = entry.IsDisabled,
             Project = entry.Project,
             ProjectId = entry.ProjectId,
         };

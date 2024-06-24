@@ -27,7 +27,6 @@ public class ConstructorFormQuestionnaireModelDB : EntryConstructedModel
             Description = questionnaire.Description,
             Pages = [],
             ProjectId = projectId,
-            IsDisabled = questionnaire.IsDisabled,
             Project = questionnaire.Project,
         };
 

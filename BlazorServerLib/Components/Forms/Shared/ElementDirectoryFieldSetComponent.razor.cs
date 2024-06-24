@@ -34,6 +34,51 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     public required DirectoryElementsListViewComponent ParentDirectoryElementsList { get; set; }
 
     bool IsEdit = false;
+
+    bool IsMostUp
+    {
+        get
+        {
+            if (ParentDirectoryElementsList.EntriesElements is null)
+                throw new Exception("Элементы справочника IsNull");
+
+            return ParentDirectoryElementsList.EntriesElements.FindIndex(x => x.Id == ElementObject.Id) == 0;
+        }
+    }
+
+    bool IsMostDown
+    {
+        get
+        {
+            if (ParentDirectoryElementsList.EntriesElements is null)
+                throw new Exception("Элементы справочника IsNull");
+
+            return ParentDirectoryElementsList.EntriesElements.FindIndex(x => x.Id == ElementObject.Id) == ParentDirectoryElementsList.EntriesElements.Count - 1;
+        }
+    }
+
+    async Task MoveUp()
+    {
+        IsEdit = false;
+        IsBusyProgress = true;
+        ResponseBaseModel rest = await FormsRepo.UpMoveElementOfDirectory(ElementObject.Id);
+        IsBusyProgress = false;
+        if (!rest.Success())
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        await ParentDirectoryElementsList.ReloadElements(null, true);
+    }
+
+    async Task MoveDown()
+    {
+        IsEdit = false;
+        IsBusyProgress = true;
+        ResponseBaseModel rest = await FormsRepo.DownMoveElementOfDirectory(ElementObject.Id);
+        IsBusyProgress = false;
+        if (!rest.Success())
+            SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        await ParentDirectoryElementsList.ReloadElements(null, true);
+    }
+
     async void EditDoneHandle()
     {
         IsEdit = false;
