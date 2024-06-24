@@ -259,8 +259,6 @@ public interface IFormsService
     /// <summary>
     /// Получить проекты
     /// </summary>
-    /// <param name="name_filter">фильтр по имени</param>
-    /// <param name="for_user_id">чъи проекты (по умолчанию null - значит свои проекты)</param>
     public Task<ProjectViewModel[]> GetProjects(string for_user_id, string? name_filter = null);
 
     /// <summary>
@@ -301,12 +299,10 @@ public interface IFormsService
     /// <summary>
     /// Установить проект как основной/используемый для пользователя.
     /// </summary>
-    /// <param name="project_id">проект</param>
-    /// <param name="user_id">если null, то для текущего пользователя</param>
     public Task<ResponseBaseModel> SetProjectAsMain(int project_id, string user_id);
 
     /// <summary>
-    /// Получить текущий основной/используемый проект. Если <paramref name="user_id"/> == null, то для текущего пользователя
+    /// Получить текущий основной/используемый проект
     /// </summary>
     public Task<TResponseModel<MainProjectViewModel>> GetCurrentMainProject(string user_id);
     #endregion
