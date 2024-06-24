@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
@@ -55,6 +57,15 @@ public class ResponseBaseModel
     {
         ResponseBaseModel err = new();
         err.Messages.InjectException(ex);
+        return err;
+    }
+
+
+    /// <inheritdoc/>
+    public static ResponseBaseModel CreateError(List<ValidationResult> validationResults)
+    {
+        ResponseBaseModel err = new();
+        err.Messages.InjectException(validationResults);
         return err;
     }
 

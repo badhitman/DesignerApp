@@ -2,25 +2,21 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
 /// <summary>
-/// Базовая DB модель объекта с поддержкой -> int:Id +string:Name
+/// SystemNamed
 /// </summary>
-[Index(nameof(Name))]
-public class EntryModel
+public class SystemNameModel
 {
     /// <summary>
-    /// Идентификатор/Key
+    /// System name
     /// </summary>
-    [Key]
-    public int Id { get; set; }
-
-    /// <inheritdoc/>
-    public static EntryModel Build(string name) => new() { Name = name };
+    [Required(AllowEmptyStrings = false)]
+    [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = GlobalStaticConstants.NAME_SPACE_TEMPLATE_MESSAGE)]
+    public required string SystemName { get; set; }
 
     /// <summary>
     /// Имя объекта

@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
 /// <summary>
 /// Процедура привязки Telegram аккаунта к учётной записи сайта
 /// </summary>
+[Index(nameof(UserIdentityId)), Index(nameof(GuidToken)), Index(nameof(CreatedAt))]
 public class TelegramJoinAccountModelDb
 {
     /// <summary>

@@ -10,7 +10,6 @@ namespace SharedLib;
 /// TelegramUserBaseModelDb
 /// </summary>
 [Index(nameof(TelegramId), IsUnique = true)]
-[Index(nameof(Name))]
 public class TelegramUserBaseModelDb : EntryCreatedModel
 {
     /// <summary>

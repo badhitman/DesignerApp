@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -9,6 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// Базовая DB модель с поддержкой -> int:Id +bool:IsDeleted
 /// </summary>
+[Index(nameof(IsDisabled))]
 public abstract class IdSwitchableModel
 {
     /// <summary>
