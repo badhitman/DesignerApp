@@ -49,7 +49,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     int _selected_dir_id;
 
     SystemEntryModel directoryObject = default!;
-    SystemOwnedNameModel elementForDict = default!;
+
+    static DirectoryNavStatesEnum[] ModesForHideSelector = [DirectoryNavStatesEnum.Create, DirectoryNavStatesEnum.Rename];
 
     /// <summary>
     /// Directory navigation state
@@ -63,14 +64,17 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     {
         get
         {
-            if (elementForDict is null)
-                throw new ArgumentNullException(nameof(elementForDict), "Элемент справочника/списка не инициализирован");
-
-            if (string.IsNullOrWhiteSpace(elementForDict.Name) || string.IsNullOrWhiteSpace(elementForDict.SystemName))
-                return "Введите название";
+            if (string.IsNullOrWhiteSpace(directoryObject.Name) || string.IsNullOrWhiteSpace(directoryObject.SystemName))
+                return "Введите название и системное имя";
 
             return "Создать";
         }
+    }
+
+    void InitRenameDirectory()
+    {
+        directoryObject = allDirectories.First(x => x.Id == SelectedDirectoryId);
+        DirectoryNavState = DirectoryNavStatesEnum.Rename;
     }
 
     /// <inheritdoc/>
@@ -80,6 +84,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
         ResponseBaseModel rest = await FormsRepo.DeleteDirectory(SelectedDirectoryId);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         await ReloadDirectories();
+        SelectedDirectoryChangeHandler(SelectedDirectoryId);
     }
 
     /// <summary>
@@ -110,7 +115,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected async Task CreateDirectoryAction()
+    protected async Task CreateDirectory()
     {
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран текущий/основной проект");
@@ -118,7 +123,12 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, SystemName = directoryObject.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        SelectedDirectoryChangeHandler(rest.Response);
+        if (rest.Success())
+        {
+            ResetNavForm();
+            await ReloadDirectories();
+            SelectedDirectoryId = rest.Response;
+        }
     }
 
     /// <inheritdoc/>
@@ -137,7 +147,6 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     void ResetNavForm(bool stateHasChanged = false)
     {
         directoryObject = SystemEntryModel.BuildEmpty();
-        elementForDict = SystemOwnedNameModel.BuildEmpty(SelectedDirectoryId);
         DirectoryNavState = DirectoryNavStatesEnum.None;
 
         if (stateHasChanged)

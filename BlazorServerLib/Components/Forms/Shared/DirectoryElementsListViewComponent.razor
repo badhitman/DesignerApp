@@ -35,15 +35,17 @@ else if (!EntriesElements.Any())
 else
 {
     <ul class="list-group list-group-flush">
-        @foreach (EntryModel e in EntriesElements)
-        {
-            <li class="list-group-item">
-                <div class="d-flex">
-                    <CascadingValue Value="e">
-                        <ElementDirectoryFieldSetComponent SelectedDirectoryId="SelectedDirectoryId" />
-                    </CascadingValue>
-                </div>
-            </li>
-        }
+        <CascadingValue Value="this">
+            @foreach (SystemEntryModel e in EntriesElements)
+            {
+                <li class="list-group-item">
+                    <div class="d-flex">
+                        <CascadingValue Value="e">
+                            <ElementDirectoryFieldSetComponent SelectedDirectoryId="SelectedDirectoryId" />
+                        </CascadingValue>
+                    </div>
+                </li>
+            }
+        </CascadingValue>
     </ul>
 }

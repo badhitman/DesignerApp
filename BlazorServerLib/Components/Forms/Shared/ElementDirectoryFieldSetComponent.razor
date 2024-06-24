@@ -9,7 +9,10 @@
 }
 else
 {
-    <div class="flex-grow-1">@ElementObject.Name</div>
+    <div class="flex-grow-1">
+        <span title="Название">@ElementObject.Name</span>
+        <code title="Системное имя элемента справочника">@ElementObject.SystemName</code>
+    </div>
     <span @onclick="() => { IsEdit = true; }" class="link-primary bi bi-pen me-2" title="Редактирование элемента"></span>
     <span @onclick="DeleteElementOfDirectory" class="link-primary bi bi-trash text-warning" title="Удаление элемента"></span>
 }

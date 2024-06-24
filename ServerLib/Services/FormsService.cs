@@ -1898,7 +1898,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         string msg;
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryModelDB? directory_db = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id != _dir.Id && x.ProjectId == _dir.ProjectId && (x.Name == _dir.Name || x.SystemName == _dir.SystemName), cancellationToken: cancellationToken);
+        ConstructorFormDirectoryModelDB? directory_db = await context_forms
+            .Directories
+            .FirstOrDefaultAsync(x => x.Id != _dir.Id && x.ProjectId == _dir.ProjectId && (x.Name == _dir.Name || x.SystemName == _dir.SystemName), cancellationToken: cancellationToken);
+
         if (directory_db is not null)
         {
             msg = $"Справочник '{directory_db.Name}' ({directory_db.SystemName}) уже существует `#{directory_db.Id}`";
@@ -1969,9 +1972,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
     #region элементы справочникв/списков
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryModel[]>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<SystemEntryModel[]>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
-        TResponseModel<EntryModel[]> res = new();
+        TResponseModel<SystemEntryModel[]> res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormDirectoryModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
@@ -1985,6 +1988,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         res.Response = dir.Elements?
             .OrderBy(x => x.SortIndex)
+            .Select(x => new SystemEntryModel() { Name = x.Name, SystemName = x.SystemName, IsDisabled = x.IsDisabled, Id = x.Id })
             .ToArray();
 
         return res;
@@ -2052,7 +2056,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> UpdateElementOfDirectory(EntryModel element, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> UpdateElementOfDirectory(SystemEntryModel element, CancellationToken cancellationToken = default)
     {
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(element);
         if (!IsValid)

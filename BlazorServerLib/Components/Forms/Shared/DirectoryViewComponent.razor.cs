@@ -28,7 +28,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     protected DirectoryElementsListViewComponent elementsListOfDirectoryView_ref = default!;
 
     /// <inheritdoc/>
-    protected DirectoryNavComponent directoryNav_ref = default!;
+    protected DirectoryNavComponent? directoryNav_ref = default!;
 
     SystemOwnedNameModel createNewElementForDict = SystemOwnedNameModel.BuildEmpty(0);
 
@@ -42,11 +42,14 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(createNewElementForDict);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (rest.Success())
+            await elementsListOfDirectoryView_ref.ReloadElements(directoryNav_ref.SelectedDirectoryId, true);
     }
 
     async void SelectedDirectoryChangeAction(int selectedDirectoryId)
     {
         createNewElementForDict = SystemOwnedNameModel.BuildEmpty(selectedDirectoryId);
         await elementsListOfDirectoryView_ref.ReloadElements(selectedDirectoryId, true);
+        StateHasChanged();
     }
 }

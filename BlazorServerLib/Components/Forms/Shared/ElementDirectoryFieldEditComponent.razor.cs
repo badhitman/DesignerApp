@@ -25,32 +25,32 @@ public partial class ElementDirectoryFieldEditComponent : BlazorBusyComponentBas
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public EntryModel ElementObject { get; set; } = default!;
+    public SystemEntryModel ElementObject { get; set; } = default!;
+    SystemEntryModel ElementObjectEdit = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public Action EditDoneAction { get; set; } = default!;
 
-    string OriginName { get; set; } = "";
     /// <inheritdoc/>
-    protected bool IsEdited => !OriginName.Equals(ElementObject.Name);
+    protected bool IsEdited => !ElementObject.Equals(ElementObjectEdit);
 
     /// <inheritdoc/>
     protected async Task UpdateElementOfDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.UpdateElementOfDirectory(new EntryModel() { Id = ElementObject.Id, Name = OriginName });
+        ResponseBaseModel rest = await FormsRepo.UpdateElementOfDirectory(ElementObjectEdit);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        ElementObject.Name = OriginName;
+        ElementObject.Update(ElementObjectEdit);
         EditDoneAction();
     }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        OriginName = ElementObject.Name;
+        ElementObjectEdit = SystemEntryModel.Build(ElementObject);
         base.OnInitialized();
     }
 }

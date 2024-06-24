@@ -23,18 +23,21 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public EntryModel ElementObject { get; set; } = default!;
+    public SystemEntryModel ElementObject { get; set; } = default!;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public Action<int> DeleteElementOfDirectoryHandler { get; set; } = default!;
 
-
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required DirectoryElementsListViewComponent ParentDirectoryElementsList { get; set; }
 
     bool IsEdit = false;
-    void EditDoneHandle()
+    async void EditDoneHandle()
     {
         IsEdit = false;
+        await ParentDirectoryElementsList.ReloadElements(null, true);
         StateHasChanged();
     }
 
@@ -46,5 +49,6 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         await FormsRepo.CheckAndNormalizeSortIndexForElementsOfDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
+        await ParentDirectoryElementsList.ReloadElements(null, true);
     }
 }

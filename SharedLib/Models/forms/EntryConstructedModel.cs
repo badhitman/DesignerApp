@@ -34,6 +34,13 @@ public class EntryConstructedModel : EntryDescriptionModel
     /// <inheritdoc/>
     public static EntryConstructedModel Build(SystemEntryModel sender, int projectId)
     {
-        return new() { Name = sender.Name, SystemName = sender.SystemName, ProjectId = projectId };
+        return new()
+        {
+            Id = sender.Id,
+            Name = sender.Name,
+            SystemName = sender.SystemName,
+            ProjectId = projectId,
+            IsDisabled = sender.IsDisabled,
+        };
     }
 }
