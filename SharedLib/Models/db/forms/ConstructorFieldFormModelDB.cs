@@ -123,11 +123,11 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
     }
 
     /// <inheritdoc/>
-    public override int GetHashCode() => $"{Id}{MetadataValueType}{Hint}{Description}{TypeField}{Required}{OwnerId}{Name}{Css}".GetHashCode();
+    public override int GetHashCode() => $"{Id} /{SystemName} {{{MetadataValueType}}}' [{Hint}] ({Description}) {TypeField} {Required} {OwnerId} '{Name}' `{Css}`".GetHashCode();
 
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"#{Id} '{Name}'/{Hint} [{Required}] ~{MetadataValueType}";
+        return $"#{Id}/{SystemName} '{Name}'/{Hint} [{Required}] ~{MetadataValueType}";
     }
 }

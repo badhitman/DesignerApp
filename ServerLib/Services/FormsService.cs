@@ -1238,7 +1238,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                     }
 
                 }
-                if (_upd.Any())
+                if (_upd.Count != 0)
                 {
                     context_forms.UpdateRange(_upd);
                     await context_forms.SaveChangesAsync(cancellationToken);
@@ -1287,6 +1287,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             res.Response = form_db;
             return res;
         }
+
         form_db = await context_forms.Forms.FirstOrDefaultAsync(x => x.Id == form.Id, cancellationToken: cancellationToken);
 
         if (form_db is null)
@@ -1297,7 +1298,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        if (form_db.Name.Equals(form.Name) && form_db.Description == form.Description && form_db.Css == form.Css && form_db.AddRowButtonTitle == form.AddRowButtonTitle)
+        if (form_db.SystemName.Equals(form.SystemName) && form_db.Name.Equals(form.Name) && form_db.Description == form.Description && form_db.Css == form.Css && form_db.AddRowButtonTitle == form.AddRowButtonTitle)
         {
             msg = $"Форма #{form.Id} не требует изменений в БД";
             res.AddInfo(msg);
@@ -1305,6 +1306,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         else
         {
+            form_db.SystemName = form.SystemName;
             form_db.Name = form.Name;
             form_db.Description = form.Description;
             form_db.Css = form.Css;
@@ -1486,14 +1488,15 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             logger.LogError(msg);
             return res;
         }
+
         ConstructorFieldFormModelDB? form_field_db;
         if (form_field.Id < 1)
         {
-            if (form_db.AllFields.Any(x => x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)))
+            if (form_db.AllFields.Any(x => x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase)))
                 return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка 0A3CBE24-148C-4EC4-9F45-7CCCF866C185");
 
-            int _sort_index = form_db.FormsDirectoriesLinks!.Any() ? form_db.FormsDirectoriesLinks!.Max(x => x.SortIndex) : 0;
-            _sort_index = Math.Max(_sort_index, form_db.Fields!.Any() ? form_db.Fields!.Max(x => x.SortIndex) : 0);
+            int _sort_index = form_db.FormsDirectoriesLinks!.Count != 0 ? form_db.FormsDirectoriesLinks!.Max(x => x.SortIndex) : 0;
+            _sort_index = Math.Max(_sort_index, form_db.Fields!.Count != 0 ? form_db.Fields!.Max(x => x.SortIndex) : 0);
 
             form_field_db = ConstructorFieldFormModelDB.Build(form_field, form_db, _sort_index + 1);
 
@@ -1505,7 +1508,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        if (form_db.AllFields.Any(x => (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(ConstructorFieldFormModelDB)) && x.Id != form_field.Id && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)))
+        if (form_db.AllFields.Any(x => x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)))
             return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка 28A55C71-3625-48C0-BB62-A44548AED0DD");
 
         form_field_db = form_db.Fields!.FirstOrDefault(x => x.Id == form_field.Id);
@@ -1559,7 +1562,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             logger.LogInformation(msg);
             form_field_db.Name = form_field.Name;
 
-            if (values_updates.Any())
+            if (values_updates.Count != 0)
             {
                 values_updates.ForEach(x => { x.Name = form_field.Name; });
                 context_forms.UpdateRange(values_updates);

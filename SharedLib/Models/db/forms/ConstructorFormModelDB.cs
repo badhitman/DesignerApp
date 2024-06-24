@@ -87,14 +87,14 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
 
         return new()
         {
+            Id = other.Id,
+            SystemName = other.SystemName,
             Name = other.Name,
             Description = other.Description,
             Css = other.Css,
             AddRowButtonTitle = other.AddRowButtonTitle,
             ProjectId = other.ProjectId,
             Project = other.Project,
-            Id = other.Id,
-            SystemName = other.SystemName,
         };
     }
 
@@ -103,11 +103,12 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
     /// </summary>
     public ConstructorFormModelDB Reload(ConstructorFormModelDB other)
     {
+        SystemName = other.SystemName;
+        Id = other.Id;
         Name = other.Name;
         Description = other.Description;
         Css = other.Css;
         AddRowButtonTitle = other.AddRowButtonTitle;
-        Id = other.Id;
         ProjectId = other.ProjectId;
         Project = other.Project;
 

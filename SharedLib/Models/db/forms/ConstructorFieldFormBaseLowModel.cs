@@ -28,6 +28,7 @@ public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
     /// </summary>
     public virtual void Update(ConstructorFieldFormBaseLowModel field)
     {
+        SystemName = field.SystemName;
         Id = field.Id;
         OwnerId = field.OwnerId;
         Name = field.Name;
@@ -64,12 +65,13 @@ public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
 
         ConstructorFieldFormBaseLowModel other = (ConstructorFieldFormBaseLowModel)o;
         return
+            Id == other.Id &&
+            SystemName == other.SystemName &&
+            Name == other.Name &&
             Hint == other.Hint &&
             Required == other.Required &&
             Css == other.Css &&
             OwnerId == other.OwnerId &&
-            Id == other.Id &&
-            Name == other.Name &&
             Description == other.Description;
     }
 
@@ -81,6 +83,6 @@ public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
         else if (this is ConstructorFormDirectoryLinkModelDB df)
             return df.GetHashCode();
         else
-            return $"{Id}{Name}{Description}{Hint}{Required}{OwnerId}{Css}".GetHashCode();
+            return $"{Id} /{SystemName} '{Name}' [{Description}] -{Hint} `{Required}` {OwnerId} *{Css}*".GetHashCode();
     }
 }
