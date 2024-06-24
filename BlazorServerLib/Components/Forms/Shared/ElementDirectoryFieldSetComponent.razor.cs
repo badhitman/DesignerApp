@@ -46,9 +46,5 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         await FormsRepo.CheckAndNormalizeSortIndexForElementsOfDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
-
-        //if (list_view_ref is not null)
-        //    await list_view_ref.ReloadElements(SelectedDirectoryId, true);
-        //StateHasChanged();
     }
 }

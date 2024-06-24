@@ -4,15 +4,28 @@
     <div class="card-header">
         <MudPaper Elevation="25">
             <MudToolBar>
-                <DirectoryNavComponent SelectedDirectoryChangeHandler="SelectedDirectoryChangeAction" />
+                <DirectoryNavComponent @ref="directoryNav_ref" SelectedDirectoryChangeHandler="SelectedDirectoryChangeAction" />
             </MudToolBar>
         </MudPaper>
     </div>
     <div class="card-body">
-        @if (directoryNav_ref is not null)
-        {
-            <DirectoryElementsListViewComponent @ref="DirectoryElementsListView_ref" SelectedDirectoryId="@directoryNav_ref.SelectedDirectoryId" />
-        }
-
+        <nav class="navbar bg-body-tertiary">
+            <div class="container-fluid">
+                @if (directoryNav_ref.SelectedDirectoryId > 0)
+                {
+                    <a class="navbar-brand">Элементы списка</a>
+                    <div class="d-flex">
+                        <input @bind-value="createNewElementForDict.Name" @bind-value:event="oninput" class="form-control me-2" type="text" placeholder="Название элемента" size="40">
+                        <input @bind-value="createNewElementForDict.SystemName" @bind-value:event="oninput" class="form-control me-2" type="text" placeholder="Системное имя" size="40">
+                        <button @onclick="AddElementIntoDirectoryAction" disabled="@(!GlobalTools.ValidateObject(createNewElementForDict).IsValid)" class="btn btn-outline-primary" type="button">Добавить</button>
+                    </div>
+                }
+                else
+                {
+                    <a class="navbar-brand">Не выбран справочник</a>
+                }
+            </div>
+        </nav>
+        <DirectoryElementsListViewComponent @ref="elementsListOfDirectoryView_ref" SelectedDirectoryId="@directoryNav_ref.SelectedDirectoryId" />
     </div>
 </div>

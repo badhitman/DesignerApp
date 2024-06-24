@@ -1991,7 +1991,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<int>> CreateElementForDirectory(SystemNameModel element, int directory_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<int>> CreateElementForDirectory(SystemOwnedNameModel element, CancellationToken cancellationToken = default)
     {
         element.Name = Regex.Replace(element.Name, @"\s+", " ").Trim();
         TResponseStrictModel<int> res = new() { Response = 0 };
@@ -2006,15 +2006,15 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormDirectoryModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
-            .FirstOrDefaultAsync(x => x.Id == directory_id, cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == element.OwnerId, cancellationToken: cancellationToken);
 
         if (dir is null)
         {
-            res.AddError($"Справочник #{directory_id} не найден в БД");
+            res.AddError($"Справочник #{element.OwnerId} не найден в БД");
             return res;
         }
 
-        ConstructorFormDirectoryElementModelDB? dictionary_element_db = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == directory_id && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()), cancellationToken: cancellationToken);
+        ConstructorFormDirectoryElementModelDB? dictionary_element_db = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == element.OwnerId && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()), cancellationToken: cancellationToken);
 
         if (dictionary_element_db is not null)
         {
@@ -2024,7 +2024,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         int[] current_indexes = await context_forms
             .DirectoriesElements
-            .Where(x => x.ParentId == directory_id)
+            .Where(x => x.ParentId == element.OwnerId)
             .Select(x => x.SortIndex)
             .ToArrayAsync(cancellationToken: cancellationToken);
 

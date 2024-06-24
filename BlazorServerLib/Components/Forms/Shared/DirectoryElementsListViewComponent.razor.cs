@@ -1,5 +1,5 @@
-﻿using BlazorLib;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -35,20 +35,17 @@ public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBas
             return;
 
         IsBusyProgress = true;
-
         TResponseModel<EntryModel[]> rest = await FormsRepo.GetElementsOfDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
 
         if (!rest.Success())
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
-        EntriesElements = rest.Response ?? [];
+        EntriesElements = rest.Response;
 
         if (state_has_change)
             StateHasChanged();
     }
-
-
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

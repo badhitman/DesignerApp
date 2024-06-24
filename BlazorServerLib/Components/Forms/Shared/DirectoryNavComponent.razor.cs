@@ -1,6 +1,6 @@
-﻿using BlazorLib;
-using BlazorWebLib.Components.Forms.Pages;
+﻿using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -32,7 +32,6 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
 
     SystemEntryModel[] allDirectories = default!;
 
-
     /// <summary>
     /// Выбранный справочник/список
     /// </summary>
@@ -49,10 +48,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     }
     int _selected_dir_id;
 
-    /// <inheritdoc/>
-    protected bool IsEditDirectoryMode = false;
-
-    SystemEntryModel EditDirectoryObject = default!;
+    SystemEntryModel directoryObject = default!;
     SystemOwnedNameModel elementForDict = default!;
 
     /// <summary>
@@ -77,19 +73,14 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
         }
     }
 
-
     /// <inheritdoc/>
-    protected async void AddElementIntoDirectoryAction()
+    protected async Task DeleteSelectedDirectory()
     {
-        if (SelectedDirectoryId < 1)
-            throw new Exception("Не выбран справочник/список");
-
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(elementForDict, SelectedDirectoryId);
-        IsBusyProgress = false;
+        ResponseBaseModel rest = await FormsRepo.DeleteDirectory(SelectedDirectoryId);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        await ReloadDirectories();
     }
-
 
     /// <summary>
     /// Перезагрузить селектор справочников/списков
@@ -112,41 +103,40 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
         else if (allDirectories.Any(x => x.Id == SelectedDirectoryId) != true)
             SelectedDirectoryId = allDirectories.FirstOrDefault()?.Id ?? 0;
 
+        SelectedDirectoryChangeHandler(SelectedDirectoryId);
+
         if (stateHasChanged)
             StateHasChanged();
     }
 
-    void TryCreateDirectory()
-    {
-        //if (string.IsNullOrWhiteSpace(NameNewDict) || string.IsNullOrWhiteSpace(SystemCodeNewDict))
-        //{
-        //    SnackbarRepo.Add("Системное имя и название обязательны", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-        //    return;
-        //}
-
-        //CreateDirectoryHandler((Name: NameNewDict, SystemName: SystemCodeNewDict));
-        //ResetNavForm();
-    }
-
     /// <inheritdoc/>
-    protected async void SaveRenameDirectoryAction()
+    protected async Task CreateDirectoryAction()
     {
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(EditDirectoryObject, ParentFormsPage.MainProject.Id));
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, SystemName = directoryObject.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        SelectedDirectoryChangeHandler(rest.Response);
+    }
+
+    /// <inheritdoc/>
+    protected async Task SaveRenameDirectory()
+    {
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран текущий/основной проект");
+
+        IsBusyProgress = true;
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id));
         IsBusyProgress = false;
-        //SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        //_creator_ref?.SetDirectoryNavState(DirectoryNavStatesEnum.None);
-        //IsEditDirectory = false;
-        //EditDirectoryObject = null;
-        //await ReloadDirectories();
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        await ReloadDirectories();
     }
 
     void ResetNavForm(bool stateHasChanged = false)
     {
-        EditDirectoryObject = SystemEntryModel.BuildEmpty();
+        directoryObject = SystemEntryModel.BuildEmpty();
         elementForDict = SystemOwnedNameModel.BuildEmpty(SelectedDirectoryId);
         DirectoryNavState = DirectoryNavStatesEnum.None;
 

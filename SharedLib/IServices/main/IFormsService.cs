@@ -227,7 +227,7 @@ public interface IFormsService
     /// <summary>
     /// Создать элемент справочника
     /// </summary>
-    public Task<TResponseStrictModel<int>> CreateElementForDirectory(SystemNameModel element, int directory_id, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> CreateElementForDirectory(SystemOwnedNameModel element, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить элемент справочника
