@@ -289,7 +289,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
         return clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && x.Value.Equals("admin", StringComparison.OrdinalIgnoreCase)) || sq.CreatorEmail.Equals(email, StringComparison.OrdinalIgnoreCase);
     }
-    
+
     /////////////// Контекст работы конструктора: работы в системе над какими-либо сущностями всегда принадлежат какому-либо проекту/контексту.
     // При переключении контекста (текущий/основной проект) становятся доступны только работы по этому проекту
     // В проект можно добавлять участников, что бы те могли работать вместе с владельцем => вносить изменения в конструкторе данного проекта/контекста
@@ -318,6 +318,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .ToArray();
 
         EntryAltModel[]? usersIdentity = null;
+
         if (usersIds.Length != 0)
         {
             using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
@@ -592,12 +593,25 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
-        res.Response = await context_forms
-            .ProjectsUse
-            .Where(x => x.UserId == user_id)
-            .Include(x => x.Project)
-            .Select(x => new MainProjectViewModel() { Name = x.Project!.Name, Description = x.Project.Description, Id = x.Project.Id, IsDisabled = x.Project.IsDisabled })
-            .FirstOrDefaultAsync();
+        if (!await context_forms.Projects.AnyAsync(x => x.OwnerUserId == user_id) && !await context_forms.MembersOfProjects.AnyAsync(x => x.UserId == user_id))
+        {
+            ProjectConstructorModelDb project = new() { Name = "По умолчанию", OwnerUserId = user_id, SystemName = "Default" };
+            await context_forms.AddAsync(project);
+            await context_forms.SaveChangesAsync();
+
+            ProjectUseModelDb project_use = new() { UserId = user_id, ProjectId = project.Id };
+            await context_forms.AddAsync(project_use);
+            await context_forms.SaveChangesAsync();
+
+            res.Response = MainProjectViewModel.Build(project);
+        }
+        else
+            res.Response = await context_forms
+                .ProjectsUse
+                .Where(x => x.UserId == user_id)
+                .Include(x => x.Project)
+                .Select(x => new MainProjectViewModel() { Name = x.Project!.Name, Description = x.Project.Description, Id = x.Project.Id, IsDisabled = x.Project.IsDisabled })
+                .FirstOrDefaultAsync();
 
         return res;
     }
