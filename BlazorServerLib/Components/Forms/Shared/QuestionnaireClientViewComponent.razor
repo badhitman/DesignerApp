@@ -18,7 +18,6 @@ else if (SessionQuestionnaire.Owner?.Pages is null)
 else
 {
     <MudDynamicTabs AddIconStyle="@AddIconStyleInUse" @ref="@DynamicTabs_ref" @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
-
         @if (!SessionQuestionnaire.Owner.Pages.Any())
         {
             <figure class="text-center mt-3">
@@ -53,8 +52,7 @@ else
                 {
                     SnackbarRepo.Add($"");
                 }
-                <MudTabPanel
-                             ID="@questionnaire_page.Id"
+                <MudTabPanel ID="@questionnaire_page.Id"
                              Text="@questionnaire_page.Name"
                              ShowCloseIcon="@(questionnaire_page.Id < 1)"
                              BadgeDot="@(questionnaire_page.Id < 1)">

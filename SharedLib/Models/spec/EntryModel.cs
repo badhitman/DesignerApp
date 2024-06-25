@@ -19,12 +19,12 @@ public class EntryModel
     [Key]
     public int Id { get; set; }
 
-    /// <inheritdoc/>
-    public static EntryModel Build(string name) => new() { Name = name };
-
     /// <summary>
     /// Имя объекта
     /// </summary>
     [Required(AllowEmptyStrings = false, ErrorMessage = "Поле наименования обязательно для заполнения")]
-    public required string Name { get; set; }
+    public virtual required string Name { get; set; }
+
+    /// <inheritdoc/>
+    public static EntryModel Build(string name) => new() { Name = name };
 }

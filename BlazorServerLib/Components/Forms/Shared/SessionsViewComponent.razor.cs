@@ -11,20 +11,21 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// </summary>
 public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
     [Inject]
-    protected IDialogService DialogServiceRepo { get; set; } = default!;
+    IDialogService DialogServiceRepo { get; set; } = default!;
+
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
+
+    [Inject]
+    IFormsService FormsRepo { get; set; } = default!;
+
+    [Inject]
+    IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
+
 
     /// <inheritdoc/>
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [CascadingParameter,EditorRequired]
+    [CascadingParameter, EditorRequired]
     public required FormsPage CurrentMainProject { get; set; }
 
     IEnumerable<ConstructorFormQuestionnaireModelDB> QuestionnairesAll = [];
@@ -58,7 +59,6 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             return "Создать новую ссылку";
         }
     }
-    //CurrentMainProject is null
 
     protected private async Task<TableData<ConstructorFormSessionModelDB>> ServerReload(TableState state)
     {
@@ -143,11 +143,19 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task CreateNewSession()
     {
+        if (string.IsNullOrWhiteSpace(NameSessionForCreate))
+        {
+            SnackbarRepo.Error("Укажите имя ссылки");
+            return;
+        }
+
+        TResponseModel<UserInfoModel?> current_user = await UsersProfilesRepo.FindByIdAsync();
+
         ConstructorFormSessionModelDB req = new()
         {
             Name = NameSessionForCreate ?? "",
-            SessionToken = Guid.NewGuid().ToString(),
-            OwnerId = SelectedQuestionnaireId
+            OwnerId = SelectedQuestionnaireId,
+            CreatorEmail = current_user.Response?.Email ?? ""
         };
         IsBusyProgress = true;
         TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);

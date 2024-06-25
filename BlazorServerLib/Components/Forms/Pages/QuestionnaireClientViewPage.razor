@@ -1,5 +1,6 @@
 ﻿@page "/questionnaire/session/{QuestionnaireGuid:guid}"
-@attribute [Authorize]
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inherits BlazorBusyComponentBaseModel
 
 <span>Опрос/анкета</span>

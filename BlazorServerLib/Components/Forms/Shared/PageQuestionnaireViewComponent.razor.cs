@@ -206,7 +206,6 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
             FormId = SelectedFormForAdding,
             OwnerId = QuestionnairePage.Id,
             Name = addingFormToTabPageName,
-
         });
         IsBusyProgress = false;
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
@@ -8,18 +9,6 @@ namespace SharedLib;
 [Index(nameof(SortIndex)), Index(nameof(IsTable))]
 public class ConstructorFormQuestionnairePageJoinFormModelDB : EntryDescriptionOwnedModel
 {
-    /// <summary>
-    /// Связь формы со страницей опроса/анкеты
-    /// </summary>
-    public static ConstructorFormQuestionnairePageJoinFormModelDB Build(EntryDescriptionOwnedModel page_join_form)
-        => new()
-        {
-            OwnerId = page_join_form.OwnerId,
-            Description = page_join_form.Description,
-            Id = page_join_form.Id,
-            Name = page_join_form.Name,
-        };
-
     /// <summary>
     /// Сортировка 
     /// </summary>
@@ -48,4 +37,16 @@ public class ConstructorFormQuestionnairePageJoinFormModelDB : EntryDescriptionO
     /// Форма
     /// </summary>
     public ConstructorFormModelDB? Form { get; set; }
+
+    /// <summary>
+    /// Связь формы со страницей опроса/анкеты
+    /// </summary>
+    public static ConstructorFormQuestionnairePageJoinFormModelDB Build(EntryDescriptionOwnedModel page_join_form)
+        => new()
+        {
+            FormId = page_join_form.OwnerId,
+            Description = page_join_form.Description,
+            Id = page_join_form.Id,
+            Name = page_join_form.Name,
+        };
 }

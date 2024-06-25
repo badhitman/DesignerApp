@@ -2185,10 +2185,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (page_join_form.Id < 1)
         {
             int _sort_index = questionnaire_page_db.JoinsForms!.Any() ? questionnaire_page_db.JoinsForms!.Max(x => x.SortIndex) : 0;
-
-            questionnaire_page_join_db = ConstructorFormQuestionnairePageJoinFormModelDB.Build(page_join_form);
-
-            await context_forms.AddAsync(questionnaire_page_join_db, cancellationToken);
+            page_join_form.SortIndex = _sort_index + 1;
+            await context_forms.AddAsync(page_join_form, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
             msg = $"Создана связь форма и страницы анкеты/опроса #{questionnaire_page_db.Id}";
             res.AddSuccess(msg);
@@ -2391,6 +2389,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             session_json.CreatedAt = DateTime.Now;
             session_json.DeadlineDate = DateTime.Now.AddMinutes(_conf.Value.TimeActualityQuestionnaireSessionMinutes);
             session_json.SessionToken = Guid.NewGuid().ToString();
+            session_json.SessionStatus = SessionsStatusesEnum.InProgress;
 
             await context_forms.AddAsync(session_json, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);

@@ -57,7 +57,7 @@
             </select>
             @if (SelectedFormForAdding > 0)
             {
-                <input @bind-value="addingFormToTabPageName" @bind-value:event="oninput" placeholder="Имя" type="text" class="form-control" autocomplete="off">
+                <input @bind-value="addingFormToTabPageName" @bind-value:event="oninput" placeholder="Название" type="text" class="form-control" autocomplete="off">
                 <button @onclick="() => { SelectedFormForAdding = 0; }" class="btn btn-outline-secondary" type="button">Отмена</button>
             }
             <button @onclick="AddFormToPage" disabled="@(SelectedFormForAdding < 1)" class="btn btn-outline-success" type="button">Добавить</button>
