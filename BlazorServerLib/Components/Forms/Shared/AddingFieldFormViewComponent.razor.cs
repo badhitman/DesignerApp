@@ -110,9 +110,31 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         }
     }
 
+    string? _field_system_name;
+    /// <summary>
+    /// Системное имя поля
+    /// </summary>
+    public string? FieldSystemName
+    {
+        get => _field_system_name;
+        private set
+        {
+            if (_field_object_master is null)
+                throw new Exception("Поле формы не инициализировано");
+
+            _field_system_name = value;
+            _field_object_master.Name = _field_name ?? "";
+            _field_object_master.SystemName = _field_system_name ?? "";
+            _field_object_master.Required = FieldIsRequired;
+            ChildUpdates();
+
+            StateHasChangedHandler(_field_object_master, this.GetType());
+        }
+    }
+
     string? _field_name;
     /// <summary>
-    /// Имя поля формы
+    /// Название поля формы
     /// </summary>
     public string? FieldName
     {
@@ -125,6 +147,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
             _field_name = value;
             _field_object_master.Name = _field_name ?? "";
             _field_object_master.Required = FieldIsRequired;
+            _field_object_master.SystemName = _field_system_name ?? "";
             ChildUpdates();
 
             StateHasChangedHandler(_field_object_master, this.GetType());
