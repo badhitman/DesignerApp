@@ -679,7 +679,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.RoleId && req.OwnerId == y.UserId));
 
         if (!string.IsNullOrWhiteSpace(req.FindQuery))
-            q = q.Where(x => EF.Functions.Like(x.NormalizedName, $"%{roleManager.NormalizeKey(req.FindQuery)}%") || x.Id == req.FindQuery);
+            q = q.Where(x => EF.Functions.Like(x.NormalizedName, $"%{roleManager.KeyNormalizer.NormalizeName(req.FindQuery)}%") || x.Id == req.FindQuery);
 
         int total = q.Count();
         q = q.Skip(req.PageNum * req.PageSize).Take(req.PageSize);
@@ -734,7 +734,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.UserId && req.OwnerId == y.RoleId));
 
         if (!string.IsNullOrWhiteSpace(req.FindQuery))
-            q = q.Where(x => EF.Functions.Like(x.Email, $"%{req.FindQuery}%") || EF.Functions.Like(x.UserName, $"%{req.FindQuery}%") || x.Id == req.FindQuery);
+            q = q.Where(x => EF.Functions.Like(x.NormalizedEmail, $"%{userManager.KeyNormalizer.NormalizeEmail(req.FindQuery)}%") || EF.Functions.Like(x.UserName, $"%{req.FindQuery}%") || x.Id == req.FindQuery);
 
         int total = q.Count();
         q = q.Skip(req.PageNum * req.PageSize).Take(req.PageSize);
