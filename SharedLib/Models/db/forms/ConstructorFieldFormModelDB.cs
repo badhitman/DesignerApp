@@ -84,7 +84,10 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
     {
         base.Update(form_field);
 
-        if (form_field is ConstructorFieldFormModelDB _f)
+        if (form_field is ConstructorFormDirectoryLinkModelDB df)
+            return;
+
+            if (form_field is ConstructorFieldFormModelDB _f)
         {
             MetadataValueType = _f.MetadataValueType;
             TypeField = _f.TypeField;
@@ -96,7 +99,7 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
         {
             MetadataValueType = bf.MetadataValueType;
             TypeField = bf.TypeField;
-        }
+        }        
         else
             throw new ArgumentException($"Тип поля не корректный: {form_field.GetType().FullName}", nameof(form_field));
     }
