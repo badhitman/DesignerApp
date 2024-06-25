@@ -1668,7 +1668,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && x.Id != form_field.Id && (x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(ConstructorFieldFormModelDB)) && (x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)));
+        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && x.Id != field_directory.Id && (x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(ConstructorFieldFormModelDB)) && (x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)));
         if (duplicate_field is not null)
             return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}' `{duplicate_field.SystemName}`");
 
