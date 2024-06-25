@@ -289,6 +289,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
         return clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && x.Value.Equals("admin", StringComparison.OrdinalIgnoreCase)) || sq.CreatorEmail.Equals(email, StringComparison.OrdinalIgnoreCase);
     }
+    
     /////////////// Контекст работы конструктора: работы в системе над какими-либо сущностями всегда принадлежат какому-либо проекту/контексту.
     // При переключении контекста (текущий/основной проект) становятся доступны только работы по этому проекту
     // В проект можно добавлять участников, что бы те могли работать вместе с владельцем => вносить изменения в конструкторе данного проекта/контекста
