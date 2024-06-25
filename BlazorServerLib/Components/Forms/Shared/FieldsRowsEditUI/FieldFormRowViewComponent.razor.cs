@@ -118,7 +118,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                     return (MarkupString)_information_field;
                 }
             }
-            _information_field ??= "<ошибка ACE8845D-6DA2-41E1-B420-727BDD5791E1>";
+            _information_field ??= $"<ошибка ACE8845D-6DA2-41E1-B420-727BDD5791E1> : {_field_master.GetType().FullName}";
             return (MarkupString)_information_field;
         }
     }
@@ -372,7 +372,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                     Name = Field.Name,
                     OwnerId = Field.OwnerId,
                     Required = Field.Required,
-                    DirectoryId = df.DirectoryId
+                    DirectoryId = df.DirectoryId,
+                    Directory = df.Directory,
+                    Owner = df.Owner,
                 };
             }
         }

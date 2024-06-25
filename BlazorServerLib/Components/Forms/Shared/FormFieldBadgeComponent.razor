@@ -17,16 +17,22 @@
             _t += $" &#9776; <u>{_dict[MetadataExtensionsFormFieldsEnum.Parameter]}</u>";
 
         KeyValuePair<MetadataExtensionsFormFieldsEnum, object?>[] _dict_echo = _dict.Where(x => !new[] { MetadataExtensionsFormFieldsEnum.Descriptor, MetadataExtensionsFormFieldsEnum.Parameter }.Contains(x.Key)).ToArray();
-        if(_dict_echo.Any())
+        if (_dict_echo.Any())
         {
             _t += ": ";
             foreach (KeyValuePair<MetadataExtensionsFormFieldsEnum, object?> de_kvp in _dict_echo)
                 _t += $"[<span class='font-monospace'>{de_kvp.Key.DescriptionInfo()}</span> = {de_kvp.Value}]; ";
         }
-
-        <span title="@Descr(_t.Trim())" class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgramCalculationDouble => "primary", TypesFieldsFormsEnum.Generator => "info", _=> "secondary" }) border border-light rounded-circle">
-            <span class="visually-hidden">Тип поля: @_f.TypeField</span>
-        </span>
+        <MudTooltip>
+            <ChildContent>
+                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgramCalculationDouble => "primary", TypesFieldsFormsEnum.Generator => "info", _=> "secondary" }) border border-light rounded-circle">
+                    <span class="visually-hidden">Тип поля: @_f.TypeField</span>
+                </span>
+            </ChildContent>
+            <TooltipContent>
+                @Descr(_t.Trim())
+            </TooltipContent>
+        </MudTooltip>
     }
     else
     {
