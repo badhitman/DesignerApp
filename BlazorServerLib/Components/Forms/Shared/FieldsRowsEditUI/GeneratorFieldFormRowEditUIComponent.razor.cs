@@ -16,7 +16,7 @@ public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBas
     {
         get
         {
-            return Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString();
+            return Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString();
         }
         private set
         {
@@ -38,7 +38,7 @@ public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBas
     {
         get
         {
-            return Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, Entries.FirstOrDefault()?.Id)?.ToString();
+            return Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, Entries.FirstOrDefault()?.Id)?.ToString();
         }
         set
         {

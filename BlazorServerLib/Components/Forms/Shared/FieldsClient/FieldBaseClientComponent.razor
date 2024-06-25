@@ -8,7 +8,7 @@
             switch (Descriptor)
             {
                 case nameof(PropsTypesMDFieldsEnum.TextMask):
-                    <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" Placeholder="@Parameter" Class="mb-3" Mask="@(new PatternMask(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString()))" Label="@Field.Name" HelperText="@Field.Hint" @bind-Value="StringFieldValue" Variant="@Variant.Text" Clearable />
+                    <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" Placeholder="@Parameter" Class="mb-3" Mask="@(new PatternMask(Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString()))" Label="@Field.Name" HelperText="@Field.Hint" @bind-Value="StringFieldValue" Variant="@Variant.Text" Clearable />
                     break;
                 case nameof(PropsTypesMDFieldsEnum.Template):
                     <label for="@DomID" class="form-label">
@@ -54,6 +54,9 @@
                     </div>
 
                     break;
+                case null:
+                    <span>не указано</span>
+                    break;
                 default:
                     <span>error D0D8973F-3A0F-4214-B0FD-EB395CBBEC72: descriptor = [@Descriptor]; parameter = [@Parameter];</span>
                     break;
@@ -81,13 +84,13 @@
                 }
             </label>
 
-            @if (Field.TypeField == TypesFieldsFormsEnum.Text && (bool?)Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true)
+            @if (Field.TypeField == TypesFieldsFormsEnum.Text && (bool?)Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true)
             {
-                <textarea @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" class="@css_class" id="@DomID" name="@DomID" rows="5" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" aria-describedby="@($"{DomID}Help")"></textarea>
+                <textarea @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" class="@css_class" id="@DomID" name="@DomID" rows="5" placeholder="@Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" aria-describedby="@($"{DomID}Help")"></textarea>
             }
             else
             {
-                <input @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" placeholder="@Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" type="@Field.TypeField.ToString()" class="@css_class" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
+                <input @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" placeholder="@Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" type="@Field.TypeField.ToString()" class="@css_class" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
             }
 
             <div id="@($"{DomID}Help")" class="form-text" hidden="@string.IsNullOrEmpty(Field.Hint)">
@@ -103,22 +106,22 @@
         }
         break;
     case TypesFieldsFormsEnum.Int:
-        <MudNumericField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="IntFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" Class="mb-3" Label="@Field.Name" HelperText="@Field.Hint" Variant="Variant.Text" Min="0" HideSpinButtons="true" />
+        <MudNumericField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="IntFieldValue" Placeholder="@(Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" Class="mb-3" Label="@Field.Name" HelperText="@Field.Hint" Variant="Variant.Text" Min="0" HideSpinButtons="true" />
         break;
     case TypesFieldsFormsEnum.Double:
-        <MudNumericField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DoubleFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" Class="mb-3" Label="@Field.Name" HelperText="@Field.Hint" Variant="Variant.Filled" Min="0.0" HideSpinButtons="true" />
+        <MudNumericField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DoubleFieldValue" Placeholder="@(Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" Class="mb-3" Label="@Field.Name" HelperText="@Field.Hint" Variant="Variant.Filled" Min="0.0" HideSpinButtons="true" />
         break;
     case TypesFieldsFormsEnum.Bool:
         <MudCheckBox ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" Class="mb-3" @bind-Value="@BoolFieldValue" Label="@Field.Name"></MudCheckBox>
         break;
     case TypesFieldsFormsEnum.DateTime:
-        <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DateTimeFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="DateTime?" Format="s" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.DateTimeLocal" />
+        <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DateTimeFieldValue" Placeholder="@(Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="DateTime?" Format="s" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.DateTimeLocal" />
         break;
     case TypesFieldsFormsEnum.Date:
-        <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DateTimeFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="DateTime?" Format="yyyy-MM-dd" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.Date" />
+        <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="DateTimeFieldValue" Placeholder="@(Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="DateTime?" Format="yyyy-MM-dd" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.Date" />
         break;
     case TypesFieldsFormsEnum.Time:
-        <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="StringFieldValue" Placeholder="@(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="string" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.Time" />
+        <MudTextField ReadOnly="@(SessionQuestionnaire is null)" Required="@Field.Required" @bind-Value="StringFieldValue" Placeholder="@(Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")?.ToString())" T="string" Label="@Field.Name" HelperText="@Field.Hint" InputType="InputType.Time" />
         break;
     case TypesFieldsFormsEnum.ProgramCalcDouble:
         <label for="@($"{DomID}")" class="form-label">

@@ -10,7 +10,7 @@ public class HostTextFieldVA : TextFieldValueAgent
     public override string About => "Установка значения по умолчанию для <code>поля</code> имени хоста. Генерируемое имя уникальное в таблице (по колонке/полю)";
 
     /// <inheritdoc/>
-    public override string Name => "Генератор имени хоста";
+    public override string Name => "Генерация имени хоста";
 
     static readonly Random _rnd = new();
 

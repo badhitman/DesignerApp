@@ -15,7 +15,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     VirtualColumnCalculationAbstraction? _calculation_service;
     CommandsAsEntriesModel? _md;
     /// <inheritdoc/>
-    public string AboutCalculationFieldValue => $"{CalculationsAsEntries.FirstOrDefault(x => x.Id == Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString())?.Name ?? "ошибка 99A9A8C3-4748-45BD-B4C9-A34BA6C13ECF"}: {Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
+    public string AboutCalculationFieldValue => $"{CalculationsAsEntries.FirstOrDefault(x => x.Id == Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString())?.Name ?? "ошибка 99A9A8C3-4748-45BD-B4C9-A34BA6C13ECF"}: {Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
     string? CalculateFieldValue
     {
         get
@@ -50,12 +50,12 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     /// <summary>
     /// Вид параметра
     /// </summary>
-    string? Descriptor => Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
+    string? Descriptor => Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
 
     /// <summary>
     /// Параметре
     /// </summary>
-    string? Parameter => Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
+    string? Parameter => Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
 
     IQueryable<ConstructorFieldFormModelDB>? QueryFieldsOfNumericTypes => PageJoinForm?.Form?.QueryFieldsOfNumericTypes(Field.Name);
     IEnumerable<string> FieldsNames => QueryFieldsOfNumericTypes?.Select(x => x.Name) ?? Enumerable.Empty<string>();

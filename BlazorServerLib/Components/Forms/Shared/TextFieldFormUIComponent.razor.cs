@@ -19,7 +19,7 @@ public partial class TextFieldFormUIComponent : ComponentBase
     /// <inheritdoc/>
     public bool IsMultiline
     {
-        get => (bool?)FieldObject.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true;
+        get => (bool?)FieldObject.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true;
         private set
         {
             FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, value);
@@ -32,10 +32,13 @@ public partial class TextFieldFormUIComponent : ComponentBase
     /// </summary>
     public string? FieldParameter
     {
-        get => FieldObject.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString();
-        private set
+        get => FieldObject.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString();
+        set
         {
-            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, value);
+            if (string.IsNullOrWhiteSpace(value))
+                FieldObject.UnsetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter);
+            else
+                FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, value);
             StateHasChangedHandler(FieldObject, GetType());
         }
     }

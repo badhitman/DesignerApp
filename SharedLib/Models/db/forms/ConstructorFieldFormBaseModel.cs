@@ -71,7 +71,7 @@ public class ConstructorFieldFormBaseModel : ConstructorFieldFormBaseLowModel
     /// <summary>
     /// Получить значение метаданных (если существует). Если свойства нет: вернёт default_value
     /// </summary>
-    public object? TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum prop_index, object? default_value = null)
+    public object? GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum prop_index, object? default_value = null)
     {
         Dictionary<MetadataExtensionsFormFieldsEnum, object?> dd = MetadataValueTypeGet();
         if (dd.TryGetValue(prop_index, out object? prop_value))

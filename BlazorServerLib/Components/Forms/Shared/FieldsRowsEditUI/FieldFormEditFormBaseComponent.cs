@@ -45,7 +45,7 @@ public class FieldFormEditFormBaseComponent : ComponentBase, IDomBaseComponent
     {
         get
         {
-            return (string?)Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "");
+            return (string?)Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "");
         }
         set
         {

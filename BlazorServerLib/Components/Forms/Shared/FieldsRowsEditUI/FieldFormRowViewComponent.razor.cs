@@ -104,9 +104,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             {
                 if (_field_master is ConstructorFieldFormModelDB sf)
                 {
-                    string? descriptor = sf.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
+                    string? descriptor = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
                     DeclarationAbstraction? _d = DeclarationAbstraction.GetHandlerService(descriptor ?? "");
-                    _information_field = $"<b>{_d?.Name ?? descriptor}</b> <u>{sf.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)}</u>";
+                    _information_field = $"<b>{_d?.Name ?? descriptor}</b> <u>{sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)}</u>";
                 }
                 else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
                     _information_field = df.Directory?.Name;
@@ -236,6 +236,30 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         Action act;
         if (_field_master is ConstructorFieldFormModelDB sf)
         {
+            string? field_valid = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
+            if (field_valid is not null && Enum.TryParse(field_valid, out PropsTypesMDFieldsEnum myDescriptor))
+            {
+                string? parameter = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
+
+                switch (myDescriptor)
+                {
+                    case PropsTypesMDFieldsEnum.TextMask:
+                        if (string.IsNullOrWhiteSpace(parameter))
+                        {
+                            IsBusyProgress = false;
+                            SnackbarRepo.Error("Укажите маску. Выбран режим [Маска], но сама маска не установлена.");
+                            return;
+                        }
+                        break;
+                    case PropsTypesMDFieldsEnum.Template:
+
+                        break;
+                    default:
+
+                        break;
+                }
+            }
+
             ConstructorFieldFormModelDB req = new()
             {
                 SystemName = sf.SystemName,
@@ -281,10 +305,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
-        {
-            SnackbarRepo.Add($"Ошибка 588E1583-07B6-4586-BCB7-B4448723A42A Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
-        }
 
         act();
 

@@ -212,10 +212,13 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         SelectedTypeFieldForAdding = field_type;
         if (field_type == 0)
         {
+            if (FieldObject is ConstructorFieldFormBaseModel && FieldTextUI is not null)
+                FieldTextUI.FieldParameter = "";
+
             _field_object_master = null;
             _field_is_required = false;
-            _field_name = "";
             _field_system_name = "";
+            _field_name = "";
         }
 
         StateHasChanged();

@@ -8,13 +8,13 @@ namespace BlazorWebLib.Components.Forms.Shared.FieldsRowsEditUI;
 public partial class TextFieldFormRowEditUIComponent : FieldFormEditFormBaseComponent
 {
     /// <summary>
-    /// Параметр текстового поля формы // (DescriptorField == PropsTypesMDFieldsEnum.None ? "Плагин отключён" : "")
+    /// Параметр текстового поля формы
     /// </summary>
     public string? ParameterField
     {
         get
         {
-            return Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString();
+            return Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString();
         }
         private set
         {
@@ -41,14 +41,15 @@ public partial class TextFieldFormRowEditUIComponent : FieldFormEditFormBaseComp
     {
         get
         {
-            if (Enum.TryParse(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, PropsTypesMDFieldsEnum.None.ToString())?.ToString(), out PropsTypesMDFieldsEnum _mode))
+            if (Enum.TryParse(Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, PropsTypesMDFieldsEnum.None.ToString())?.ToString(), out PropsTypesMDFieldsEnum _mode))
                 return _mode;
 
             return PropsTypesMDFieldsEnum.None;
         }
         set
         {
-            Field.UnsetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter);
+            if (value == PropsTypesMDFieldsEnum.None)
+                Field.UnsetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter);
 
             if (value == PropsTypesMDFieldsEnum.None)
                 Field.UnsetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor);
@@ -58,12 +59,27 @@ public partial class TextFieldFormRowEditUIComponent : FieldFormEditFormBaseComp
         }
     }
 
+    string GetHelpTextForPlugin
+    {
+        get
+        {
+            string? pf = ParameterField;
+            return DescriptorField switch
+            {
+                PropsTypesMDFieldsEnum.None => $"Плагин отключён{(string.IsNullOrWhiteSpace(pf) ? "" : $" (опция `{pf}` игнорируется)")}",
+                PropsTypesMDFieldsEnum.TextMask => "Спецификация: a - это буквы, 0 - цифры и * - любой символ. остальные символы - как [разделители]",
+                PropsTypesMDFieldsEnum.Template => "Статический текст или применение агентов поведения",
+                _ => throw new Exception($"Тип опции [{DescriptorField}] не опознан")
+            };
+        }
+    }
+
     /// <inheritdoc/>
     public bool IsMultiline
     {
         get
         {
-            return (bool?)Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true;
+            return (bool?)Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true;
         }
         private set
         {

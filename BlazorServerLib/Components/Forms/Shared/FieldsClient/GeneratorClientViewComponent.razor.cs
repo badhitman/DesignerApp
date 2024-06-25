@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
+using BlazorLib;
 
 namespace BlazorWebLib.Components.Forms.Shared.FieldsClient;
 
@@ -50,7 +51,7 @@ public partial class GeneratorClientViewComponent : FieldComponentBaseModel
         if (string.IsNullOrWhiteSpace(Field.MetadataValueType))
             return;
 
-        _gen = DeclarationAbstraction.GetHandlerService(Field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, "")!.ToString()!) as FieldValueGeneratorAbstraction;
+        _gen = DeclarationAbstraction.GetHandlerService(Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, "")!.ToString()!) as FieldValueGeneratorAbstraction;
         if (_gen is null)
         {
             SnackbarRepo.Add($"Параметры поля-генератора имеют не корректный формат. Не найден генератор.\n\n{Field.MetadataValueType}", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
