@@ -36,7 +36,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
     [NotMapped]
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    public IEnumerable<ConstructorFieldFormBaseLowModel> AllFields
+    public ConstructorFieldFormBaseLowModel[] AllFields
     {
         get
         {

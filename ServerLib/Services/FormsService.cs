@@ -1481,7 +1481,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .FirstOrDefaultAsync(x => x.Id == form_field.OwnerId, cancellationToken: cancellationToken);
 
         string msg;
-        if (form_db is null)
+        if (form_db?.Fields is null || form_db.FormsDirectoriesLinks is null)
         {
             msg = $"Форма #{form_field.OwnerId} не найдена в БД";
             res.AddError(msg);
@@ -1489,14 +1489,18 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
+        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && (x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(ConstructorFieldFormModelDB)) && x.Id != form_field.Id && (x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)));
+        if (duplicate_field is not null)
+            return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}' `{duplicate_field.SystemName}`");
+
         ConstructorFieldFormModelDB? form_field_db;
         if (form_field.Id < 1)
         {
-            if (form_db.AllFields.Any(x => x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase)))
-                return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка 0A3CBE24-148C-4EC4-9F45-7CCCF866C185");
+            int _sort_index = form_db.FormsDirectoriesLinks.Count != 0
+                ? form_db.FormsDirectoriesLinks.Max(x => x.SortIndex)
+                : 0;
 
-            int _sort_index = form_db.FormsDirectoriesLinks!.Count != 0 ? form_db.FormsDirectoriesLinks!.Max(x => x.SortIndex) : 0;
-            _sort_index = Math.Max(_sort_index, form_db.Fields!.Count != 0 ? form_db.Fields!.Max(x => x.SortIndex) : 0);
+            _sort_index = Math.Max(_sort_index, form_db.Fields.Count != 0 ? form_db.Fields.Max(x => x.SortIndex) : 0);
 
             form_field_db = ConstructorFieldFormModelDB.Build(form_field, form_db, _sort_index + 1);
 
@@ -1508,10 +1512,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        if (form_db.AllFields.Any(x => x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)))
-            return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка 28A55C71-3625-48C0-BB62-A44548AED0DD");
-
-        form_field_db = form_db.Fields!.FirstOrDefault(x => x.Id == form_field.Id);
+        form_field_db = form_db.Fields.FirstOrDefault(x => x.Id == form_field.Id);
 
         if (form_field_db is null)
         {
@@ -1521,7 +1522,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context_forms.Database.BeginTransaction();
+        using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context_forms.Database.BeginTransaction(isolationLevel: System.Data.IsolationLevel.Serializable);
 
         List<ConstructorFormSessionValueModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == form_field.Name)
                                                                          join session in context_forms.Sessions on val_s.OwnerId equals session.Id
@@ -1535,7 +1536,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         {
             if (values_updates.Count != 0)
             {
-                msg = $"Тип поля (простого типа) формы #{form_field.Id} не может быть изменён ([{form_field_db.TypeField}] -> [{form_field.TypeField}]): найдены ссылки введёных значений ({values_updates.Count} штук) для этого поля";
+                msg = $"Тип поля (простого типа) формы #{form_field.Id} не может быть изменён ([{form_field_db.TypeField}] -> [{form_field.TypeField}]): для этого поля найдены ссылки введённых значений ({values_updates.Count} штук).";
                 res.AddError(msg);
                 logger.LogError(msg);
                 return res;
@@ -1543,7 +1544,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
             if (form_field.TypeField == TypesFieldsFormsEnum.ProgramCalcDouble && form_field.TryGetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, null) is null)
             {
-                msg = $"";
+                msg = $"Для калькуляции требуются параметры с именами полей. Пример: ['ИмяПоля1', 'ИмяПоля2', 'ИмяПоля3']";
                 res.AddError(msg);
                 logger.LogError(msg);
                 return res;
@@ -1557,7 +1558,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         if (form_field_db.Name != form_field.Name)
         {
-            msg = $"Имя поля (простого типа) формы #{form_field.Id} изменилось: [{form_field_db.Name}] -> [{form_field.Name}]";
+            msg = $"Название поля (простого типа) формы #{form_field.Id} изменилось: [{form_field_db.Name}] -> [{form_field.Name}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
             form_field_db.Name = form_field.Name;
@@ -1567,6 +1568,14 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 values_updates.ForEach(x => { x.Name = form_field.Name; });
                 context_forms.UpdateRange(values_updates);
             }
+        }
+
+        if (form_field_db.SystemName != form_field.SystemName)
+        {
+            msg = $"Системное имя поля (простого типа) формы #{form_field.Id} изменилось: [{form_field_db.Name}] -> [{form_field.Name}]";
+            res.AddWarning(msg);
+            logger.LogInformation(msg);
+            form_field_db.SystemName = form_field.SystemName;
         }
 
         if (form_field_db.Description != form_field.Description)
@@ -1590,6 +1599,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             logger.LogInformation(msg);
             form_field_db.Css = form_field.Css;
         }
+
         if (form_field_db.MetadataValueType != form_field.MetadataValueType)
         {
             msg = $"Метаданные поля (простого типа) формы #{form_field.Id} изменились: [{form_field_db.MetadataValueType}] -> [{form_field.MetadataValueType}]";
@@ -1597,6 +1607,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             logger.LogInformation(msg);
             form_field_db.MetadataValueType = form_field.MetadataValueType;
         }
+
         if (form_field_db.Required != form_field.Required)
         {
             msg = $"Признак [Required] поля (простого типа) формы #{form_field.Id} изменился: [{form_field_db.Required}] -> [{form_field.Required}]";
@@ -1609,10 +1620,21 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         {
             context_forms.Update(form_field_db);
             msg = $"Поле (простого типа) формы #{form_field.Id} обновлено в БД";
-            logger.LogInformation(msg);
-            await context_forms.SaveChangesAsync(cancellationToken);
-            transaction.Commit();
+            try
+            {
+                await context_forms.SaveChangesAsync(cancellationToken);
+                transaction.Commit();
+                logger.LogInformation(msg);
+            }
+            catch (Exception ex)
+            {
+                msg = $"Ошибка обновления поля #{form_field_db.Id} '{form_field_db.Name}' `{form_field_db.SystemName}` (форма #{form_db.Id} '{form_db.Name}' `{form_db.SystemName}`)";
+                res.AddError(msg);
+                res.Messages.InjectException(ex);
+                logger.LogError(ex, msg);
+            }
         }
+
         return res;
     }
 
@@ -1638,7 +1660,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .Include(x => x.FormsDirectoriesLinks)
             .FirstOrDefaultAsync(x => x.Id == field_directory.OwnerId, cancellationToken: cancellationToken);
         string msg;
-        if (form_db is null)
+        if (form_db?.Fields is null || form_db.FormsDirectoriesLinks is null)
         {
             msg = $"Форма #{field_directory.OwnerId} не найдена в БД";
             res.AddError(msg);
@@ -1646,14 +1668,15 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
+        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && x.Id != form_field.Id && (x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(ConstructorFieldFormModelDB)) && (x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)));
+        if (duplicate_field is not null)
+            return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}' `{duplicate_field.SystemName}`");
+
         ConstructorFormDirectoryLinkModelDB? form_field_db;
         if (field_directory.Id < 1)
         {
-            if (form_db.AllFields.Any(x => x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)))
-                return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка 0D2E58E1-8F3F-4CE1-AF55-794644E07D45");
-
-            int _sort_index = form_db.FormsDirectoriesLinks!.Any() ? form_db.FormsDirectoriesLinks!.Max(x => x.SortIndex) : 0;
-            _sort_index = Math.Max(_sort_index, form_db.Fields!.Any() ? form_db.Fields!.Max(x => x.SortIndex) : 0);
+            int _sort_index = form_db.FormsDirectoriesLinks.Any() ? form_db.FormsDirectoriesLinks.Max(x => x.SortIndex) : 0;
+            _sort_index = Math.Max(_sort_index, form_db.Fields.Any() ? form_db.Fields.Max(x => x.SortIndex) : 0);
 
             form_field_db = new()
             {
@@ -1677,10 +1700,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        if (form_db.AllFields.Any(x => (x.GetType() == typeof(ConstructorFieldFormModelDB) && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && x.Id != field_directory.Id && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase))))
-            return ResponseBaseModel.CreateError("Поле с таким именем уже существует. ошибка E1848D9D-32D1-4EA1-B6B0-5EC8D60D39C4");
-
-        form_field_db = form_db.FormsDirectoriesLinks!.FirstOrDefault(x => x.Id == field_directory.Id);
+        form_field_db = form_db.FormsDirectoriesLinks.FirstOrDefault(x => x.Id == field_directory.Id);
         if (form_field_db is null)
         {
             msg = $"Поле (списочного типа) формы #{field_directory.Id} не найдено в БД";
@@ -1689,7 +1709,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context_forms.Database.BeginTransaction();
+        using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context_forms.Database.BeginTransaction(isolationLevel: System.Data.IsolationLevel.Serializable);
 
         List<ConstructorFormSessionValueModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == field_directory.Name)
                                                                          join session in context_forms.Sessions on val_s.OwnerId equals session.Id
@@ -1701,7 +1721,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         if (form_field_db.DirectoryId != field_directory.DirectoryId)
         {
-            if (values_updates.Any())
+            if (values_updates.Count != 0)
             {
                 msg = $"Тип поля (списочного типа) формы #{field_directory.Id} не может быть изменён ([{form_field_db.DirectoryId}] -> [{field_directory.DirectoryId}]): найдены ссылки введёных значений ({values_updates.Count} штук) для этого поля";
                 res.AddError(msg);
@@ -1717,17 +1737,26 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         if (form_field_db.Name != field_directory.Name)
         {
-            if (values_updates.Any())
+            if (values_updates.Count != 0)
             {
                 values_updates.ForEach(x => { x.Name = field_directory.Name; });
                 context_forms.UpdateRange(values_updates);
             }
 
-            msg = $"Имя поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.Name}] -> [{field_directory.Name}]";
+            msg = $"Название поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.Name}] -> [{field_directory.Name}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
             form_field_db.Name = field_directory.Name;
         }
+
+        if (form_field_db.SystemName != field_directory.SystemName)
+        {
+            msg = $"Системное имя поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.SystemName}] -> [{field_directory.SystemName}]";
+            res.AddWarning(msg);
+            logger.LogInformation(msg);
+            form_field_db.SystemName = field_directory.SystemName;
+        }
+
         if (form_field_db.Css != field_directory.Css)
         {
             msg = $"CSS поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.Css}] -> [{field_directory.Css}]";
@@ -1759,13 +1788,23 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         if (res.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Warning))
         {
-            context_forms.Update(form_field_db);
             msg = $"Поле (списочного типа) формы #{field_directory.Id} обновлено в БД";
-            res.AddInfo(msg);
-            logger.LogInformation(msg);
-            await context_forms.SaveChangesAsync(cancellationToken);
+            context_forms.Update(form_field_db);
+
+            try
+            {
+                await context_forms.SaveChangesAsync(cancellationToken);
+                transaction.Commit();
+                logger.LogInformation(msg);
+            }
+            catch (Exception ex)
+            {
+                msg = $"Ошибка обновления поля #{form_field_db.Id} '{form_field_db.Name}' `{form_field_db.SystemName}` (форма #{form_db.Id} '{form_db.Name}' `{form_db.SystemName}`)";
+                res.AddError(msg);
+                res.Messages.InjectException(ex);
+                logger.LogError(ex, msg);
+            }
         }
-        transaction.Commit();
         return res;
     }
 
