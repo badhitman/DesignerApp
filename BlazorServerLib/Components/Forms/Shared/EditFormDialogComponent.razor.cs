@@ -31,7 +31,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected FieldsFormViewComponent? _fields_view_ref;
 
     /// <inheritdoc/>
-    protected bool IsEdited => !Form.Equals(FormEditObject);
+    protected bool IsEdited => !Form.Equals(FormEditObject) || FormEditObject.Id == 0;
 
     /// <inheritdoc/>
     protected InputRichTextComponent? _currentTemplateInputRichText;

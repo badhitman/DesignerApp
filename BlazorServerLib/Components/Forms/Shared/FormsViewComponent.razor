@@ -14,7 +14,7 @@
         <MudTd>
             <p style="cursor:pointer;" @onclick="async () => { await OpenForm(context); }">
                 @context.Name
-                <sup class="ms-1">#@context.Id</sup>
+                <sup class="ms-1 border" title="Системное имя">@context.SystemName</sup>
             </p>
             <div class="d-flex flex-wrap">
                 @foreach (ConstructorFieldFormBaseLowModel fb in context.AllFields)
