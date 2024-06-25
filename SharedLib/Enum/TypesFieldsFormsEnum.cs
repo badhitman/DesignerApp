@@ -59,7 +59,7 @@ public enum TypesFieldsFormsEnum
     /// Калькуляция double (программное)
     /// </summary>
     [Description("Калькуляция")]
-    ProgramCalcDouble  = 90,
+    ProgramCalculationDouble  = 90,
 
     /// <summary>
     /// Генератор (rest-api)

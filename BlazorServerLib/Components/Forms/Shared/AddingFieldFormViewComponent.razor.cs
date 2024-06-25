@@ -190,7 +190,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         return tf switch
         {
             TypesFieldsFormsEnum.Text => "text-danger-emphasis",
-            TypesFieldsFormsEnum.ProgramCalcDouble => "text-primary",
+            TypesFieldsFormsEnum.ProgramCalculationDouble => "text-primary",
             TypesFieldsFormsEnum.Generator => "text-info",
             _ => ""
         };

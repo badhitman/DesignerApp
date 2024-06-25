@@ -23,7 +23,7 @@ public class ConstructorFormModelDB : ConstructorFormBaseModel
     /// </summary>
     /// <param name="exclude_field_name">удалить из результата колонку</param>
     /// <returns>числовые поля</returns>
-    public IQueryable<ConstructorFieldFormModelDB>? QueryFieldsOfNumericTypes(string? exclude_field_name) => Fields?.Where(x => (string.IsNullOrWhiteSpace(exclude_field_name) || !x.Name.Equals(exclude_field_name)) && ((new TypesFieldsFormsEnum[] { TypesFieldsFormsEnum.Double, TypesFieldsFormsEnum.Int, TypesFieldsFormsEnum.ProgramCalcDouble }).Contains(x.TypeField))).OrderBy(x => x.SortIndex).AsQueryable();
+    public IQueryable<ConstructorFieldFormModelDB>? QueryFieldsOfNumericTypes(string? exclude_field_name) => Fields?.Where(x => (string.IsNullOrWhiteSpace(exclude_field_name) || !x.Name.Equals(exclude_field_name)) && ((new TypesFieldsFormsEnum[] { TypesFieldsFormsEnum.Double, TypesFieldsFormsEnum.Int, TypesFieldsFormsEnum.ProgramCalculationDouble }).Contains(x.TypeField))).OrderBy(x => x.SortIndex).AsQueryable();
 
     /// <summary>
     /// Связи форм со списками/связями

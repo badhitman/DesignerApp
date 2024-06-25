@@ -24,7 +24,7 @@
                 _t += $"[<span class='font-monospace'>{de_kvp.Key.DescriptionInfo()}</span> = {de_kvp.Value}]; ";
         }
 
-        <span title="@Descr(_t.Trim())" class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgramCalcDouble => "primary", TypesFieldsFormsEnum.Generator => "info", _=> "secondary" }) border border-light rounded-circle">
+        <span title="@Descr(_t.Trim())" class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgramCalculationDouble => "primary", TypesFieldsFormsEnum.Generator => "info", _=> "secondary" }) border border-light rounded-circle">
             <span class="visually-hidden">Тип поля: @_f.TypeField</span>
         </span>
     }
@@ -45,9 +45,9 @@ else
             }
             else if (Field is ConstructorFieldFormModelDB _f)
             {
-                if (_f.TypeField == TypesFieldsFormsEnum.Generator || _f.TypeField == TypesFieldsFormsEnum.ProgramCalcDouble)
+                if (_f.TypeField == TypesFieldsFormsEnum.Generator || _f.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble)
                 {
-                    <span class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgramCalcDouble => "warning", TypesFieldsFormsEnum.Generator => "primary", _=> "body" }) border border-light rounded-circle">
+                    <span class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgramCalculationDouble => "warning", TypesFieldsFormsEnum.Generator => "primary", _=> "body" }) border border-light rounded-circle">
                         <span class="visually-hidden">Тип поля: @_f.TypeField</span>
                     </span>
                 }

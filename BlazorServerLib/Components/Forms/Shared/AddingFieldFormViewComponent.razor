@@ -36,7 +36,7 @@ else
         case (int)TypesFieldsFormsEnum.Text:
             <TextFieldFormUIComponent @ref="FieldTextUI" FieldObject="FieldObjectStandard" />
             break;
-        case (int)TypesFieldsFormsEnum.ProgramCalcDouble:
+        case (int)TypesFieldsFormsEnum.ProgramCalculationDouble:
             <div class="col-auto">
                 <ProgramCalculationFieldFormUIComponent @ref="FieldProgramCalculationDouble" FieldObject="FieldObjectStandard" />
             </div>
@@ -48,7 +48,7 @@ else
             break;
     }
 
-    @if (SelectedTypeFieldForAdding != (int)TypesFieldsFormsEnum.ProgramCalcDouble)
+    @if (SelectedTypeFieldForAdding != (int)TypesFieldsFormsEnum.ProgramCalculationDouble)
     {
         <div class="col-auto">
             <div class="form-check form-switch mt-2">

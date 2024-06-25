@@ -264,7 +264,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         return res;
     }
 
-    static bool ScalarOnly(ConstructorFieldFormBaseLowModel x) => !(x is ConstructorFieldFormModelDB _f && _f.TypeField == TypesFieldsFormsEnum.ProgramCalcDouble);
+    static bool ScalarOnly(ConstructorFieldFormBaseLowModel x) => !(x is ConstructorFieldFormModelDB _f && _f.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble);
 
     static string? EditorsGenerate(ConstructorFormSessionModelDB session, string editor)
     {
@@ -1365,7 +1365,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 return res;
             }
 
-            if (form_field.TypeField == TypesFieldsFormsEnum.ProgramCalcDouble && form_field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, null) is null)
+            if (form_field.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble && form_field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, null) is null)
             {
                 msg = $"Для калькуляции требуются параметры с именами полей. Пример: ['ИмяПоля1', 'ИмяПоля2', 'ИмяПоля3']";
                 res.AddError(msg);
