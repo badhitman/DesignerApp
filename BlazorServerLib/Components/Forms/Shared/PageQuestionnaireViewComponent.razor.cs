@@ -70,10 +70,23 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     [Parameter, EditorRequired]
     public Action<ConstructorFormQuestionnaireModelDB, ConstructorFormQuestionnairePageModelDB?> UpdateQuestionnaireHandle { get; set; } = default!;
 
+    int _selectedFormForAdding;
     /// <summary>
     /// Selected form for adding
     /// </summary>
-    protected int SelectedFormForAdding { get; set; }
+    protected int SelectedFormForAdding
+    {
+        get => _selectedFormForAdding;
+        set
+        {
+            _selectedFormForAdding = value;
+
+            if (_selectedFormForAdding < 1)
+                addingFormToTabPageName = null;
+        }
+    }
+
+    // 
 
     string? NameOrigin { get; set; }
     /// <summary>
@@ -174,17 +187,26 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         SetHoldHandle(IsEdited);
     }
 
+    string? addingFormToTabPageName;
+
     /// <summary>
     /// Add form to page
     /// </summary>
     protected async Task AddFormToPage()
     {
+        if (string.IsNullOrWhiteSpace(addingFormToTabPageName))
+        {
+            SnackbarRepo.Error("Укажите название");
+            return;
+        }
+
         IsBusyProgress = true;
         ResponseBaseModel rest = await FormsRepo.CreateOrUpdateQuestionnairePageJoinForm(new ConstructorFormQuestionnairePageJoinFormModelDB()
         {
             FormId = SelectedFormForAdding,
             OwnerId = QuestionnairePage.Id,
-            Name = ""
+            Name = addingFormToTabPageName,
+
         });
         IsBusyProgress = false;
 

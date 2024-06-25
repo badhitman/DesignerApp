@@ -55,11 +55,12 @@
                     <option value="@f.Id">@f.Name</option>
                 }
             </select>
-            <button @onclick="AddFormToPage" disabled="@(SelectedFormForAdding < 1)" class="btn btn-outline-success" type="button">Добавить</button>
             @if (SelectedFormForAdding > 0)
             {
+                <input @bind-value="addingFormToTabPageName" @bind-value:event="oninput" placeholder="Имя" type="text" class="form-control" autocomplete="off">
                 <button @onclick="() => { SelectedFormForAdding = 0; }" class="btn btn-outline-secondary" type="button">Отмена</button>
             }
+            <button @onclick="AddFormToPage" disabled="@(SelectedFormForAdding < 1)" class="btn btn-outline-success" type="button">Добавить</button>
         </div>
         <PageQuestionnaireFormsViewComponent />
     </TabComponent>

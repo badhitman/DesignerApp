@@ -23,4 +23,10 @@ public class SystemNameModel
     /// </summary>
     [Required(AllowEmptyStrings = false, ErrorMessage = "Поле наименования обязательно для заполнения")]
     public required string Name { get; set; }
+
+    /// <inheritdoc/>
+    public static SystemNameModel? BuildEmpty()
+    {
+        return new() { Name = "", SystemName = "" };
+    }
 }
