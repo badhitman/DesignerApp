@@ -169,6 +169,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
             _field_is_required = value;
             _field_object_master.Required = _field_is_required;
             _field_object_master.Name = _field_name ?? "";
+            _field_object_master.SystemName = _field_system_name ?? "";
             ChildUpdates();
             StateHasChangedHandler(_field_object_master, this.GetType());
         }
