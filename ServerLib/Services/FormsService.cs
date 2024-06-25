@@ -2274,6 +2274,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /////////////// Пользовательский/публичный доступ к возможностям заполнения документа данными
     // Если у вас есть готовый к заполнению документ со всеми его табами и настройками, то вы можете создавать уникальные ссылки для заполнения данными
     // Каждая ссылка это всего лишь уникальный GUID к которому привязываются все данные, которые вводят конечные пользователи
+    // Пользователи видят ваш документ, но сам документ данные не хранит. Хранение данных происходит в сессиях, которые вы сами выпускаете для любого вашего документа
     #region сессии документов (данные заполнения документов).
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetStatusSessionQuestionnaire(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default)
