@@ -166,7 +166,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         {
             Name = NameSessionForCreate,
             OwnerId = SelectedQuestionnaireId,
-            AuthorUserId = current_user.Response.UserId
+            AuthorUser = current_user.Response.UserId
         };
         IsBusyProgress = true;
         TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);

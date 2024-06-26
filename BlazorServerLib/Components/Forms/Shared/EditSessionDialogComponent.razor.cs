@@ -99,7 +99,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
         {
             Id = Session.Id,
             CreatedAt = Session.CreatedAt,
-            AuthorUserId = Session.AuthorUserId,
+            AuthorUser = Session.AuthorUser,
             DeadlineDate = Session.DeadlineDate,
             Description = Session.Description,
             Editors = Session.Editors,

@@ -22,5 +22,5 @@ public class ConstructorFormsSessionsPaginationResponseModel : PaginationRespons
     /// <summary>
     /// Сессии опросов/анкет
     /// </summary>
-    public IEnumerable<SessionOfDocumentDataModelDB>? Sessions { get; set; }
+    public List<SessionOfDocumentDataModelDB>? Sessions { get; set; }
 }

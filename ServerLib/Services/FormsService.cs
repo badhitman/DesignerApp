@@ -92,10 +92,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             }
         }
 
-        TResponseModel<UserInfoModel?> author_user = await usersProfilesRepo.FindByIdAsync(sq.AuthorUserId);
+        TResponseModel<UserInfoModel?> author_user = await usersProfilesRepo.FindByIdAsync(sq.AuthorUser);
         if (author_user.Response is null)
         {
-            msg = $"Автор ссылки (пользователь #{sq.AuthorUserId}) не найден в БД.\n{author_user.Message()}";
+            msg = $"Автор ссылки (пользователь #{sq.AuthorUser}) не найден в БД.\n{author_user.Message()}";
             res.AddWarning(msg);
             logger.LogError(msg);
             return res;
@@ -656,7 +656,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             context_forms.Update(_document_scheme_seed);
             await context_forms.SaveChangesAsync();
 
-            SessionOfDocumentDataModelDB _session_seed = new() { AuthorUserId = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "") };
+            SessionOfDocumentDataModelDB _session_seed = new() { AuthorUser = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "") };
 
             await context_forms.AddAsync(_session_seed);
             await context_forms.SaveChangesAsync();
@@ -2439,11 +2439,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         ApplicationUser? userDb = await identityContext.Users
-            .FirstOrDefaultAsync(x => x.Id == session_json.AuthorUserId, cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == session_json.AuthorUser, cancellationToken: cancellationToken);
 
         if (userDb is null)
         {
-            res.AddError($"Пользователь #{session_json.AuthorUserId} не найден в БД");
+            res.AddError($"Пользователь #{session_json.AuthorUser} не найден в БД");
             return res;
         }
 
@@ -2537,7 +2537,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             query = query.Where(x => x.OwnerId == req.DocumentSchemeId);
 
         if (!string.IsNullOrWhiteSpace(req.FilterUserId))
-            query = query.Where(x => x.AuthorUserId == req.FilterUserId);
+            query = query.Where(x => x.AuthorUser == req.FilterUserId);
 
         if (!string.IsNullOrWhiteSpace(req.SimpleRequest))
             query = query.Where(x => (x.Name != null && EF.Functions.Like(x.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") || (x.SessionToken != null && x.SessionToken.ToLower() == req.SimpleRequest.ToLower()) || (!string.IsNullOrWhiteSpace(x.EmailsNotifications) && EF.Functions.Like(x.EmailsNotifications.ToLower(), $"%{req.SimpleRequest.ToLower()}%"))));
@@ -2545,7 +2545,17 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         res.TotalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
         query = query.Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
-        res.Sessions = await query.ToArrayAsync(cancellationToken: cancellationToken);
+        res.Sessions = await query.ToListAsync(cancellationToken: cancellationToken);
+
+        if (res.Sessions.Count != 0)
+        {
+            string[] users_ids = res.Sessions.Select(x => x.AuthorUser).Distinct().ToArray();
+            using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+            ApplicationUser[] users_data = await identityContext.Users.Where(x => users_ids.Contains(x.Id)).ToArrayAsync(cancellationToken: cancellationToken);
+
+            res.Sessions.ForEach(x => { x.AuthorUser = users_data.FirstOrDefault(y => y.Id.Equals(x))?.UserName ?? x.AuthorUser; });
+        }
+
         return res;
     }
 
@@ -2576,7 +2586,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 {
                     { nameof(Enumerable.Count), x.Count() },
                     { nameof(element_g.Session.CreatedAt), element_g.Session.CreatedAt },
-                    { nameof(element_g.Session.AuthorUserId), element_g.Session.AuthorUserId },
+                    { nameof(element_g.Session.AuthorUser), element_g.Session.AuthorUser },
                     { nameof(element_g.Session.SessionStatus), element_g.Session.SessionStatus }
                 };
 
