@@ -669,7 +669,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 .ProjectsUse
                 .Where(x => x.UserId == user_id)
                 .Include(x => x.Project)
-                .Select(x => new MainProjectViewModel() { Id = x.Project!.Id, Name = x.Project.Name, Description = x.Project.Description, IsDisabled = x.Project.IsDisabled, OwnerUserId = x.UserId })
+                .Select(x => new MainProjectViewModel() { Id = x.Project!.Id, Name = x.Project.Name, Description = x.Project.Description, IsDisabled = x.Project.IsDisabled, OwnerUserId = x.Project.OwnerUserId })
                 .FirstOrDefaultAsync();
 
         return res;
