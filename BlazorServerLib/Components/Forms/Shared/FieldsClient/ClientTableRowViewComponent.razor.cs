@@ -83,8 +83,8 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
             return (MarkupString)(CalculateFieldValue(_fb) ?? "&nbsp;");
 
         ValueDataForSessionOfDocumentModelDB? _sv = SessionQuestionnaire
-        .SessionValues?
-        .FirstOrDefault(x => x.QuestionnairePageJoinFormId == PageJoinForm.Id && x.GroupByRowNum == RowNum && x.Name.Equals(_fbl.Name, StringComparison.OrdinalIgnoreCase));
+        .DataSessionValues?
+        .FirstOrDefault(x => x.TabJoinDocumentSchemeId == PageJoinForm.Id && x.GroupByRowNum == RowNum && x.Name.Equals(_fbl.Name, StringComparison.OrdinalIgnoreCase));
 
         return (MarkupString)(_sv?.Value ?? "&nbsp;");
     }

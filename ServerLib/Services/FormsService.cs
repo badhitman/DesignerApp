@@ -34,7 +34,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         IQueryable<SessionOfDocumentDataModelDB> q = context_forms
             .Sessions
-            .Include(x => x.SessionValues)
+            .Include(x => x.DataSessionValues)
 
             .Include(s => s.Owner) // опрос/анкета
             .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
@@ -116,7 +116,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         SessionOfDocumentDataModelDB? session_Questionnaire = session.Response;
         TResponseModel<SessionOfDocumentDataModelDB> res = new();
 
-        if (session_Questionnaire?.Owner?.Pages is null || session_Questionnaire.SessionValues is null)
+        if (session_Questionnaire?.Owner?.Pages is null || session_Questionnaire.DataSessionValues is null)
         {
             res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка B3AC5AAF-A786-4190-9C61-A272F174D940");
             return res;
@@ -144,7 +144,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ValueDataForSessionOfDocumentModelDB? existing_value = session_Questionnaire.SessionValues.FirstOrDefault(x => x.GroupByRowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.QuestionnairePageJoinFormId == form_join.Id);
+        ValueDataForSessionOfDocumentModelDB? existing_value = session_Questionnaire.DataSessionValues.FirstOrDefault(x => x.GroupByRowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == form_join.Id);
         if (existing_value is null)
         {
             existing_value = ValueDataForSessionOfDocumentModelDB.Build(req, form_join, session_Questionnaire);
@@ -178,7 +178,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         TResponseStrictModel<int> res = new() { Response = 0 };
         SessionOfDocumentDataModelDB? session = get_s.Response;
 
-        if (session?.Owner?.Pages is null || session.SessionValues is null)
+        if (session?.Owner?.Pages is null || session.DataSessionValues is null)
         {
             res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка 14504D03-88B5-4D1B-AFF2-8DB8D4EB757F");
             return res;
@@ -193,7 +193,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 6342356D-0491-45BC-A33D-B95F5D7DCB5F");
             return res;
         }
-        IQueryable<ValueDataForSessionOfDocumentModelDB> q = session.SessionValues.Where(x => x.QuestionnairePageJoinFormId == form_join.Id && x.GroupByRowNum > 0).AsQueryable();
+        IQueryable<ValueDataForSessionOfDocumentModelDB> q = session.DataSessionValues.Where(x => x.TabJoinDocumentSchemeId == form_join.Id && x.GroupByRowNum > 0).AsQueryable();
         res.Response = (int)(q.Any() ? (q.Max(x => x.GroupByRowNum) + 1) : 1);
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         await context_forms.AddRangeAsync(form_join.Form.AllFields.Where(ScalarOnly).Select(x => new ValueDataForSessionOfDocumentModelDB()
@@ -202,8 +202,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             Name = x.Name,
             Owner = session,
             OwnerId = session.Id,
-            QuestionnairePageJoinForm = form_join,
-            QuestionnairePageJoinFormId = form_join.Id
+            TabJoinDocumentScheme = form_join,
+            TabJoinDocumentSchemeId = form_join.Id
         }), cancellationToken);
         session.LastQuestionnaireUpdateActivity = DateTime.Now;
 
@@ -221,7 +221,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return get_s;
 
         SessionOfDocumentDataModelDB? session = get_s.Response;
-        if (session?.Owner?.Pages is null || session.SessionValues is null)
+        if (session?.Owner?.Pages is null || session.DataSessionValues is null)
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка 5DF6598B-18FF-4E76-AE33-6CE78ACE5442");
 
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
@@ -231,7 +231,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null || !form_join.IsTable)
             return ResponseBaseModel.CreateError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 66A38A11-CD9B-4F9E-8B5C-49E60109442D");
 
-        ValueDataForSessionOfDocumentModelDB[] values_for_delete = session.SessionValues.Where(x => x.GroupByRowNum == req.GroupByRowNum && x.QuestionnairePageJoinFormId == form_join.Id).ToArray();
+        ValueDataForSessionOfDocumentModelDB[] values_for_delete = session.DataSessionValues.Where(x => x.GroupByRowNum == req.GroupByRowNum && x.TabJoinDocumentSchemeId == form_join.Id).ToArray();
 
         ResponseBaseModel res = new();
         if (req.IsSelf && values_for_delete.Any(x => !string.IsNullOrWhiteSpace(x.Value)))
@@ -251,7 +251,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
             uint i = 0;
             List<ValueDataForSessionOfDocumentModelDB> values_re_sort = [];
-            session.SessionValues
+            session.DataSessionValues
                 .Where(x => x.GroupByRowNum > 0)
                 .GroupBy(x => x.GroupByRowNum)
                 .ToList()
@@ -1710,7 +1710,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return ResponseBaseModel.CreateError($"Поле #{form_field_id} (простого типа) формы не найден в БД");
 
         IQueryable<ValueDataForSessionOfDocumentModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
-                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
+                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.TabJoinDocumentSchemeId equals _jf.Id
                                                                   select _v;
 
         if (await values.AnyAsync(cancellationToken: cancellationToken))
@@ -1733,7 +1733,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         context_forms.Remove(field_db);
 
         IQueryable<ValueDataForSessionOfDocumentModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
-                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
+                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.TabJoinDocumentSchemeId equals _jf.Id
                                                                   select _v;
 
         if (await values.AnyAsync(cancellationToken: cancellationToken))
@@ -2399,7 +2399,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         {
             Response = await context_forms
             .Sessions
-            .Include(x => x.SessionValues)
+            .Include(x => x.DataSessionValues)
 
             .Include(s => s.Owner) // опрос/анкета
             .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
@@ -2569,7 +2569,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         var q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
                 join _s in context_forms.Sessions on _vs.OwnerId equals _s.Id
-                join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.QuestionnairePageJoinFormId equals _pjf.Id
+                join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.TabJoinDocumentSchemeId equals _pjf.Id
                 join _qp in context_forms.TabsOfDocumentsSchemes on _pjf.OwnerId equals _qp.Id
                 select new { Value = _vs, Session = _s, QuestionnairePageJoinForm = _pjf, QuestionnairePage = _qp };
 
@@ -2618,7 +2618,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         IQueryable<ValueDataForSessionOfDocumentModelDB> q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
                                                              join _s in context_forms.Sessions.Where(x => !req.SessionId.HasValue || x.Id == req.SessionId.Value) on _vs.OwnerId equals _s.Id
-                                                             join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.QuestionnairePageJoinFormId equals _pjf.Id
+                                                             join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.TabJoinDocumentSchemeId equals _pjf.Id
                                                              select _vs;
         int _i = await q.CountAsync();
         if (_i == 0)
@@ -2636,7 +2636,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         SessionOfDocumentDataModelDB? session_db = await context_forms
             .Sessions
-            .Include(x => x.SessionValues)
+            .Include(x => x.DataSessionValues)
 
             .Include(s => s.Owner) // опрос/анкета
             .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты

@@ -56,15 +56,15 @@ public class SessionOfDocumentDataModelDB
     /// <summary>
     /// Значения полей форм
     /// </summary>
-    public List<ValueDataForSessionOfDocumentModelDB>? SessionValues { get; set; }
+    public List<ValueDataForSessionOfDocumentModelDB>? DataSessionValues { get; set; }
 
     /// <summary>
     /// ВВедённые значения в табличную форму
     /// </summary>
     public IQueryable<ValueDataForSessionOfDocumentModelDB>? QueryCurrentTablePageFormValues(int page_join_id)
     {
-        return SessionValues?
-               .Where(x => x.GroupByRowNum > 0 && x.QuestionnairePageJoinFormId == page_join_id)
+        return DataSessionValues?
+               .Where(x => x.GroupByRowNum > 0 && x.TabJoinDocumentSchemeId == page_join_id)
                .AsQueryable();
     }
 
@@ -105,28 +105,28 @@ public class SessionOfDocumentDataModelDB
         EmailsNotifications = other.EmailsNotifications;
         Name = other.Name;
         Description = other.Description;
-        if (other.SessionValues is not null)
+        if (other.DataSessionValues is not null)
         {
-            SessionValues ??= [];
+            DataSessionValues ??= [];
 
-            int i = SessionValues.FindIndex(x => !other.SessionValues.Any(y => y.Id == x.Id));
+            int i = DataSessionValues.FindIndex(x => !other.DataSessionValues.Any(y => y.Id == x.Id));
             while (i >= 0)
             {
-                SessionValues.RemoveAt(i);
-                i = SessionValues.FindIndex(x => !other.SessionValues.Any(y => y.Id == x.Id));
+                DataSessionValues.RemoveAt(i);
+                i = DataSessionValues.FindIndex(x => !other.DataSessionValues.Any(y => y.Id == x.Id));
             }
 
             ValueDataForSessionOfDocumentModelDB? _s;
-            foreach (ValueDataForSessionOfDocumentModelDB sv in SessionValues)
+            foreach (ValueDataForSessionOfDocumentModelDB sv in DataSessionValues)
             {
-                _s = other.SessionValues.FirstOrDefault(x => x.Id == sv.Id);
+                _s = other.DataSessionValues.FirstOrDefault(x => x.Id == sv.Id);
                 if (_s is not null)
                     sv.Value = _s.Value;
             }
 
-            ValueDataForSessionOfDocumentModelDB[] _values = other.SessionValues.Where(x => !SessionValues.Any(y => y.Id == x.Id)).ToArray();
+            ValueDataForSessionOfDocumentModelDB[] _values = other.DataSessionValues.Where(x => !DataSessionValues.Any(y => y.Id == x.Id)).ToArray();
             if (_values.Length != 0)
-                SessionValues.AddRange(_values);
+                DataSessionValues.AddRange(_values);
         }
 
         if (other.Owner is not null && Owner is not null)

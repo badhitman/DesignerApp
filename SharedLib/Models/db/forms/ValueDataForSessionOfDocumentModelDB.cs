@@ -13,34 +13,18 @@ namespace SharedLib;
 public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
 {
     /// <summary>
-    /// Значение поля из формы опроса/анкеты
-    /// </summary>
-    public static ValueDataForSessionOfDocumentModelDB Build(SetValueFieldSessionQuestionnaireModel req, TabJoinDocumentSchemeConstructorModelDB questionnaire_page_join, SessionOfDocumentDataModelDB session)
-        => new()
-        {
-            Name = req.NameField,
-            Value = req.FieldValue,
-            Description = req.Description,
-            QuestionnairePageJoinFormId = questionnaire_page_join.Id,
-            QuestionnairePageJoinForm = questionnaire_page_join,
-            Owner = session,
-            OwnerId = session.OwnerId,
-            GroupByRowNum = req.GroupByRowNum
-        };
-
-    /// <summary>
     /// Сессия
     /// </summary>
     public SessionOfDocumentDataModelDB? Owner { get; set; }
 
     /// <summary>
-    /// [FK] Форма
+    /// [FK] Связь со схемой документа
     /// </summary>
-    public int QuestionnairePageJoinFormId { get; set; }
+    public int TabJoinDocumentSchemeId { get; set; }
     /// <summary>
-    /// Форма
+    /// Связь со схемой документа
     /// </summary>
-    public TabJoinDocumentSchemeConstructorModelDB? QuestionnairePageJoinForm { get; set; }
+    public TabJoinDocumentSchemeConstructorModelDB? TabJoinDocumentScheme { get; set; }
 
     /// <summary>
     /// Значение поля
@@ -54,4 +38,20 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
 
     /// <inheritdoc/>
     public override string ToString() => $"{Name}: [{Value}]";
+
+    /// <summary>
+    /// Значение поля из формы опроса/анкеты
+    /// </summary>
+    public static ValueDataForSessionOfDocumentModelDB Build(SetValueFieldSessionQuestionnaireModel req, TabJoinDocumentSchemeConstructorModelDB questionnaire_page_join, SessionOfDocumentDataModelDB session)
+        => new()
+        {
+            Name = req.NameField,
+            Value = req.FieldValue,
+            Description = req.Description,
+            TabJoinDocumentSchemeId = questionnaire_page_join.Id,
+            TabJoinDocumentScheme = questionnaire_page_join,
+            Owner = session,
+            OwnerId = session.OwnerId,
+            GroupByRowNum = req.GroupByRowNum,
+        };
 }

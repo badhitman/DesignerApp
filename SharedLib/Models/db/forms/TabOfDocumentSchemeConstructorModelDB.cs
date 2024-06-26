@@ -76,20 +76,20 @@ public class TabOfDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
     public static Dictionary<string, Dictionary<uint, List<ValueDataForSessionOfDocumentModelDB>>> GetRowsData(SessionOfDocumentDataModelDB session)
     {
         Dictionary<string, Dictionary<uint, List<ValueDataForSessionOfDocumentModelDB>>> res = [];
-        if (session.SessionValues is null || session.SessionValues.Count == 0)
+        if (session.DataSessionValues is null || session.DataSessionValues.Count == 0)
             return res;
 
-        foreach (ValueDataForSessionOfDocumentModelDB val in session.SessionValues)
+        foreach (ValueDataForSessionOfDocumentModelDB val in session.DataSessionValues)
         {
-            if (string.IsNullOrWhiteSpace(val.QuestionnairePageJoinForm?.Owner?.Name))
+            if (string.IsNullOrWhiteSpace(val.TabJoinDocumentScheme?.Owner?.Name))
                 continue;
 
-            if (!res.ContainsKey(val.QuestionnairePageJoinForm.Owner.Name))
-                res.Add(val.QuestionnairePageJoinForm.Owner.Name, []);
-            if (!res[val.QuestionnairePageJoinForm.Owner.Name].ContainsKey(val.GroupByRowNum))
-                res[val.QuestionnairePageJoinForm.Owner.Name].Add(val.GroupByRowNum, []);
+            if (!res.ContainsKey(val.TabJoinDocumentScheme.Owner.Name))
+                res.Add(val.TabJoinDocumentScheme.Owner.Name, []);
+            if (!res[val.TabJoinDocumentScheme.Owner.Name].ContainsKey(val.GroupByRowNum))
+                res[val.TabJoinDocumentScheme.Owner.Name].Add(val.GroupByRowNum, []);
 
-            res[val.QuestionnairePageJoinForm.Owner.Name][val.GroupByRowNum].Add(val);
+            res[val.TabJoinDocumentScheme.Owner.Name][val.GroupByRowNum].Add(val);
         }
         return res;
     }

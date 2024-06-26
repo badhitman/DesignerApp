@@ -36,7 +36,7 @@ public partial class QuestionnaireClientViewIntPage : BlazorBusyComponentBaseMod
             throw new Exception("rest.Content.SessionQuestionnaire is null. error 09DFC142-55DA-4616-AA14-EA1B810E9A7E");
 
         SessionQuestionnaire = rest.Response;
-        if (SessionQuestionnaire.SessionValues is not null && SessionQuestionnaire.SessionValues.Count != 0)
-            SessionQuestionnaire.SessionValues.ForEach(x => { x.Owner ??= SessionQuestionnaire; x.OwnerId = SessionQuestionnaire.Id; });
+        if (SessionQuestionnaire.DataSessionValues is not null && SessionQuestionnaire.DataSessionValues.Count != 0)
+            SessionQuestionnaire.DataSessionValues.ForEach(x => { x.Owner ??= SessionQuestionnaire; x.OwnerId = SessionQuestionnaire.Id; });
     }
 }

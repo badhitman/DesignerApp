@@ -34,7 +34,7 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
         }
     }
 
-    string? FieldValue => SessionQuestionnaire?.SessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.QuestionnairePageJoinFormId == PageJoinForm?.Id && x.GroupByRowNum == GroupByRowNum)?.Value;
+    string? FieldValue => SessionQuestionnaire?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.GroupByRowNum == GroupByRowNum)?.Value;
     
     /// <inheritdoc/>
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{QuestionnairePage?.Id}-{Field.Id}";

@@ -22,7 +22,7 @@ public class HostTextFieldVA : TextFieldValueAgent
     public override string? DefaultValueIfNull(FieldFormConstructorModelDB field, SessionOfDocumentDataModelDB session_Questionnaire, int page_join_form_id)
     {
         int _index_value = _rnd.Next(1000, 9999);
-        while (session_Questionnaire.SessionValues?.Any(x => x.Name.Equals(field.Name) && x.Value?.Equals($"{_index_value}.host", StringComparison.OrdinalIgnoreCase) == true) == true)
+        while (session_Questionnaire.DataSessionValues?.Any(x => x.Name.Equals(field.Name) && x.Value?.Equals($"{_index_value}.host", StringComparison.OrdinalIgnoreCase) == true) == true)
             _rnd.Next(1000, 9999);
         return $"{_index_value}.host";
     }
