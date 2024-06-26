@@ -20,7 +20,7 @@
                 @if (Session.SessionStatus == SessionsStatusesEnum.None)
                 {
                     <p class="lead">
-                        Сессия не активна. <span class="badge rounded-pill bg-dark">Переведите ссылку в активное состояние</span>
+                        Сессия выключена. <span class="badge rounded-pill bg-dark">Статус сессии: @SessionsStatusesEnum.None.DescriptionInfo()</span>
                     </p>
                 }
                 else if (string.IsNullOrWhiteSpace(Session.SessionToken))

@@ -2437,6 +2437,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             }
         }
 
+        if (session_json.SessionStatus == SessionsStatusesEnum.None)
+            session_json.SessionToken = null;
+
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         ApplicationUser? userDb = await identityContext.Users
             .FirstOrDefaultAsync(x => x.Id == session_json.AuthorUser, cancellationToken: cancellationToken);
