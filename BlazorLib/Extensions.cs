@@ -1,7 +1,7 @@
 ﻿using SharedLib;
 using MudBlazor;
 
-namespace BlazorWebLib;
+namespace BlazorLib;
 
 /// <summary>
 /// Extensions
@@ -28,6 +28,10 @@ public static class Extensions
             SnackbarRepo.Add(m.Text, _style, opt => opt.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
         }
     }
+
+    /// <inheritdoc/>
+    public static void Error(this ISnackbar SnackbarRepo, string message)
+        => SnackbarRepo.Add(message, Severity.Error, opt => opt.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
     /// <inheritdoc/>
     public static VerticalDirectionsEnum GetVerticalDirection(this SortDirection sort_direction)
