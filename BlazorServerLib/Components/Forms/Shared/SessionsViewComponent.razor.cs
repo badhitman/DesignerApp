@@ -30,7 +30,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required FormsPage CurrentMainProject { get; set; }
+    public required FormsPage ParentFormsPage { get; set; }
 
     IEnumerable<DocumentSchemeConstructorModelDB> QuestionnairesAll = [];
 
@@ -54,7 +54,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     {
         get
         {
-            if (CurrentMainProject is null)
+            if (ParentFormsPage is null)
                 return "Не выбран основной/рабочий проект";
 
             if (SelectedQuestionnaireId < 1)
@@ -66,12 +66,16 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
     protected private async Task<TableData<SessionOfDocumentDataModelDB>> ServerReload(TableState state)
     {
+        if (string.IsNullOrWhiteSpace(ParentFormsPage.CurrentUser.UserId))
+            return new TableData<SessionOfDocumentDataModelDB>() { TotalItems = totalItems, Items = sessions };
+
         RequestSessionsQuestionnairesRequestPaginationModel req = new()
         {
             PageNum = state.Page,
             PageSize = state.PageSize,
             SimpleRequest = searchString,
-            DocumentSchemeId = SelectedQuestionnaireId
+            DocumentSchemeId = SelectedQuestionnaireId,
+            FilterUserId = ParentFormsPage.CurrentUser.UserId
         };
         IsBusyProgress = true;
         ConstructorFormsSessionsPaginationResponseModel rest = await FormsRepo.RequestSessionsQuestionnaires(req);
@@ -192,11 +196,11 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
     async Task RestUpdate()
     {
-        if (CurrentMainProject.MainProject is null)
+        if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        ConstructorFormsQuestionnairesPaginationResponseModel rest = await FormsRepo.RequestQuestionnaires(new() { PageNum = 0, PageSize = 1000 }, CurrentMainProject.MainProject.Id);
+        ConstructorFormsQuestionnairesPaginationResponseModel rest = await FormsRepo.RequestQuestionnaires(new() { PageNum = 0, PageSize = 1000 }, ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
         if (rest.Questionnaires is null)

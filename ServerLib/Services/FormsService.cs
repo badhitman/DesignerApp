@@ -2536,6 +2536,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (req.DocumentSchemeId > 0)
             query = query.Where(x => x.OwnerId == req.DocumentSchemeId);
 
+        if (!string.IsNullOrWhiteSpace(req.FilterUserId))
+            query = query.Where(x => x.AuthorUserId == req.FilterUserId);
+
         if (!string.IsNullOrWhiteSpace(req.SimpleRequest))
             query = query.Where(x => (x.Name != null && EF.Functions.Like(x.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") || (x.SessionToken != null && x.SessionToken.ToLower() == req.SimpleRequest.ToLower()) || (!string.IsNullOrWhiteSpace(x.EmailsNotifications) && EF.Functions.Like(x.EmailsNotifications.ToLower(), $"%{req.SimpleRequest.ToLower()}%"))));
 

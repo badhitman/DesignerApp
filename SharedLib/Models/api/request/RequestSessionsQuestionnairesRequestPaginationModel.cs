@@ -10,7 +10,12 @@ namespace SharedLib;
 public class RequestSessionsQuestionnairesRequestPaginationModel : SimplePaginationRequestModel
 {
     /// <summary>
-    /// 
+    /// Фильтр по схеме документа
     /// </summary>
     public int DocumentSchemeId { get; set; }
+
+    /// <summary>
+    /// Фильтр автору (user Identity id)
+    /// </summary>
+    public string? FilterUserId { get; set; }
 }
