@@ -12,39 +12,29 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link px-3" href="" Match="NavLinkMatch.All">
-                <span aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link px-3" href="counter">
-                <span aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link px-3" href="weather">
-                <span aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link px-3" href="auth">
-                <span aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
-
-        <AuthorizeView Roles="admin">
-            <Authorized>
+        @foreach (NavItemModel nav_item in NavMainMenu.NavMenuItems)
+        {
+            if (string.IsNullOrWhiteSpace(nav_item.AuthorizeViewRoles))
+            {
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link px-3" href="Users/Profiles">
-                        <span aria-hidden="true"></span> Пользователи
+                    <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll?NavLinkMatch.All: NavLinkMatch.Prefix)">
+                        <span aria-hidden="true"></span> @nav_item.Title
                     </NavLink>
                 </div>
-            </Authorized>
-        </AuthorizeView>
+            }
+            else
+            {
+                <AuthorizeView Roles="@nav_item.AuthorizeViewRoles">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll?NavLinkMatch.All: NavLinkMatch.Prefix)">
+                                <span aria-hidden="true"></span> @nav_item.Title
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            }
+        }
 
         <AuthorizeView>
             <Authorized>
@@ -80,6 +70,9 @@
 </div>
 
 @code {
+    [CascadingParameter, EditorRequired]
+    public required NavMainMenuModel NavMainMenu { get; set; }
+
     private string? currentUrl;
 
     protected override void OnInitialized()
