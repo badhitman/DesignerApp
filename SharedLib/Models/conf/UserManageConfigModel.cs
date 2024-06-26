@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-
 using System.Net.Mail;
 
 namespace SharedLib;

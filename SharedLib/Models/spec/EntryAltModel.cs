@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-
 namespace SharedLib;
 
 /// <inheritdoc/>

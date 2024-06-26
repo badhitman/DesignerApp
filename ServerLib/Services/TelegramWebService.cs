@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +12,7 @@ using SharedLib;
 using DbcLib;
 
 namespace ServerLib;
+
 /// <summary>
 /// Telegram
 /// </summary>
