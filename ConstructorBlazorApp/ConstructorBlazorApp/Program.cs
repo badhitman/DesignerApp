@@ -75,6 +75,10 @@ builder.Services
     .Configure<VirtualColumnCalculateGroupingTableModel[]>(builder.Configuration.GetSection("VirtualColumnCalculateGroupingTable"))
     ;
 
+NavMainMenuModel? mainNavMenu = builder.Configuration.GetSection("NavMenuConfig").Get<NavMainMenuModel>();
+mainNavMenu ??= new NavMainMenuModel() { NavMenuItems = [new NavItemModel() { HrefNav = "", Title = "Home", IsNavLinkMatchAll = true }] };
+builder.Services.AddCascadingValue(sp => mainNavMenu);
+
 string connectionIdentityString = builder.Configuration.GetConnectionString("IdentityConnection") ?? throw new InvalidOperationException("Connection string 'IdentityConnection' not found.");
 builder.Services.AddDbContextFactory<IdentityAppDbContext>(opt =>
     opt.UseSqlite(connectionIdentityString));
