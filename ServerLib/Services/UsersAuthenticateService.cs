@@ -3,8 +3,6 @@
 ////////////////////////////////////////////////
 
 using IdentityLib;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
@@ -34,14 +32,14 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
         {
             Response = UserInfoModel.Build(
             userId: au.Id,
-            userName: au.UserName ?? "",
+            userName: au.UserName,
             email: au.Email,
             phoneNumber: au.PhoneNumber,
-            au.TelegramId,
-            au.EmailConfirmed,
-            au.LockoutEnd,
-            au.LockoutEnabled,
-            au.AccessFailedCount)
+            telegramId: au.TelegramId,
+            emailConfirmed: au.EmailConfirmed,
+            lockoutEnd: au.LockoutEnd,
+            lockoutEnabled: au.LockoutEnabled,
+            accessFailedCount: au.AccessFailedCount)
         };
     }
 
