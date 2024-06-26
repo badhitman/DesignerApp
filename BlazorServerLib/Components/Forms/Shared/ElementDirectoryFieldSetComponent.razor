@@ -14,7 +14,7 @@ else
         <code title="Системное имя элемента справочника">@ElementObject.SystemName</code>
     </div>
 
-    @if (ParentFormsPage.MainProject?.IsDisabled == false || ParentFormsPage.CurrentUser.IsAdmin)
+    @if (ParentFormsPage.CanEditProject)
     {
         <span @onclick="MoveUp" class="link-@(IsMostUp ? "secondary" : "info") bi bi-arrow-up-square@(IsMostUp ? "" : "-fill") me-2" title="Вверх"></span>
         <span @onclick="MoveDown" class="link-@(IsMostDown ? "secondary" : "info") bi bi-arrow-down-square@(IsMostDown ? "" : "-fill") me-3" title="Вниз"></span>

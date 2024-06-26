@@ -27,6 +27,11 @@ public partial class FormsPage : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     public MainProjectViewModel? MainProject { get; set; }
 
+    /// <summary>
+    /// Проверка разрешения редактировать проект
+    /// </summary>
+    public bool CanEditProject => MainProject is not null && (!MainProject.IsDisabled || MainProject.OwnerUserId.Equals(CurrentUser.UserId) || CurrentUser.IsAdmin);
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {

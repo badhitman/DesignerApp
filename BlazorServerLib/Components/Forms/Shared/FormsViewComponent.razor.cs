@@ -60,7 +60,8 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
         StateHasChanged();
         DialogParameters<EditFormDialogComponent> parameters = new()
         {
-            { x => x.Form, rest.Response }
+            { x => x.Form, rest.Response },
+            { x => x.ParentFormsPage, ParentFormsPage }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>($"Редактирование формы #{rest.Response?.Id}", parameters, options).Result;
@@ -101,7 +102,8 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
 
         DialogParameters<EditFormDialogComponent> parameters = new()
         {
-            { x => x.Form, FormConstructorModelDB.BuildEmpty(ParentFormsPage.MainProject.Id) }
+            { x => x.Form, FormConstructorModelDB.BuildEmpty(ParentFormsPage.MainProject.Id) },
+            { x => x.ParentFormsPage, ParentFormsPage }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;

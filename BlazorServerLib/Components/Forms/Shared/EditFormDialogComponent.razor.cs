@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using BlazorWebLib.Components.Forms.Pages;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
@@ -14,13 +15,11 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// </summary>
 public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
-    /// <inheritdoc/>
     [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
 
     [CascadingParameter]
@@ -30,6 +29,11 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public FormConstructorModelDB Form { get; set; } = default!;
 
+    /// <summary>
+    /// Родительская страница форм
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     protected FieldsFormViewComponent? _fields_view_ref;
@@ -63,8 +67,11 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
+        {
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
-
+        }
         if (rest.Response is null)
         {
             SnackbarRepo.Add($"Ошибка B64393D8-9C60-4A84-9790-15EFA6A74ABB rest content form is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);

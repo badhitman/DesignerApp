@@ -9,11 +9,11 @@
         </MudPaper>
     </div>
     <div class="card-body">
-        @if (ParentFormsPage.MainProject?.IsDisabled == false || ParentFormsPage.CurrentUser.IsAdmin)
+        @if (ParentFormsPage.CanEditProject)
         {
             <nav class="navbar bg-body-tertiary">
                 <div class="container-fluid">
-                    @if (directoryNav_ref.SelectedDirectoryId > 0)
+                    @if (directoryNav_ref is not null && directoryNav_ref.SelectedDirectoryId > 0)
                     {
                         <a class="navbar-brand">Элементы списка</a>
                         <div class="d-flex">
@@ -29,6 +29,6 @@
                 </div>
             </nav>
         }
-        <DirectoryElementsListViewComponent @ref="elementsListOfDirectoryView_ref" SelectedDirectoryId="@directoryNav_ref.SelectedDirectoryId" />
+        <DirectoryElementsListViewComponent @ref="elementsListOfDirectoryView_ref" SelectedDirectoryId="@(directoryNav_ref?.SelectedDirectoryId ?? -1)" />
     </div>
 </div>

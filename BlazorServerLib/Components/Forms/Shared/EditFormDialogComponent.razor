@@ -18,41 +18,45 @@
                     <form class="row g-3">
                         <div class="col-md-3">
                             <label for="inputName4" class="form-label">Название</label>
-                            <input @bind-value="FormEditObject.Name" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" placeholder="Наименование">
+                            <input @bind-value="FormEditObject.Name" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" placeholder="Наименование" disabled="@(!ParentFormsPage.CanEditProject)">
                         </div>
                         <div class="col-md-3">
                             <label for="inputSystemName5" class="form-label">Системное имя</label>
-                            <input @bind-value="FormEditObject.SystemName" @bind-value:event="oninput" type="text" class="form-control" id="inputSystemName5" placeholder="Системное имя">
+                            <input @bind-value="FormEditObject.SystemName" @bind-value:event="oninput" type="text" class="form-control" id="inputSystemName5" placeholder="Системное имя" disabled="@(!ParentFormsPage.CanEditProject)">
                         </div>
                         <div class="col-md-3" title="Классы стилей, которые будут применены к форме">
                             <label for="inputCSS4" class="form-label">CSS</label>
-                            <input @bind-value="FormEditObject.Css" @bind-value:event="oninput" type="text" class="form-control" id="inputCSS4">
+                            <input @bind-value="FormEditObject.Css" @bind-value:event="oninput" type="text" class="form-control" id="inputCSS4" disabled="@(!ParentFormsPage.CanEditProject)">
                         </div>
                         <div class="col-md-3" title="Текст кнопки для режима многострочной/табличной части документа">
                             <label for="inputBtn5" class="form-label">Текст кнопки создания</label>
-                            <input @bind-value="FormEditObject.AddRowButtonTitle" @bind-value:event="oninput" type="text" class="form-control" id="inputBtn5" placeholder="Добавить строку">
+                            <input @bind-value="FormEditObject.AddRowButtonTitle" @bind-value:event="oninput" type="text" class="form-control" id="inputBtn5" placeholder="Добавить строку" disabled="@(!ParentFormsPage.CanEditProject)">
                         </div>
                         <div class="col-12">
                             <div class="mb-3">
                                 <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
-                                <InputRichTextComponent @bind-Value="FormEditObject.Description" @ref="_currentTemplateInputRichText" />
+                                <InputRichTextComponent @bind-Value="FormEditObject.Description" @ref="_currentTemplateInputRichText" ReadOnly="@(!ParentFormsPage.CanEditProject)" />
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="hstack gap-3">
-                                <div></div>
-                                <MudSpacer />
-                                <div>
-                                    <div class="btn-group" role="group">
-                                        <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(FormEditObject.Name) || !Regex.IsMatch(FormEditObject.SystemName, GlobalStaticConstants.NAME_SPACE_TEMPLATE) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
-                                        @if (IsEdited)
-                                        {
-                                            <button @onclick="ResetForm" class="btn btn-outline-primary" type="button" id="reset-form">Сброс</button>
-                                        }
+
+                        @if (ParentFormsPage.CanEditProject)
+                        {
+                            <div class="col-12">
+                                <div class="hstack gap-3">
+                                    <div></div>
+                                    <MudSpacer />
+                                    <div>
+                                        <div class="btn-group" role="group">
+                                            <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(FormEditObject.Name) || !Regex.IsMatch(FormEditObject.SystemName, GlobalStaticConstants.NAME_SPACE_TEMPLATE) || !IsEdited)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
+                                            @if (IsEdited)
+                                            {
+                                                <button @onclick="ResetForm" class="btn btn-outline-primary" type="button" id="reset-form">Сброс</button>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        }
                     </form>
                 </MudTabPanel>
                 <MudTabPanel Disabled="@(Form.Id < 1)" Text="Поля формы">

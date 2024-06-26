@@ -602,7 +602,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             await context_forms.AddAsync(project);
             await context_forms.SaveChangesAsync();
 
-            ProjectUseConstructorModelDb project_use = new() { UserId = user_id, ProjectId = project.Id };
+            ProjectUseConstructorModelDb project_use = new() { UserId = project.OwnerUserId, ProjectId = project.Id };
             await context_forms.AddAsync(project_use);
             await context_forms.SaveChangesAsync();
 

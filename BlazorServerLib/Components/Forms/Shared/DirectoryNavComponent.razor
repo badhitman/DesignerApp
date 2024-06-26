@@ -47,7 +47,7 @@ else if (DirectoryNavState == DirectoryNavStatesEnum.Delete)
         <button @onclick="() => { DirectoryNavState = DirectoryNavStatesEnum.None; }" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
     </div>
 }
-else if (ParentFormsPage.MainProject?.IsDisabled == false || ParentFormsPage.CurrentUser.IsAdmin)
+else if (ParentFormsPage.CanEditProject)
 {
     @if (SelectedDirectoryId > 0)
     {

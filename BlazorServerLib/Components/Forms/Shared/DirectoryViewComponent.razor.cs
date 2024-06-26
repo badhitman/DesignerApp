@@ -32,7 +32,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     protected DirectoryElementsListViewComponent elementsListOfDirectoryView_ref = default!;
 
     /// <inheritdoc/>
-    protected DirectoryNavComponent directoryNav_ref = default!;
+    protected DirectoryNavComponent? directoryNav_ref;
 
     SystemOwnedNameModel createNewElementForDict = SystemOwnedNameModel.BuildEmpty(0);
 
@@ -42,15 +42,21 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         if (createNewElementForDict.OwnerId < 1)
             throw new Exception("Не выбран справочник/список");
 
-        directoryNav_ref.IsBusyProgress = true;
-        directoryNav_ref.StateHasChangedCall();
+        if (directoryNav_ref is not null)
+        {
+            directoryNav_ref.IsBusyProgress = true;
+            directoryNav_ref.StateHasChangedCall();
+        }
 
         IsBusyProgress = true;
         TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(createNewElementForDict);
         IsBusyProgress = false;
 
-        directoryNav_ref.IsBusyProgress = false;
-        directoryNav_ref.StateHasChangedCall();
+        if (directoryNav_ref is not null)
+        {
+            directoryNav_ref.IsBusyProgress = false;
+            directoryNav_ref.StateHasChangedCall();
+        }
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         createNewElementForDict = SystemOwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
