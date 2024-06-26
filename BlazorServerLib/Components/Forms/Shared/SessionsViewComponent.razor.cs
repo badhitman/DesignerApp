@@ -71,7 +71,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             PageNum = state.Page,
             PageSize = state.PageSize,
             SimpleRequest = searchString,
-            QuestionnaireId = SelectedQuestionnaireId
+            DocumentSchemeId = SelectedQuestionnaireId
         };
         IsBusyProgress = true;
         ConstructorFormsSessionsPaginationResponseModel rest = await FormsRepo.RequestSessionsQuestionnaires(req);

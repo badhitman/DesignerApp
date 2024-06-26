@@ -614,6 +614,65 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             await context_forms.AddAsync(project_use);
             await context_forms.SaveChangesAsync();
 
+#if DEBUG
+            DirectoryConstructorModelDB _dir_seed = new()
+            {
+                Name = "Булево (логическое)",
+                ProjectId = project.Id,
+                SystemName = "BooleanEnum",
+            };
+            await context_forms.AddAsync(_dir_seed);
+            await context_forms.SaveChangesAsync();
+
+            ElementOfDirectoryConstructorModelDB[] _el_of_dir_seed = [
+                new() { Name = "Не установлено", SortIndex = 1, SystemName = "None", ParentId = _dir_seed.Id },
+                new() { Name = "Да", SortIndex = 2, SystemName = "True", ParentId = _dir_seed.Id },
+                new() { Name = "Нет", SortIndex = 3, SystemName = "False", ParentId = _dir_seed.Id }
+                ];
+
+            await context_forms.AddRangeAsync(_el_of_dir_seed);
+            await context_forms.SaveChangesAsync();
+
+            FormConstructorModelDB _form_seed = new()
+            {
+                Name = "Тестовая форма (demo)",
+                ProjectId = project.Id,
+                SystemName = "Default",
+                Description = "<p>seed data for debug</p>",
+            };
+
+            await context_forms.AddAsync(_form_seed);
+            await context_forms.SaveChangesAsync();
+
+            _form_seed.Fields = [new FieldFormConstructorModelDB() { Name = "Test text", SystemName = "DemoTextField", OwnerId = _form_seed.Id, SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12" }];
+            _form_seed.FormsDirectoriesLinks = [new LinkDirectoryToFormConstructorModelDB() { Name = "Test Directory", SystemName = "DemoDirectoryField", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
+
+            context_forms.Update(_form_seed);
+            await context_forms.SaveChangesAsync();
+
+            DocumentSchemeConstructorModelDB _document_scheme_seed = new() { Name = "Demo", SystemName = "TestDocument", ProjectId = project.Id };
+
+            await context_forms.AddAsync(_document_scheme_seed);
+            await context_forms.SaveChangesAsync();
+
+            _document_scheme_seed.Pages = [new TabOfDocumentSchemeConstructorModelDB() { Name = "Demo seed", SortIndex = 1, OwnerId = _document_scheme_seed.Id }];
+
+            context_forms.Update(_document_scheme_seed);
+            await context_forms.SaveChangesAsync();
+
+            _document_scheme_seed.Pages[0].JoinsForms = [new TabJoinDocumentSchemeConstructorModelDB() { Name = "", FormId = _form_seed.Id, OwnerId = _document_scheme_seed.Pages[0].Id, SortIndex = 1 }];
+
+            context_forms.Update(_document_scheme_seed);
+            await context_forms.SaveChangesAsync();
+
+            SessionOfDocumentDataModelDB _session_seed = new() { Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "") };
+
+            await context_forms.AddAsync(_session_seed);
+            await context_forms.SaveChangesAsync();
+
+#endif
+
+
             res.Response = MainProjectViewModel.Build(project);
         }
         else
@@ -1359,11 +1418,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context_forms.Database.BeginTransaction(isolationLevel: System.Data.IsolationLevel.Serializable);
 
         List<ValueDataForSessionOfDocumentModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == form_field.Name)
-                                                                         join session in context_forms.Sessions on val_s.OwnerId equals session.Id
-                                                                         join Questionnaire in context_forms.DocumentSchemes on session.OwnerId equals Questionnaire.Id
-                                                                         join page in context_forms.TabsOfDocumentsSchemes on Questionnaire.Id equals page.OwnerId
-                                                                         join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
-                                                                         select val_s)
+                                                                           join session in context_forms.Sessions on val_s.OwnerId equals session.Id
+                                                                           join Questionnaire in context_forms.DocumentSchemes on session.OwnerId equals Questionnaire.Id
+                                                                           join page in context_forms.TabsOfDocumentsSchemes on Questionnaire.Id equals page.OwnerId
+                                                                           join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
+                                                                           select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);
 
         if (form_field_db.TypeField != form_field.TypeField)
@@ -1546,11 +1605,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context_forms.Database.BeginTransaction(isolationLevel: System.Data.IsolationLevel.Serializable);
 
         List<ValueDataForSessionOfDocumentModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == field_directory.Name)
-                                                                         join session in context_forms.Sessions on val_s.OwnerId equals session.Id
-                                                                         join Questionnaire in context_forms.DocumentSchemes on session.OwnerId equals Questionnaire.Id
-                                                                         join page in context_forms.TabsOfDocumentsSchemes on Questionnaire.Id equals page.OwnerId
-                                                                         join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
-                                                                         select val_s)
+                                                                           join session in context_forms.Sessions on val_s.OwnerId equals session.Id
+                                                                           join Questionnaire in context_forms.DocumentSchemes on session.OwnerId equals Questionnaire.Id
+                                                                           join page in context_forms.TabsOfDocumentsSchemes on Questionnaire.Id equals page.OwnerId
+                                                                           join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
+                                                                           select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);
 
         if (form_field_db.DirectoryId != field_directory.DirectoryId)
@@ -1651,8 +1710,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return ResponseBaseModel.CreateError($"Поле #{form_field_id} (простого типа) формы не найден в БД");
 
         IQueryable<ValueDataForSessionOfDocumentModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
-                                                                join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
-                                                                select _v;
+                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
+                                                                  select _v;
 
         if (await values.AnyAsync(cancellationToken: cancellationToken))
             context_forms.RemoveRange(values);
@@ -1674,8 +1733,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         context_forms.Remove(field_db);
 
         IQueryable<ValueDataForSessionOfDocumentModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
-                                                                join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
-                                                                select _v;
+                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
+                                                                  select _v;
 
         if (await values.AnyAsync(cancellationToken: cancellationToken))
             context_forms.RemoveRange(values);
@@ -2485,8 +2544,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .OrderByDescending(x => x.CreatedAt)
             .AsQueryable();
 
-        if (req.QuestionnaireId > 0)
-            query = query.Where(x => x.OwnerId == req.QuestionnaireId);
+        if (req.DocumentSchemeId > 0)
+            query = query.Where(x => x.OwnerId == req.DocumentSchemeId);
 
         if (!string.IsNullOrWhiteSpace(req.SimpleRequest))
             query = query.Where(x => (x.Name != null && EF.Functions.Like(x.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") || (x.SessionToken != null && x.SessionToken.ToLower() == req.SimpleRequest.ToLower()) || (!string.IsNullOrWhiteSpace(x.EmailsNotifications) && EF.Functions.Like(x.EmailsNotifications.ToLower(), $"%{req.SimpleRequest.ToLower()}%"))));
@@ -2558,9 +2617,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         IQueryable<ValueDataForSessionOfDocumentModelDB> q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
-                                                           join _s in context_forms.Sessions.Where(x => !req.SessionId.HasValue || x.Id == req.SessionId.Value) on _vs.OwnerId equals _s.Id
-                                                           join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.QuestionnairePageJoinFormId equals _pjf.Id
-                                                           select _vs;
+                                                             join _s in context_forms.Sessions.Where(x => !req.SessionId.HasValue || x.Id == req.SessionId.Value) on _vs.OwnerId equals _s.Id
+                                                             join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.QuestionnairePageJoinFormId equals _pjf.Id
+                                                             select _vs;
         int _i = await q.CountAsync();
         if (_i == 0)
             return ResponseBaseModel.CreateSuccess("Значений нет (удалить нечего)");

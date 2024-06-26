@@ -7,10 +7,10 @@ namespace SharedLib;
 /// <summary>
 /// Запрос сессий (с пагинацией)
 /// </summary>
-public class RequestSessionsQuestionnairesRequestPaginationModel: SimplePaginationRequestModel
+public class RequestSessionsQuestionnairesRequestPaginationModel : SimplePaginationRequestModel
 {
     /// <summary>
     /// 
     /// </summary>
-    public int QuestionnaireId { get; set; }
+    public int DocumentSchemeId { get; set; }
 }
