@@ -656,7 +656,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             context_forms.Update(_document_scheme_seed);
             await context_forms.SaveChangesAsync();
 
-            SessionOfDocumentDataModelDB _session_seed = new() { AuthorUser = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "") };
+            SessionOfDocumentDataModelDB _session_seed = new() { AuthorUser = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString() };
 
             await context_forms.AddAsync(_session_seed);
             await context_forms.SaveChangesAsync();
@@ -2469,9 +2469,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        session_db.CreatedAt = session_db.CreatedAt;
-        session_db.DeadlineDate = session_db.DeadlineDate;
-        session_db.LastQuestionnaireUpdateActivity = session_db.LastQuestionnaireUpdateActivity;
+        //session_db.CreatedAt = session_db.CreatedAt;
+        //session_db.DeadlineDate = session_db.DeadlineDate;
+        //session_db.LastQuestionnaireUpdateActivity = session_db.LastQuestionnaireUpdateActivity;
 
         if (session_db.Name == session_json.Name &&
             session_db.Description == session_json.Description &&

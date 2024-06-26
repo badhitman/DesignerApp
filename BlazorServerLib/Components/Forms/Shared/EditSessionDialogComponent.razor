@@ -17,10 +17,16 @@
                 <div title="Адреса email через любой разделитель" id="emailsNotifyHelp" class="form-text">Адреса Email для уведомлений изменений.</div>
             </div>
             <div class="col-md-6">
-                @if (string.IsNullOrWhiteSpace(Session.SessionToken) || Session.SessionStatus == SessionsStatusesEnum.None)
+                @if (Session.SessionStatus == SessionsStatusesEnum.None)
                 {
                     <p class="lead">
-                        Сессия не активна. <span style="cursor:pointer;" class="badge rounded-pill bg-dark" @onclick="ReGenerate">создать новый токен?</span>
+                        Сессия не активна. <span class="badge rounded-pill bg-dark">Переведите ссылку в активное состояние</span>
+                    </p>
+                }
+                else if (string.IsNullOrWhiteSpace(Session.SessionToken))
+                {
+                    <p class="lead">
+                        Токен отсутствует. <span style="cursor:pointer;" class="badge rounded-pill bg-dark" @onclick="ReGenerate">создать новый токен?</span>
                     </p>
                 }
                 else
@@ -72,7 +78,7 @@
                     <div></div>
                     <MudSpacer />
                     <div>
-                        <div class="btn-group" role="group" >
+                        <div class="btn-group" role="group">
                             <button @onclick="SaveForm" disabled="@(string.IsNullOrWhiteSpace(session_origin.Name) || !IsEdited || IsBusyProgress)" class="btn btn-outline-success" type="button" id="save-form">Сохранить</button>
                             @if (IsEdited)
                             {
