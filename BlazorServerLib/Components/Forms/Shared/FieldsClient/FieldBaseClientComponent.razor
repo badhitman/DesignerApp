@@ -86,11 +86,11 @@
 
             @if (Field.TypeField == TypesFieldsFormsEnum.Text && (bool?)Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.IsMultiline, false) == true)
             {
-                <textarea @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" class="@css_class" id="@DomID" name="@DomID" rows="5" placeholder="@Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" aria-describedby="@($"{DomID}Help")"></textarea>
+                <textarea @bind-value="StringFieldValue" @bind-value:event="oninput" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" class="@css_class" id="@DomID" name="@DomID" rows="5" placeholder="@Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" aria-describedby="@($"{DomID}Help")"></textarea>
             }
             else
             {
-                <input @bind="StringFieldValue" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" placeholder="@Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" type="@Field.TypeField.ToString()" class="@css_class" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
+                <input @bind-value="StringFieldValue" @bind-value:event="oninput" readonly="@(SessionQuestionnaire is null)" disabled="@_disabled" placeholder="@Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Placeholder, "")" type="@Field.TypeField.ToString()" class="@css_class" name="@DomID" id="@DomID" aria-describedby="@($"{DomID}Help")">
             }
 
             <div id="@($"{DomID}Help")" class="form-text" hidden="@string.IsNullOrEmpty(Field.Hint)">
