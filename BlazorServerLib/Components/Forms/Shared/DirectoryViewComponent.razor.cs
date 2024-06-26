@@ -56,6 +56,11 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         createNewElementForDict = SystemOwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
         if (rest.Success())
             await elementsListOfDirectoryView_ref.ReloadElements(directoryNav_ref.SelectedDirectoryId, true);
+        else
+        {
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
+        }
     }
 
     async void SelectedDirectoryChangeAction(int selectedDirectoryId)

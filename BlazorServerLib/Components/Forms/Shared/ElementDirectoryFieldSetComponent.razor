@@ -14,8 +14,11 @@ else
         <code title="Системное имя элемента справочника">@ElementObject.SystemName</code>
     </div>
 
-    <span @onclick="MoveUp" class="link-@(IsMostUp ? "secondary" : "info") bi bi-arrow-up-square@(IsMostUp ? "" : "-fill") me-2" title="Вверх"></span>
-    <span @onclick="MoveDown" class="link-@(IsMostDown ? "secondary" : "info") bi bi-arrow-down-square@(IsMostDown ? "" : "-fill") me-3" title="Вниз"></span>
-    <span @onclick="() => { IsEdit = true; }" class="link-primary bi bi-pen me-2" title="Редактирование элемента"></span>
-    <span @onclick="DeleteElementOfDirectory" class="link-primary bi bi-trash text-warning" title="Удаление элемента"></span>
+    @if (ParentFormsPage.MainProject?.IsDisabled == false || ParentFormsPage.CurrentUser.IsAdmin)
+    {
+        <span @onclick="MoveUp" class="link-@(IsMostUp ? "secondary" : "info") bi bi-arrow-up-square@(IsMostUp ? "" : "-fill") me-2" title="Вверх"></span>
+        <span @onclick="MoveDown" class="link-@(IsMostDown ? "secondary" : "info") bi bi-arrow-down-square@(IsMostDown ? "" : "-fill") me-3" title="Вниз"></span>
+        <span @onclick="() => { IsEdit = true; }" class="link-primary bi bi-pen me-2" title="Редактирование элемента"></span>
+        <span @onclick="DeleteElementOfDirectory" class="link-primary bi bi-trash text-warning" title="Удаление элемента"></span>
+    }
 }

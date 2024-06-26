@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using BlazorWebLib.Components.Forms.Pages;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
@@ -36,6 +37,12 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required DirectoryElementsListViewComponent ParentDirectoryElementsList { get; set; }
+
+    /// <summary>
+    /// Родительская страница форм
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
 
     bool IsEdit = false;
 
@@ -68,7 +75,11 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
         ResponseBaseModel rest = await FormsRepo.UpMoveElementOfDirectory(ElementObject.Id);
         IsBusyProgress = false;
         if (!rest.Success())
+        {
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
+        }
         await ParentDirectoryElementsList.ReloadElements(null, true);
     }
 
@@ -79,7 +90,11 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
         ResponseBaseModel rest = await FormsRepo.DownMoveElementOfDirectory(ElementObject.Id);
         IsBusyProgress = false;
         if (!rest.Success())
+        {
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
+        }
         await ParentDirectoryElementsList.ReloadElements(null, true);
     }
 
@@ -95,9 +110,14 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     {
         IsBusyProgress = true;
         ResponseBaseModel rest = await FormsRepo.DeleteElementFromDirectory(ElementObject.Id);
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        await FormsRepo.CheckAndNormalizeSortIndexForElementsOfDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (!rest.Success())
+        {
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
+        }
+        await FormsRepo.CheckAndNormalizeSortIndexForElementsOfDirectory(SelectedDirectoryId);
         await ParentDirectoryElementsList.ReloadElements(null, true);
     }
 }

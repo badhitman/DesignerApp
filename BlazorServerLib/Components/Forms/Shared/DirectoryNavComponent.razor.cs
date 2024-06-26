@@ -86,9 +86,68 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     {
         IsBusyProgress = true;
         ResponseBaseModel rest = await FormsRepo.DeleteDirectory(SelectedDirectoryId);
+        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
+
+        if (!rest.Success())
+        {
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
+        }
+
         await ReloadDirectories();
         SelectedDirectoryChangeHandler(SelectedDirectoryId);
+    }
+
+    /// <inheritdoc/>
+    protected async Task CreateDirectory()
+    {
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран текущий/основной проект");
+
+        IsBusyProgress = true;
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, SystemName = directoryObject.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (rest.Success())
+        {
+            ResetNavForm();
+            await ReloadDirectories();
+            SelectedDirectoryId = rest.Response;
+        }
+        else
+        {
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
+        }
+    }
+
+    /// <inheritdoc/>
+    protected async Task SaveRenameDirectory()
+    {
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран текущий/основной проект");
+
+        IsBusyProgress = true;
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id));
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+
+        if (!rest.Success())
+        {
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
+        }
+
+        await ReloadDirectories();
+    }
+
+    void ResetNavForm(bool stateHasChanged = false)
+    {
+        directoryObject = SystemEntryModel.BuildEmpty();
+        DirectoryNavState = DirectoryNavStatesEnum.None;
+
+        if (stateHasChanged)
+            StateHasChanged();
     }
 
     /// <summary>
@@ -113,45 +172,6 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             SelectedDirectoryId = allDirectories.FirstOrDefault()?.Id ?? 0;
 
         SelectedDirectoryChangeHandler(SelectedDirectoryId);
-
-        if (stateHasChanged)
-            StateHasChanged();
-    }
-
-    /// <inheritdoc/>
-    protected async Task CreateDirectory()
-    {
-        if (ParentFormsPage.MainProject is null)
-            throw new Exception("Не выбран текущий/основной проект");
-
-        IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, SystemName = directoryObject.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        if (rest.Success())
-        {
-            ResetNavForm();
-            await ReloadDirectories();
-            SelectedDirectoryId = rest.Response;
-        }
-    }
-
-    /// <inheritdoc/>
-    protected async Task SaveRenameDirectory()
-    {
-        if (ParentFormsPage.MainProject is null)
-            throw new Exception("Не выбран текущий/основной проект");
-
-        IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id));
-        IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        await ReloadDirectories();
-    }
-
-    void ResetNavForm(bool stateHasChanged = false)
-    {
-        directoryObject = SystemEntryModel.BuildEmpty();
-        DirectoryNavState = DirectoryNavStatesEnum.None;
 
         if (stateHasChanged)
             StateHasChanged();
