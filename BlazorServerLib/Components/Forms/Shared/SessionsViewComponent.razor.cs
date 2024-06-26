@@ -155,11 +155,14 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
         TResponseModel<UserInfoModel?> current_user = await UsersProfilesRepo.FindByIdAsync();
 
+        if (current_user.Response?.UserId is null)
+            throw new Exception("Ошибка установки автора ссылки");
+
         SessionOfDocumentDataModelDB req = new()
         {
-            Name = NameSessionForCreate ?? "",
+            Name = NameSessionForCreate,
             OwnerId = SelectedQuestionnaireId,
-            CreatorEmail = current_user.Response?.Email ?? ""
+            AuthorUserId = current_user.Response.UserId
         };
         IsBusyProgress = true;
         TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);

@@ -19,7 +19,7 @@ namespace ServerLib;
 /// <summary>
 /// Forms служба
 /// </summary>
-public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDbContextFactory<IdentityAppDbContext> identityDbFactory, ILogger<FormsService> logger, IOptions<ServerConstructorConfigModel> _conf) : IFormsService
+public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDbContextFactory<IdentityAppDbContext> identityDbFactory, IUsersProfilesService usersProfilesRepo, ILogger<FormsService> logger, IOptions<ServerConstructorConfigModel> _conf) : IFormsService
 {
     static readonly Random r = new();
 
@@ -92,16 +92,16 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             }
         }
 
-        if (MailAddress.TryCreate(sq.CreatorEmail, out _))
+        TResponseModel<UserInfoModel?> author_user = await usersProfilesRepo.FindByIdAsync(sq.AuthorUserId);
+        if (author_user.Response is null)
         {
-            res.AddSuccess($"Сессия [{token_session}] успешно отправлена на проверку:{sq.CreatorEmail}");
-        }
-        else
-        {
-            msg = $"Email автора [{sq.CreatorEmail}] имеет не корректный формат. сессия: {token_session}";
+            msg = $"Автор ссылки (пользователь #{sq.AuthorUserId}) не найден в БД.\n{author_user.Message()}";
             res.AddWarning(msg);
             logger.LogError(msg);
+            return res;
         }
+
+        res.AddSuccess($"Сессия [{token_session}] успешно отправлена на проверку:{author_user.Response.UserName}");
 
         return res;
     }
@@ -147,7 +147,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         ValueDataForSessionOfDocumentModelDB? existing_value = session_Questionnaire.DataSessionValues.FirstOrDefault(x => x.RowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == form_join.Id);
         if (existing_value is null)
         {
-            if(req.FieldValue is null)
+            if (req.FieldValue is null)
                 return await GetSessionQuestionnaire(req.SessionId, cancellationToken);
 
             existing_value = ValueDataForSessionOfDocumentModelDB.Build(req, form_join, session_Questionnaire);
@@ -294,14 +294,14 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
     #endregion
 
-    /// <summary>
+    /*/// <summary>
     /// Признак особых привилегий, которыми обладает создатель/владелец сессии и пользователь с ролью Admin
     /// </summary>
     public static bool IsForce(ClaimsPrincipal clp, SessionOfDocumentDataModelDB sq)
     {
         string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
         return clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && x.Value.Equals("admin", StringComparison.OrdinalIgnoreCase)) || sq.CreatorEmail.Equals(email, StringComparison.OrdinalIgnoreCase);
-    }
+    }*/
 
     /////////////// Контекст работы конструктора: работы в системе над какими-либо сущностями всегда принадлежат какому-либо проекту/контексту.
     // При переключении контекста (текущий/основной проект) становятся доступны только работы по этому проекту
@@ -594,7 +594,6 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<TResponseModel<MainProjectViewModel>> GetCurrentMainProject(string user_id)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-
         ApplicationUser? userDb = await identityContext.Users
             .FirstOrDefaultAsync(x => x.Id == user_id);
 
@@ -666,7 +665,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             context_forms.Update(_document_scheme_seed);
             await context_forms.SaveChangesAsync();
 
-            SessionOfDocumentDataModelDB _session_seed = new() { Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "") };
+            SessionOfDocumentDataModelDB _session_seed = new() { AuthorUserId = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "") };
 
             await context_forms.AddAsync(_session_seed);
             await context_forms.SaveChangesAsync();
@@ -2446,15 +2445,20 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 return res;
             }
         }
+
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        ApplicationUser? userDb = await identityContext.Users
+            .FirstOrDefaultAsync(x => x.Id == session_json.AuthorUserId, cancellationToken: cancellationToken);
+
+        if (userDb is null)
+        {
+            res.AddError($"Пользователь #{session_json.AuthorUserId} не найден в БД");
+            return res;
+        }
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         if (session_json.Id < 1)
         {
-            if (!MailAddress.TryCreate(session_json.CreatorEmail, out _))
-            {
-                res.AddError("Ошибка! Ваш email не корректен. 4BFD1BFC-CAAE-4508-9FFE-20562661C368");
-                return res;
-            }
-
             session_json.CreatedAt = DateTime.Now;
             session_json.DeadlineDate = DateTime.Now.AddMinutes(_conf.Value.TimeActualityQuestionnaireSessionMinutes);
             session_json.SessionToken = Guid.NewGuid().ToString();
@@ -2477,11 +2481,6 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         session_db.CreatedAt = session_db.CreatedAt;
         session_db.DeadlineDate = session_db.DeadlineDate;
         session_db.LastQuestionnaireUpdateActivity = session_db.LastQuestionnaireUpdateActivity;
-
-        if (string.IsNullOrWhiteSpace(session_db.CreatorEmail))
-        {
-            logger.LogWarning($"Пустое значение создателя для сессии [#{session_db.Id} token:{session_db.SessionToken}]. Попытка установить текущего пользователя как автора: '{session_db.CreatorEmail}'");
-        }
 
         if (session_db.Name == session_json.Name &&
             session_db.Description == session_json.Description &&
@@ -2583,7 +2582,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 {
                     { nameof(Enumerable.Count), x.Count() },
                     { nameof(element_g.Session.CreatedAt), element_g.Session.CreatedAt },
-                    { nameof(element_g.Session.CreatorEmail), element_g.Session.CreatorEmail },
+                    { nameof(element_g.Session.AuthorUserId), element_g.Session.AuthorUserId },
                     { nameof(element_g.Session.SessionStatus), element_g.Session.SessionStatus }
                 };
 

@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// Сессия опроса/анкеты
 /// </summary>
-[Index(nameof(CreatorEmail)), Index(nameof(SessionToken)), Index(nameof(SessionStatus)), Index(nameof(CreatedAt)), Index(nameof(LastQuestionnaireUpdateActivity)), Index(nameof(DeadlineDate))]
+[Index(nameof(AuthorUserId)), Index(nameof(SessionToken)), Index(nameof(SessionStatus)), Index(nameof(CreatedAt)), Index(nameof(LastQuestionnaireUpdateActivity)), Index(nameof(DeadlineDate))]
 public class SessionOfDocumentDataModelDB
     : EntryDescriptionOwnedModel
 {
@@ -21,7 +21,7 @@ public class SessionOfDocumentDataModelDB
     /// <summary>
     /// Адрес создателя
     /// </summary>
-    public string CreatorEmail { get; set; } = string.Empty;
+    public required string AuthorUserId { get; set; }
 
     /// <summary>
     /// Адреса для отправки уведомлений
