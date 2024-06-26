@@ -10,7 +10,7 @@ namespace SharedLib;
 /// Поле формы
 /// </summary>
 [Index(nameof(SortIndex))]
-public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
+public class FieldFormConstructorModelDB : ConstructorFieldFormBaseModel
 {
     /// <summary>
     /// Сортировка 
@@ -18,14 +18,14 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
     public int SortIndex { get; set; }
 
     /// <inheritdoc/>
-    public ConstructorFormModelDB? Owner { get; set; }
+    public FormConstructorModelDB? Owner { get; set; }
 
 
 
     /// <summary>
     /// Поле формы
     /// </summary>
-    public static ConstructorFieldFormModelDB Build(ConstructorFieldFormBaseModel form_field, ConstructorFormModelDB form_db, int sortIndex)
+    public static FieldFormConstructorModelDB Build(ConstructorFieldFormBaseModel form_field, FormConstructorModelDB form_db, int sortIndex)
         => new()
         {
             SystemName = form_field.SystemName,
@@ -42,11 +42,11 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
         };
 
     /// <inheritdoc/>
-    public static ConstructorFieldFormModelDB Build(ConstructorFieldFormBaseLowModel form_field)
+    public static FieldFormConstructorModelDB Build(ConstructorFieldFormBaseLowModel form_field)
     {
         if (form_field is ConstructorFieldFormBaseModel bf)
         {
-            return new ConstructorFieldFormModelDB()
+            return new FieldFormConstructorModelDB()
             {
                 SystemName = bf.SystemName,
                 Name = bf.Name,
@@ -60,9 +60,9 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
                 Id = bf.Id,
             };
         }
-        else if (form_field is ConstructorFieldFormModelDB ff)
+        else if (form_field is FieldFormConstructorModelDB ff)
         {
-            return new ConstructorFieldFormModelDB()
+            return new FieldFormConstructorModelDB()
             {
                 SystemName = ff.SystemName,
                 Name = ff.Name,
@@ -88,10 +88,10 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
     {
         base.Update(form_field);
 
-        if (form_field is ConstructorFormDirectoryLinkModelDB df)
+        if (form_field is LinkDirectoryToFormConstructorModelDB df)
             return;
 
-            if (form_field is ConstructorFieldFormModelDB _f)
+            if (form_field is FieldFormConstructorModelDB _f)
         {
             MetadataValueType = _f.MetadataValueType;
             TypeField = _f.TypeField;
@@ -114,7 +114,7 @@ public class ConstructorFieldFormModelDB : ConstructorFieldFormBaseModel
         if (o?.GetType() != GetType())
             return false;
 
-        ConstructorFieldFormModelDB other = (ConstructorFieldFormModelDB)o;
+        FieldFormConstructorModelDB other = (FieldFormConstructorModelDB)o;
 
         bool res = other.Id == Id &&
             other.MetadataValueType == MetadataValueType &&

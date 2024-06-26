@@ -24,7 +24,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required ConstructorFormDirectoryLinkModelDB FieldObject { get; set; }
+    public required LinkDirectoryToFormConstructorModelDB FieldObject { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]
@@ -33,7 +33,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormModelDB Form { get; set; }
+    public required FormConstructorModelDB Form { get; set; }
 
 
     /// <inheritdoc/>

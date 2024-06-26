@@ -15,7 +15,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
 {
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required IEnumerable<ConstructorFormSessionValueModelDB> RowData { get; set; }
+    public required IEnumerable<ValueDataForSessionOfDocumentModelDB> RowData { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -35,11 +35,11 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; }
+    public required TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormSessionModelDB SessionQuestionnaire { get; set; }
+    public required SessionOfDocumentDataModelDB SessionQuestionnaire { get; set; }
 
     /// <inheritdoc/>
     public string DomID => $"tr-{PageJoinForm.Id}-{RowNum}";
@@ -79,19 +79,19 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
 
     MarkupString GetValue(ConstructorFieldFormBaseLowModel _fbl)
     {
-        if (_fbl is ConstructorFieldFormModelDB _fb && _fb.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble)
+        if (_fbl is FieldFormConstructorModelDB _fb && _fb.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble)
             return (MarkupString)(CalculateFieldValue(_fb) ?? "&nbsp;");
 
-        ConstructorFormSessionValueModelDB? _sv = SessionQuestionnaire
+        ValueDataForSessionOfDocumentModelDB? _sv = SessionQuestionnaire
         .SessionValues?
         .FirstOrDefault(x => x.QuestionnairePageJoinFormId == PageJoinForm.Id && x.GroupByRowNum == RowNum && x.Name.Equals(_fbl.Name, StringComparison.OrdinalIgnoreCase));
 
         return (MarkupString)(_sv?.Value ?? "&nbsp;");
     }
 
-    IQueryable<ConstructorFieldFormModelDB>? Query(string field_name) => PageJoinForm.Form!.QueryFieldsOfNumericTypes(field_name);
+    IQueryable<FieldFormConstructorModelDB>? Query(string field_name) => PageJoinForm.Form!.QueryFieldsOfNumericTypes(field_name);
     IEnumerable<string> FieldsNames(string field_name) => Query(field_name)?.Select(x => x.Name) ?? Enumerable.Empty<string>();
-    IEnumerable<ConstructorFormSessionValueModelDB> CellsValuesOfCurrentRow => SessionQuestionnaire?.RowsData(PageJoinForm.Id)?.FirstOrDefault(x => x.Key == RowNum) ?? Enumerable.Empty<ConstructorFormSessionValueModelDB>();
+    IEnumerable<ValueDataForSessionOfDocumentModelDB> CellsValuesOfCurrentRow => SessionQuestionnaire?.RowsData(PageJoinForm.Id)?.FirstOrDefault(x => x.Key == RowNum) ?? Enumerable.Empty<ValueDataForSessionOfDocumentModelDB>();
 
     string CellId(ConstructorFieldFormBaseLowModel fb) => $"cell-{fb.Id}:{DomID}";
 

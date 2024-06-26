@@ -44,11 +44,11 @@
                         </div>
                     </div>
                     <CascadingValue Value="SetFieldAction">
-                        @if (_field_master is ConstructorFieldFormModelDB sf)
+                        @if (_field_master is FieldFormConstructorModelDB sf)
                         {
                             <FieldFormRowEditComponent Field="sf" @ref="FieldEditUI_ref" />
                         }
-                        else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+                        else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
                         {
                             <FieldDirectoryFormRowEditComponent Field="df" @ref="FieldDirUI_ref" />
                         }
@@ -96,11 +96,11 @@
                                 {
                                     Dictionary<string, object>? _d = row.Tag;
                                     int? _count = _d?[nameof(Enumerable.Count)] as int?;
-                                    DateTime? _created_at = _d?[nameof(ConstructorFormSessionModelDB.CreatedAt)] as DateTime?;
-                                    DateTime? _deadline_date = _d?.GetValueOrDefault(nameof(ConstructorFormSessionModelDB.DeadlineDate)) as DateTime?;
-                                    DateTime? _last_questionnaire_update_activity = _d?.GetValueOrDefault(nameof(ConstructorFormSessionModelDB.LastQuestionnaireUpdateActivity)) as DateTime?;
-                                    string? _emails_notifications = _d?[nameof(ConstructorFormSessionModelDB.EmailsNotifications)].ToString();
-                                    SessionsStatusesEnum? _mark_as_done = _d?[nameof(ConstructorFormSessionModelDB.SessionStatus)] as SessionsStatusesEnum?;
+                                    DateTime? _created_at = _d?[nameof(SessionOfDocumentDataModelDB.CreatedAt)] as DateTime?;
+                                    DateTime? _deadline_date = _d?.GetValueOrDefault(nameof(SessionOfDocumentDataModelDB.DeadlineDate)) as DateTime?;
+                                    DateTime? _last_questionnaire_update_activity = _d?.GetValueOrDefault(nameof(SessionOfDocumentDataModelDB.LastQuestionnaireUpdateActivity)) as DateTime?;
+                                    string? _emails_notifications = _d?[nameof(SessionOfDocumentDataModelDB.EmailsNotifications)].ToString();
+                                    SessionsStatusesEnum? _mark_as_done = _d?[nameof(SessionOfDocumentDataModelDB.SessionStatus)] as SessionsStatusesEnum?;
 
                                     <tr>
                                         <td>
@@ -149,14 +149,14 @@
                     {
                         <sub title="html css class" class="text-secondary me-1">css:<u>@_field_master.Css</u></sub>
                     }
-                    @if (_field_master is ConstructorFieldFormModelDB sf)
+                    @if (_field_master is FieldFormConstructorModelDB sf)
                     {
                         @* if (!string.IsNullOrEmpty(sf.Hint))
                         {
                             <sup class="me-2" title="подсказка">[@sf.Hint]</sup>
                         } *@
                     }
-                    else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+                    else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
                     {
                         @* if (!string.IsNullOrEmpty(df.Hint))
                         {

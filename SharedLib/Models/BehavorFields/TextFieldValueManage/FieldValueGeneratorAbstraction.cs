@@ -17,5 +17,5 @@ public abstract class FieldValueGeneratorAbstraction : DeclarationAbstraction
     /// <summary>
     /// Элементы, полученные от генератора
     /// </summary>
-    public abstract TResponseModel<string[]> GetListElements(ConstructorFieldFormModelDB field, ConstructorFormSessionModelDB session_Questionnaire, ConstructorFormQuestionnairePageJoinFormModelDB? page_join_form = null, uint row_num = 0);
+    public abstract TResponseModel<string[]> GetListElements(FieldFormConstructorModelDB field, SessionOfDocumentDataModelDB session_Questionnaire, TabJoinDocumentSchemeConstructorModelDB? page_join_form = null, uint row_num = 0);
 }

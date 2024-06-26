@@ -24,7 +24,7 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
     /// Форма
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormModelDB Form { get; set; }
+    public required FormConstructorModelDB Form { get; set; }
 
     /// <summary>
     /// Имя поля

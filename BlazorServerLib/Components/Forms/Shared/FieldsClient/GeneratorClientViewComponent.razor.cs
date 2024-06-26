@@ -16,7 +16,7 @@ public partial class GeneratorClientViewComponent : FieldComponentBaseModel
 {
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public ConstructorFieldFormModelDB Field { get; set; } = default!;
+    public FieldFormConstructorModelDB Field { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]

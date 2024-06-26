@@ -7,7 +7,6 @@ using NLog;
 using NLog.Web;
 using ServerLib;
 using SharedLib;
-using System.Reflection;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using DbcLib;
@@ -85,7 +84,7 @@ builder.Services.AddDbContextFactory<IdentityAppDbContext>(opt =>
 
 string connectionMainString = builder.Configuration.GetConnectionString("MainConnection") ?? throw new InvalidOperationException("Connection string 'MainConnection' not found.");
 builder.Services.AddDbContextFactory<MainDbAppContext>(opt =>
-    opt.UseSqlite(connectionMainString));
+    opt.UseSqlite(connectionMainString).EnableSensitiveDataLogging());
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

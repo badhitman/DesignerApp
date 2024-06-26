@@ -32,7 +32,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required FormsPage CurrentMainProject { get; set; }
 
-    IEnumerable<ConstructorFormQuestionnaireModelDB> QuestionnairesAll = [];
+    IEnumerable<DocumentSchemeConstructorModelDB> QuestionnairesAll = [];
 
     int _selectedQuestionnaireId;
     int SelectedQuestionnaireId
@@ -64,7 +64,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    protected private async Task<TableData<ConstructorFormSessionModelDB>> ServerReload(TableState state)
+    protected private async Task<TableData<SessionOfDocumentDataModelDB>> ServerReload(TableState state)
     {
         RequestSessionsQuestionnairesRequestPaginationModel req = new()
         {
@@ -80,20 +80,20 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         if (rest.Sessions is null)
         {
             SnackbarRepo.Add($"rest.Content.Sessions is null. error B1F8BCC4-952B-4C5E-B573-6FA5AD7F3A8A", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return new TableData<ConstructorFormSessionModelDB>() { TotalItems = totalItems, Items = sessions };
+            return new TableData<SessionOfDocumentDataModelDB>() { TotalItems = totalItems, Items = sessions };
         }
 
         totalItems = rest.TotalRowsCount;
         sessions = new(rest.Sessions);
 
-        return new TableData<ConstructorFormSessionModelDB>() { TotalItems = totalItems, Items = sessions };
+        return new TableData<SessionOfDocumentDataModelDB>() { TotalItems = totalItems, Items = sessions };
     }
 
     /// <inheritdoc/>
-    protected async Task EditSession(ConstructorFormSessionModelDB session)
+    protected async Task EditSession(SessionOfDocumentDataModelDB session)
     {
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.GetSessionQuestionnaire(session.Id);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionQuestionnaire(session.Id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -138,11 +138,11 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected MudTable<ConstructorFormSessionModelDB>? table;
+    protected MudTable<SessionOfDocumentDataModelDB>? table;
 
     /// <inheritdoc/>
     protected int totalItems;
-    List<ConstructorFormSessionModelDB> sessions = [];
+    List<SessionOfDocumentDataModelDB> sessions = [];
 
     /// <inheritdoc/>
     protected async Task CreateNewSession()
@@ -155,14 +155,14 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
         TResponseModel<UserInfoModel?> current_user = await UsersProfilesRepo.FindByIdAsync();
 
-        ConstructorFormSessionModelDB req = new()
+        SessionOfDocumentDataModelDB req = new()
         {
             Name = NameSessionForCreate ?? "",
             OwnerId = SelectedQuestionnaireId,
             CreatorEmail = current_user.Response?.Email ?? ""
         };
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

@@ -35,7 +35,7 @@ else
         <thead>
             <tr>
                 <th class="table-primary" scope="col">@SelectedFieldObject!.FieldName</th>
-                @foreach (ConstructorFieldFormModelDB fe in QueryFieldsOfNumericTypes)
+                @foreach (FieldFormConstructorModelDB fe in QueryFieldsOfNumericTypes)
                 {
                     <th scope="col">@fe.Name</th>
                 }
@@ -85,7 +85,7 @@ else
                                 </sup>
                             </div>
                         </th>
-                        @foreach (ConstructorFieldFormModelDB fe in QueryFieldsOfNumericTypes)
+                        @foreach (FieldFormConstructorModelDB fe in QueryFieldsOfNumericTypes)
                         {
                             <td>
                                 @if (grv.ContainsKey(fe.Name))
@@ -112,7 +112,7 @@ else
         <tfoot>
             <tr>
                 <th scope="row">Итого: </th>
-                @foreach (ConstructorFieldFormModelDB fe in QueryFieldsOfNumericTypes)
+                @foreach (FieldFormConstructorModelDB fe in QueryFieldsOfNumericTypes)
                 {
                     <td>@TableCalculation?.GetTotalSumFieldForGroup(fe.Name)</td>
                 }

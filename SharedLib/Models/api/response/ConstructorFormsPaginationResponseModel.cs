@@ -22,5 +22,5 @@ public class ConstructorFormsPaginationResponseModel : PaginationResponseModel
     /// <summary>
     /// Формы
     /// </summary>
-    public IEnumerable<ConstructorFormModelDB>? Elements { get; set; }
+    public IEnumerable<FormConstructorModelDB>? Elements { get; set; }
 }

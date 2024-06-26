@@ -24,7 +24,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     /// Questionnaire page
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; }
+    public required TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; }
 
     /// <summary>
     /// All forms
@@ -48,7 +48,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     /// Set id for page -  handle action
     /// </summary>
     [Parameter, EditorRequired]
-    public required Action<int, ConstructorFormQuestionnairePageModelDB> SetIdForPageHandle { get; set; }
+    public required Action<int, TabOfDocumentSchemeConstructorModelDB> SetIdForPageHandle { get; set; }
 
     /// <summary>
     /// Set name for page - handle action
@@ -72,7 +72,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     /// Update questionnaire - handle action
     /// </summary>
     [Parameter, EditorRequired]
-    public Action<ConstructorFormQuestionnaireModelDB, ConstructorFormQuestionnairePageModelDB?> UpdateQuestionnaireHandle { get; set; } = default!;
+    public Action<DocumentSchemeConstructorModelDB, TabOfDocumentSchemeConstructorModelDB?> UpdateQuestionnaireHandle { get; set; } = default!;
 
     int _selectedFormForAdding;
     /// <summary>
@@ -139,7 +139,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     protected async Task MoveRow(VerticalDirectionsEnum direct)
     {
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormQuestionnaireModelDB> rest = await FormsRepo.QuestionnairePageMove(QuestionnairePage.Id, direct);
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.QuestionnairePageMove(QuestionnairePage.Id, direct);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -205,7 +205,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         }
 
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.CreateOrUpdateQuestionnairePageJoinForm(new ConstructorFormQuestionnairePageJoinFormModelDB()
+        ResponseBaseModel rest = await FormsRepo.CreateOrUpdateQuestionnairePageJoinForm(new TabJoinDocumentSchemeConstructorModelDB()
         {
             FormId = SelectedFormForAdding,
             OwnerId = QuestionnairePage.Id,

@@ -25,21 +25,21 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
 
     ///// <inheritdoc/>
     //[CascadingParameter, EditorRequired]
-    //public ConstructorFormModelDB Form { get; set; } = default!;
+    //public FormConstructorModelDB Form { get; set; } = default!;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public Action<ConstructorFormDirectoryLinkModelDB> StateHasChangedHandler { get; set; } = default!;
+    public Action<LinkDirectoryToFormConstructorModelDB> StateHasChangedHandler { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public ConstructorFormDirectoryLinkModelDB Field { get; set; } = default!;
+    public LinkDirectoryToFormConstructorModelDB Field { get; set; } = default!;
 
     /// <summary>
     /// Форма
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormModelDB Form { get; set; }
+    public required FormConstructorModelDB Form { get; set; }
 
     /// <inheritdoc/>
     protected IEnumerable<SystemEntryModel> Entries = default!;
@@ -61,7 +61,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     }
 
     /// <inheritdoc/>
-    public void Update(ConstructorFormDirectoryLinkModelDB field)
+    public void Update(LinkDirectoryToFormConstructorModelDB field)
     {
         Field.Update(field);
         StateHasChanged();

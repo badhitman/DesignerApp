@@ -30,7 +30,7 @@ public class ProjectConstructorModelDb : EntryDescriptionSwitchableModel
     /// <summary>
     /// Members
     /// </summary>
-    public List<MemberOfProjectModelDb>? Members { get; set; }
+    public List<MemberOfProjectConstructorModelDb>? Members { get; set; }
 
     /// <summary>
     /// Reload

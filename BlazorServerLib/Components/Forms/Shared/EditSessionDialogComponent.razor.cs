@@ -37,7 +37,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required ConstructorFormSessionModelDB Session { get; set; }
+    public required SessionOfDocumentDataModelDB Session { get; set; }
 
     string UrlSession => $"{NavManagerRepo.BaseUri}{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{Session.SessionToken}";
 
@@ -70,7 +70,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected InputRichTextComponent? _currentTemplateInputRichText;
 
-    ConstructorFormSessionModelDB session_origin = default!;
+    SessionOfDocumentDataModelDB session_origin = default!;
 
     /// <inheritdoc/>
     protected string GetHelperTextForDeadlineDate
@@ -120,7 +120,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
     async Task SaveForm()
     {
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(session_origin);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(session_origin);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())

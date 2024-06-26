@@ -20,7 +20,7 @@ public partial class QuestionnaireClientViewComponent : ComponentBase
     /// Session questionnaire
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormSessionModelDB SessionQuestionnaire { get; set; }
+    public required SessionOfDocumentDataModelDB SessionQuestionnaire { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]

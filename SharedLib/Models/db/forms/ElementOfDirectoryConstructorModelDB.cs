@@ -13,7 +13,7 @@ namespace SharedLib;
 [Index(nameof(SystemName)), Index(nameof(SortIndex))]
 [Index(nameof(Name), nameof(ParentId), IsUnique = true)]
 [Index(nameof(SystemName), nameof(ParentId), IsUnique = true)]
-public class ConstructorFormDirectoryElementModelDB : EntryDescriptionModel
+public class ElementOfDirectoryConstructorModelDB : EntryDescriptionModel
 {
     /// <summary>
     /// System name
@@ -30,7 +30,7 @@ public class ConstructorFormDirectoryElementModelDB : EntryDescriptionModel
     /// <summary>
     /// Перечисление-владелец
     /// </summary>
-    public ConstructorFormDirectoryModelDB? Parent { get; set; }
+    public DirectoryConstructorModelDB? Parent { get; set; }
 
     /// <summary>
     /// Сортировка

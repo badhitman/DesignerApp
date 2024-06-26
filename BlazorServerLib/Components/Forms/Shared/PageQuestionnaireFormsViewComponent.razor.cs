@@ -24,7 +24,7 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     /// Questionnaire page
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; }
+    public required TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; }
 
     int _join_form_id;
 
@@ -40,7 +40,7 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     /// <summary>
     /// Update page
     /// </summary>
-    protected void UpdatePageAction(ConstructorFormQuestionnairePageModelDB? page = null)
+    protected void UpdatePageAction(TabOfDocumentSchemeConstructorModelDB? page = null)
     {
         if (page is not null)
         {
@@ -74,7 +74,7 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     /// <summary>
     /// Форму можно сдвинуть выше?
     /// </summary>
-    protected bool CanUpJoinForm(ConstructorFormQuestionnairePageJoinFormModelDB pjf)
+    protected bool CanUpJoinForm(TabJoinDocumentSchemeConstructorModelDB pjf)
     {
         int min_index = QuestionnairePage.JoinsForms?.Any(x => x.Id != pjf.Id) == true
         ? QuestionnairePage.JoinsForms.Where(x => x.Id != pjf.Id).Min(x => x.SortIndex)
@@ -85,7 +85,7 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     /// <summary>
     /// Форму можно сдвинуть ниже?
     /// </summary>
-    protected bool CanDownJoinForm(ConstructorFormQuestionnairePageJoinFormModelDB pjf)
+    protected bool CanDownJoinForm(TabJoinDocumentSchemeConstructorModelDB pjf)
     {
         int max_index = QuestionnairePage.JoinsForms?.Any(x => x.Id != pjf.Id) == true
         ? QuestionnairePage.JoinsForms.Where(x => x.Id != pjf.Id).Max(x => x.SortIndex)

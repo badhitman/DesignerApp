@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// Опрос/Анкета
+/// Схема документа
 /// </summary>
 [Index(nameof(Name), IsUnique = true)]
-public class ConstructorFormQuestionnaireModelDB : EntryConstructedModel
+public class DocumentSchemeConstructorModelDB : EntryConstructedModel
 {
     /// <inheritdoc/>
-    public static ConstructorFormQuestionnaireModelDB BuildEmpty(int projectId)
+    public static DocumentSchemeConstructorModelDB BuildEmpty(int projectId)
         => new()
         {
             Name = "",
@@ -22,7 +22,7 @@ public class ConstructorFormQuestionnaireModelDB : EntryConstructedModel
         };
 
     /// <inheritdoc/>
-    public static ConstructorFormQuestionnaireModelDB Build(EntryConstructedModel questionnaire, int projectId)
+    public static DocumentSchemeConstructorModelDB Build(EntryConstructedModel questionnaire, int projectId)
         => new()
         {
             Id = questionnaire.Id,
@@ -37,14 +37,14 @@ public class ConstructorFormQuestionnaireModelDB : EntryConstructedModel
     /// <summary>
     /// Страницы
     /// </summary>
-    public List<ConstructorFormQuestionnairePageModelDB>? Pages { get; set; }
+    public List<TabOfDocumentSchemeConstructorModelDB>? Pages { get; set; }
 
     /// <summary>
     /// Получить крайнюю (последнюю или первую) страницу документа с учётом ограничения индекса сортировки
     /// </summary>
     /// <param name="direct">Направление определения (первая или последняя)</param>
     /// <param name="restriction_sort_index">Индекс сортировки от которого следует отталкиваться</param>
-    public ConstructorFormQuestionnairePageModelDB? GetOutermostPage(VerticalDirectionsEnum direct, int restriction_sort_index)
+    public TabOfDocumentSchemeConstructorModelDB? GetOutermostPage(VerticalDirectionsEnum direct, int restriction_sort_index)
     {
         if (Pages is null || Pages.Count == 0)
             return null;
@@ -57,7 +57,7 @@ public class ConstructorFormQuestionnaireModelDB : EntryConstructedModel
     /// <summary>
     /// Перезагрузка
     /// </summary>
-    public void Reload(ConstructorFormQuestionnaireModelDB other)
+    public void Reload(DocumentSchemeConstructorModelDB other)
     {
         Name = other.Name;
         Description = other.Description;
@@ -75,14 +75,14 @@ public class ConstructorFormQuestionnaireModelDB : EntryConstructedModel
                 Pages.RemoveAt(i);
                 i = Pages.FindIndex(x => !other.Pages.Any(y => y.Id == x.Id));
             }
-            ConstructorFormQuestionnairePageModelDB? _p;
-            foreach (ConstructorFormQuestionnairePageModelDB p in Pages)
+            TabOfDocumentSchemeConstructorModelDB? _p;
+            foreach (TabOfDocumentSchemeConstructorModelDB p in Pages)
             {
                 _p = other.Pages.FirstOrDefault(x => x.Id == p.Id);
                 if (_p is not null)
                     p.Reload(_p);
             }
-            ConstructorFormQuestionnairePageModelDB[] pages = other.Pages.Where(x => !Pages.Any(y => y.Id == x.Id)).ToArray();
+            TabOfDocumentSchemeConstructorModelDB[] pages = other.Pages.Where(x => !Pages.Any(y => y.Id == x.Id)).ToArray();
             if (pages.Length != 0)
                 Pages.AddRange(pages);
         }

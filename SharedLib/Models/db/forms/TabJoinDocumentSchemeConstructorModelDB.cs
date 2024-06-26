@@ -10,7 +10,7 @@ namespace SharedLib;
 /// Связь формы со страницей опроса/анкеты
 /// </summary>
 [Index(nameof(SortIndex)), Index(nameof(IsTable))]
-public class ConstructorFormQuestionnairePageJoinFormModelDB : EntryDescriptionOwnedModel
+public class TabJoinDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
 {
     /// <summary>
     /// Сортировка 
@@ -30,7 +30,7 @@ public class ConstructorFormQuestionnairePageJoinFormModelDB : EntryDescriptionO
     /// <summary>
     /// Страница
     /// </summary>
-    public ConstructorFormQuestionnairePageModelDB? Owner { get; set; }
+    public TabOfDocumentSchemeConstructorModelDB? Owner { get; set; }
 
     /// <summary>
     /// [FK] Форма
@@ -39,12 +39,12 @@ public class ConstructorFormQuestionnairePageJoinFormModelDB : EntryDescriptionO
     /// <summary>
     /// Форма
     /// </summary>
-    public ConstructorFormModelDB? Form { get; set; }
+    public FormConstructorModelDB? Form { get; set; }
 
     /// <summary>
     /// Связь формы со страницей опроса/анкеты
     /// </summary>
-    public static ConstructorFormQuestionnairePageJoinFormModelDB Build(EntryDescriptionOwnedModel page_join_form)
+    public static TabJoinDocumentSchemeConstructorModelDB Build(EntryDescriptionOwnedModel page_join_form)
         => new()
         {
             FormId = page_join_form.OwnerId,

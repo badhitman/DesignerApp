@@ -31,14 +31,14 @@ else
         @foreach (ConstructorFieldFormBaseLowModel fb in Form.AllFields)
         {
             <div class="@fb.Css mb-3">
-                @if (fb is ConstructorFieldFormModelDB fs)
+                @if (fb is FieldFormConstructorModelDB fs)
                 {
                     <CascadingValue Value="fs">
                         <FieldBaseClientComponent GroupByRowNum="@RowNum" FieldsReferring="FieldsReferring" />
                     </CascadingValue>
 
                 }
-                else if (fb is ConstructorFormDirectoryLinkModelDB fd)
+                else if (fb is LinkDirectoryToFormConstructorModelDB fd)
                 {
                     <CascadingValue Value="fd">
                         <FieldDirectoryClientComponent DirectoryObject="@Directories.FirstOrDefault(x => x.Id == fd.DirectoryId)" GroupByRowNum="@RowNum" FieldsReferring="FieldsReferring" />

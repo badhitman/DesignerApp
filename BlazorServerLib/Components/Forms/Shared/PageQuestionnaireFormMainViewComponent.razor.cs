@@ -30,11 +30,11 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public required ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; }
+    public required TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; }
+    public required TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -54,7 +54,7 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required Action<ConstructorFormQuestionnairePageModelDB?> UpdatePageActionHandle { get; set; }
+    public required Action<TabOfDocumentSchemeConstructorModelDB?> UpdatePageActionHandle { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -136,7 +136,7 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
     protected async Task SaveJoinForm()
     {
         IsBusyProgress = true;
-        ConstructorFormQuestionnairePageJoinFormModelDB req = new()
+        TabJoinDocumentSchemeConstructorModelDB req = new()
         {
             Description = PageJoinForm.Description,
             FormId = PageJoinForm.FormId,
@@ -184,7 +184,7 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
         {
             LoggerRepo.LogWarning("Дозагрузка [Form] для [PageJoinForm]...");
             IsBusyProgress = true;
-            TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.GetForm(PageJoinForm.FormId);
+            TResponseModel<FormConstructorModelDB> rest = await FormsRepo.GetForm(PageJoinForm.FormId);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);

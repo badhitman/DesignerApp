@@ -31,11 +31,11 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
 
-    MudTable<ConstructorFormQuestionnaireModelDB>? table;
+    MudTable<DocumentSchemeConstructorModelDB>? table;
 
     /// <inheritdoc/>
     protected string? searchString;
-    ConstructorFormsQuestionnairesPaginationResponseModel data = new() { Questionnaires = Enumerable.Empty<ConstructorFormQuestionnaireModelDB>() };
+    ConstructorFormsQuestionnairesPaginationResponseModel data = new() { Questionnaires = Enumerable.Empty<DocumentSchemeConstructorModelDB>() };
 
     /// <inheritdoc/>
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
@@ -61,7 +61,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
-    protected async Task<TableData<ConstructorFormQuestionnaireModelDB>> ServerReload(TableState state)
+    protected async Task<TableData<DocumentSchemeConstructorModelDB>> ServerReload(TableState state)
     {
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");
@@ -74,19 +74,19 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
         if (data.Questionnaires is null)
         {
             SnackbarRepo.Add($"rest.Content.Questionnaires is null. error 62D3109B-7349-48E8-932B-762D5B0EA585", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return new TableData<ConstructorFormQuestionnaireModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
+            return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
         }
 
-        return new TableData<ConstructorFormQuestionnaireModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
+        return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
     }
 
     /// <inheritdoc/>
-    protected async Task QuestionnaireOpenDialog(ConstructorFormQuestionnaireModelDB? questionnaire = null)
+    protected async Task QuestionnaireOpenDialog(DocumentSchemeConstructorModelDB? questionnaire = null)
     {
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");
 
-        questionnaire ??= ConstructorFormQuestionnaireModelDB.BuildEmpty(ParentFormsPage.MainProject.Id);
+        questionnaire ??= DocumentSchemeConstructorModelDB.BuildEmpty(ParentFormsPage.MainProject.Id);
         DialogParameters<EditQuestionnaireDialogComponent> parameters = new()
         {
             { x => x.Questionnaire, questionnaire },

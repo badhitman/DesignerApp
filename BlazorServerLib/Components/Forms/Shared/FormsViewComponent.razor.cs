@@ -34,7 +34,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Таблица
     /// </summary>
-    protected MudTable<ConstructorFormModelDB>? table;
+    protected MudTable<FormConstructorModelDB>? table;
 
     /// <summary>
     /// Строка поиска
@@ -45,10 +45,10 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Открыть форму
     /// </summary>
-    protected async Task OpenForm(ConstructorFormModelDB form)
+    protected async Task OpenForm(FormConstructorModelDB form)
     {
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.GetForm(form.Id);
+        TResponseModel<FormConstructorModelDB> rest = await FormsRepo.GetForm(form.Id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -101,7 +101,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
 
         DialogParameters<EditFormDialogComponent> parameters = new()
         {
-            { x => x.Form, ConstructorFormModelDB.BuildEmpty(ParentFormsPage.MainProject.Id) }
+            { x => x.Form, FormConstructorModelDB.BuildEmpty(ParentFormsPage.MainProject.Id) }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;
@@ -113,11 +113,11 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Загрузка данных форм
     /// </summary>
-    protected async Task<TableData<ConstructorFormModelDB>> ServerReload(TableState state)
+    protected async Task<TableData<FormConstructorModelDB>> ServerReload(TableState state)
     {
         _table_state = state;
         await RestJson();
-        return new TableData<ConstructorFormModelDB>() { TotalItems = rest_data.TotalRowsCount, Items = rest_data.Elements };
+        return new TableData<FormConstructorModelDB>() { TotalItems = rest_data.TotalRowsCount, Items = rest_data.Elements };
     }
 
     /// <inheritdoc/>

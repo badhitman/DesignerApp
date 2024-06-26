@@ -23,7 +23,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormModelDB Form { get; set; }
+    public required FormConstructorModelDB Form { get; set; }
 
     /// <inheritdoc/>
     protected bool CanSave => !string.IsNullOrWhiteSpace(field_creating_field_ref?.FieldName);
@@ -33,11 +33,11 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected ClientStandardViewFormComponent? client_standard_ref;
 
-    void ReloadFields(ConstructorFormModelDB? form = null)
+    void ReloadFields(FormConstructorModelDB? form = null)
     {
         if (Form.Id < 1)
             return;
-        TResponseModel<ConstructorFormModelDB> rest;
+        TResponseModel<FormConstructorModelDB> rest;
         if (form is null)
         {
             IsBusyProgress = true;
@@ -90,9 +90,9 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
         ResponseBaseModel rest;
         IsBusyProgress = true;
-        if (_field_master is ConstructorFormDirectoryLinkModelDB directory_field)
+        if (_field_master is LinkDirectoryToFormConstructorModelDB directory_field)
         {
-            rest = await FormsRepo.FormFieldDirectoryUpdateOrCreate(new ConstructorFormDirectoryLinkModelDB()
+            rest = await FormsRepo.FormFieldDirectoryUpdateOrCreate(new LinkDirectoryToFormConstructorModelDB()
             {
                 SystemName = directory_field.SystemName,
                 Description = directory_field.Description,
@@ -104,7 +104,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 Id = directory_field.Id
             });
         }
-        else if (_field_master is ConstructorFieldFormModelDB standard_field)
+        else if (_field_master is FieldFormConstructorModelDB standard_field)
         {
             rest = await FormsRepo.FormFieldUpdateOrCreate(new ConstructorFieldFormBaseModel()
             {
@@ -152,14 +152,14 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
             return;
         }
         field_creating_field_ref?.Update(_sender);
-        if (_sender is ConstructorFormDirectoryLinkModelDB directory_field)
+        if (_sender is LinkDirectoryToFormConstructorModelDB directory_field)
         {
             if (initiator == typeof(AddingFieldFormViewComponent))
             {
                 _field_master.Required = directory_field.Required;
                 _field_master.Name = directory_field.Name;
 
-                if (_field_master is ConstructorFormDirectoryLinkModelDB dl)
+                if (_field_master is LinkDirectoryToFormConstructorModelDB dl)
                     directory_field.DirectoryId = dl.DirectoryId;
             }
             else
@@ -169,14 +169,14 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
             }
             _field_master = directory_field;
         }
-        else if (_sender is ConstructorFieldFormModelDB standard_field)
+        else if (_sender is FieldFormConstructorModelDB standard_field)
         {
             if (initiator == typeof(AddingFieldFormViewComponent))
             {
                 _field_master.Required = standard_field.Required;
                 _field_master.Name = standard_field.Name;
 
-                if (_field_master is ConstructorFieldFormModelDB sfl)
+                if (_field_master is FieldFormConstructorModelDB sfl)
                     standard_field.MetadataValueType = sfl.MetadataValueType;
             }
             else

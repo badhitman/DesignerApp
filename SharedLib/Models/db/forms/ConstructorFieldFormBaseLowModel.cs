@@ -40,14 +40,14 @@ public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
         Hint = field.Hint;
         Required = field.Required;
         Css = field.Css;
-        if (this is ConstructorFieldFormModelDB _ft && field is ConstructorFieldFormModelDB _fo)
+        if (this is FieldFormConstructorModelDB _ft && field is FieldFormConstructorModelDB _fo)
         {
             _ft.SortIndex = _fo.SortIndex;
             //
             _ft.TypeField = _fo.TypeField;
             _ft.MetadataValueType = _fo.MetadataValueType;
         }
-        else if (this is ConstructorFormDirectoryLinkModelDB _ft2 && field is ConstructorFormDirectoryLinkModelDB _fo2)
+        else if (this is LinkDirectoryToFormConstructorModelDB _ft2 && field is LinkDirectoryToFormConstructorModelDB _fo2)
         {
             _ft2.SortIndex = _fo2.SortIndex;
             //
@@ -62,10 +62,10 @@ public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
         if (o?.GetType() != GetType())
             return false;
 
-        if (o is ConstructorFieldFormModelDB sf)
-            return sf.Equals((ConstructorFieldFormModelDB)this);
-        else if (o is ConstructorFormDirectoryLinkModelDB df)
-            return df.Equals((ConstructorFormDirectoryLinkModelDB)this);
+        if (o is FieldFormConstructorModelDB sf)
+            return sf.Equals((FieldFormConstructorModelDB)this);
+        else if (o is LinkDirectoryToFormConstructorModelDB df)
+            return df.Equals((LinkDirectoryToFormConstructorModelDB)this);
 
         ConstructorFieldFormBaseLowModel other = (ConstructorFieldFormBaseLowModel)o;
         return
@@ -82,9 +82,9 @@ public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        if (this is ConstructorFieldFormModelDB sf)
+        if (this is FieldFormConstructorModelDB sf)
             return sf.GetHashCode();
-        else if (this is ConstructorFormDirectoryLinkModelDB df)
+        else if (this is LinkDirectoryToFormConstructorModelDB df)
             return df.GetHashCode();
         else
             return $"{Id} /{SystemName} '{Name}' [{Description}] -{Hint} `{Required}` {OwnerId} *{Css}*".GetHashCode();

@@ -14,7 +14,7 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
 {
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormDirectoryLinkModelDB Field { get; set; }
+    public required LinkDirectoryToFormConstructorModelDB Field { get; set; }
 
     /// <summary>
     /// Объект справочника/списка (вместе с его элементами)

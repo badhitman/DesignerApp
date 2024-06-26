@@ -14,7 +14,7 @@ public partial class TextFieldFormUIComponent : ComponentBase
 {
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public ConstructorFieldFormModelDB FieldObject { get; set; } = default!;
+    public FieldFormConstructorModelDB FieldObject { get; set; } = default!;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]

@@ -28,7 +28,7 @@ public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseMo
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormModelDB Form { get; set; } = default!;
+    public FormConstructorModelDB Form { get; set; } = default!;
 
     /// <summary>
     /// Доступ к перечню полей формы. Каждое поле формы добавляет себя к этому перечню при инициализации (в <c>OnInitialized()</c>) базового <cref name="FieldBaseClientComponent">компонента</cref>
@@ -45,7 +45,7 @@ public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseMo
     }
 
     /// <inheritdoc/>
-    public async Task Update(ConstructorFormModelDB? form = null)
+    public async Task Update(FormConstructorModelDB? form = null)
     {
         if (form is not null)
             Form.Reload(form);

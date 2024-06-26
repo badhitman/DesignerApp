@@ -11,7 +11,7 @@ namespace SharedLib;
 /// Признак проекта как используемого
 /// </summary>
 [Index(nameof(UserId), IsUnique = true)]
-public class ProjectUseModelDb
+public class ProjectUseConstructorModelDb
 {
     /// <summary>
     /// Идентификатор/Key

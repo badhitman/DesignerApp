@@ -22,16 +22,16 @@ public partial class AddingFieldFormViewComponent : ComponentBase
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormModelDB Form { get; set; }
+    public required FormConstructorModelDB Form { get; set; }
 
-    ConstructorFormDirectoryLinkModelDB FieldObjectForDirectory
+    LinkDirectoryToFormConstructorModelDB FieldObjectForDirectory
     {
         get
         {
             if (_field_object_master is null)
                 return new() { SystemName = "", Name = "", OwnerId = Form.Id };
 
-            ConstructorFormDirectoryLinkModelDB res = new()
+            LinkDirectoryToFormConstructorModelDB res = new()
             {
                 SystemName = _field_object_master.SystemName,
                 Id = _field_object_master.Id,
@@ -43,7 +43,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
                 Css = _field_object_master.Css
             };
 
-            if (_field_object_master is ConstructorFormDirectoryLinkModelDB directory_field)
+            if (_field_object_master is LinkDirectoryToFormConstructorModelDB directory_field)
             {
                 res.DirectoryId = directory_field.DirectoryId;
                 res.SortIndex = directory_field.SortIndex;
@@ -53,14 +53,14 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         }
     }
 
-    ConstructorFieldFormModelDB FieldObjectStandard
+    FieldFormConstructorModelDB FieldObjectStandard
     {
         get
         {
             if (_field_object_master is null)
                 return new() { SystemName = "", Name = "", OwnerId = Form.Id, TypeField = (TypesFieldsFormsEnum)SelectedTypeFieldForAdding };
 
-            ConstructorFieldFormModelDB res = new()
+            FieldFormConstructorModelDB res = new()
             {
                 SystemName = _field_object_master.SystemName,
                 Id = _field_object_master.Id,
@@ -73,7 +73,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
                 Css = _field_object_master.Css
             };
 
-            if (_field_object_master is ConstructorFieldFormModelDB standard_field)
+            if (_field_object_master is FieldFormConstructorModelDB standard_field)
             {
                 res.MetadataValueType = standard_field.MetadataValueType;
                 res.SortIndex = standard_field.SortIndex;

@@ -7,16 +7,16 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// Страница опроса/анкеты
+/// Таб/вкладка документа
 /// </summary>
 [Index(nameof(Name), nameof(OwnerId), IsUnique = true)]
 [Index(nameof(SortIndex), nameof(OwnerId), IsUnique = true)]
-public class ConstructorFormQuestionnairePageModelDB : EntryDescriptionOwnedModel
+public class TabOfDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
 {
     /// <summary>
-    /// Страница опроса/анкеты
+    /// Таб/вкладка документа
     /// </summary>
-    public static ConstructorFormQuestionnairePageModelDB Build(EntryDescriptionOwnedModel questionnaire_page, ConstructorFormQuestionnaireModelDB questionnaire_db, int sortIndex)
+    public static TabOfDocumentSchemeConstructorModelDB Build(EntryDescriptionOwnedModel questionnaire_page, DocumentSchemeConstructorModelDB questionnaire_db, int sortIndex)
         => new()
         {
             Id = questionnaire_page.Id,
@@ -30,7 +30,7 @@ public class ConstructorFormQuestionnairePageModelDB : EntryDescriptionOwnedMode
     /// <summary>
     /// Опрос/Анкета
     /// </summary>
-    public ConstructorFormQuestionnaireModelDB? Owner { get; set; }
+    public DocumentSchemeConstructorModelDB? Owner { get; set; }
 
     /// <summary>
     /// Сортировка 
@@ -40,12 +40,12 @@ public class ConstructorFormQuestionnairePageModelDB : EntryDescriptionOwnedMode
     /// <summary>
     /// Связанные формы
     /// </summary>
-    public List<ConstructorFormQuestionnairePageJoinFormModelDB>? JoinsForms { get; set; }
+    public List<TabJoinDocumentSchemeConstructorModelDB>? JoinsForms { get; set; }
 
     /// <summary>
     /// Получить крайний элемент в границах restriction_sort_index
     /// </summary>
-    public ConstructorFormQuestionnairePageJoinFormModelDB? GetOutermostJoinForm(VerticalDirectionsEnum direct, int restriction_sort_index)
+    public TabJoinDocumentSchemeConstructorModelDB? GetOutermostJoinForm(VerticalDirectionsEnum direct, int restriction_sort_index)
     {
         if (JoinsForms is null || JoinsForms.Count == 0)
             return null;
@@ -64,7 +64,7 @@ public class ConstructorFormQuestionnairePageModelDB : EntryDescriptionOwnedMode
     /// <summary>
     /// Перезагрузить
     /// </summary>
-    public void Reload(ConstructorFormQuestionnairePageModelDB other)
+    public void Reload(TabOfDocumentSchemeConstructorModelDB other)
     {
         Name = other.Name;
         Description = other.Description;
@@ -73,13 +73,13 @@ public class ConstructorFormQuestionnairePageModelDB : EntryDescriptionOwnedMode
     /// <summary>
     /// 
     /// </summary>
-    public static Dictionary<string, Dictionary<uint, List<ConstructorFormSessionValueModelDB>>> GetRowsData(ConstructorFormSessionModelDB session)
+    public static Dictionary<string, Dictionary<uint, List<ValueDataForSessionOfDocumentModelDB>>> GetRowsData(SessionOfDocumentDataModelDB session)
     {
-        Dictionary<string, Dictionary<uint, List<ConstructorFormSessionValueModelDB>>> res = [];
+        Dictionary<string, Dictionary<uint, List<ValueDataForSessionOfDocumentModelDB>>> res = [];
         if (session.SessionValues is null || session.SessionValues.Count == 0)
             return res;
 
-        foreach (ConstructorFormSessionValueModelDB val in session.SessionValues)
+        foreach (ValueDataForSessionOfDocumentModelDB val in session.SessionValues)
         {
             if (string.IsNullOrWhiteSpace(val.QuestionnairePageJoinForm?.Owner?.Name))
                 continue;

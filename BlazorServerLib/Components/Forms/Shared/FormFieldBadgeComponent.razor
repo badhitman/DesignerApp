@@ -1,12 +1,12 @@
 ﻿@if (string.IsNullOrWhiteSpace(Field.Description))
 {
-    if (Field is ConstructorFormDirectoryLinkModelDB _fd)
+    if (Field is LinkDirectoryToFormConstructorModelDB _fd)
     {
         <span title="словарь/список" class="position-absolute top-0 start-100 translate-middle p-2 bg-success border border-light rounded-circle">
             <span class="visually-hidden">Directory ID: @_fd.DirectoryId</span>
         </span>
     }
-    else if (Field is ConstructorFieldFormModelDB _f)
+    else if (Field is FieldFormConstructorModelDB _f)
     {
         string _t = $"{_f.TypeField.DescriptionInfo()}";
         Dictionary<MetadataExtensionsFormFieldsEnum, object?> _dict = _f.MetadataValueTypeGet();
@@ -43,13 +43,13 @@ else
 {
     <MudTooltip>
         <ChildContent>
-            @if (Field is ConstructorFormDirectoryLinkModelDB _fd)
+            @if (Field is LinkDirectoryToFormConstructorModelDB _fd)
             {
                 <span class="position-absolute top-0 start-100 translate-middle p-2 bg-info border border-light rounded-circle">
                     <span class="visually-hidden">Directory ID: @_fd.DirectoryId</span>
                 </span>
             }
-            else if (Field is ConstructorFieldFormModelDB _f)
+            else if (Field is FieldFormConstructorModelDB _f)
             {
                 if (_f.TypeField == TypesFieldsFormsEnum.Generator || _f.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble)
                 {
@@ -64,11 +64,11 @@ else
             }
         </ChildContent>
         <TooltipContent>
-            @if (Field is ConstructorFormDirectoryLinkModelDB _fd)
+            @if (Field is LinkDirectoryToFormConstructorModelDB _fd)
             {
                 <MudText Typo="Typo.h6">словарь/список</MudText>
             }
-            else if (Field is ConstructorFieldFormModelDB _f)
+            else if (Field is FieldFormConstructorModelDB _f)
             {
                 <MudText Typo="Typo.h6">@_f.TypeField.DescriptionInfo() // @_f.MetadataValueType</MudText>
             }

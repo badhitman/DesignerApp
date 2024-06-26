@@ -27,7 +27,7 @@ else
         }
         else
         {
-            foreach (ConstructorFormQuestionnairePageModelDB questionnaire_page in Questionnaire.Pages.OrderBy(x => x.SortIndex))
+            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in Questionnaire.Pages.OrderBy(x => x.SortIndex))
             {
                 questionnaire_page.Owner = Questionnaire;
                 <MudTabPanel

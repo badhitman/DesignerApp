@@ -25,14 +25,14 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
     #region public
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormSessionModelDB>> GetSessionQuestionnaire(string guid_session, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionQuestionnaire(string guid_session, CancellationToken cancellationToken = default)
     {
         if (!Guid.TryParse(guid_session, out Guid guid_parsed) || guid_parsed == Guid.Empty)
             return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Токен сессии имеет не корректный формат" }] };
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
-        IQueryable<ConstructorFormSessionModelDB> q = context_forms
+        IQueryable<SessionOfDocumentDataModelDB> q = context_forms
             .Sessions
             .Include(x => x.SessionValues)
 
@@ -50,7 +50,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
             .AsSplitQuery();
 
-        TResponseModel<ConstructorFormSessionModelDB> res = new()
+        TResponseModel<SessionOfDocumentDataModelDB> res = new()
         {
             Response = await q
             .FirstOrDefaultAsync(x => x.SessionToken == guid_session, cancellationToken: cancellationToken)
@@ -70,7 +70,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> SetDoneSessionQuestionnaire(string token_session, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormSessionModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.SessionToken == token_session, cancellationToken: cancellationToken);
+        SessionOfDocumentDataModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.SessionToken == token_session, cancellationToken: cancellationToken);
         if (sq is null)
             return ResponseBaseModel.CreateError($"Сессия [{token_session}] не найдена в БД. ошибка 638FB569-BB5E-43C2-9263-2DCB76F7D88E");
 
@@ -107,14 +107,14 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormSessionModelDB>> SetValueFieldSessionQuestionnaire(SetValueFieldSessionQuestionnaireModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> SetValueFieldSessionQuestionnaire(SetValueFieldSessionQuestionnaireModel req, CancellationToken cancellationToken = default)
     {
-        TResponseModel<ConstructorFormSessionModelDB> session = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> session = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!session.Success())
             return session;
 
-        ConstructorFormSessionModelDB? session_Questionnaire = session.Response;
-        TResponseModel<ConstructorFormSessionModelDB> res = new();
+        SessionOfDocumentDataModelDB? session_Questionnaire = session.Response;
+        TResponseModel<SessionOfDocumentDataModelDB> res = new();
 
         if (session_Questionnaire?.Owner?.Pages is null || session_Questionnaire.SessionValues is null)
         {
@@ -130,7 +130,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         session_Questionnaire.LastQuestionnaireUpdateActivity = DateTime.Now;
 
-        ConstructorFormQuestionnairePageJoinFormModelDB? form_join = session_Questionnaire.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        TabJoinDocumentSchemeConstructorModelDB? form_join = session_Questionnaire.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена. ошибка 2494D4D2-24E1-48D4-BC9C-C27D327D98B8");
@@ -144,10 +144,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormSessionValueModelDB? existing_value = session_Questionnaire.SessionValues.FirstOrDefault(x => x.GroupByRowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.QuestionnairePageJoinFormId == form_join.Id);
+        ValueDataForSessionOfDocumentModelDB? existing_value = session_Questionnaire.SessionValues.FirstOrDefault(x => x.GroupByRowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.QuestionnairePageJoinFormId == form_join.Id);
         if (existing_value is null)
         {
-            existing_value = ConstructorFormSessionValueModelDB.Build(req, form_join, session_Questionnaire);
+            existing_value = ValueDataForSessionOfDocumentModelDB.Build(req, form_join, session_Questionnaire);
             await context_forms.AddAsync(existing_value, cancellationToken);
         }
         else
@@ -157,7 +157,14 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             context_forms.Update(existing_value);
         }
 
-        await context_forms.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await context_forms.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "");
+        }
 
         return await GetSessionQuestionnaire(req.SessionId, cancellationToken);
     }
@@ -165,11 +172,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /// <inheritdoc/>
     public async Task<TResponseStrictModel<int>> AddRowToTable(FieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
     {
-        TResponseModel<ConstructorFormSessionModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!get_s.Success())
             return new TResponseStrictModel<int>() { Messages = get_s.Messages, Response = 0 };
         TResponseStrictModel<int> res = new() { Response = 0 };
-        ConstructorFormSessionModelDB? session = get_s.Response;
+        SessionOfDocumentDataModelDB? session = get_s.Response;
 
         if (session?.Owner?.Pages is null || session.SessionValues is null)
         {
@@ -180,16 +187,16 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
             return (TResponseStrictModel<int>)ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (в статусе {session.SessionStatus}).");
 
-        ConstructorFormQuestionnairePageJoinFormModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null || !form_join.IsTable)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 6342356D-0491-45BC-A33D-B95F5D7DCB5F");
             return res;
         }
-        IQueryable<ConstructorFormSessionValueModelDB> q = session.SessionValues.Where(x => x.QuestionnairePageJoinFormId == form_join.Id && x.GroupByRowNum > 0).AsQueryable();
+        IQueryable<ValueDataForSessionOfDocumentModelDB> q = session.SessionValues.Where(x => x.QuestionnairePageJoinFormId == form_join.Id && x.GroupByRowNum > 0).AsQueryable();
         res.Response = (int)(q.Any() ? (q.Max(x => x.GroupByRowNum) + 1) : 1);
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        await context_forms.AddRangeAsync(form_join.Form.AllFields.Where(ScalarOnly).Select(x => new ConstructorFormSessionValueModelDB()
+        await context_forms.AddRangeAsync(form_join.Form.AllFields.Where(ScalarOnly).Select(x => new ValueDataForSessionOfDocumentModelDB()
         {
             GroupByRowNum = (uint)res.Response,
             Name = x.Name,
@@ -209,22 +216,22 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(ValueFieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
     {
-        TResponseModel<ConstructorFormSessionModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!get_s.Success())
             return get_s;
 
-        ConstructorFormSessionModelDB? session = get_s.Response;
+        SessionOfDocumentDataModelDB? session = get_s.Response;
         if (session?.Owner?.Pages is null || session.SessionValues is null)
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка 5DF6598B-18FF-4E76-AE33-6CE78ACE5442");
 
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (статус {session.SessionStatus}).");
 
-        ConstructorFormQuestionnairePageJoinFormModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null || !form_join.IsTable)
             return ResponseBaseModel.CreateError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 66A38A11-CD9B-4F9E-8B5C-49E60109442D");
 
-        ConstructorFormSessionValueModelDB[] values_for_delete = session.SessionValues.Where(x => x.GroupByRowNum == req.GroupByRowNum && x.QuestionnairePageJoinFormId == form_join.Id).ToArray();
+        ValueDataForSessionOfDocumentModelDB[] values_for_delete = session.SessionValues.Where(x => x.GroupByRowNum == req.GroupByRowNum && x.QuestionnairePageJoinFormId == form_join.Id).ToArray();
 
         ResponseBaseModel res = new();
         if (req.IsSelf && values_for_delete.Any(x => !string.IsNullOrWhiteSpace(x.Value)))
@@ -243,7 +250,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
             get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
             uint i = 0;
-            List<ConstructorFormSessionValueModelDB> values_re_sort = [];
+            List<ValueDataForSessionOfDocumentModelDB> values_re_sort = [];
             session.SessionValues
                 .Where(x => x.GroupByRowNum > 0)
                 .GroupBy(x => x.GroupByRowNum)
@@ -268,9 +275,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         return res;
     }
 
-    static bool ScalarOnly(ConstructorFieldFormBaseLowModel x) => !(x is ConstructorFieldFormModelDB _f && _f.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble);
+    static bool ScalarOnly(ConstructorFieldFormBaseLowModel x) => !(x is FieldFormConstructorModelDB _f && _f.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble);
 
-    static string? EditorsGenerate(ConstructorFormSessionModelDB session, string editor)
+    static string? EditorsGenerate(SessionOfDocumentDataModelDB session, string editor)
     {
         if (session.Editors?.StartsWith(editor) == true || session.Editors?.EndsWith(editor) == true || session.Editors?.Contains($", {editor},") == true)
             return session.Editors;
@@ -288,7 +295,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     /// <summary>
     /// Признак особых привилегий, которыми обладает создатель/владелец сессии и пользователь с ролью Admin
     /// </summary>
-    public static bool IsForce(ClaimsPrincipal clp, ConstructorFormSessionModelDB sq)
+    public static bool IsForce(ClaimsPrincipal clp, SessionOfDocumentDataModelDB sq)
     {
         string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
         return clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && x.Value.Equals("admin", StringComparison.OrdinalIgnoreCase)) || sq.CreatorEmail.Equals(email, StringComparison.OrdinalIgnoreCase);
@@ -333,7 +340,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                 .ToArrayAsync();
         }
 
-        List<EntryAltModel>? ReadMembersData(List<MemberOfProjectModelDb>? members)
+        List<EntryAltModel>? ReadMembersData(List<MemberOfProjectConstructorModelDb>? members)
         {
             if (members is null || usersIdentity is null)
                 return null;
@@ -490,7 +497,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return ResponseBaseModel.CreateError($"Пользователь #{member_user_id} не найден в БД");
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        MemberOfProjectModelDb? memberDb = await context_forms
+        MemberOfProjectConstructorModelDb? memberDb = await context_forms
             .MembersOfProjects
             .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == userDb.Id);
 
@@ -537,7 +544,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return ResponseBaseModel.CreateError($"Пользователь #{member_user_id} не найден в БД");
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        MemberOfProjectModelDb? memberDb = await context_forms
+        MemberOfProjectConstructorModelDb? memberDb = await context_forms
             .MembersOfProjects
             .Include(x => x.Project)
             .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == userDb.Id);
@@ -565,10 +572,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (projectDb is null)
             return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
 
-        ProjectUseModelDb? mainProjectDb = await context_forms.ProjectsUse.FirstOrDefaultAsync(x => x.UserId == user_id);
+        ProjectUseConstructorModelDb? mainProjectDb = await context_forms.ProjectsUse.FirstOrDefaultAsync(x => x.UserId == user_id);
         if (mainProjectDb is null)
         {
-            mainProjectDb = new ProjectUseModelDb() { UserId = user_id, ProjectId = project_id, Project = projectDb };
+            mainProjectDb = new ProjectUseConstructorModelDb() { UserId = user_id, ProjectId = project_id, Project = projectDb };
             await context_forms.AddAsync(mainProjectDb);
         }
         else
@@ -603,7 +610,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             await context_forms.AddAsync(project);
             await context_forms.SaveChangesAsync();
 
-            ProjectUseModelDb project_use = new() { UserId = user_id, ProjectId = project.Id };
+            ProjectUseConstructorModelDb project_use = new() { UserId = user_id, ProjectId = project.Id };
             await context_forms.AddAsync(project_use);
             await context_forms.SaveChangesAsync();
 
@@ -631,7 +638,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (!ids.Any())
             return [];
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryModelDB[] res = await context_forms.Directories.Include(x => x.Elements).Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken: cancellationToken);
+        DirectoryConstructorModelDB[] res = await context_forms.Directories.Include(x => x.Elements).Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken: cancellationToken);
 
         return res.Select(x => new EntryNestedModel() { Id = x.Id, Name = x.Name, Childs = x.Elements!.Select(y => new EntryModel() { Id = y.Id, Name = y.Name }) });
     }
@@ -668,7 +675,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         string msg;
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryModelDB? directory_db = await context_forms
+        DirectoryConstructorModelDB? directory_db = await context_forms
             .Directories
             .FirstOrDefaultAsync(x => x.Id != _dir.Id && x.ProjectId == _dir.ProjectId && (x.Name == _dir.Name || x.SystemName == _dir.SystemName), cancellationToken: cancellationToken);
 
@@ -682,7 +689,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         if (_dir.Id < 1)
         {
-            directory_db = ConstructorFormDirectoryModelDB.Build(_dir);
+            directory_db = DirectoryConstructorModelDB.Build(_dir);
             try
             {
                 await context_forms.AddAsync(directory_db, cancellationToken);
@@ -729,7 +736,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> DeleteDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryModelDB? dir_db = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id == directory_id, cancellationToken: cancellationToken);
+        DirectoryConstructorModelDB? dir_db = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id == directory_id, cancellationToken: cancellationToken);
         if (dir_db is null)
             return ResponseBaseModel.CreateError($"Список/справочник #{directory_id} не найден в БД");
 
@@ -745,7 +752,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     {
         TResponseModel<List<SystemEntryModel>> res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryModelDB? dir = await context_forms.Directories
+        DirectoryConstructorModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
             .FirstOrDefaultAsync(x => x.Id == directory_id, cancellationToken: cancellationToken);
 
@@ -777,7 +784,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryModelDB? dir = await context_forms.Directories
+        DirectoryConstructorModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
             .FirstOrDefaultAsync(x => x.Id == element.OwnerId, cancellationToken: cancellationToken);
 
@@ -787,7 +794,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFormDirectoryElementModelDB? dictionary_element_db = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.ParentId == element.OwnerId && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()), cancellationToken: cancellationToken);
+        ElementOfDirectoryConstructorModelDB? dictionary_element_db = await context_forms.ElementsOfDirectories.FirstOrDefaultAsync(x => x.ParentId == element.OwnerId && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()), cancellationToken: cancellationToken);
 
         if (dictionary_element_db is not null)
         {
@@ -796,7 +803,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
 
         int[] current_indexes = await context_forms
-            .DirectoriesElements
+            .ElementsOfDirectories
             .Where(x => x.ParentId == element.OwnerId)
             .Select(x => x.SortIndex)
             .ToArrayAsync(cancellationToken: cancellationToken);
@@ -836,10 +843,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
-        ConstructorFormDirectoryElementModelDB? element_db;
+        ElementOfDirectoryConstructorModelDB? element_db;
 
         element_db = await context_forms
-            .DirectoriesElements
+            .ElementsOfDirectories
             .FirstOrDefaultAsync(x => x.Id == element.Id, cancellationToken: cancellationToken);
 
         if (element_db is null)
@@ -854,8 +861,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFormDirectoryElementModelDB? duplicate_check;
-        IQueryable<ConstructorFormDirectoryElementModelDB> duplicate_check_query = context_forms.DirectoriesElements.Where(x => x.Id != element.Id && x.ParentId == element_db.ParentId && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()));
+        ElementOfDirectoryConstructorModelDB? duplicate_check;
+        IQueryable<ElementOfDirectoryConstructorModelDB> duplicate_check_query = context_forms.ElementsOfDirectories.Where(x => x.Id != element.Id && x.ParentId == element_db.ParentId && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()));
 #if DEBUG
         duplicate_check = await duplicate_check_query.FirstOrDefaultAsync();
 #endif
@@ -878,7 +885,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> DeleteElementFromDirectory(int element_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryElementModelDB? el = await context_forms.DirectoriesElements.FirstOrDefaultAsync(x => x.Id == element_id, cancellationToken: cancellationToken);
+        ElementOfDirectoryConstructorModelDB? el = await context_forms.ElementsOfDirectories.FirstOrDefaultAsync(x => x.Id == element_id, cancellationToken: cancellationToken);
         if (el is null)
             return ResponseBaseModel.CreateError($"Элемент справочника #{element_id} не найден в БД");
         context_forms.Remove(el);
@@ -891,8 +898,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> UpMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryElementModelDB? el = await context_forms
-            .DirectoriesElements
+        ElementOfDirectoryConstructorModelDB? el = await context_forms
+            .ElementsOfDirectories
             .Include(x => x.Parent)
             .ThenInclude(x => x!.Elements)
             .FirstOrDefaultAsync(x => x.Id == element_id, cancellationToken: cancellationToken);
@@ -909,7 +916,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         el.Parent!.Elements![i].SortIndex--;
         el.Parent!.Elements![i - 1].SortIndex++;
 
-        context_forms.UpdateRange(new ConstructorFormDirectoryElementModelDB[] { el.Parent!.Elements![i], el.Parent!.Elements![i - 1] });
+        context_forms.UpdateRange(new ElementOfDirectoryConstructorModelDB[] { el.Parent!.Elements![i], el.Parent!.Elements![i - 1] });
         await context_forms.SaveChangesAsync(cancellationToken);
 
         return ResponseBaseModel.CreateSuccess("Элемент сдвинут");
@@ -919,8 +926,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> DownMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryElementModelDB? el = await context_forms
-            .DirectoriesElements
+        ElementOfDirectoryConstructorModelDB? el = await context_forms
+            .ElementsOfDirectories
             .Include(x => x.Parent)
             .ThenInclude(x => x!.Elements)
             .FirstOrDefaultAsync(x => x.Id == element_id, cancellationToken: cancellationToken);
@@ -937,7 +944,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         el.Parent!.Elements![i].SortIndex++;
         el.Parent!.Elements![i + 1].SortIndex--;
 
-        context_forms.UpdateRange(new ConstructorFormDirectoryElementModelDB[] { el.Parent!.Elements![i], el.Parent!.Elements![i + 1] });
+        context_forms.UpdateRange(new ElementOfDirectoryConstructorModelDB[] { el.Parent!.Elements![i], el.Parent!.Elements![i + 1] });
         await context_forms.SaveChangesAsync(cancellationToken);
 
         return ResponseBaseModel.CreateSuccess("Элемент сдвинут");
@@ -947,8 +954,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> CheckAndNormalizeSortIndexForElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        List<ConstructorFormDirectoryElementModelDB> elements = await context_forms
-            .DirectoriesElements
+        List<ElementOfDirectoryConstructorModelDB> elements = await context_forms
+            .ElementsOfDirectories
             .Where(x => x.ParentId == directory_id)
             .ToListAsync();
 
@@ -986,7 +993,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormsPaginationResponseModel res = new(req);
 
-        IQueryable<ConstructorFormModelDB> q;
+        IQueryable<FormConstructorModelDB> q;
 
         q = context_forms.Forms.Where(x => x.ProjectId == projectId).OrderBy(x => x.Name);
 
@@ -1013,15 +1020,15 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         res.Elements = ids.Length != 0
             ? await context_forms.Forms.Where(x => ids.Contains(x.Id)).Include(x => x.Fields).Include(x => x.FormsDirectoriesLinks).ToArrayAsync(cancellationToken: cancellationToken)
-            : Enumerable.Empty<ConstructorFormModelDB>();
+            : Enumerable.Empty<FormConstructorModelDB>();
         return res;
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormModelDB>> GetForm(int form_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<FormConstructorModelDB>> GetForm(int form_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        TResponseModel<ConstructorFormModelDB> res = new()
+        TResponseModel<FormConstructorModelDB> res = new()
         {
             Response = await context_forms
             .Forms
@@ -1038,9 +1045,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             if (res.Response.Fields is not null)
             {
                 string msg;
-                List<ConstructorFieldFormModelDB> _upd = [];
+                List<FieldFormConstructorModelDB> _upd = [];
                 Dictionary<MetadataExtensionsFormFieldsEnum, object?> mdvs;
-                foreach (ConstructorFieldFormModelDB f in res.Response.Fields)
+                foreach (FieldFormConstructorModelDB f in res.Response.Fields)
                 {
                     if (f.MetadataValueType?.Equals("{}") == true)
                     {
@@ -1078,9 +1085,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormModelDB>> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<FormConstructorModelDB>> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default)
     {
-        TResponseModel<ConstructorFormModelDB> res = new();
+        TResponseModel<FormConstructorModelDB> res = new();
         form.Name = Regex.Replace(form.Name, @"\s+", " ").Trim();
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(form);
         if (!IsValid)
@@ -1091,7 +1098,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 #pragma warning disable CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
-        ConstructorFormModelDB? form_db = await context_forms
+        FormConstructorModelDB? form_db = await context_forms
             .Forms
             .FirstOrDefaultAsync(x => x.Id != form.Id && x.ProjectId == form.ProjectId && (x.Name.ToUpper() == form.Name.ToUpper() || x.SystemName.ToUpper() == form.SystemName.ToUpper()), cancellationToken: cancellationToken);
 #pragma warning restore CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
@@ -1106,7 +1113,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         if (form.Id < 1)
         {
-            form_db = ConstructorFormModelDB.Build(form);
+            form_db = FormConstructorModelDB.Build(form);
             await context_forms.AddAsync(form_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
             msg = $"Форма создана #{form_db.Id}";
@@ -1162,11 +1169,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     #endregion
     #region поля форм
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormModelDB>> FieldFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<FormConstructorModelDB>> FieldFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
     {
-        TResponseModel<ConstructorFormModelDB> res = new();
+        TResponseModel<FormConstructorModelDB> res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFieldFormModelDB? field_db = await context_forms
+        FieldFormConstructorModelDB? field_db = await context_forms
             .Fields
             .Include(x => x.Owner)
             .ThenInclude(x => x!.Fields)
@@ -1190,7 +1197,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         if (field_db.Owner.Fields!.Any(x => x.SortIndex == next_index))
         {
-            ConstructorFieldFormModelDB _fns = field_db.Owner.Fields!.First(x => x.SortIndex == next_index);
+            FieldFormConstructorModelDB _fns = field_db.Owner.Fields!.First(x => x.SortIndex == next_index);
             res.AddInfo($"Поля формы меняются индексами сортировки: #{_fns.Id} i:{_fns.SortIndex} '{_fns.Name}' (простой тип) && #{field_db.Id} i:{field_db.SortIndex} '{field_db.Name}' (простой тип)");
 
             _fns.SortIndex = field_db.SortIndex;
@@ -1200,7 +1207,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         else if (field_db.Owner.FormsDirectoriesLinks!.Any(x => x.SortIndex == next_index))
         {
-            ConstructorFormDirectoryLinkModelDB _fnsd = field_db.Owner.FormsDirectoriesLinks!.First(x => x.SortIndex == next_index);
+            LinkDirectoryToFormConstructorModelDB _fnsd = field_db.Owner.FormsDirectoriesLinks!.First(x => x.SortIndex == next_index);
             res.AddInfo($"Поля формы меняются индексами сортировки: #{_fnsd.Id} i:{_fnsd.SortIndex} '{_fnsd.Name}' (тип: справочник) && #{field_db.Id} i:{field_db.SortIndex} '{field_db.Name}' (простой тип)");
 
             _fnsd.SortIndex = field_db.SortIndex;
@@ -1225,12 +1232,12 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormModelDB>> FieldDirectoryFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<FormConstructorModelDB>> FieldDirectoryFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
     {
-        TResponseModel<ConstructorFormModelDB> res = new();
+        TResponseModel<FormConstructorModelDB> res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryLinkModelDB? field_db = await context_forms
-            .FormsDirectoriesLinks
+        LinkDirectoryToFormConstructorModelDB? field_db = await context_forms
+            .LinksDirectoriesToForms
             //.Include(x => x.Directory)
             .Include(x => x.Owner)
             .ThenInclude(x => x!.Fields)
@@ -1255,7 +1262,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         if (field_db.Owner.Fields!.Any(x => x.SortIndex == next_index))
         {
-            ConstructorFieldFormModelDB _fns = field_db.Owner.Fields!.First(x => x.SortIndex == next_index);
+            FieldFormConstructorModelDB _fns = field_db.Owner.Fields!.First(x => x.SortIndex == next_index);
             res.AddInfo($"Поля формы меняются индексами сортировки: #{_fns.Id} i:{_fns.SortIndex} '{_fns.Name}' (простой тип) && #{field_db.Id} i:{field_db.SortIndex} '{field_db.Name}' (тип: справочник)");
 
             _fns.SortIndex = field_db.SortIndex;
@@ -1265,7 +1272,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         else if (field_db.Owner.FormsDirectoriesLinks!.Any(x => x.SortIndex == next_index))
         {
-            ConstructorFormDirectoryLinkModelDB _fnsd = field_db.Owner.FormsDirectoriesLinks!.First(x => x.SortIndex == next_index);
+            LinkDirectoryToFormConstructorModelDB _fnsd = field_db.Owner.FormsDirectoriesLinks!.First(x => x.SortIndex == next_index);
             res.AddInfo($"Поля формы меняются индексами сортировки: #{_fnsd.Id} i:{_fnsd.SortIndex} '{_fnsd.Name}' (тип: справочник) && #{field_db.Id} i:{field_db.SortIndex} '{field_db.Name}' (тип: справочник)");
 
             _fnsd.SortIndex = field_db.SortIndex;
@@ -1301,7 +1308,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         ResponseBaseModel res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormModelDB? form_db = await context_forms
+        FormConstructorModelDB? form_db = await context_forms
             .Forms
             .Include(x => x.Fields)
             .Include(x => x.FormsDirectoriesLinks)
@@ -1316,11 +1323,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && (x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(ConstructorFieldFormModelDB)) && x.Id != form_field.Id && (x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)));
+        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && (x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Id != form_field.Id && (x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)));
         if (duplicate_field is not null)
             return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}' `{duplicate_field.SystemName}`");
 
-        ConstructorFieldFormModelDB? form_field_db;
+        FieldFormConstructorModelDB? form_field_db;
         if (form_field.Id < 1)
         {
             int _sort_index = form_db.FormsDirectoriesLinks.Count != 0
@@ -1329,7 +1336,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
             _sort_index = Math.Max(_sort_index, form_db.Fields.Count != 0 ? form_db.Fields.Max(x => x.SortIndex) : 0);
 
-            form_field_db = ConstructorFieldFormModelDB.Build(form_field, form_db, _sort_index + 1);
+            form_field_db = FieldFormConstructorModelDB.Build(form_field, form_db, _sort_index + 1);
 
             await context_forms.AddAsync(form_field_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
@@ -1351,11 +1358,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context_forms.Database.BeginTransaction(isolationLevel: System.Data.IsolationLevel.Serializable);
 
-        List<ConstructorFormSessionValueModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == form_field.Name)
+        List<ValueDataForSessionOfDocumentModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == form_field.Name)
                                                                          join session in context_forms.Sessions on val_s.OwnerId equals session.Id
-                                                                         join Questionnaire in context_forms.Questionnaires on session.OwnerId equals Questionnaire.Id
-                                                                         join page in context_forms.QuestionnairesPages on Questionnaire.Id equals page.OwnerId
-                                                                         join form_join in context_forms.QuestionnairesPagesJoinForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
+                                                                         join Questionnaire in context_forms.DocumentSchemes on session.OwnerId equals Questionnaire.Id
+                                                                         join page in context_forms.TabsOfDocumentsSchemes on Questionnaire.Id equals page.OwnerId
+                                                                         join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
                                                                          select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);
 
@@ -1466,7 +1473,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(ConstructorFormDirectoryLinkModelDB field_directory, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(LinkDirectoryToFormConstructorModelDB field_directory, CancellationToken cancellationToken = default)
     {
         field_directory.Name = Regex.Replace(field_directory.Name, @"\s+", " ").Trim();
 
@@ -1476,12 +1483,12 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         ResponseBaseModel res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryModelDB? dir_db = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id == field_directory.DirectoryId, cancellationToken: cancellationToken);
+        DirectoryConstructorModelDB? dir_db = await context_forms.Directories.FirstOrDefaultAsync(x => x.Id == field_directory.DirectoryId, cancellationToken: cancellationToken);
 
         if (dir_db is null)
             return ResponseBaseModel.CreateError($"Не найден справочник #{field_directory.DirectoryId}");
 
-        ConstructorFormModelDB? form_db = await context_forms
+        FormConstructorModelDB? form_db = await context_forms
             .Forms
             .Include(x => x.Fields)
             .Include(x => x.FormsDirectoriesLinks)
@@ -1495,11 +1502,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(ConstructorFormDirectoryLinkModelDB) && x.Id != field_directory.Id && (x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(ConstructorFieldFormModelDB)) && (x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)));
+        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && x.Id != field_directory.Id && (x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && (x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)));
         if (duplicate_field is not null)
             return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}' `{duplicate_field.SystemName}`");
 
-        ConstructorFormDirectoryLinkModelDB? form_field_db;
+        LinkDirectoryToFormConstructorModelDB? form_field_db;
         if (field_directory.Id < 1)
         {
             int _sort_index = form_db.FormsDirectoriesLinks.Count != 0 ? form_db.FormsDirectoriesLinks.Max(x => x.SortIndex) : 0;
@@ -1538,11 +1545,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context_forms.Database.BeginTransaction(isolationLevel: System.Data.IsolationLevel.Serializable);
 
-        List<ConstructorFormSessionValueModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == field_directory.Name)
+        List<ValueDataForSessionOfDocumentModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == field_directory.Name)
                                                                          join session in context_forms.Sessions on val_s.OwnerId equals session.Id
-                                                                         join Questionnaire in context_forms.Questionnaires on session.OwnerId equals Questionnaire.Id
-                                                                         join page in context_forms.QuestionnairesPages on Questionnaire.Id equals page.OwnerId
-                                                                         join form_join in context_forms.QuestionnairesPagesJoinForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
+                                                                         join Questionnaire in context_forms.DocumentSchemes on session.OwnerId equals Questionnaire.Id
+                                                                         join page in context_forms.TabsOfDocumentsSchemes on Questionnaire.Id equals page.OwnerId
+                                                                         join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
                                                                          select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);
 
@@ -1639,12 +1646,12 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> FormFieldDelete(int form_field_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFieldFormModelDB? field_db = await context_forms.Fields.FirstOrDefaultAsync(x => x.Id == form_field_id, cancellationToken: cancellationToken);
+        FieldFormConstructorModelDB? field_db = await context_forms.Fields.FirstOrDefaultAsync(x => x.Id == form_field_id, cancellationToken: cancellationToken);
         if (field_db is null)
             return ResponseBaseModel.CreateError($"Поле #{form_field_id} (простого типа) формы не найден в БД");
 
-        IQueryable<ConstructorFormSessionValueModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
-                                                                join _jf in context_forms.QuestionnairesPagesJoinForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
+        IQueryable<ValueDataForSessionOfDocumentModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
+                                                                join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
                                                                 select _v;
 
         if (await values.AnyAsync(cancellationToken: cancellationToken))
@@ -1661,13 +1668,13 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> FormFieldDirectoryDelete(int field_directory_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormDirectoryLinkModelDB? field_db = await context_forms.FormsDirectoriesLinks.FirstOrDefaultAsync(x => x.Id == field_directory_id, cancellationToken: cancellationToken);
+        LinkDirectoryToFormConstructorModelDB? field_db = await context_forms.LinksDirectoriesToForms.FirstOrDefaultAsync(x => x.Id == field_directory_id, cancellationToken: cancellationToken);
         if (field_db is null)
             return ResponseBaseModel.CreateError($"Поле #{field_directory_id} (тип: справочник) формы не найден в БД");
         context_forms.Remove(field_db);
 
-        IQueryable<ConstructorFormSessionValueModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
-                                                                join _jf in context_forms.QuestionnairesPagesJoinForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
+        IQueryable<ValueDataForSessionOfDocumentModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
+                                                                join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.QuestionnairePageJoinFormId equals _jf.Id
                                                                 select _v;
 
         if (await values.AnyAsync(cancellationToken: cancellationToken))
@@ -1678,17 +1685,17 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormModelDB>> CheckAndNormalizeSortIndexFrmFields(ConstructorFormModelDB form, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<FormConstructorModelDB>> CheckAndNormalizeSortIndexFrmFields(FormConstructorModelDB form, CancellationToken cancellationToken = default)
     {
-        TResponseModel<ConstructorFormModelDB> res = new();
+        TResponseModel<FormConstructorModelDB> res = new();
         int i = 0;
-        List<ConstructorFormDirectoryLinkModelDB> fields_dir = [];
-        List<ConstructorFieldFormModelDB> fields_st = [];
+        List<LinkDirectoryToFormConstructorModelDB> fields_dir = [];
+        List<FieldFormConstructorModelDB> fields_st = [];
 
         foreach (ConstructorFieldFormBaseLowModel fb in form.AllFields)
         {
             i++;
-            if (fb is ConstructorFormDirectoryLinkModelDB fs)
+            if (fb is LinkDirectoryToFormConstructorModelDB fs)
             {
                 if (i != fs.SortIndex)
                 {
@@ -1697,7 +1704,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                     fields_dir.Add(fs);
                 }
             }
-            else if (fb is ConstructorFieldFormModelDB fd)
+            else if (fb is FieldFormConstructorModelDB fd)
             {
                 if (i != fd.SortIndex)
                 {
@@ -1743,17 +1750,17 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormsQuestionnairesPaginationResponseModel res = new(req);
 
-        IQueryable<ConstructorFormQuestionnaireModelDB> query = context_forms
-            .Questionnaires
+        IQueryable<DocumentSchemeConstructorModelDB> query = context_forms
+            .DocumentSchemes
             .Where(x => x.ProjectId == projectId)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(req.SimpleRequest))
         {
             query = (from _quest in query
-                     join _page in context_forms.QuestionnairesPages on _quest.Id equals _page.OwnerId into j_pages
+                     join _page in context_forms.TabsOfDocumentsSchemes on _quest.Id equals _page.OwnerId into j_pages
                      from j_page in j_pages.DefaultIfEmpty()
-                     join _join_form in context_forms.QuestionnairesPagesJoinForms on j_page.Id equals _join_form.OwnerId into j_join_forms
+                     join _join_form in context_forms.TabsJoinsForms on j_page.Id equals _join_form.OwnerId into j_join_forms
                      from j_join_form in j_join_forms.DefaultIfEmpty()
                      join _form in context_forms.Forms on j_join_form.FormId equals _form.Id into j_forms
                      from j_form in j_forms.DefaultIfEmpty()
@@ -1763,7 +1770,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
                         .AsQueryable();
         }
 
-        //IQueryable<ConstructorFormQuestionnaireModelDB> query =
+        //IQueryable<DocumentShemaModelDB> query =
         //    (from _quest in context_forms.Questionnaires.Where(x => x.ProjectId == projectId)
         //     join _page in context_forms.QuestionnairesPages on _quest.Id equals _page.OwnerId
         //     join _join_form in context_forms.QuestionnairesPagesJoinForms on _page.Id equals _join_form.OwnerId
@@ -1777,22 +1784,22 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         query = query.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
         int[] ids = await query.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
-        query = context_forms.Questionnaires.Include(x => x.Pages).Where(x => ids.Contains(x.Id)).Include(x => x.Pages).OrderBy(x => x.Name);
+        query = context_forms.DocumentSchemes.Include(x => x.Pages).Where(x => ids.Contains(x.Id)).Include(x => x.Pages).OrderBy(x => x.Name);
         res.Questionnaires = ids.Length != 0
             ? await query.ToArrayAsync(cancellationToken: cancellationToken)
-            : Enumerable.Empty<ConstructorFormQuestionnaireModelDB>();
+            : Enumerable.Empty<DocumentSchemeConstructorModelDB>();
 
         return res;
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> GetQuestionnaire(int questionnaire_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<DocumentSchemeConstructorModelDB>> GetQuestionnaire(int questionnaire_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        TResponseModel<ConstructorFormQuestionnaireModelDB> res = new()
+        TResponseModel<DocumentSchemeConstructorModelDB> res = new()
         {
             Response = await context_forms
-           .Questionnaires
+           .DocumentSchemes
            .Include(x => x.Pages!)
            .ThenInclude(x => x.JoinsForms)
            .FirstOrDefaultAsync(x => x.Id == questionnaire_id, cancellationToken: cancellationToken)
@@ -1805,11 +1812,11 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> UpdateOrCreateQuestionnaire(EntryConstructedModel questionnaire, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<DocumentSchemeConstructorModelDB>> UpdateOrCreateQuestionnaire(EntryConstructedModel questionnaire, CancellationToken cancellationToken = default)
     {
         questionnaire.Name = Regex.Replace(questionnaire.Name, @"\s+", " ").Trim();
 
-        TResponseModel<ConstructorFormQuestionnaireModelDB> res = new();
+        TResponseModel<DocumentSchemeConstructorModelDB> res = new();
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(questionnaire);
         if (!IsValid)
         {
@@ -1818,7 +1825,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormQuestionnaireModelDB? questionnaire_db = await context_forms.Questionnaires.FirstOrDefaultAsync(x => x.Id != questionnaire.Id && x.ProjectId == questionnaire.ProjectId && (x.Name.ToUpper() == questionnaire.Name.ToUpper() || x.SystemName.ToUpper() == questionnaire.SystemName.ToUpper()), cancellationToken: cancellationToken);
+        DocumentSchemeConstructorModelDB? questionnaire_db = await context_forms.DocumentSchemes.FirstOrDefaultAsync(x => x.Id != questionnaire.Id && x.ProjectId == questionnaire.ProjectId && (x.Name.ToUpper() == questionnaire.Name.ToUpper() || x.SystemName.ToUpper() == questionnaire.SystemName.ToUpper()), cancellationToken: cancellationToken);
         string msg;
         if (questionnaire_db is not null)
         {
@@ -1829,7 +1836,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         if (questionnaire.Id < 1)
         {
-            questionnaire_db = ConstructorFormQuestionnaireModelDB.Build(questionnaire, questionnaire.ProjectId);
+            questionnaire_db = DocumentSchemeConstructorModelDB.Build(questionnaire, questionnaire.ProjectId);
             await context_forms.AddAsync(questionnaire_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
             msg = $"Опрос/анкета создана #{questionnaire_db.Id}";
@@ -1838,7 +1845,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             res.Response = questionnaire_db;
             return res;
         }
-        questionnaire_db = await context_forms.Questionnaires.FirstOrDefaultAsync(x => x.Id == questionnaire.Id, cancellationToken: cancellationToken);
+        questionnaire_db = await context_forms.DocumentSchemes.FirstOrDefaultAsync(x => x.Id == questionnaire.Id, cancellationToken: cancellationToken);
 
         if (questionnaire_db is null)
         {
@@ -1873,7 +1880,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> DeleteQuestionnaire(int questionnaire_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormQuestionnaireModelDB? Questionnaire_db = await context_forms.Questionnaires.Include(x => x.Pages!).ThenInclude(x => x.JoinsForms).FirstOrDefaultAsync(x => x.Id == questionnaire_id, cancellationToken: cancellationToken);
+        DocumentSchemeConstructorModelDB? Questionnaire_db = await context_forms.DocumentSchemes.Include(x => x.Pages!).ThenInclude(x => x.JoinsForms).FirstOrDefaultAsync(x => x.Id == questionnaire_id, cancellationToken: cancellationToken);
         if (Questionnaire_db is null)
             return ResponseBaseModel.CreateError($"Опрос/анкета #{questionnaire_id} не найдена в БД");
 
@@ -1886,12 +1893,12 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     // табы/вкладки схожи по смыслу табов/вкладок в Excel. Т.е. обычная группировка разных рабочих пространств со своим именем 
     #region табы документов
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> QuestionnairePageMove(int questionnaire_page_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<DocumentSchemeConstructorModelDB>> QuestionnairePageMove(int questionnaire_page_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
     {
-        TResponseModel<ConstructorFormQuestionnaireModelDB> res = new();
+        TResponseModel<DocumentSchemeConstructorModelDB> res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormQuestionnairePageModelDB? questionnaire_db = await context_forms
-            .QuestionnairesPages
+        TabOfDocumentSchemeConstructorModelDB? questionnaire_db = await context_forms
+            .TabsOfDocumentsSchemes
             .Include(x => x.Owner)
             .ThenInclude(x => x!.Pages)
             .FirstOrDefaultAsync(x => x.Id == questionnaire_page_id, cancellationToken: cancellationToken);
@@ -1903,7 +1910,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
         questionnaire_db.Owner!.Pages = questionnaire_db.Owner.Pages!.OrderBy(x => x.SortIndex).ToList();
 
-        ConstructorFormQuestionnairePageModelDB? _fns = questionnaire_db.Owner.GetOutermostPage(direct, questionnaire_db.SortIndex);
+        TabOfDocumentSchemeConstructorModelDB? _fns = questionnaire_db.Owner.GetOutermostPage(direct, questionnaire_db.SortIndex);
 
         if (_fns is null)
             res.AddError("Не удалось выполнить перемещение. ошибка 7BA66820-1DDF-42B0-AF6D-F8F0C920A40E");
@@ -1934,14 +1941,14 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
 
         res.Response = await context_forms
-            .Questionnaires
+            .DocumentSchemes
             .Include(x => x.Pages)
             .FirstAsync(x => x.Id == questionnaire_db.OwnerId, cancellationToken: cancellationToken);
         questionnaire_db.Owner!.Pages = questionnaire_db.Owner.Pages!.OrderBy(x => x.SortIndex).ToList();
 
         int i = 0;
         bool is_upd = false;
-        foreach (ConstructorFormQuestionnairePageModelDB p in res.Response.Pages!)
+        foreach (TabOfDocumentSchemeConstructorModelDB p in res.Response.Pages!)
         {
             i++;
             is_upd = is_upd || p.SortIndex != i;
@@ -1976,8 +1983,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         }
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormQuestionnaireModelDB? questionnaire_db = await context_forms
-            .Questionnaires
+        DocumentSchemeConstructorModelDB? questionnaire_db = await context_forms
+            .DocumentSchemes
             .Include(x => x.Pages)
             .FirstOrDefaultAsync(x => x.Id == questionnaire_page.OwnerId, cancellationToken: cancellationToken);
         string msg;
@@ -1988,12 +1995,12 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             logger.LogError(msg);
             return res;
         }
-        ConstructorFormQuestionnairePageModelDB? questionnaire_page_db;
+        TabOfDocumentSchemeConstructorModelDB? questionnaire_page_db;
         if (questionnaire_page.Id < 1)
         {
             int _sort_index = questionnaire_db.Pages!.Any() ? questionnaire_db.Pages!.Max(x => x.SortIndex) : 0;
 
-            questionnaire_page_db = ConstructorFormQuestionnairePageModelDB.Build(questionnaire_page, questionnaire_db, _sort_index + 1);
+            questionnaire_page_db = TabOfDocumentSchemeConstructorModelDB.Build(questionnaire_page, questionnaire_db, _sort_index + 1);
 
             await context_forms.AddAsync(questionnaire_page_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
@@ -2049,7 +2056,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         FormQuestionnairePageResponseModel res = new()
         {
             QuestionnairePage = await context_forms
-           .QuestionnairesPages
+           .TabsOfDocumentsSchemes
 
            .Include(x => x.JoinsForms!)
            .ThenInclude(x => x.Form)
@@ -2072,8 +2079,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> DeleteQuestionnairePage(int questionnaire_page_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormQuestionnairePageModelDB? questionnaire_page_db = await context_forms
-            .QuestionnairesPages
+        TabOfDocumentSchemeConstructorModelDB? questionnaire_page_db = await context_forms
+            .TabsOfDocumentsSchemes
             .Include(x => x.JoinsForms)
             .FirstOrDefaultAsync(x => x.Id == questionnaire_page_id, cancellationToken: cancellationToken);
 
@@ -2092,8 +2099,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     {
         FormQuestionnairePageResponseModel res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormQuestionnairePageJoinFormModelDB? questionnaire_page_join_db = await context_forms
-            .QuestionnairesPagesJoinForms
+        TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_join_db = await context_forms
+            .TabsJoinsForms
             .Include(x => x.Owner)
             .ThenInclude(x => x!.JoinsForms)
             .FirstOrDefaultAsync(x => x.Id == questionnaire_page_join_form_id, cancellationToken: cancellationToken);
@@ -2104,7 +2111,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
 
-        ConstructorFormQuestionnairePageJoinFormModelDB? _fns = questionnaire_page_join_db.Owner.GetOutermostJoinForm(direct, questionnaire_page_join_db.SortIndex);
+        TabJoinDocumentSchemeConstructorModelDB? _fns = questionnaire_page_join_db.Owner.GetOutermostJoinForm(direct, questionnaire_page_join_db.SortIndex);
 
         if (_fns is null)
             res.AddError("Не удалось выполнить перемещение. ошибка ED601887-8BB3-4FB7-96C7-1563FD9B1FCD");
@@ -2133,7 +2140,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
 
         res.QuestionnairePage = await context_forms
-            .QuestionnairesPages
+            .TabsOfDocumentsSchemes
             .Include(x => x.JoinsForms)
             .FirstAsync(x => x.Id == questionnaire_page_join_db.OwnerId, cancellationToken: cancellationToken);
 
@@ -2141,7 +2148,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         int i = 0;
         bool is_upd = false;
-        foreach (ConstructorFormQuestionnairePageJoinFormModelDB p in res.QuestionnairePage.JoinsForms!)
+        foreach (TabJoinDocumentSchemeConstructorModelDB p in res.QuestionnairePage.JoinsForms!)
         {
             i++;
             is_upd = is_upd || p.SortIndex != i;
@@ -2159,7 +2166,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> CreateOrUpdateQuestionnairePageJoinForm(ConstructorFormQuestionnairePageJoinFormModelDB page_join_form, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> CreateOrUpdateQuestionnairePageJoinForm(TabJoinDocumentSchemeConstructorModelDB page_join_form, CancellationToken cancellationToken = default)
     {
         page_join_form.Name = Regex.Replace(page_join_form.Name, @"\s+", " ").Trim();
         page_join_form.Description = page_join_form.Description?.Trim();
@@ -2170,8 +2177,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         ResponseBaseModel res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormQuestionnairePageModelDB? questionnaire_page_db = await context_forms
-            .QuestionnairesPages
+        TabOfDocumentSchemeConstructorModelDB? questionnaire_page_db = await context_forms
+            .TabsOfDocumentsSchemes
             .Include(x => x.Owner)
             //.ThenInclude(x => x!.Pages)
             .Include(x => x.JoinsForms)
@@ -2185,7 +2192,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             logger.LogError(msg);
             return res;
         }
-        ConstructorFormQuestionnairePageJoinFormModelDB? questionnaire_page_join_db;
+        TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_join_db;
         if (page_join_form.Id < 1)
         {
             int _sort_index = questionnaire_page_db.JoinsForms!.Any() ? questionnaire_page_db.JoinsForms!.Max(x => x.SortIndex) : 0;
@@ -2250,13 +2257,13 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormQuestionnairePageJoinFormModelDB>> GetQuestionnairePageJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<TabJoinDocumentSchemeConstructorModelDB>> GetQuestionnairePageJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        TResponseModel<ConstructorFormQuestionnairePageJoinFormModelDB> res = new()
+        TResponseModel<TabJoinDocumentSchemeConstructorModelDB> res = new()
         {
             Response = await context_forms
-            .QuestionnairesPagesJoinForms
+            .TabsJoinsForms
             .Include(x => x.Form)
             .Include(x => x.Owner)
             .ThenInclude(x => x!.JoinsForms)
@@ -2275,8 +2282,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> DeleteQuestionnairePageJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormQuestionnairePageJoinFormModelDB? questionnaire_page_db = await context_forms
-            .QuestionnairesPagesJoinForms
+        TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_db = await context_forms
+            .TabsJoinsForms
             .FirstOrDefaultAsync(x => x.Id == questionnaire_page_join_form_id, cancellationToken: cancellationToken);
 
         if (questionnaire_page_db is null)
@@ -2297,7 +2304,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> SetStatusSessionQuestionnaire(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormSessionModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken);
+        SessionOfDocumentDataModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken);
         if (sq is null)
             return ResponseBaseModel.CreateError($"Сессия [{id_session}] не найдена в БД. ошибка A85733AF-56F4-45D2-A16C-729352D1645B");
 
@@ -2326,10 +2333,10 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormSessionModelDB>> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        TResponseModel<ConstructorFormSessionModelDB> res = new()
+        TResponseModel<SessionOfDocumentDataModelDB> res = new()
         {
             Response = await context_forms
             .Sessions
@@ -2361,9 +2368,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ConstructorFormSessionModelDB>> UpdateOrCreateSessionQuestionnaire(ConstructorFormSessionModelDB session_json, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> UpdateOrCreateSessionQuestionnaire(SessionOfDocumentDataModelDB session_json, CancellationToken cancellationToken = default)
     {
-        TResponseModel<ConstructorFormSessionModelDB> res = new();
+        TResponseModel<SessionOfDocumentDataModelDB> res = new();
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(session_json);
         if (!IsValid)
@@ -2399,7 +2406,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             await context_forms.SaveChangesAsync(cancellationToken);
             return new() { Response = session_json, Messages = new() { new() { TypeMessage = ResultTypesEnum.Success, Text = $"Создана сессия #{session_json.Id}" } } };
         }
-        ConstructorFormSessionModelDB? session_db = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == session_json.Id, cancellationToken: cancellationToken);
+        SessionOfDocumentDataModelDB? session_db = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == session_json.Id, cancellationToken: cancellationToken);
         string msg;
         if (session_db is null)
         {
@@ -2458,7 +2465,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             logger.LogInformation(msg);
             await context_forms.SaveChangesAsync(cancellationToken);
         }
-        TResponseModel<ConstructorFormSessionModelDB> sr = await GetSessionQuestionnaire(session_json.Id, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> sr = await GetSessionQuestionnaire(session_json.Id, cancellationToken);
         if (res.Messages.Count != 0)
             sr.AddRangeMessages(res.Messages);
         return sr;
@@ -2472,7 +2479,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ConstructorFormsSessionsPaginationResponseModel res = new(req);
-        IQueryable<ConstructorFormSessionModelDB> query = context_forms
+        IQueryable<SessionOfDocumentDataModelDB> query = context_forms
             .Sessions
             .Include(x => x.Owner)
             .OrderByDescending(x => x.CreatedAt)
@@ -2503,8 +2510,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         var q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
                 join _s in context_forms.Sessions on _vs.OwnerId equals _s.Id
-                join _pjf in context_forms.QuestionnairesPagesJoinForms.Where(x => x.FormId == req.FormId) on _vs.QuestionnairePageJoinFormId equals _pjf.Id
-                join _qp in context_forms.QuestionnairesPages on _pjf.OwnerId equals _qp.Id
+                join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.QuestionnairePageJoinFormId equals _pjf.Id
+                join _qp in context_forms.TabsOfDocumentsSchemes on _pjf.OwnerId equals _qp.Id
                 select new { Value = _vs, Session = _s, QuestionnairePageJoinForm = _pjf, QuestionnairePage = _qp };
 
         var data_rows = await q.ToArrayAsync(cancellationToken: cancellationToken);
@@ -2550,9 +2557,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> ClearValuesForFieldName(FormFieldOfSessionModel req, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        IQueryable<ConstructorFormSessionValueModelDB> q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
+        IQueryable<ValueDataForSessionOfDocumentModelDB> q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
                                                            join _s in context_forms.Sessions.Where(x => !req.SessionId.HasValue || x.Id == req.SessionId.Value) on _vs.OwnerId equals _s.Id
-                                                           join _pjf in context_forms.QuestionnairesPagesJoinForms.Where(x => x.FormId == req.FormId) on _vs.QuestionnairePageJoinFormId equals _pjf.Id
+                                                           join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.QuestionnairePageJoinFormId equals _pjf.Id
                                                            select _vs;
         int _i = await q.CountAsync();
         if (_i == 0)
@@ -2568,7 +2575,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
     public async Task<ResponseBaseModel> DeleteSessionQuestionnaire(int session_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormSessionModelDB? session_db = await context_forms
+        SessionOfDocumentDataModelDB? session_db = await context_forms
             .Sessions
             .Include(x => x.SessionValues)
 

@@ -1,6 +1,6 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<MudTable dom-guid="{}" Loading="IsBusyProgress" ServerData="@(new Func<TableState, Task<TableData<ConstructorFormModelDB>>>(ServerReload))" Class="d-flex flex-column flex-grow-1" Dense="true" Hover="true" Striped="true" @ref="table">
+<MudTable dom-guid="{}" Loading="IsBusyProgress" ServerData="@(new Func<TableState, Task<TableData<FormConstructorModelDB>>>(ServerReload))" Class="d-flex flex-column flex-grow-1" Dense="true" Hover="true" Striped="true" @ref="table">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Формы</MudText>
         <MudIconButton Title="Создать новую форму" OnClick="OpenDialogCreateForm" Icon="@Icons.Material.Filled.AddBox"></MudIconButton>

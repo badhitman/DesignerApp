@@ -28,7 +28,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     /// Форма
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormModelDB Form { get; set; }
+    public required FormConstructorModelDB Form { get; set; }
 
     /// <summary>
     /// Поле формы
@@ -40,7 +40,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     /// Перезагрузка полей (обработчик события)
     /// </summary>
     [Parameter, EditorRequired]
-    public required Action<ConstructorFormModelDB?> ReloadFieldsHandler { get; set; }
+    public required Action<FormConstructorModelDB?> ReloadFieldsHandler { get; set; }
 
     ConstructorFieldFormBaseLowModel _field_master = default!;
 
@@ -67,7 +67,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         {
             if (_type_name is null)
             {
-                if (_field_master is ConstructorFieldFormModelDB sf)
+                if (_field_master is FieldFormConstructorModelDB sf)
                 {
                     switch (sf.TypeField)
                     {
@@ -82,7 +82,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                             break;
                     }
                 }
-                else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+                else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
                     _type_name = "<span class='badge bg-success text-wrap'>Справочник/Список</span>";
                 else
                 {
@@ -106,13 +106,13 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         {
             if (_information_field is null)
             {
-                if (_field_master is ConstructorFieldFormModelDB sf)
+                if (_field_master is FieldFormConstructorModelDB sf)
                 {
                     string? descriptor = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
                     DeclarationAbstraction? _d = DeclarationAbstraction.GetHandlerService(descriptor ?? "");
                     _information_field = $"<b>{_d?.Name ?? descriptor}</b> <u>{sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)}</u>";
                 }
-                else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+                else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
                     _information_field = df.Directory?.Name;
                 else
                 {
@@ -132,9 +132,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     {
         get
         {
-            if (Field is ConstructorFieldFormModelDB sf)
+            if (Field is FieldFormConstructorModelDB sf)
                 return sf.SortIndex < (Form.Fields?.Count() + Form.FormsDirectoriesLinks?.Count());
-            else if (Field is ConstructorFormDirectoryLinkModelDB df)
+            else if (Field is LinkDirectoryToFormConstructorModelDB df)
                 return df.SortIndex < (Form.Fields?.Count() + Form.FormsDirectoriesLinks?.Count());
             else
                 SnackbarRepo.Add("ошибка C0688447-05EE-4982-B9E0-D48C7DA89C3F", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -148,9 +148,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     {
         get
         {
-            if (Field is ConstructorFieldFormModelDB sf)
+            if (Field is FieldFormConstructorModelDB sf)
                 return sf.SortIndex > 1;
-            else if (Field is ConstructorFormDirectoryLinkModelDB df)
+            else if (Field is LinkDirectoryToFormConstructorModelDB df)
                 return df.SortIndex > 1;
             else
                 SnackbarRepo.Add("ошибка EAAC696C-1CDE-41C3-8009-8F8FD4CC2D8E", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -165,11 +165,11 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     {
         get
         {
-            if (_field_master is ConstructorFieldFormModelDB sf)
+            if (_field_master is FieldFormConstructorModelDB sf)
             {
 
             }
-            else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+            else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
             {
                 if (df.DirectoryId < 1)
                     return false;
@@ -238,7 +238,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         ResponseBaseModel rest;
         IsBusyProgress = true;
         Action act;
-        if (_field_master is ConstructorFieldFormModelDB sf)
+        if (_field_master is FieldFormConstructorModelDB sf)
         {
             string? field_valid = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
             if (field_valid is not null && Enum.TryParse(field_valid, out PropsTypesMDFieldsEnum myDescriptor))
@@ -264,7 +264,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 }
             }
 
-            ConstructorFieldFormModelDB req = new()
+            FieldFormConstructorModelDB req = new()
             {
                 SystemName = sf.SystemName,
                 Css = sf.Css,
@@ -279,11 +279,11 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 TypeField = sf.TypeField
             };
             rest = await FormsRepo.FormFieldUpdateOrCreate(req);
-            act = () => { ((ConstructorFieldFormModelDB)Field).Update(sf); };
+            act = () => { ((FieldFormConstructorModelDB)Field).Update(sf); };
         }
-        else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+        else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
         {
-            ConstructorFormDirectoryLinkModelDB req = new()
+            LinkDirectoryToFormConstructorModelDB req = new()
             {
                 SystemName = df.SystemName,
                 Id = df.Id,
@@ -297,7 +297,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 SortIndex = df.SortIndex
             };
             rest = await FormsRepo.FormFieldDirectoryUpdateOrCreate(req);
-            act = () => { ((ConstructorFormDirectoryLinkModelDB)Field).Update(df); };
+            act = () => { ((LinkDirectoryToFormConstructorModelDB)Field).Update(df); };
         }
         else
         {
@@ -324,7 +324,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     async Task ReloadForm()
     {
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.GetForm(Field.OwnerId);
+        TResponseModel<FormConstructorModelDB> rest = await FormsRepo.GetForm(Field.OwnerId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -342,14 +342,14 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 
         ReloadFieldsHandler(rest.Response);
 
-        if (_field_master is ConstructorFieldFormModelDB sf)
+        if (_field_master is FieldFormConstructorModelDB sf)
         {
             if (rest.Response.Fields.Any(x => x.Id == _field_master.Id))
             {
                 Field.Update(rest.Response.Fields.First(x => x.Id == _field_master.Id));
                 //_field_master.Update(Field);
-                _field_master = ConstructorFieldFormModelDB.Build(Field);
-                //_field_master = new ConstructorFieldFormModelDB()
+                _field_master = FieldFormConstructorModelDB.Build(Field);
+                //_field_master = new FieldFormConstructorModelDB()
                 //{
                 //    Css = Field.Css,
                 //    Description = Field.Description,
@@ -361,12 +361,12 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 //};
             }
         }
-        else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+        else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
         {
             if (rest.Response.FormsDirectoriesLinks.Any(x => x.Id == _field_master.Id))
             {
                 Field.Update(rest.Response.FormsDirectoriesLinks.First(x => x.Id == _field_master.Id));
-                _field_master = new ConstructorFormDirectoryLinkModelDB()
+                _field_master = new LinkDirectoryToFormConstructorModelDB()
                 {
                     SystemName = Field.SystemName,
                     Css = Field.Css,
@@ -399,9 +399,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 
     void ChildUpdates()
     {
-        if (_field_master is ConstructorFieldFormModelDB sf)
+        if (_field_master is FieldFormConstructorModelDB sf)
             FieldEditUI_ref?.Update(sf);
-        else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+        else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
             FieldDirUI_ref?.Update(df);
     }
 
@@ -412,9 +412,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     {
         IsBusyProgress = true;
         ResponseBaseModel rest;
-        if (_field_master is ConstructorFieldFormModelDB sf)
+        if (_field_master is FieldFormConstructorModelDB sf)
             rest = await FormsRepo.FormFieldDelete(sf.Id);
-        else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+        else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
             rest = await FormsRepo.FormFieldDirectoryDelete(df.Id);
         else
         {
@@ -437,8 +437,8 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 
     void SetFieldAction(ConstructorFieldFormBaseLowModel field)
     {
-        if (field is ConstructorFieldFormModelDB sf)
-            _field_master = new ConstructorFieldFormModelDB()
+        if (field is FieldFormConstructorModelDB sf)
+            _field_master = new FieldFormConstructorModelDB()
             {
                 SystemName = sf.SystemName,
                 Css = sf.Css,
@@ -453,8 +453,8 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 SortIndex = sf.SortIndex,
                 TypeField = sf.TypeField
             };
-        else if (field is ConstructorFormDirectoryLinkModelDB df)
-            _field_master = new ConstructorFormDirectoryLinkModelDB()
+        else if (field is LinkDirectoryToFormConstructorModelDB df)
+            _field_master = new LinkDirectoryToFormConstructorModelDB()
             {
                 SystemName = df.SystemName,
                 Css = df.Css,
@@ -484,10 +484,10 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     protected async Task MoveFieldUp()
     {
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormModelDB> rest;
-        if (_field_master is ConstructorFieldFormModelDB sf)
+        TResponseModel<FormConstructorModelDB> rest;
+        if (_field_master is FieldFormConstructorModelDB sf)
             rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Up);
-        else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+        else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
             rest = await FormsRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Up);
         else
         {
@@ -520,10 +520,10 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     protected async Task MoveFieldDown()
     {
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormModelDB> rest;
-        if (_field_master is ConstructorFieldFormModelDB sf)
+        TResponseModel<FormConstructorModelDB> rest;
+        if (_field_master is FieldFormConstructorModelDB sf)
             rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Down);
-        else if (_field_master is ConstructorFormDirectoryLinkModelDB df)
+        else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
             rest = await FormsRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Down);
         else
         {

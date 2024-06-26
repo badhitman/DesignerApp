@@ -28,7 +28,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public ConstructorFormModelDB Form { get; set; } = default!;
+    public FormConstructorModelDB Form { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -41,7 +41,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected InputRichTextComponent? _currentTemplateInputRichText;
 
     /// <inheritdoc/>
-    protected ConstructorFormModelDB FormEditObject = default!;
+    protected FormConstructorModelDB FormEditObject = default!;
 
     /// <inheritdoc/>
     protected IEnumerable<EntryAltDescriptionModel> Entries = default!;
@@ -51,7 +51,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
 
     void ResetForm()
     {
-        FormEditObject = ConstructorFormModelDB.Build(Form);
+        FormEditObject = FormConstructorModelDB.Build(Form);
         _currentTemplateInputRichText?.SetValue(FormEditObject.Description);
     }
 
@@ -59,7 +59,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected async Task SaveForm()
     {
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormModelDB> rest = await FormsRepo.FormUpdateOrCreate(FormEditObject);
+        TResponseModel<FormConstructorModelDB> rest = await FormsRepo.FormUpdateOrCreate(FormEditObject);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())

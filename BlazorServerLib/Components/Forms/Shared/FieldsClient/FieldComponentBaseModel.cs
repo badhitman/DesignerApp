@@ -35,19 +35,19 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// Форма
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormModelDB Form { get; set; }
+    public required FormConstructorModelDB Form { get; set; }
 
     /// <summary>
     /// Документ/сессия
     /// </summary>
     [CascadingParameter]
-    public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
+    public SessionOfDocumentDataModelDB? SessionQuestionnaire { get; set; }
 
     /// <summary>
     /// Страница/Таб документа
     /// </summary>
     [CascadingParameter]
-    public ConstructorFormQuestionnairePageModelDB? QuestionnairePage { get; set; }
+    public TabOfDocumentSchemeConstructorModelDB? QuestionnairePage { get; set; }
 
     /// <summary>
     /// Признак того, что поле находится в состоянии реального использования, а не в конструкторе или режим demo
@@ -58,7 +58,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// Связь формы со страницей опроса/анкеты. В режиме DEMO тут NULL
     /// </summary>
     [CascadingParameter]
-    public ConstructorFormQuestionnairePageJoinFormModelDB? PageJoinForm { get; set; }
+    public TabJoinDocumentSchemeConstructorModelDB? PageJoinForm { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]
@@ -76,7 +76,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// <summary>
     /// Проверка доступности редактирования поля. Поле формы в некоторых случаях не доступна для редактирования
     /// </summary>
-    public static bool IsReadonly(ClaimsPrincipal clp, ConstructorFormSessionModelDB sq)
+    public static bool IsReadonly(ClaimsPrincipal clp, SessionOfDocumentDataModelDB sq)
     {
         string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email, StringComparison.OrdinalIgnoreCase))?.Value;
         return !clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && (x.Value.Equals("admin", StringComparison.OrdinalIgnoreCase))) && sq.SessionStatus >= SessionsStatusesEnum.Sended && !sq.CreatorEmail.Equals(email, StringComparison.OrdinalIgnoreCase);
@@ -103,7 +103,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
             SessionId = SessionQuestionnaire!.Id
         };
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.SetValueFieldSessionQuestionnaire(req);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.SetValueFieldSessionQuestionnaire(req);
         IsBusyProgress = false;
 
         if (!rest.Success())

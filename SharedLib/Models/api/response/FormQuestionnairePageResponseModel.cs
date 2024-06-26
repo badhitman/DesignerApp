@@ -12,5 +12,5 @@ public class FormQuestionnairePageResponseModel : ResponseBaseModel
     /// <summary>
     /// Страница анкеты/опроса
     /// </summary>
-    public ConstructorFormQuestionnairePageModelDB? QuestionnairePage { get; set; }
+    public TabOfDocumentSchemeConstructorModelDB? QuestionnairePage { get; set; }
 }

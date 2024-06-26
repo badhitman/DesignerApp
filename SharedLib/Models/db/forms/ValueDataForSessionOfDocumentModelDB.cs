@@ -10,12 +10,12 @@ namespace SharedLib;
 /// Значение поля из формы опроса/анкеты
 /// </summary>
 [Index(nameof(GroupByRowNum))]
-public class ConstructorFormSessionValueModelDB : EntryDescriptionOwnedModel
+public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
 {
     /// <summary>
     /// Значение поля из формы опроса/анкеты
     /// </summary>
-    public static ConstructorFormSessionValueModelDB Build(SetValueFieldSessionQuestionnaireModel req, ConstructorFormQuestionnairePageJoinFormModelDB questionnaire_page_join, ConstructorFormSessionModelDB session)
+    public static ValueDataForSessionOfDocumentModelDB Build(SetValueFieldSessionQuestionnaireModel req, TabJoinDocumentSchemeConstructorModelDB questionnaire_page_join, SessionOfDocumentDataModelDB session)
         => new()
         {
             Name = req.NameField,
@@ -31,7 +31,7 @@ public class ConstructorFormSessionValueModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Сессия
     /// </summary>
-    public ConstructorFormSessionModelDB? Owner { get; set; }
+    public SessionOfDocumentDataModelDB? Owner { get; set; }
 
     /// <summary>
     /// [FK] Форма
@@ -40,7 +40,7 @@ public class ConstructorFormSessionValueModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Форма
     /// </summary>
-    public ConstructorFormQuestionnairePageJoinFormModelDB? QuestionnairePageJoinForm { get; set; }
+    public TabJoinDocumentSchemeConstructorModelDB? QuestionnairePageJoinForm { get; set; }
 
     /// <summary>
     /// Значение поля

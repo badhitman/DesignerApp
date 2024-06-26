@@ -10,12 +10,13 @@ namespace SharedLib;
 /// Сессия опроса/анкеты
 /// </summary>
 [Index(nameof(CreatorEmail)), Index(nameof(SessionToken)), Index(nameof(SessionStatus)), Index(nameof(CreatedAt)), Index(nameof(LastQuestionnaireUpdateActivity)), Index(nameof(DeadlineDate))]
-public class ConstructorFormSessionModelDB : EntryDescriptionOwnedModel
+public class SessionOfDocumentDataModelDB
+    : EntryDescriptionOwnedModel
 {
     /// <summary>
     /// Опрос/анкета
     /// </summary>
-    public ConstructorFormQuestionnaireModelDB? Owner { get; set; }
+    public DocumentSchemeConstructorModelDB? Owner { get; set; }
 
     /// <summary>
     /// Адрес создателя
@@ -55,12 +56,12 @@ public class ConstructorFormSessionModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Значения полей форм
     /// </summary>
-    public List<ConstructorFormSessionValueModelDB>? SessionValues { get; set; }
+    public List<ValueDataForSessionOfDocumentModelDB>? SessionValues { get; set; }
 
     /// <summary>
     /// ВВедённые значения в табличную форму
     /// </summary>
-    public IQueryable<ConstructorFormSessionValueModelDB>? QueryCurrentTablePageFormValues(int page_join_id)
+    public IQueryable<ValueDataForSessionOfDocumentModelDB>? QueryCurrentTablePageFormValues(int page_join_id)
     {
         return SessionValues?
                .Where(x => x.GroupByRowNum > 0 && x.QuestionnairePageJoinFormId == page_join_id)
@@ -70,7 +71,7 @@ public class ConstructorFormSessionModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// 
     /// </summary>
-    public IGrouping<uint, ConstructorFormSessionValueModelDB>[]? RowsData(int page_join_id)
+    public IGrouping<uint, ValueDataForSessionOfDocumentModelDB>[]? RowsData(int page_join_id)
     {
         return QueryCurrentTablePageFormValues(page_join_id)?
                .GroupBy(x => x.GroupByRowNum)
@@ -92,7 +93,7 @@ public class ConstructorFormSessionModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Перезагрузить объект
     /// </summary>
-    public void Reload(ConstructorFormSessionModelDB other)
+    public void Reload(SessionOfDocumentDataModelDB other)
     {
         DeadlineDate = other.DeadlineDate;
         ShowDescriptionAsStartPage = other.ShowDescriptionAsStartPage;
@@ -115,15 +116,15 @@ public class ConstructorFormSessionModelDB : EntryDescriptionOwnedModel
                 i = SessionValues.FindIndex(x => !other.SessionValues.Any(y => y.Id == x.Id));
             }
 
-            ConstructorFormSessionValueModelDB? _s;
-            foreach (ConstructorFormSessionValueModelDB sv in SessionValues)
+            ValueDataForSessionOfDocumentModelDB? _s;
+            foreach (ValueDataForSessionOfDocumentModelDB sv in SessionValues)
             {
                 _s = other.SessionValues.FirstOrDefault(x => x.Id == sv.Id);
                 if (_s is not null)
                     sv.Value = _s.Value;
             }
 
-            ConstructorFormSessionValueModelDB[] _values = other.SessionValues.Where(x => !SessionValues.Any(y => y.Id == x.Id)).ToArray();
+            ValueDataForSessionOfDocumentModelDB[] _values = other.SessionValues.Where(x => !SessionValues.Any(y => y.Id == x.Id)).ToArray();
             if (_values.Length != 0)
                 SessionValues.AddRange(_values);
         }

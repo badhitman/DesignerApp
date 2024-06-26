@@ -21,7 +21,7 @@ public partial class QuestionnaireClientViewPage : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public Guid QuestionnaireGuid { get; set; } = default!;
 
-    ConstructorFormSessionModelDB SessionQuestionnaire = default!;
+    SessionOfDocumentDataModelDB SessionQuestionnaire = default!;
 
     /// <inheritdoc/>
     protected IEnumerable<EntryAltDescriptionModel> Entries = [];
@@ -31,7 +31,7 @@ public partial class QuestionnaireClientViewPage : BlazorBusyComponentBaseModel
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormSessionModelDB> rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireGuid.ToString());
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireGuid.ToString());
         IsBusyProgress = false;
 
         if (rest.Response is null)

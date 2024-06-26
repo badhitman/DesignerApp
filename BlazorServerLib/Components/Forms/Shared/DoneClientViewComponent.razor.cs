@@ -24,7 +24,7 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public required ConstructorFormSessionModelDB SessionQuestionnaire { get; set; }
+    public required SessionOfDocumentDataModelDB SessionQuestionnaire { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]

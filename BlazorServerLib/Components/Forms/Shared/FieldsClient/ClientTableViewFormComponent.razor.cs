@@ -33,11 +33,11 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; }
+    public required TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
+    public SessionOfDocumentDataModelDB? SessionQuestionnaire { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]
@@ -45,14 +45,14 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public ConstructorFormQuestionnairePageModelDB? QuestionnairePage { get; set; }
+    public TabOfDocumentSchemeConstructorModelDB? QuestionnairePage { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormModelDB Form { get; set; }
+    public required FormConstructorModelDB Form { get; set; }
 
     /// <inheritdoc/>
-    protected static bool IsReadonly(ClaimsPrincipal clp, ConstructorFormSessionModelDB sq)
+    protected static bool IsReadonly(ClaimsPrincipal clp, SessionOfDocumentDataModelDB sq)
     {
         string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
         return !clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && (x.Value.Equals("Admin", StringComparison.OrdinalIgnoreCase))) && sq.SessionStatus >= SessionsStatusesEnum.Sended && !sq.CreatorEmail.Equals(email, StringComparison.OrdinalIgnoreCase);
@@ -163,7 +163,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             return;
         }
         IsBusyProgress = true;
-        TResponseModel<ConstructorFormSessionModelDB> rest = string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken)
+        TResponseModel<SessionOfDocumentDataModelDB> rest = string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken)
         ? await FormsRepo.GetSessionQuestionnaire(SessionQuestionnaire.Id)
         : await FormsRepo.GetSessionQuestionnaire(SessionQuestionnaire.SessionToken);
         IsBusyProgress = false;

@@ -47,7 +47,7 @@ else
             }
             else
             {
-                foreach (ConstructorFormQuestionnairePageJoinFormModelDB pjf in QuestionnairePage.JoinsForms.OrderBy(x => x.SortIndex))
+                foreach (TabJoinDocumentSchemeConstructorModelDB pjf in QuestionnairePage.JoinsForms.OrderBy(x => x.SortIndex))
                 {
                     pjf.Owner ??= QuestionnairePage;
                     <CascadingValue Value="pjf">

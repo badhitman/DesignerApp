@@ -11,9 +11,9 @@ public class FormTableCalculationManager
 {
     SelectedFieldModel _selected_field = default!;
     readonly Dictionary<string, List<Dictionary<string, double>>> _data = [];
-    IQueryable<ConstructorFieldFormModelDB>? Query => _page_join_form.Form?.QueryFieldsOfNumericTypes(_selected_field.FieldName ?? "");
+    IQueryable<FieldFormConstructorModelDB>? Query => _page_join_form.Form?.QueryFieldsOfNumericTypes(_selected_field.FieldName ?? "");
 
-    ConstructorFormQuestionnairePageJoinFormModelDB _page_join_form = default!;
+    TabJoinDocumentSchemeConstructorModelDB _page_join_form = default!;
 
     /// <summary>
     /// Ведущая колонка (выбранное поле)
@@ -30,7 +30,7 @@ public class FormTableCalculationManager
     /// <summary>
     /// Управление таблицей группировок/сумм
     /// </summary>
-    public FormTableCalculationManager(SelectedFieldModel selected_field, ConstructorFormQuestionnairePageJoinFormModelDB page_join_form, ConstructorFormSessionModelDB session_questionnairie)
+    public FormTableCalculationManager(SelectedFieldModel selected_field, TabJoinDocumentSchemeConstructorModelDB page_join_form, SessionOfDocumentDataModelDB session_questionnairie)
         => Update(selected_field, page_join_form, session_questionnairie);
 
     /// <summary>
@@ -98,29 +98,29 @@ public class FormTableCalculationManager
     /// <summary>
     /// Обновить объект
     /// </summary>
-    public void Update(SelectedFieldModel selected_field, ConstructorFormQuestionnairePageJoinFormModelDB page_join_form, ConstructorFormSessionModelDB session_questionnairie)
+    public void Update(SelectedFieldModel selected_field, TabJoinDocumentSchemeConstructorModelDB page_join_form, SessionOfDocumentDataModelDB session_questionnairie)
     {
         _selected_field = selected_field;
         _page_join_form = page_join_form;
         _data.Clear();
 
-        foreach (IGrouping<uint, ConstructorFormSessionValueModelDB> sv in session_questionnairie.RowsData(page_join_form.Id)!)
+        foreach (IGrouping<uint, ValueDataForSessionOfDocumentModelDB> sv in session_questionnairie.RowsData(page_join_form.Id)!)
         {
-            ConstructorFormSessionValueModelDB? master_sv = sv.FirstOrDefault(x => x.Name.Equals(_selected_field.FieldName))
-                ?? ConstructorFormSessionValueModelDB.Build(SetValueFieldSessionQuestionnaireModel.Build("", selected_field.FieldName, "<null>", sv.Key), page_join_form, session_questionnairie);
+            ValueDataForSessionOfDocumentModelDB? master_sv = sv.FirstOrDefault(x => x.Name.Equals(_selected_field.FieldName))
+                ?? ValueDataForSessionOfDocumentModelDB.Build(SetValueFieldSessionQuestionnaireModel.Build("", selected_field.FieldName, "<null>", sv.Key), page_join_form, session_questionnairie);
 
             SetData(sv.Where(x => !x.Name.Equals(_selected_field.FieldName) && Query?.Any(y => y.Name.Equals(x.Name)) == true).ToArray(), master_sv);
         }
     }
 
-    void SetData(IEnumerable<ConstructorFormSessionValueModelDB> values, ConstructorFormSessionValueModelDB master_sv)
+    void SetData(IEnumerable<ValueDataForSessionOfDocumentModelDB> values, ValueDataForSessionOfDocumentModelDB master_sv)
     {
         string _pos = master_sv.Value ?? "";
         if (!_data.ContainsKey(_pos))
             _data.Add(_pos, new());
 
         Dictionary<string, double> row = new();
-        foreach (ConstructorFormSessionValueModelDB val in values)
+        foreach (ValueDataForSessionOfDocumentModelDB val in values)
         {
             if (string.IsNullOrWhiteSpace(val.Value))
                 row.Add(val.Name, 0.0);

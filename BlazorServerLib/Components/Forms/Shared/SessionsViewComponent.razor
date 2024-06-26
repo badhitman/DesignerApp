@@ -14,7 +14,7 @@
                 <label class="visually-hidden" for="inlineFormSelectPref">Опрос/анкета</label>
                 <select @bind="SelectedQuestionnaireId" class="form-select" disabled="@(CurrentMainProject is null)" id="inlineFormSelectPref">
                     <option value="0">Выбор анкеты...</option>
-                    @foreach (ConstructorFormQuestionnaireModelDB q in QuestionnairesAll)
+                    @foreach (DocumentSchemeConstructorModelDB q in QuestionnairesAll)
                     {
                         <option value="@q.Id">@q.Name</option>
                     }
@@ -32,7 +32,7 @@
         </form>
     </div>
     <div class="card-body">
-        <MudTable ServerData="@(new Func<TableState, Task<TableData<ConstructorFormSessionModelDB>>>(ServerReload))" Loading="IsBusyProgress" Dense="true" Hover="true" Striped="true" @ref="table">
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<SessionOfDocumentDataModelDB>>>(ServerReload))" Loading="IsBusyProgress" Dense="true" Hover="true" Striped="true" @ref="table">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Ссылки/сессии</MudText>
                 <MudSpacer />

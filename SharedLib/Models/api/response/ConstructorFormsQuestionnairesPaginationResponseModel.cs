@@ -22,5 +22,5 @@ public class ConstructorFormsQuestionnairesPaginationResponseModel : PaginationR
     /// <summary>
     /// 
     /// </summary>
-    public IEnumerable<ConstructorFormQuestionnaireModelDB>? Questionnaires { get; set; }
+    public IEnumerable<DocumentSchemeConstructorModelDB>? Questionnaires { get; set; }
 }

@@ -25,7 +25,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required ConstructorFormQuestionnaireModelDB Questionnaire { get; set; }
+    public required DocumentSchemeConstructorModelDB Questionnaire { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -78,7 +78,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         IsBusyProgress = true;
         InvokeAsync(async () =>
         {
-            TResponseModel<ConstructorFormQuestionnaireModelDB> rest = await FormsRepo.GetQuestionnaire(Questionnaire.Id);
+            TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.GetQuestionnaire(Questionnaire.Id);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (rest.Response is null)
@@ -97,7 +97,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     }
 
     /// <inheritdoc/>
-    protected void SetIdForPageAction(int init_id, ConstructorFormQuestionnairePageModelDB new_page)
+    protected void SetIdForPageAction(int init_id, TabOfDocumentSchemeConstructorModelDB new_page)
     {
         if (PagesNotExist)
         {
@@ -116,9 +116,9 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     }
 
     /// <inheritdoc/>
-    protected bool CanUpPage(ConstructorFormQuestionnairePageModelDB questionnaire_page) => questionnaire_page.SortIndex > (Questionnaire.Pages!.Any(x => x.Id != questionnaire_page.Id) ? Questionnaire.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Min(y => y.SortIndex) : 1) && !Questionnaire.Pages!.Any(x => x.Id < 1);
+    protected bool CanUpPage(TabOfDocumentSchemeConstructorModelDB questionnaire_page) => questionnaire_page.SortIndex > (Questionnaire.Pages!.Any(x => x.Id != questionnaire_page.Id) ? Questionnaire.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Min(y => y.SortIndex) : 1) && !Questionnaire.Pages!.Any(x => x.Id < 1);
     /// <inheritdoc/>
-    protected bool CanDownPage(ConstructorFormQuestionnairePageModelDB questionnaire_page) => questionnaire_page.SortIndex < (Questionnaire.Pages!.Any(x => x.Id != questionnaire_page.Id) ? Questionnaire.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Max(y => y.SortIndex) : Questionnaire.Pages!.Count) && !Questionnaire.Pages!.Any(x => x.Id < 1);
+    protected bool CanDownPage(TabOfDocumentSchemeConstructorModelDB questionnaire_page) => questionnaire_page.SortIndex < (Questionnaire.Pages!.Any(x => x.Id != questionnaire_page.Id) ? Questionnaire.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Max(y => y.SortIndex) : Questionnaire.Pages!.Count) && !Questionnaire.Pages!.Any(x => x.Id < 1);
 
     bool PagesNotExist => Questionnaire.Pages is null || Questionnaire.Pages.Count == 0;
 
@@ -131,7 +131,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
             return;
         }
 
-        ConstructorFormQuestionnairePageModelDB? _page = Questionnaire.Pages!.FirstOrDefault(x => x.Id == id);
+        TabOfDocumentSchemeConstructorModelDB? _page = Questionnaire.Pages!.FirstOrDefault(x => x.Id == id);
         if (_page is null)
         {
             SnackbarRepo.Add($"_page is null. Ошибка CBDF9789-4A28-4869-A214-A4702A432DA6", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -156,13 +156,13 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         while (i <= 100 && Questionnaire.Pages.Any(x => x.Name.Equals($"New {i}", StringComparison.OrdinalIgnoreCase)))
             i++;
 
-        Questionnaire.Pages.Add(new ConstructorFormQuestionnairePageModelDB { OwnerId = Questionnaire.Id, Id = new_page_id, Name = $"New {(i < 100 ? i.ToString() : Guid.NewGuid().ToString())}", JoinsForms = new(), SortIndex = (Questionnaire.Pages.Any() ? Questionnaire.Pages.Max(x => x.SortIndex) + 1 : 1) });
+        Questionnaire.Pages.Add(new TabOfDocumentSchemeConstructorModelDB { OwnerId = Questionnaire.Id, Id = new_page_id, Name = $"New {(i < 100 ? i.ToString() : Guid.NewGuid().ToString())}", JoinsForms = new(), SortIndex = (Questionnaire.Pages.Any() ? Questionnaire.Pages.Max(x => x.SortIndex) + 1 : 1) });
         QuestionnaireIndex = Questionnaire.Pages.Count - 1;
         _stateHasChanged = true;
     }
 
     /// <inheritdoc/>
-    public void Update(ConstructorFormQuestionnaireModelDB questionnaire, ConstructorFormQuestionnairePageModelDB? page = null)
+    public void Update(DocumentSchemeConstructorModelDB questionnaire, TabOfDocumentSchemeConstructorModelDB? page = null)
     {
         Questionnaire = questionnaire;
         if (page is not null && Questionnaire.Pages?.Any(x => x.Id == page.Id) == true)
@@ -173,7 +173,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     public void RemoveTab(int id)
     {
-        ConstructorFormQuestionnairePageModelDB? tabView = Questionnaire.Pages!.SingleOrDefault((t) => Equals(t.Id, id));
+        TabOfDocumentSchemeConstructorModelDB? tabView = Questionnaire.Pages!.SingleOrDefault((t) => Equals(t.Id, id));
         if (tabView is not null)
         {
             Questionnaire.Pages!.Remove(tabView);

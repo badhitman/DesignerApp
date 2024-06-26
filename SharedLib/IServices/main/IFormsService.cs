@@ -13,12 +13,12 @@ public interface IFormsService
     /// <summary>
     /// Получить сессию
     /// </summary>
-    public Task<TResponseModel<ConstructorFormSessionModelDB>> GetSessionQuestionnaire(string guid_session, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionQuestionnaire(string guid_session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Установить значение свойства сессии
     /// </summary>
-    public Task<TResponseModel<ConstructorFormSessionModelDB>> SetValueFieldSessionQuestionnaire(SetValueFieldSessionQuestionnaireModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> SetValueFieldSessionQuestionnaire(SetValueFieldSessionQuestionnaireModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Отправить опрос на проверку (от клиента)
@@ -47,12 +47,12 @@ public interface IFormsService
     /// <summary>
     /// Получить сессию
     /// </summary>
-    public Task<TResponseModel<ConstructorFormSessionModelDB>> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить (или создать) сессию опроса/анкеты
     /// </summary>
-    public Task<TResponseModel<ConstructorFormSessionModelDB>> UpdateOrCreateSessionQuestionnaire(ConstructorFormSessionModelDB session, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> UpdateOrCreateSessionQuestionnaire(SessionOfDocumentDataModelDB session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Запросить порцию сессий (с пагинацией)
@@ -79,7 +79,7 @@ public interface IFormsService
     /// <summary>
     /// Обновить (или создать) анкету/опрос
     /// </summary>
-    public Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> UpdateOrCreateQuestionnaire(EntryConstructedModel questionnaire, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<DocumentSchemeConstructorModelDB>> UpdateOrCreateQuestionnaire(EntryConstructedModel questionnaire, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Запрос анкет/опросов
@@ -89,7 +89,7 @@ public interface IFormsService
     /// <summary>
     /// Получить анкету/опрос
     /// </summary>
-    public Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> GetQuestionnaire(int questionnaire_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<DocumentSchemeConstructorModelDB>> GetQuestionnaire(int questionnaire_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить опрос/анкету
@@ -106,7 +106,7 @@ public interface IFormsService
     /// <summary>
     /// Перемещение страницы опроса/анкеты (сортировка страниц внутри опроса/анкеты)
     /// </summary>
-    public Task<TResponseModel<ConstructorFormQuestionnaireModelDB>> QuestionnairePageMove(int questionnaire_page_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<DocumentSchemeConstructorModelDB>> QuestionnairePageMove(int questionnaire_page_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить страницу анкеты/опроса
@@ -123,7 +123,7 @@ public interface IFormsService
     /// <summary>
     /// Обновить (или создать) связь [страницы анкеты/опроса] с [формой]
     /// </summary>
-    public Task<ResponseBaseModel> CreateOrUpdateQuestionnairePageJoinForm(ConstructorFormQuestionnairePageJoinFormModelDB page_join_form, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> CreateOrUpdateQuestionnairePageJoinForm(TabJoinDocumentSchemeConstructorModelDB page_join_form, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сдвинуть связь [формы] со [страницей анкеты/опроса] (изменение сортировки/последовательности)
@@ -133,7 +133,7 @@ public interface IFormsService
     /// <summary>
     /// Получить данные по связи [формы] со [страницей анкеты/опроса]
     /// </summary>
-    public Task<TResponseModel<ConstructorFormQuestionnairePageJoinFormModelDB>> GetQuestionnairePageJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<TabJoinDocumentSchemeConstructorModelDB>> GetQuestionnairePageJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить связь [формы] со [страницей анкеты/опроса]
@@ -150,12 +150,12 @@ public interface IFormsService
     /// <summary>
     /// Получить форму
     /// </summary>
-    public Task<TResponseModel<ConstructorFormModelDB>> GetForm(int form_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> GetForm(int form_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/создать форму (имя, описание, `признак таблицы`)
     /// </summary>
-    public Task<TResponseModel<ConstructorFormModelDB>> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить форму
@@ -167,17 +167,17 @@ public interface IFormsService
     /// <summary>
     /// Сдвинуть поле формы (простой тип)
     /// </summary>
-    public Task<TResponseModel<ConstructorFormModelDB>> FieldFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> FieldFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сдвинуть поле формы (тип: список/справочник)
     /// </summary>
-    public Task<TResponseModel<ConstructorFormModelDB>> FieldDirectoryFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> FieldDirectoryFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Проверить сортировку и нормализовать в случае рассинхрона
     /// </summary>
-    public Task<TResponseModel<ConstructorFormModelDB>> CheckAndNormalizeSortIndexFrmFields(ConstructorFormModelDB form, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> CheckAndNormalizeSortIndexFrmFields(FormConstructorModelDB form, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/создать поле формы (простой тип)
@@ -192,7 +192,7 @@ public interface IFormsService
     /// <summary>
     /// Обновить/создать поле формы (тип: справочник/список)
     /// </summary>
-    public Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(ConstructorFormDirectoryLinkModelDB field_directory, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(LinkDirectoryToFormConstructorModelDB field_directory, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить поле формы (тип: справочник/список)

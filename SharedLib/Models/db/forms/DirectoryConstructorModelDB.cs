@@ -10,10 +10,10 @@ namespace SharedLib;
 /// Справочник/список
 /// </summary>
 [Index(nameof(Name), IsUnique = true)]
-public class ConstructorFormDirectoryModelDB : EntryConstructedModel
+public class DirectoryConstructorModelDB : EntryConstructedModel
 {
     /// <inheritdoc/>
-    public static ConstructorFormDirectoryModelDB Build(EntryConstructedModel entry)
+    public static DirectoryConstructorModelDB Build(EntryConstructedModel entry)
         => new()
         {
             Name = entry.Name,
@@ -27,10 +27,10 @@ public class ConstructorFormDirectoryModelDB : EntryConstructedModel
     /// <summary>
     /// Элементы справочника/списка
     /// </summary>
-    public List<ConstructorFormDirectoryElementModelDB>? Elements { get; set; }
+    public List<ElementOfDirectoryConstructorModelDB>? Elements { get; set; }
 
     /// <summary>
     /// Связи форм со списками/связями
     /// </summary>
-    public List<ConstructorFormDirectoryLinkModelDB>? FormsDirectoriesLinks { get; set; }
+    public List<LinkDirectoryToFormConstructorModelDB>? FormsDirectoriesLinks { get; set; }
 }

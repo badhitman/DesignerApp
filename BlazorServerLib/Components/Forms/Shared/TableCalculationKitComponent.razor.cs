@@ -27,14 +27,14 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; }
+    public required TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
+    public SessionOfDocumentDataModelDB SessionQuestionnaire { get; set; } = default!;
 
     /// <inheritdoc/>
-    protected IQueryable<ConstructorFieldFormModelDB>? QueryFieldsOfNumericTypes => PageJoinForm.Form?.QueryFieldsOfNumericTypes(SelectedFieldObject?.FieldName);
+    protected IQueryable<FieldFormConstructorModelDB>? QueryFieldsOfNumericTypes => PageJoinForm.Form?.QueryFieldsOfNumericTypes(SelectedFieldObject?.FieldName);
 
     const string _separator = ":";
     /// <inheritdoc/>
@@ -105,7 +105,7 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    IQueryable<ConstructorFieldFormModelDB>? GetQueryFieldsOfNumericTypesForFieldName(string? field_name) => PageJoinForm.Form?.QueryFieldsOfNumericTypes(field_name);
+    IQueryable<FieldFormConstructorModelDB>? GetQueryFieldsOfNumericTypesForFieldName(string? field_name) => PageJoinForm.Form?.QueryFieldsOfNumericTypes(field_name);
     
     /// <inheritdoc/>
     protected IEnumerable<string> FieldsNames(string? field_name) => GetQueryFieldsOfNumericTypesForFieldName(field_name)?.Select(x => x.Name) ?? Enumerable.Empty<string>();

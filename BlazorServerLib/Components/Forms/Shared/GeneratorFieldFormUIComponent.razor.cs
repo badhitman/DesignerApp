@@ -17,7 +17,7 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required ConstructorFieldFormModelDB FieldObject { get; set; }
+    public required FieldFormConstructorModelDB FieldObject { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]

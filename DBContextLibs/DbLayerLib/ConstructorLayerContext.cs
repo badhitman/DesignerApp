@@ -16,68 +16,65 @@ public partial class LayerContext
     /// <summary>
     /// Members of projects
     /// </summary>
-    public DbSet<MemberOfProjectModelDb> MembersOfProjects { get; set; }
+    public DbSet<MemberOfProjectConstructorModelDb> MembersOfProjects { get; set; }
 
     /// <summary>
     /// Используемые проекты
     /// </summary>
-    public DbSet<ProjectUseModelDb> ProjectsUse { get; set; }
+    /// <remarks>Какой проект для какого пользователя установлен в роли основного/используемого</remarks>
+    public DbSet<ProjectUseConstructorModelDb> ProjectsUse { get; set; }
+
 
     /// <summary>
     /// Справочники/списки
     /// </summary>
-    public DbSet<ConstructorFormDirectoryModelDB> Directories { get; set; }
+    public DbSet<DirectoryConstructorModelDB> Directories { get; set; }
 
     /// <summary>
     /// Элементы справочников/списков
     /// </summary>
-    public DbSet<ConstructorFormDirectoryElementModelDB> DirectoriesElements { get; set; }
-
-    /// <summary>
-    /// Связи форм со списками/справочниками
-    /// </summary>
-    public DbSet<ConstructorFormDirectoryLinkModelDB> FormsDirectoriesLinks { get; set; }
-
-
+    public DbSet<ElementOfDirectoryConstructorModelDB> ElementsOfDirectories { get; set; }
 
 
     /// <summary>
     /// Формы
     /// </summary>
-    public DbSet<ConstructorFormModelDB> Forms { get; set; }
+    public DbSet<FormConstructorModelDB> Forms { get; set; }
 
     /// <summary>
     /// Поля форм
     /// </summary>
-    public DbSet<ConstructorFieldFormModelDB> Fields { get; set; }
+    public DbSet<FieldFormConstructorModelDB> Fields { get; set; }
 
+    /// <summary>
+    /// Связи форм со списками/справочниками
+    /// </summary>
+    public DbSet<LinkDirectoryToFormConstructorModelDB> LinksDirectoriesToForms { get; set; }
 
 
     /// <summary>
-    /// Сессии опросов/анкет
+    /// Схемы документов
     /// </summary>
-    public DbSet<ConstructorFormSessionModelDB> Sessions { get; set; }
+    public DbSet<DocumentSchemeConstructorModelDB> DocumentSchemes { get; set; }
 
     /// <summary>
-    /// Значения опросов/анкет
+    /// Табы/вкладки схем документов
     /// </summary>
-    public DbSet<ConstructorFormSessionValueModelDB> ValuesSessions { get; set; }
+    public DbSet<TabOfDocumentSchemeConstructorModelDB> TabsOfDocumentsSchemes { get; set; }
 
+    /// <summary>
+    /// Связи форм с табами/вкладками документов
+    /// </summary>
+    public DbSet<TabJoinDocumentSchemeConstructorModelDB> TabsJoinsForms { get; set; }
 
 
     /// <summary>
-    /// Опросы/анкеты
+    /// Сессии/ссылки для заполнения документов данными
     /// </summary>
-    public DbSet<ConstructorFormQuestionnaireModelDB> Questionnaires { get; set; }
+    public DbSet<SessionOfDocumentDataModelDB> Sessions { get; set; }
 
     /// <summary>
-    /// Страницы опросов/анкет
+    /// Значения/данные документов
     /// </summary>
-    public DbSet<ConstructorFormQuestionnairePageModelDB> QuestionnairesPages { get; set; }
-
-    /// <summary>
-    /// Связи форм со страницами опросов/анкет
-    /// </summary>
-    public DbSet<ConstructorFormQuestionnairePageJoinFormModelDB> QuestionnairesPagesJoinForms { get; set; }
-
+    public DbSet<ValueDataForSessionOfDocumentModelDB> ValuesSessions { get; set; }
 }

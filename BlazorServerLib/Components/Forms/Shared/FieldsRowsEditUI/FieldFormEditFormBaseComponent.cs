@@ -23,21 +23,21 @@ public class FieldFormEditFormBaseComponent : ComponentBase, IDomBaseComponent
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required ConstructorFieldFormModelDB Field { get; set; }
+    public required FieldFormConstructorModelDB Field { get; set; }
 
     /// <summary>
     /// Форма
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required ConstructorFormModelDB Form { get; set; }
+    public required FormConstructorModelDB Form { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required Action<ConstructorFieldFormModelDB> StateHasChangedHandler { get; set; }
+    public required Action<FieldFormConstructorModelDB> StateHasChangedHandler { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public ConstructorFormSessionModelDB? SessionQuestionnaire { get; set; }
+    public SessionOfDocumentDataModelDB? SessionQuestionnaire { get; set; }
 
     /// <inheritdoc/>
     public string DomID => $"{SessionQuestionnaire?.Id}_form-{Form.Id}_{Field.GetType().FullName}-{Field.Id}";
@@ -64,7 +64,7 @@ public class FieldFormEditFormBaseComponent : ComponentBase, IDomBaseComponent
     /// <summary>
     /// Update field + <c>StateHasChanged()</c>
     /// </summary>
-    public virtual void Update(ConstructorFieldFormModelDB field)
+    public virtual void Update(FieldFormConstructorModelDB field)
     {
         Field.Update(field);
         StateHasChanged();

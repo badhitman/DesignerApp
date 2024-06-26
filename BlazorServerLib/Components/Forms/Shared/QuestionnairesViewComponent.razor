@@ -1,6 +1,6 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<MudTable Class="d-flex flex-column flex-grow-1" Loading="IsBusyProgress" ServerData="@(new Func<TableState, Task<TableData<ConstructorFormQuestionnaireModelDB>>>(ServerReload))" Dense="true" Hover="true" Striped="true" @ref="table">
+<MudTable Class="d-flex flex-column flex-grow-1" Loading="IsBusyProgress" ServerData="@(new Func<TableState, Task<TableData<DocumentSchemeConstructorModelDB>>>(ServerReload))" Dense="true" Hover="true" Striped="true" @ref="table">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Анкеты</MudText>
         <MudIconButton Title="Создать новый опрос/анкету" OnClick="() => QuestionnaireOpenDialog()" Icon="@Icons.Material.Filled.AddBox"></MudIconButton>
@@ -23,7 +23,7 @@
             }
             else
             {
-                foreach (ConstructorFormQuestionnairePageModelDB qp in context.Pages.OrderBy(x => x.SortIndex))
+                foreach (TabOfDocumentSchemeConstructorModelDB qp in context.Pages.OrderBy(x => x.SortIndex))
                 {
                     if (string.IsNullOrWhiteSpace(qp.Description))
                     {

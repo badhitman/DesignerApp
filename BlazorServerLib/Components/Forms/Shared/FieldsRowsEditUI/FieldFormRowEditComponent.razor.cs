@@ -73,7 +73,7 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
     /// <inheritdoc/>
     protected IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
 
-    ConstructorFieldFormModelDB _field_copy = default!;
+    FieldFormConstructorModelDB _field_copy = default!;
 
     /// <inheritdoc/>
     protected TextFieldFormRowEditUIComponent? FieldTextUI;
@@ -83,7 +83,7 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        _field_copy = new ConstructorFieldFormModelDB()
+        _field_copy = new FieldFormConstructorModelDB()
         {
             SystemName = Field.SystemName,
             Css = Field.Css,
@@ -104,7 +104,7 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
     }
 
     /// <inheritdoc/>
-    public override void Update(ConstructorFieldFormModelDB field)
+    public override void Update(FieldFormConstructorModelDB field)
     {
         base.Update(field);
         FieldTextUI?.Update(field);

@@ -33,7 +33,7 @@ else
             @{
                 if (InUse == true && SessionQuestionnaire?.QueryCurrentTablePageFormValues(PageJoinForm.Id)?.Any() == true)
                 {
-                    foreach (IGrouping<uint, ConstructorFormSessionValueModelDB> row in SessionQuestionnaire.RowsData(PageJoinForm.Id)!)
+                    foreach (IGrouping<uint, ValueDataForSessionOfDocumentModelDB> row in SessionQuestionnaire.RowsData(PageJoinForm.Id)!)
                     {
                         <ClientTableRowViewComponent @key=@(row) RowNum="row.Key" RowData="row.ToArray()" OpenHandle="OpenEditRowAction" DeleteHandle="DeleteRowAction" />
                     }

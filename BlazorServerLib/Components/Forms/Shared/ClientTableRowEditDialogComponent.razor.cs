@@ -23,18 +23,18 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
 
     /// <inheritdoc/>
     [Parameter]
-    public ConstructorFormSessionModelDB SessionQuestionnaire { get; set; } = default!;
+    public SessionOfDocumentDataModelDB SessionQuestionnaire { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter]
-    public ConstructorFormQuestionnairePageModelDB QuestionnairePage { get; set; } = default!;
+    public TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public ConstructorFormQuestionnairePageJoinFormModelDB PageJoinForm { get; set; } = default!;
+    public TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; } = default!;
 
     /// <inheritdoc/>
-    protected List<ConstructorFormSessionValueModelDB> RowValuesSet = [];
+    protected List<ValueDataForSessionOfDocumentModelDB> RowValuesSet = [];
 
     /// <inheritdoc/>
     protected IEnumerable<EntryAltDescriptionModel> Entries = [];

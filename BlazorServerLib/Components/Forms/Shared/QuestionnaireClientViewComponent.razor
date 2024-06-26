@@ -45,7 +45,7 @@ else
 
                 }
             }
-            @foreach (ConstructorFormQuestionnairePageModelDB questionnaire_page in SessionQuestionnaire.Owner.Pages.OrderBy(x => x.SortIndex))
+            @foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in SessionQuestionnaire.Owner.Pages.OrderBy(x => x.SortIndex))
             {
                 questionnaire_page.Owner ??= SessionQuestionnaire.Owner;
                 if (questionnaire_page.Owner is null)

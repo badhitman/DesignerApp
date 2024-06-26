@@ -14,7 +14,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
 {
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public ConstructorFieldFormModelDB Field { get; set; } = default!;
+    public FieldFormConstructorModelDB Field { get; set; } = default!;
 
     VirtualColumnCalculationAbstraction? _calculation_service;
     CommandsAsEntriesModel? _md;
@@ -61,9 +61,9 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     /// </summary>
     string? Parameter => Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
 
-    IQueryable<ConstructorFieldFormModelDB>? QueryFieldsOfNumericTypes => PageJoinForm?.Form?.QueryFieldsOfNumericTypes(Field.Name);
+    IQueryable<FieldFormConstructorModelDB>? QueryFieldsOfNumericTypes => PageJoinForm?.Form?.QueryFieldsOfNumericTypes(Field.Name);
     IEnumerable<string> FieldsNames => QueryFieldsOfNumericTypes?.Select(x => x.Name) ?? Enumerable.Empty<string>();
-    IEnumerable<ConstructorFormSessionValueModelDB> CellsValuesOfCurrentRow => SessionQuestionnaire?.RowsData(PageJoinForm!.Id)?.FirstOrDefault(x => x.Key == GroupByRowNum) ?? Enumerable.Empty<ConstructorFormSessionValueModelDB>();
+    IEnumerable<ValueDataForSessionOfDocumentModelDB> CellsValuesOfCurrentRow => SessionQuestionnaire?.RowsData(PageJoinForm!.Id)?.FirstOrDefault(x => x.Key == GroupByRowNum) ?? Enumerable.Empty<ValueDataForSessionOfDocumentModelDB>();
 
     string? _stringFieldValue;
     /// <inheritdoc/>

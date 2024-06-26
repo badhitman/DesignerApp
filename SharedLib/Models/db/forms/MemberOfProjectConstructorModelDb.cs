@@ -11,7 +11,7 @@ namespace SharedLib;
 /// Member of project
 /// </summary>
 [Index(nameof(UserId))]
-public class MemberOfProjectModelDb
+public class MemberOfProjectConstructorModelDb
 {
     /// <summary>
     /// Идентификатор/Key
