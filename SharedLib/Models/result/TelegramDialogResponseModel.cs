@@ -1,4 +1,8 @@
-﻿namespace SharedLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+namespace SharedLib;
 
 /// <summary>
 /// Ответ на входящее сообщение из Telegram

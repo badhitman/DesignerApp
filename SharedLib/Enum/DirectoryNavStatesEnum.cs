@@ -1,7 +1,11 @@
-﻿namespace SharedLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+namespace SharedLib;
 
 /// <summary>
-/// Навигационные статусы справочника
+/// Навигационные статусы
 /// </summary>
 public enum DirectoryNavStatesEnum
 {

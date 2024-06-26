@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace IdentityLib;

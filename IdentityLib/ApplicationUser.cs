@@ -1,7 +1,9 @@
+////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
 using SharedLib;
-using System.Diagnostics;
 
 namespace IdentityLib;
 
