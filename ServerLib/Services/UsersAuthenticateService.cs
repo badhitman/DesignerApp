@@ -3,8 +3,6 @@
 ////////////////////////////////////////////////
 
 using IdentityLib;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
@@ -30,7 +28,19 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
         if (au is null)
             return new() { Messages = ResponseBaseModel.ErrorMessage("ApplicationUser is null. error {586ED8B1-1905-472E-AB1C-69AFF0A6A191}") };
 
-        return new() { Response = UserInfoModel.Build(au.Id, au.Email, au.UserName, au.PhoneNumber, au.TelegramId, au.EmailConfirmed, au.LockoutEnd, au.LockoutEnabled, au.AccessFailedCount) };
+        return new()
+        {
+            Response = UserInfoModel.Build(
+            userId: au.Id,
+            userName: au.UserName,
+            email: au.Email,
+            phoneNumber: au.PhoneNumber,
+            telegramId: au.TelegramId,
+            emailConfirmed: au.EmailConfirmed,
+            lockoutEnd: au.LockoutEnd,
+            lockoutEnabled: au.LockoutEnabled,
+            accessFailedCount: au.AccessFailedCount)
+        };
     }
 
     /// <inheritdoc/>

@@ -15,7 +15,7 @@ public abstract class BlazorBusyComponentBaseModel : ComponentBase, IDisposable
     /// <summary>
     /// Компонент занят отправкой REST запроса и обработки ответа
     /// </summary>
-    public bool IsBusyProgress { get; protected set; }
+    public bool IsBusyProgress { get; set; }
 
     /// <summary>
     /// Уведомляет компонент об изменении его состояния.

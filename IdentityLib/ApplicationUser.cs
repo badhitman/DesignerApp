@@ -20,10 +20,15 @@ public class ApplicationUser : IdentityUser
     /// <inheritdoc/>
     public static explicit operator UserInfoModel(ApplicationUser app_user)
     {
-//#if DEBUG
-//        Debug.WriteLine(JsonConvert.SerializeObject(app_user));
-//#endif
-
-        return UserInfoModel.Build(app_user.Id, app_user.Email, app_user.UserName, app_user.PhoneNumber, app_user.TelegramId, app_user.EmailConfirmed, app_user.LockoutEnd, app_user.LockoutEnabled, app_user.AccessFailedCount);
+        return UserInfoModel.Build(
+            userId: app_user.Id,
+            userName: app_user.UserName ?? "",
+            email: app_user.Email,
+            phoneNumber: app_user.PhoneNumber,
+            telegramId: app_user.TelegramId,
+            emailConfirmed: app_user.EmailConfirmed,
+            lockoutEnd: app_user.LockoutEnd,
+            lockoutEnabled: app_user.LockoutEnabled,
+            accessFailedCount: app_user.AccessFailedCount);
     }
 }
