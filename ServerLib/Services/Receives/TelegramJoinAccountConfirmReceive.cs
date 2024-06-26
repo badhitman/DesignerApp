@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using Microsoft.Extensions.Logging;
 using RemoteCallLib;
 using SharedLib;
 
