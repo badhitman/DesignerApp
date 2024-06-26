@@ -36,7 +36,7 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
     /// Show referrals -  handler action
     /// </summary>
     [Parameter, EditorRequired]
-    public required Action<IEnumerable<EntryDictModel>> ShowReferralsHandler { get; set; }
+    public required Action<EntryDictModel[]> ShowReferralsHandler { get; set; }
 
     /// <summary>
     /// Найти использование полей (заполненные данными), связанные с данным документом/сессией

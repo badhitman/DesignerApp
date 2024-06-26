@@ -2,7 +2,7 @@
 
 <div class="mb-3 col-12">
     <label for="inputSelect-@(DomID)" class="form-label">Тип поля</label>
-    <select @bind="SelectedTypeFieldForEditRow" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help">
+    <select @bind="SelectedTypeFieldForEditRow" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help" disabled="@(!ParentFormsPage.CanEditProject)">
         @foreach (TypesFieldsFormsEnum tf in Enum.GetValues(typeof(TypesFieldsFormsEnum)))
         {
             <option class="@(tf == TypesFieldsFormsEnum.ProgramCalculationDouble ? "text-primary" : (tf == TypesFieldsFormsEnum.Generator ? "text-info" : ""))" value="@tf">@tf.DescriptionInfo()</option>
@@ -22,7 +22,7 @@ else if (SelectedTypeFieldForEditRow == TypesFieldsFormsEnum.ProgramCalculationD
 {
     <div class="col-md-6">
         <label for="inputSelect2-@(DomID)" class="form-label">Метод</label>
-        <select id="inputSelect2-@(DomID)" @bind="SelectedProgramCalculationField" class="form-select">
+        <select id="inputSelect2-@(DomID)" @bind="SelectedProgramCalculationField" class="form-select" disabled="@(!ParentFormsPage.CanEditProject)">
             @foreach (EntryAltDescriptionModel e in Entries)
             {
                 <option value="@e.Id">
@@ -36,7 +36,7 @@ else if (SelectedTypeFieldForEditRow == TypesFieldsFormsEnum.ProgramCalculationD
     </div>
     <div class="col-md-6">
         <label for="input3-@(DomID)" class="form-label">Имена полей</label>
-        <input title="Имена полей в формате JSON массива" @bind-value="FieldsNames" @bind-value:event="oninput" type="text" placeholder='["Имя поля 1", "Имя поля 2", ...]' class="form-control" id="input3-@(DomID)">
+        <input title="Имена полей в формате JSON массива" @bind-value="FieldsNames" @bind-value:event="oninput" type="text" placeholder='["Имя поля 1", "Имя поля 2", ...]' class="form-control" id="input3-@(DomID)" readonly="@(!ParentFormsPage.CanEditProject)">
         <div id="@(DomID)Help" class="form-text">Имена полей в формате JSON массива</div>
     </div>
     <div class="card border-info col-12">
@@ -50,6 +50,6 @@ else if (SelectedTypeFieldForEditRow == TypesFieldsFormsEnum.ProgramCalculationD
 {
     <div class="col-12">
         <label for="inputPlaceholder_@($"{Form.Id}/{Field.Id}")" class="form-label">Placeholder</label>
-        <input @bind-value="Placeholder" @bind-value:event="oninput" type="text" class="form-control" id="inputPlaceholder_@($"{Form.Id}/{Field.Id}")">
+        <input @bind-value="Placeholder" @bind-value:event="oninput" type="text" class="form-control" id="inputPlaceholder_@($"{Form.Id}/{Field.Id}")" readonly="@(!ParentFormsPage.CanEditProject)">
     </div>
 }

@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -31,6 +32,13 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     public required FormConstructorModelDB Form { get; set; }
 
     /// <summary>
+    /// Родительская страница форм
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
+
+
+    /// <summary>
     /// Поле формы
     /// </summary>
     [Parameter, EditorRequired]
@@ -53,7 +61,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     protected InputRichTextComponent? _currentTemplateInputRichText_ref;
     /// <inheritdoc/>
     protected SessionsValuesOfFieldViewComponent? _sessionsValuesOfFieldViewComponent_Ref;
-    IEnumerable<EntryDictModel>? _elements = null;
+    EntryDictModel[]? _elements = null;
 
     #region row of table (visual)
 
@@ -218,9 +226,12 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected void ShowReferrals(IEnumerable<EntryDictModel> elements)
+    protected void ShowReferrals(EntryDictModel[] elements)
     {
         _elements = elements;
+        if (_elements.Length == 0)
+            SnackbarRepo.Add("Ссылок нет");
+
         StateHasChanged();
     }
 

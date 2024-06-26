@@ -3,7 +3,7 @@
 
 <div class="col-md-6 border-bottom border-top py-2 border-start">
     <label for="exampleInputParameter2_@(DomID)" class="form-label">Программа</label>
-    <select @bind="GeneratorClass" class="form-select" aria-label="Программа" id="exampleInputParameter2_@(DomID)" name="exampleInputParameter2_@(DomID)" aria-describedby="@($"exampleInputParameter2_{DomID}Help")">
+    <select @bind="GeneratorClass" class="form-select" aria-label="Программа" id="exampleInputParameter2_@(DomID)" name="exampleInputParameter2_@(DomID)" aria-describedby="@($"exampleInputParameter2_{DomID}Help")" disabled="@(!ParentFormsPage.CanEditProject)">
         @foreach (EntryAltDescriptionModel gen_element in Entries)
         {
             <option title="@gen_element.Description" value="@gen_element.Id">@gen_element.Name</option>
@@ -17,7 +17,7 @@
     <label for="exampleInputParameter1_@(DomID)" class="form-label">
         Опции/параметры
     </label>
-    <input @bind-value="GeneratorFieldParameter" @bind-value:event="oninput" type="text" class="form-control" id="exampleInputParameter1_@(DomID)" name="exampleInputParameter1_@(DomID)" aria-describedby="@($"exampleInputParameter1_{DomID}Help")">
+    <input @bind-value="GeneratorFieldParameter" @bind-value:event="oninput" type="text" class="form-control" id="exampleInputParameter1_@(DomID)" name="exampleInputParameter1_@(DomID)" aria-describedby="@($"exampleInputParameter1_{DomID}Help")" readonly="@(!ParentFormsPage.CanEditProject)">
     <div id="@($"exampleInputParameter1_{DomID}Help")" class="form-text">
         JSON объект-словарь параметров
     </div>

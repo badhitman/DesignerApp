@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using BlazorWebLib.Components.Forms.Pages;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
@@ -24,6 +25,12 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
+
+    /// <summary>
+    /// Родительская страница форм
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     protected bool CanSave => !string.IsNullOrWhiteSpace(field_creating_field_ref?.FieldName);

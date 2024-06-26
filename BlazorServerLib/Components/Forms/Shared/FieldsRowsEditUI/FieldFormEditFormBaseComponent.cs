@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using BlazorLib.Components;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
@@ -38,6 +39,12 @@ public class FieldFormEditFormBaseComponent : ComponentBase, IDomBaseComponent
     /// <inheritdoc/>
     [CascadingParameter]
     public SessionOfDocumentDataModelDB? SessionQuestionnaire { get; set; }
+
+    /// <summary>
+    /// Родительская страница форм
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     public string DomID => $"{SessionQuestionnaire?.Id}_form-{Form.Id}_{Field.GetType().FullName}-{Field.Id}";

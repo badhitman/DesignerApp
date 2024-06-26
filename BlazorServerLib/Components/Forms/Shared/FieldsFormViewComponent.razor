@@ -1,24 +1,33 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<div @key="@($"{Form.Id}")" dom-guid="{}" class="card">
+<div @key="@($"{Form.Id}")" class="card">
+
     <div class="card-header">
-        <div class="row g-3 align-items-center">
-            <div class="col-auto">
-                <label for="inputName" class="col-form-label">Добавить поле</label>
-            </div>
-            <CascadingValue Value="AddingFieldStateHasChangedAction">
-                <AddingFieldFormViewComponent @ref="field_creating_field_ref" FieldObject="_field_master" />
-            </CascadingValue>
-            @if (field_creating_field_ref?.SelectedTypeFieldForAdding > 0)
-            {
+        @if (ParentFormsPage.CanEditProject)
+        {
+            <div class="row g-3 align-items-center">
                 <div class="col-auto">
-                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
-                        <button @onclick="() => field_creating_field_ref?.SetTypeField()" type="button" class="btn btn-outline-secondary">Отмена</button>
-                        <button @onclick="CreateField" disabled="@(!CanSave)" type="button" class="btn btn-outline-primary">Добавить</button>
-                    </div>
+                    <label for="inputName" class="col-form-label">Добавить поле</label>
                 </div>
-            }
-        </div>
+                <CascadingValue Value="AddingFieldStateHasChangedAction">
+                    <AddingFieldFormViewComponent @ref="field_creating_field_ref" FieldObject="_field_master" />
+                </CascadingValue>
+                @if (field_creating_field_ref?.SelectedTypeFieldForAdding > 0)
+                {
+                    <div class="col-auto">
+                        <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                            <button @onclick="() => field_creating_field_ref?.SetTypeField()" type="button" class="btn btn-outline-secondary">Отмена</button>
+                            <button @onclick="CreateField" disabled="@(!CanSave)" type="button" class="btn btn-outline-primary">Добавить</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <h5 class="card-title">Только чтение</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">Проект отключён администратором</h6>
+        }
     </div>
     <div class="card-body">
         <table class="table table-striped table-hover">

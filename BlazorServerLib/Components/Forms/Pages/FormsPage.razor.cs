@@ -25,12 +25,12 @@ public partial class FormsPage : BlazorBusyComponentBaseModel
     public UserInfoModel CurrentUser { get; private set; } = default!;
 
     /// <inheritdoc/>
-    public MainProjectViewModel? MainProject { get; set; }
+    public MainProjectViewModel? MainProject { get; private set; }
 
     /// <summary>
     /// Проверка разрешения редактировать проект
     /// </summary>
-    public bool CanEditProject => MainProject is not null && (!MainProject.IsDisabled || MainProject.OwnerUserId.Equals(CurrentUser.UserId) || CurrentUser.IsAdmin);
+    public bool CanEditProject { get; private set; }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -53,6 +53,7 @@ public partial class FormsPage : BlazorBusyComponentBaseModel
     /// </summary>
     public async Task ReadCurrentMainProject()
     {
+        CanEditProject = false;
         IsBusyProgress = true;
         TResponseModel<MainProjectViewModel> currentMainProject = await FormsRepo.GetCurrentMainProject(CurrentUser.UserId);
         IsBusyProgress = false;
@@ -60,5 +61,6 @@ public partial class FormsPage : BlazorBusyComponentBaseModel
             SnackbarRepo.ShowMessagesResponse(currentMainProject.Messages);
 
         MainProject = currentMainProject.Response;
+        CanEditProject = MainProject is not null && (!MainProject.IsDisabled || MainProject.OwnerUserId.Equals(CurrentUser.UserId) || CurrentUser.IsAdmin);
     }
 }

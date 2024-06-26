@@ -12,14 +12,14 @@
 
 <div class="col-12">
     <div class="form-check form-switch">
-        <input disabled="@(!string.IsNullOrWhiteSpace(ParameterField) || DescriptorField == PropsTypesMDFieldsEnum.TextMask)" @bind="IsMultiline" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault_@(DomID)" name="flexSwitchCheckDefault_@(DomID)" aria-describedby="@($"flexSwitchCheckDefault_{DomID}Help")">
+        <input disabled="@(!string.IsNullOrWhiteSpace(ParameterField) || DescriptorField == PropsTypesMDFieldsEnum.TextMask || !ParentFormsPage.CanEditProject)" @bind="IsMultiline" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault_@(DomID)" name="flexSwitchCheckDefault_@(DomID)" aria-describedby="@($"flexSwitchCheckDefault_{DomID}Help")">
         <label class="form-check-label" for="flexSwitchCheckDefault_@DomID)">Многострочный</label>
     </div>
 </div>
 
 <div class="col-md-6 border-bottom border-top py-2 border-start">
     <label for="exampleInputParameter2_@(DomID)" class="form-label">Режим</label>
-    <select @bind="DescriptorField" class="form-select" aria-label="Режим работы текстового поля" id="exampleInputParameter2_@(DomID)" name="exampleInputParameter2_@(DomID)" aria-describedby="@($"exampleInputParameter2_{DomID}Help")">
+    <select @bind="DescriptorField" class="form-select" aria-label="Режим работы текстового поля" id="exampleInputParameter2_@(DomID)" name="exampleInputParameter2_@(DomID)" aria-describedby="@($"exampleInputParameter2_{DomID}Help")" disabled="@(!ParentFormsPage.CanEditProject)">
         <option value="@PropsTypesMDFieldsEnum.None">@PropsTypesMDFieldsEnum.None.DescriptionInfo()</option>
         <option title="Статический текст или применение агентов поведения" value="@PropsTypesMDFieldsEnum.Template">@PropsTypesMDFieldsEnum.Template.DescriptionInfo()</option>
         <option title="@(IsMultiline ? "Что бы установить маску: отключите многосторонность" : "Маска значения")" disabled="@IsMultiline" value="@PropsTypesMDFieldsEnum.TextMask">@PropsTypesMDFieldsEnum.TextMask.DescriptionInfo()</option>
@@ -36,7 +36,7 @@
             <TextFieldAgentSelectorComponent @ref="_tfAgentSelectorComponent_ref" SelectAgentHandle="SelectAgentAction" SelectedAgent="@(Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, "")?.ToString())" />
         }
     </label>
-    <input disabled="@(IsMultiline || DescriptorField == PropsTypesMDFieldsEnum.None)" @bind-value="ParameterField" @bind-value:event="oninput" type="text" class="form-control" id="exampleInputParameter1_@(DomID)" name="exampleInputParameter1_@(DomID)" aria-describedby="@($"exampleInputParameter1_{DomID}Help")">
+    <input disabled="@(IsMultiline || DescriptorField == PropsTypesMDFieldsEnum.None)" readonly="@(!ParentFormsPage.CanEditProject)" @bind-value="ParameterField" @bind-value:event="oninput" type="text" class="form-control" id="exampleInputParameter1_@(DomID)" name="exampleInputParameter1_@(DomID)" aria-describedby="@($"exampleInputParameter1_{DomID}Help")">
     <div id="@($"exampleInputParameter1_{DomID}Help")" class="@(DescriptorField == PropsTypesMDFieldsEnum.Template ? "text-danger":"form-text")">
         @GetHelpTextForPlugin
     </div>

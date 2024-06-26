@@ -4,6 +4,7 @@
 
 using BlazorLib;
 using BlazorLib.Components;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
@@ -40,6 +41,12 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
+
+    /// <summary>
+    /// Родительская страница форм
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     protected IEnumerable<SystemEntryModel> Entries = default!;

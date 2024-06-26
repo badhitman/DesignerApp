@@ -1,8 +1,4 @@
-﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
-////////////////////////////////////////////////
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
