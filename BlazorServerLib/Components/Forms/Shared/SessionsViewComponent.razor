@@ -56,7 +56,7 @@
                         @if (string.IsNullOrEmpty(context.SessionToken) || context.SessionStatus == SessionsStatusesEnum.None)
                         {
                             <MudChip Variant="Variant.Outlined" Size="Size.Small">
-                                <NavLink title="Доступ к заполнению заблокирован" class="nav-link text-muted" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/2/{context.Id}")">
+                                <NavLink title="Доступ к заполнению заблокирован" class="nav-link text-muted" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/protected/{context.Id}")">
                                     Аннулирован
                                 </NavLink>
                             </MudChip>

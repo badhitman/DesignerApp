@@ -2553,7 +2553,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
             ApplicationUser[] users_data = await identityContext.Users.Where(x => users_ids.Contains(x.Id)).ToArrayAsync(cancellationToken: cancellationToken);
 
-            res.Sessions.ForEach(x => { x.AuthorUser = users_data.FirstOrDefault(y => y.Id.Equals(x))?.UserName ?? x.AuthorUser; });
+            res.Sessions.ForEach(x => { x.AuthorUser = users_data.FirstOrDefault(y => y.Id.Equals(x.AuthorUser))?.UserName ?? x.AuthorUser; });
         }
 
         return res;
