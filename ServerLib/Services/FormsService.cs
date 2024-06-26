@@ -144,12 +144,21 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ValueDataForSessionOfDocumentModelDB? existing_value = session_Questionnaire.DataSessionValues.FirstOrDefault(x => x.GroupByRowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == form_join.Id);
+        ValueDataForSessionOfDocumentModelDB? existing_value = session_Questionnaire.DataSessionValues.FirstOrDefault(x => x.RowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == form_join.Id);
         if (existing_value is null)
         {
+            if(req.FieldValue is null)
+                return await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+
             existing_value = ValueDataForSessionOfDocumentModelDB.Build(req, form_join, session_Questionnaire);
+
+            existing_value.Owner = null;
+            existing_value.TabJoinDocumentScheme = null;
+
             await context_forms.AddAsync(existing_value, cancellationToken);
         }
+        else if (req.FieldValue is null)
+            context_forms.Remove(existing_value);
         else
         {
             existing_value.Value = req.FieldValue;
@@ -157,14 +166,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             context_forms.Update(existing_value);
         }
 
-        try
-        {
-            await context_forms.SaveChangesAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "");
-        }
+        await context_forms.SaveChangesAsync(cancellationToken);
 
         return await GetSessionQuestionnaire(req.SessionId, cancellationToken);
     }
@@ -193,12 +195,12 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 6342356D-0491-45BC-A33D-B95F5D7DCB5F");
             return res;
         }
-        IQueryable<ValueDataForSessionOfDocumentModelDB> q = session.DataSessionValues.Where(x => x.TabJoinDocumentSchemeId == form_join.Id && x.GroupByRowNum > 0).AsQueryable();
-        res.Response = (int)(q.Any() ? (q.Max(x => x.GroupByRowNum) + 1) : 1);
+        IQueryable<ValueDataForSessionOfDocumentModelDB> q = session.DataSessionValues.Where(x => x.TabJoinDocumentSchemeId == form_join.Id && x.RowNum > 0).AsQueryable();
+        res.Response = (int)(q.Any() ? (q.Max(x => x.RowNum) + 1) : 1);
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         await context_forms.AddRangeAsync(form_join.Form.AllFields.Where(ScalarOnly).Select(x => new ValueDataForSessionOfDocumentModelDB()
         {
-            GroupByRowNum = (uint)res.Response,
+            RowNum = (uint)res.Response,
             Name = x.Name,
             Owner = session,
             OwnerId = session.Id,
@@ -231,7 +233,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null || !form_join.IsTable)
             return ResponseBaseModel.CreateError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 66A38A11-CD9B-4F9E-8B5C-49E60109442D");
 
-        ValueDataForSessionOfDocumentModelDB[] values_for_delete = session.DataSessionValues.Where(x => x.GroupByRowNum == req.GroupByRowNum && x.TabJoinDocumentSchemeId == form_join.Id).ToArray();
+        ValueDataForSessionOfDocumentModelDB[] values_for_delete = session.DataSessionValues.Where(x => x.RowNum == req.GroupByRowNum && x.TabJoinDocumentSchemeId == form_join.Id).ToArray();
 
         ResponseBaseModel res = new();
         if (req.IsSelf && values_for_delete.Any(x => !string.IsNullOrWhiteSpace(x.Value)))
@@ -252,14 +254,14 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             uint i = 0;
             List<ValueDataForSessionOfDocumentModelDB> values_re_sort = [];
             session.DataSessionValues
-                .Where(x => x.GroupByRowNum > 0)
-                .GroupBy(x => x.GroupByRowNum)
+                .Where(x => x.RowNum > 0)
+                .GroupBy(x => x.RowNum)
                 .ToList()
                 .ForEach(x =>
                 {
                     i++;
                     if (i != x.Key)
-                        values_re_sort.AddRange(x.ToList().Select(y => { y.GroupByRowNum = i; return y; }));
+                        values_re_sort.AddRange(x.ToList().Select(y => { y.RowNum = i; return y; }));
                 })
                 ;
             if (values_re_sort.Count > 0)
@@ -625,9 +627,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             await context_forms.SaveChangesAsync();
 
             ElementOfDirectoryConstructorModelDB[] _el_of_dir_seed = [
-                new() { Name = "Не установлено", SortIndex = 1, SystemName = "None", ParentId = _dir_seed.Id },
-                new() { Name = "Да", SortIndex = 2, SystemName = "True", ParentId = _dir_seed.Id },
-                new() { Name = "Нет", SortIndex = 3, SystemName = "False", ParentId = _dir_seed.Id }
+                new() { Name = "Да", SortIndex = 1, SystemName = "True", ParentId = _dir_seed.Id },
+                new() { Name = "Нет", SortIndex = 2, SystemName = "False", ParentId = _dir_seed.Id }
                 ];
 
             await context_forms.AddRangeAsync(_el_of_dir_seed);
@@ -660,7 +661,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             context_forms.Update(_document_scheme_seed);
             await context_forms.SaveChangesAsync();
 
-            _document_scheme_seed.Pages[0].JoinsForms = [new TabJoinDocumentSchemeConstructorModelDB() { Name = "", FormId = _form_seed.Id, OwnerId = _document_scheme_seed.Pages[0].Id, SortIndex = 1 }];
+            _document_scheme_seed.Pages[0].JoinsForms = [new TabJoinDocumentSchemeConstructorModelDB() { Name = "join form", FormId = _form_seed.Id, OwnerId = _document_scheme_seed.Pages[0].Id, SortIndex = 1 }];
 
             context_forms.Update(_document_scheme_seed);
             await context_forms.SaveChangesAsync();
@@ -671,8 +672,6 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             await context_forms.SaveChangesAsync();
 
 #endif
-
-
             res.Response = MainProjectViewModel.Build(project);
         }
         else

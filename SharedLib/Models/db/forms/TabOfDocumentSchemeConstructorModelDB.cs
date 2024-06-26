@@ -86,10 +86,10 @@ public class TabOfDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
 
             if (!res.ContainsKey(val.TabJoinDocumentScheme.Owner.Name))
                 res.Add(val.TabJoinDocumentScheme.Owner.Name, []);
-            if (!res[val.TabJoinDocumentScheme.Owner.Name].ContainsKey(val.GroupByRowNum))
-                res[val.TabJoinDocumentScheme.Owner.Name].Add(val.GroupByRowNum, []);
+            if (!res[val.TabJoinDocumentScheme.Owner.Name].ContainsKey(val.RowNum))
+                res[val.TabJoinDocumentScheme.Owner.Name].Add(val.RowNum, []);
 
-            res[val.TabJoinDocumentScheme.Owner.Name][val.GroupByRowNum].Add(val);
+            res[val.TabJoinDocumentScheme.Owner.Name][val.RowNum].Add(val);
         }
         return res;
     }

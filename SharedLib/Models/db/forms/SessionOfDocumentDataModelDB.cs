@@ -64,7 +64,7 @@ public class SessionOfDocumentDataModelDB
     public IQueryable<ValueDataForSessionOfDocumentModelDB>? QueryCurrentTablePageFormValues(int page_join_id)
     {
         return DataSessionValues?
-               .Where(x => x.GroupByRowNum > 0 && x.TabJoinDocumentSchemeId == page_join_id)
+               .Where(x => x.RowNum > 0 && x.TabJoinDocumentSchemeId == page_join_id)
                .AsQueryable();
     }
 
@@ -74,7 +74,7 @@ public class SessionOfDocumentDataModelDB
     public IGrouping<uint, ValueDataForSessionOfDocumentModelDB>[]? RowsData(int page_join_id)
     {
         return QueryCurrentTablePageFormValues(page_join_id)?
-               .GroupBy(x => x.GroupByRowNum)
+               .GroupBy(x => x.RowNum)
                .OrderBy(x => x.Key)
                .ToArray();
     }

@@ -30,12 +30,21 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
         set
         {
             _selectedElement = value;
-            InvokeAsync(async () => await SetValue(DirectoryObject?.Childs.FirstOrDefault(x => x.Id == _selectedElement)?.Name ?? "error {D21CC2F7-0B44-4BB3-A755-5A9C598D6E15}", Field.Name));
+            InvokeAsync(async () =>
+            {
+                if (_selectedElement == 0)
+                    await SetValue(null, Field.Name);
+                else
+                {
+                    string? _set_val = DirectoryObject?.Childs.FirstOrDefault(x => x.Id == _selectedElement)?.Name;
+                    await SetValue(_set_val ?? "error {D21CC2F7-0B44-4BB3-A755-5A9C598D6E15}", Field.Name);
+                }
+            });
         }
     }
 
-    string? FieldValue => SessionQuestionnaire?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.GroupByRowNum == GroupByRowNum)?.Value;
-    
+    string? FieldValue => SessionQuestionnaire?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.RowNum == GroupByRowNum)?.Value;
+
     /// <inheritdoc/>
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{QuestionnairePage?.Id}-{Field.Id}";
     EntryModel? detect_value = null;

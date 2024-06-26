@@ -42,7 +42,7 @@ public partial class GeneratorClientViewComponent : FieldComponentBaseModel
         return Task.FromResult(Elements.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
     }
 
-    string? FieldValue => SessionQuestionnaire?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.GroupByRowNum == GroupByRowNum)?.Value;
+    string? FieldValue => SessionQuestionnaire?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.RowNum == GroupByRowNum)?.Value;
 
     /// <inheritdoc/>
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{QuestionnairePage?.Id}-{Field.Id}";

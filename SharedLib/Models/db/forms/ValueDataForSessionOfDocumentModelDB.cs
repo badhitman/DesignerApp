@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// Значение поля из формы опроса/анкеты
 /// </summary>
-[Index(nameof(GroupByRowNum))]
+[Index(nameof(RowNum))]
 public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
 {
     /// <summary>
@@ -32,9 +32,9 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
     public string? Value { get; set; }
 
     /// <summary>
-    /// Группировка по номеру строки
+    /// Номер строки данных если это таблица. если это не таблица - тогда 0
     /// </summary>
-    public uint GroupByRowNum { get; set; }
+    public uint RowNum { get; set; }
 
     /// <inheritdoc/>
     public override string ToString() => $"{Name}: [{Value}]";
@@ -52,6 +52,6 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
             TabJoinDocumentScheme = questionnaire_page_join,
             Owner = session,
             OwnerId = session.OwnerId,
-            GroupByRowNum = req.GroupByRowNum,
+            RowNum = req.GroupByRowNum,
         };
 }
