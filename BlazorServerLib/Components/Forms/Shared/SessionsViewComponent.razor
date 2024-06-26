@@ -12,7 +12,7 @@
             </div>
             <div class="col-12" title="Выбранная анкета используется в том числе и для фильтрации выводимых ссылок">
                 <label class="visually-hidden" for="inlineFormSelectPref">Опрос/анкета</label>
-                <select @bind="SelectedQuestionnaireId" class="form-select" disabled="@(ParentFormsPage is null)" id="inlineFormSelectPref">
+                <select @bind="SelectedDocumentSchemeId" class="form-select" disabled="@(ParentFormsPage is null)" id="inlineFormSelectPref">
                     <option value="0">Выбор анкеты...</option>
                     @foreach (DocumentSchemeConstructorModelDB q in QuestionnairesAll)
                     {
@@ -21,12 +21,12 @@
                 </select>
             </div>
             <div class="col-12">
-                <button @onclick="CreateNewSession" disabled="@(SelectedQuestionnaireId < 1 || ParentFormsPage is null)" type="button" class="btn btn@(SelectedQuestionnaireId > 0 ? "" : "-outline")-primary">@CreateSessionButtonTitle</button>
+                <button @onclick="CreateNewSession" disabled="@(SelectedDocumentSchemeId < 1 || ParentFormsPage is null)" type="button" class="btn btn@(SelectedDocumentSchemeId > 0 ? "" : "-outline")-primary">@CreateSessionButtonTitle</button>
             </div>
-            @if (SelectedQuestionnaireId > 0)
+            @if (SelectedDocumentSchemeId > 0)
             {
                 <div class="col-12">
-                    <button @onclick="() => { SelectedQuestionnaireId = 0; NameSessionForCreate = null; }" type="button" class="btn btn-outline-secondary" disabled="@(ParentFormsPage is null)">Отмена</button>
+                    <button @onclick="() => { SelectedDocumentSchemeId = 0; NameSessionForCreate = null; }" type="button" class="btn btn-outline-secondary" disabled="@(ParentFormsPage is null)">Отмена</button>
                 </div>
             }
         </form>

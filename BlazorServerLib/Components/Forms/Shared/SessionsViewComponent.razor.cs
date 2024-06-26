@@ -34,15 +34,15 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
     IEnumerable<DocumentSchemeConstructorModelDB> QuestionnairesAll = [];
 
-    int _selectedQuestionnaireId;
-    int SelectedQuestionnaireId
+    int _selectedDocumentSchemeId;
+    int SelectedDocumentSchemeId
     {
-        get => _selectedQuestionnaireId;
+        get => _selectedDocumentSchemeId;
         set
         {
-            _selectedQuestionnaireId = value;
+            _selectedDocumentSchemeId = value;
             if (table is not null)
-                InvokeAsync(async () => await table.ReloadServerData());
+                InvokeAsync(table.ReloadServerData);
         }
     }
 
@@ -57,7 +57,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             if (ParentFormsPage is null)
                 return "Не выбран основной/рабочий проект";
 
-            if (SelectedQuestionnaireId < 1)
+            if (SelectedDocumentSchemeId < 1)
                 return "Укажите анкету";
 
             return "Создать новую ссылку";
@@ -67,15 +67,19 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     protected private async Task<TableData<SessionOfDocumentDataModelDB>> ServerReload(TableState state)
     {
         if (string.IsNullOrWhiteSpace(ParentFormsPage.CurrentUser.UserId))
-            return new TableData<SessionOfDocumentDataModelDB>() { TotalItems = totalItems, Items = sessions };
+            throw new Exception("Не определён текущий пользователь");
+
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не установлен основной проект");
 
         RequestSessionsQuestionnairesRequestPaginationModel req = new()
         {
             PageNum = state.Page,
             PageSize = state.PageSize,
             SimpleRequest = searchString,
-            DocumentSchemeId = SelectedQuestionnaireId,
-            FilterUserId = ParentFormsPage.CurrentUser.UserId
+            DocumentSchemeId = SelectedDocumentSchemeId,
+            FilterUserId = ParentFormsPage.CurrentUser.UserId,
+            ProjectId = ParentFormsPage.MainProject.Id
         };
         IsBusyProgress = true;
         ConstructorFormsSessionsPaginationResponseModel rest = await FormsRepo.RequestSessionsQuestionnaires(req);
@@ -165,7 +169,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         SessionOfDocumentDataModelDB req = new()
         {
             Name = NameSessionForCreate,
-            OwnerId = SelectedQuestionnaireId,
+            OwnerId = SelectedDocumentSchemeId,
             AuthorUser = current_user.Response.UserId
         };
         IsBusyProgress = true;
@@ -187,7 +191,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         else
             sessions.Add(rest.Response);
 
-        SelectedQuestionnaireId = 0;
+        SelectedDocumentSchemeId = 0;
         NameSessionForCreate = null;
 
         if (table is not null)

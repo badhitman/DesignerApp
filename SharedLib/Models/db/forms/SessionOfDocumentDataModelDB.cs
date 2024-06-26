@@ -10,8 +10,7 @@ namespace SharedLib;
 /// Сессия опроса/анкеты
 /// </summary>
 [Index(nameof(AuthorUser)), Index(nameof(SessionToken)), Index(nameof(SessionStatus)), Index(nameof(CreatedAt)), Index(nameof(LastQuestionnaireUpdateActivity)), Index(nameof(DeadlineDate))]
-public class SessionOfDocumentDataModelDB
-    : EntryDescriptionOwnedModel
+public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
 {
     /// <summary>
     /// Опрос/анкета
@@ -54,32 +53,6 @@ public class SessionOfDocumentDataModelDB
     public DateTime? LastQuestionnaireUpdateActivity { get; set; }
 
     /// <summary>
-    /// Значения полей форм
-    /// </summary>
-    public List<ValueDataForSessionOfDocumentModelDB>? DataSessionValues { get; set; }
-
-    /// <summary>
-    /// ВВедённые значения в табличную форму
-    /// </summary>
-    public IQueryable<ValueDataForSessionOfDocumentModelDB>? QueryCurrentTablePageFormValues(int page_join_id)
-    {
-        return DataSessionValues?
-               .Where(x => x.RowNum > 0 && x.TabJoinDocumentSchemeId == page_join_id)
-               .AsQueryable();
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public IGrouping<uint, ValueDataForSessionOfDocumentModelDB>[]? RowsData(int page_join_id)
-    {
-        return QueryCurrentTablePageFormValues(page_join_id)?
-               .GroupBy(x => x.RowNum)
-               .OrderBy(x => x.Key)
-               .ToArray();
-    }
-
-    /// <summary>
     /// Первой вкладкой будет специальная для отображения описания.
     /// Что-то вроде вступительной страницы с общей информацией
     /// </summary>
@@ -89,6 +62,30 @@ public class SessionOfDocumentDataModelDB
     /// Дата окончания актуальности сессии/токена
     /// </summary>
     public DateTime? DeadlineDate { get; set; }
+
+    /// <summary>
+    /// Значения полей форм
+    /// </summary>
+    public List<ValueDataForSessionOfDocumentModelDB>? DataSessionValues { get; set; }
+
+    /// <summary>
+    /// Введённые значения в табличную форму
+    /// </summary>
+    public IQueryable<ValueDataForSessionOfDocumentModelDB>? QueryCurrentTablePageFormValues(int page_join_id)
+    {
+        return DataSessionValues?
+               .Where(x => x.RowNum > 0 && x.TabJoinDocumentSchemeId == page_join_id)
+               .AsQueryable();
+    }
+
+    /// <inheritdoc/>
+    public IGrouping<uint, ValueDataForSessionOfDocumentModelDB>[]? RowsData(int page_join_id)
+    {
+        return QueryCurrentTablePageFormValues(page_join_id)?
+               .GroupBy(x => x.RowNum)
+               .OrderBy(x => x.Key)
+               .ToArray();
+    }
 
     /// <summary>
     /// Перезагрузить объект

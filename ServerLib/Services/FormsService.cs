@@ -2539,6 +2539,9 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         if (req.DocumentSchemeId > 0)
             query = query.Where(x => x.OwnerId == req.DocumentSchemeId);
 
+        if (req.ProjectId > 0)
+            query = query.Where(x => context_forms.DocumentSchemes.Any(y => y.Id == x.OwnerId && y.ProjectId == req.ProjectId));
+
         if (!string.IsNullOrWhiteSpace(req.FilterUserId))
             query = query.Where(x => x.AuthorUser == req.FilterUserId);
 

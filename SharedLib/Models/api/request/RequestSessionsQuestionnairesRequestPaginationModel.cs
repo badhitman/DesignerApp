@@ -15,6 +15,11 @@ public class RequestSessionsQuestionnairesRequestPaginationModel : SimplePaginat
     public int DocumentSchemeId { get; set; }
 
     /// <summary>
+    /// Фильтр по проекту
+    /// </summary>
+    public int ProjectId { get; set; }
+
+    /// <summary>
     /// Фильтр автору (user Identity id)
     /// </summary>
     public string? FilterUserId { get; set; }
