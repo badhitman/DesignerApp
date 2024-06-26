@@ -1,9 +1,13 @@
-﻿namespace SharedLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+namespace SharedLib;
 
 /// <summary>
 /// Расчёт суммы всех переданных полей (второй параметр: string[] calc_cells) между собой
 /// </summary>
-public class SummAllVirtualColumnCalc : VirtualColumnCalculationAbstraction
+public class SumAllVirtualColumnCalculation : VirtualColumnCalculationAbstraction
 {
     /// <inheritdoc/>
     public override string About => "Сумма полей по их именам. В параметрах указываются имена колонок. Порядок имён не имеет значения";

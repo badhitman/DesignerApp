@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib;
 

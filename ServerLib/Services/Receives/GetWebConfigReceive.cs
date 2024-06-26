@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Options;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using Microsoft.Extensions.Options;
 using RemoteCallLib;
 using SharedLib;
 

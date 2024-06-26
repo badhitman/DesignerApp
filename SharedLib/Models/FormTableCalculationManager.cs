@@ -1,9 +1,13 @@
-﻿namespace SharedLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+namespace SharedLib;
 
 /// <summary>
 /// Управление таблицей группировок/сумм
 /// </summary>
-public class FormTableCalcManager
+public class FormTableCalculationManager
 {
     SelectedFieldModel _selected_field = default!;
     readonly Dictionary<string, List<Dictionary<string, double>>> _data = [];
@@ -26,7 +30,7 @@ public class FormTableCalcManager
     /// <summary>
     /// Управление таблицей группировок/сумм
     /// </summary>
-    public FormTableCalcManager(SelectedFieldModel selected_field, ConstructorFormQuestionnairePageJoinFormModelDB page_join_form, ConstructorFormSessionModelDB session_questionnairie)
+    public FormTableCalculationManager(SelectedFieldModel selected_field, ConstructorFormQuestionnairePageJoinFormModelDB page_join_form, ConstructorFormSessionModelDB session_questionnairie)
         => Update(selected_field, page_join_form, session_questionnairie);
 
     /// <summary>

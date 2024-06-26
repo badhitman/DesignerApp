@@ -1,4 +1,8 @@
-﻿using DbcLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using DbcLib;
 using IdentityLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

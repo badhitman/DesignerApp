@@ -1,10 +1,12 @@
-﻿using BlazorWebLib.Components.Forms.Pages;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using System.ComponentModel.DataAnnotations;
 
 namespace BlazorWebLib.Components.Forms.Shared.Projects;
 

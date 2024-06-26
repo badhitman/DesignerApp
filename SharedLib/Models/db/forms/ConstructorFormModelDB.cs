@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib;

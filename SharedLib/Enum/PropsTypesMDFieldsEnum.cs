@@ -1,4 +1,8 @@
-﻿using System.ComponentModel;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using System.ComponentModel;
 
 namespace SharedLib;
 

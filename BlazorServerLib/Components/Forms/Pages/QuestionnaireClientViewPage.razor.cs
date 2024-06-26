@@ -1,4 +1,8 @@
-﻿using BlazorLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 

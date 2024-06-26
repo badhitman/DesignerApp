@@ -1,4 +1,8 @@
-﻿using BlazorLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using MudBlazor;
@@ -65,7 +69,7 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
         return new() { FieldType = fb.GetType(), FieldId = fb.Id, FieldName = fb.Name };
     }
 
-    FormTableCalcManager? TableCalculation;
+    FormTableCalculationManager? TableCalculation;
 
     SelectedFieldModel? SelectedFieldObject = null;
     /// <inheritdoc/>

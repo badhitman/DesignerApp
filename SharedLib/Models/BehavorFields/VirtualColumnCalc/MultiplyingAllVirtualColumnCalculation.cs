@@ -1,9 +1,13 @@
-﻿namespace SharedLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+namespace SharedLib;
 
 /// <summary>
 /// Расчёт умножения всех переданных полей (второй параметр: string[] calc_cells) между собой
 /// </summary>
-public class MultiplyingAllVirtualColumnCalc : VirtualColumnCalculationAbstraction
+public class MultiplyingAllVirtualColumnCalculation : VirtualColumnCalculationAbstraction
 {
     /// <inheritdoc/>
     public override string About => "Умножения полей между собой по их именам. В параметрах указываются имена колонок. Порядок имён не имеет значения";

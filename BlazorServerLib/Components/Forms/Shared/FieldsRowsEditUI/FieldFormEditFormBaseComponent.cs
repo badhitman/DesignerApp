@@ -1,4 +1,8 @@
-﻿using BlazorLib.Components;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using BlazorLib.Components;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;

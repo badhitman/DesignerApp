@@ -1,4 +1,8 @@
-﻿using BlazorLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using BlazorLib;
 using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
