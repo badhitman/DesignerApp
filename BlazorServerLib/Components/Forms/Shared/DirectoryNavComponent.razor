@@ -4,8 +4,7 @@
 {
     <div class="input-group me-4">
         <span class="input-group-text">Справочник</span>
-
-        <select disabled="@(allDirectories.Any() != true || DirectoryNavState == DirectoryNavStatesEnum.Delete)" @bind="SelectedDirectoryId" class="form-select" aria-label="справочник/список">
+        <select disabled="@(allDirectories.Any() != true || DirectoryNavState == DirectoryNavStatesEnum.Delete || IsBusyProgress)" @bind="SelectedDirectoryId" class="form-select" aria-label="справочник/список">
             @if (allDirectories.Any() != true)
             {
                 <option value="-1" selected>Справочники отсутствуют</option>
@@ -25,35 +24,35 @@
 {
     <div class="input-group">
         <span class="input-group-text">новый справочник/список:</span>
-        <input @bind-value="directoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника">
-        <input @bind-value="directoryObject.SystemName" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя">
-        <button disabled="@(!GlobalTools.ValidateObject(directoryObject).IsValid)" @onclick="CreateDirectory" class="btn btn-outline-success" type="button" id="button-addon1">@GetTitleForButtonCreate</button>
-        <button @onclick="() => ResetNavForm()" class="btn btn-outline-secondary" type="button" id="button-addon2">Отмена</button>
+        <input @bind-value="directoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника" disabled="@IsBusyProgress">
+        <input @bind-value="directoryObject.SystemName" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя" disabled="@IsBusyProgress">
+        <button disabled="@(IsBusyProgress || !GlobalTools.ValidateObject(directoryObject).IsValid)" @onclick="CreateDirectory" class="btn btn-outline-success" type="button">@GetTitleForButtonCreate</button>
+        <button @onclick="() => ResetNavForm()" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
     </div>
 }
 else if (DirectoryNavState == DirectoryNavStatesEnum.Rename)
 {
     <div class="input-group">
         <span class="input-group-text">редактирование справочника/списка:</span>
-        <input @bind-value="directoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника">
-        <input @bind-value="directoryObject.SystemName" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя">
-        <button @onclick="SaveRenameDirectory" disabled="@(!GlobalTools.ValidateObject(directoryObject).IsValid)" class="btn btn-outline-secondary" type="button" id="button-addon1">Сохранить</button>
-        <button @onclick="() => ResetNavForm()" class="btn btn-outline-secondary" type="button" id="button-addon1">Отмена</button>
+        <input @bind-value="directoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника" disabled="@IsBusyProgress">
+        <input @bind-value="directoryObject.SystemName" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя" disabled="@IsBusyProgress">
+        <button @onclick="SaveRenameDirectory" disabled="@(IsBusyProgress || !GlobalTools.ValidateObject(directoryObject).IsValid)" class="btn btn-outline-secondary" type="button">Сохранить</button>
+        <button @onclick="() => ResetNavForm()" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
     </div>
 }
 else if (DirectoryNavState == DirectoryNavStatesEnum.Delete)
 {
     <div class="btn-group" role="group">
-        <button @onclick="DeleteSelectedDirectory" class="btn btn-outline-danger" type="button" id="button-addon1">Удалить</button>
-        <button @onclick="() => { DirectoryNavState = DirectoryNavStatesEnum.None; }" class="btn btn-outline-secondary" type="button" id="button-addon2">Отмена</button>
+        <button @onclick="DeleteSelectedDirectory" class="btn btn-outline-danger" type="button" disabled="@IsBusyProgress">Удалить</button>
+        <button @onclick="() => { DirectoryNavState = DirectoryNavStatesEnum.None; }" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
     </div>
 }
 else
 {
     @if (SelectedDirectoryId > 0)
     {
-        <MudIconButton OnClick="InitRenameDirectory" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" />
-        <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Delete; }" Icon="@Icons.Material.Outlined.Delete" />
+        <MudIconButton OnClick="InitRenameDirectory" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" Disabled="IsBusyProgress" />
+        <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Delete; }" Icon="@Icons.Material.Outlined.Delete" Disabled="IsBusyProgress" />
     }
-    <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Create; }" Icon="@Icons.Material.Outlined.Add" Size="Size.Small" />
+    <MudIconButton OnClick="() => { DirectoryNavState = DirectoryNavStatesEnum.Create; }" Icon="@Icons.Material.Outlined.Add" Size="Size.Small" Disabled="IsBusyProgress" />
 }

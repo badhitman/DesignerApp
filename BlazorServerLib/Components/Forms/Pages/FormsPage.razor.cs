@@ -30,7 +30,9 @@ public partial class FormsPage : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        IsBusyProgress = true;
         TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
+        IsBusyProgress = false;
         if (currentUser.Response is null)
             throw new Exception("Current user is null");
 
@@ -46,7 +48,9 @@ public partial class FormsPage : BlazorBusyComponentBaseModel
     /// </summary>
     public async Task ReadCurrentMainProject()
     {
+        IsBusyProgress = true;
         TResponseModel<MainProjectViewModel> currentMainProject = await FormsRepo.GetCurrentMainProject(CurrentUser.UserId);
+        IsBusyProgress = false;
         if (!currentMainProject.Success())
             SnackbarRepo.ShowMessagesResponse(currentMainProject.Messages);
 

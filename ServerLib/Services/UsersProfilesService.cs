@@ -246,7 +246,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         if (user is null)
             return null;
 
-        return new() { UserId = user.Id, Email = user.Email };
+        return new() { UserId = user.Id, Email = user.Email, UserName = user.UserName ?? "" };
     }
 
     /// <inheritdoc/>
@@ -760,7 +760,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
 
         return new()
         {
-            UsersInfo = users.Select(x => UserInfoModel.Build(x.Id, x.Email, x.UserName, x.PhoneNumber, x.TelegramId, x.EmailConfirmed, x.LockoutEnd, x.LockoutEnabled, x.AccessFailedCount, roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray())).ToList(),
+            UsersInfo = users.Select(x => UserInfoModel.Build(x.Id, x.UserName, x.Email, x.PhoneNumber, x.TelegramId, x.EmailConfirmed, x.LockoutEnd, x.LockoutEnabled, x.AccessFailedCount, roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray())).ToList(),
             TotalRowsCount = total,
             PageNum = req.PageNum,
             PageSize = req.PageSize,

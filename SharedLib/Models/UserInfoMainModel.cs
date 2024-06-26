@@ -11,10 +11,6 @@ namespace SharedLib;
 public class UserInfoMainModel
 {
     /// <inheritdoc/>
-    public static UserInfoMainModel Build(string userId, string? email, string[]? roles = null)
-        => new() { UserId = userId, Email = email, Roles = roles };
-
-    /// <inheritdoc/>
     public required string UserId { get; set; }
 
     /// <inheritdoc/>
@@ -32,4 +28,8 @@ public class UserInfoMainModel
     /// –оли пользовател€ в виде одной строки
     /// </summary>
     public string RolesAsString(string separator) => Roles is null || Roles.Length == 0 ? string.Empty : $"{string.Join(separator, Roles.Select(i => $"[{i}]"))}{separator}".Trim();
+
+    /// <inheritdoc/>
+    public static UserInfoMainModel Build(string userId, string? userName, string? email, string[]? roles = null)
+        => new() { UserId = userId, Email = email, Roles = roles, UserName = userName };
 }

@@ -17,7 +17,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
@@ -32,22 +32,29 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     protected DirectoryElementsListViewComponent elementsListOfDirectoryView_ref = default!;
 
     /// <inheritdoc/>
-    protected DirectoryNavComponent? directoryNav_ref = default!;
+    protected DirectoryNavComponent directoryNav_ref = default!;
 
     SystemOwnedNameModel createNewElementForDict = SystemOwnedNameModel.BuildEmpty(0);
 
     /// <inheritdoc/>
-    protected async void AddElementIntoDirectoryAction()
+    protected async void AddElementIntoDirectory()
     {
         if (createNewElementForDict.OwnerId < 1)
             throw new Exception("Не выбран справочник/список");
 
+        directoryNav_ref.IsBusyProgress = true;
+        directoryNav_ref.StateHasChangedCall();
+
         IsBusyProgress = true;
         TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(createNewElementForDict);
         IsBusyProgress = false;
+
+        directoryNav_ref.IsBusyProgress = false;
+        directoryNav_ref.StateHasChangedCall();
+
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         createNewElementForDict = SystemOwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
-        if (rest.Success() && directoryNav_ref is not null)
+        if (rest.Success())
             await elementsListOfDirectoryView_ref.ReloadElements(directoryNav_ref.SelectedDirectoryId, true);
     }
 
