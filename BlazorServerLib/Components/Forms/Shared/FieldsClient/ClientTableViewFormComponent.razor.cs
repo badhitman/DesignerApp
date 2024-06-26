@@ -51,12 +51,12 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
 
-    /*/// <inheritdoc/>
+    /// <inheritdoc/>
     protected static bool IsReadonly(ClaimsPrincipal clp, SessionOfDocumentDataModelDB sq)
     {
         string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
         return !clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && (x.Value.Equals("Admin", StringComparison.OrdinalIgnoreCase))) && sq.SessionStatus >= SessionsStatusesEnum.Sended && !sq.AuthorUserId.Equals(email, StringComparison.OrdinalIgnoreCase);
-    }*/
+    }
 
     /// <inheritdoc/>
     protected bool TableCalculationKit { get; set; } = false;

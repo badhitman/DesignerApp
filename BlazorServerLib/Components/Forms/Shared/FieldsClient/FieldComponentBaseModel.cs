@@ -73,15 +73,6 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// <inheritdoc/>
     public abstract string DomID { get; }
 
-    /*/// <summary>
-    /// Проверка доступности редактирования поля. Поле формы в некоторых случаях не доступна для редактирования
-    /// </summary>
-    public static bool IsReadonly(ClaimsPrincipal clp, SessionOfDocumentDataModelDB sq)
-    {
-        string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email, StringComparison.OrdinalIgnoreCase))?.Value;
-        return !clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && (x.Value.Equals("admin", StringComparison.OrdinalIgnoreCase))) && sq.SessionStatus >= SessionsStatusesEnum.Sended && !sq.AuthorUserId.Equals(email, StringComparison.OrdinalIgnoreCase);
-    }*/
-
     /// <summary>
     /// Установить значение поля
     /// </summary>
