@@ -18,6 +18,16 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
     public DocumentSchemeConstructorModelDB? Owner { get; set; }
 
     /// <summary>
+    /// Project
+    /// </summary>
+    public ProjectConstructorModelDb? Project { get; set; }
+
+    /// <summary>
+    /// Project
+    /// </summary>
+    public required int ProjectId { get; set; }
+
+    /// <summary>
     /// Автор/создатель ссылки
     /// </summary>
     public required string AuthorUser { get; set; }
@@ -67,6 +77,20 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
     /// Значения полей форм
     /// </summary>
     public List<ValueDataForSessionOfDocumentModelDB>? DataSessionValues { get; set; }
+
+    /// <summary>
+    /// Проверка возможности внесения данных в сессию
+    /// </summary>
+    public bool CanMakeData(UserInfoModel? user = null)
+    {
+        if (user is null)
+            return SessionStatus == SessionsStatusesEnum.InProgress && Guid.TryParse(SessionToken, out Guid _guid) && _guid != Guid.Empty && (DeadlineDate.HasValue && DeadlineDate.Value >= DateTime.Now);
+
+        if (Project is null)
+            return user.Roles?.Any(x => x.Equals("admin", StringComparison.OrdinalIgnoreCase)) == true;
+
+        return user.UserId.Equals(Project.OwnerUserId) || user.Roles?.Any(x => x.Equals("admin", StringComparison.OrdinalIgnoreCase)) == true;
+    }
 
     /// <summary>
     /// Введённые значения в табличную форму

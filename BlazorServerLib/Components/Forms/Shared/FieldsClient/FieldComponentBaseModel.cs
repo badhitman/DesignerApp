@@ -8,6 +8,7 @@ using MudBlazor;
 using SharedLib;
 using BlazorLib;
 using BlazorLib.Components;
+using BlazorWebLib.Components.Forms.Pages;
 
 namespace BlazorWebLib.Components.Forms.Shared.FieldsClient;
 
@@ -48,6 +49,9 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// </summary>
     [CascadingParameter]
     public TabOfDocumentSchemeConstructorModelDB? QuestionnairePage { get; set; }
+
+
+
 
     /// <summary>
     /// Признак того, что поле находится в состоянии реального использования, а не в конструкторе или режим demo

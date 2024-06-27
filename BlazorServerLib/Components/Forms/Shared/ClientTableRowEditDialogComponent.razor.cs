@@ -2,8 +2,9 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -32,6 +33,11 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; } = default!;
+
+    /// <inheritdoc/>
+    [Parameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
+
 
     /// <inheritdoc/>
     protected List<ValueDataForSessionOfDocumentModelDB> RowValuesSet = [];

@@ -17,9 +17,11 @@
 }
 else
 {
-    <CascadingValue Value="SessionQuestionnaire">
-        <CascadingValue Value="true">
-            <QuestionnaireClientViewComponent />
+    <CascadingValue Value="CurrentUser">
+        <CascadingValue Value="SessionQuestionnaire">
+            <CascadingValue Value="true">
+                <QuestionnaireClientViewComponent />
+            </CascadingValue>
         </CascadingValue>
     </CascadingValue>
 }

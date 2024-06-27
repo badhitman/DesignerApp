@@ -11,13 +11,21 @@ namespace BlazorWebLib.Components.Forms.Pages;
 /// <inheritdoc/>
 public partial class QuestionnaireClientViewIntPage : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
     [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
+
+    [Inject]
+    IUsersProfilesService UsersProfiles { get; set; } = default!;
+
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public int QuestionnaireId { get; set; }
+
+
+
+    /// <inheritdoc/>
+    public UserInfoModel? CurrentUser { get; private set; }
 
     SessionOfDocumentDataModelDB SessionQuestionnaire = default!;
 
@@ -29,7 +37,12 @@ public partial class QuestionnaireClientViewIntPage : BlazorBusyComponentBaseMod
     {
         Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         IsBusyProgress = true;
+        
+        TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
+        CurrentUser = currentUser.Response;
+
         TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireId);
+        
         IsBusyProgress = false;
 
         if (rest.Response is null)

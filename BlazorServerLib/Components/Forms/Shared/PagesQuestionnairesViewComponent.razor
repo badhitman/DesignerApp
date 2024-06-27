@@ -11,10 +11,10 @@
         </figcaption>
     </figure>
 }
-else
+else if (!ParentFormsPage.CanEditProject)
 {
-    <MudDynamicTabs @ref="@DynamicTabs" @bind-ActivePanelIndex="@QuestionnaireIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
-     @if (!Questionnaire.Pages.Any())
+    <MudTabs @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+        @if (!Questionnaire.Pages.Any())
         {
             <figure class="text-center mt-3">
                 <blockquote class="blockquote">
@@ -30,8 +30,37 @@ else
             foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in Questionnaire.Pages.OrderBy(x => x.SortIndex))
             {
                 questionnaire_page.Owner = Questionnaire;
-                <MudTabPanel
-                             ID="@questionnaire_page.Id"
+                <MudTabPanel ID="@($"document-scheme_{questionnaire_page.Id}")"
+                             Text="@questionnaire_page.Name"               
+                             BadgeDot="@(questionnaire_page.Id < 1)">
+                    <CascadingValue Value="questionnaire_page">
+                        <PageQuestionnaireFormsViewComponent />
+                    </CascadingValue>
+                </MudTabPanel>
+            }
+        }
+    </MudTabs>
+}
+else
+{
+    <MudDynamicTabs @bind-ActivePanelIndex="@QuestionnaireIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+        @if (!Questionnaire.Pages.Any())
+        {
+            <figure class="text-center mt-3">
+                <blockquote class="blockquote">
+                    <p>Нет ни одной страницы</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    добавьте первую <cite>страницу</cite>
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in Questionnaire.Pages.OrderBy(x => x.SortIndex))
+            {
+                questionnaire_page.Owner = Questionnaire;
+                <MudTabPanel ID="@($"document-scheme_{questionnaire_page.Id}")"
                              Text="@questionnaire_page.Name"
                              Disabled="@TabIsDisabled(questionnaire_page.Id)"
                              ShowCloseIcon="@(questionnaire_page.Id < 1)"

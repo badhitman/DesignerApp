@@ -10,8 +10,8 @@
                     <input @bind="NameSessionForCreate" type="text" class="form-control" id="inlineFormInputGroupSessionName" placeholder="Название">
                 </div>
             </div>
-            <div class="col-12" title="Выбранная анкета используется в том числе и для фильтрации выводимых ссылок">
-                <label class="visually-hidden" for="inlineFormSelectPref">Опрос/анкета</label>
+            <div class="col-12" title="Выбранная схема документа используется в том числе и для фильтрации выводимых ссылок">
+                <label class="visually-hidden" for="inlineFormSelectPref">Документ/схема</label>
                 <select @bind="SelectedDocumentSchemeId" class="form-select" disabled="@(ParentFormsPage is null)" id="inlineFormSelectPref">
                     <option value="0">Выбор анкеты...</option>
                     @foreach (DocumentSchemeConstructorModelDB q in QuestionnairesAll)

@@ -32,6 +32,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
 
+
     IEnumerable<DocumentSchemeConstructorModelDB> QuestionnairesAll = [];
 
     int _selectedDocumentSchemeId;
@@ -161,6 +162,9 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             return;
         }
 
+        if (ParentFormsPage.MainProject is null)
+            throw new Exception("Не выбран основной/текущий проект");
+
         TResponseModel<UserInfoModel?> current_user = await UsersProfilesRepo.FindByIdAsync();
 
         if (current_user.Response?.UserId is null)
@@ -170,7 +174,8 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         {
             Name = NameSessionForCreate,
             OwnerId = SelectedDocumentSchemeId,
-            AuthorUser = current_user.Response.UserId
+            AuthorUser = current_user.Response.UserId,
+            ProjectId = ParentFormsPage.MainProject.Id
         };
         IsBusyProgress = true;
         TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);

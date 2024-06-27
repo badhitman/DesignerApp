@@ -656,7 +656,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             context_forms.Update(_document_scheme_seed);
             await context_forms.SaveChangesAsync();
 
-            SessionOfDocumentDataModelDB _session_seed = new() { AuthorUser = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString() };
+            SessionOfDocumentDataModelDB _session_seed = new() { ProjectId = project.Id, AuthorUser = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString() };
 
             await context_forms.AddAsync(_session_seed);
             await context_forms.SaveChangesAsync();
@@ -2388,6 +2388,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
         {
             Response = await context_forms
             .Sessions
+            .Include(x => x.Project)
             .Include(x => x.DataSessionValues)
 
             .Include(s => s.Owner) // опрос/анкета
@@ -2401,6 +2402,7 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
             .ThenInclude(x => x!.FormsDirectoriesLinks) // поля
+
             .AsSingleQuery()
             .FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken)
         };
@@ -2471,10 +2473,6 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             res.AddError(msg);
             return res;
         }
-
-        //session_db.CreatedAt = session_db.CreatedAt;
-        //session_db.DeadlineDate = session_db.DeadlineDate;
-        //session_db.LastQuestionnaireUpdateActivity = session_db.LastQuestionnaireUpdateActivity;
 
         if (session_db.Name == session_json.Name &&
             session_db.Description == session_json.Description &&

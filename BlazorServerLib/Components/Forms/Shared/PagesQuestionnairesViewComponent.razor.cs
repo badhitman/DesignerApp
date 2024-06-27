@@ -28,12 +28,10 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     public required DocumentSchemeConstructorModelDB Questionnaire { get; set; }
 
     /// <inheritdoc/>
-    [Parameter, EditorRequired]
+    [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
 
 
-    /// <inheritdoc/>
-    public MudDynamicTabs? DynamicTabs;
     /// <inheritdoc/>
     protected bool _stateHasChanged;
     /// <inheritdoc/>

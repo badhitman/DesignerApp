@@ -12,28 +12,6 @@ namespace SharedLib;
 [Index(nameof(Name), IsUnique = true)]
 public class DocumentSchemeConstructorModelDB : EntryConstructedModel
 {
-    /// <inheritdoc/>
-    public static DocumentSchemeConstructorModelDB BuildEmpty(int projectId)
-        => new()
-        {
-            Name = "",
-            SystemName = "",
-            ProjectId = projectId,
-        };
-
-    /// <inheritdoc/>
-    public static DocumentSchemeConstructorModelDB Build(EntryConstructedModel questionnaire, int projectId)
-        => new()
-        {
-            Id = questionnaire.Id,
-            SystemName = questionnaire.SystemName,
-            Name = questionnaire.Name,
-            Description = questionnaire.Description,
-            Pages = [],
-            ProjectId = projectId,
-            Project = questionnaire.Project,
-        };
-
     /// <summary>
     /// Страницы
     /// </summary>
@@ -87,4 +65,26 @@ public class DocumentSchemeConstructorModelDB : EntryConstructedModel
                 Pages.AddRange(pages);
         }
     }
+
+    /// <inheritdoc/>
+    public static DocumentSchemeConstructorModelDB BuildEmpty(int projectId)
+        => new()
+        {
+            Name = "",
+            SystemName = "",
+            ProjectId = projectId,
+        };
+
+    /// <inheritdoc/>
+    public static DocumentSchemeConstructorModelDB Build(EntryConstructedModel questionnaire, int projectId)
+        => new()
+        {
+            Id = questionnaire.Id,
+            SystemName = questionnaire.SystemName,
+            Name = questionnaire.Name,
+            Description = questionnaire.Description,
+            Pages = [],
+            ProjectId = projectId,
+            Project = questionnaire.Project,
+        };
 }

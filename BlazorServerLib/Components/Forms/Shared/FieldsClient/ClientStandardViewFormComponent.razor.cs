@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
@@ -29,6 +30,7 @@ public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseMo
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public FormConstructorModelDB Form { get; set; } = default!;
+
 
     /// <summary>
     /// Доступ к перечню полей формы. Каждое поле формы добавляет себя к этому перечню при инициализации (в <c>OnInitialized()</c>) базового <cref name="FieldBaseClientComponent">компонента</cref>

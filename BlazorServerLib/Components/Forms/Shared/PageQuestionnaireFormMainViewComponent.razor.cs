@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
@@ -15,18 +16,19 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// </summary>
 public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
     [Inject]
-    protected ILogger<PageQuestionnaireFormMainViewComponent> LoggerRepo { get; set; } = default!;
+    ILogger<PageQuestionnaireFormMainViewComponent> LoggerRepo { get; set; } = default!;
+
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
+
+    [Inject]
+    IFormsService FormsRepo { get; set; } = default!;
+
 
     /// <inheritdoc/>
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
-
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]

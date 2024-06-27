@@ -97,6 +97,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
     {
         session_origin = new()
         {
+            ProjectId = Session.ProjectId,
             Id = Session.Id,
             CreatedAt = Session.CreatedAt,
             AuthorUser = Session.AuthorUser,

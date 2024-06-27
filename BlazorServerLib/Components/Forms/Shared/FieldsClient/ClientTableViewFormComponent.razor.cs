@@ -7,6 +7,7 @@ using System.Security.Claims;
 using MudBlazor;
 using SharedLib;
 using BlazorLib;
+using BlazorWebLib.Components.Forms.Pages;
 
 namespace BlazorWebLib.Components.Forms.Shared.FieldsClient;
 
@@ -15,17 +16,14 @@ namespace BlazorWebLib.Components.Forms.Shared.FieldsClient;
 /// </summary>
 public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
     [Inject]
-    protected IDialogService DialogServiceRepo { get; set; } = default!;
+    IDialogService DialogServiceRepo { get; set; } = default!;
 
-    /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
-    /// <inheritdoc/>
     [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter]
@@ -51,12 +49,13 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
 
+
     /// <inheritdoc/>
-    protected static bool IsReadonly(ClaimsPrincipal clp, SessionOfDocumentDataModelDB sq)
-    {
-        string? email = clp.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
-        return !clp.Claims.Any(x => x.Type.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase) && (x.Value.Equals("Admin", StringComparison.OrdinalIgnoreCase))) && sq.SessionStatus >= SessionsStatusesEnum.Sended && !sq.AuthorUser.Equals(email, StringComparison.OrdinalIgnoreCase);
-    }
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
+
+
+
 
     /// <inheritdoc/>
     protected bool TableCalculationKit { get; set; } = false;
@@ -72,7 +71,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             { x => x.RowNum, row_num },
             { x => x.SessionQuestionnaire, SessionQuestionnaire },
             { x => x.QuestionnairePage, QuestionnairePage },
-            { x => x.PageJoinForm, PageJoinForm }
+            { x => x.PageJoinForm, PageJoinForm },
+            { x => x.ParentFormsPage, ParentFormsPage }
         };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
@@ -140,7 +140,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             { x => x.RowNum, row_num },
             { x => x.SessionQuestionnaire, SessionQuestionnaire },
             { x => x.QuestionnairePage, QuestionnairePage },
-            { x => x.PageJoinForm, PageJoinForm }
+            { x => x.PageJoinForm, PageJoinForm },
+            { x => x.ParentFormsPage, ParentFormsPage }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         DialogResult result = await DialogServiceRepo.Show<ClientTableRowEditDialogComponent>($"Созданная строка данных №{rest.Response}", parameters, options).Result;
