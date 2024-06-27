@@ -633,62 +633,62 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             await context_forms.SaveChangesAsync();
 
             res.Response = MainProjectViewModel.Build(project);
-#if DEBUG
-            DirectoryConstructorModelDB _dir_seed = new()
-            {
-                Name = "Булево (логическое)",
-                ProjectId = project.Id,
-                SystemName = "BooleanEnum",
-            };
-            await context_forms.AddAsync(_dir_seed);
-            await context_forms.SaveChangesAsync();
-
-            ElementOfDirectoryConstructorModelDB[] _el_of_dir_seed = [
-                new() { Name = "Да", SortIndex = 1, SystemName = "True", ParentId = _dir_seed.Id },
-                new() { Name = "Нет", SortIndex = 2, SystemName = "False", ParentId = _dir_seed.Id }
-                ];
-
-            await context_forms.AddRangeAsync(_el_of_dir_seed);
-            await context_forms.SaveChangesAsync();
-
-            FormConstructorModelDB _form_seed = new()
-            {
-                Name = "Тестовая форма (demo)",
-                ProjectId = project.Id,
-                SystemName = "Default",
-                Description = "<p>seed data for debug</p>",
-            };
-
-            await context_forms.AddAsync(_form_seed);
-            await context_forms.SaveChangesAsync();
-
-            _form_seed.Fields = [new FieldFormConstructorModelDB() { Name = "Test text", SystemName = "DemoTextField", OwnerId = _form_seed.Id, SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12" }];
-            _form_seed.FormsDirectoriesLinks = [new LinkDirectoryToFormConstructorModelDB() { Name = "Test Directory", SystemName = "DemoDirectoryField", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
-
-            context_forms.Update(_form_seed);
-            await context_forms.SaveChangesAsync();
-
-            DocumentSchemeConstructorModelDB _document_scheme_seed = new() { Name = "Demo", SystemName = "TestDocument", ProjectId = project.Id };
-
-            await context_forms.AddAsync(_document_scheme_seed);
-            await context_forms.SaveChangesAsync();
-
-            _document_scheme_seed.Pages = [new TabOfDocumentSchemeConstructorModelDB() { Name = "Demo seed", SortIndex = 1, OwnerId = _document_scheme_seed.Id }];
-
-            context_forms.Update(_document_scheme_seed);
-            await context_forms.SaveChangesAsync();
-
-            _document_scheme_seed.Pages[0].JoinsForms = [new TabJoinDocumentSchemeConstructorModelDB() { Name = "join form", FormId = _form_seed.Id, OwnerId = _document_scheme_seed.Pages[0].Id, SortIndex = 1 }];
-
-            context_forms.Update(_document_scheme_seed);
-            await context_forms.SaveChangesAsync();
-
-            SessionOfDocumentDataModelDB _session_seed = new() { ProjectId = project.Id, AuthorUser = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString() };
-
-            await context_forms.AddAsync(_session_seed);
-            await context_forms.SaveChangesAsync();
-#endif
         }
+#if DEBUG
+        DirectoryConstructorModelDB _dir_seed = new()
+        {
+            Name = "Булево (логическое)",
+            ProjectId = project!.Id,
+            SystemName = "BooleanEnum",
+        };
+        await context_forms.AddAsync(_dir_seed);
+        await context_forms.SaveChangesAsync();
+
+        ElementOfDirectoryConstructorModelDB[] _el_of_dir_seed = [
+            new() { Name = "Да", SortIndex = 1, SystemName = "True", ParentId = _dir_seed.Id },
+                new() { Name = "Нет", SortIndex = 2, SystemName = "False", ParentId = _dir_seed.Id }
+            ];
+
+        await context_forms.AddRangeAsync(_el_of_dir_seed);
+        await context_forms.SaveChangesAsync();
+
+        FormConstructorModelDB _form_seed = new()
+        {
+            Name = "Тестовая форма (demo)",
+            ProjectId = project.Id,
+            SystemName = "Default",
+            Description = "<p>seed data for debug</p>",
+        };
+
+        await context_forms.AddAsync(_form_seed);
+        await context_forms.SaveChangesAsync();
+
+        _form_seed.Fields = [new FieldFormConstructorModelDB() { Name = "Test text", SystemName = "DemoTextField", OwnerId = _form_seed.Id, SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12" }];
+        _form_seed.FormsDirectoriesLinks = [new LinkDirectoryToFormConstructorModelDB() { Name = "Test Directory", SystemName = "DemoDirectoryField", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
+
+        context_forms.Update(_form_seed);
+        await context_forms.SaveChangesAsync();
+
+        DocumentSchemeConstructorModelDB _document_scheme_seed = new() { Name = "Demo", SystemName = "TestDocument", ProjectId = project.Id };
+
+        await context_forms.AddAsync(_document_scheme_seed);
+        await context_forms.SaveChangesAsync();
+
+        _document_scheme_seed.Pages = [new TabOfDocumentSchemeConstructorModelDB() { Name = "Demo seed", SortIndex = 1, OwnerId = _document_scheme_seed.Id }];
+
+        context_forms.Update(_document_scheme_seed);
+        await context_forms.SaveChangesAsync();
+
+        _document_scheme_seed.Pages[0].JoinsForms = [new TabJoinDocumentSchemeConstructorModelDB() { Name = "join form", FormId = _form_seed.Id, OwnerId = _document_scheme_seed.Pages[0].Id, SortIndex = 1 }];
+
+        context_forms.Update(_document_scheme_seed);
+        await context_forms.SaveChangesAsync();
+
+        SessionOfDocumentDataModelDB _session_seed = new() { ProjectId = project.Id, AuthorUser = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString() };
+
+        await context_forms.AddAsync(_session_seed);
+        await context_forms.SaveChangesAsync();
+#endif
 
         return res;
     }
