@@ -10,7 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// Форма
 /// </summary>
-[Index(nameof(Name), IsUnique = true)]
+[Index(nameof(Name), nameof(ProjectId), IsUnique = true)]
 public class FormConstructorModelDB : ConstructorFormBaseModel
 {
     /// <inheritdoc/>

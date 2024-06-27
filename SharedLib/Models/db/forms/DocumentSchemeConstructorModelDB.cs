@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// Схема документа
 /// </summary>
-[Index(nameof(Name), IsUnique = true)]
+[Index(nameof(Name), nameof(ProjectId), IsUnique = true)]
 public class DocumentSchemeConstructorModelDB : EntryConstructedModel
 {
     /// <summary>
