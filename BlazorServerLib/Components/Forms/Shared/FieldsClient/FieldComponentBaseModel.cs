@@ -25,11 +25,10 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
 
 
     /// <summary>
-    /// Номер строки таблицы от 1 и больше.
-    /// Если 0 (по умолчанию) => обрабатывается как [не таблица], а обычная форма
+    /// Текущий пользователь (сессия)
     /// </summary>
-    [Parameter]
-    public uint GroupByRowNum { get; set; }
+    [CascadingParameter]
+    public UserInfoModel? CurrentUser { get; set; }
 
     /// <summary>
     /// Форма
@@ -50,18 +49,6 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     public TabOfDocumentSchemeConstructorModelDB? QuestionnairePage { get; set; }
 
     /// <summary>
-    /// Текущий пользователь (сессия)
-    /// </summary>
-    [CascadingParameter]
-    public UserInfoModel? CurrentUser { get; set; }
-
-
-    /// <summary>
-    /// Признак того, что поле находится в состоянии реального использования, а не в конструкторе или режим demo
-    /// </summary>
-    public bool InUse => PageJoinForm is not null && SessionQuestionnaire is not null;
-
-    /// <summary>
     /// Связь формы со страницей опроса/анкеты. В режиме DEMO тут NULL
     /// </summary>
     [CascadingParameter]
@@ -76,6 +63,19 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// </summary>
     [Parameter]
     public List<FieldComponentBaseModel?>? FieldsReferring { get; set; }
+
+    /// <summary>
+    /// Номер строки таблицы от 1 и больше.
+    /// Если 0 (по умолчанию) => обрабатывается как [не таблица], а обычная форма
+    /// </summary>
+    [Parameter]
+    public uint GroupByRowNum { get; set; }
+
+
+    /// <summary>
+    /// Признак того, что поле находится в состоянии реального использования, а не в конструкторе или режим demo
+    /// </summary>
+    public bool InUse => PageJoinForm is not null && SessionQuestionnaire is not null;
 
     /// <inheritdoc/>
     public abstract string DomID { get; }

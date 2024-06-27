@@ -39,24 +39,27 @@
         </TooltipContent>
     </MudTooltip>
 </h3>
-<CascadingValue Value="this">
-    <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
-        <MudTabPanel Disabled="IsBusyProgress" Text="Проекты">
-            <ProjectsListComponent />
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Списки">
-            <DirectoryViewComponent />
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Формы">
-            <FormsViewComponent />
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Документы">
-            <QuestionnairesViewComponent />
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки">
-            <SessionsViewComponent />
-        </MudTabPanel>
-    </MudTabs>
+
+<CascadingValue Value="CurrentUser">
+    <CascadingValue Value="this">
+        <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
+            <MudTabPanel Disabled="IsBusyProgress" Text="Проекты">
+                <ProjectsListComponent />
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Списки">
+                <DirectoryViewComponent />
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Формы">
+                <FormsViewComponent />
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Документы">
+                <QuestionnairesViewComponent />
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки">
+                <SessionsViewComponent />
+            </MudTabPanel>
+        </MudTabs>
+    </CascadingValue>
 </CascadingValue>
 
 @if (MainProject is null)

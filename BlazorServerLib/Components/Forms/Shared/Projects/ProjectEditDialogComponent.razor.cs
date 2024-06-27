@@ -39,6 +39,9 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
 
+    /// <inheritdoc/>
+    [Parameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
 
     /// <inheritdoc/>
     protected bool CanSave => !string.IsNullOrWhiteSpace(projectObject.Name) && !string.IsNullOrWhiteSpace(projectObject.SystemName) && (!ProjectForEdit.Equals(projectObject) || ProjectForEdit.Id < 1);
@@ -68,7 +71,7 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         if (projectObject.Id < 1)
         {
-            TResponseModel<int> res = await FormsRepo.CreateProject(projectObject, ParentFormsPage.CurrentUser.UserId);
+            TResponseModel<int> res = await FormsRepo.CreateProject(projectObject, CurrentUser.UserId);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(res.Messages);
             if (res.Success())

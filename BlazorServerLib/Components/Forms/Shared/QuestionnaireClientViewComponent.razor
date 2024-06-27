@@ -17,7 +17,7 @@ else if (SessionQuestionnaire.Owner?.Pages is null)
 }
 else
 {
-    <MudDynamicTabs AddIconStyle="@AddIconStyleInUse" @ref="@DynamicTabs_ref" @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+    <MudTabs PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
         @if (!SessionQuestionnaire.Owner.Pages.Any())
         {
             <figure class="text-center mt-3">
@@ -62,6 +62,6 @@ else
                 </MudTabPanel>
             }
         }
-    </MudDynamicTabs>
+    </MudTabs>
     <DoneClientViewComponent />
 }

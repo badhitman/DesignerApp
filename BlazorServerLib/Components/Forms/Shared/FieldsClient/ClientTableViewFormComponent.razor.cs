@@ -25,6 +25,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
 
+
     /// <inheritdoc/>
     [Parameter]
     public string? Title { get; set; }
@@ -49,11 +50,15 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
 
-
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
 
+    /// <summary>
+    /// Текущий пользователь (сессия)
+    /// </summary>
+    [CascadingParameter]
+    public UserInfoModel? CurrentUser { get; set; }
 
 
 

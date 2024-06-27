@@ -42,6 +42,11 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
+
+    /// <inheritdoc/>
     protected async Task EditProject()
     {
         DialogParameters<ProjectEditDialogComponent> parameters = new()
@@ -49,6 +54,7 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
              { x => x.ProjectForEdit, ProjectRow },
              { x => x.ParentFormsPage, ParentFormsPage },
              { x => x.ParentListProjects, ParentProjectsList },
+             { x => x.CurrentUser, CurrentUser },
         };
         DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraExtraLarge };
         IDialogReference res = await DialogService.ShowAsync<ProjectEditDialogComponent>("Редактирование проекта", parameters, options);
@@ -70,7 +76,7 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     protected async Task SetMainProjectHandle()
     {
         IsBusyProgress = true;
-        ResponseBaseModel res = await FormsRepo.SetProjectAsMain(ProjectRow.Id, ParentFormsPage.CurrentUser.UserId);
+        ResponseBaseModel res = await FormsRepo.SetProjectAsMain(ProjectRow.Id, CurrentUser.UserId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success())

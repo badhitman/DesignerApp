@@ -32,6 +32,10 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
 
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
 
     IEnumerable<DocumentSchemeConstructorModelDB> QuestionnairesAll = [];
 
@@ -67,7 +71,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
     protected private async Task<TableData<SessionOfDocumentDataModelDB>> ServerReload(TableState state)
     {
-        if (string.IsNullOrWhiteSpace(ParentFormsPage.CurrentUser.UserId))
+        if (string.IsNullOrWhiteSpace(CurrentUser.UserId))
             throw new Exception("Не определён текущий пользователь");
 
         if (ParentFormsPage.MainProject is null)
@@ -79,7 +83,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             PageSize = state.PageSize,
             SimpleRequest = searchString,
             DocumentSchemeId = SelectedDocumentSchemeId,
-            FilterUserId = ParentFormsPage.CurrentUser.UserId,
+            FilterUserId = CurrentUser.UserId,
             ProjectId = ParentFormsPage.MainProject.Id
         };
         IsBusyProgress = true;

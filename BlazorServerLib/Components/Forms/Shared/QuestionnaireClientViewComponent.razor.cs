@@ -16,6 +16,7 @@ public partial class QuestionnaireClientViewComponent : ComponentBase
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+
     /// <summary>
     /// Session questionnaire
     /// </summary>
@@ -29,17 +30,7 @@ public partial class QuestionnaireClientViewComponent : ComponentBase
     /// <summary>
     /// Информация
     /// </summary>
-    protected MarkupString Information => (MarkupString)(!string.IsNullOrWhiteSpace(SessionQuestionnaire.Description) ? SessionQuestionnaire.Description : SessionQuestionnaire.Owner!.Description!);
-
-    /// <summary>
-    /// Dynamic tabs - ref
-    /// </summary>
-    public MudDynamicTabs? DynamicTabs_ref;
-
-    /// <summary>
-    /// Questionnaire index
-    /// </summary>
-    public int QuestionnaireIndex;
+    protected MarkupString Information => (MarkupString)(!string.IsNullOrWhiteSpace(SessionQuestionnaire.Description) ? SessionQuestionnaire.Description : SessionQuestionnaire.Owner!.Description ?? "");
 
     /// <summary>
     /// В зависимости режима (InUse) стили, которые добавятся к кнопке добавления: Если документ используется для реального заполнения, то кнопка скрывается.

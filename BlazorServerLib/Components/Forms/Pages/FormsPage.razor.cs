@@ -22,7 +22,7 @@ public partial class FormsPage : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     /// <inheritdoc/>
-    public UserInfoModel CurrentUser { get; private set; } = default!;
+    UserInfoModel CurrentUser = default!;
 
     /// <inheritdoc/>
     public MainProjectViewModel? MainProject { get; private set; }
