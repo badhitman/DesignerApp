@@ -31,6 +31,10 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
 
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
 
     MudTable<DocumentSchemeConstructorModelDB>? table;
 
@@ -45,7 +49,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     protected async Task DeleteQuestionnaire(int questionnaire_id)
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnaire(questionnaire_id);
+        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnaire(questionnaire_id, CurrentUser.UserId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -92,6 +96,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
         {
             { x => x.Questionnaire, questionnaire },
             { x => x.ParentFormsPage, ParentFormsPage },
+            { x => x.CurrentUser, CurrentUser },
         };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };

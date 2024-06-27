@@ -3,10 +3,10 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using BlazorWebLib.Components.Forms.Pages;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
@@ -17,24 +17,30 @@ public partial class ElementDirectoryFieldEditComponent : BlazorBusyComponentBas
 {
     /// <inheritdoc/>
     [Inject]
-    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    IFormsService FormsRepo { get; set; } = default!;
 
-    /// <inheritdoc/>
-    [Inject]
-    protected IFormsService FormsRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public SystemEntryModel ElementObject { get; set; } = default!;
+    public required SystemEntryModel ElementObject { get; set; }
     SystemEntryModel ElementObjectEdit = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public Action EditDoneAction { get; set; } = default!;
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
 
     /// <inheritdoc/>
     protected bool IsEdited => !ElementObject.Equals(ElementObjectEdit);
@@ -43,12 +49,17 @@ public partial class ElementDirectoryFieldEditComponent : BlazorBusyComponentBas
     protected async Task UpdateElementOfDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.UpdateElementOfDirectory(ElementObjectEdit);
+        ResponseBaseModel rest = await FormsRepo.UpdateElementOfDirectory(ElementObjectEdit, CurrentUser.UserId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         ElementObject.Update(ElementObjectEdit);
         EditDoneAction();
+        if (!rest.Success())
+        {
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
+        }
     }
 
     /// <inheritdoc/>

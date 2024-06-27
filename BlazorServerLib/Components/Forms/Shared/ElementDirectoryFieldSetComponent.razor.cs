@@ -44,6 +44,10 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
 
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
     bool IsEdit = false;
 
     bool IsMostUp
@@ -72,7 +76,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     {
         IsEdit = false;
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.UpMoveElementOfDirectory(ElementObject.Id);
+        ResponseBaseModel rest = await FormsRepo.UpMoveElementOfDirectory(ElementObject.Id, CurrentUser.UserId);
         IsBusyProgress = false;
         if (!rest.Success())
         {
@@ -87,7 +91,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     {
         IsEdit = false;
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DownMoveElementOfDirectory(ElementObject.Id);
+        ResponseBaseModel rest = await FormsRepo.DownMoveElementOfDirectory(ElementObject.Id, CurrentUser.UserId);
         IsBusyProgress = false;
         if (!rest.Success())
         {
@@ -109,7 +113,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     protected async Task DeleteElementOfDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteElementFromDirectory(ElementObject.Id);
+        ResponseBaseModel rest = await FormsRepo.DeleteElementFromDirectory(ElementObject.Id, CurrentUser.UserId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())

@@ -22,6 +22,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
 
+
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
@@ -31,6 +32,11 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
 
     /// <inheritdoc/>
     protected bool CanSave => !string.IsNullOrWhiteSpace(field_creating_field_ref?.FieldName);
@@ -109,7 +115,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 Required = directory_field.Required,
                 OwnerId = Form.Id,
                 Id = directory_field.Id
-            });
+            }, CurrentUser.UserId);
         }
         else if (_field_master is FieldFormConstructorModelDB standard_field)
         {
@@ -124,7 +130,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 OwnerId = Form.Id,
                 Required = standard_field.Required,
                 TypeField = standard_field.TypeField
-            });
+            }, CurrentUser.UserId);
         }
         else
         {
@@ -138,7 +144,8 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка 624403DB-C86D-421D-9C5D-098FA81DC6A8 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
 

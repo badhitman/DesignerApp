@@ -25,6 +25,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
 
+
     /// <summary>
     /// Форма
     /// </summary>
@@ -37,7 +38,6 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
 
-
     /// <summary>
     /// Поле формы
     /// </summary>
@@ -49,6 +49,11 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [Parameter, EditorRequired]
     public required Action<FormConstructorModelDB?> ReloadFieldsHandler { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
 
     ConstructorFieldFormBaseLowModel _field_master = default!;
 
@@ -289,7 +294,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 SortIndex = sf.SortIndex,
                 TypeField = sf.TypeField
             };
-            rest = await FormsRepo.FormFieldUpdateOrCreate(req);
+            rest = await FormsRepo.FormFieldUpdateOrCreate(req, CurrentUser.UserId);
             act = () => { ((FieldFormConstructorModelDB)Field).Update(sf); };
         }
         else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
@@ -307,7 +312,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 Required = df.Required,
                 SortIndex = df.SortIndex
             };
-            rest = await FormsRepo.FormFieldDirectoryUpdateOrCreate(req);
+            rest = await FormsRepo.FormFieldDirectoryUpdateOrCreate(req, CurrentUser.UserId);
             act = () => { ((LinkDirectoryToFormConstructorModelDB)Field).Update(df); };
         }
         else
@@ -320,8 +325,11 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
+        {
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
-
+        }
         act();
 
         IsEditRow = false;
@@ -424,9 +432,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         ResponseBaseModel rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await FormsRepo.FormFieldDelete(sf.Id);
+            rest = await FormsRepo.FormFieldDelete(sf.Id, CurrentUser.UserId);
         else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
-            rest = await FormsRepo.FormFieldDirectoryDelete(df.Id);
+            rest = await FormsRepo.FormFieldDirectoryDelete(df.Id, CurrentUser.UserId);
         else
         {
             SnackbarRepo.Add($"{_field_master.GetType().FullName}. ошибка 1BCDEFB4-55F5-4A5A-BA61-3EAD2E9063D2", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -439,7 +447,8 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка 53FAFE69-5FEC-4BE1-AA8B-5B2581A9F3E9 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
      ;
@@ -497,9 +506,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Up);
+            rest = await FormsRepo.FieldFormMove(sf.Id, CurrentUser.UserId, VerticalDirectionsEnum.Up);
         else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
-            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Up);
+            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, CurrentUser.UserId, VerticalDirectionsEnum.Up);
         else
         {
             SnackbarRepo.Add("ошибка 591195A4-959D-4CDD-9410-F8984F790CBE", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -512,7 +521,8 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка A05881B9-8F48-4276-8C17-BF68867D3A12 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
 
@@ -533,9 +543,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Down);
+            rest = await FormsRepo.FieldFormMove(sf.Id, CurrentUser.UserId, VerticalDirectionsEnum.Down);
         else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
-            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Down);
+            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, CurrentUser.UserId, VerticalDirectionsEnum.Down);
         else
         {
             SnackbarRepo.Add("ошибка 8768E090-BE63-4FE4-A693-7E24ED1A1876", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -548,7 +558,8 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка F43B3A47-362D-4D46-9C74-DBB210346FC8 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
 

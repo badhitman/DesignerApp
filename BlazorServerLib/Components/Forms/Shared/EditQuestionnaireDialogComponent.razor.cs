@@ -18,15 +18,12 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
 {
     /// <inheritdoc/>
     [Inject]
-    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
+
 
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; } = default!;
@@ -35,10 +32,13 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
     [Parameter, EditorRequired]
     public required DocumentSchemeConstructorModelDB Questionnaire { get; set; }
 
-
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
+
+    /// <inheritdoc/>
+    [Parameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
 
 
     /// <inheritdoc/>
@@ -88,7 +88,7 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.UpdateOrCreateQuestionnaire(new EntryConstructedModel() { Id = Questionnaire.Id, SystemName = QuestionnaireSystemNameOrigin, Name = QuestionnaireNameOrigin, Description = QuestionnaireDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id });
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.UpdateOrCreateQuestionnaire(new EntryConstructedModel() { Id = Questionnaire.Id, SystemName = QuestionnaireSystemNameOrigin, Name = QuestionnaireNameOrigin, Description = QuestionnaireDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id }, CurrentUser.UserId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

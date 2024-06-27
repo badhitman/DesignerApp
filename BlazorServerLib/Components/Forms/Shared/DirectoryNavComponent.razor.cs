@@ -22,6 +22,11 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
 
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
     /// <summary>
     /// Родительская страница форм
     /// </summary>
@@ -33,6 +38,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [Parameter, EditorRequired]
     public required Action<int> SelectedDirectoryChangeHandler { get; set; }
+
 
     SystemEntryModel[] allDirectories = default!;
 
@@ -85,7 +91,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     protected async Task DeleteSelectedDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteDirectory(SelectedDirectoryId);
+        ResponseBaseModel rest = await FormsRepo.DeleteDirectory(SelectedDirectoryId, CurrentUser.UserId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
@@ -106,7 +112,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, SystemName = directoryObject.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, SystemName = directoryObject.SystemName, ProjectId = ParentFormsPage.MainProject.Id }, CurrentUser.UserId);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
         {
@@ -128,7 +134,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id));
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id), CurrentUser.UserId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 

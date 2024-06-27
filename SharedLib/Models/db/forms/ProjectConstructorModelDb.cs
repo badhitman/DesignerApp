@@ -33,6 +33,14 @@ public class ProjectConstructorModelDb : EntryDescriptionSwitchableModel
     public List<MemberOfProjectConstructorModelDb>? Members { get; set; }
 
     /// <summary>
+    /// Проверка прав/возможности пользователю редактировать данные в рамках проекта
+    /// </summary>
+    public bool CanEdit(UserInfoModel userInfoModel)
+    {
+        return !IsDisabled || OwnerUserId.Equals(userInfoModel.UserId) || userInfoModel.Roles?.Any(x => x.Equals("admin", StringComparison.OrdinalIgnoreCase)) == true;
+    }
+
+    /// <summary>
     /// Reload
     /// </summary>
     public void Reload(ProjectViewModel project)

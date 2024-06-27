@@ -2,10 +2,11 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using BlazorWebLib.Components.Forms.Pages;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 
@@ -19,6 +20,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
 
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
+
 
     /// <summary>
     /// Questionnaire page
@@ -73,6 +75,15 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     [Parameter, EditorRequired]
     public Action<DocumentSchemeConstructorModelDB, TabOfDocumentSchemeConstructorModelDB?> UpdateQuestionnaireHandle { get; set; } = default!;
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required FormsPage ParentFormsPage { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter]
+    public UserInfoModel? CurrentUser { get; set; }
+
 
     int _selectedFormForAdding;
     /// <summary>
@@ -138,14 +149,18 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     protected async Task MoveRow(VerticalDirectionsEnum direct)
     {
+        if (CurrentUser is null)
+            throw new Exception("CurrentUser is null");
+
         IsBusyProgress = true;
-        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.QuestionnairePageMove(QuestionnairePage.Id, direct);
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.QuestionnairePageMove(QuestionnairePage.Id, CurrentUser.UserId, direct);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка 7E9B8C63-E3A8-4628-8343-993BF1E3BED0 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
         if (rest.Response is null)
@@ -162,19 +177,23 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     protected async Task Delete()
     {
+        if (CurrentUser is null)
+            throw new Exception("CurrentUser is null");
+
         if (!IsInitDelete)
         {
             IsInitDelete = true;
             return;
         }
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnairePage(QuestionnairePage.Id);
+        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnairePage(QuestionnairePage.Id, CurrentUser.UserId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка 909F66CD-4B54-4F27-8675-2D7748E5E4DF Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
         QuestionnaireReloadHandle();
@@ -198,6 +217,9 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     protected async Task AddFormToPage()
     {
+        if (CurrentUser is null)
+            throw new Exception("CurrentUser is null");
+
         if (string.IsNullOrWhiteSpace(addingFormToTabPageName))
         {
             SnackbarRepo.Error("Укажите название");
@@ -210,13 +232,14 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
             FormId = SelectedFormForAdding,
             OwnerId = QuestionnairePage.Id,
             Name = addingFormToTabPageName,
-        });
+        }, CurrentUser.UserId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка D6166A6D-65D4-49FC-88AE-9D6B3FA79E39 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
 
@@ -229,14 +252,18 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     protected async Task SavePage()
     {
+        if (CurrentUser is null)
+            throw new Exception("CurrentUser is null");
+
         IsBusyProgress = true;
-        FormQuestionnairePageResponseModel rest = await FormsRepo.CreateOrUpdateQuestionnairePage(new EntryDescriptionOwnedModel() { Id = QuestionnairePage.Id, OwnerId = QuestionnairePage.OwnerId, Name = QuestionnairePage.Name, Description = QuestionnairePage.Description });
+        FormQuestionnairePageResponseModel rest = await FormsRepo.CreateOrUpdateQuestionnairePage(new EntryDescriptionOwnedModel() { Id = QuestionnairePage.Id, OwnerId = QuestionnairePage.OwnerId, Name = QuestionnairePage.Name, Description = QuestionnairePage.Description }, CurrentUser.UserId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка 58DBC730-D7BC-481D-A7EF-10CD20489C5E Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
         if (rest.QuestionnairePage is null)

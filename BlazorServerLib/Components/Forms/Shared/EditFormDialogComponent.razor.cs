@@ -36,6 +36,11 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
+    [Parameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
+
+    /// <inheritdoc/>
     protected FieldsFormViewComponent? _fields_view_ref;
 
     /// <inheritdoc/>
@@ -60,7 +65,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected async Task SaveForm()
     {
         IsBusyProgress = true;
-        TResponseModel<FormConstructorModelDB> rest = await FormsRepo.FormUpdateOrCreate(FormEditObject);
+        TResponseModel<FormConstructorModelDB> rest = await FormsRepo.FormUpdateOrCreate(FormEditObject, CurrentUser.UserId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())

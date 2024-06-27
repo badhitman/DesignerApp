@@ -60,20 +60,28 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public bool InUse { get; set; } = default!;
+    public required bool InUse { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter]
+    public UserInfoModel? CurrentUser { get; set; }
+
 
     /// <inheritdoc/>
     protected async Task DeleteJoinForm()
     {
+        if (CurrentUser is null)
+            throw new Exception("CurrentUser is null");
+
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnairePageJoinForm(PageJoinForm.Id);
+        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnairePageJoinForm(PageJoinForm.Id, CurrentUser.UserId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка BC47C379-C7EA-4527-BC66-E7E18E13D55E Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return;
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
         }
         UpdatePageActionHandle(null);
     }
@@ -121,14 +129,18 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
     /// <inheritdoc/>
     protected async Task QuestionnairePageJoinFormMove(VerticalDirectionsEnum direct)
     {
+        if (CurrentUser is null)
+            throw new Exception("CurrentUser is null");
+
         IsBusyProgress = true;
-        FormQuestionnairePageResponseModel rest = await FormsRepo.QuestionnairePageJoinFormMove(PageJoinForm.Id, direct);
+        FormQuestionnairePageResponseModel rest = await FormsRepo.QuestionnairePageJoinFormMove(PageJoinForm.Id, CurrentUser.UserId, direct);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка 82D66555-EE5A-44CD-94C3-C7D30C06348A Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
         UpdatePageActionHandle(null);
@@ -137,6 +149,9 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
     /// <inheritdoc/>
     protected async Task SaveJoinForm()
     {
+        if (CurrentUser is null)
+            throw new Exception("CurrentUser is null");
+
         IsBusyProgress = true;
         TabJoinDocumentSchemeConstructorModelDB req = new()
         {
@@ -149,13 +164,14 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
             ShowTitle = PageJoinForm.ShowTitle,
             SortIndex = PageJoinForm.SortIndex
         };
-        ResponseBaseModel rest = await FormsRepo.CreateOrUpdateQuestionnairePageJoinForm(req);
+        ResponseBaseModel rest = await FormsRepo.CreateOrUpdateQuestionnairePageJoinForm(req, CurrentUser.UserId);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
         {
-            SnackbarRepo.Add($"Ошибка B384A2CC-A7BE-4335-976C-A2612FE84723 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
             return;
         }
 

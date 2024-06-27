@@ -22,11 +22,17 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
 
+
     /// <summary>
     /// Родительская страница форм
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required FormsPage ParentFormsPage { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
 
     /// <inheritdoc/>
     protected DirectoryElementsListViewComponent elementsListOfDirectoryView_ref = default!;
@@ -49,7 +55,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(createNewElementForDict);
+        TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(createNewElementForDict, CurrentUser.UserId);
         IsBusyProgress = false;
 
         if (directoryNav_ref is not null)
