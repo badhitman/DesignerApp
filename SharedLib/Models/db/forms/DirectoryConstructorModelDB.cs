@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// Справочник/список
 /// </summary>
-[Index(nameof(Name), IsUnique = true)]
+[Index(nameof(Name), nameof(ProjectId), IsUnique = true)]
 public class DirectoryConstructorModelDB : EntryConstructedModel
 {
     /// <inheritdoc/>

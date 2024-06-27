@@ -53,10 +53,4 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
 
         MudDialog.Close(DialogResult.Ok(RowValuesSet));
     });
-
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
-    }
 }

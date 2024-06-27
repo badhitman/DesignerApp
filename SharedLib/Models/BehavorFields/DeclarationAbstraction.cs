@@ -21,34 +21,53 @@ public abstract class DeclarationAbstraction
     /// </summary>
     public abstract string? About { get; }
 
+
+    /// <summary>
+    /// Кэш команд
+    /// </summary>
+    static readonly Dictionary<string, EntryAltDescriptionModel[]> _commands_cache = [];
+
     /// <summary>
     /// Все программные калькуляции
     /// </summary>
-    public static IEnumerable<EntryAltDescriptionModel> CommandsAsEntries<T>()
+    public static EntryAltDescriptionModel[] CommandsAsEntries<T>()
     {
         Type _current_type = typeof(T);
-        IEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies()
+        string? type_name = _current_type.FullName;
+        if (string.IsNullOrWhiteSpace(type_name))
+            throw new ArgumentException($"Тип данных [{_current_type}] без имени?", nameof(_current_type.FullName));
+
+        lock (_commands_cache)
+        {
+            if (_commands_cache.TryGetValue(type_name, out EntryAltDescriptionModel[]? _vcc))
+                return _vcc;
+
+            IEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())
             .Where(p => _current_type.IsAssignableFrom(p) && _current_type != p && !p.IsAbstract && !p.IsInterface);
 
-        return types.Select(x =>
-        {
-            if (Activator.CreateInstance(x) is not T obj)
-                throw new Exception("error 919F8FF2-B902-4112-8680-67352F369F0C");
+            EntryAltDescriptionModel[] res = types.Select(x =>
+            {
+                if (Activator.CreateInstance(x) is not T obj)
+                    throw new Exception("error 919F8FF2-B902-4112-8680-67352F369F0C");
 
-            if (obj is not DeclarationAbstraction _set)
-                throw new Exception("error EF8D4F4A-F578-44C6-B78C-BA7685662938");
+                if (obj is not DeclarationAbstraction _set)
+                    throw new Exception("error EF8D4F4A-F578-44C6-B78C-BA7685662938");
 
-            return new EntryAltDescriptionModel() { Id = x.Name, Name = _set.Name, Description = _set.About };
-        });
+                return new EntryAltDescriptionModel() { Id = x.Name, Name = _set.Name, Description = _set.About };
+            }).ToArray();
+
+            _commands_cache.Add(type_name, res);
+            return res;
+        }
     }
 
-    static readonly Dictionary<string, CommandsAsEntriesModel> ParseCalculationsAsEntriesCache = new();
+    static readonly Dictionary<string, CommandsAsEntriesModel> ParseCalculationsAsEntriesCache = [];
 
     /// <summary>
     /// Кэш деклараций
     /// </summary>
-    protected static readonly Dictionary<string, DeclarationAbstraction> _calc_cache = new();
+    static readonly Dictionary<string, DeclarationAbstraction> _calc_cache = [];
     /// <summary>
     /// Получить службу-обработчик
     /// </summary>

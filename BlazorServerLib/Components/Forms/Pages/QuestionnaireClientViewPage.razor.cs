@@ -33,19 +33,15 @@ public partial class QuestionnaireClientViewPage : BlazorBusyComponentBaseModel
     SessionOfDocumentDataModelDB SessionQuestionnaire = default!;
 
     /// <inheritdoc/>
-    protected IEnumerable<EntryAltDescriptionModel> Entries = [];
-
-    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         IsBusyProgress = true;
 
         TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
         CurrentUser = currentUser.Response;
 
         TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireGuid.ToString());
-        
+
         IsBusyProgress = false;
 
         if (rest.Response is null)

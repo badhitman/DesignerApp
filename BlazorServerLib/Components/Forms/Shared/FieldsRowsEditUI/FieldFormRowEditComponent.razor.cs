@@ -71,7 +71,7 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
     }
 
     /// <inheritdoc/>
-    protected IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
+    protected IEnumerable<EntryAltDescriptionModel> Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
 
     FieldFormConstructorModelDB _field_copy = default!;
 
@@ -98,7 +98,7 @@ public partial class FieldFormRowEditComponent : FieldFormEditFormBaseComponent
             SortIndex = Field.SortIndex,
             TypeField = Field.TypeField
         };
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
+        
         if (!string.IsNullOrWhiteSpace(SelectedProgramCalculationField))
             _dc = DeclarationAbstraction.GetHandlerService(SelectedProgramCalculationField);
     }

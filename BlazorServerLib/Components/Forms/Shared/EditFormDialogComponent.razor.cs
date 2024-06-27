@@ -48,9 +48,6 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected FormConstructorModelDB FormEditObject = default!;
 
     /// <inheritdoc/>
-    protected IEnumerable<EntryAltDescriptionModel> Entries = default!;
-
-    /// <inheritdoc/>
     protected void Close() => MudDialog.Close(DialogResult.Ok(Form));
 
     void ResetForm()
@@ -85,7 +82,6 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
         ResetForm();
     }
 }

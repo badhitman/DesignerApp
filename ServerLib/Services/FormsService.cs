@@ -595,17 +595,44 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-
+        ProjectConstructorModelDb? project = null;
+        ProjectUseConstructorModelDb? project_use = null;
         if (!await context_forms.Projects.AnyAsync(x => x.OwnerUserId == user_id) && !await context_forms.MembersOfProjects.AnyAsync(x => x.UserId == user_id))
         {
-            ProjectConstructorModelDb project = new() { Name = "По умолчанию", OwnerUserId = user_id, SystemName = "Default" };
+            project = new() { Name = "По умолчанию", OwnerUserId = user_id, SystemName = "Default" };
             await context_forms.AddAsync(project);
             await context_forms.SaveChangesAsync();
 
-            ProjectUseConstructorModelDb project_use = new() { UserId = project.OwnerUserId, ProjectId = project.Id };
+            project_use = new() { UserId = project.OwnerUserId, ProjectId = project.Id };
+            await context_forms.AddAsync(project_use);
+            await context_forms.SaveChangesAsync();
+        }
+
+        res.Response = project is not null
+            ? MainProjectViewModel.Build(project)
+            : await context_forms.ProjectsUse.Where(x => x.UserId == user_id)
+            .Include(x => x.Project)
+            .Select(x => new MainProjectViewModel() { Id = x.Project!.Id, Name = x.Project.Name, Description = x.Project.Description, IsDisabled = x.Project.IsDisabled, OwnerUserId = x.Project.OwnerUserId })
+            .FirstOrDefaultAsync();
+
+        if (res.Response is null)
+        {
+            IQueryable<ProjectConstructorModelDb> members_query = context_forms
+                .MembersOfProjects
+                .Include(x => x.Project)
+                .Select(x => x.Project!);
+
+            project = await context_forms
+                .Projects
+                .Where(x => x.OwnerUserId == user_id)
+                .Union(members_query)
+                .FirstAsync();
+
+            project_use = new() { UserId = user_id, ProjectId = project.Id };
             await context_forms.AddAsync(project_use);
             await context_forms.SaveChangesAsync();
 
+            res.Response = MainProjectViewModel.Build(project);
 #if DEBUG
             DirectoryConstructorModelDB _dir_seed = new()
             {
@@ -660,17 +687,8 @@ public class FormsService(IDbContextFactory<MainDbAppContext> mainDbFactory, IDb
 
             await context_forms.AddAsync(_session_seed);
             await context_forms.SaveChangesAsync();
-
 #endif
-            res.Response = MainProjectViewModel.Build(project);
         }
-        else
-            res.Response = await context_forms
-                .ProjectsUse
-                .Where(x => x.UserId == user_id)
-                .Include(x => x.Project)
-                .Select(x => new MainProjectViewModel() { Id = x.Project!.Id, Name = x.Project.Name, Description = x.Project.Description, IsDisabled = x.Project.IsDisabled, OwnerUserId = x.Project.OwnerUserId })
-                .FirstOrDefaultAsync();
 
         return res;
     }

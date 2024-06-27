@@ -33,7 +33,7 @@ public partial class ProgramCalculationFieldFormUIComponent : ComponentBase
         }
     }
 
-    IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
+    readonly IEnumerable<EntryAltDescriptionModel> Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
     string? selected_program_calculation_field;
     /// <inheritdoc/>
     public string? SelectedProgramCalculationField
@@ -51,8 +51,6 @@ public partial class ProgramCalculationFieldFormUIComponent : ComponentBase
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
-
         if (Entries.Any())
             SelectedProgramCalculationField = Entries.First().Id;
     }
