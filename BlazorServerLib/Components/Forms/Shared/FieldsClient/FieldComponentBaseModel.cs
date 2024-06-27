@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using System.Security.Claims;
+using BlazorLib.Components;
 using MudBlazor;
 using SharedLib;
 using BlazorLib;
-using BlazorLib.Components;
-using BlazorWebLib.Components.Forms.Pages;
 
 namespace BlazorWebLib.Components.Forms.Shared.FieldsClient;
 
@@ -24,6 +22,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// <inheritdoc/>
     [Inject]
     protected IFormsService FormsRepo { get; set; } = default!;
+
 
     /// <summary>
     /// Номер строки таблицы от 1 и больше.
@@ -50,7 +49,11 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     [CascadingParameter]
     public TabOfDocumentSchemeConstructorModelDB? QuestionnairePage { get; set; }
 
-
+    /// <summary>
+    /// Текущий пользователь (сессия)
+    /// </summary>
+    [CascadingParameter]
+    public UserInfoModel? CurrentUser { get; set; }
 
 
     /// <summary>
