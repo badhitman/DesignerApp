@@ -9,7 +9,7 @@ using SharedLib;
 namespace BlazorWebLib.Components.Forms.Shared;
 
 /// <summary>
-/// Questionnaire client view
+/// DocumentScheme client view
 /// </summary>
 public partial class QuestionnaireClientViewComponent : ComponentBase
 {

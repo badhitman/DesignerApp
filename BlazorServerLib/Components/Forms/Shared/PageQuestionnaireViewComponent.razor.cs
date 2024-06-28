@@ -23,7 +23,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
 
 
     /// <summary>
-    /// Questionnaire page
+    /// DocumentScheme page
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; }
@@ -59,7 +59,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
     public Action<int, string?> SetNameForPageHandle { get; set; } = default!;
 
     /// <summary>
-    /// Questionnaire reload - handle action
+    /// DocumentScheme reload - handle action
     /// </summary>
     [Parameter, EditorRequired]
     public Action QuestionnaireReloadHandle { get; set; } = default!;
@@ -165,7 +165,7 @@ public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseMod
         }
         if (rest.Response is null)
         {
-            SnackbarRepo.Add($"Ошибка 671CB343-ADD5-46AE-91F8-24175FBF2592 Content [rest.Questionnaire is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 671CB343-ADD5-46AE-91F8-24175FBF2592 Content [rest.DocumentScheme is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 

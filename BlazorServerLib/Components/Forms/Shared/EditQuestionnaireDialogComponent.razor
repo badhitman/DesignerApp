@@ -46,10 +46,10 @@
                         </div>
                     </form>
                 </TabComponent>
-                <TabComponent IsDisabled="@(Questionnaire.Id < 1)" Tooltip="Состав опроса/анкеты" Title="Страницы">
+                <TabComponent IsDisabled="@(DocumentScheme.Id < 1)" Tooltip="Состав опроса/анкеты" Title="Страницы">
                     <CascadingValue Value="CurrentUser">
                         <CascadingValue Value="ParentFormsPage">
-                            <PagesQuestionnairesViewComponent @ref="pages_questionnaires_view_ref" Questionnaire="Questionnaire" />
+                            <TabsOfDocumentsSchemesViewComponent @ref="pages_questionnaires_view_ref" DocumentScheme="DocumentScheme" />
                         </CascadingValue>
                     </CascadingValue>
                 </TabComponent>
@@ -57,6 +57,6 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton Disabled="@(IsEdited && Questionnaire.Id > 0)" Color="Color.Primary" OnClick="Close">@(IsEdited && Questionnaire.Id > 0 ? "Опрос/анкета изменена" : "Закрыть")</MudButton>
+        <MudButton Disabled="@(IsEdited && DocumentScheme.Id > 0)" Color="Color.Primary" OnClick="Close">@(IsEdited && DocumentScheme.Id > 0 ? "Опрос/анкета изменена" : "Закрыть")</MudButton>
     </DialogActions>
 </MudDialog>

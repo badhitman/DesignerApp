@@ -1567,8 +1567,8 @@ public class FormsService(
 
         List<ValueDataForSessionOfDocumentModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == form_field.Name)
                                                                            join session in context_forms.Sessions on val_s.OwnerId equals session.Id
-                                                                           join Questionnaire in context_forms.DocumentSchemes on session.OwnerId equals Questionnaire.Id
-                                                                           join page in context_forms.TabsOfDocumentsSchemes on Questionnaire.Id equals page.OwnerId
+                                                                           join DocumentScheme in context_forms.DocumentSchemes on session.OwnerId equals DocumentScheme.Id
+                                                                           join page in context_forms.TabsOfDocumentsSchemes on DocumentScheme.Id equals page.OwnerId
                                                                            join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
                                                                            select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);
@@ -1758,8 +1758,8 @@ public class FormsService(
 
         List<ValueDataForSessionOfDocumentModelDB> values_updates = await (from val_s in context_forms.ValuesSessions.Where(x => x.Name == form_field_db.Name)
                                                                            join session in context_forms.Sessions on val_s.OwnerId equals session.Id
-                                                                           join Questionnaire in context_forms.DocumentSchemes on session.OwnerId equals Questionnaire.Id
-                                                                           join page in context_forms.TabsOfDocumentsSchemes on Questionnaire.Id equals page.OwnerId
+                                                                           join DocumentScheme in context_forms.DocumentSchemes on session.OwnerId equals DocumentScheme.Id
+                                                                           join page in context_forms.TabsOfDocumentsSchemes on DocumentScheme.Id equals page.OwnerId
                                                                            join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
                                                                            select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);

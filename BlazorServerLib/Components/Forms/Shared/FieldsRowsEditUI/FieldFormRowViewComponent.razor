@@ -170,9 +170,9 @@
                 <MudSpacer />
                 @if (ParentFormsPage.CanEditProject)
                 {
-                    <MudIconButton OnClick="() => { IsEditRow = true; }" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" Color="@(Color.Dark)" aria-label="Редактировать" />
-                    <MudIconButton OnClick="MoveFieldUp" Disabled="!CanUp" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowDropUp" aria-label="Выше" Color="Color.Default" />
-                    <MudIconButton OnClick="MoveFieldDown" Disabled="!CanDown" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowDropDown" aria-label="Ниже" Color="Color.Default" />
+                    <MudIconButton OnClick="() => { IsEditRow = true; }" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" Color="Color.Info" aria-label="Редактировать" />
+                    <MudIconButton OnClick="MoveFieldUp" Disabled="!CanUp" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowDropUp" aria-label="Выше" Color="@(CanUp ? Color.Success : Color.Default)" />
+                    <MudIconButton OnClick="MoveFieldDown" Disabled="!CanDown" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowDropDown" aria-label="Ниже" Color="@(CanDown ? Color.Success : Color.Default)" />
                     <MudIconButton OnClick="DeleteClick" Size="Size.Small" Icon="@Icons.Material.Filled.DeleteOutline" Color="@(Color.Warning)" aria-label="Удалить" />
                 }
                 else

@@ -21,7 +21,7 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     IFormsService FormsRepo { get; set; } = default!;
 
     /// <summary>
-    /// Questionnaire page
+    /// DocumentScheme page
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; }

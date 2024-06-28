@@ -2,7 +2,14 @@
 
 <tr>
     <th scope="row" class="@(ProjectRow.IsDisabled ? "text-decoration-line-through" : "")">
-        <code class="@(ProjectRow.IsDisabled ? "text-secondary" : "")" title="Системное имя проекта">@ProjectRow.SystemName</code> <span title="">@ProjectRow.Name</span>
+        <code class="@(ProjectRow.IsDisabled ? "text-secondary" : "")" title="Системное имя проекта">@ProjectRow.SystemName</code>
+        <span title="Название проекта">
+            @ProjectRow.Name
+            @if (!IsMyProject)
+            {
+                <sup class="badge text-bg-secondary ms-1">гостевой</sup>
+            }
+        </span>
     </th>
     <td>
         @if (ProjectRow.Members is null || ProjectRow.Members.Count == 0)
@@ -23,7 +30,7 @@
         {
             <MudIconButton Class="me-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Сделать основным" OnClick="SetMainProjectHandle"></MudIconButton>
         }
-        @if (CurrentUser.UserId == ProjectRow.OwnerUserId)
+        @if (IsMyProject)
         {
             <MudIconButton Class="me-2" Color="@(ProjectRow.IsDisabled ? Color.Info : Color.Default)" Icon="@(ProjectRow.IsDisabled ? Icons.Material.Filled.FlashOff : Icons.Material.Filled.FlashOn)" aria-label="disable" Size="Size.Small" Title="@(ProjectRow.IsDisabled? "Включение проекта":"Отключение проекта")" OnClick="DeleteProject"></MudIconButton>
             <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" Title="Редактирование проекта" OnClick="EditProject"></MudIconButton>

@@ -13,7 +13,7 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// <summary>
 /// Questionnaires view
 /// </summary>
-public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
+public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Inject]
@@ -94,7 +94,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
         questionnaire ??= DocumentSchemeConstructorModelDB.BuildEmpty(ParentFormsPage.MainProject.Id);
         DialogParameters<EditQuestionnaireDialogComponent> parameters = new()
         {
-            { x => x.Questionnaire, questionnaire },
+            { x => x.DocumentScheme, questionnaire },
             { x => x.ParentFormsPage, ParentFormsPage },
             { x => x.CurrentUser, CurrentUser },
         };

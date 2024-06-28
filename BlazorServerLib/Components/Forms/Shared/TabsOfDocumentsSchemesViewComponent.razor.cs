@@ -13,7 +13,7 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// <summary>
 /// Pages questionnaires view
 /// </summary>
-public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseModel
+public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Inject]
@@ -25,7 +25,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required DocumentSchemeConstructorModelDB Questionnaire { get; set; }
+    public required DocumentSchemeConstructorModelDB DocumentScheme { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -51,7 +51,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     protected bool TabIsDisabled(int questionnaire_page_id)
     {
-        return _tabs_is_hold && Questionnaire.Pages?.FindIndex(x => x.Id == questionnaire_page_id) != QuestionnaireIndex;
+        return _tabs_is_hold && DocumentScheme.Pages?.FindIndex(x => x.Id == questionnaire_page_id) != QuestionnaireIndex;
     }
 
     /// <inheritdoc/>
@@ -76,12 +76,12 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         IsBusyProgress = true;
         InvokeAsync(async () =>
         {
-            TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.GetDocumentScheme(Questionnaire.Id);
+            TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.GetDocumentScheme(DocumentScheme.Id);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (rest.Response is null)
             {
-                SnackbarRepo.Add($"Ошибка A3D19BFC-38BB-4932-85DD-54C306D8C83E rest.Content.Questionnaire", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка A3D19BFC-38BB-4932-85DD-54C306D8C83E rest.Content.DocumentScheme", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             if (!rest.Success())
@@ -89,7 +89,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
                 SnackbarRepo.Add($"Ошибка 55685D9E-E9D0-4937-A727-5BCC9FAD4381 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
-            Questionnaire = rest.Response;
+            DocumentScheme = rest.Response;
             StateHasChanged();
         });
     }
@@ -102,23 +102,23 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
             SnackbarRepo.Add($"PagesNotExist. Ошибка 6264F83F-DF3F-4860-BC18-5288AB335985", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
-        int i = Questionnaire.Pages!.FindIndex(x => x.Id == init_id);
+        int i = DocumentScheme.Pages!.FindIndex(x => x.Id == init_id);
         if (i >= 0 && init_id != new_page.Id)
             new_page.Id = i;
 
-        i = Questionnaire.Pages.FindIndex(x => x.Id == new_page.Id);
+        i = DocumentScheme.Pages.FindIndex(x => x.Id == new_page.Id);
         if (i >= 0)
-            Questionnaire.Pages[i].JoinsForms = new_page.JoinsForms;
+            DocumentScheme.Pages[i].JoinsForms = new_page.JoinsForms;
 
         StateHasChanged();
     }
 
     /// <inheritdoc/>
-    protected bool CanUpPage(TabOfDocumentSchemeConstructorModelDB questionnaire_page) => questionnaire_page.SortIndex > (Questionnaire.Pages!.Any(x => x.Id != questionnaire_page.Id) ? Questionnaire.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Min(y => y.SortIndex) : 1) && !Questionnaire.Pages!.Any(x => x.Id < 1);
+    protected bool CanUpPage(TabOfDocumentSchemeConstructorModelDB questionnaire_page) => questionnaire_page.SortIndex > (DocumentScheme.Pages!.Any(x => x.Id != questionnaire_page.Id) ? DocumentScheme.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Min(y => y.SortIndex) : 1) && !DocumentScheme.Pages!.Any(x => x.Id < 1);
     /// <inheritdoc/>
-    protected bool CanDownPage(TabOfDocumentSchemeConstructorModelDB questionnaire_page) => questionnaire_page.SortIndex < (Questionnaire.Pages!.Any(x => x.Id != questionnaire_page.Id) ? Questionnaire.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Max(y => y.SortIndex) : Questionnaire.Pages!.Count) && !Questionnaire.Pages!.Any(x => x.Id < 1);
+    protected bool CanDownPage(TabOfDocumentSchemeConstructorModelDB questionnaire_page) => questionnaire_page.SortIndex < (DocumentScheme.Pages!.Any(x => x.Id != questionnaire_page.Id) ? DocumentScheme.Pages!.Where(x => x.Id != questionnaire_page.Id)!.Max(y => y.SortIndex) : DocumentScheme.Pages!.Count) && !DocumentScheme.Pages!.Any(x => x.Id < 1);
 
-    bool PagesNotExist => Questionnaire.Pages is null || Questionnaire.Pages.Count == 0;
+    bool PagesNotExist => DocumentScheme.Pages is null || DocumentScheme.Pages.Count == 0;
 
     /// <inheritdoc/>
     protected void SetNameForPage(int id, string name)
@@ -129,7 +129,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
             return;
         }
 
-        TabOfDocumentSchemeConstructorModelDB? _page = Questionnaire.Pages!.FirstOrDefault(x => x.Id == id);
+        TabOfDocumentSchemeConstructorModelDB? _page = DocumentScheme.Pages!.FirstOrDefault(x => x.Id == id);
         if (_page is null)
         {
             SnackbarRepo.Add($"_page is null. Ошибка CBDF9789-4A28-4869-A214-A4702A432DA6", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -142,42 +142,42 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     public void AddTab()
     {
-        Questionnaire.Pages ??= [];
+        DocumentScheme.Pages ??= [];
         int new_page_id = PagesNotExist
             ? 0
-            : Questionnaire.Pages.Min(x => x.Id) - 1;
+            : DocumentScheme.Pages.Min(x => x.Id) - 1;
 
         if (new_page_id > 0)
             new_page_id = 0;
 
         int i = 1;
-        while (i <= 100 && Questionnaire.Pages.Any(x => x.Name.Equals($"New {i}", StringComparison.OrdinalIgnoreCase)))
+        while (i <= 100 && DocumentScheme.Pages.Any(x => x.Name.Equals($"New {i}", StringComparison.OrdinalIgnoreCase)))
             i++;
 
-        Questionnaire.Pages.Add(new TabOfDocumentSchemeConstructorModelDB { OwnerId = Questionnaire.Id, Id = new_page_id, Name = $"New {(i < 100 ? i.ToString() : Guid.NewGuid().ToString())}", JoinsForms = new(), SortIndex = (Questionnaire.Pages.Any() ? Questionnaire.Pages.Max(x => x.SortIndex) + 1 : 1) });
-        QuestionnaireIndex = Questionnaire.Pages.Count - 1;
+        DocumentScheme.Pages.Add(new TabOfDocumentSchemeConstructorModelDB { OwnerId = DocumentScheme.Id, Id = new_page_id, Name = $"New {(i < 100 ? i.ToString() : Guid.NewGuid().ToString())}", JoinsForms = new(), SortIndex = (DocumentScheme.Pages.Any() ? DocumentScheme.Pages.Max(x => x.SortIndex) + 1 : 1) });
+        QuestionnaireIndex = DocumentScheme.Pages.Count - 1;
         _stateHasChanged = true;
     }
 
     /// <inheritdoc/>
-    public void Update(DocumentSchemeConstructorModelDB questionnaire, TabOfDocumentSchemeConstructorModelDB? page = null)
+    public void Update(DocumentSchemeConstructorModelDB document_scheme, TabOfDocumentSchemeConstructorModelDB? page = null)
     {
-        Questionnaire = questionnaire;
-        if (page is not null && Questionnaire.Pages?.Any(x => x.Id == page.Id) == true)
-            QuestionnaireIndex = Questionnaire.Pages.FindIndex(x => x.Id == page.Id);
+        DocumentScheme = document_scheme;
+        if (page is not null && DocumentScheme.Pages?.Any(x => x.Id == page.Id) == true)
+            QuestionnaireIndex = DocumentScheme.Pages.FindIndex(x => x.Id == page.Id);
         StateHasChanged();
     }
 
     /// <inheritdoc/>
-    public void RemoveTab(int id)
+    public void RemoveTab(string id)
     {
-        TabOfDocumentSchemeConstructorModelDB? tabView = Questionnaire.Pages!.SingleOrDefault((t) => Equals(t.Id, id));
+        TabOfDocumentSchemeConstructorModelDB? tabView = DocumentScheme.Pages!.SingleOrDefault((t) => Equals(t.Id, id));
         if (tabView is not null)
         {
-            Questionnaire.Pages!.Remove(tabView);
+            DocumentScheme.Pages!.Remove(tabView);
             _stateHasChanged = true;
         }
     }
     /// <inheritdoc/>
-    protected void CloseTabCallback(MudTabPanel panel) => RemoveTab((int)panel.ID);
+    protected void CloseTabCallback(MudTabPanel panel) => RemoveTab(panel.ID.ToString() ?? throw new Exception("tab engine error"));
 }

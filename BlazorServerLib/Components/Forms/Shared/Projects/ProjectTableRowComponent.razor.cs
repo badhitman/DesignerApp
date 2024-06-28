@@ -46,6 +46,8 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     public required UserInfoModel CurrentUser { get; set; }
 
 
+    bool IsMyProject => CurrentUser.UserId.Equals(ProjectRow.OwnerUserId);
+
     /// <inheritdoc/>
     protected async Task EditProject()
     {

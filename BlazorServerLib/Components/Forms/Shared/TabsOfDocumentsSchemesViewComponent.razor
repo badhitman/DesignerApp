@@ -1,10 +1,10 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-@if (Questionnaire.Pages is null)
+@if (DocumentScheme.Pages is null)
 {
     <figure>
         <blockquote class="blockquote">
-            <p>Questionnaire.Pages is null</p>
+            <p>DocumentScheme.Pages is null</p>
         </blockquote>
         <figcaption class="blockquote-footer">
             ошибка <cite>E112BEFB-5709-4D5A-89A5-987F19FB0371</cite>
@@ -14,7 +14,7 @@
 else if (!ParentFormsPage.CanEditProject)
 {
     <MudTabs @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
-        @if (!Questionnaire.Pages.Any())
+        @if (!DocumentScheme.Pages.Any())
         {
             <figure class="text-center mt-3">
                 <blockquote class="blockquote">
@@ -27,9 +27,9 @@ else if (!ParentFormsPage.CanEditProject)
         }
         else
         {
-            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in Questionnaire.Pages.OrderBy(x => x.SortIndex))
+            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in DocumentScheme.Pages.OrderBy(x => x.SortIndex))
             {
-                questionnaire_page.Owner = Questionnaire;
+                questionnaire_page.Owner = DocumentScheme;
                 <MudTabPanel ID="@($"document-scheme_{questionnaire_page.Id}")"
                              Text="@questionnaire_page.Name"               
                              BadgeDot="@(questionnaire_page.Id < 1)">
@@ -44,7 +44,7 @@ else if (!ParentFormsPage.CanEditProject)
 else
 {
     <MudDynamicTabs @bind-ActivePanelIndex="@QuestionnaireIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
-        @if (!Questionnaire.Pages.Any())
+        @if (!DocumentScheme.Pages.Any())
         {
             <figure class="text-center mt-3">
                 <blockquote class="blockquote">
@@ -57,9 +57,9 @@ else
         }
         else
         {
-            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in Questionnaire.Pages.OrderBy(x => x.SortIndex))
+            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in DocumentScheme.Pages.OrderBy(x => x.SortIndex))
             {
-                questionnaire_page.Owner = Questionnaire;
+                questionnaire_page.Owner = DocumentScheme;
                 <MudTabPanel ID="@($"document-scheme_{questionnaire_page.Id}")"
                              Text="@questionnaire_page.Name"
                              Disabled="@TabIsDisabled(questionnaire_page.Id)"
