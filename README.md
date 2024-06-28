@@ -1,7 +1,7 @@
 ## Конструктор документов (*стадия активной разработки*).
-> как развитие базового кейса '*Blazor NET.8 + TelegramBot*' из ветки [main](https://github.com/badhitman/DesignerApp/tree/main). Другими словами там уже есть встроеная поддержка TelegramBot
+> как развитие базового кейса '*Blazor NET.8 + TelegramBot*' из ветки [main](https://github.com/badhitman/DesignerApp/tree/main). Другими словами там уже есть встроенная поддержка TelegramBot и другие нюансы решения из основной ветки.
 
-**Constructor** - гибкое web решение для конструирования документов, справочников и т.п.. А так же генерация C# .net кода для созданной структуры сущностей со всеми её связями (целиком). Решение позволит с нуля сконструировать новое приложение со своей структурой БД и CRUD+ набором сервисов (+ web/ui of `BlazorWebApp`). Такой сгенерированный код легко ляжет на [базовую заготовку](https://github.com/badhitman/DesignerApp/tree/main).
+**Constructor** - гибкое web решение для конструирования документов, справочников и т.п.
 
 ... добавлено [разного UI на Blazor](https://github.com/badhitman/DesignerApp/tree/constructor/BlazorServerLib/Components/Forms). А так же [немного](https://github.com/badhitman/DesignerApp/blob/constructor/DBContextLibs/DbLayerLib/ConstructorLayerContext.cs) [БД](https://github.com/badhitman/DesignerApp/tree/constructor/SharedLib/Models/db/forms) для [соответствующего сервиса](https://github.com/badhitman/DesignerApp/blob/constructor/SharedLib/IServices/main/IFormsService.cs).
 
