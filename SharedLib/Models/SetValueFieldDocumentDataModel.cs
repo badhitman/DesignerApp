@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Установка значения поля формы
 /// </summary>
-public class SetValueFieldDocumentDataModel : ValueFieldSessionQuestionnaireBaseModel
+public class SetValueFieldDocumentDataModel : ValueFieldSessionDocumentDataBaseModel
 {
     /// <summary>
     /// Имя поля

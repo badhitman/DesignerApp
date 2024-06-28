@@ -220,7 +220,7 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(ValueFieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(ValueFieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default)
     {
         TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
         if (!get_s.Success())
@@ -1970,13 +1970,13 @@ public class FormsService(
     // Пользователь при добавлении/редактировании строк таблицы будет видеть форму, которую вы настроили для этого, а внутри таба это будет выглядеть как обычная многострочная таблица с колонками, равными полям формы
     #region схема документа
     /// <inheritdoc/>
-    public async Task<ConstructorFormsQuestionnairesPaginationResponseModel> RequestDocumentsSchemes(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken)
+    public async Task<ConstructorFormsDocumentSchemePaginationResponseModel> RequestDocumentsSchemes(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken)
     {
         if (req.PageSize < 1)
             req.PageSize = 10;
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormsQuestionnairesPaginationResponseModel res = new(req);
+        ConstructorFormsDocumentSchemePaginationResponseModel res = new(req);
 
         IQueryable<DocumentSchemeConstructorModelDB> query = context_forms
             .DocumentSchemes
@@ -2013,7 +2013,7 @@ public class FormsService(
 
         int[] ids = await query.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
         query = context_forms.DocumentSchemes.Include(x => x.Pages).Where(x => ids.Contains(x.Id)).Include(x => x.Pages).OrderBy(x => x.Name);
-        res.Questionnaires = ids.Length != 0
+        res.DocumentsSchemes = ids.Length != 0
             ? await query.ToArrayAsync(cancellationToken: cancellationToken)
             : Enumerable.Empty<DocumentSchemeConstructorModelDB>();
 
@@ -2021,7 +2021,7 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<DocumentSchemeConstructorModelDB>> GetDocumentScheme(int questionnaire_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<DocumentSchemeConstructorModelDB>> GetDocumentScheme(int document_scheme_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         TResponseModel<DocumentSchemeConstructorModelDB> res = new()
@@ -2030,11 +2030,11 @@ public class FormsService(
             .DocumentSchemes
             .Include(x => x.Pages!)
             .ThenInclude(x => x.JoinsForms)
-            .FirstOrDefaultAsync(x => x.Id == questionnaire_id, cancellationToken: cancellationToken)
+            .FirstOrDefaultAsync(x => x.Id == document_scheme_id, cancellationToken: cancellationToken)
         };
 
         if (res.Response is null)
-            res.AddError($"Опрос/анкета #{questionnaire_id} отсутствует в БД");
+            res.AddError($"Опрос/анкета #{document_scheme_id} отсутствует в БД");
 
         return res;
     }
@@ -2125,7 +2125,7 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteDocumentScheme(int questionnaire_id, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> DeleteDocumentScheme(int document_scheme_id, CancellationToken cancellationToken = default)
     {
         //TResponseModel<UserInfoModel?> call_user = await usersProfilesRepo.FindByIdAsync();
         //if (!call_user.Success())
@@ -2136,10 +2136,10 @@ public class FormsService(
             .DocumentSchemes
             .Include(x => x.Pages!)
             .ThenInclude(x => x.JoinsForms)
-            .FirstOrDefaultAsync(x => x.Id == questionnaire_id, cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == document_scheme_id, cancellationToken: cancellationToken);
 
         if (document_scheme_db is null)
-            return ResponseBaseModel.CreateError($"Опрос/анкета #{questionnaire_id} не найдена в БД");
+            return ResponseBaseModel.CreateError($"Опрос/анкета #{document_scheme_id} не найдена в БД");
 
         ResponseBaseModel check_project = await CanEditProject(document_scheme_db.ProjectId);
         if (!check_project.Success())
@@ -2148,7 +2148,7 @@ public class FormsService(
         context_forms.Remove(document_scheme_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        return ResponseBaseModel.CreateSuccess($"Опрос/анкета #{questionnaire_id} удалена");
+        return ResponseBaseModel.CreateSuccess($"Опрос/анкета #{document_scheme_id} удалена");
     }
     #endregion
     // табы/вкладки схожи по смыслу табов/вкладок в Excel. Т.е. обычная группировка разных рабочих пространств со своим именем 
@@ -2387,7 +2387,7 @@ public class FormsService(
     #endregion
     #region структура/схема табов/вкладок схем документов: формы, порядок и настройки поведения    
     /// <inheritdoc/>
-    public async Task<TResponseModel<TabJoinDocumentSchemeConstructorModelDB>> GetTabDocumentSchemeJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<TabJoinDocumentSchemeConstructorModelDB>> GetTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         TResponseModel<TabJoinDocumentSchemeConstructorModelDB> res = new()
@@ -2397,11 +2397,11 @@ public class FormsService(
             .Include(x => x.Form)
             .Include(x => x.Owner)
             .ThenInclude(x => x!.JoinsForms)
-            .FirstOrDefaultAsync(x => x.Id == questionnaire_page_join_form_id, cancellationToken: cancellationToken)
+            .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_join_form_id, cancellationToken: cancellationToken)
         };
 
         if (res.Response is null)
-            res.AddError($"Связь #{questionnaire_page_join_form_id} (форма<->опрос/анкета) не найдена в БД");
+            res.AddError($"Связь #{tab_document_scheme_join_form_id} (форма<->опрос/анкета) не найдена в БД");
         else if (res.Response.Owner?.JoinsForms is not null)
             res.Response.Owner.JoinsForms = res.Response.Owner.JoinsForms.OrderBy(x => x.SortIndex).ToList();
 
@@ -2409,7 +2409,7 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<TabOfDocumentSchemeResponseModel> MoveTabDocumentSchemeJoinForm(int questionnaire_page_join_form_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
+    public async Task<TabOfDocumentSchemeResponseModel> MoveTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
     {
         TabOfDocumentSchemeResponseModel res = new();
         
@@ -2418,11 +2418,11 @@ public class FormsService(
             .TabsJoinsForms
             .Include(x => x.Owner)
             .ThenInclude(x => x!.JoinsForms)
-            .FirstOrDefaultAsync(x => x.Id == questionnaire_page_join_form_id, cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_join_form_id, cancellationToken: cancellationToken);
 
         if (questionnaire_page_join_db?.Owner?.JoinsForms is null)
         {
-            res.AddError($"Форма для страницы опроса/анкеты #{questionnaire_page_join_form_id} отсутствует в БД. ошибка 66CB7541-20AE-4C26-A020-3A9546457C3D");
+            res.AddError($"Форма для страницы опроса/анкеты #{tab_document_scheme_join_form_id} отсутствует в БД. ошибка 66CB7541-20AE-4C26-A020-3A9546457C3D");
             return res;
         }
 
@@ -2495,12 +2495,12 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TabJoinDocumentSchemeConstructorModelDB page_join_form, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TabJoinDocumentSchemeConstructorModelDB tab_document_scheme_form, CancellationToken cancellationToken = default)
     {
-        page_join_form.Name = Regex.Replace(page_join_form.Name, @"\s+", " ").Trim();
-        page_join_form.Description = page_join_form.Description?.Trim();
+        tab_document_scheme_form.Name = Regex.Replace(tab_document_scheme_form.Name, @"\s+", " ").Trim();
+        tab_document_scheme_form.Description = tab_document_scheme_form.Description?.Trim();
 
-        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(page_join_form);
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(tab_document_scheme_form);
         if (!IsValid)
             return ResponseBaseModel.CreateError(ValidationResults);
 
@@ -2509,12 +2509,12 @@ public class FormsService(
         TabOfDocumentSchemeConstructorModelDB? tab_of_document_db = await context_forms
             .TabsOfDocumentsSchemes
             .Include(x => x.JoinsForms)
-            .FirstOrDefaultAsync(x => x.Id == page_join_form.OwnerId, cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_form.OwnerId, cancellationToken: cancellationToken);
 
         string msg;
         if (tab_of_document_db?.JoinsForms is null)
         {
-            msg = $"Страница анкеты/опроса #{page_join_form.OwnerId} не найдена в БД";
+            msg = $"Страница анкеты/опроса #{tab_document_scheme_form.OwnerId} не найдена в БД";
             res.AddError(msg);
             logger.LogError(msg);
             return res;
@@ -2531,11 +2531,11 @@ public class FormsService(
             return check_project;
 
         TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_join_db;
-        if (page_join_form.Id < 1)
+        if (tab_document_scheme_form.Id < 1)
         {
             int _sort_index = tab_of_document_db.JoinsForms.Count != 0 ? tab_of_document_db.JoinsForms.Max(x => x.SortIndex) : 0;
-            page_join_form.SortIndex = _sort_index + 1;
-            await context_forms.AddAsync(page_join_form, cancellationToken);
+            tab_document_scheme_form.SortIndex = _sort_index + 1;
+            await context_forms.AddAsync(tab_document_scheme_form, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
             msg = $"Создана связь форма и страницы анкеты/опроса #{tab_of_document_db.Id}";
             res.AddSuccess(msg);
@@ -2543,49 +2543,49 @@ public class FormsService(
             return res;
         }
 
-        questionnaire_page_join_db = tab_of_document_db.JoinsForms.FirstOrDefault(x => x.Id == page_join_form.Id);
+        questionnaire_page_join_db = tab_of_document_db.JoinsForms.FirstOrDefault(x => x.Id == tab_document_scheme_form.Id);
 
         if (questionnaire_page_join_db is null)
         {
-            msg = $"Связь формы и страницы опроса/анкеты #{page_join_form.Id} не найдена в БД";
+            msg = $"Связь формы и страницы опроса/анкеты #{tab_document_scheme_form.Id} не найдена в БД";
             res.AddError(msg);
             logger.LogError(msg);
             return res;
         }
 
-        if (questionnaire_page_join_db.Name != page_join_form.Name)
+        if (questionnaire_page_join_db.Name != tab_document_scheme_form.Name)
         {
-            msg = $"Имя связи формы и страницы опроса/анкеты #{page_join_form.Id} изменилось: [{questionnaire_page_join_db.Name}] -> [{page_join_form.Name}]";
+            msg = $"Имя связи формы и страницы опроса/анкеты #{tab_document_scheme_form.Id} изменилось: [{questionnaire_page_join_db.Name}] -> [{tab_document_scheme_form.Name}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            questionnaire_page_join_db.Name = page_join_form.Name;
+            questionnaire_page_join_db.Name = tab_document_scheme_form.Name;
         }
-        if (questionnaire_page_join_db.Description != page_join_form.Description)
+        if (questionnaire_page_join_db.Description != tab_document_scheme_form.Description)
         {
-            msg = $"Описание связи формы и страницы опроса/анкеты #{page_join_form.Id} изменилось";
+            msg = $"Описание связи формы и страницы опроса/анкеты #{tab_document_scheme_form.Id} изменилось";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            questionnaire_page_join_db.Description = page_join_form.Description;
+            questionnaire_page_join_db.Description = tab_document_scheme_form.Description;
         }
-        if (questionnaire_page_join_db.ShowTitle != page_join_form.ShowTitle)
+        if (questionnaire_page_join_db.ShowTitle != tab_document_scheme_form.ShowTitle)
         {
-            msg = $"Описание связи формы и страницы опроса/анкеты #{page_join_form.Id} изменение '{nameof(questionnaire_page_join_db.ShowTitle)}': [{questionnaire_page_join_db.ShowTitle}] => [{page_join_form.ShowTitle}]";
+            msg = $"Описание связи формы и страницы опроса/анкеты #{tab_document_scheme_form.Id} изменение '{nameof(questionnaire_page_join_db.ShowTitle)}': [{questionnaire_page_join_db.ShowTitle}] => [{tab_document_scheme_form.ShowTitle}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            questionnaire_page_join_db.ShowTitle = page_join_form.ShowTitle;
+            questionnaire_page_join_db.ShowTitle = tab_document_scheme_form.ShowTitle;
         }
-        if (questionnaire_page_join_db.IsTable != page_join_form.IsTable)
+        if (questionnaire_page_join_db.IsTable != tab_document_scheme_form.IsTable)
         {
-            msg = $"Признак [таблица] связи формы и страницы опроса/анкеты #{page_join_form.Id} изменение '{nameof(questionnaire_page_join_db.IsTable)}': [{questionnaire_page_join_db.IsTable}] => [{page_join_form.IsTable}]";
+            msg = $"Признак [таблица] связи формы и страницы опроса/анкеты #{tab_document_scheme_form.Id} изменение '{nameof(questionnaire_page_join_db.IsTable)}': [{questionnaire_page_join_db.IsTable}] => [{tab_document_scheme_form.IsTable}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            questionnaire_page_join_db.IsTable = page_join_form.IsTable;
+            questionnaire_page_join_db.IsTable = tab_document_scheme_form.IsTable;
         }
 
         if (res.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Warning))
         {
             context_forms.Update(questionnaire_page_join_db);
-            msg = $"Связь формы и страницы опроса/анкеты #{page_join_form.Id} обновлено в БД";
+            msg = $"Связь формы и страницы опроса/анкеты #{tab_document_scheme_form.Id} обновлено в БД";
             res.AddInfo(msg);
             logger.LogInformation(msg);
             await context_forms.SaveChangesAsync(cancellationToken);
@@ -2595,15 +2595,15 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteTabDocumentSchemeJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> DeleteTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_db = await context_forms
             .TabsJoinsForms
-            .FirstOrDefaultAsync(x => x.Id == questionnaire_page_join_form_id, cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_join_form_id, cancellationToken: cancellationToken);
 
         if (questionnaire_page_db is null)
-            return ResponseBaseModel.CreateError($"Связь формы и страницы опроса/анкеты #{questionnaire_page_join_form_id} не найдена в БД");
+            return ResponseBaseModel.CreateError($"Связь формы и страницы опроса/анкеты #{tab_document_scheme_join_form_id} не найдена в БД");
 
         int current_project_id = await (from project in context_forms.Projects
                                                            join ds in context_forms.DocumentSchemes on project.Id equals ds.ProjectId

@@ -101,8 +101,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         StateHasChanged();
         _ = InvokeAsync(async () =>
         {
-            ValueFieldSessionQuestionnaireBaseModel req = new() { GroupByRowNum = row_num, JoinFormId = PageJoinForm.Id, SessionId = SessionQuestionnaire.Id };
-            ResponseBaseModel rest = await FormsRepo.DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(req);
+            ValueFieldSessionDocumentDataBaseModel req = new() { GroupByRowNum = row_num, JoinFormId = PageJoinForm.Id, SessionId = SessionQuestionnaire.Id };
+            ResponseBaseModel rest = await FormsRepo.DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(req);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -150,14 +150,14 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         DialogResult result = await DialogServiceRepo.Show<ClientTableRowEditDialogComponent>($"Созданная строка данных №{rest.Response}", parameters, options).Result;
-        ValueFieldSessionQuestionnaireBaseModel req = new()
+        ValueFieldSessionDocumentDataBaseModel req = new()
         {
             GroupByRowNum = row_num,
             JoinFormId = PageJoinForm.Id,
             SessionId = SessionQuestionnaire.Id,
             IsSelf = true
         };
-        _ = await FormsRepo.DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(req);
+        _ = await FormsRepo.DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(req);
         await ReloadSession();
     }
 

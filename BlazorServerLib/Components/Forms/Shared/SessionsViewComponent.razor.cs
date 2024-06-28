@@ -213,16 +213,16 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        ConstructorFormsQuestionnairesPaginationResponseModel rest = await FormsRepo.RequestDocumentsSchemes(new() { PageNum = 0, PageSize = 1000 }, ParentFormsPage.MainProject.Id);
+        ConstructorFormsDocumentSchemePaginationResponseModel rest = await FormsRepo.RequestDocumentsSchemes(new() { PageNum = 0, PageSize = 1000 }, ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
-        if (rest.Questionnaires is null)
+        if (rest.DocumentsSchemes is null)
         {
             SnackbarRepo.Add($"rest.Content.Questionnaires is null. error 0A875193-08AA-4678-824D-213BCE33080F", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        QuestionnairesAll = rest.Questionnaires;
+        QuestionnairesAll = rest.DocumentsSchemes;
     }
 
     /// <inheritdoc/>

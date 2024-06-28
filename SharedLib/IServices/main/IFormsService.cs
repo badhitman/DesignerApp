@@ -29,7 +29,7 @@ public interface IFormsService
     /// Удалить набор значений сессии опроса/анкеты по номеру строки [GroupByRowNum].
     /// Если индекс ниже нуля - удаляются все значения для указанной JoinForm (полная очистка таблицы или очистка всех значений всех поллей стандартной формы)
     /// </summary>
-    public Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionQuestionnaireByRowNum(ValueFieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(ValueFieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Добавить новую строку в таблицу значений
@@ -239,7 +239,7 @@ public interface IFormsService
     /// <summary>
     /// Запрос схем документов
     /// </summary>
-    public Task<ConstructorFormsQuestionnairesPaginationResponseModel> RequestDocumentsSchemes(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default);
+    public Task<ConstructorFormsDocumentSchemePaginationResponseModel> RequestDocumentsSchemes(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить схему документа

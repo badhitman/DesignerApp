@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Базовая модель доступа значения поля формы
 /// </summary>
-public class ValueFieldSessionQuestionnaireBaseModel : FieldSessionDocumentDataBaseModel
+public class ValueFieldSessionDocumentDataBaseModel : FieldSessionDocumentDataBaseModel
 {
     /// <summary>
     /// Группировка по номеру строки

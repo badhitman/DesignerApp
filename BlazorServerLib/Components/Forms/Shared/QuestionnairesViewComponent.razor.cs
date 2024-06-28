@@ -40,7 +40,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     protected string? searchString;
-    ConstructorFormsQuestionnairesPaginationResponseModel data = new() { Questionnaires = Enumerable.Empty<DocumentSchemeConstructorModelDB>() };
+    ConstructorFormsDocumentSchemePaginationResponseModel data = new() { DocumentsSchemes = Enumerable.Empty<DocumentSchemeConstructorModelDB>() };
 
     /// <inheritdoc/>
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
@@ -76,13 +76,13 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
         data = await FormsRepo.RequestDocumentsSchemes(req, ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
-        if (data.Questionnaires is null)
+        if (data.DocumentsSchemes is null)
         {
             SnackbarRepo.Add($"rest.Content.Questionnaires is null. error 62D3109B-7349-48E8-932B-762D5B0EA585", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
+            return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.DocumentsSchemes };
         }
 
-        return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Questionnaires };
+        return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.DocumentsSchemes };
     }
 
     /// <inheritdoc/>
