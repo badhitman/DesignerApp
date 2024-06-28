@@ -33,7 +33,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     /// Родительская страница форм
     /// </summary>
     [Parameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
+    public required ConstrucnorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]

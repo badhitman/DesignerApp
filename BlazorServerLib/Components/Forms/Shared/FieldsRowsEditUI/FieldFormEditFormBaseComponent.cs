@@ -44,7 +44,7 @@ public class FieldFormEditFormBaseComponent : ComponentBase, IDomBaseComponent
     /// Родительская страница форм
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
+    public required ConstrucnorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     public string DomID => $"{SessionDocument?.Id}_form-{Form.Id}_{Field.GetType().FullName}-{Field.Id}";

@@ -10,7 +10,7 @@ using SharedLib;
 namespace BlazorWebLib.Components.Forms.Pages;
 
 /// <inheritdoc/>
-public partial class FormsPage : BlazorBusyComponentBaseModel
+public partial class ConstrucnorPage : BlazorBusyComponentBaseModel
 {
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;

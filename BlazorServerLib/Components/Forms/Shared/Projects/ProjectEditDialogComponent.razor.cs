@@ -37,7 +37,7 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
+    public required ConstrucnorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]

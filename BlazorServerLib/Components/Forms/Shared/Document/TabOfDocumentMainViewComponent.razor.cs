@@ -28,7 +28,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
+    public required ConstrucnorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]

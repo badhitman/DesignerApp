@@ -29,7 +29,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// Родительская страница форм
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
+    public required ConstrucnorPage ParentFormsPage { get; set; }
 
     /// <summary>
     /// Таблица

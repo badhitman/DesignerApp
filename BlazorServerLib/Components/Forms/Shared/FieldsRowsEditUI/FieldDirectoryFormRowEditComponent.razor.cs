@@ -46,7 +46,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     /// Родительская страница форм
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
+    public required ConstrucnorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     protected IEnumerable<SystemEntryModel> Entries = default!;

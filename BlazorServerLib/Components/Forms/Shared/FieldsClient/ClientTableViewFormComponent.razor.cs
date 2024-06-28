@@ -52,7 +52,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
+    public required ConstrucnorPage ParentFormsPage { get; set; }
 
     /// <summary>
     /// Текущий пользователь (сессия)

@@ -42,7 +42,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     /// Родительская страница форм
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
+    public required ConstrucnorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]

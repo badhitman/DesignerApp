@@ -34,7 +34,7 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required FormsPage ParentFormsPage { get; set; }
+    public required ConstrucnorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     [Parameter]
