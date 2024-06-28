@@ -37,8 +37,8 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
     public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
-    [Parameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
+    [Parameter]
+    public UserInfoModel? CurrentUser { get; set; }
 
 
     /// <inheritdoc/>
