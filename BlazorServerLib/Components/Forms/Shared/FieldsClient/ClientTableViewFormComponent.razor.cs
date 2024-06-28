@@ -124,7 +124,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        FieldSessionQuestionnaireBaseModel row_obj = new()
+        FieldSessionDocumentDataBaseModel row_obj = new()
         {
             JoinFormId = PageJoinForm.Id,
             SessionId = SessionQuestionnaire.Id
@@ -171,7 +171,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<SessionOfDocumentDataModelDB> rest = string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken)
         ? await FormsRepo.GetSessionQuestionnaire(SessionQuestionnaire.Id)
-        : await FormsRepo.GetSessionQuestionnaire(SessionQuestionnaire.SessionToken);
+        : await FormsRepo.GetSessionDocumentData(SessionQuestionnaire.SessionToken);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

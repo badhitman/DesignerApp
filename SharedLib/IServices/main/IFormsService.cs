@@ -13,17 +13,17 @@ public interface IFormsService
     /// <summary>
     /// Получить сессию
     /// </summary>
-    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionQuestionnaire(string guid_session, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocumentData(string guid_session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Установить значение свойства сессии
     /// </summary>
-    public Task<TResponseModel<SessionOfDocumentDataModelDB>> SetValueFieldSessionQuestionnaire(SetValueFieldSessionQuestionnaireModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> SetValueFieldSessionDocumentData(SetValueFieldDocumentDataModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Отправить опрос на проверку (от клиента)
     /// </summary>
-    public Task<ResponseBaseModel> SetDoneSessionQuestionnaire(string token_session, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> SetDoneSessionDocumentData(string token_session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить набор значений сессии опроса/анкеты по номеру строки [GroupByRowNum].
@@ -35,7 +35,7 @@ public interface IFormsService
     /// Добавить новую строку в таблицу значений
     /// </summary>
     /// <returns>Номер п/п (начиная с 1) созданной строки</returns>
-    public Task<TResponseStrictModel<int>> AddRowToTable(FieldSessionQuestionnaireBaseModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> AddRowToTable(FieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default);
     #endregion
 
     /////////////// Контекст работы конструктора: работы в системе над какими-либо сущностями всегда принадлежат какому-либо проекту/контексту.

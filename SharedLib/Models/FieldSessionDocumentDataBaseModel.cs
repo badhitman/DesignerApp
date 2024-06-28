@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Строки данных таблиц
 /// </summary>
-public class FieldSessionQuestionnaireBaseModel
+public class FieldSessionDocumentDataBaseModel
 {
     /// <summary>
     /// Сессия опроса/анкеты

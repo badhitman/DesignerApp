@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Установка значения поля формы
 /// </summary>
-public class SetValueFieldSessionQuestionnaireModel : ValueFieldSessionQuestionnaireBaseModel
+public class SetValueFieldDocumentDataModel : ValueFieldSessionQuestionnaireBaseModel
 {
     /// <summary>
     /// Имя поля
@@ -24,7 +24,7 @@ public class SetValueFieldSessionQuestionnaireModel : ValueFieldSessionQuestionn
     /// </summary>
     public string? Description { get; set; }
 
-    internal static SetValueFieldSessionQuestionnaireModel Build(string fieldValue, string fieldName, string description, uint groupByRowNum)
+    internal static SetValueFieldDocumentDataModel Build(string fieldValue, string fieldName, string description, uint groupByRowNum)
     {
         return new()
         {

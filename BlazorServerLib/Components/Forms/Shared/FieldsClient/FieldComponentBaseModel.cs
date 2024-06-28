@@ -92,7 +92,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
         if (!InUse)
             throw new NullReferenceException("Форма не инициализирована.");
 
-        SetValueFieldSessionQuestionnaireModel req = new()
+        SetValueFieldDocumentDataModel req = new()
         {
             FieldValue = valAsString,
             GroupByRowNum = GroupByRowNum,
@@ -101,7 +101,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
             SessionId = SessionQuestionnaire!.Id
         };
         IsBusyProgress = true;
-        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.SetValueFieldSessionQuestionnaire(req);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.SetValueFieldSessionDocumentData(req);
         IsBusyProgress = false;
 
         if (!rest.Success())

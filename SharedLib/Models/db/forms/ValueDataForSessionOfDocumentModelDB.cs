@@ -42,7 +42,7 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Значение поля из формы опроса/анкеты
     /// </summary>
-    public static ValueDataForSessionOfDocumentModelDB Build(SetValueFieldSessionQuestionnaireModel req, TabJoinDocumentSchemeConstructorModelDB questionnaire_page_join, SessionOfDocumentDataModelDB session)
+    public static ValueDataForSessionOfDocumentModelDB Build(SetValueFieldDocumentDataModel req, TabJoinDocumentSchemeConstructorModelDB questionnaire_page_join, SessionOfDocumentDataModelDB session)
         => new()
         {
             Name = req.NameField,

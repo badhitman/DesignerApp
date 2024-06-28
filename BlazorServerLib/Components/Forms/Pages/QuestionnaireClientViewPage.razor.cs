@@ -40,7 +40,7 @@ public partial class QuestionnaireClientViewPage : BlazorBusyComponentBaseModel
         TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
         CurrentUser = currentUser.Response;
 
-        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireGuid.ToString());
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionDocumentData(QuestionnaireGuid.ToString());
 
         IsBusyProgress = false;
 
