@@ -3,6 +3,11 @@
 
 **Constructor** - гибкое web решение для конструирования документов, справочников и т.п.
 
+- [x] первая фаза "конструктор" - создание схемы документов и структуры моделей в общих чертах. возможность формировать ссылки/сессии, что бы внешние клиенты могли заполнять документы своими данными.
+- [ ] вторая фаза "генератор" - генерация кода c# .net
+
+первая фаза в финальной стадии. отыскиваю/отлаживаю баги и документирую.
+
 ... добавлено [разного UI на Blazor](https://github.com/badhitman/DesignerApp/tree/constructor/BlazorServerLib/Components/Forms). А так же [немного](https://github.com/badhitman/DesignerApp/blob/constructor/DBContextLibs/DbLayerLib/ConstructorLayerContext.cs) [БД](https://github.com/badhitman/DesignerApp/tree/constructor/SharedLib/Models/db/forms) для [соответствующего сервиса](https://github.com/badhitman/DesignerApp/blob/constructor/SharedLib/IServices/main/IFormsService.cs).
 
 ### Проекты
