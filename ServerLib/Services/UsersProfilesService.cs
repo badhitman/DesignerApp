@@ -158,7 +158,29 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         if (!user.Success() || user.ApplicationUser is null)
             return new TResponseModel<UserInfoModel?>() { Messages = user.Messages };
 
-        return new() { Response = (UserInfoModel)user.ApplicationUser };
+        UserInfoModel res = (UserInfoModel)user.ApplicationUser;
+
+        IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+
+        res.Roles = await identityContext
+            .UserRoles
+            .Where(x => x.UserId == res.UserId)
+            .Select(x => x.RoleId)
+            .Distinct()
+            .ToArrayAsync();
+
+        if (res.Roles.Length != 0)
+        {
+            string?[] roles_names = await identityContext
+                .Roles
+                .Where(x => res.Roles.Contains(x.Id))
+                .Select(x => x.Name)
+                .ToArrayAsync();
+
+            roles_names = roles_names.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+            res.Roles = roles_names.Select(x => x!).ToArray();
+        }
+        return new() { Response = res };
     }
 
     /// <inheritdoc/>
