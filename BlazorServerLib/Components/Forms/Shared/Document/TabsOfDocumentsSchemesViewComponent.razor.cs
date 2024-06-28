@@ -35,7 +35,7 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
     /// <inheritdoc/>
     protected bool _stateHasChanged;
     /// <inheritdoc/>
-    public int QuestionnaireIndex;
+    public int DocumentIndex;
 
     /// <inheritdoc/>
     protected IEnumerable<ConstructorFormBaseModel> AllForms = default!;
@@ -51,7 +51,7 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
     /// <inheritdoc/>
     protected bool TabIsDisabled(int questionnaire_page_id)
     {
-        return _tabs_is_hold && DocumentScheme.Pages?.FindIndex(x => x.Id == questionnaire_page_id) != QuestionnaireIndex;
+        return _tabs_is_hold && DocumentScheme.Pages?.FindIndex(x => x.Id == questionnaire_page_id) != DocumentIndex;
     }
 
     /// <inheritdoc/>
@@ -71,7 +71,7 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
     }
 
     /// <inheritdoc/>
-    protected void QuestionnaireReloadAction()
+    protected void DocumentReloadAction()
     {
         IsBusyProgress = true;
         InvokeAsync(async () =>
@@ -155,7 +155,7 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
             i++;
 
         DocumentScheme.Pages.Add(new TabOfDocumentSchemeConstructorModelDB { OwnerId = DocumentScheme.Id, Id = new_page_id, Name = $"New {(i < 100 ? i.ToString() : Guid.NewGuid().ToString())}", JoinsForms = new(), SortIndex = (DocumentScheme.Pages.Any() ? DocumentScheme.Pages.Max(x => x.SortIndex) + 1 : 1) });
-        QuestionnaireIndex = DocumentScheme.Pages.Count - 1;
+        DocumentIndex = DocumentScheme.Pages.Count - 1;
         _stateHasChanged = true;
     }
 
@@ -164,7 +164,7 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
     {
         DocumentScheme = document_scheme;
         if (page is not null && DocumentScheme.Pages?.Any(x => x.Id == page.Id) == true)
-            QuestionnaireIndex = DocumentScheme.Pages.FindIndex(x => x.Id == page.Id);
+            DocumentIndex = DocumentScheme.Pages.FindIndex(x => x.Id == page.Id);
         StateHasChanged();
     }
 

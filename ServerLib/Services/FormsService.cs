@@ -64,7 +64,7 @@ public class FormsService(
         {
             msg = $"Токен '{guid_session}' не найден или просрочен.";
             res.AddError(msg);
-            logger.LogError($"{msg} res.SessionQuestionnaire is null. error 61362F88-21C8-431A-9038-475B4C52B759");
+            logger.LogError($"{msg} res.SessionDocument is null. error 61362F88-21C8-431A-9038-475B4C52B759");
         }
 
         return res;
@@ -113,28 +113,28 @@ public class FormsService(
     /// <inheritdoc/>
     public async Task<TResponseModel<SessionOfDocumentDataModelDB>> SetValueFieldSessionDocumentData(SetValueFieldDocumentDataModel req, CancellationToken cancellationToken = default)
     {
-        TResponseModel<SessionOfDocumentDataModelDB> session = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> session = await GetSessionDocument(req.SessionId, cancellationToken);
         if (!session.Success())
             return session;
 
-        SessionOfDocumentDataModelDB? session_Questionnaire = session.Response;
+        SessionOfDocumentDataModelDB? session_Document = session.Response;
         TResponseModel<SessionOfDocumentDataModelDB> res = new();
 
-        if (session_Questionnaire?.Owner?.Pages is null || session_Questionnaire.DataSessionValues is null)
+        if (session_Document?.Owner?.Pages is null || session_Document.DataSessionValues is null)
         {
             res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка B3AC5AAF-A786-4190-9C61-A272F174D940");
             return res;
         }
 
-        if (session_Questionnaire.SessionStatus >= SessionsStatusesEnum.Sended)
+        if (session_Document.SessionStatus >= SessionsStatusesEnum.Sended)
         {
-            res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (находиться в статусе {session_Questionnaire.SessionStatus}).");
+            res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (находиться в статусе {session_Document.SessionStatus}).");
             return res;
         }
 
-        session_Questionnaire.LastQuestionnaireUpdateActivity = DateTime.Now;
+        session_Document.LastDocumentUpdateActivity = DateTime.Now;
 
-        TabJoinDocumentSchemeConstructorModelDB? form_join = session_Questionnaire.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        TabJoinDocumentSchemeConstructorModelDB? form_join = session_Document.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена. ошибка 2494D4D2-24E1-48D4-BC9C-C27D327D98B8");
@@ -148,13 +148,13 @@ public class FormsService(
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ValueDataForSessionOfDocumentModelDB? existing_value = session_Questionnaire.DataSessionValues.FirstOrDefault(x => x.RowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == form_join.Id);
+        ValueDataForSessionOfDocumentModelDB? existing_value = session_Document.DataSessionValues.FirstOrDefault(x => x.RowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == form_join.Id);
         if (existing_value is null)
         {
             if (req.FieldValue is null)
-                return await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+                return await GetSessionDocument(req.SessionId, cancellationToken);
 
-            existing_value = ValueDataForSessionOfDocumentModelDB.Build(req, form_join, session_Questionnaire);
+            existing_value = ValueDataForSessionOfDocumentModelDB.Build(req, form_join, session_Document);
 
             existing_value.Owner = null;
             existing_value.TabJoinDocumentScheme = null;
@@ -172,13 +172,13 @@ public class FormsService(
 
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        return await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        return await GetSessionDocument(req.SessionId, cancellationToken);
     }
 
     /// <inheritdoc/>
     public async Task<TResponseStrictModel<int>> AddRowToTable(FieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default)
     {
-        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionDocument(req.SessionId, cancellationToken);
         if (!get_s.Success())
             return new TResponseStrictModel<int>() { Messages = get_s.Messages, Response = 0 };
         TResponseStrictModel<int> res = new() { Response = 0 };
@@ -210,7 +210,7 @@ public class FormsService(
             TabJoinDocumentSchemeId = form_join.Id
         }).ToArray();
         await context_forms.AddRangeAsync(rows_add, cancellationToken);
-        session.LastQuestionnaireUpdateActivity = DateTime.Now;
+        session.LastDocumentUpdateActivity = DateTime.Now;
 
         await context_forms.SaveChangesAsync(cancellationToken);
         res.AddSuccess($"Добавлена строка в таблицу: №п/п {res.Response}");
@@ -221,7 +221,7 @@ public class FormsService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(ValueFieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default)
     {
-        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionDocument(req.SessionId, cancellationToken);
         if (!get_s.Success())
             return get_s;
 
@@ -247,13 +247,13 @@ public class FormsService(
 
         if (values_for_delete.Length > 0)
         {
-            session.LastQuestionnaireUpdateActivity = DateTime.Now;
+            session.LastDocumentUpdateActivity = DateTime.Now;
             using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
             context_forms.RemoveRange(values_for_delete);
             await context_forms.SaveChangesAsync(cancellationToken);
             res.AddSuccess($"Строка №{req.GroupByRowNum} удалена ({values_for_delete.Length} значений ячеек)");
 
-            get_s = await GetSessionQuestionnaire(req.SessionId, cancellationToken);
+            get_s = await GetSessionDocument(req.SessionId, cancellationToken);
             uint i = 0;
             List<ValueDataForSessionOfDocumentModelDB> values_re_sort = [];
             session.DataSessionValues
@@ -1998,9 +1998,9 @@ public class FormsService(
         }
 
         //IQueryable<DocumentShemaModelDB> query =
-        //    (from _quest in context_forms.Questionnaires.Where(x => x.ProjectId == projectId)
-        //     join _page in context_forms.QuestionnairesPages on _quest.Id equals _page.OwnerId
-        //     join _join_form in context_forms.QuestionnairesPagesJoinForms on _page.Id equals _join_form.OwnerId
+        //    (from _quest in context_forms.Documents.Where(x => x.ProjectId == projectId)
+        //     join _page in context_forms.DocumentsPages on _quest.Id equals _page.OwnerId
+        //     join _join_form in context_forms.DocumentsPagesJoinForms on _page.Id equals _join_form.OwnerId
         //     join _form in context_forms.Forms on _join_form.FormId equals _form.Id
         //     where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") || EF.Functions.Like(_quest.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") || EF.Functions.Like(_page.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%")
         //     group _quest by _quest into g
@@ -2627,7 +2627,7 @@ public class FormsService(
     // Пользователи видят ваш документ, но сам документ данные не хранит. Хранение данных происходит в сессиях, которые вы сами выпускаете для любого вашего документа
     #region сессии документов (данные заполнения документов).
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetStatusSessionQuestionnaire(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> SetStatusSessionDocument(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         SessionOfDocumentDataModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken);
@@ -2659,7 +2659,7 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocument(int id_session, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         TResponseModel<SessionOfDocumentDataModelDB> res = new()
@@ -2687,7 +2687,7 @@ public class FormsService(
         string msg;
         if (res.Response is null)
         {
-            msg = $"for {nameof(id_session)} = [{id_session}]. SessionQuestionnaire is null. error 965BED19-5E30-4AA5-8FBD-1B3EFEFC5B1D";
+            msg = $"for {nameof(id_session)} = [{id_session}]. SessionDocument is null. error 965BED19-5E30-4AA5-8FBD-1B3EFEFC5B1D";
             logger.LogError(msg);
             res.AddError(msg);
         }
@@ -2696,7 +2696,7 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> UpdateOrCreateSessionQuestionnaire(SessionOfDocumentDataModelDB session_json, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> UpdateOrCreateSessionDocument(SessionOfDocumentDataModelDB session_json, CancellationToken cancellationToken = default)
     {
         TResponseModel<SessionOfDocumentDataModelDB> res = new();
 
@@ -2734,7 +2734,7 @@ public class FormsService(
         if (session_json.Id < 1)
         {
             session_json.CreatedAt = DateTime.Now;
-            session_json.DeadlineDate = DateTime.Now.AddMinutes(_conf.Value.TimeActualityQuestionnaireSessionMinutes);
+            session_json.DeadlineDate = DateTime.Now.AddMinutes(_conf.Value.TimeActualityDocumentSessionMinutes);
             session_json.SessionToken = Guid.NewGuid().ToString();
             session_json.SessionStatus = SessionsStatusesEnum.InProgress;
 
@@ -2792,14 +2792,14 @@ public class FormsService(
             logger.LogInformation(msg);
             await context_forms.SaveChangesAsync(cancellationToken);
         }
-        TResponseModel<SessionOfDocumentDataModelDB> sr = await GetSessionQuestionnaire(session_json.Id, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> sr = await GetSessionDocument(session_json.Id, cancellationToken);
         if (res.Messages.Count != 0)
             sr.AddRangeMessages(res.Messages);
         return sr;
     }
 
     /// <inheritdoc/>
-    public async Task<ConstructorFormsSessionsPaginationResponseModel> RequestSessionsQuestionnaires(RequestSessionsQuestionnairesRequestPaginationModel req, CancellationToken cancellationToken = default)
+    public async Task<ConstructorFormsSessionsPaginationResponseModel> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
@@ -2842,7 +2842,7 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryDictModel[]>> FindSessionsQuestionnairesByFormFieldName(FormFieldModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<EntryDictModel[]>> FindSessionsDocumentsByFormFieldName(FormFieldModel req, CancellationToken cancellationToken = default)
     {
         TResponseModel<EntryDictModel[]> res = new();
         if (string.IsNullOrWhiteSpace(req.FieldName))
@@ -2855,7 +2855,7 @@ public class FormsService(
                 join _s in context_forms.Sessions on _vs.OwnerId equals _s.Id
                 join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.TabJoinDocumentSchemeId equals _pjf.Id
                 join _qp in context_forms.TabsOfDocumentsSchemes on _pjf.OwnerId equals _qp.Id
-                select new { Value = _vs, Session = _s, QuestionnairePageJoinForm = _pjf, QuestionnairePage = _qp };
+                select new { Value = _vs, Session = _s, DocumentPageJoinForm = _pjf, DocumentPage = _qp };
 
         var data_rows = await q.ToArrayAsync(cancellationToken: cancellationToken);
 
@@ -2882,8 +2882,8 @@ public class FormsService(
                     _d.Add(nameof(element_g.Session.SessionToken), element_g.Session.SessionToken);
                 if (element_g.Session.DeadlineDate is not null)
                     _d.Add(nameof(element_g.Session.DeadlineDate), element_g.Session.DeadlineDate);
-                if (element_g.Session.LastQuestionnaireUpdateActivity is not null)
-                    _d.Add(nameof(element_g.Session.LastQuestionnaireUpdateActivity), element_g.Session.LastQuestionnaireUpdateActivity);
+                if (element_g.Session.LastDocumentUpdateActivity is not null)
+                    _d.Add(nameof(element_g.Session.LastDocumentUpdateActivity), element_g.Session.LastDocumentUpdateActivity);
 
                 return new EntryDictModel()
                 {
@@ -2915,7 +2915,7 @@ public class FormsService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteSessionQuestionnaire(int session_id, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> DeleteSessionDocument(int session_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         SessionOfDocumentDataModelDB? session_db = await context_forms

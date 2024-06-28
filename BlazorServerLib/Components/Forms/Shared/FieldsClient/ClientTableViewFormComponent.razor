@@ -31,9 +31,9 @@ else
         </thead>
         <tbody>
             @{
-                if (InUse == true && SessionQuestionnaire?.QueryCurrentTablePageFormValues(PageJoinForm.Id)?.Any() == true)
+                if (InUse == true && SessionDocument?.QueryCurrentTablePageFormValues(PageJoinForm.Id)?.Any() == true)
                 {
-                    foreach (IGrouping<uint, ValueDataForSessionOfDocumentModelDB> row in SessionQuestionnaire.RowsData(PageJoinForm.Id)!)
+                    foreach (IGrouping<uint, ValueDataForSessionOfDocumentModelDB> row in SessionDocument.RowsData(PageJoinForm.Id)!)
                     {
                         <ClientTableRowViewComponent @key=@(row) RowNum="row.Key" RowData="row.ToArray()" OpenHandle="OpenEditRowAction" DeleteHandle="DeleteRowAction" />
                     }
@@ -60,7 +60,7 @@ else
             {
                 <button @onclick="() => { TableCalculationKit = !TableCalculationKit; }" class="btn btn-link oi oi-calculator" type="button"></button>
             }
-            @if (SessionQuestionnaire is not null)
+            @if (SessionDocument is not null)
             {
                 <button @onclick="AddRowToTable" class="btn btn-outline-primary" type="button">@(string.IsNullOrEmpty(Form.AddRowButtonTitle) ? "Добавить строку" : Form.AddRowButtonTitle)</button>
             }

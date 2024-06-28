@@ -31,7 +31,7 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public SessionOfDocumentDataModelDB SessionQuestionnaire { get; set; } = default!;
+    public SessionOfDocumentDataModelDB SessionDocument { get; set; } = default!;
 
     /// <inheritdoc/>
     protected IQueryable<FieldFormConstructorModelDB>? QueryFieldsOfNumericTypes => PageJoinForm.Form?.QueryFieldsOfNumericTypes(SelectedFieldObject?.FieldName);
@@ -116,9 +116,9 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
         if (SelectedFieldObject is null)
             return;
         if (TableCalculation is null)
-            TableCalculation = new(SelectedFieldObject, PageJoinForm, SessionQuestionnaire);
+            TableCalculation = new(SelectedFieldObject, PageJoinForm, SessionDocument);
         else
-            TableCalculation.Update(SelectedFieldObject, PageJoinForm, SessionQuestionnaire);
+            TableCalculation.Update(SelectedFieldObject, PageJoinForm, SessionDocument);
 
         StateHasChanged();
     }

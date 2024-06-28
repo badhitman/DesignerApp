@@ -13,7 +13,7 @@
 }
 else if (!ParentFormsPage.CanEditProject)
 {
-    <MudTabs @bind-ActivePanelIndex="@QuestionnaireIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+    <MudTabs @bind-ActivePanelIndex="@DocumentIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
         @if (!DocumentScheme.Pages.Any())
         {
             <figure class="text-center mt-3">
@@ -43,7 +43,7 @@ else if (!ParentFormsPage.CanEditProject)
 }
 else
 {
-    <MudDynamicTabs @bind-ActivePanelIndex="@QuestionnaireIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+    <MudDynamicTabs @bind-ActivePanelIndex="@DocumentIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
         @if (!DocumentScheme.Pages.Any())
         {
             <figure class="text-center mt-3">
@@ -66,7 +66,7 @@ else
                              ShowCloseIcon="@(questionnaire_page.Id < 1)"
                              BadgeDot="@(questionnaire_page.Id < 1)">
                     <CascadingValue Value="questionnaire_page">
-                        <TabOfDocumentEditViewComponent AllForms="AllForms" CanUpMove="@(CanUpPage(questionnaire_page))" CanDownMove="@(CanDownPage(questionnaire_page))" SetHoldHandle="SetHoldAction" UpdateQuestionnaireHandle="Update" QuestionnaireReloadHandle="QuestionnaireReloadAction" SetNameForPageHandle="SetNameForPage" SetIdForPageHandle="SetIdForPageAction" />
+                        <TabOfDocumentEditViewComponent AllForms="AllForms" CanUpMove="@(CanUpPage(questionnaire_page))" CanDownMove="@(CanDownPage(questionnaire_page))" SetHoldHandle="SetHoldAction" UpdateDocumentHandle="Update" DocumentReloadHandle="DocumentReloadAction" SetNameForPageHandle="SetNameForPage" SetIdForPageHandle="SetIdForPageAction" />
                     </CascadingValue>
                 </MudTabPanel>
             }

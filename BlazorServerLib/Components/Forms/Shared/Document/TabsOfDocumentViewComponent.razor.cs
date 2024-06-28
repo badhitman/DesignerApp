@@ -63,7 +63,7 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
             }
             if (rest.TabOfDocumentScheme is null)
             {
-                SnackbarRepo.Add($"Ошибка E7427B3A-68CB-4560-B2E0-4AF69F2EDA72 [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                SnackbarRepo.Add($"Ошибка E7427B3A-68CB-4560-B2E0-4AF69F2EDA72 [rest.Content.DocumentPage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
             TabOfDocumentScheme = rest.TabOfDocumentScheme;

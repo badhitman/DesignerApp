@@ -1,11 +1,11 @@
-﻿@page "/questionnaire/session/{QuestionnaireGuid:guid}"
+﻿@page "/questionnaire/session/{DocumentGuid:guid}"
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inherits BlazorBusyComponentBaseModel
 
 <span>Опрос/анкета</span>
 
-@if (IsBusyProgress || SessionQuestionnaire.Id < 1)
+@if (IsBusyProgress || SessionDocument.Id < 1)
 {
     <div class="text-center">
         <div class="spinner-border" role="status">
@@ -16,7 +16,7 @@
 else
 {
     <CascadingValue Value="CurrentUser">
-        <CascadingValue Value="SessionQuestionnaire">
+        <CascadingValue Value="SessionDocument">
             <CascadingValue Value="true">
                 <DocumentClientViewComponent />
             </CascadingValue>

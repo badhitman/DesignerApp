@@ -36,7 +36,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public SessionOfDocumentDataModelDB? SessionQuestionnaire { get; set; }
+    public SessionOfDocumentDataModelDB? SessionDocument { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]
@@ -44,7 +44,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public TabOfDocumentSchemeConstructorModelDB? QuestionnairePage { get; set; }
+    public TabOfDocumentSchemeConstructorModelDB? DocumentPage { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -74,8 +74,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         DialogParameters<ClientTableRowEditDialogComponent> parameters = new()
         {
             { x => x.RowNum, row_num },
-            { x => x.SessionQuestionnaire, SessionQuestionnaire },
-            { x => x.QuestionnairePage, QuestionnairePage },
+            { x => x.SessionDocument, SessionDocument },
+            { x => x.DocumentPage, DocumentPage },
             { x => x.PageJoinForm, PageJoinForm },
             { x => x.ParentFormsPage, ParentFormsPage }
         };
@@ -91,9 +91,9 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected void DeleteRowAction(uint row_num)
     {
-        if (SessionQuestionnaire is null)
+        if (SessionDocument is null)
         {
-            SnackbarRepo.Add("SessionQuestionnaire is null. error 6146B0D1-0BF3-4CA5-BBF5-5EA64ACA709E", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionDocument is null. error 6146B0D1-0BF3-4CA5-BBF5-5EA64ACA709E", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -101,7 +101,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         StateHasChanged();
         _ = InvokeAsync(async () =>
         {
-            ValueFieldSessionDocumentDataBaseModel req = new() { GroupByRowNum = row_num, JoinFormId = PageJoinForm.Id, SessionId = SessionQuestionnaire.Id };
+            ValueFieldSessionDocumentDataBaseModel req = new() { GroupByRowNum = row_num, JoinFormId = PageJoinForm.Id, SessionId = SessionDocument.Id };
             ResponseBaseModel rest = await FormsRepo.DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(req);
             IsBusyProgress = false;
 
@@ -118,16 +118,16 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task AddRowToTable()
     {
-        if (SessionQuestionnaire is null)
+        if (SessionDocument is null)
         {
-            SnackbarRepo.Add("SessionQuestionnaire is null. error DDD591F2-F3DE-4BF1-91DB-B0C4E5D7C93C", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionDocument is null. error DDD591F2-F3DE-4BF1-91DB-B0C4E5D7C93C", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
         FieldSessionDocumentDataBaseModel row_obj = new()
         {
             JoinFormId = PageJoinForm.Id,
-            SessionId = SessionQuestionnaire.Id
+            SessionId = SessionDocument.Id
         };
         IsBusyProgress = true;
         TResponseStrictModel<int> rest = await FormsRepo.AddRowToTable(row_obj);
@@ -143,8 +143,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         DialogParameters<ClientTableRowEditDialogComponent> parameters = new()
         {
             { x => x.RowNum, row_num },
-            { x => x.SessionQuestionnaire, SessionQuestionnaire },
-            { x => x.QuestionnairePage, QuestionnairePage },
+            { x => x.SessionDocument, SessionDocument },
+            { x => x.DocumentPage, DocumentPage },
             { x => x.PageJoinForm, PageJoinForm },
             { x => x.ParentFormsPage, ParentFormsPage }
         };
@@ -154,7 +154,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         {
             GroupByRowNum = row_num,
             JoinFormId = PageJoinForm.Id,
-            SessionId = SessionQuestionnaire.Id,
+            SessionId = SessionDocument.Id,
             IsSelf = true
         };
         _ = await FormsRepo.DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(req);
@@ -163,15 +163,15 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
     async Task ReloadSession()
     {
-        if (SessionQuestionnaire is null)
+        if (SessionDocument is null)
         {
-            SnackbarRepo.Add("SessionQuestionnaire is null. error BCBB2599-4CC1-433A-A5BC-21114935105F", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("SessionDocument is null. error BCBB2599-4CC1-433A-A5BC-21114935105F", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         IsBusyProgress = true;
-        TResponseModel<SessionOfDocumentDataModelDB> rest = string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken)
-        ? await FormsRepo.GetSessionQuestionnaire(SessionQuestionnaire.Id)
-        : await FormsRepo.GetSessionDocumentData(SessionQuestionnaire.SessionToken);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = string.IsNullOrWhiteSpace(SessionDocument.SessionToken)
+        ? await FormsRepo.GetSessionDocument(SessionDocument.Id)
+        : await FormsRepo.GetSessionDocumentData(SessionDocument.SessionToken);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -182,7 +182,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         }
 
         if (rest.Response is not null)
-            SessionQuestionnaire.Reload(rest.Response);
+            SessionDocument.Reload(rest.Response);
 
         _table_kit_ref?.Update();
 

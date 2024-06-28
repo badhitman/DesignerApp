@@ -37,7 +37,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 return null;
 
             _calculation_service ??= (DeclarationAbstraction.GetHandlerService(_md.CommandName) as VirtualColumnCalculationAbstraction);
-            if (_calculation_service is null || SessionQuestionnaire is null || PageJoinForm is null)
+            if (_calculation_service is null || SessionDocument is null || PageJoinForm is null)
                 return null;
 
             Dictionary<string, double> columns = [];
@@ -65,7 +65,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
 
     IQueryable<FieldFormConstructorModelDB>? QueryFieldsOfNumericTypes => PageJoinForm?.Form?.QueryFieldsOfNumericTypes(Field.Name);
     IEnumerable<string> FieldsNames => QueryFieldsOfNumericTypes?.Select(x => x.Name) ?? Enumerable.Empty<string>();
-    IEnumerable<ValueDataForSessionOfDocumentModelDB> CellsValuesOfCurrentRow => SessionQuestionnaire?.RowsData(PageJoinForm!.Id)?.FirstOrDefault(x => x.Key == GroupByRowNum) ?? Enumerable.Empty<ValueDataForSessionOfDocumentModelDB>();
+    IEnumerable<ValueDataForSessionOfDocumentModelDB> CellsValuesOfCurrentRow => SessionDocument?.RowsData(PageJoinForm!.Id)?.FirstOrDefault(x => x.Key == GroupByRowNum) ?? Enumerable.Empty<ValueDataForSessionOfDocumentModelDB>();
 
     string? _stringFieldValue;
     /// <inheritdoc/>
@@ -159,10 +159,10 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     }
 
     /// <inheritdoc/>
-    public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{QuestionnairePage?.Id}-{Field.Id}";
+    public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{DocumentPage?.Id}-{Field.Id}";
 
     /// <inheritdoc/>
-    public string? FieldValue => SessionQuestionnaire?.DataSessionValues?.FirstOrDefault(x => x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.RowNum == GroupByRowNum)?.Value;
+    public string? FieldValue => SessionDocument?.DataSessionValues?.FirstOrDefault(x => x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.RowNum == GroupByRowNum)?.Value;
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -177,8 +177,8 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                 if (_current_agent is not null)
                 {
                     TextFieldValueAgent? _declaration = DeclarationAbstraction.GetHandlerService(_current_agent.Id) as TextFieldValueAgent;
-                    if (_declaration is not null && FieldValue is null && SessionQuestionnaire is not null && QuestionnairePage is not null && PageJoinForm is not null)
-                        StringFieldValue = _declaration.DefaultValueIfNull(Field, SessionQuestionnaire, PageJoinForm.Id);
+                    if (_declaration is not null && FieldValue is null && SessionDocument is not null && DocumentPage is not null && PageJoinForm is not null)
+                        StringFieldValue = _declaration.DefaultValueIfNull(Field, SessionDocument, PageJoinForm.Id);
                     else
                         _stringFieldValue = FieldValue;
                 }

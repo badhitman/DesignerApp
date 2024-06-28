@@ -24,11 +24,11 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
 
     /// <inheritdoc/>
     [Parameter]
-    public SessionOfDocumentDataModelDB SessionQuestionnaire { get; set; } = default!;
+    public SessionOfDocumentDataModelDB SessionDocument { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter]
-    public TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; } = default!;
+    public TabOfDocumentSchemeConstructorModelDB DocumentPage { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]

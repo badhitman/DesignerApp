@@ -38,7 +38,7 @@ public class FieldFormEditFormBaseComponent : ComponentBase, IDomBaseComponent
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public SessionOfDocumentDataModelDB? SessionQuestionnaire { get; set; }
+    public SessionOfDocumentDataModelDB? SessionDocument { get; set; }
 
     /// <summary>
     /// Родительская страница форм
@@ -47,7 +47,7 @@ public class FieldFormEditFormBaseComponent : ComponentBase, IDomBaseComponent
     public required FormsPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
-    public string DomID => $"{SessionQuestionnaire?.Id}_form-{Form.Id}_{Field.GetType().FullName}-{Field.Id}";
+    public string DomID => $"{SessionDocument?.Id}_form-{Form.Id}_{Field.GetType().FullName}-{Field.Id}";
 
     /// <summary>
     /// Placeholder

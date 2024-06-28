@@ -14,7 +14,7 @@
                 <label class="visually-hidden" for="inlineFormSelectPref">Документ/схема</label>
                 <select @bind="SelectedDocumentSchemeId" class="form-select" disabled="@(ParentFormsPage is null)" id="inlineFormSelectPref">
                     <option value="0">Выбор анкеты...</option>
-                    @foreach (DocumentSchemeConstructorModelDB q in QuestionnairesAll)
+                    @foreach (DocumentSchemeConstructorModelDB q in DocumentsAll)
                     {
                         <option value="@q.Id">@q.Name</option>
                     }
@@ -101,9 +101,9 @@
                                     </NavLink>
                                 </div>
                                 <div class="ms-2">
-                                    @if (context.LastQuestionnaireUpdateActivity is not null)
+                                    @if (context.LastDocumentUpdateActivity is not null)
                                     {
-                                        <mark title="дата/время последнего действия по заполнению"> upd: <LastUpdateViewComponent LastUpdateDate="@context.LastQuestionnaireUpdateActivity" /></mark>
+                                        <mark title="дата/время последнего действия по заполнению"> upd: <LastUpdateViewComponent LastUpdateDate="@context.LastDocumentUpdateActivity" /></mark>
                                     }
                                 </div>
                             </div>

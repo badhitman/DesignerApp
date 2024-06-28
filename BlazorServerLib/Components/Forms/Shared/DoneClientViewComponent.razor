@@ -4,10 +4,10 @@
 {
     <span class="invisible">demo mode</span>
 }
-else if (SessionQuestionnaire.SessionStatus >= SessionsStatusesEnum.Sended)
+else if (SessionDocument.SessionStatus >= SessionsStatusesEnum.Sended)
 {
     <div class="alert alert-warning mt-3" role="alert">
-        Форма в статусе [@(SessionQuestionnaire.SessionStatus.DescriptionInfo())]. Последнее обновление: @SessionQuestionnaire.LastQuestionnaireUpdateActivity
+        Форма в статусе [@(SessionDocument.SessionStatus.DescriptionInfo())]. Последнее обновление: @SessionDocument.LastDocumentUpdateActivity
     </div>
 }
 else if (IsBusyProgress)

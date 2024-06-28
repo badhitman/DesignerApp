@@ -42,21 +42,21 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
 
 
     /// <inheritdoc/>
-    protected bool IsEdited => DocumentScheme.SystemName != QuestionnaireSystemNameOrigin || DocumentScheme.Name != QuestionnaireNameOrigin || DocumentScheme.Description != QuestionnaireDescriptionOrigin;
+    protected bool IsEdited => DocumentScheme.SystemName != DocumentSystemNameOrigin || DocumentScheme.Name != DocumentNameOrigin || DocumentScheme.Description != DocumentDescriptionOrigin;
     /// <inheritdoc/>
     protected TabsOfDocumentsSchemesViewComponent? pages_questionnaires_view_ref;
     /// <inheritdoc/>
     protected InputRichTextComponent? _currentTemplateInputRichText;
 
 
-    string QuestionnaireSystemNameOrigin { get; set; } = "";
-    string QuestionnaireNameOrigin { get; set; } = "";
-    string? QuestionnaireDescriptionOrigin { get; set; }
+    string DocumentSystemNameOrigin { get; set; } = "";
+    string DocumentNameOrigin { get; set; } = "";
+    string? DocumentDescriptionOrigin { get; set; }
 
     /// <inheritdoc/>
     protected void Close() => MudDialog.Close(DialogResult.Ok(DocumentScheme));
 
-    async Task ResetQuestionnaireForm()
+    async Task ResetDocumentForm()
     {
         if (DocumentScheme.Id > 0)
         {
@@ -73,22 +73,22 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
             DocumentScheme = rest.Response;
         }
 
-        QuestionnaireSystemNameOrigin = DocumentScheme.SystemName;
-        QuestionnaireNameOrigin = DocumentScheme.Name;
-        QuestionnaireDescriptionOrigin = DocumentScheme.Description;
+        DocumentSystemNameOrigin = DocumentScheme.SystemName;
+        DocumentNameOrigin = DocumentScheme.Name;
+        DocumentDescriptionOrigin = DocumentScheme.Description;
 
         pages_questionnaires_view_ref?.Update(DocumentScheme);
-        _currentTemplateInputRichText?.SetValue(QuestionnaireDescriptionOrigin);
+        _currentTemplateInputRichText?.SetValue(DocumentDescriptionOrigin);
     }
 
     /// <inheritdoc/>
-    protected async Task SaveQuestionnaire()
+    protected async Task SaveDocument()
     {
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.UpdateOrCreateDocumentScheme(new EntryConstructedModel() { Id = DocumentScheme.Id, SystemName = QuestionnaireSystemNameOrigin, Name = QuestionnaireNameOrigin, Description = QuestionnaireDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id });
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.UpdateOrCreateDocumentScheme(new EntryConstructedModel() { Id = DocumentScheme.Id, SystemName = DocumentSystemNameOrigin, Name = DocumentNameOrigin, Description = DocumentDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -110,7 +110,7 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await ResetQuestionnaireForm();
+        await ResetDocumentForm();
         base.OnInitialized();
     }
 }

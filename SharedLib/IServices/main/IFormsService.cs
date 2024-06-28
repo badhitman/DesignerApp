@@ -303,27 +303,27 @@ public interface IFormsService
     /// <summary>
     /// Установить статус сессии (от менеджера)
     /// </summary>
-    public Task<ResponseBaseModel> SetStatusSessionQuestionnaire(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> SetStatusSessionDocument(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить сессию
     /// </summary>
-    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionQuestionnaire(int id_session, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocument(int id_session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить (или создать) сессию опроса/анкеты
     /// </summary>
-    public Task<TResponseModel<SessionOfDocumentDataModelDB>> UpdateOrCreateSessionQuestionnaire(SessionOfDocumentDataModelDB session, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> UpdateOrCreateSessionDocument(SessionOfDocumentDataModelDB session, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Запросить порцию сессий (с пагинацией)
     /// </summary>
-    public Task<ConstructorFormsSessionsPaginationResponseModel> RequestSessionsQuestionnaires(RequestSessionsQuestionnairesRequestPaginationModel req, CancellationToken cancellationToken = default);
+    public Task<ConstructorFormsSessionsPaginationResponseModel> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Найти порцию сессий по имени поля (с пагинацией)
     /// </summary>
-    public Task<TResponseModel<EntryDictModel[]>> FindSessionsQuestionnairesByFormFieldName(FormFieldModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<EntryDictModel[]>> FindSessionsDocumentsByFormFieldName(FormFieldModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить значения (введённые в сессиях) по имени поля
@@ -333,6 +333,6 @@ public interface IFormsService
     /// <summary>
     /// Удалить сессию опроса/анкеты
     /// </summary>
-    public Task<ResponseBaseModel> DeleteSessionQuestionnaire(int session_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteSessionDocument(int session_id, CancellationToken cancellationToken = default);
     #endregion
 }

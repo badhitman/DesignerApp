@@ -39,7 +39,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required SessionOfDocumentDataModelDB SessionQuestionnaire { get; set; }
+    public required SessionOfDocumentDataModelDB SessionDocument { get; set; }
 
     /// <inheritdoc/>
     public string DomID => $"tr-{PageJoinForm.Id}-{RowNum}";
@@ -63,7 +63,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
         if (_md?.Options.Any() != true)
             return null;
 
-        if (DeclarationAbstraction.GetHandlerService(_md.CommandName) is not VirtualColumnCalculationAbstraction _calculate_service || SessionQuestionnaire is null || PageJoinForm is null)
+        if (DeclarationAbstraction.GetHandlerService(_md.CommandName) is not VirtualColumnCalculationAbstraction _calculate_service || SessionDocument is null || PageJoinForm is null)
             return null;
 
         Dictionary<string, double> columns = [];
@@ -82,7 +82,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
         if (_fbl is FieldFormConstructorModelDB _fb && _fb.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble)
             return (MarkupString)(CalculateFieldValue(_fb) ?? "&nbsp;");
 
-        ValueDataForSessionOfDocumentModelDB? _sv = SessionQuestionnaire
+        ValueDataForSessionOfDocumentModelDB? _sv = SessionDocument
         .DataSessionValues?
         .FirstOrDefault(x => x.TabJoinDocumentSchemeId == PageJoinForm.Id && x.RowNum == RowNum && x.Name.Equals(_fbl.Name, StringComparison.OrdinalIgnoreCase));
 
@@ -91,7 +91,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
 
     IQueryable<FieldFormConstructorModelDB>? Query(string field_name) => PageJoinForm.Form!.QueryFieldsOfNumericTypes(field_name);
     IEnumerable<string> FieldsNames(string field_name) => Query(field_name)?.Select(x => x.Name) ?? Enumerable.Empty<string>();
-    IEnumerable<ValueDataForSessionOfDocumentModelDB> CellsValuesOfCurrentRow => SessionQuestionnaire?.RowsData(PageJoinForm.Id)?.FirstOrDefault(x => x.Key == RowNum) ?? Enumerable.Empty<ValueDataForSessionOfDocumentModelDB>();
+    IEnumerable<ValueDataForSessionOfDocumentModelDB> CellsValuesOfCurrentRow => SessionDocument?.RowsData(PageJoinForm.Id)?.FirstOrDefault(x => x.Key == RowNum) ?? Enumerable.Empty<ValueDataForSessionOfDocumentModelDB>();
 
     string CellId(ConstructorFieldFormBaseLowModel fb) => $"cell-{fb.Id}:{DomID}";
 

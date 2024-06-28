@@ -33,8 +33,8 @@ else
                     <form class="row gy-2 gx-3 align-items-center">
                         <div class="col-auto">
                             <div class="form-check mt-2">
-                                <input @bind="SetTitleForm" disabled="@(IsDisabled || !ParentFormsPage.CanEditProject)" class="form-check-input" type="checkbox" id="@($"setFormTitleCheck_{QuestionnairePage.Id}")">
-                                <label class="form-check-label" for="@($"setFormTitleCheck_{QuestionnairePage.Id}")">
+                                <input @bind="SetTitleForm" disabled="@(IsDisabled || !ParentFormsPage.CanEditProject)" class="form-check-input" type="checkbox" id="@($"setFormTitleCheck_{DocumentPage.Id}")">
+                                <label class="form-check-label" for="@($"setFormTitleCheck_{DocumentPage.Id}")">
                                     Отображать заголовок
                                 </label>
                             </div>
@@ -42,13 +42,13 @@ else
                         @if (SetTitleForm)
                         {
                             <div class="col-auto">
-                                <label class="visually-hidden" for="@($"autoSizingInput_{QuestionnairePage.Id}")">Name</label>
-                                <input @bind-value="PageJoinFormName" @bind-value:event="oninput" type="text" class="form-control" id="@($"autoSizingInput_{QuestionnairePage.Id}")" placeholder="Отображаемое имя" aria-describedby="@($"nameFormHelpInline_{QuestionnairePage.Id}")" readonly="@(!ParentFormsPage.CanEditProject)">
+                                <label class="visually-hidden" for="@($"autoSizingInput_{DocumentPage.Id}")">Name</label>
+                                <input @bind-value="PageJoinFormName" @bind-value:event="oninput" type="text" class="form-control" id="@($"autoSizingInput_{DocumentPage.Id}")" placeholder="Отображаемое имя" aria-describedby="@($"nameFormHelpInline_{DocumentPage.Id}")" readonly="@(!ParentFormsPage.CanEditProject)">
                             </div>
                             @if (string.IsNullOrWhiteSpace(PageJoinFormName))
                             {
                                 <div class="col-auto">
-                                    <span title="@PageJoinForm.Form.Name" id="@($"nameFormHelpInline_{QuestionnairePage.Id}")" class="form-text">
+                                    <span title="@PageJoinForm.Form.Name" id="@($"nameFormHelpInline_{DocumentPage.Id}")" class="form-text">
                                         по умолчанию (имя формы)
                                     </span>
                                 </div>
@@ -58,8 +58,8 @@ else
                             <div class="hstack">
                                 <div>
                                     <div class="form-check mt-2">
-                                        <input @bind="IsTable" disabled="@(IsDisabled || !ParentFormsPage.CanEditProject)" class="form-check-input" type="checkbox" id="@($"setFormAsTable_{QuestionnairePage.Id}")">
-                                        <label class="form-check-label" for="@($"setFormAsTable_{QuestionnairePage.Id}")">
+                                        <input @bind="IsTable" disabled="@(IsDisabled || !ParentFormsPage.CanEditProject)" class="form-check-input" type="checkbox" id="@($"setFormAsTable_{DocumentPage.Id}")">
+                                        <label class="form-check-label" for="@($"setFormAsTable_{DocumentPage.Id}")">
                                             Таблица
                                         </label>
                                     </div>
@@ -81,8 +81,8 @@ else
                         <MudSpacer />
                         <div>
                             <MudIconButton OnClick="DeleteJoinForm" Disabled="@(IsEdited || IsDisabled)" Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" Size="Size.Small" />
-                            <MudIconButton OnClick="async () => { await QuestionnairePageJoinFormMove( VerticalDirectionsEnum.Down); }" Disabled="@(IsEdited || IsDisabled || !CanDown)" Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Primary" Size="Size.Small" />
-                            <MudIconButton OnClick="async () => { await QuestionnairePageJoinFormMove( VerticalDirectionsEnum.Up); }" Disabled="@(IsEdited || IsDisabled || !CanUp)" Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Primary" Size="Size.Small" />
+                            <MudIconButton OnClick="async () => { await DocumentPageJoinFormMove( VerticalDirectionsEnum.Down); }" Disabled="@(IsEdited || IsDisabled || !CanDown)" Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Primary" Size="Size.Small" />
+                            <MudIconButton OnClick="async () => { await DocumentPageJoinFormMove( VerticalDirectionsEnum.Up); }" Disabled="@(IsEdited || IsDisabled || !CanUp)" Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Primary" Size="Size.Small" />
                         </div>
                     }
                 </div>

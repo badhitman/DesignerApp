@@ -43,10 +43,10 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
         }
     }
 
-    string? FieldValue => SessionQuestionnaire?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.RowNum == GroupByRowNum)?.Value;
+    string? FieldValue => SessionDocument?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.RowNum == GroupByRowNum)?.Value;
 
     /// <inheritdoc/>
-    public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{QuestionnairePage?.Id}-{Field.Id}";
+    public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{DocumentPage?.Id}-{Field.Id}";
     EntryModel? detect_value = null;
 
     /// <inheritdoc/>

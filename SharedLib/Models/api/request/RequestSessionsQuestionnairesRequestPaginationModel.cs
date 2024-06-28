@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Запрос сессий (с пагинацией)
 /// </summary>
-public class RequestSessionsQuestionnairesRequestPaginationModel : SimplePaginationRequestModel
+public class RequestSessionsDocumentsRequestPaginationModel : SimplePaginationRequestModel
 {
     /// <summary>
     /// Фильтр по схеме документа

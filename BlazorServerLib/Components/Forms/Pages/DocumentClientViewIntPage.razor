@@ -1,4 +1,4 @@
-﻿@page "/questionnaire/session/protected/{QuestionnaireId:int}"
+﻿@page "/questionnaire/session/protected/{DocumentId:int}"
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inherits BlazorBusyComponentBaseModel
@@ -18,7 +18,7 @@
 else
 {
     <CascadingValue Value="CurrentUser">
-        <CascadingValue Value="SessionQuestionnaire">
+        <CascadingValue Value="SessionDocument">
             <CascadingValue Value="true">
                 <DocumentClientViewComponent />
             </CascadingValue>

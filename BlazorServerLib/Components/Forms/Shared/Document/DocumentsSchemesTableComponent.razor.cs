@@ -11,7 +11,7 @@ using SharedLib;
 namespace BlazorWebLib.Components.Forms.Shared.Document;
 
 /// <summary>
-/// Questionnaires view
+/// Documents view
 /// </summary>
 public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseModel
 {
@@ -46,7 +46,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
 
     /// <inheritdoc/>
-    protected async Task DeleteQuestionnaire(int questionnaire_id)
+    protected async Task DeleteDocument(int questionnaire_id)
     {
         IsBusyProgress = true;
         ResponseBaseModel rest = await FormsRepo.DeleteDocumentScheme(questionnaire_id);
@@ -78,7 +78,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
 
         if (data.DocumentsSchemes is null)
         {
-            SnackbarRepo.Add($"rest.Content.Questionnaires is null. error 62D3109B-7349-48E8-932B-762D5B0EA585", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.Documents is null. error 62D3109B-7349-48E8-932B-762D5B0EA585", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.DocumentsSchemes };
         }
 
@@ -86,7 +86,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
     }
 
     /// <inheritdoc/>
-    protected async Task QuestionnaireOpenDialog(DocumentSchemeConstructorModelDB? questionnaire = null)
+    protected async Task DocumentOpenDialog(DocumentSchemeConstructorModelDB? questionnaire = null)
     {
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");

@@ -26,7 +26,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// DocumentScheme page
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; }
+    public required TabOfDocumentSchemeConstructorModelDB DocumentPage { get; set; }
 
     /// <summary>
     /// All forms
@@ -62,7 +62,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// DocumentScheme reload - handle action
     /// </summary>
     [Parameter, EditorRequired]
-    public Action QuestionnaireReloadHandle { get; set; } = default!;
+    public Action DocumentReloadHandle { get; set; } = default!;
 
     /// <summary>
     /// Set hold handle - action
@@ -74,7 +74,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// Update questionnaire - handle action
     /// </summary>
     [Parameter, EditorRequired]
-    public Action<DocumentSchemeConstructorModelDB, TabOfDocumentSchemeConstructorModelDB?> UpdateQuestionnaireHandle { get; set; } = default!;
+    public Action<DocumentSchemeConstructorModelDB, TabOfDocumentSchemeConstructorModelDB?> UpdateDocumentHandle { get; set; } = default!;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -109,11 +109,11 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     protected string? Name
     {
-        get => QuestionnairePage.Name;
+        get => DocumentPage.Name;
         set
         {
-            QuestionnairePage.Name = value ?? "";
-            SetNameForPageHandle(QuestionnairePage.Id, value);
+            DocumentPage.Name = value ?? "";
+            SetNameForPageHandle(DocumentPage.Id, value);
             SetHoldHandle(IsEdited);
         }
     }
@@ -126,7 +126,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
         get => DescriptionOrigin;
         set
         {
-            QuestionnairePage.Description = value;
+            DocumentPage.Description = value;
             SetHoldHandle(IsEdited);
         }
     }
@@ -141,8 +141,8 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// <summary>
     /// Can`t save?
     /// </summary>
-    protected bool CantSave => string.IsNullOrWhiteSpace(QuestionnairePage.Name) || (QuestionnairePage.Id > 0 && QuestionnairePage.Name == NameOrigin && QuestionnairePage.Description == DescriptionOrigin && QuestionnairePage.Description == DescriptionOrigin);
-    bool IsEdited => QuestionnairePage.Name != NameOrigin || QuestionnairePage.Description != DescriptionOrigin;
+    protected bool CantSave => string.IsNullOrWhiteSpace(DocumentPage.Name) || (DocumentPage.Id > 0 && DocumentPage.Name == NameOrigin && DocumentPage.Description == DescriptionOrigin && DocumentPage.Description == DescriptionOrigin);
+    bool IsEdited => DocumentPage.Name != NameOrigin || DocumentPage.Description != DescriptionOrigin;
 
     /// <summary>
     /// Перемещение страницы опроса/анкеты (сортировка страниц внутри опроса/анкеты)
@@ -153,7 +153,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             throw new Exception("CurrentUser is null");
 
         IsBusyProgress = true;
-        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.MoveTabOfDocumentScheme(QuestionnairePage.Id, direct);
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.MoveTabOfDocumentScheme(DocumentPage.Id, direct);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -169,7 +169,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             return;
         }
 
-        UpdateQuestionnaireHandle(rest.Response, QuestionnairePage);
+        UpdateDocumentHandle(rest.Response, DocumentPage);
     }
 
     /// <summary>
@@ -186,7 +186,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             return;
         }
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteTabOfDocumentScheme(QuestionnairePage.Id);
+        ResponseBaseModel rest = await FormsRepo.DeleteTabOfDocumentScheme(DocumentPage.Id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -196,7 +196,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             ParentFormsPage.StateHasChangedCall();
             return;
         }
-        QuestionnaireReloadHandle();
+        DocumentReloadHandle();
     }
 
     /// <summary>
@@ -205,8 +205,8 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     protected void CancelEditing()
     {
         IsInitDelete = false;
-        QuestionnairePage.Name = NameOrigin ?? "";
-        QuestionnairePage.Description = DescriptionOrigin;
+        DocumentPage.Name = NameOrigin ?? "";
+        DocumentPage.Description = DescriptionOrigin;
         SetHoldHandle(IsEdited);
     }
 
@@ -230,7 +230,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
         ResponseBaseModel rest = await FormsRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new TabJoinDocumentSchemeConstructorModelDB()
         {
             FormId = SelectedFormForAdding,
-            OwnerId = QuestionnairePage.Id,
+            OwnerId = DocumentPage.Id,
             Name = addingFormToTabPageName,
         });
         IsBusyProgress = false;
@@ -256,7 +256,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             throw new Exception("CurrentUser is null");
 
         IsBusyProgress = true;
-        TabOfDocumentSchemeResponseModel rest = await FormsRepo.CreateOrUpdateTabOfDocumentScheme(new EntryDescriptionOwnedModel() { Id = QuestionnairePage.Id, OwnerId = QuestionnairePage.OwnerId, Name = QuestionnairePage.Name, Description = QuestionnairePage.Description });
+        TabOfDocumentSchemeResponseModel rest = await FormsRepo.CreateOrUpdateTabOfDocumentScheme(new EntryDescriptionOwnedModel() { Id = DocumentPage.Id, OwnerId = DocumentPage.OwnerId, Name = DocumentPage.Name, Description = DocumentPage.Description });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -268,11 +268,11 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
         }
         if (rest.TabOfDocumentScheme is null)
         {
-            SnackbarRepo.Add($"Ошибка 07653445-0B30-46CB-9B79-3B068BAB9AEB rest.Content.QuestionnairePage is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 07653445-0B30-46CB-9B79-3B068BAB9AEB rest.Content.DocumentPage is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
-        int i = QuestionnairePage.Id;
-        QuestionnairePage.Id = rest.TabOfDocumentScheme.Id;
+        int i = DocumentPage.Id;
+        DocumentPage.Id = rest.TabOfDocumentScheme.Id;
         SetIdForPageHandle(i, rest.TabOfDocumentScheme);
 
         DescriptionOrigin = Description;
@@ -284,11 +284,11 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
 
     async Task ReloadPage()
     {
-        if (QuestionnairePage.Id < 1)
+        if (DocumentPage.Id < 1)
             return;
 
         IsBusyProgress = true;
-        TabOfDocumentSchemeResponseModel rest = await FormsRepo.GetTabOfDocumentScheme(QuestionnairePage.Id);
+        TabOfDocumentSchemeResponseModel rest = await FormsRepo.GetTabOfDocumentScheme(DocumentPage.Id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -299,13 +299,13 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
         }
         if (rest.TabOfDocumentScheme is null)
         {
-            SnackbarRepo.Add($"Ошибка 5B879025-EC6E-4989-9A75-5844BD20DF0B Content [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Ошибка 5B879025-EC6E-4989-9A75-5844BD20DF0B Content [rest.Content.DocumentPage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        QuestionnairePage.JoinsForms = rest.TabOfDocumentScheme?.JoinsForms;
-        QuestionnairePage.Owner = rest.TabOfDocumentScheme?.Owner;
-        SetIdForPageHandle(QuestionnairePage.Id, QuestionnairePage);
+        DocumentPage.JoinsForms = rest.TabOfDocumentScheme?.JoinsForms;
+        DocumentPage.Owner = rest.TabOfDocumentScheme?.Owner;
+        SetIdForPageHandle(DocumentPage.Id, DocumentPage);
         StateHasChanged();
     }
 
@@ -313,7 +313,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     protected override async Task OnInitializedAsync()
     {
         await ReloadPage();
-        NameOrigin = QuestionnairePage.Name;
-        DescriptionOrigin = QuestionnairePage.Description;
+        NameOrigin = DocumentPage.Name;
+        DescriptionOrigin = DocumentPage.Description;
     }
 }

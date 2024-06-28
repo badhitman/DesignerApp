@@ -105,7 +105,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
             Description = Session.Description,
             Editors = Session.Editors,
             EmailsNotifications = Session.EmailsNotifications,
-            LastQuestionnaireUpdateActivity = Session.LastQuestionnaireUpdateActivity,
+            LastDocumentUpdateActivity = Session.LastDocumentUpdateActivity,
             Name = Session.Name,
             OwnerId = Session.OwnerId,
             SessionStatus = Session.SessionStatus,
@@ -121,7 +121,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
     async Task SaveForm()
     {
         IsBusyProgress = true;
-        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(session_origin);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.UpdateOrCreateSessionDocument(session_origin);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())

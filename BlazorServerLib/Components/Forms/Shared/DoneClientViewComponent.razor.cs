@@ -24,7 +24,7 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public required SessionOfDocumentDataModelDB SessionQuestionnaire { get; set; }
+    public required SessionOfDocumentDataModelDB SessionDocument { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]
@@ -35,9 +35,9 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task SetAsDone()
     {
-        if (string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken))
+        if (string.IsNullOrWhiteSpace(SessionDocument.SessionToken))
         {
-            SnackbarRepo.Add("string.IsNullOrWhiteSpace(SessionQuestionnaire.SessionToken). error 5E2D7979-53E7-4130-8DF2-53C00D378BEA", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add("string.IsNullOrWhiteSpace(SessionDocument.SessionToken). error 5E2D7979-53E7-4130-8DF2-53C00D378BEA", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -48,11 +48,11 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.SetDoneSessionDocumentData(SessionQuestionnaire.SessionToken);
+        ResponseBaseModel rest = await FormsRepo.SetDoneSessionDocumentData(SessionDocument.SessionToken);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
-            SessionQuestionnaire.SessionStatus = SessionsStatusesEnum.Sended;
+            SessionDocument.SessionStatus = SessionsStatusesEnum.Sended;
     }
 }

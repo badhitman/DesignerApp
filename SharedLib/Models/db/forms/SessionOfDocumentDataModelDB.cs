@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// Сессия опроса/анкеты
 /// </summary>
-[Index(nameof(AuthorUser)), Index(nameof(SessionToken)), Index(nameof(SessionStatus)), Index(nameof(CreatedAt)), Index(nameof(LastQuestionnaireUpdateActivity)), Index(nameof(DeadlineDate))]
+[Index(nameof(AuthorUser)), Index(nameof(SessionToken)), Index(nameof(SessionStatus)), Index(nameof(CreatedAt)), Index(nameof(LastDocumentUpdateActivity)), Index(nameof(DeadlineDate))]
 public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
 {
     /// <summary>
@@ -60,7 +60,7 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Последнее обновление данных опроса/анкеты (последняя активность по вводу значений)
     /// </summary>
-    public DateTime? LastQuestionnaireUpdateActivity { get; set; }
+    public DateTime? LastDocumentUpdateActivity { get; set; }
 
     /// <summary>
     /// Первой вкладкой будет специальная для отображения описания.
@@ -119,7 +119,7 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
         DeadlineDate = other.DeadlineDate;
         ShowDescriptionAsStartPage = other.ShowDescriptionAsStartPage;
 
-        LastQuestionnaireUpdateActivity = other.LastQuestionnaireUpdateActivity;
+        LastDocumentUpdateActivity = other.LastDocumentUpdateActivity;
         CreatedAt = other.CreatedAt;
         SessionStatus = other.SessionStatus;
         SessionToken = other.SessionToken;

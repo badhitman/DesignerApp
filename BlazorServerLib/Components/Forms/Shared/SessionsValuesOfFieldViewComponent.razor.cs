@@ -44,7 +44,7 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
     public async Task FindFields()
     {
         IsBusyProgress = true;
-        TResponseModel<EntryDictModel[]> rest = await FormsRepo.FindSessionsQuestionnairesByFormFieldName(new() { FormId = Form.Id, FieldName = FieldName });
+        TResponseModel<EntryDictModel[]> rest = await FormsRepo.FindSessionsDocumentsByFormFieldName(new() { FormId = Form.Id, FieldName = FieldName });
         IsBusyProgress = false;
         
         if (!rest.Success())

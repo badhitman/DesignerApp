@@ -101,7 +101,7 @@
                                     int? _count = _d?[nameof(Enumerable.Count)] as int?;
                                     DateTime? _created_at = _d?[nameof(SessionOfDocumentDataModelDB.CreatedAt)] as DateTime?;
                                     DateTime? _deadline_date = _d?.GetValueOrDefault(nameof(SessionOfDocumentDataModelDB.DeadlineDate)) as DateTime?;
-                                    DateTime? _last_questionnaire_update_activity = _d?.GetValueOrDefault(nameof(SessionOfDocumentDataModelDB.LastQuestionnaireUpdateActivity)) as DateTime?;
+                                    DateTime? _last_questionnaire_update_activity = _d?.GetValueOrDefault(nameof(SessionOfDocumentDataModelDB.LastDocumentUpdateActivity)) as DateTime?;
                                     string? _emails_notifications = _d?[nameof(SessionOfDocumentDataModelDB.EmailsNotifications)].ToString();
                                     SessionsStatusesEnum? _mark_as_done = _d?[nameof(SessionOfDocumentDataModelDB.SessionStatus)] as SessionsStatusesEnum?;
 

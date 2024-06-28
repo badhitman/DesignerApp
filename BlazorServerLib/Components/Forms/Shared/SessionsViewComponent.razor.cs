@@ -37,7 +37,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     public required UserInfoModel CurrentUser { get; set; }
 
 
-    IEnumerable<DocumentSchemeConstructorModelDB> QuestionnairesAll = [];
+    IEnumerable<DocumentSchemeConstructorModelDB> DocumentsAll = [];
 
     int _selectedDocumentSchemeId;
     int SelectedDocumentSchemeId
@@ -77,7 +77,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не установлен основной проект");
 
-        RequestSessionsQuestionnairesRequestPaginationModel req = new()
+        RequestSessionsDocumentsRequestPaginationModel req = new()
         {
             PageNum = state.Page,
             PageSize = state.PageSize,
@@ -87,7 +87,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             ProjectId = ParentFormsPage.MainProject.Id
         };
         IsBusyProgress = true;
-        ConstructorFormsSessionsPaginationResponseModel rest = await FormsRepo.RequestSessionsQuestionnaires(req);
+        ConstructorFormsSessionsPaginationResponseModel rest = await FormsRepo.RequestSessionsDocuments(req);
         IsBusyProgress = false;
 
         if (rest.Sessions is null)
@@ -106,7 +106,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     protected async Task EditSession(SessionOfDocumentDataModelDB session)
     {
         IsBusyProgress = true;
-        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionQuestionnaire(session.Id);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionDocument(session.Id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -131,7 +131,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     protected async Task DeleteSession(int session_id)
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteSessionQuestionnaire(session_id);
+        ResponseBaseModel rest = await FormsRepo.DeleteSessionDocument(session_id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -182,7 +182,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             ProjectId = ParentFormsPage.MainProject.Id
         };
         IsBusyProgress = true;
-        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.UpdateOrCreateSessionQuestionnaire(req);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.UpdateOrCreateSessionDocument(req);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -191,7 +191,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
         if (rest.Response is null)
         {
-            SnackbarRepo.Add($"rest.Content.SessionQuestionnaire is null. error 9B2E03C0-0434-4F1A-B4E9-7020575DBDDF", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.SessionDocument is null. error 9B2E03C0-0434-4F1A-B4E9-7020575DBDDF", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
@@ -218,11 +218,11 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 
         if (rest.DocumentsSchemes is null)
         {
-            SnackbarRepo.Add($"rest.Content.Questionnaires is null. error 0A875193-08AA-4678-824D-213BCE33080F", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"rest.Content.Documents is null. error 0A875193-08AA-4678-824D-213BCE33080F", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        QuestionnairesAll = rest.DocumentsSchemes;
+        DocumentsAll = rest.DocumentsSchemes;
     }
 
     /// <inheritdoc/>

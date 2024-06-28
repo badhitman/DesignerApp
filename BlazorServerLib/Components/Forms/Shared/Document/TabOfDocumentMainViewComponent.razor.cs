@@ -32,7 +32,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public required TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; }
+    public required TabOfDocumentSchemeConstructorModelDB DocumentPage { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -127,7 +127,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     bool IsEdited => _join_name_origin != PageJoinFormName || SetTitleForm != _join_set_title_origin || IsTable != _is_table_origin;
 
     /// <inheritdoc/>
-    protected async Task QuestionnairePageJoinFormMove(VerticalDirectionsEnum direct)
+    protected async Task DocumentPageJoinFormMove(VerticalDirectionsEnum direct)
     {
         if (CurrentUser is null)
             throw new Exception("CurrentUser is null");

@@ -10,7 +10,7 @@ namespace SharedLib;
 public class ServerConstructorConfigModel : ServerConfigModel
 {
     /// <summary>
-    /// Срок жизни создаваемой сессии опроса/анкеты (в минутах)
+    /// Срок жизни создаваемой сессии документа (в минутах)
     /// </summary>
-    public int TimeActualityQuestionnaireSessionMinutes { get; set; }
+    public int TimeActualityDocumentSessionMinutes { get; set; }
 }

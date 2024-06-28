@@ -17,10 +17,10 @@
             {
                 <button @onclick="CancelEditing" class="btn btn-outline-secondary" type="button">Отмена</button>
             }
-            @if (QuestionnairePage.Id > 0)
+            @if (DocumentPage.Id > 0)
             {
                 <button @onclick="Delete" class="btn btn@(IsInitDelete ? "" : "-outline")-danger" type="button">@(IsInitDelete ? "Подтвердить удаление" : "Удалить")</button>
-                @if (QuestionnairePage.Owner?.Pages!.Any(x => x.Id < 1) == true)
+                @if (DocumentPage.Owner?.Pages!.Any(x => x.Id < 1) == true)
                 {
                     <figure class="text-center">
                         <blockquote class="blockquote">
@@ -45,10 +45,10 @@
             }
         </div>
     </TabComponent>
-    <TabComponent IsDisabled="@(QuestionnairePage.Id < 1)" Tooltip="Формы на странице" Title="Формы">
+    <TabComponent IsDisabled="@(DocumentPage.Id < 1)" Tooltip="Формы на странице" Title="Формы">
         <div class="input-group mb-3">
             <label class="input-group-text" for="inputGroupSelect01">Добавление формы</label>
-            <select @bind="SelectedFormForAdding" disabled="@(QuestionnairePage.Id < 1)" class="form-select" id="inputGroupSelect01">
+            <select @bind="SelectedFormForAdding" disabled="@(DocumentPage.Id < 1)" class="form-select" id="inputGroupSelect01">
                 <option disabled="@(SelectedFormForAdding > 0)" value="0">Выбор формы...</option>
                 @foreach (ConstructorFormBaseModel f in AllForms)
                 {

@@ -40,13 +40,13 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// Документ/сессия
     /// </summary>
     [CascadingParameter]
-    public SessionOfDocumentDataModelDB? SessionQuestionnaire { get; set; }
+    public SessionOfDocumentDataModelDB? SessionDocument { get; set; }
 
     /// <summary>
     /// Страница/Таб документа
     /// </summary>
     [CascadingParameter]
-    public TabOfDocumentSchemeConstructorModelDB? QuestionnairePage { get; set; }
+    public TabOfDocumentSchemeConstructorModelDB? DocumentPage { get; set; }
 
     /// <summary>
     /// Связь формы со страницей опроса/анкеты. В режиме DEMO тут NULL
@@ -75,7 +75,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// <summary>
     /// Признак того, что поле находится в состоянии реального использования, а не в конструкторе или режим demo
     /// </summary>
-    public bool InUse => PageJoinForm is not null && SessionQuestionnaire is not null;
+    public bool InUse => PageJoinForm is not null && SessionDocument is not null;
 
     /// <inheritdoc/>
     public abstract string DomID { get; }
@@ -85,8 +85,8 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// </summary>
     /// <param name="valAsString">Значение поля</param>
     /// <param name="fieldName">Имя поля</param>
-    /// <exception cref="InvalidOperationException">В процессе установки значения не был возвращён объект сессии/документа, который необходим для обновления состояния <see cref="SessionQuestionnaire" />.</exception>
-    /// <exception cref="NullReferenceException">Ошибка в случае если отсутствует <cref cref="PageJoinForm">связь</cref> (например: в режиме 'demo'). Полноценно инициированное поле формы должно так же иметь объект сессии <see cref="SessionQuestionnaire" />.</exception>
+    /// <exception cref="InvalidOperationException">В процессе установки значения не был возвращён объект сессии/документа, который необходим для обновления состояния <see cref="SessionDocument" />.</exception>
+    /// <exception cref="NullReferenceException">Ошибка в случае если отсутствует <cref cref="PageJoinForm">связь</cref> (например: в режиме 'demo'). Полноценно инициированное поле формы должно так же иметь объект сессии <see cref="SessionDocument" />.</exception>
     public async Task SetValue(string? valAsString, string fieldName)
     {
         if (!InUse)
@@ -98,7 +98,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
             GroupByRowNum = GroupByRowNum,
             JoinFormId = PageJoinForm!.Id,
             NameField = fieldName,
-            SessionId = SessionQuestionnaire!.Id
+            SessionId = SessionDocument!.Id
         };
         IsBusyProgress = true;
         TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.SetValueFieldSessionDocumentData(req);
@@ -108,12 +108,12 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
             SnackbarRepo.Add($"Ошибка B449F13A-7316-4BBB-96F0-DD2A7E6D6699: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
         if (rest.Response is null)
-            throw new InvalidOperationException($"Данные сессии 'SessionQuestionnaire': IsNull");
+            throw new InvalidOperationException($"Данные сессии 'SessionDocument': IsNull");
 
         if (!rest.Success())
             return;
 
-        SessionQuestionnaire.Reload(rest.Response);
+        SessionDocument.Reload(rest.Response);
 
         FieldsReferring?
             .Where(x => x?.DomID.Equals(DomID, StringComparison.Ordinal) != true)

@@ -9,7 +9,7 @@ using SharedLib;
 namespace BlazorWebLib.Components.Forms.Pages;
 
 /// <inheritdoc/>
-public partial class QuestionnaireClientViewIntPage : BlazorBusyComponentBaseModel
+public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseModel
 {
     [Inject]
     IFormsService FormsRepo { get; set; } = default!;
@@ -20,14 +20,14 @@ public partial class QuestionnaireClientViewIntPage : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public int QuestionnaireId { get; set; }
+    public int DocumentId { get; set; }
 
 
 
     /// <inheritdoc/>
     public UserInfoModel? CurrentUser { get; private set; }
 
-    SessionOfDocumentDataModelDB SessionQuestionnaire = default!;
+    SessionOfDocumentDataModelDB SessionDocument = default!;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -36,15 +36,15 @@ public partial class QuestionnaireClientViewIntPage : BlazorBusyComponentBaseMod
         TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
         CurrentUser = currentUser.Response;
 
-        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionQuestionnaire(QuestionnaireId);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await FormsRepo.GetSessionDocument(DocumentId);
         
         IsBusyProgress = false;
 
         if (rest.Response is null)
-            throw new Exception("rest.Content.SessionQuestionnaire is null. error 09DFC142-55DA-4616-AA14-EA1B810E9A7E");
+            throw new Exception("rest.Content.SessionDocument is null. error 09DFC142-55DA-4616-AA14-EA1B810E9A7E");
 
-        SessionQuestionnaire = rest.Response;
-        if (SessionQuestionnaire.DataSessionValues is not null && SessionQuestionnaire.DataSessionValues.Count != 0)
-            SessionQuestionnaire.DataSessionValues.ForEach(x => { x.Owner ??= SessionQuestionnaire; x.OwnerId = SessionQuestionnaire.Id; });
+        SessionDocument = rest.Response;
+        if (SessionDocument.DataSessionValues is not null && SessionDocument.DataSessionValues.Count != 0)
+            SessionDocument.DataSessionValues.ForEach(x => { x.Owner ??= SessionDocument; x.OwnerId = SessionDocument.Id; });
     }
 }
