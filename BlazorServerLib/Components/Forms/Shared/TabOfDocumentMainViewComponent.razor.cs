@@ -14,10 +14,10 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// <summary>
 /// Page questionnaire form main view
 /// </summary>
-public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponentBaseModel
+public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ILogger<PageQuestionnaireFormMainViewComponent> LoggerRepo { get; set; } = default!;
+    ILogger<TabOfDocumentMainViewComponent> LoggerRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;

@@ -8,7 +8,7 @@
         </div>
     </div>
 }
-else if (QuestionnairePage.Id < 1)
+else if (TabOfDocumentScheme.Id < 1)
 {
     <figure class="text-center mt-3">
         <blockquote class="blockquote">
@@ -19,7 +19,7 @@ else if (QuestionnairePage.Id < 1)
         </figcaption>
     </figure>
 }
-else if (QuestionnairePage.JoinsForms is null)
+else if (TabOfDocumentScheme.JoinsForms is null)
 {
     <figure class="text-center">
         <blockquote class="blockquote">
@@ -34,7 +34,7 @@ else
 {
     <div class="card">
         <div class="card-body">
-            @if (!QuestionnairePage.JoinsForms.Any())
+            @if (!TabOfDocumentScheme.JoinsForms.Any())
             {
                 <figure class="text-center">
                     <blockquote class="blockquote">
@@ -47,11 +47,11 @@ else
             }
             else
             {
-                foreach (TabJoinDocumentSchemeConstructorModelDB pjf in QuestionnairePage.JoinsForms.OrderBy(x => x.SortIndex))
+                foreach (TabJoinDocumentSchemeConstructorModelDB pjf in TabOfDocumentScheme.JoinsForms.OrderBy(x => x.SortIndex))
                 {
-                    pjf.Owner ??= QuestionnairePage;
+                    pjf.Owner ??= TabOfDocumentScheme;
                     <CascadingValue Value="pjf">
-                        <PageQuestionnaireFormMainViewComponent @key="@($"page-{QuestionnairePage.Id}_jform-{pjf.Id}")" UpdatePageActionHandle="UpdatePageAction" CurrentFormJoinEdit="_join_form_id" CanDown="@(CanDownJoinForm(pjf))" CanUp="@(CanUpJoinForm(pjf))" JoinFormHoldHandle="JoinFormHoldAction" />
+                        <TabOfDocumentMainViewComponent @key="@($"page-{TabOfDocumentScheme.Id}_jform-{pjf.Id}")" UpdatePageActionHandle="UpdatePageAction" CurrentFormJoinEdit="_join_form_id" CanDown="@(CanDownJoinForm(pjf))" CanUp="@(CanUpJoinForm(pjf))" JoinFormHoldHandle="JoinFormHoldAction" />
                     </CascadingValue>
                 }
             }

@@ -13,7 +13,7 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// <summary>
 /// Page questionnaire view
 /// </summary>
-public partial class PageQuestionnaireViewComponent : BlazorBusyComponentBaseModel
+public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;

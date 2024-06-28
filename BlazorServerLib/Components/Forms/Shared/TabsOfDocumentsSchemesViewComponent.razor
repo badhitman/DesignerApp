@@ -34,7 +34,7 @@ else if (!ParentFormsPage.CanEditProject)
                              Text="@questionnaire_page.Name"               
                              BadgeDot="@(questionnaire_page.Id < 1)">
                     <CascadingValue Value="questionnaire_page">
-                        <PageQuestionnaireFormsViewComponent />
+                        <TabsOfDocumentViewComponent />
                     </CascadingValue>
                 </MudTabPanel>
             }
@@ -66,7 +66,7 @@ else
                              ShowCloseIcon="@(questionnaire_page.Id < 1)"
                              BadgeDot="@(questionnaire_page.Id < 1)">
                     <CascadingValue Value="questionnaire_page">
-                        <PageQuestionnaireViewComponent AllForms="AllForms" CanUpMove="@(CanUpPage(questionnaire_page))" CanDownMove="@(CanDownPage(questionnaire_page))" SetHoldHandle="SetHoldAction" UpdateQuestionnaireHandle="Update" QuestionnaireReloadHandle="QuestionnaireReloadAction" SetNameForPageHandle="SetNameForPage" SetIdForPageHandle="SetIdForPageAction" />
+                        <TabOfDocumentEditViewComponent AllForms="AllForms" CanUpMove="@(CanUpPage(questionnaire_page))" CanDownMove="@(CanDownPage(questionnaire_page))" SetHoldHandle="SetHoldAction" UpdateQuestionnaireHandle="Update" QuestionnaireReloadHandle="QuestionnaireReloadAction" SetNameForPageHandle="SetNameForPage" SetIdForPageHandle="SetIdForPageAction" />
                     </CascadingValue>
                 </MudTabPanel>
             }

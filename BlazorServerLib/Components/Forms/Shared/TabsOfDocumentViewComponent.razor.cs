@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// <summary>
 /// Page questionnaire forms - view
 /// </summary>
-public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBaseModel
+public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
@@ -24,7 +24,7 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     /// DocumentScheme page
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required TabOfDocumentSchemeConstructorModelDB QuestionnairePage { get; set; }
+    public required TabOfDocumentSchemeConstructorModelDB TabOfDocumentScheme { get; set; }
 
 
     int _join_form_id;
@@ -45,14 +45,14 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     {
         if (page is not null)
         {
-            QuestionnairePage = page;
+            TabOfDocumentScheme = page;
             StateHasChanged();
             return;
         }
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            TabOfDocumentSchemeResponseModel rest = await FormsRepo.GetTabOfDocumentScheme(QuestionnairePage.Id);
+            TabOfDocumentSchemeResponseModel rest = await FormsRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -66,8 +66,8 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
                 SnackbarRepo.Add($"Ошибка E7427B3A-68CB-4560-B2E0-4AF69F2EDA72 [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
-            QuestionnairePage = rest.TabOfDocumentScheme;
-            QuestionnairePage.JoinsForms = QuestionnairePage.JoinsForms?.OrderBy(x => x.SortIndex).ToList();
+            TabOfDocumentScheme = rest.TabOfDocumentScheme;
+            TabOfDocumentScheme.JoinsForms = TabOfDocumentScheme.JoinsForms?.OrderBy(x => x.SortIndex).ToList();
             StateHasChanged();
         });
     }
@@ -77,8 +77,8 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     /// </summary>
     protected bool CanUpJoinForm(TabJoinDocumentSchemeConstructorModelDB pjf)
     {
-        int min_index = QuestionnairePage.JoinsForms?.Any(x => x.Id != pjf.Id) == true
-        ? QuestionnairePage.JoinsForms.Where(x => x.Id != pjf.Id).Min(x => x.SortIndex)
+        int min_index = TabOfDocumentScheme.JoinsForms?.Any(x => x.Id != pjf.Id) == true
+        ? TabOfDocumentScheme.JoinsForms.Where(x => x.Id != pjf.Id).Min(x => x.SortIndex)
         : 1;
         return _join_form_id == 0 && pjf.SortIndex > min_index;
     }
@@ -88,8 +88,8 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     /// </summary>
     protected bool CanDownJoinForm(TabJoinDocumentSchemeConstructorModelDB pjf)
     {
-        int max_index = QuestionnairePage.JoinsForms?.Any(x => x.Id != pjf.Id) == true
-        ? QuestionnairePage.JoinsForms.Where(x => x.Id != pjf.Id).Max(x => x.SortIndex)
+        int max_index = TabOfDocumentScheme.JoinsForms?.Any(x => x.Id != pjf.Id) == true
+        ? TabOfDocumentScheme.JoinsForms.Where(x => x.Id != pjf.Id).Max(x => x.SortIndex)
         : 1;
         return _join_form_id == 0 && pjf.SortIndex < max_index;
     }
@@ -97,15 +97,15 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        if (QuestionnairePage.JoinsForms is null)
+        if (TabOfDocumentScheme.JoinsForms is null)
         {
-            SnackbarRepo.Add($"Дозагрузка `{nameof(QuestionnairePage.JoinsForms)}` в `{nameof(QuestionnairePage)} ['{QuestionnairePage.Name}' #{QuestionnairePage.Id}]`", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            SnackbarRepo.Add($"Дозагрузка `{nameof(TabOfDocumentScheme.JoinsForms)}` в `{nameof(TabOfDocumentScheme)} ['{TabOfDocumentScheme.Name}' #{TabOfDocumentScheme.Id}]`", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = true;
-            TabOfDocumentSchemeResponseModel rest = await FormsRepo.GetTabOfDocumentScheme(QuestionnairePage.Id);
+            TabOfDocumentSchemeResponseModel rest = await FormsRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            QuestionnairePage.JoinsForms = rest.TabOfDocumentScheme?.JoinsForms;
+            TabOfDocumentScheme.JoinsForms = rest.TabOfDocumentScheme?.JoinsForms;
         }
     }
 }
