@@ -57,16 +57,16 @@ else
         }
         else
         {
-            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in DocumentScheme.Pages.OrderBy(x => x.SortIndex))
+            foreach (TabOfDocumentSchemeConstructorModelDB tab_of_document_scheme in DocumentScheme.Pages.OrderBy(x => x.SortIndex))
             {
-                questionnaire_page.Owner = DocumentScheme;
-                <MudTabPanel ID="@($"document-scheme_{questionnaire_page.Id}")"
-                             Text="@questionnaire_page.Name"
-                             Disabled="@TabIsDisabled(questionnaire_page.Id)"
-                             ShowCloseIcon="@(questionnaire_page.Id < 1)"
-                             BadgeDot="@(questionnaire_page.Id < 1)">
-                    <CascadingValue Value="questionnaire_page">
-                        <TabOfDocumentEditViewComponent AllForms="AllForms" CanUpMove="@(CanUpPage(questionnaire_page))" CanDownMove="@(CanDownPage(questionnaire_page))" SetHoldHandle="SetHoldAction" UpdateDocumentHandle="Update" DocumentReloadHandle="DocumentReloadAction" SetNameForPageHandle="SetNameForPage" SetIdForPageHandle="SetIdForPageAction" />
+                tab_of_document_scheme.Owner = DocumentScheme;
+                <MudTabPanel ID="tab_of_document_scheme.Id"
+                             Text="@tab_of_document_scheme.Name"
+                             Disabled="@TabIsDisabled(tab_of_document_scheme.Id)"
+                             ShowCloseIcon="@(tab_of_document_scheme.Id < 1)"
+                             BadgeDot="@(tab_of_document_scheme.Id < 1)">
+                    <CascadingValue Value="tab_of_document_scheme">
+                        <TabOfDocumentEditViewComponent AllForms="AllForms" CanUpMove="@(CanUpPage(tab_of_document_scheme))" CanDownMove="@(CanDownPage(tab_of_document_scheme))" SetHoldHandle="SetHoldAction" UpdateDocumentHandle="Update" DocumentReloadHandle="DocumentReloadAction" SetNameForPageHandle="SetNameForPage" SetIdForPageHandle="SetIdForPageAction" />
                     </CascadingValue>
                 </MudTabPanel>
             }

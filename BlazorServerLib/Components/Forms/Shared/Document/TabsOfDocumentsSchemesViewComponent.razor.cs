@@ -169,7 +169,7 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
     }
 
     /// <inheritdoc/>
-    public void RemoveTab(string id)
+    public void RemoveTab(int id)
     {
         TabOfDocumentSchemeConstructorModelDB? tabView = DocumentScheme.Pages!.SingleOrDefault((t) => Equals(t.Id, id));
         if (tabView is not null)
@@ -179,5 +179,5 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
         }
     }
     /// <inheritdoc/>
-    protected void CloseTabCallback(MudTabPanel panel) => RemoveTab(panel.ID.ToString() ?? throw new Exception("tab engine error"));
+    protected void CloseTabCallback(MudTabPanel panel) => RemoveTab((int)panel.ID);
 }

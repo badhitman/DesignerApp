@@ -86,21 +86,21 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
     }
 
     /// <inheritdoc/>
-    protected async Task DocumentOpenDialog(DocumentSchemeConstructorModelDB? questionnaire = null)
+    protected async Task DocumentOpenDialog(DocumentSchemeConstructorModelDB? document_scheme = null)
     {
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");
 
-        questionnaire ??= DocumentSchemeConstructorModelDB.BuildEmpty(ParentFormsPage.MainProject.Id);
+        document_scheme ??= DocumentSchemeConstructorModelDB.BuildEmpty(ParentFormsPage.MainProject.Id);
         DialogParameters<EditDocumentSchemeDialogComponent> parameters = new()
         {
-            { x => x.DocumentScheme, questionnaire },
+            { x => x.DocumentScheme, document_scheme },
             { x => x.ParentFormsPage, ParentFormsPage },
             { x => x.CurrentUser, CurrentUser },
         };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await DialogServiceRepo.Show<EditDocumentSchemeDialogComponent>(questionnaire.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{questionnaire.Id}", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<EditDocumentSchemeDialogComponent>(document_scheme.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{document_scheme.Id}", parameters, options).Result;
         if (table is not null)
             await table.ReloadServerData();
     }
