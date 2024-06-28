@@ -13,7 +13,7 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// <summary>
 /// Edit questionnaire dialog
 /// </summary>
-public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseModel
+public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Inject]

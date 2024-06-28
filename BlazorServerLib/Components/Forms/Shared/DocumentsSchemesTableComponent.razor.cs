@@ -92,7 +92,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
             throw new Exception("Не выбран основной/используемый проект");
 
         questionnaire ??= DocumentSchemeConstructorModelDB.BuildEmpty(ParentFormsPage.MainProject.Id);
-        DialogParameters<EditQuestionnaireDialogComponent> parameters = new()
+        DialogParameters<EditDocumentSchemeDialogComponent> parameters = new()
         {
             { x => x.DocumentScheme, questionnaire },
             { x => x.ParentFormsPage, ParentFormsPage },
@@ -100,7 +100,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
         };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await DialogServiceRepo.Show<EditQuestionnaireDialogComponent>(questionnaire.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{questionnaire.Id}", parameters, options).Result;
+        DialogResult result = await DialogServiceRepo.Show<EditDocumentSchemeDialogComponent>(questionnaire.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{questionnaire.Id}", parameters, options).Result;
         if (table is not null)
             await table.ReloadServerData();
     }
