@@ -76,7 +76,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     {
         IsEdit = false;
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.UpMoveElementOfDirectory(ElementObject.Id, CurrentUser.UserId);
+        ResponseBaseModel rest = await FormsRepo.UpMoveElementOfDirectory(ElementObject.Id);
         IsBusyProgress = false;
         if (!rest.Success())
         {
@@ -91,7 +91,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     {
         IsEdit = false;
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DownMoveElementOfDirectory(ElementObject.Id, CurrentUser.UserId);
+        ResponseBaseModel rest = await FormsRepo.DownMoveElementOfDirectory(ElementObject.Id);
         IsBusyProgress = false;
         if (!rest.Success())
         {
@@ -113,7 +113,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     protected async Task DeleteElementOfDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteElementFromDirectory(ElementObject.Id, CurrentUser.UserId);
+        ResponseBaseModel rest = await FormsRepo.DeleteElementFromDirectory(ElementObject.Id);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())

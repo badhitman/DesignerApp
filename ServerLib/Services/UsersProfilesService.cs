@@ -166,6 +166,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             .UserRoles
             .Where(x => x.UserId == res.UserId)
             .Select(x => x.RoleId)
+            .Distinct()
             .ToArrayAsync();
 
         if (res.Roles.Length != 0)

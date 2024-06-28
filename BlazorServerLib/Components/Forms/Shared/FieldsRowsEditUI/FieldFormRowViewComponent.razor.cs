@@ -294,7 +294,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 SortIndex = sf.SortIndex,
                 TypeField = sf.TypeField
             };
-            rest = await FormsRepo.FormFieldUpdateOrCreate(req, CurrentUser.UserId);
+            rest = await FormsRepo.FormFieldUpdateOrCreate(req);
             act = () => { ((FieldFormConstructorModelDB)Field).Update(sf); };
         }
         else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
@@ -312,7 +312,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 Required = df.Required,
                 SortIndex = df.SortIndex
             };
-            rest = await FormsRepo.FormFieldDirectoryUpdateOrCreate(req, CurrentUser.UserId);
+            rest = await FormsRepo.FormFieldDirectoryUpdateOrCreate(req);
             act = () => { ((LinkDirectoryToFormConstructorModelDB)Field).Update(df); };
         }
         else
@@ -432,9 +432,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         ResponseBaseModel rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await FormsRepo.FormFieldDelete(sf.Id, CurrentUser.UserId);
+            rest = await FormsRepo.FormFieldDelete(sf.Id);
         else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
-            rest = await FormsRepo.FormFieldDirectoryDelete(df.Id, CurrentUser.UserId);
+            rest = await FormsRepo.FormFieldDirectoryDelete(df.Id);
         else
         {
             SnackbarRepo.Add($"{_field_master.GetType().FullName}. ошибка 1BCDEFB4-55F5-4A5A-BA61-3EAD2E9063D2", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -506,9 +506,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await FormsRepo.FieldFormMove(sf.Id, CurrentUser.UserId, VerticalDirectionsEnum.Up);
+            rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Up);
         else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
-            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, CurrentUser.UserId, VerticalDirectionsEnum.Up);
+            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Up);
         else
         {
             SnackbarRepo.Add("ошибка 591195A4-959D-4CDD-9410-F8984F790CBE", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -543,9 +543,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await FormsRepo.FieldFormMove(sf.Id, CurrentUser.UserId, VerticalDirectionsEnum.Down);
+            rest = await FormsRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Down);
         else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
-            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, CurrentUser.UserId, VerticalDirectionsEnum.Down);
+            rest = await FormsRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Down);
         else
         {
             SnackbarRepo.Add("ошибка 8768E090-BE63-4FE4-A693-7E24ED1A1876", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);

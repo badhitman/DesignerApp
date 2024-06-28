@@ -55,7 +55,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(createNewElementForDict, CurrentUser.UserId);
+        TResponseStrictModel<int> rest = await FormsRepo.CreateElementForDirectory(createNewElementForDict);
         IsBusyProgress = false;
 
         if (directoryNav_ref is not null)

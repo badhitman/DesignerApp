@@ -53,7 +53,7 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            FormQuestionnairePageResponseModel rest = await FormsRepo.GetQuestionnairePage(QuestionnairePage.Id);
+            TabOfDocumentSchemeResponseModel rest = await FormsRepo.GetTabOfDocumentScheme(QuestionnairePage.Id);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -62,12 +62,12 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
                 SnackbarRepo.Add($"Ошибка 16188CA3-EC20-4743-A31C-DA497CABDEB5 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
-            if (rest.QuestionnairePage is null)
+            if (rest.TabOfDocumentScheme is null)
             {
                 SnackbarRepo.Add($"Ошибка E7427B3A-68CB-4560-B2E0-4AF69F2EDA72 [rest.Content.QuestionnairePage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
-            QuestionnairePage = rest.QuestionnairePage;
+            QuestionnairePage = rest.TabOfDocumentScheme;
             QuestionnairePage.JoinsForms = QuestionnairePage.JoinsForms?.OrderBy(x => x.SortIndex).ToList();
             StateHasChanged();
         });
@@ -102,11 +102,11 @@ public partial class PageQuestionnaireFormsViewComponent : BlazorBusyComponentBa
         {
             SnackbarRepo.Add($"Дозагрузка `{nameof(QuestionnairePage.JoinsForms)}` в `{nameof(QuestionnairePage)} ['{QuestionnairePage.Name}' #{QuestionnairePage.Id}]`", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = true;
-            FormQuestionnairePageResponseModel rest = await FormsRepo.GetQuestionnairePage(QuestionnairePage.Id);
+            TabOfDocumentSchemeResponseModel rest = await FormsRepo.GetTabOfDocumentScheme(QuestionnairePage.Id);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            QuestionnairePage.JoinsForms = rest.QuestionnairePage?.JoinsForms;
+            QuestionnairePage.JoinsForms = rest.TabOfDocumentScheme?.JoinsForms;
         }
     }
 }

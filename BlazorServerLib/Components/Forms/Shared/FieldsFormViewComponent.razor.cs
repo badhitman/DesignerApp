@@ -115,7 +115,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 Required = directory_field.Required,
                 OwnerId = Form.Id,
                 Id = directory_field.Id
-            }, CurrentUser.UserId);
+            });
         }
         else if (_field_master is FieldFormConstructorModelDB standard_field)
         {
@@ -130,7 +130,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 OwnerId = Form.Id,
                 Required = standard_field.Required,
                 TypeField = standard_field.TypeField
-            }, CurrentUser.UserId);
+            });
         }
         else
         {

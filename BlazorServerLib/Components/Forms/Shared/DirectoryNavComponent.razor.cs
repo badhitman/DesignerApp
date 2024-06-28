@@ -91,7 +91,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     protected async Task DeleteSelectedDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteDirectory(SelectedDirectoryId, CurrentUser.UserId);
+        ResponseBaseModel rest = await FormsRepo.DeleteDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
@@ -112,7 +112,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, SystemName = directoryObject.SystemName, ProjectId = ParentFormsPage.MainProject.Id }, CurrentUser.UserId);
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, SystemName = directoryObject.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
         {
@@ -134,7 +134,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id), CurrentUser.UserId);
+        TResponseStrictModel<int> rest = await FormsRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id));
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 

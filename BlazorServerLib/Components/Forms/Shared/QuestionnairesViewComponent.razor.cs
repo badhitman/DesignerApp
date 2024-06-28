@@ -49,7 +49,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
     protected async Task DeleteQuestionnaire(int questionnaire_id)
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnaire(questionnaire_id, CurrentUser.UserId);
+        ResponseBaseModel rest = await FormsRepo.DeleteDocumentScheme(questionnaire_id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -73,7 +73,7 @@ public partial class QuestionnairesViewComponent : BlazorBusyComponentBaseModel
 
         SimplePaginationRequestModel req = new();
         IsBusyProgress = true;
-        data = await FormsRepo.RequestQuestionnaires(req, ParentFormsPage.MainProject.Id);
+        data = await FormsRepo.RequestDocumentsSchemes(req, ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
         if (data.Questionnaires is null)

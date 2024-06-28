@@ -213,7 +213,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        ConstructorFormsQuestionnairesPaginationResponseModel rest = await FormsRepo.RequestQuestionnaires(new() { PageNum = 0, PageSize = 1000 }, ParentFormsPage.MainProject.Id);
+        ConstructorFormsQuestionnairesPaginationResponseModel rest = await FormsRepo.RequestDocumentsSchemes(new() { PageNum = 0, PageSize = 1000 }, ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
         if (rest.Questionnaires is null)

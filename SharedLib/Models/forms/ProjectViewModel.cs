@@ -25,7 +25,7 @@ public class ProjectViewModel : EntryDescriptionSwitchableModel
     }
 
     /// <summary>
-    /// Владелец проекта (Identity user id)
+    /// Владелец проекта (user id of Identity)
     /// </summary>
     public required string OwnerUserId { get; set; }
 

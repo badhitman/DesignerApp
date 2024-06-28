@@ -49,7 +49,7 @@ public partial class ElementDirectoryFieldEditComponent : BlazorBusyComponentBas
     protected async Task UpdateElementOfDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.UpdateElementOfDirectory(ElementObjectEdit, CurrentUser.UserId);
+        ResponseBaseModel rest = await FormsRepo.UpdateElementOfDirectory(ElementObjectEdit);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

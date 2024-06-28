@@ -65,7 +65,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected async Task SaveForm()
     {
         IsBusyProgress = true;
-        TResponseModel<FormConstructorModelDB> rest = await FormsRepo.FormUpdateOrCreate(FormEditObject, CurrentUser.UserId);
+        TResponseModel<FormConstructorModelDB> rest = await FormsRepo.FormUpdateOrCreate(FormEditObject);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())

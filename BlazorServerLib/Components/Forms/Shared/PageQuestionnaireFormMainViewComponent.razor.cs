@@ -74,7 +74,7 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
             throw new Exception("CurrentUser is null");
 
         IsBusyProgress = true;
-        ResponseBaseModel rest = await FormsRepo.DeleteQuestionnairePageJoinForm(PageJoinForm.Id, CurrentUser.UserId);
+        ResponseBaseModel rest = await FormsRepo.DeleteTabDocumentSchemeJoinForm(PageJoinForm.Id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -133,7 +133,7 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
             throw new Exception("CurrentUser is null");
 
         IsBusyProgress = true;
-        FormQuestionnairePageResponseModel rest = await FormsRepo.QuestionnairePageJoinFormMove(PageJoinForm.Id, CurrentUser.UserId, direct);
+        TabOfDocumentSchemeResponseModel rest = await FormsRepo.MoveTabDocumentSchemeJoinForm(PageJoinForm.Id, direct);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -164,7 +164,7 @@ public partial class PageQuestionnaireFormMainViewComponent : BlazorBusyComponen
             ShowTitle = PageJoinForm.ShowTitle,
             SortIndex = PageJoinForm.SortIndex
         };
-        ResponseBaseModel rest = await FormsRepo.CreateOrUpdateQuestionnairePageJoinForm(req, CurrentUser.UserId);
+        ResponseBaseModel rest = await FormsRepo.CreateOrUpdateTabDocumentSchemeJoinForm(req);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

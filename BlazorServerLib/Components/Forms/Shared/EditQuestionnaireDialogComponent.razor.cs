@@ -61,7 +61,7 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
         if (Questionnaire.Id > 0)
         {
             IsBusyProgress = true;
-            TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.GetQuestionnaire(Questionnaire.Id);
+            TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.GetDocumentScheme(Questionnaire.Id);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -88,7 +88,7 @@ public partial class EditQuestionnaireDialogComponent : BlazorBusyComponentBaseM
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.UpdateOrCreateQuestionnaire(new EntryConstructedModel() { Id = Questionnaire.Id, SystemName = QuestionnaireSystemNameOrigin, Name = QuestionnaireNameOrigin, Description = QuestionnaireDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id }, CurrentUser.UserId);
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.UpdateOrCreateDocumentScheme(new EntryConstructedModel() { Id = Questionnaire.Id, SystemName = QuestionnaireSystemNameOrigin, Name = QuestionnaireNameOrigin, Description = QuestionnaireDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

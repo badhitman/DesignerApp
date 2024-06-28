@@ -14,20 +14,6 @@ namespace SharedLib;
 public class TabOfDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
 {
     /// <summary>
-    /// Таб/вкладка документа
-    /// </summary>
-    public static TabOfDocumentSchemeConstructorModelDB Build(EntryDescriptionOwnedModel questionnaire_page, DocumentSchemeConstructorModelDB questionnaire_db, int sortIndex)
-        => new()
-        {
-            Id = questionnaire_page.Id,
-            Name = questionnaire_page.Name,
-            Description = questionnaire_page.Description,
-            OwnerId = questionnaire_page.OwnerId,
-            Owner = questionnaire_db,
-            SortIndex = sortIndex
-        };
-
-    /// <summary>
     /// Опрос/Анкета
     /// </summary>
     public DocumentSchemeConstructorModelDB? Owner { get; set; }
@@ -71,8 +57,20 @@ public class TabOfDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
     }
 
     /// <summary>
-    /// 
+    /// Таб/вкладка документа
     /// </summary>
+    public static TabOfDocumentSchemeConstructorModelDB Build(EntryDescriptionOwnedModel questionnaire_page, DocumentSchemeConstructorModelDB questionnaire_db, int sortIndex)
+        => new()
+        {
+            Id = questionnaire_page.Id,
+            Name = questionnaire_page.Name,
+            Description = questionnaire_page.Description,
+            OwnerId = questionnaire_page.OwnerId,
+            Owner = questionnaire_db,
+            SortIndex = sortIndex
+        };
+
+    /// <inheritdoc/>
     public static Dictionary<string, Dictionary<uint, List<ValueDataForSessionOfDocumentModelDB>>> GetRowsData(SessionOfDocumentDataModelDB session)
     {
         Dictionary<string, Dictionary<uint, List<ValueDataForSessionOfDocumentModelDB>>> res = [];

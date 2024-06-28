@@ -76,7 +76,7 @@ public partial class PagesQuestionnairesViewComponent : BlazorBusyComponentBaseM
         IsBusyProgress = true;
         InvokeAsync(async () =>
         {
-            TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.GetQuestionnaire(Questionnaire.Id);
+            TResponseModel<DocumentSchemeConstructorModelDB> rest = await FormsRepo.GetDocumentScheme(Questionnaire.Id);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
             if (rest.Response is null)
