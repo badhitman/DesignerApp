@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using BlazorWebLib.Components.Forms.Shared.Document;
 
 namespace BlazorWebLib.Components.Forms.Shared;
 

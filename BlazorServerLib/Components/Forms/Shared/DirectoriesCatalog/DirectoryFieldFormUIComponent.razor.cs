@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Forms.Shared;
+namespace BlazorWebLib.Components.Forms.Shared.DirectoriesCatalog;
 
 /// <summary>
 /// Directory field form UI

@@ -8,7 +8,7 @@ using BlazorLib;
 using SharedLib;
 using MudBlazor;
 
-namespace BlazorWebLib.Components.Forms.Shared;
+namespace BlazorWebLib.Components.Forms.Shared.DirectoriesCatalog;
 
 /// <summary>
 /// Directory view

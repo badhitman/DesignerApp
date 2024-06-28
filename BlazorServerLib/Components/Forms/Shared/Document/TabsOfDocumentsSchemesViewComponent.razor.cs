@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Forms.Shared;
+namespace BlazorWebLib.Components.Forms.Shared.Document;
 
 /// <summary>
 /// Pages questionnaires view

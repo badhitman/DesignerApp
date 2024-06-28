@@ -8,7 +8,7 @@ using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Forms.Shared;
+namespace BlazorWebLib.Components.Forms.Shared.Document;
 
 /// <summary>
 /// Page questionnaire view
