@@ -11,7 +11,7 @@ namespace BlazorWebLib.Components.Forms.Shared;
 /// <summary>
 /// DocumentScheme client view
 /// </summary>
-public partial class QuestionnaireClientViewComponent : ComponentBase
+public partial class DocumentClientViewComponent : ComponentBase
 {
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
