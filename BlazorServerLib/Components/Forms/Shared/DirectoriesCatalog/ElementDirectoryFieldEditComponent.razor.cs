@@ -8,7 +8,7 @@ using MudBlazor;
 using SharedLib;
 using BlazorWebLib.Components.Forms.Pages;
 
-namespace BlazorWebLib.Components.Forms.Shared;
+namespace BlazorWebLib.Components.Forms.Shared.DirectoriesCatalog;
 
 /// <summary>
 /// Element directory field edit
