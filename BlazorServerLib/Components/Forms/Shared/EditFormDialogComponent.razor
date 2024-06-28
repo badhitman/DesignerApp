@@ -14,8 +14,8 @@
         }
         else
         {
-            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-                <MudTabPanel Text="Параметры">
+            <TabSetComponent>
+                <TabComponent Tooltip="Параметры" Title="Параметры">
                     <form class="row g-3">
                         <div class="col-md-3">
                             <label for="inputName4" class="form-label">Название</label>
@@ -59,8 +59,8 @@
                             </div>
                         }
                     </form>
-                </MudTabPanel>
-                <MudTabPanel Disabled="@(Form.Id < 1)" Text="Поля формы">
+                </TabComponent>
+                <TabComponent Tooltip="Поля формы" Title="Поля формы" IsDisabled="@(Form.Id < 1)">
                     @if (Form.FormsDirectoriesLinks is null || Form.Fields is null)
                     {
                         <blockquote class="blockquote">
@@ -75,8 +75,8 @@
                             </CascadingValue>
                         </CascadingValue>
                     }
-                </MudTabPanel>
-            </MudTabs>
+                </TabComponent>
+            </TabSetComponent>
         }
     </DialogContent>
     <DialogActions>

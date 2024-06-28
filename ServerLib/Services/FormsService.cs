@@ -202,15 +202,14 @@ public class FormsService(
         IQueryable<ValueDataForSessionOfDocumentModelDB> q = session.DataSessionValues.Where(x => x.TabJoinDocumentSchemeId == form_join.Id && x.RowNum > 0).AsQueryable();
         res.Response = (int)(q.Any() ? (q.Max(x => x.RowNum) + 1) : 1);
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        await context_forms.AddRangeAsync(form_join.Form.AllFields.Where(ScalarOnly).Select(x => new ValueDataForSessionOfDocumentModelDB()
+        ValueDataForSessionOfDocumentModelDB[] rows_add = form_join.Form.AllFields.Where(ScalarOnly).Select(x => new ValueDataForSessionOfDocumentModelDB()
         {
             RowNum = (uint)res.Response,
             Name = x.Name,
-            Owner = session,
             OwnerId = session.Id,
-            TabJoinDocumentScheme = form_join,
             TabJoinDocumentSchemeId = form_join.Id
-        }), cancellationToken);
+        }).ToArray();
+        await context_forms.AddRangeAsync(rows_add, cancellationToken);
         session.LastQuestionnaireUpdateActivity = DateTime.Now;
 
         await context_forms.SaveChangesAsync(cancellationToken);
@@ -735,8 +734,8 @@ public class FormsService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CanEditProject(int project_id, string? user_id = null)
     {
-        if (project_id < 1 || string.IsNullOrWhiteSpace(user_id))
-            return ResponseBaseModel.CreateError($"ArgumentNullException: <user #{user_id}>; <project #{project_id}>;");
+        if (project_id < 1)
+            return ResponseBaseModel.CreateError("Не указан проект");
 
         TResponseModel<UserInfoModel?> call_user = await usersProfilesRepo.FindByIdAsync(user_id);
 
