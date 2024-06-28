@@ -1,12 +1,14 @@
 ## Blazor NET.8 + TelegramBot
 
-###### + развитие решения в отдельной одноимённой ветке [constructor](https://github.com/badhitman/DesignerApp/tree/constructor)
+###### + развитие решения в отдельной ветке [constructor](https://github.com/badhitman/DesignerApp/tree/constructor)
 
 - Заготовка **Blazor NET.8**[^4] + **TelegramBot**[^5]: подойдёт как стартовый кейс web решения с поддержкой **Telegram бота**.
 
 - База данных (по умолчанию) [SQLite](https://github.com/badhitman/DesignerApp/tree/main/DBContextLibs#sqlite-установлен-по-умолчанию): миграции отсутствуют, поскольку изначально не понятно какая в итоге СУБД будет выбрана[^10]. Для переключения с **SQLite** на [PostgreSQL](https://github.com/badhitman/DesignerApp/tree/main/DBContextLibs#postgresql) или [MySQL](https://github.com/badhitman/DesignerApp/tree/main/DBContextLibs#mysql): потребуется отредактировать зависимости проектов[^6]. После того как определились с используемой СУБД (*или оставили как есть*: **SQLIte**) - можно использовать миграции [^10].
 
 - Связь между службами реализована через RabbitMQ[^1] в режиме `запрос-ответ`: при отправке сообщения в очередь, отправитель дожидается ответ (в границах таймаута) и возвращает результат вызывающему. При использовании вызова такой команды удалённого сервиса проходит так, как если бы это был обычный `await` запрос к базе данных или rest/api.
+
+- Установлен/используется пакет [MudBlazor 6.x.x](https://github.com/MudBlazor/MudBlazor/)
 
 > [!IMPORTANT]
 > В принципе служба *TelegramBot* могла бы использовать прямой доступ к сервисам как это делает `BlazorWebApp` (достаточно установить зависимость от `ServerLib`), тогда `RemoteCallLib` становится бесполезным и его можно даже удалить (+ заменить зависимости сервисов на серверные). Но в данной реализации *Telegram* бот не связан с серверной инфраструктурой (нет доступа ни к БД сервера ни даже к его DI сервисам), а только отправляет запросы в RabbitMQ и получает ответы в виде `public class TResponseModel<TResponse> : ResponseBaseModel`, который поддерживает наличие статусных сообщений.
