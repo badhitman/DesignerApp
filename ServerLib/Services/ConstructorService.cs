@@ -52,6 +52,8 @@ public class ConstructorService(
             .ThenInclude(x => x.Form) // форма
             .ThenInclude(x => x!.FormsDirectoriesLinks) // поля
 
+            .Include(x => x.Project)
+
             .AsSplitQuery();
 
         TResponseModel<SessionOfDocumentDataModelDB> res = new()
