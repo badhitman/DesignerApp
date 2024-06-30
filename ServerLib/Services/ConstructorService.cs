@@ -1398,11 +1398,6 @@ public class ConstructorService(
             await context_forms.SaveChangesAsync(cancellationToken);
         }
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == form_db.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
-
         res.Response = form_db;
         return res;
     }
