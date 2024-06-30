@@ -621,7 +621,7 @@ public class ConstructorService(
             return res;
         }
 
-#if DEBUG
+#if DEMO
         bool _seed_call = false;
 #endif
 
@@ -633,7 +633,7 @@ public class ConstructorService(
             project = new() { Name = "По умолчанию", OwnerUserId = user_id, SystemName = "Default" };
             await context_forms.AddAsync(project);
             await context_forms.SaveChangesAsync();
-#if DEBUG
+#if DEMO
             _seed_call = true;
 #endif
             project_use = new() { UserId = project.OwnerUserId, ProjectId = project.Id };
@@ -650,7 +650,7 @@ public class ConstructorService(
 
         if (res.Response is null)
         {
-#if DEBUG
+#if DEMO
             _seed_call = true;
 #endif
             IQueryable<ProjectConstructorModelDb> members_query = context_forms
@@ -670,7 +670,7 @@ public class ConstructorService(
 
             res.Response = MainProjectViewModel.Build(project);
         }
-#if DEBUG
+#if DEMO
         if (_seed_call)
         {
             DirectoryConstructorModelDB? _dir_seed = await context_forms.Directories.FirstOrDefaultAsync(x => x.ProjectId == project!.Id);
