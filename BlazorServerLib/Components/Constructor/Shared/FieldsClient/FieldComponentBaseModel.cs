@@ -31,12 +31,6 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     public required FormConstructorModelDB Form { get; set; }
 
     /// <summary>
-    /// Форма
-    /// </summary>
-    [CascadingParameter, EditorRequired]
-    public required DateTime? SchemeLastUpdated { get; set; }
-
-    /// <summary>
     /// Текущий пользователь (сессия)
     /// </summary>
     [CascadingParameter]
@@ -98,6 +92,9 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
         if (!InUse)
             throw new NullReferenceException("Форма не инициализирована.");
 
+        if (SessionDocument?.Project is null)
+            throw new NullReferenceException("Версия проекта не установлена.");
+
         SetValueFieldDocumentDataModel req = new()
         {
             FieldValue = valAsString,
@@ -105,7 +102,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
             JoinFormId = PageJoinForm!.Id,
             NameField = fieldName,
             SessionId = SessionDocument!.Id,
-            ProjectVersionStamp = SchemeLastUpdated!.Value,
+            ProjectVersionStamp = SessionDocument.Project.SchemeLastUpdated,
         };
         IsBusyProgress = true;
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.SetValueFieldSessionDocumentData(req);
@@ -126,12 +123,5 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
             .Where(x => x?.DomID.Equals(DomID, StringComparison.Ordinal) != true)
             .ToList()
             .ForEach(x => x?.StateHasChanged());
-    }
-
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        if (!SchemeLastUpdated.HasValue)
-            throw new Exception("Не установлена версия проекта");
     }
 }
