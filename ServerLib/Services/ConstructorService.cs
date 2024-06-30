@@ -117,6 +117,12 @@ public class ConstructorService(
         if (!session.Success())
             return session;
 
+        if (session.Response!.Project!.SchemeLastUpdated != req.ProjectVersionStamp)
+        {
+            session.AddError("Версия схемы документа изменилась. Обновите свою сессию (F5)");
+            return session;
+        }
+
         SessionOfDocumentDataModelDB? session_Document = session.Response;
         TResponseModel<SessionOfDocumentDataModelDB> res = new();
 
