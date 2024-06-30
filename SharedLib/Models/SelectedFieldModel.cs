@@ -17,4 +17,9 @@ public class SelectedFieldModel
 
     /// <inheritdoc/>
     public string FieldName { get; set; } = default!;
+
+    /// <summary>
+    /// Версия проекта (дата/время последнего изменения)
+    /// </summary>
+    public required DateTime ProjectVersionStamp { get; set; }
 }

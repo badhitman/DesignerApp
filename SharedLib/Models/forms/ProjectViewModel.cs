@@ -39,6 +39,12 @@ public class ProjectViewModel : EntryDescriptionSwitchableModel
     /// </summary>
     public List<EntryAltModel>? Members { get; set; }
 
+    /// <summary>
+    /// Scheme: Last updated DateTime
+    /// </summary>
+    public DateTime SchemeLastUpdated { get; set; }
+
+
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
@@ -62,6 +68,7 @@ public class ProjectViewModel : EntryDescriptionSwitchableModel
         Name = other.Name;
         Description = other.Description;
         IsDisabled = other.IsDisabled;
+        SchemeLastUpdated = other.SchemeLastUpdated;
 
         if (other.Members is null)
             Members = null;

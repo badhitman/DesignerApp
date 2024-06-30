@@ -10,6 +10,11 @@ namespace SharedLib;
 public class SetValueFieldDocumentDataModel : ValueFieldSessionDocumentDataBaseModel
 {
     /// <summary>
+    /// Версия проекта (дата/время последнего изменения)
+    /// </summary>
+    public required DateTime ProjectVersionStamp { get; set; }
+
+    /// <summary>
     /// Имя поля
     /// </summary>
     public required string NameField { get; set; }
@@ -24,14 +29,15 @@ public class SetValueFieldDocumentDataModel : ValueFieldSessionDocumentDataBaseM
     /// </summary>
     public string? Description { get; set; }
 
-    internal static SetValueFieldDocumentDataModel Build(string fieldValue, string fieldName, string description, uint groupByRowNum)
+    internal static SetValueFieldDocumentDataModel Build(DateTime projectVersionStamp, string fieldValue, string fieldName, string description, uint groupByRowNum)
     {
         return new()
         {
             FieldValue = fieldValue,
             NameField = fieldName,
             Description = description,
-            GroupByRowNum = groupByRowNum
+            GroupByRowNum = groupByRowNum,
+            ProjectVersionStamp = projectVersionStamp
         };
     }
 }

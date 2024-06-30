@@ -107,7 +107,7 @@ public class FormTableCalculationManager
         foreach (IGrouping<uint, ValueDataForSessionOfDocumentModelDB> sv in session_questionnairie.RowsData(page_join_form.Id)!)
         {
             ValueDataForSessionOfDocumentModelDB? master_sv = sv.FirstOrDefault(x => x.Name.Equals(_selected_field.FieldName))
-                ?? ValueDataForSessionOfDocumentModelDB.Build(SetValueFieldDocumentDataModel.Build("", selected_field.FieldName, "<null>", sv.Key), page_join_form, session_questionnairie);
+                ?? ValueDataForSessionOfDocumentModelDB.Build(SetValueFieldDocumentDataModel.Build(_selected_field.ProjectVersionStamp, "", selected_field.FieldName, "<null>", sv.Key), page_join_form, session_questionnairie);
 
             SetData(sv.Where(x => !x.Name.Equals(_selected_field.FieldName) && Query?.Any(y => y.Name.Equals(x.Name)) == true).ToArray(), master_sv);
         }

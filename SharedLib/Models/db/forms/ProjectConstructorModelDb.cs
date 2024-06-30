@@ -33,6 +33,12 @@ public class ProjectConstructorModelDb : EntryDescriptionSwitchableModel
     public List<MemberOfProjectConstructorModelDb>? Members { get; set; }
 
     /// <summary>
+    /// Scheme: Last updated DateTime
+    /// </summary>
+    public DateTime SchemeLastUpdated { get; set; } = DateTime.Now;
+
+
+    /// <summary>
     /// Проверка прав/возможности пользователю редактировать данные в рамках проекта
     /// </summary>
     public bool CanEdit(UserInfoModel userInfoModel)
@@ -45,10 +51,11 @@ public class ProjectConstructorModelDb : EntryDescriptionSwitchableModel
     /// </summary>
     public void Reload(ProjectViewModel project)
     {
-
         Name = project.Name;
         SystemName = project.SystemName;
         Description = project.Description;
-
+        Id = project.Id;
+        IsDisabled = project.IsDisabled;
+        OwnerUserId = project.OwnerUserId;
     }
 }
