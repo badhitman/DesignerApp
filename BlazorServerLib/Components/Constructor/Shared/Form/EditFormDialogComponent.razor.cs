@@ -8,7 +8,7 @@ using MudBlazor;
 using SharedLib;
 using BlazorWebLib.Components.Constructor.Pages;
 
-namespace BlazorWebLib.Components.Constructor.Shared;
+namespace BlazorWebLib.Components.Constructor.Shared.Form;
 
 /// <summary>
 /// Edit form dialog

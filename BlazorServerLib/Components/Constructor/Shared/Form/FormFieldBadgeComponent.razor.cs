@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Constructor.Shared;
+namespace BlazorWebLib.Components.Constructor.Shared.Form;
 
 /// <summary>
 /// Form field badge

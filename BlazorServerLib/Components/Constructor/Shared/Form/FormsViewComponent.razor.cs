@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Constructor.Shared;
+namespace BlazorWebLib.Components.Constructor.Shared.Form;
 
 /// <summary>
 /// Forms view
