@@ -3,7 +3,7 @@
 
 Web решение для конструирования документов, справочников и т.п. Создание схемы документов и структуры моделей в общих чертах. Для созданных схем документов есть возможность формировать ссылки/сессии, что бы внешние клиенты могли заполнять формы/документы своими данными. Что-то на подобие Веб-форм или опросников.
 
-... исходные файлы ветки [main](https://github.com/badhitman/DesignerApp/tree/main) не редактировались. добавлено [разного UI на Blazor](https://github.com/badhitman/DesignerApp/tree/constructor/BlazorServerLib/Components/Constructor). А так же [немного](https://github.com/badhitman/DesignerApp/blob/constructor/DBContextLibs/DbLayerLib/ConstructorLayerContext.cs) [БД](https://github.com/badhitman/DesignerApp/tree/constructor/SharedLib/Models/db/constructor) для [соответствующего сервиса](https://github.com/badhitman/DesignerApp/blob/constructor/SharedLib/IServices/main/IFormsService.cs).
+... исходные файлы ветки [main](https://github.com/badhitman/DesignerApp/tree/main) не редактировались. добавлено [разного UI на Blazor](https://github.com/badhitman/DesignerApp/tree/constructor/BlazorServerLib/Components/Constructor). А так же [немного](https://github.com/badhitman/DesignerApp/blob/constructor/DBContextLibs/DbLayerLib/ConstructorLayerContext.cs) [БД](https://github.com/badhitman/DesignerApp/tree/constructor/SharedLib/Models/db/constructor) для [соответствующего сервиса](https://github.com/badhitman/DesignerApp/blob/constructor/SharedLib/IServices/main/IConstructorService.cs).
 
 ### Проекты
 ![проекты](./img/constructor/projects-list-page.png)
