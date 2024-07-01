@@ -50,7 +50,7 @@
             <label class="input-group-text" for="inputGroupSelect01">Добавление формы</label>
             <select @bind="SelectedFormForAdding" disabled="@(DocumentPage.Id < 1)" class="form-select" id="inputGroupSelect01">
                 <option disabled="@(SelectedFormForAdding > 0)" value="0">Выбор формы...</option>
-                @foreach (ConstructorFormBaseModel f in AllForms)
+                @foreach (FormBaseConstructorModel f in AllForms)
                 {
                     <option value="@f.Id">@f.Name</option>
                 }

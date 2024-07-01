@@ -10,7 +10,7 @@ namespace SharedLib;
 /// Поле формы (тип: справочник/список)
 /// </summary>
 [Index(nameof(Required))]
-public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
+public class FieldFormBaseLowConstructorModel : EntrySystemDescriptionOwnedModel
 {
     /// <summary>
     /// Подсказка
@@ -30,7 +30,7 @@ public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
     /// <summary>
     /// Обновить
     /// </summary>
-    public virtual void Update(ConstructorFieldFormBaseLowModel field)
+    public virtual void Update(FieldFormBaseLowConstructorModel field)
     {
         SystemName = field.SystemName;
         Id = field.Id;
@@ -67,7 +67,7 @@ public class ConstructorFieldFormBaseLowModel : EntrySystemDescriptionOwnedModel
         else if (o is LinkDirectoryToFormConstructorModelDB df)
             return df.Equals((LinkDirectoryToFormConstructorModelDB)this);
 
-        ConstructorFieldFormBaseLowModel other = (ConstructorFieldFormBaseLowModel)o;
+        FieldFormBaseLowConstructorModel other = (FieldFormBaseLowConstructorModel)o;
         return
             Id == other.Id &&
             SystemName == other.SystemName &&

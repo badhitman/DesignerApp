@@ -91,7 +91,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    ConstructorFieldFormBaseLowModel? _field_master;
+    FieldFormBaseLowConstructorModel? _field_master;
 
     /// <inheritdoc/>
     protected async Task CreateField()
@@ -119,7 +119,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
         else if (_field_master is FieldFormConstructorModelDB standard_field)
         {
-            rest = await ConstructorRepo.FormFieldUpdateOrCreate(new ConstructorFieldFormBaseModel()
+            rest = await ConstructorRepo.FormFieldUpdateOrCreate(new FieldFormBaseConstructorModel()
             {
                 SystemName = standard_field.SystemName,
                 Description = standard_field.Description,
@@ -156,7 +156,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected void AddingFieldStateHasChangedAction(ConstructorFieldFormBaseLowModel _sender, Type initiator)
+    protected void AddingFieldStateHasChangedAction(FieldFormBaseLowConstructorModel _sender, Type initiator)
     {
         if (_field_master is null)
         {

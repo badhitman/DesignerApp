@@ -32,7 +32,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// All forms
     /// </summary>
     [Parameter, EditorRequired]
-    public required IEnumerable<ConstructorFormBaseModel> AllForms { get; set; }
+    public required IEnumerable<FormBaseConstructorModel> AllForms { get; set; }
 
     /// <summary>
     /// Can up move

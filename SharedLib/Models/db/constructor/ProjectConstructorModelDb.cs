@@ -2,18 +2,17 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib;
 
 /// <summary>
 /// Project (for constructor)
 /// </summary>
-[Index(nameof(OwnerUserId))]
-[Index(nameof(SystemName))]
+[Index(nameof(SystemName)), Index(nameof(OwnerUserId))]
 [Index(nameof(OwnerUserId), nameof(SystemName), IsUnique = true)]
-public class ProjectConstructorModelDb : EntryDescriptionSwitchableModel
+public class ProjectConstructorModelDB : EntryDescriptionSwitchableModel
 {
     /// <summary>
     /// System name
@@ -30,7 +29,7 @@ public class ProjectConstructorModelDb : EntryDescriptionSwitchableModel
     /// <summary>
     /// Members
     /// </summary>
-    public List<MemberOfProjectConstructorModelDb>? Members { get; set; }
+    public List<MemberOfProjectConstructorModelDB>? Members { get; set; }
 
     /// <summary>
     /// Scheme: Last updated DateTime

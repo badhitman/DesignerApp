@@ -10,7 +10,7 @@ namespace SharedLib;
 /// связь формы со списком/справочником
 /// </summary>
 [Index(nameof(SortIndex))]
-public class LinkDirectoryToFormConstructorModelDB : ConstructorFieldFormBaseLowModel
+public class LinkDirectoryToFormConstructorModelDB : FieldFormBaseLowConstructorModel
 {
     /// <summary>
     /// Сортировка 

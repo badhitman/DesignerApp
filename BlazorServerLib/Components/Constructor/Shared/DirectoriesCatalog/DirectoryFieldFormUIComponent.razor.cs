@@ -28,7 +28,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
+    public Action<FieldFormBaseLowConstructorModel, Type> StateHasChangedHandler { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -50,7 +50,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     }
 
     /// <inheritdoc/>
-    public void Update(ConstructorFieldFormBaseLowModel field)
+    public void Update(FieldFormBaseLowConstructorModel field)
     {
         FieldObject.Update(field);
         StateHasChanged();

@@ -21,7 +21,7 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; }
+    public required Action<FieldFormBaseLowConstructorModel, Type> StateHasChangedHandler { get; set; }
 
     string? _generation_options;
     string? OptionsGeneration
@@ -62,7 +62,7 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
     }
 
     /// <inheritdoc/>
-    public void Update(ConstructorFieldFormBaseLowModel field)
+    public void Update(FieldFormBaseLowConstructorModel field)
     {
         FieldObject.Update(field);
         StateHasChanged();

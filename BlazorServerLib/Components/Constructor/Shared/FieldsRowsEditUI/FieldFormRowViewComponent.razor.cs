@@ -42,7 +42,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     /// Поле формы
     /// </summary>
     [Parameter, EditorRequired]
-    public required ConstructorFieldFormBaseLowModel Field { get; set; }
+    public required FieldFormBaseLowConstructorModel Field { get; set; }
 
     /// <summary>
     /// Перезагрузка полей (обработчик события)
@@ -55,7 +55,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     public required UserInfoModel CurrentUser { get; set; }
 
 
-    ConstructorFieldFormBaseLowModel _field_master = default!;
+    FieldFormBaseLowConstructorModel _field_master = default!;
 
     /// <inheritdoc/>
     protected FieldDirectoryFormRowEditComponent? FieldDirUI_ref;
@@ -455,7 +455,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         await ReloadForm();
     }
 
-    void SetFieldAction(ConstructorFieldFormBaseLowModel field)
+    void SetFieldAction(FieldFormBaseLowConstructorModel field)
     {
         if (field is FieldFormConstructorModelDB sf)
             _field_master = new FieldFormConstructorModelDB()

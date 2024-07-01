@@ -11,7 +11,7 @@ namespace SharedLib;
 /// Поле формы (простой тип)
 /// </summary>
 [Index(nameof(TypeField))]
-public class ConstructorFieldFormBaseModel : ConstructorFieldFormBaseLowModel
+public class FieldFormBaseConstructorModel : FieldFormBaseLowConstructorModel
 {
     /// <summary>
     /// Тип данных поля

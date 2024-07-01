@@ -51,7 +51,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
             throw new Exception("данные формы не загружены. error 4551A862-30F4-49BB-85AF-9B7BCEE85EE9");
     }
 
-    string? CalculateFieldValue(ConstructorFieldFormBaseModel _fb)
+    string? CalculateFieldValue(FieldFormBaseConstructorModel _fb)
     {
         if (InUse != true)
             return "<калькуляция>";
@@ -77,7 +77,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
         return _calculate_service.Calculate(columns, _md.Options).ToString();
     }
 
-    MarkupString GetValue(ConstructorFieldFormBaseLowModel _fbl)
+    MarkupString GetValue(FieldFormBaseLowConstructorModel _fbl)
     {
         if (_fbl is FieldFormConstructorModelDB _fb && _fb.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble)
             return (MarkupString)(CalculateFieldValue(_fb) ?? "&nbsp;");
@@ -93,7 +93,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
     IEnumerable<string> FieldsNames(string field_name) => Query(field_name)?.Select(x => x.Name) ?? Enumerable.Empty<string>();
     IEnumerable<ValueDataForSessionOfDocumentModelDB> CellsValuesOfCurrentRow => SessionDocument?.RowsData(PageJoinForm.Id)?.FirstOrDefault(x => x.Key == RowNum) ?? Enumerable.Empty<ValueDataForSessionOfDocumentModelDB>();
 
-    string CellId(ConstructorFieldFormBaseLowModel fb) => $"cell-{fb.Id}:{DomID}";
+    string CellId(FieldFormBaseLowConstructorModel fb) => $"cell-{fb.Id}:{DomID}";
 
     int _total_cols_count = -1;
     int TotalColsCount

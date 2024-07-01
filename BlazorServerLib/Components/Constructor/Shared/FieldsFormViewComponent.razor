@@ -39,7 +39,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (ConstructorFieldFormBaseLowModel fo in Form.AllFields)
+                @foreach (FieldFormBaseLowConstructorModel fo in Form.AllFields)
                 {
                     <FieldFormRowViewComponent @key="@($"{Form.Id}/{fo.GetType().Name}-{fo.Id}")" ReloadFieldsHandler="ReloadFields" Field="fo" />
                 }

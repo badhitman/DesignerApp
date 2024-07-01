@@ -51,7 +51,7 @@ public interface IConstructorService
     /// <summary>
     /// Прочитать данные проекта
     /// </summary>
-    public Task<ProjectConstructorModelDb?> ReadProject(int project_id);
+    public Task<ProjectConstructorModelDB?> ReadProject(int project_id);
 
     /// <summary>
     /// Создать проект
@@ -182,7 +182,7 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/создать форму (имя, описание, `признак таблицы`)
     /// </summary>
-    public Task<TResponseModel<FormConstructorModelDB>> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> FormUpdateOrCreate(FormBaseConstructorModel form, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить форму
@@ -208,7 +208,7 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/создать поле формы (простой тип)
     /// </summary>
-    public Task<ResponseBaseModel> FormFieldUpdateOrCreate(ConstructorFieldFormBaseModel form_field, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldUpdateOrCreate(FieldFormBaseConstructorModel form_field, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить поле формы (простой тип)

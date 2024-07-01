@@ -149,7 +149,7 @@ public class ConstructorService(
             return res;
         }
 
-        ConstructorFieldFormBaseLowModel? field_by_name = form_join.Form.AllFields.FirstOrDefault(x => x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase));
+        FieldFormBaseLowConstructorModel? field_by_name = form_join.Form.AllFields.FirstOrDefault(x => x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase));
         if (field_by_name is null)
         {
             res.AddError($"Поле '{req.NameField}' не найдено в форме #{form_join.Form.Id} '{form_join.Form.Name}'. ошибка 98371573-83A3-41A3-97C2-F8F775BFFD2D");
@@ -288,7 +288,7 @@ public class ConstructorService(
         return res;
     }
 
-    static bool ScalarOnly(ConstructorFieldFormBaseLowModel x) => !(x is FieldFormConstructorModelDB _f && _f.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble);
+    static bool ScalarOnly(FieldFormBaseLowConstructorModel x) => !(x is FieldFormConstructorModelDB _f && _f.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble);
 
     static string? EditorsGenerate(SessionOfDocumentDataModelDB session, string editor)
     {
@@ -314,7 +314,7 @@ public class ConstructorService(
     public async Task<ProjectViewModel[]> GetProjects(string user_id, string? name_filter = null)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        IQueryable<ProjectConstructorModelDb> q = context_forms
+        IQueryable<ProjectConstructorModelDB> q = context_forms
             .Projects
             .Where(x => x.OwnerUserId == user_id || context_forms.MembersOfProjects.Any(y => y.ProjectId == x.Id && y.UserId == user_id))
             .Include(x => x.Members)
@@ -323,7 +323,7 @@ public class ConstructorService(
         if (!string.IsNullOrWhiteSpace(name_filter))
             q = q.Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{name_filter.ToUpper()}%") || EF.Functions.Like(x.SystemName.ToUpper(), $"%{name_filter.ToUpper()}%"));
 
-        ProjectConstructorModelDb[] raw_data = await q.ToArrayAsync();
+        ProjectConstructorModelDB[] raw_data = await q.ToArrayAsync();
 
         string[] usersIds = raw_data
             .Where(x => x.Members is not null)
@@ -345,7 +345,7 @@ public class ConstructorService(
                 .ToArrayAsync();
         }
 
-        List<EntryAltModel>? ReadMembersData(List<MemberOfProjectConstructorModelDb>? members)
+        List<EntryAltModel>? ReadMembersData(List<MemberOfProjectConstructorModelDB>? members)
         {
             if (members is null || usersIdentity is null)
                 return null;
@@ -355,7 +355,7 @@ public class ConstructorService(
                 .ToList();
         }
 
-        Func<ProjectConstructorModelDb, ProjectViewModel> cast_expression = (project) => new ProjectViewModel()
+        Func<ProjectConstructorModelDB, ProjectViewModel> cast_expression = (project) => new ProjectViewModel()
         {
             OwnerUserId = project.OwnerUserId,
             Name = project.Name,
@@ -371,7 +371,7 @@ public class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<ProjectConstructorModelDb?> ReadProject(int project_id)
+    public async Task<ProjectConstructorModelDB?> ReadProject(int project_id)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
@@ -402,7 +402,7 @@ public class ConstructorService(
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ProjectConstructorModelDb? projectDb = await context_forms
+        ProjectConstructorModelDB? projectDb = await context_forms
             .Projects
             .FirstOrDefaultAsync(x => x.OwnerUserId == userDb.Id && (x.Name == project.Name || x.SystemName == project.SystemName));
 
@@ -435,7 +435,7 @@ public class ConstructorService(
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
-        ProjectConstructorModelDb? project = await context_forms
+        ProjectConstructorModelDB? project = await context_forms
             .Projects
             .FirstOrDefaultAsync(x => x.Id == project_id);
 
@@ -458,7 +458,7 @@ public class ConstructorService(
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
-        ProjectConstructorModelDb? projectDb = await context_forms
+        ProjectConstructorModelDB? projectDb = await context_forms
             .Projects
             .FirstOrDefaultAsync(x => x.Id != project.Id && (x.Name.ToUpper() == project.Name.ToUpper() || x.SystemName.ToUpper() == project.SystemName.ToUpper()));
 
@@ -516,14 +516,14 @@ public class ConstructorService(
             return ResponseBaseModel.CreateError($"Пользователь #{member_user_id} не найден в БД");
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        MemberOfProjectConstructorModelDb? memberDb = await context_forms
+        MemberOfProjectConstructorModelDB? memberDb = await context_forms
             .MembersOfProjects
             .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == userDb.Id);
 
         if (memberDb is not null)
             return ResponseBaseModel.CreateInfo("Пользователь уже является участником проекта");
 
-        ProjectConstructorModelDb? projectDb = await context_forms
+        ProjectConstructorModelDB? projectDb = await context_forms
             .Projects
             .FirstOrDefaultAsync(x => x.Id == project_id);
 
@@ -563,7 +563,7 @@ public class ConstructorService(
             return ResponseBaseModel.CreateError($"Пользователь #{member_user_id} не найден в БД");
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        MemberOfProjectConstructorModelDb? memberDb = await context_forms
+        MemberOfProjectConstructorModelDB? memberDb = await context_forms
             .MembersOfProjects
             .Include(x => x.Project)
             .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == userDb.Id);
@@ -587,7 +587,7 @@ public class ConstructorService(
             return ResponseBaseModel.CreateError($"Пользователь #{user_id} не найден в БД");
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ProjectConstructorModelDb? projectDb = await context_forms.Projects.FirstOrDefaultAsync(x => x.Id == project_id);
+        ProjectConstructorModelDB? projectDb = await context_forms.Projects.FirstOrDefaultAsync(x => x.Id == project_id);
         if (projectDb is null)
             return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
 
@@ -626,7 +626,7 @@ public class ConstructorService(
 #endif
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ProjectConstructorModelDb? project = null;
+        ProjectConstructorModelDB? project = null;
         ProjectUseConstructorModelDb? project_use = null;
         if (!await context_forms.Projects.AnyAsync(x => x.OwnerUserId == user_id) && !await context_forms.MembersOfProjects.AnyAsync(x => x.UserId == user_id))
         {
@@ -653,7 +653,7 @@ public class ConstructorService(
 #if DEMO
             _seed_call = true;
 #endif
-            IQueryable<ProjectConstructorModelDb> members_query = context_forms
+            IQueryable<ProjectConstructorModelDB> members_query = context_forms
                 .MembersOfProjects
                 .Include(x => x.Project)
                 .Select(x => x.Project!);
@@ -765,7 +765,7 @@ public class ConstructorService(
             return ResponseBaseModel.Create(call_user.Messages);
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ProjectConstructorModelDb? project = await context_forms.Projects.FirstOrDefaultAsync(x => x.Id == project_id);
+        ProjectConstructorModelDB? project = await context_forms.Projects.FirstOrDefaultAsync(x => x.Id == project_id);
         if (project is null)
             return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
 
@@ -1309,7 +1309,7 @@ public class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<FormConstructorModelDB>> FormUpdateOrCreate(ConstructorFormBaseModel form, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<FormConstructorModelDB>> FormUpdateOrCreate(FormBaseConstructorModel form, CancellationToken cancellationToken = default)
     {
         TResponseModel<FormConstructorModelDB> res = new();
 
@@ -1580,7 +1580,7 @@ public class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> FormFieldUpdateOrCreate(ConstructorFieldFormBaseModel form_field, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> FormFieldUpdateOrCreate(FieldFormBaseConstructorModel form_field, CancellationToken cancellationToken = default)
     {
         form_field.Name = Regex.Replace(form_field.Name, @"\s+", " ").Trim();
         form_field.MetadataValueType = form_field.MetadataValueType?.Trim();
@@ -1613,7 +1613,7 @@ public class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && (x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Id != form_field.Id && (x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)));
+        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && (x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Id != form_field.Id && (x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)));
         if (duplicate_field is not null)
             return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}' `{duplicate_field.SystemName}`");
 
@@ -1800,7 +1800,7 @@ public class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        ConstructorFieldFormBaseLowModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && x.Id != field_directory.Id && (x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && (x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)));
+        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && x.Id != field_directory.Id && (x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && (x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)));
         if (duplicate_field is not null)
             return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}' `{duplicate_field.SystemName}`");
 
@@ -2016,7 +2016,7 @@ public class ConstructorService(
         List<LinkDirectoryToFormConstructorModelDB> fields_dir = [];
         List<FieldFormConstructorModelDB> fields_st = [];
 
-        foreach (ConstructorFieldFormBaseLowModel fb in form.AllFields)
+        foreach (FieldFormBaseLowConstructorModel fb in form.AllFields)
         {
             i++;
             if (fb is LinkDirectoryToFormConstructorModelDB fs)

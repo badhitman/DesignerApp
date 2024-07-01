@@ -15,11 +15,11 @@ public partial class AddingFieldFormViewComponent : ComponentBase
 {
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public ConstructorFieldFormBaseLowModel? FieldObject { get; set; }
-    ConstructorFieldFormBaseLowModel? _field_object_master;
+    public FieldFormBaseLowConstructorModel? FieldObject { get; set; }
+    FieldFormBaseLowConstructorModel? _field_object_master;
 
     [CascadingParameter, EditorRequired]
-    Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
+    Action<FieldFormBaseLowConstructorModel, Type> StateHasChangedHandler { get; set; } = default!;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -202,7 +202,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
     }
 
     /// <inheritdoc/>
-    public void Update(ConstructorFieldFormBaseLowModel field)
+    public void Update(FieldFormBaseLowConstructorModel field)
     {
         if (_field_object_master is null)
             throw new Exception("Поле формы не инициализировано");
@@ -217,7 +217,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         SelectedTypeFieldForAdding = field_type;
         if (field_type == 0)
         {
-            if (FieldObject is ConstructorFieldFormBaseModel && FieldTextUI is not null)
+            if (FieldObject is FieldFormBaseConstructorModel && FieldTextUI is not null)
                 FieldTextUI.FieldParameter = "";
 
             _field_object_master = null;

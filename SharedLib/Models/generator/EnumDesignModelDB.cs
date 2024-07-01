@@ -22,7 +22,7 @@ public class EnumDesignModelDB : RealTypeModel
     /// <summary>
     /// Проект, за которым закреплено перечисление
     /// </summary>
-    public ProjectConstructorModelDb? Project { get; set; }
+    public ProjectConstructorModelDB? Project { get; set; }
 
     /// <summary>
     /// Связи полей документов с типами данных

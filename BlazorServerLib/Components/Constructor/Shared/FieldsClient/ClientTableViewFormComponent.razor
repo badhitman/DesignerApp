@@ -21,7 +21,7 @@ else
         }
         <thead>
             <tr>
-                @foreach (ConstructorFieldFormBaseLowModel fb in PageJoinForm.Form!.AllFields)
+                @foreach (FieldFormBaseLowConstructorModel fb in PageJoinForm.Form!.AllFields)
                 {
                     <th scope="col" class="text-center align-middle">
                         @fb.Name

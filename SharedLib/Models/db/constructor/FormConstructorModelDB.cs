@@ -11,7 +11,7 @@ namespace SharedLib;
 /// Форма
 /// </summary>
 [Index(nameof(Name), nameof(ProjectId), IsUnique = true)]
-public class FormConstructorModelDB : ConstructorFormBaseModel
+public class FormConstructorModelDB : FormBaseConstructorModel
 {
     /// <inheritdoc/>
     public static FormConstructorModelDB BuildEmpty(int projectId)
@@ -40,11 +40,11 @@ public class FormConstructorModelDB : ConstructorFormBaseModel
     [NotMapped]
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    public ConstructorFieldFormBaseLowModel[] AllFields
+    public FieldFormBaseLowConstructorModel[] AllFields
     {
         get
         {
-            List<(ConstructorFieldFormBaseLowModel obj, int sort)> res = [];
+            List<(FieldFormBaseLowConstructorModel obj, int sort)> res = [];
             if (Fields is not null && Fields.Count != 0)
                 foreach (FieldFormConstructorModelDB f in Fields)
                 {
@@ -84,7 +84,7 @@ public class FormConstructorModelDB : ConstructorFormBaseModel
         };
 
     /// <inheritdoc/>
-    public static FormConstructorModelDB Build(ConstructorFormBaseModel other)
+    public static FormConstructorModelDB Build(FormBaseConstructorModel other)
     {
         if (other is FormConstructorModelDB form)
             return Build(form);
@@ -182,7 +182,7 @@ public class FormConstructorModelDB : ConstructorFormBaseModel
                 AddRowButtonTitle == other.AddRowButtonTitle &&
                 ProjectId == other.ProjectId;
 
-        if (obj is ConstructorFormBaseModel base_other)
+        if (obj is FormBaseConstructorModel base_other)
             return
                 SystemName == base_other.SystemName &&
                 Id == base_other.Id &&

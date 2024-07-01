@@ -16,7 +16,7 @@ public class EnumDesignItemModelDB : EntryDescriptionModel
     /// <summary>
     /// Системное имя (имя типа/класса C#)
     /// </summary>
-    [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = "Системное имя может содержать только буквы латинского алфавита (a-zA-Z)")]
+    [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = GlobalStaticConstants.NAME_SPACE_TEMPLATE_MESSAGE)]
     public required override string Name { get; set; }
 
     /// <summary>

@@ -25,7 +25,7 @@ public class MainProjectViewModel : EntryDescriptionSwitchableModel
     }
 
     /// <inheritdoc/>
-    public static MainProjectViewModel Build(ProjectConstructorModelDb sender)
+    public static MainProjectViewModel Build(ProjectConstructorModelDB sender)
     {
         return new()
         {

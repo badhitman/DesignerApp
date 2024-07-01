@@ -16,7 +16,7 @@ public partial class FormFieldBadgeComponent : ComponentBase
     /// Поле формы
     /// </summary>
     [Parameter, EditorRequired]
-    public required ConstructorFieldFormBaseLowModel Field { get; set; }
+    public required FieldFormBaseLowConstructorModel Field { get; set; }
 
     /// <summary>
     /// Описание в формате HTML/Markup

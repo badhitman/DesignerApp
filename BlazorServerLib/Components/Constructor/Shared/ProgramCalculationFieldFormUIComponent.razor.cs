@@ -18,7 +18,7 @@ public partial class ProgramCalculationFieldFormUIComponent : ComponentBase
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public Action<ConstructorFieldFormBaseLowModel, Type> StateHasChangedHandler { get; set; } = default!;
+    public Action<FieldFormBaseLowConstructorModel, Type> StateHasChangedHandler { get; set; } = default!;
 
     string? _fields_names;
     string? FieldsNames
@@ -56,7 +56,7 @@ public partial class ProgramCalculationFieldFormUIComponent : ComponentBase
     }
 
     /// <inheritdoc/>
-    public void Update(ConstructorFieldFormBaseLowModel field)
+    public void Update(FieldFormBaseLowConstructorModel field)
     {
         FieldObject.Update(field);
         StateHasChanged();

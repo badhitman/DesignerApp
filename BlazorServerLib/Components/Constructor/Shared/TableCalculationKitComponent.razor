@@ -21,7 +21,7 @@ else
     <div class="input-group mb-3">
         <label class="input-group-text" for="inputGroupSelect01">Поле для группировки</label>
         <select @bind="SelectedFieldValue" class="form-select" id="inputGroupSelect01">
-            @foreach (ConstructorFieldFormBaseLowModel f in PageJoinForm.Form.AllFields)
+            @foreach (FieldFormBaseLowConstructorModel f in PageJoinForm.Form.AllFields)
             {
                 <option value="@getFieldVal(f)">@f.Name</option>
             }

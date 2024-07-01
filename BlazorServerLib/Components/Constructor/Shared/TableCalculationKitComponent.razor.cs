@@ -41,7 +41,7 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
 
     const string _separator = ":";
     /// <inheritdoc/>
-    protected string getFieldVal(ConstructorFieldFormBaseLowModel f) => $"{f.Id}{_separator}{f.GetType().Name}";
+    protected string getFieldVal(FieldFormBaseLowConstructorModel f) => $"{f.Id}{_separator}{f.GetType().Name}";
     SelectedFieldModel? GetFieldStruct(string? f)
     {
         if (string.IsNullOrWhiteSpace(f))
@@ -62,7 +62,7 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
         }
 
         string type_str = f[(id_str.Length + 1)..];
-        ConstructorFieldFormBaseLowModel? fb = PageJoinForm.Form?.AllFields.FirstOrDefault(x => x.Id == id_int && x.GetType().Name.Equals(type_str));
+        FieldFormBaseLowConstructorModel? fb = PageJoinForm.Form?.AllFields.FirstOrDefault(x => x.Id == id_int && x.GetType().Name.Equals(type_str));
 
         if (fb is null)
         {
@@ -83,7 +83,7 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
             bool is_upd = false;
             if (SelectedFieldObject is null)
             {
-                ConstructorFieldFormBaseLowModel? fb = PageJoinForm.Form?.AllFields.FirstOrDefault();
+                FieldFormBaseLowConstructorModel? fb = PageJoinForm.Form?.AllFields.FirstOrDefault();
                 if (fb is not null)
                 {
                     is_upd = true;

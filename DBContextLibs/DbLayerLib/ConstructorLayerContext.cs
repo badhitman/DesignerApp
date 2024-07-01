@@ -11,12 +11,12 @@ public partial class LayerContext
     /// <summary>
     /// Projects
     /// </summary>
-    public DbSet<ProjectConstructorModelDb> Projects { get; set; }
+    public DbSet<ProjectConstructorModelDB> Projects { get; set; }
 
     /// <summary>
     /// Members of projects
     /// </summary>
-    public DbSet<MemberOfProjectConstructorModelDb> MembersOfProjects { get; set; }
+    public DbSet<MemberOfProjectConstructorModelDB> MembersOfProjects { get; set; }
 
     /// <summary>
     /// Используемые проекты

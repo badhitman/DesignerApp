@@ -17,7 +17,7 @@
                 <sup class="ms-1 border" title="Системное имя">@context.SystemName</sup>
             </p>
             <div class="d-flex flex-wrap">
-                @foreach (ConstructorFieldFormBaseLowModel fb in context.AllFields)
+                @foreach (FieldFormBaseLowConstructorModel fb in context.AllFields)
                 {
                     <span class="badge rounded-pill bg-secondary position-relative badge-outer-fix" style="margin-right: 15px ;margin-bottom: 15px;">
                         <span>@fb.Name</span>

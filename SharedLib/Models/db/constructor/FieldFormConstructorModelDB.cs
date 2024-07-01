@@ -10,7 +10,7 @@ namespace SharedLib;
 /// Поле формы
 /// </summary>
 [Index(nameof(SortIndex))]
-public class FieldFormConstructorModelDB : ConstructorFieldFormBaseModel
+public class FieldFormConstructorModelDB : FieldFormBaseConstructorModel
 {
     /// <summary>
     /// Сортировка 
@@ -25,7 +25,7 @@ public class FieldFormConstructorModelDB : ConstructorFieldFormBaseModel
     /// <summary>
     /// Поле формы
     /// </summary>
-    public static FieldFormConstructorModelDB Build(ConstructorFieldFormBaseModel form_field, FormConstructorModelDB form_db, int sortIndex)
+    public static FieldFormConstructorModelDB Build(FieldFormBaseConstructorModel form_field, FormConstructorModelDB form_db, int sortIndex)
         => new()
         {
             SystemName = form_field.SystemName,
@@ -42,9 +42,9 @@ public class FieldFormConstructorModelDB : ConstructorFieldFormBaseModel
         };
 
     /// <inheritdoc/>
-    public static FieldFormConstructorModelDB Build(ConstructorFieldFormBaseLowModel form_field)
+    public static FieldFormConstructorModelDB Build(FieldFormBaseLowConstructorModel form_field)
     {
-        if (form_field is ConstructorFieldFormBaseModel bf)
+        if (form_field is FieldFormBaseConstructorModel bf)
         {
             return new FieldFormConstructorModelDB()
             {
@@ -84,7 +84,7 @@ public class FieldFormConstructorModelDB : ConstructorFieldFormBaseModel
 
 
     /// <inheritdoc/>
-    public override void Update(ConstructorFieldFormBaseLowModel form_field)
+    public override void Update(FieldFormBaseLowConstructorModel form_field)
     {
         base.Update(form_field);
 
@@ -99,7 +99,7 @@ public class FieldFormConstructorModelDB : ConstructorFieldFormBaseModel
             Owner = _f.Owner;
             SortIndex = _f.SortIndex;
         }
-        else if (form_field is ConstructorFieldFormBaseModel bf)
+        else if (form_field is FieldFormBaseConstructorModel bf)
         {
             MetadataValueType = bf.MetadataValueType;
             TypeField = bf.TypeField;

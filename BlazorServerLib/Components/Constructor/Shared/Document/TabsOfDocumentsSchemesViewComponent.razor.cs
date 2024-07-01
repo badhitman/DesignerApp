@@ -38,7 +38,7 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
     public int DocumentIndex;
 
     /// <inheritdoc/>
-    protected IEnumerable<ConstructorFormBaseModel> AllForms = default!;
+    protected IEnumerable<FormBaseConstructorModel> AllForms = default!;
 
     bool _tabs_is_hold = false;
     /// <inheritdoc/>

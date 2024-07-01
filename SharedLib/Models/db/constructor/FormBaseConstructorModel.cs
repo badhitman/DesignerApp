@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Формы
 /// </summary>
-public class ConstructorFormBaseModel : EntryConstructedModel
+public class FormBaseConstructorModel : EntryConstructedModel
 {
     /// <summary>
     /// CSS класс формы
