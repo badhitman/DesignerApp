@@ -17,7 +17,7 @@ public class DocumentPropertyFitModel : SortableFitRealTypeModel
     /// <summary>
     /// Метаданные поля
     /// </summary>
-    public BaseFitRealTypeModel? PropertyTypeMetadata { get; set; }
+    public RealTypeModel? PropertyTypeMetadata { get; set; }
 
     /// <inheritdoc/>
     public static explicit operator DocumentPropertyFitModel(DocumentPropertyMainBodyModelDB v)

@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Сортируемая (лёгкая) вещественная модель
 /// </summary>
-public class SortableFitRealTypeModel : BaseFitRealTypeModel
+public class SortableFitRealTypeModel : RealTypeModel
 {
     /// <summary>
     /// Индекс сортировки

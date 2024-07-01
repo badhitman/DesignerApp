@@ -42,5 +42,5 @@ public enum PropertyTypesEnum
     /// <summary>
     /// Документ
     /// </summary>
-    Document
+    Document,
 }

@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Документ (лёгкая модель)
 /// </summary>
-public class DocumentFitModel : BaseFitRealTypeModel
+public class DocumentFitModel : RealTypeModel
 {
     /// <summary>
     /// Поля тела документа

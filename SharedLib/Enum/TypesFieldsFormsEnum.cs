@@ -60,14 +60,14 @@ public enum TypesFieldsFormsEnum
     DateTime = 80,
 
     /// <summary>
-    /// Калькуляция double (программное)
+    /// Калькуляция  (double; программное;)
     /// </summary>
     [Description("Калькуляция")]
-    ProgramCalculationDouble  = 90,
+    ProgramCalculationDouble  = 1100,
 
     /// <summary>
     /// Генератор (rest-api)
     /// </summary>
     [Description("Генератор")]
-    Generator = 100
+    Generator = 1200
 }

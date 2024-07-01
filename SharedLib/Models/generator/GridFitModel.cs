@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Табличная часть документа
 /// </summary>
-public class GridFitModel : BaseFitRealTypeModel
+public class GridFitModel : RealTypeModel
 {
     /// <summary>
     /// Поля табличной части документа

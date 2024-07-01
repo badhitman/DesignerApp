@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Перечисление (лёгкая модель)
 /// </summary>
-public class EnumFitModel : BaseFitRealTypeModel
+public class EnumFitModel : RealTypeModel
 {
     /// <summary>
     /// Элементы/состав перечисления
