@@ -36,12 +36,6 @@ public abstract class GetUserServiceAbstract(IHttpContextAccessor httpContextAcc
             else
             {
                 user = await identityContext.Users.FirstOrDefaultAsync(x => x.Id == user_id);
-
-                //#if DEBUG
-                //                Debug.WriteLine(JsonConvert.SerializeObject(user));
-                //                Debug.WriteLine(JsonConvert.SerializeObject(await userManager.FindByIdAsync(user.Id)));
-                //#endif
-
                 return new ApplicationUserResponseModel()
                 {
                     ApplicationUser = user

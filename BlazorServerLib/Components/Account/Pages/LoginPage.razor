@@ -82,7 +82,7 @@
     private string? ReturnUrl { get; set; }
 
     [SupplyParameterFromForm]
-#if DEBUG
+#if DEMO
     private UserAuthorizationModel Input { get; set; } = new() { Password = "Qwerty123!" };
     bool IsDebug = true;
 #else

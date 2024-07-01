@@ -578,7 +578,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         if (roles_that_need_add_in_db.Length != 0)
         {
             await identityContext
-                .AddRangeAsync(roles_that_need_add_in_db.Select(r => new IdentityRole() { Name = r, NormalizedName = userManager.NormalizeName(r) }));
+                .AddRangeAsync(roles_that_need_add_in_db.Select(r => new ApplicationRole() { Name = r, Title = r, NormalizedName = userManager.NormalizeName(r) }));
             await identityContext.SaveChangesAsync();
         }
 
