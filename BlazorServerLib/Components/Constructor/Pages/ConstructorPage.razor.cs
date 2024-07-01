@@ -21,6 +21,7 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+
     /// <inheritdoc/>
     UserInfoModel CurrentUser = default!;
 
