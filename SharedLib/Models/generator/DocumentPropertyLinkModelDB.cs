@@ -55,7 +55,7 @@ public class DocumentPropertyLinkModelDB
     /// Тип:документ. Ссылка на объект документа, который представляет тип данных, хранящийся в поле/свойстве документа.
     /// NULL - если тип данных не документ
     /// </summary>
-    public DocumentDesignModelDB? TypedDocument { get; set; }
+    public DocumentSchemeConstructorModelDB? TypedDocument { get; set; }
 
     /// <inheritdoc/>
     public int? TypeId

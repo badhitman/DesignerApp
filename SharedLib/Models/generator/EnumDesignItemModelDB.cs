@@ -11,7 +11,6 @@ namespace SharedLib.Models;
 /// Элементы перечисления
 /// </summary>
 [Index(nameof(Name), nameof(OwnerEnumId), IsUnique = true)]
-//[Index(nameof(SortIndex), nameof(OwnerEnumId), IsUnique = true)]
 public class EnumDesignItemModelDB : EntryDescriptionModel
 {
     /// <summary>
@@ -34,15 +33,4 @@ public class EnumDesignItemModelDB : EntryDescriptionModel
     /// Владелец элемента/перечисления
     /// </summary>
     public EnumDesignModelDB? OwnerEnum { get; set; }
-
-    /// <inheritdoc/>
-    public static explicit operator EnumDesignItemModelDB(EnumItemActionRequestModel v)
-    {
-        return new EnumDesignItemModelDB()
-        {
-            Name = v.Name,
-            Description = v.Description,
-            OwnerEnumId = v.OwnerEnumId
-        };
-    }
 }

@@ -7,8 +7,13 @@ namespace SharedLib.Models;
 /// <summary>
 /// Поле документа (лёгкая модель)
 /// </summary>
-public class DocumentPropertyFitModel : SortableFitRealTypeModel
+public class DocumentPropertyFitModel : RealTypeModel
 {
+    /// <summary>
+    /// Индекс сортировки
+    /// </summary>
+    public uint SortIndex { get; set; }
+
     /// <summary>
     /// Тип данных поля
     /// </summary>

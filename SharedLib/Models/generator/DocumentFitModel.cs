@@ -20,7 +20,7 @@ public class DocumentFitModel : RealTypeModel
     public IEnumerable<GridFitModel>? Grids { get; set; }
 
     /// <inheritdoc/>
-    public static explicit operator DocumentFitModel(DocumentDesignModelDB v)
+    public static explicit operator DocumentFitModel(DocumentSchemeConstructorModelDB v)
     {
         return new DocumentFitModel()
         {
@@ -28,8 +28,6 @@ public class DocumentFitModel : RealTypeModel
             Description = v.Description,
             Name = v.Name,
             SystemName = v.SystemName,
-            PropertiesBody = v.PropertiesBody?.Select(x => (DocumentPropertyFitModel)x),
-            Grids = v.Grids?.Select(x => (GridFitModel)x)
         };
     }
 }

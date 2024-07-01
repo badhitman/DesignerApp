@@ -17,7 +17,7 @@ public class DocumentGridModelDB : RealTypeModel
     /// <summary>
     /// Документ - владелец табличной части
     /// </summary>
-    public DocumentDesignModelDB? DocumentOwner { get; set; }
+    public DocumentSchemeConstructorModelDB? DocumentOwner { get; set; }
 
     /// <summary>
     /// Поля документа (табличная часть)

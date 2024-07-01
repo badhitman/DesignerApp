@@ -12,7 +12,15 @@ namespace SharedLib.Models;
 /// </summary>
 [Table("DesignDocumentsMainBodyProperties")]
 [Comment("Реквизиты документов (основное тело документа)")]
-public class DocumentPropertyMainBodyModelDB : DocumentPropertyMainModelDB
+public class DocumentPropertyMainBodyModelDB : MetaMapBaseModelDB
 {
-    
+    /// <summary>
+    /// Идентификатор документа (внешний ключ)
+    /// </summary>
+    public int DocumentOwnerId { get; set; }
+
+    /// <summary>
+    /// Документ
+    /// </summary>
+    public DocumentSchemeConstructorModelDB? DocumentOwner { get; set; }
 }

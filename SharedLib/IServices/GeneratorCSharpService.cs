@@ -29,12 +29,12 @@ namespace SharedLib.Services
             await writer.WriteLineAsync($"// Project: {project_name} - by  © https://github.com/badhitman - @fakegov");
             await writer.WriteLineAsync("////////////////////////////////////////////////");
             await writer.WriteLineAsync();
+
             if (using_ns?.Any() == true)
             {
                 foreach (string u in using_ns)
-                {
-                    await writer.WriteLineAsync($"{(u.ToLower().StartsWith("using ") ? u : $"using {u}")}{(u.EndsWith(";") ? "" : ";")}");
-                }
+                    await writer.WriteLineAsync($"{(u.StartsWith("using ", StringComparison.CurrentCultureIgnoreCase) ? u : $"using {u}")}{(u.EndsWith(';') ? "" : ";")}");
+
                 await writer.WriteLineAsync();
             }
             bool ns_is_empty = string.IsNullOrWhiteSpace(name_space);
@@ -45,7 +45,9 @@ namespace SharedLib.Services
             }
             if (type_name is not null)
                 await writer.WriteLineAsync($"{(ns_is_empty ? "" : "\t")}/// <summary>");
+
             await writer.WriteLineAsync($"/// {(type_name is null ? "<inheritdoc/>" : type_name)}");
+
             if (type_name is not null)
                 await writer.WriteLineAsync($"{(ns_is_empty ? "" : "\t")}/// </summary>");
         }
@@ -84,15 +86,14 @@ namespace SharedLib.Services
         {
             ZipArchiveEntry readmeEntry = archive.CreateEntry("services_di.cs");
             using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, null, "di services", new string[] { project_info.NameSpace });
+            await WriteHead(writer, project_info.Name, null, "di services", [project_info.NameSpace]);
             await writer.WriteLineAsync("\tpublic static class ServicesExtensionDesignerDI");
             await writer.WriteLineAsync("\t{");
             await writer.WriteLineAsync("\t\tpublic static void BuildDesignerServicesDI(this IServiceCollection services)");
             await writer.WriteLineAsync("\t\t{");
             foreach (KeyValuePair<string, string> kvp in services_di)
-            {
                 await writer.WriteLineAsync($"\t\t\tservices.AddScoped<{kvp.Key}, {kvp.Value}>();");
-            }
+
             await WriteEnd(writer);
         }
 
@@ -1244,6 +1245,8 @@ namespace SharedLib.Services
             await WriteEnd(writer);
         }
 
+
+
         /// <inheritdoc/>
         public async Task DbTableAccessGen(IEnumerable<DocumentFitModel> docs, ZipArchive archive, string dir, NameSpacedModel project_info, string controllers_directory_path, string refit_client_services_dir_name)
         {
@@ -1612,7 +1615,7 @@ namespace SharedLib.Services
         }
 
         /// <inheritdoc/>
-        public async Task DbContextGen(IEnumerable<DocumentFitModel> DbTypesNames, ZipArchive archive, NameSpacedModel project_info)
+        public async Task DbContextGen(IEnumerable<DocumentFitModel> docs, ZipArchive archive, NameSpacedModel project_info)
         {
             ZipArchiveEntry enumEntry = archive.CreateEntry("LayerContextPartGen.cs");
             StreamWriter writer = new(enumEntry.Open(), Encoding.UTF8);
@@ -1621,16 +1624,13 @@ namespace SharedLib.Services
             await writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
             await writer.WriteLineAsync("\t{");
             bool is_first_item = true;
-            foreach (DocumentFitModel doc_obj in DbTypesNames)
+            foreach (DocumentFitModel doc_obj in docs)
             {
                 if (!is_first_item)
-                {
                     await writer.WriteLineAsync();
-                }
                 else
-                {
                     is_first_item = false;
-                }
+
                 await writer.WriteLineAsync("\t\t/// <summary>");
                 await writer.WriteLineAsync($"\t\t/// {doc_obj.Description}");
                 await writer.WriteLineAsync("\t\t/// </summary>");
@@ -1826,14 +1826,14 @@ namespace SharedLib.Services
         /// <inheritdoc/>
         public async Task<Stream> GetFullStream(StructureProjectModel dump, CodeGeneratorConfigModel conf)
         {
-            List<string> stat = new()
-            {
+            List<string> stat =
+            [
                 $"Перечислений: {dump.Enums.Count()} (элементов всего: {dump.Enums.Sum(x => x.EnumItems?.Count())})",
                 $"Документов: {dump.Documents.Count()} (полей всего: {dump.Documents.Sum(x => x.PropertiesBody?.Count()) + dump.Documents.Sum(x => x.Grids?.SelectMany(y => y.Properties!).Count())})",
                 $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
-                $"{conf.EnumDirectoryPath} - папка размещения файлов перечислений. Разместить в 'SharedLib'",
+                $"{conf.EnumDirectoryPath} - папка перечислений",
                 $"",
-                $"{conf.AccessDataDirectoryPath} - папка размещения файлов сервисов backend служб доступа к данным (CRUD) и классов/моделей ответов",
+                $"{conf.AccessDataDirectoryPath} - папка файлов сервисов backend служб доступа к данным (CRUD) и классов/моделей ответов",
                 $"\t> crud_interfaces: интерфейсы низкоуровневого доступа к контексту таблиц базы данных",
                 $"\t\t> crud_implementations: реализация интерфейсов crud_interfaces",
                 $"······················································",
@@ -1848,8 +1848,8 @@ namespace SharedLib.Services
                 $"LayerContextPartGen.cs - разделяемый [public partial class LayerContext : DbContext] класс.",
                 $"refit_di.cs - [public static class RefitExtensionDesignerDI].[public static void BuildRefitServicesDI(this IServiceCollection services, ClientConfigModel conf, TimeSpan handler_lifetime)]",
                 $"services_di.cs - [public static class ServicesExtensionDesignerDI].[public static void BuildDesignerServicesDI(this IServiceCollection services)]"
-            };
-            services_di = new Dictionary<string, string>();
+            ];
+            services_di = [];
             using MemoryStream zipToOpen = new();
             using (ZipArchive archive = new(zipToOpen, ZipArchiveMode.Create))
             {
@@ -1877,10 +1877,9 @@ namespace SharedLib.Services
             await writer.WriteLineAsync($"Генератор C# комплекта - ver: {app_version} (by © https://github.com/badhitman - @fakegov)");
             await writer.WriteLineAsync($"============ {DateTime.Now} ============");
             await writer.WriteLineAsync();
+            //
             foreach (string row_line in stat)
-            {
                 await writer.WriteLineAsync(row_line);
-            }
         }
     }
 }

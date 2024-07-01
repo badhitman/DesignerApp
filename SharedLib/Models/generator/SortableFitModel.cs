@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// SortableFitModel
 /// </summary>
-public class SortableFitModel : IdNameDescriptionSimpleModel
+public class SortableFitModel : EntryDescriptionModel
 {
     /// <summary>
     /// Индекс сортировки

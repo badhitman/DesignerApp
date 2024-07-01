@@ -33,7 +33,7 @@ public class StructureProjectModel
     /// <summary>
     /// Адаптер конвертации документов
     /// </summary>
-    public IEnumerable<DocumentDesignModelDB> DocumentsProxyAdapter
+    public IEnumerable<DocumentSchemeConstructorModelDB> DocumentsProxyAdapter
     {
         set
         {

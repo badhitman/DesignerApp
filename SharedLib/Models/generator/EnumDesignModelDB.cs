@@ -7,10 +7,25 @@ namespace SharedLib.Models;
 /// <summary>
 /// Перечисления (enum)
 /// </summary>
-public class EnumDesignModelDB : MainTypeModel
+public class EnumDesignModelDB : RealTypeModel
 {
     /// <summary>
     /// Состав/элементы перечисления
     /// </summary>
     public ICollection<EnumDesignItemModelDB>? EnumItems { get; set; }
+
+    /// <summary>
+    /// Внешний ключ на проект
+    /// </summary>
+    public int ProjectId { get; set; }
+
+    /// <summary>
+    /// Проект, за которым закреплено перечисление
+    /// </summary>
+    public ProjectConstructorModelDb? Project { get; set; }
+
+    /// <summary>
+    /// Связи полей документов с типами данных
+    /// </summary>
+    public IEnumerable<DocumentPropertyLinkModelDB>? PropertiesTypesLinks { get; set; }
 }
