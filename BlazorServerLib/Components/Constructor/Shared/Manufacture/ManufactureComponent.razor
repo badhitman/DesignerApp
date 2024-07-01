@@ -1,5 +1,26 @@
-﻿<h3>Генерация кода C#</h3>
+﻿@inherits BlazorBusyComponentBaseModel
+
+<h3>Генерация кода C#</h3>
 
 @code {
+    [Inject]
+    IConstructorService ConstructorRepo { get; set; } = default!;
 
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
+
+
+    [Parameter, EditorRequired]
+    public required MainProjectViewModel MainProject { get; set; }
+
+    ProjectConstructorModelDB CurrentProject = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusyProgress = true;
+        ProjectConstructorModelDB? rest = await ConstructorRepo.ReadProject(MainProject.Id);
+        IsBusyProgress = false;
+
+        CurrentProject = rest ?? throw new Exception("Данные проекта не удалось получить");
+    }
 }

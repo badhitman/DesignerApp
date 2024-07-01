@@ -376,7 +376,16 @@ public class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
             .Projects
-            .Include(x => x.Members)
+            //.Include(x => x.Members)
+            .Include(x => x.Forms)
+
+            .Include(x => x.Directories!)
+            .ThenInclude(x => x.Elements)
+
+            .Include(x => x.Documents!)
+            .ThenInclude(x => x.Pages!)
+            .ThenInclude(x => x.JoinsForms)
+
             .FirstOrDefaultAsync(x => x.Id == project_id);
     }
 

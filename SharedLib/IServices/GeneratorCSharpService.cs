@@ -1853,7 +1853,7 @@ namespace SharedLib.Services
             using MemoryStream zipToOpen = new();
             using (ZipArchive archive = new(zipToOpen, ZipArchiveMode.Create))
             {
-                await ReadmeGen(archive, conf.ProjectInfo, stat);
+                await ReadmeGen(archive, stat);
                 await EnumsGen(dump.Enums, archive, conf.EnumDirectoryPath, conf.ProjectInfo);
                 await DocumentsShemaGen(dump.Documents, archive, conf.DocumentsMastersDbDirectoryPath, conf.ProjectInfo);
                 await DbContextGen(dump.Documents, archive, conf.ProjectInfo);
@@ -1869,7 +1869,7 @@ namespace SharedLib.Services
         }
 
         /// <inheritdoc/>
-        public async Task ReadmeGen(ZipArchive archive, NameSpacedModel project_info, IEnumerable<string> stat)
+        public async Task ReadmeGen(ZipArchive archive, IEnumerable<string> stat)
         {
             string app_version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
             ZipArchiveEntry readmeEntry = archive.CreateEntry("Readme.txt");

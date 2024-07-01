@@ -23,7 +23,7 @@ public interface IGeneratorCSharpService
     /// <param name="archive">Объект архива для записи данных</param>
     /// <param name="project_info">Информация о проекте</param>
     /// <param name="write_lines">Строки дя записи в readme</param>
-    public Task ReadmeGen(ZipArchive archive, NameSpacedModel project_info, IEnumerable<string> write_lines);
+    public Task ReadmeGen(ZipArchive archive, IEnumerable<string> write_lines);
 
     /// <summary>
     /// Генерация перечислений

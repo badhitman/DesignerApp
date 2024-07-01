@@ -32,6 +32,22 @@ public class ProjectConstructorModelDB : EntryDescriptionSwitchableModel
     public List<MemberOfProjectConstructorModelDB>? Members { get; set; }
 
     /// <summary>
+    /// Справочники/перечисления
+    /// </summary>
+    public List<DirectoryConstructorModelDB>? Directories { get; set; }
+
+    /// <summary>
+    /// Формы
+    /// </summary>
+    public List<FormConstructorModelDB>? Forms { get; set; }
+
+    /// <summary>
+    /// Схемы документов
+    /// </summary>
+    public List<DocumentSchemeConstructorModelDB>? Documents { get; set; }
+
+
+    /// <summary>
     /// Scheme: Last updated DateTime
     /// </summary>
     public DateTime SchemeLastUpdated { get; set; } = DateTime.Now;
