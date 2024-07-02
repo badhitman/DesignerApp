@@ -10,6 +10,11 @@ namespace SharedLib.Models;
 public class DocumentGridModelDB : EntryDescriptionModel
 {
     /// <summary>
+    /// SystemName
+    /// </summary>
+    public required string SystemName { get; set; }
+
+    /// <summary>
     /// FK: Документ - владелец табличной части
     /// </summary>
     public int DocumentOwnerId { get; set; }

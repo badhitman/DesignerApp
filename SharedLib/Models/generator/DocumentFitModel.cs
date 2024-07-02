@@ -10,6 +10,11 @@ namespace SharedLib.Models;
 public class DocumentFitModel : EntryDescriptionModel
 {
     /// <summary>
+    /// SystemName
+    /// </summary>
+    public required string SystemName { get; set; }
+
+    /// <summary>
     /// Поля тела документа
     /// </summary>
     public IEnumerable<DocumentPropertyFitModel>? PropertiesBody { get; set; }
@@ -18,15 +23,4 @@ public class DocumentFitModel : EntryDescriptionModel
     /// Табличные части документа
     /// </summary>
     public IEnumerable<GridFitModel>? Grids { get; set; }
-
-    /// <inheritdoc/>
-    public static explicit operator DocumentFitModel(DocumentSchemeConstructorModelDB v)
-    {
-        return new DocumentFitModel()
-        {
-            Id = v.Id,
-            Description = v.Description,
-            Name = v.Name,
-        };
-    }
 }

@@ -15,6 +15,11 @@ namespace SharedLib.Models;
 public class DocumentPropertyMainBodyModelDB : MetaMapBaseModelDB
 {
     /// <summary>
+    /// SystemName
+    /// </summary>
+    public required string SystemName { get; set; }
+
+    /// <summary>
     /// Идентификатор документа (внешний ключ)
     /// </summary>
     public int DocumentOwnerId { get; set; }

@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Перечисления (enum)
 /// </summary>
-public class EnumDesignModelDB : EntryDescriptionModel
+public class EnumDesignModelDB : SystemEntryDescriptionModel
 {
     /// <summary>
     /// Состав/элементы перечисления

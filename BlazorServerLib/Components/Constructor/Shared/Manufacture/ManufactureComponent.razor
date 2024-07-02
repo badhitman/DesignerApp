@@ -2,6 +2,13 @@
 
 <h3>Генерация кода C#</h3>
 
+<CascadingValue Value="this">
+    <ConfigManufactureComponent />
+    <EnumerationsManufactureComponent />
+    <FormsManufactureComponent />
+    <DocumentsManufactureComponent/>
+</CascadingValue>
+
 @code {
     [Inject]
     IConstructorService ConstructorRepo { get; set; } = default!;
@@ -13,14 +20,20 @@
     [Parameter, EditorRequired]
     public required MainProjectViewModel MainProject { get; set; }
 
-    ProjectConstructorModelDB CurrentProject = default!;
 
-    protected override async Task OnInitializedAsync()
+    public ProjectConstructorModelDB CurrentProject { get; private set; } = default!;
+
+    public async Task ReloadProjectData()
     {
         IsBusyProgress = true;
         ProjectConstructorModelDB? rest = await ConstructorRepo.ReadProject(MainProject.Id);
         IsBusyProgress = false;
 
         CurrentProject = rest ?? throw new Exception("Данные проекта не удалось получить");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadProjectData();
     }
 }

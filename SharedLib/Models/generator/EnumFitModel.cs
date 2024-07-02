@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Перечисление (лёгкая модель)
 /// </summary>
-public class EnumFitModel : EntryDescriptionModel
+public class EnumFitModel : SystemEntryDescriptionModel
 {
     /// <summary>
     /// Элементы/состав перечисления
@@ -22,6 +22,7 @@ public class EnumFitModel : EntryDescriptionModel
             Description = v.Description,
             Id = v.Id,
             Name = v.Name,
+            SystemName = v.SystemName,
             EnumItems = v.EnumItems?.Select(x => (SortableFitModel)x)
         };
     }

@@ -10,6 +10,11 @@ namespace SharedLib.Models;
 public class DocumentPropertyFitModel : EntryDescriptionModel
 {
     /// <summary>
+    /// SystemName
+    /// </summary>
+    public required string SystemName { get; set; }
+
+    /// <summary>
     /// Индекс сортировки
     /// </summary>
     public uint SortIndex { get; set; }
@@ -22,7 +27,7 @@ public class DocumentPropertyFitModel : EntryDescriptionModel
     /// <summary>
     /// Метаданные поля
     /// </summary>
-    public EntryDescriptionModel? PropertyTypeMetadata { get; set; }
+    public SystemEntryDescriptionModel? PropertyTypeMetadata { get; set; }
 
     /// <inheritdoc/>
     public static explicit operator DocumentPropertyFitModel(DocumentPropertyMainBodyModelDB v)
@@ -30,6 +35,7 @@ public class DocumentPropertyFitModel : EntryDescriptionModel
         return new DocumentPropertyFitModel()
         {
             Name = v.Name,
+            SystemName = v.SystemName,
     //        Description = v.Description,
     //        Id = v.Id,
     //        PropertyType = v.PropertyType,
@@ -65,6 +71,7 @@ public class DocumentPropertyFitModel : EntryDescriptionModel
         return new DocumentPropertyFitModel()
         {
             Name = v.Name,
+            SystemName = v.SystemName,
     //        IsDeleted = v.IsDeleted,
     //        Description = v.Description,
     //        Id = v.Id,

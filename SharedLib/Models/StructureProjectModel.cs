@@ -29,15 +29,4 @@ public class StructureProjectModel
             Enums = value.Select(x => (EnumFitModel)x);
         }
     }
-
-    /// <summary>
-    /// Адаптер конвертации документов
-    /// </summary>
-    public IEnumerable<DocumentSchemeConstructorModelDB> DocumentsProxyAdapter
-    {
-        set
-        {
-            Documents = value.Select(x => (DocumentFitModel)x);
-        }
-    }
 }

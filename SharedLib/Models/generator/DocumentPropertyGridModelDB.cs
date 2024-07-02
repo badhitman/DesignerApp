@@ -14,6 +14,11 @@ namespace SharedLib.Models;
 public class DocumentPropertyGridModelDB : MetaMapBaseModelDB
 {
     /// <summary>
+    /// SystemName
+    /// </summary>
+    public required string SystemName { get; set; }
+
+    /// <summary>
     /// FK: Табличная часть документа
     /// </summary>
     public int GridId { get; set; }
