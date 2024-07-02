@@ -32,7 +32,6 @@ public class FieldFormBaseLowConstructorModel : EntrySystemDescriptionOwnedModel
     /// </summary>
     public virtual void Update(FieldFormBaseLowConstructorModel field)
     {
-        SystemName = field.SystemName;
         Id = field.Id;
         OwnerId = field.OwnerId;
         Name = field.Name;
@@ -70,7 +69,6 @@ public class FieldFormBaseLowConstructorModel : EntrySystemDescriptionOwnedModel
         FieldFormBaseLowConstructorModel other = (FieldFormBaseLowConstructorModel)o;
         return
             Id == other.Id &&
-            SystemName == other.SystemName &&
             Name == other.Name &&
             Hint == other.Hint &&
             Required == other.Required &&
@@ -87,6 +85,6 @@ public class FieldFormBaseLowConstructorModel : EntrySystemDescriptionOwnedModel
         else if (this is LinkDirectoryToFormConstructorModelDB df)
             return df.GetHashCode();
         else
-            return $"{Id} /{SystemName} '{Name}' [{Description}] -{Hint} `{Required}` {OwnerId} *{Css}*".GetHashCode();
+            return $"{Id} '{Name}' [{Description}] -{Hint} `{Required}` {OwnerId} *{Css}*".GetHashCode();
     }
 }

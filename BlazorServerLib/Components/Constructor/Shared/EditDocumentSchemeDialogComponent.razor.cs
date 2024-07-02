@@ -42,14 +42,13 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
 
 
     /// <inheritdoc/>
-    protected bool IsEdited => DocumentScheme.SystemName != DocumentSystemNameOrigin || DocumentScheme.Name != DocumentNameOrigin || DocumentScheme.Description != DocumentDescriptionOrigin;
+    protected bool IsEdited => DocumentScheme.Name != DocumentNameOrigin || DocumentScheme.Description != DocumentDescriptionOrigin;
     /// <inheritdoc/>
     protected TabsOfDocumentsSchemesViewComponent? pages_questionnaires_view_ref;
     /// <inheritdoc/>
     protected InputRichTextComponent? _currentTemplateInputRichText;
 
 
-    string DocumentSystemNameOrigin { get; set; } = "";
     string DocumentNameOrigin { get; set; } = "";
     string? DocumentDescriptionOrigin { get; set; }
 
@@ -73,7 +72,6 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
             DocumentScheme = rest.Response;
         }
 
-        DocumentSystemNameOrigin = DocumentScheme.SystemName;
         DocumentNameOrigin = DocumentScheme.Name;
         DocumentDescriptionOrigin = DocumentScheme.Description;
 
@@ -88,7 +86,7 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.UpdateOrCreateDocumentScheme(new EntryConstructedModel() { Id = DocumentScheme.Id, SystemName = DocumentSystemNameOrigin, Name = DocumentNameOrigin, Description = DocumentDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id });
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.UpdateOrCreateDocumentScheme(new EntryConstructedModel() { Id = DocumentScheme.Id, Name = DocumentNameOrigin, Description = DocumentDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

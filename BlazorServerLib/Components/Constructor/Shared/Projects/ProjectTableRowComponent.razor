@@ -2,7 +2,6 @@
 
 <tr>
     <th scope="row" class="@(ProjectRow.IsDisabled ? "text-decoration-line-through" : "")">
-        <code class="@(ProjectRow.IsDisabled ? "text-secondary" : "")" title="Системное имя проекта">@ProjectRow.SystemName</code>
         <span title="Название проекта">
             @ProjectRow.Name
             @if (!IsMyProject)

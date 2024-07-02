@@ -27,7 +27,7 @@ public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBas
     public required int SelectedDirectoryId { get; set; }
 
     /// <inheritdoc/>
-    public List<SystemEntryModel>? EntriesElements { get; set; }
+    public List<EntryModel>? EntriesElements { get; set; }
 
     /// <inheritdoc/>
     public async Task ReloadElements(int? selected_directory_id = 0, bool state_has_change = false)
@@ -42,7 +42,7 @@ public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBas
         }
 
         IsBusyProgress = true;
-        TResponseModel<List<SystemEntryModel>> rest = await ConstructorRepo.GetElementsOfDirectory(SelectedDirectoryId);
+        TResponseModel<List<EntryModel>> rest = await ConstructorRepo.GetElementsOfDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
 
         if (!rest.Success())

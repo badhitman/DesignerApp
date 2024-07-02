@@ -12,10 +12,7 @@ namespace SharedLib;
 /// </summary>
 [Index(nameof(Name), nameof(ProjectId), IsUnique = true)]
 public class FormConstructorModelDB : FormBaseConstructorModel
-{
-    /// <inheritdoc/>
-    public static FormConstructorModelDB BuildEmpty(int projectId)
-        => new() { SystemName = "", Name = "", ProjectId = projectId };
+{   
 
     /// <summary>
     /// Поля формы
@@ -68,6 +65,10 @@ public class FormConstructorModelDB : FormBaseConstructorModel
     }
 
     /// <inheritdoc/>
+    public static FormConstructorModelDB BuildEmpty(int projectId)
+        => new() { Name = "", ProjectId = projectId };
+
+    /// <inheritdoc/>
     public static FormConstructorModelDB Build(FormConstructorModelDB other)
         => new()
         {
@@ -80,7 +81,6 @@ public class FormConstructorModelDB : FormBaseConstructorModel
             Id = other.Id,
             ProjectId = other.ProjectId,
             Project = other.Project,
-            SystemName = other.SystemName,
         };
 
     /// <inheritdoc/>
@@ -92,7 +92,6 @@ public class FormConstructorModelDB : FormBaseConstructorModel
         return new()
         {
             Id = other.Id,
-            SystemName = other.SystemName,
             Name = other.Name,
             Description = other.Description,
             Css = other.Css,
@@ -107,7 +106,6 @@ public class FormConstructorModelDB : FormBaseConstructorModel
     /// </summary>
     public FormConstructorModelDB Reload(FormConstructorModelDB other)
     {
-        SystemName = other.SystemName;
         Id = other.Id;
         Name = other.Name;
         Description = other.Description;
@@ -174,7 +172,6 @@ public class FormConstructorModelDB : FormBaseConstructorModel
     {
         if (obj is FormConstructorModelDB other)
             return
-                SystemName == other.SystemName &&
                 Id == other.Id &&
                 Name.Equals(other.Name) &&
                 Description == other.Description &&
@@ -184,7 +181,6 @@ public class FormConstructorModelDB : FormBaseConstructorModel
 
         if (obj is FormBaseConstructorModel base_other)
             return
-                SystemName == base_other.SystemName &&
                 Id == base_other.Id &&
                 Name.Equals(base_other.Name) &&
                 Description == base_other.Description &&
@@ -197,5 +193,5 @@ public class FormConstructorModelDB : FormBaseConstructorModel
 
     /// <inheritdoc/>
     public override int GetHashCode()
-        => $"{Id} /{SystemName} *{Name}* ({Description}) '{Css}' `{AddRowButtonTitle}` [{ProjectId}]".GetHashCode();
+        => $"{Id} *{Name}* ({Description}) '{Css}' `{AddRowButtonTitle}` [{ProjectId}]".GetHashCode();
 }

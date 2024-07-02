@@ -26,8 +26,8 @@ public partial class ElementDirectoryFieldEditComponent : BlazorBusyComponentBas
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required SystemEntryModel ElementObject { get; set; }
-    SystemEntryModel ElementObjectEdit = default!;
+    public required EntryModel ElementObject { get; set; }
+    EntryModel ElementObjectEdit = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -65,7 +65,7 @@ public partial class ElementDirectoryFieldEditComponent : BlazorBusyComponentBas
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        ElementObjectEdit = SystemEntryModel.Build(ElementObject);
+        ElementObjectEdit = EntryModel.Build(ElementObject);
         base.OnInitialized();
     }
 }

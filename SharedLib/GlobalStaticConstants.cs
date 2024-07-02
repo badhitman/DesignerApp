@@ -240,12 +240,12 @@ public static partial class GlobalStaticConstants
     public const string SESSION_MEMCASHE_NAMESPASE = "sessions";
 
     /// <summary>
-    /// Шаблон пространства имён
+    /// Шаблон системного имени
     /// </summary>
-    public const string NAME_SPACE_TEMPLATE = @"^[a-zA-Z][a-zA-Z0-9_]{1,72}[a-zA-Z0-9]{0,128}$";
+    public const string SYSTEM_NAME_TEMPLATE = @"^[a-zA-Z][a-zA-Z0-9_]{1,72}[a-zA-Z0-9]{0,128}$";
 
     /// <summary>
     /// Сообщение для шаблона пространства имён
     /// </summary>
-    public const string NAME_SPACE_TEMPLATE_MESSAGE = "Системное имя не корректное. Оно может содержать латинские буквы и цифры. Первым символом должна идти буква. Минимум 2 символа!";
+    public const string SYSTEM_NAME_TEMPLATE_MESSAGE = "Системное имя не корректное. Оно может содержать латинские буквы и цифры. Первым символом должна идти буква. Минимум 2 символа!";
 }

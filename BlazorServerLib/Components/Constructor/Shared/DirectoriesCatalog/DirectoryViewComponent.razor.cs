@@ -40,7 +40,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected DirectoryNavComponent? directoryNav_ref;
 
-    SystemOwnedNameModel createNewElementForDict = SystemOwnedNameModel.BuildEmpty(0);
+    OwnedNameModel createNewElementForDict = OwnedNameModel.BuildEmpty(0);
 
     /// <inheritdoc/>
     protected async void AddElementIntoDirectory()
@@ -65,7 +65,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         }
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        createNewElementForDict = SystemOwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
+        createNewElementForDict = OwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
         if (rest.Success())
             await elementsListOfDirectoryView_ref.ReloadElements(directoryNav_ref?.SelectedDirectoryId, true);
         else
@@ -77,7 +77,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 
     async void SelectedDirectoryChangeAction(int selectedDirectoryId)
     {
-        createNewElementForDict = SystemOwnedNameModel.BuildEmpty(selectedDirectoryId);
+        createNewElementForDict = OwnedNameModel.BuildEmpty(selectedDirectoryId);
         await elementsListOfDirectoryView_ref.ReloadElements(selectedDirectoryId, true);
         StateHasChanged();
     }

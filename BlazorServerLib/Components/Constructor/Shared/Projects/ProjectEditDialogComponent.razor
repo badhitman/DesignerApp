@@ -7,14 +7,8 @@
             <TabComponent Tooltip="Базовые настройки" Title="Параметры">
                 <form class="row">
                     <div class="col-12">
-                    </div>
-                    <div class="col-md-6">
                         <label for="inputProjectName4" class="form-label">Название</label>
                         <input type="text" class="form-control" id="inputProjectName4" @bind-value="projectObject.Name" @bind-value:event="oninput" placeholder="Наименование проекта">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="inputSystemCode4" class="form-label">Системное имя</label>
-                        <input type="text" class="form-control" id="inputSystemCode4" @bind-value="projectObject.SystemName" @bind-value:event="oninput" placeholder="Системный код объекта">
                     </div>
                     <div class="col-12 mb-3">
                         <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>

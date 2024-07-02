@@ -39,7 +39,6 @@ public class DocumentSchemeConstructorModelDB : EntryConstructedModel
     {
         Name = other.Name;
         Description = other.Description;
-        SystemName = other.SystemName;
         ProjectId = other.ProjectId;
         Project = other.Project;
         if (other.Pages is null)
@@ -71,7 +70,6 @@ public class DocumentSchemeConstructorModelDB : EntryConstructedModel
         => new()
         {
             Name = "",
-            SystemName = "",
             ProjectId = projectId,
         };
 
@@ -80,7 +78,6 @@ public class DocumentSchemeConstructorModelDB : EntryConstructedModel
         => new()
         {
             Id = questionnaire.Id,
-            SystemName = questionnaire.SystemName,
             Name = questionnaire.Name,
             Description = questionnaire.Description,
             Pages = [],

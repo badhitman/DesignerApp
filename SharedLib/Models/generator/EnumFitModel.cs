@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Перечисление (лёгкая модель)
 /// </summary>
-public class EnumFitModel : RealTypeModel
+public class EnumFitModel : EntryDescriptionModel
 {
     /// <summary>
     /// Элементы/состав перечисления
@@ -22,7 +22,6 @@ public class EnumFitModel : RealTypeModel
             Description = v.Description,
             Id = v.Id,
             Name = v.Name,
-            SystemName = v.SystemName,
             EnumItems = v.EnumItems?.Select(x => (SortableFitModel)x)
         };
     }

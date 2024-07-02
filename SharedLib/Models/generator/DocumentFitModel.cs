@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Документ (лёгкая модель)
 /// </summary>
-public class DocumentFitModel : RealTypeModel
+public class DocumentFitModel : EntryDescriptionModel
 {
     /// <summary>
     /// Поля тела документа
@@ -27,7 +27,6 @@ public class DocumentFitModel : RealTypeModel
             Id = v.Id,
             Description = v.Description,
             Name = v.Name,
-            SystemName = v.SystemName,
         };
     }
 }

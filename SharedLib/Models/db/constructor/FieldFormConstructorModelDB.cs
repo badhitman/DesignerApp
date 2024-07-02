@@ -28,7 +28,6 @@ public class FieldFormConstructorModelDB : FieldFormBaseConstructorModel
     public static FieldFormConstructorModelDB Build(FieldFormBaseConstructorModel form_field, FormConstructorModelDB form_db, int sortIndex)
         => new()
         {
-            SystemName = form_field.SystemName,
             Name = form_field.Name,
             Description = form_field.Description,
             Css = form_field.Css,
@@ -48,7 +47,6 @@ public class FieldFormConstructorModelDB : FieldFormBaseConstructorModel
         {
             return new FieldFormConstructorModelDB()
             {
-                SystemName = bf.SystemName,
                 Name = bf.Name,
                 Css = bf.Css,
                 OwnerId = bf.OwnerId,
@@ -64,7 +62,6 @@ public class FieldFormConstructorModelDB : FieldFormBaseConstructorModel
         {
             return new FieldFormConstructorModelDB()
             {
-                SystemName = ff.SystemName,
                 Name = ff.Name,
                 SortIndex = ff.SortIndex,
                 Css = ff.Css,
@@ -130,11 +127,11 @@ public class FieldFormConstructorModelDB : FieldFormBaseConstructorModel
     }
 
     /// <inheritdoc/>
-    public override int GetHashCode() => $"{Id} /{SystemName} {{{MetadataValueType}}}' [{Hint}] ({Description}) {TypeField} {Required} {OwnerId} '{Name}' `{Css}`".GetHashCode();
+    public override int GetHashCode() => $"{Id} {{{MetadataValueType}}}' [{Hint}] ({Description}) {TypeField} {Required} {OwnerId} '{Name}' `{Css}`".GetHashCode();
 
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"#{Id}/{SystemName} '{Name}'/{Hint} [{Required}] ~{MetadataValueType}";
+        return $"#{Id} '{Name}'/{Hint} [{Required}] ~{MetadataValueType}";
     }
 }

@@ -31,11 +31,10 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         get
         {
             if (_field_object_master is null)
-                return new() { SystemName = "", Name = "", OwnerId = Form.Id };
+                return new() { Name = "", OwnerId = Form.Id };
 
             LinkDirectoryToFormConstructorModelDB res = new()
             {
-                SystemName = _field_object_master.SystemName,
                 Id = _field_object_master.Id,
                 Description = _field_object_master.Description,
                 Hint = _field_object_master.Hint,
@@ -60,11 +59,10 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         get
         {
             if (_field_object_master is null)
-                return new() { SystemName = "", Name = "", OwnerId = Form.Id, TypeField = (TypesFieldsFormsEnum)SelectedTypeFieldForAdding };
+                return new() { Name = "", OwnerId = Form.Id, TypeField = (TypesFieldsFormsEnum)SelectedTypeFieldForAdding };
 
             FieldFormConstructorModelDB res = new()
             {
-                SystemName = _field_object_master.SystemName,
                 Id = _field_object_master.Id,
                 Description = _field_object_master.Description,
                 Hint = _field_object_master.Hint,
@@ -116,28 +114,6 @@ public partial class AddingFieldFormViewComponent : ComponentBase
         }
     }
 
-    string? _field_system_name;
-    /// <summary>
-    /// Системное имя поля
-    /// </summary>
-    public string? FieldSystemName
-    {
-        get => _field_system_name;
-        private set
-        {
-            if (_field_object_master is null)
-                throw new Exception("Поле формы не инициализировано");
-
-            _field_system_name = value;
-            _field_object_master.Name = _field_name ?? "";
-            _field_object_master.SystemName = _field_system_name ?? "";
-            _field_object_master.Required = FieldIsRequired;
-            ChildUpdates();
-
-            StateHasChangedHandler(_field_object_master, this.GetType());
-        }
-    }
-
     string? _field_name;
     /// <summary>
     /// Название поля формы
@@ -153,7 +129,6 @@ public partial class AddingFieldFormViewComponent : ComponentBase
             _field_name = value;
             _field_object_master.Name = _field_name ?? "";
             _field_object_master.Required = FieldIsRequired;
-            _field_object_master.SystemName = _field_system_name ?? "";
             ChildUpdates();
 
             StateHasChangedHandler(_field_object_master, this.GetType());
@@ -175,7 +150,6 @@ public partial class AddingFieldFormViewComponent : ComponentBase
             _field_is_required = value;
             _field_object_master.Required = _field_is_required;
             _field_object_master.Name = _field_name ?? "";
-            _field_object_master.SystemName = _field_system_name ?? "";
             ChildUpdates();
             StateHasChangedHandler(_field_object_master, this.GetType());
         }
@@ -223,7 +197,6 @@ public partial class AddingFieldFormViewComponent : ComponentBase
 
             _field_object_master = null;
             _field_is_required = false;
-            _field_system_name = "";
             _field_name = "";
         }
 

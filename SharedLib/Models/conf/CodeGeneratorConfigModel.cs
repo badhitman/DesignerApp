@@ -33,9 +33,4 @@ public class CodeGeneratorConfigModel
     /// Папака размещения файлов контроллеров
     /// </summary>
     public string ControllersDirectoryPath { get; set; } = "gen_controllers";
-
-    /// <summary>
-    /// Папака размещения файлов клиентских/Refit служб для взаимодействия с api/rest контроллерами
-    /// </summary>
-    public string RefitClientServicesDirName { get; set; } = "gen_refit";
 }

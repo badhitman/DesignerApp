@@ -115,7 +115,7 @@ public interface IConstructorService
     /// <summary>
     /// Получить справочники/списки для проекта
     /// </summary>
-    public Task<TResponseStrictModel<SystemEntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/Создать справочник
@@ -131,17 +131,17 @@ public interface IConstructorService
     /// <summary>
     /// Получить элементы справочника/списка
     /// </summary>
-    public Task<TResponseModel<List<SystemEntryModel>>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<List<EntryModel>>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Создать элемент справочника
     /// </summary>
-    public Task<TResponseStrictModel<int>> CreateElementForDirectory(SystemOwnedNameModel element, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> CreateElementForDirectory(OwnedNameModel element, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить элемент справочника
     /// </summary>
-    public Task<ResponseBaseModel> UpdateElementOfDirectory(SystemEntryModel element, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> UpdateElementOfDirectory(EntryModel element, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить элемент справочника/списка

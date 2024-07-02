@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
@@ -17,5 +19,7 @@ public class NameSpacedModel
     /// <summary>
     /// Пространство имён
     /// </summary>
-    public required string NameSpace { get; set; }
+    [Required(AllowEmptyStrings = false)]
+    [Namespace]
+    public required string Namespace { get; set; }
 }

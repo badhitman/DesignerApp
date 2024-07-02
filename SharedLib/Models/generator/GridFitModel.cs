@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Табличная часть документа
 /// </summary>
-public class GridFitModel : RealTypeModel
+public class GridFitModel : EntryDescriptionModel
 {
     /// <summary>
     /// Поля табличной части документа
@@ -22,7 +22,6 @@ public class GridFitModel : RealTypeModel
             Id = v.Id,
             Name = v.Name,
             Description = v.Description,
-            SystemName = v.SystemName,
             Properties = v.Properties?.Select(x => (DocumentPropertyFitModel)x)
         };
     }

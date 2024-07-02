@@ -11,9 +11,9 @@
             }
             else
             {
-                foreach (SystemEntryModel el in allDirectories)
+                foreach (EntryModel el in allDirectories)
                 {
-                    <option value="@el.Id">@($"{el.Name} [{el.SystemName}]")</option>
+                    <option value="@el.Id">@el.Name</option>
                 }
             }
         </select>
@@ -25,7 +25,6 @@
     <div class="input-group">
         <span class="input-group-text">новый справочник/список:</span>
         <input @bind-value="directoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника" disabled="@IsBusyProgress">
-        <input @bind-value="directoryObject.SystemName" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя" disabled="@IsBusyProgress">
         <button disabled="@(IsBusyProgress || !GlobalTools.ValidateObject(directoryObject).IsValid)" @onclick="CreateDirectory" class="btn btn-outline-success" type="button">@GetTitleForButtonCreate</button>
         <button @onclick="() => ResetNavForm()" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
     </div>
@@ -35,7 +34,6 @@ else if (DirectoryNavState == DirectoryNavStatesEnum.Rename)
     <div class="input-group">
         <span class="input-group-text">редактирование справочника/списка:</span>
         <input @bind-value="directoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника" disabled="@IsBusyProgress">
-        <input @bind-value="directoryObject.SystemName" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Системное имя" disabled="@IsBusyProgress">
         <button @onclick="SaveRenameDirectory" disabled="@(IsBusyProgress || !GlobalTools.ValidateObject(directoryObject).IsValid)" class="btn btn-outline-secondary" type="button">Сохранить</button>
         <button @onclick="() => ResetNavForm()" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
     </div>

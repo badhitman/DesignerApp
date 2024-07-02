@@ -17,7 +17,6 @@ public class DirectoryConstructorModelDB : EntryConstructedModel
         => new()
         {
             Name = entry.Name,
-            SystemName = entry.SystemName,
             Description = entry.Description,
             Id = entry.Id,
             Project = entry.Project,

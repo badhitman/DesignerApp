@@ -7,17 +7,10 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// SystemNamed
+///Simple Name`d
 /// </summary>
-public class SystemNameModel
+public class SimpleNameModel
 {
-    /// <summary>
-    /// System name
-    /// </summary>
-    [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = GlobalStaticConstants.NAME_SPACE_TEMPLATE_MESSAGE)]
-    public required string SystemName { get; set; }
-
     /// <summary>
     /// Имя объекта
     /// </summary>
@@ -25,8 +18,8 @@ public class SystemNameModel
     public required string Name { get; set; }
 
     /// <inheritdoc/>
-    public static SystemNameModel? BuildEmpty()
+    public static SimpleNameModel BuildEmpty()
     {
-        return new() { Name = "", SystemName = "" };
+        return new() { Name = "" };
     }
 }

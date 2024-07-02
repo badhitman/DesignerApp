@@ -321,7 +321,7 @@ public class ConstructorService(
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(name_filter))
-            q = q.Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{name_filter.ToUpper()}%") || EF.Functions.Like(x.SystemName.ToUpper(), $"%{name_filter.ToUpper()}%"));
+            q = q.Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{name_filter.ToUpper()}%"));
 
         ProjectConstructorModelDB[] raw_data = await q.ToArrayAsync();
 
@@ -359,7 +359,6 @@ public class ConstructorService(
         {
             OwnerUserId = project.OwnerUserId,
             Name = project.Name,
-            SystemName = project.SystemName,
             Description = project.Description,
             Id = project.Id,
             IsDisabled = project.IsDisabled,
@@ -413,18 +412,17 @@ public class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ProjectConstructorModelDB? projectDb = await context_forms
             .Projects
-            .FirstOrDefaultAsync(x => x.OwnerUserId == userDb.Id && (x.Name == project.Name || x.SystemName == project.SystemName));
+            .FirstOrDefaultAsync(x => x.OwnerUserId == userDb.Id && (x.Name == project.Name));
 
         if (projectDb is not null)
         {
-            res.AddError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{projectDb.Id} '{projectDb.Name}' ({projectDb.SystemName})");
+            res.AddError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{projectDb.Id} '{projectDb.Name}'");
             return res;
         }
 
         projectDb = new()
         {
             Name = project.Name,
-            SystemName = project.SystemName,
             OwnerUserId = userDb.Id,
             Description = project.Description,
             IsDisabled = project.IsDisabled,
@@ -455,7 +453,7 @@ public class ConstructorService(
         context_forms.Update(project);
         await context_forms.SaveChangesAsync();
 
-        return ResponseBaseModel.CreateSuccess($"Проект '{project.Name}' [{project.SystemName}] {(is_deleted ? "выключен" : "включён")}");
+        return ResponseBaseModel.CreateSuccess($"Проект '{project.Name}' {(is_deleted ? "выключен" : "включён")}");
     }
 
     /// <inheritdoc/>
@@ -469,10 +467,10 @@ public class ConstructorService(
 
         ProjectConstructorModelDB? projectDb = await context_forms
             .Projects
-            .FirstOrDefaultAsync(x => x.Id != project.Id && (x.Name.ToUpper() == project.Name.ToUpper() || x.SystemName.ToUpper() == project.SystemName.ToUpper()));
+            .FirstOrDefaultAsync(x => x.Id != project.Id && x.Name.ToUpper() == project.Name.ToUpper());
 
         if (projectDb is not null)
-            return ResponseBaseModel.CreateError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{projectDb.Id} '{projectDb.Name}' ({projectDb.SystemName})");
+            return ResponseBaseModel.CreateError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{projectDb.Id} '{projectDb.Name}'");
 
         projectDb = await context_forms
             .Projects
@@ -481,7 +479,7 @@ public class ConstructorService(
         if (projectDb is null)
             return ResponseBaseModel.CreateError($"Проект #{project.Id} не найден в БД");
 
-        if (project.Name == projectDb.Name && project.SystemName == projectDb.SystemName && project.Description == projectDb.Description)
+        if (project.Name == projectDb.Name && project.Description == projectDb.Description)
             return ResponseBaseModel.CreateInfo("Объект не изменён");
 
         projectDb.Reload(project);
@@ -558,7 +556,7 @@ public class ConstructorService(
         await context_forms.AddAsync(memberDb);
         await context_forms.SaveChangesAsync();
 
-        return ResponseBaseModel.CreateSuccess($"Пользователь/участник {userDb.UserName} добавлен к проекту '{projectDb.Name}' ({projectDb.SystemName})");
+        return ResponseBaseModel.CreateSuccess($"Пользователь/участник {userDb.UserName} добавлен к проекту '{projectDb.Name}'");
     }
 
     /// <inheritdoc/>
@@ -582,7 +580,7 @@ public class ConstructorService(
         context_forms.Remove(memberDb);
         await context_forms.SaveChangesAsync();
 
-        return ResponseBaseModel.CreateSuccess($"Пользователь {userDb.UserName} успешно исключён из проекта '{memberDb.Project!.Name}' ({memberDb.Project.SystemName})");
+        return ResponseBaseModel.CreateSuccess($"Пользователь {userDb.UserName} успешно исключён из проекта '{memberDb.Project!.Name}'");
     }
 
     /// <inheritdoc/>
@@ -639,7 +637,7 @@ public class ConstructorService(
         ProjectUseConstructorModelDb? project_use = null;
         if (!await context_forms.Projects.AnyAsync(x => x.OwnerUserId == user_id) && !await context_forms.MembersOfProjects.AnyAsync(x => x.UserId == user_id))
         {
-            project = new() { Name = "По умолчанию", OwnerUserId = user_id, SystemName = "Default" };
+            project = new() { Name = "По умолчанию", OwnerUserId = user_id };
             await context_forms.AddAsync(project);
             await context_forms.SaveChangesAsync();
 #if DEMO
@@ -690,14 +688,13 @@ public class ConstructorService(
                 {
                     Name = "Булево (логическое)",
                     ProjectId = project!.Id,
-                    SystemName = "BooleanEnum",
                 };
                 await context_forms.AddAsync(_dir_seed);
                 await context_forms.SaveChangesAsync();
 
                 ElementOfDirectoryConstructorModelDB[] _el_of_dir_seed = [
-                    new() { Name = "Да", SortIndex = 1, SystemName = "True", ParentId = _dir_seed.Id },
-                new() { Name = "Нет", SortIndex = 2, SystemName = "False", ParentId = _dir_seed.Id }
+                    new() { Name = "Да", SortIndex = 1, ParentId = _dir_seed.Id },
+                new() { Name = "Нет", SortIndex = 2, ParentId = _dir_seed.Id }
                     ];
 
                 await context_forms.AddRangeAsync(_el_of_dir_seed);
@@ -711,15 +708,14 @@ public class ConstructorService(
                 {
                     Name = "Тестовая форма (demo)",
                     ProjectId = project!.Id,
-                    SystemName = "Default",
                     Description = "<p>seed data for debug</p>",
                 };
 
                 await context_forms.AddAsync(_form_seed);
                 await context_forms.SaveChangesAsync();
 
-                _form_seed.Fields = [new FieldFormConstructorModelDB() { Name = "Test text", SystemName = "DemoTextField", OwnerId = _form_seed.Id, SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12" }];
-                _form_seed.FormsDirectoriesLinks = [new LinkDirectoryToFormConstructorModelDB() { Name = "Test Directory", SystemName = "DemoDirectoryField", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
+                _form_seed.Fields = [new FieldFormConstructorModelDB() { Name = "Test text", OwnerId = _form_seed.Id, SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12" }];
+                _form_seed.FormsDirectoriesLinks = [new LinkDirectoryToFormConstructorModelDB() { Name = "Test Directory", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
 
                 context_forms.Update(_form_seed);
                 await context_forms.SaveChangesAsync();
@@ -729,7 +725,7 @@ public class ConstructorService(
 
             if (_document_scheme_seed is null)
             {
-                _document_scheme_seed = new() { Name = "Demo", SystemName = "TestDocument", ProjectId = project!.Id };
+                _document_scheme_seed = new() { Name = "Demo", ProjectId = project!.Id };
 
                 await context_forms.AddAsync(_document_scheme_seed);
                 await context_forms.SaveChangesAsync();
@@ -780,7 +776,7 @@ public class ConstructorService(
 
         return project.CanEdit(call_user.Response!)
             ? ResponseBaseModel.CreateSuccess("Проект доступен для редактирования")
-            : ResponseBaseModel.CreateError($"Проект недоступен для редактирования #{project.Id} '{project.Name}' `{project.SystemName}`"); ;
+            : ResponseBaseModel.CreateError($"Проект недоступен для редактирования #{project.Id} '{project.Name}'"); ;
     }
 
     /////////////// Перечисления.
@@ -799,20 +795,20 @@ public class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<SystemEntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
-        IQueryable<SystemEntryModel> query = context_forms
+        IQueryable<EntryModel> query = context_forms
             .Directories
             .Where(x => x.ProjectId == project_id)
-            .Select(x => new SystemEntryModel() { Id = x.Id, Name = x.Name, SystemName = x.SystemName })
+            .Select(x => new EntryModel() { Id = x.Id, Name = x.Name })
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(name_filter))
-            query = query.Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{name_filter.ToUpper()}%") || EF.Functions.Like(x.SystemName.ToUpper(), $"%{name_filter.ToUpper()}%"));
+            query = query.Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{name_filter.ToUpper()}%"));
 
-        return new TResponseStrictModel<SystemEntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
+        return new TResponseStrictModel<EntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
     }
 
     /// <inheritdoc/>
@@ -832,11 +828,11 @@ public class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         DirectoryConstructorModelDB? directory_db = await context_forms
             .Directories
-            .FirstOrDefaultAsync(x => x.Id != _dir.Id && x.ProjectId == _dir.ProjectId && (x.Name == _dir.Name || x.SystemName == _dir.SystemName), cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id != _dir.Id && x.ProjectId == _dir.ProjectId && x.Name == _dir.Name, cancellationToken: cancellationToken);
 
         if (directory_db is not null)
         {
-            msg = $"Справочник '{directory_db.Name}' ({directory_db.SystemName}) уже существует `#{directory_db.Id}`";
+            msg = $"Справочник '{directory_db.Name} уже существует `#{directory_db.Id}`";
             logger.LogError(msg);
             res.AddError(msg);
             return res;
@@ -877,7 +873,7 @@ public class ConstructorService(
                 return res;
             }
 
-            if (directory_db.Name.Equals(_dir.Name) && directory_db.SystemName.Equals(_dir.SystemName))
+            if (directory_db.Name.Equals(_dir.Name))
             {
                 res.AddInfo("Справочник не требует изменения");
             }
@@ -885,7 +881,6 @@ public class ConstructorService(
             {
                 msg = $"Справочник #{_dir.Id} переименован: `{directory_db.Name}` -> `{_dir.Name}`";
                 directory_db.Name = _dir.Name;
-                directory_db.SystemName = _dir.SystemName;
                 context_forms.Update(directory_db);
                 await context_forms.SaveChangesAsync(cancellationToken);
                 logger.LogInformation(msg);
@@ -930,9 +925,9 @@ public class ConstructorService(
     #endregion
     #region элементы справочникв/списков
     /// <inheritdoc/>
-    public async Task<TResponseModel<List<SystemEntryModel>>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<List<EntryModel>>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
-        TResponseModel<List<SystemEntryModel>> res = new();
+        TResponseModel<List<EntryModel>> res = new();
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         DirectoryConstructorModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
@@ -946,14 +941,14 @@ public class ConstructorService(
 
         res.Response = dir.Elements?
             .OrderBy(x => x.SortIndex)
-            .Select(x => new SystemEntryModel() { Name = x.Name, SystemName = x.SystemName, Id = x.Id })
+            .Select(x => new EntryModel() { Name = x.Name, Id = x.Id })
             .ToList();
 
         return res;
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<int>> CreateElementForDirectory(SystemOwnedNameModel element, CancellationToken cancellationToken = default)
+    public async Task<TResponseStrictModel<int>> CreateElementForDirectory(OwnedNameModel element, CancellationToken cancellationToken = default)
     {
         element.Name = Regex.Replace(element.Name, @"\s+", " ").Trim();
         TResponseStrictModel<int> res = new() { Response = 0 };
@@ -983,7 +978,7 @@ public class ConstructorService(
             return res;
         }
 
-        ElementOfDirectoryConstructorModelDB? dictionary_element_db = await context_forms.ElementsOfDirectories.FirstOrDefaultAsync(x => x.ParentId == element.OwnerId && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()), cancellationToken: cancellationToken);
+        ElementOfDirectoryConstructorModelDB? dictionary_element_db = await context_forms.ElementsOfDirectories.FirstOrDefaultAsync(x => x.ParentId == element.OwnerId && (x.Name.ToUpper() == element.Name.ToUpper()), cancellationToken: cancellationToken);
 
         if (dictionary_element_db is not null)
         {
@@ -1001,7 +996,7 @@ public class ConstructorService(
             ? 0
             : current_indexes.Max();
 
-        dictionary_element_db = new() { Name = element.Name, SystemName = element.SystemName, ParentId = directory_db.Id, Parent = directory_db, SortIndex = current_index + 1 };
+        dictionary_element_db = new() { Name = element.Name, ParentId = directory_db.Id, Parent = directory_db, SortIndex = current_index + 1 };
 
         try
         {
@@ -1026,7 +1021,7 @@ public class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> UpdateElementOfDirectory(SystemEntryModel element, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> UpdateElementOfDirectory(EntryModel element, CancellationToken cancellationToken = default)
     {
         element.Name = Regex.Replace(element.Name, @"\s+", " ").Trim();
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(element);
@@ -1051,7 +1046,7 @@ public class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        if (element_db.Name.Equals(element.Name) && element_db.SystemName.Equals(element.SystemName))
+        if (element_db.Name.Equals(element.Name))
         {
             res.AddInfo("Изменений нет - обновления не требуется");
             return res;
@@ -1059,7 +1054,7 @@ public class ConstructorService(
 
         IQueryable<ElementOfDirectoryConstructorModelDB> duplicate_check_query = context_forms
             .ElementsOfDirectories
-            .Where(x => x.Id != element.Id && x.ParentId == element_db.ParentId && (x.Name.ToUpper() == element.Name.ToUpper() || x.SystemName.ToUpper() == element.SystemName.ToUpper()));
+            .Where(x => x.Id != element.Id && x.ParentId == element_db.ParentId && (x.Name.ToUpper() == element.Name.ToUpper()));
 
         if (await duplicate_check_query.AnyAsync(cancellationToken: cancellationToken))
         {
@@ -1068,7 +1063,6 @@ public class ConstructorService(
         }
 
         element_db.Name = element.Name;
-        element_db.SystemName = element.SystemName;
         context_forms.Update(element_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
@@ -1237,9 +1231,7 @@ public class ConstructorService(
                  from field in ps_field.DefaultIfEmpty()
                  where
                  EF.Functions.Like(_form.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") ||
-                 EF.Functions.Like(field.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") ||
-                 EF.Functions.Like(_form.SystemName.ToLower(), $"%{req.SimpleRequest.ToLower()}%") ||
-                 EF.Functions.Like(field.SystemName.ToLower(), $"%{req.SimpleRequest.ToLower()}%")
+                 EF.Functions.Like(field.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%")
                  group _form by _form into g
                  select g.Key)
              .OrderBy(x => x.Name)
@@ -1334,13 +1326,13 @@ public class ConstructorService(
 #pragma warning disable CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
         FormConstructorModelDB? form_db = await context_forms
             .Forms
-            .FirstOrDefaultAsync(x => x.Id != form.Id && x.ProjectId == form.ProjectId && (x.Name.ToUpper() == form.Name.ToUpper() || x.SystemName.ToUpper() == form.SystemName.ToUpper()), cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id != form.Id && x.ProjectId == form.ProjectId && x.Name.ToUpper() == form.Name.ToUpper(), cancellationToken: cancellationToken);
 #pragma warning restore CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
 
         string msg;
         if (form_db is not null)
         {
-            msg = $"Такая форма уже существует: #{form_db.Id} '{form_db.Name}' [{form_db.SystemName}]";
+            msg = $"Такая форма уже существует: #{form_db.Id} '{form_db.Name}'";
             res.AddError(msg);
             logger.LogError(msg);
             return res;
@@ -1387,7 +1379,7 @@ public class ConstructorService(
             return res;
         }
 
-        if (form_db.SystemName.Equals(form.SystemName) && form_db.Name.Equals(form.Name) && form_db.Description == form.Description && form_db.Css == form.Css && form_db.AddRowButtonTitle == form.AddRowButtonTitle)
+        if (form_db.Name.Equals(form.Name) && form_db.Description == form.Description && form_db.Css == form.Css && form_db.AddRowButtonTitle == form.AddRowButtonTitle)
         {
             msg = $"Форма #{form.Id} не требует изменений в БД";
             res.AddInfo(msg);
@@ -1395,7 +1387,6 @@ public class ConstructorService(
         }
         else
         {
-            form_db.SystemName = form.SystemName;
             form_db.Name = form.Name;
             form_db.Description = form.Description;
             form_db.Css = form.Css;
@@ -1622,9 +1613,9 @@ public class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && (x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Id != form_field.Id && (x.SystemName.Equals(form_field.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)));
+        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Id != form_field.Id && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase));
         if (duplicate_field is not null)
-            return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}' `{duplicate_field.SystemName}`");
+            return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}'");
 
         FieldFormConstructorModelDB? form_field_db;
         if (form_field.Id < 1)
@@ -1695,14 +1686,6 @@ public class ConstructorService(
             }
         }
 
-        if (form_field_db.SystemName != form_field.SystemName)
-        {
-            msg = $"Системное имя поля (простого типа) формы #{form_field.Id} изменилось: [{form_field_db.Name}] -> [{form_field.Name}]";
-            res.AddWarning(msg);
-            logger.LogInformation(msg);
-            form_field_db.SystemName = form_field.SystemName;
-        }
-
         if (form_field_db.Description != form_field.Description)
         {
             msg = $"Описание поля (простого типа) формы #{form_field.Id} изменилось";
@@ -1753,7 +1736,7 @@ public class ConstructorService(
             }
             catch (Exception ex)
             {
-                msg = $"Ошибка обновления поля #{form_field_db.Id} '{form_field_db.Name}' `{form_field_db.SystemName}` (форма #{form_db.Id} '{form_db.Name}' `{form_db.SystemName}`)";
+                msg = $"Ошибка обновления поля #{form_field_db.Id} '{form_field_db.Name}' (форма #{form_db.Id} '{form_db.Name}')";
                 res.AddError(msg);
                 res.Messages.InjectException(ex);
                 logger.LogError(ex, msg);
@@ -1809,9 +1792,9 @@ public class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && x.Id != field_directory.Id && (x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase) || x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase))) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && (x.SystemName.Equals(field_directory.SystemName, StringComparison.OrdinalIgnoreCase) || x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)));
+        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && x.Id != field_directory.Id && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase));
         if (duplicate_field is not null)
-            return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}' `{duplicate_field.SystemName}`");
+            return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}'");
 
         LinkDirectoryToFormConstructorModelDB? form_field_db;
         if (field_directory.Id < 1)
@@ -1821,7 +1804,6 @@ public class ConstructorService(
 
             form_field_db = new()
             {
-                SystemName = field_directory.SystemName,
                 Name = field_directory.Name,
                 Css = field_directory.Css,
                 OwnerId = field_directory.OwnerId,
@@ -1883,14 +1865,6 @@ public class ConstructorService(
             form_field_db.Name = field_directory.Name;
         }
 
-        if (form_field_db.SystemName != field_directory.SystemName)
-        {
-            msg = $"Системное имя поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.SystemName}] -> [{field_directory.SystemName}]";
-            res.AddWarning(msg);
-            logger.LogInformation(msg);
-            form_field_db.SystemName = field_directory.SystemName;
-        }
-
         if (form_field_db.Css != field_directory.Css)
         {
             msg = $"CSS поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.Css}] -> [{field_directory.Css}]";
@@ -1933,7 +1907,7 @@ public class ConstructorService(
             }
             catch (Exception ex)
             {
-                msg = $"Ошибка обновления поля #{form_field_db.Id} '{form_field_db.Name}' `{form_field_db.SystemName}` (форма #{form_db.Id} '{form_db.Name}' `{form_db.SystemName}`)";
+                msg = $"Ошибка обновления поля #{form_field_db.Id} '{form_field_db.Name}' (форма #{form_db.Id} '{form_db.Name}')";
                 res.AddError(msg);
                 res.Messages.InjectException(ex);
                 logger.LogError(ex, msg);
@@ -2160,11 +2134,11 @@ public class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         DocumentSchemeConstructorModelDB? questionnaire_db = await context_forms
             .DocumentSchemes
-            .FirstOrDefaultAsync(x => x.Id != documentScheme.Id && x.ProjectId == documentScheme.ProjectId && (x.Name.ToUpper() == documentScheme.Name.ToUpper() || x.SystemName.ToUpper() == documentScheme.SystemName.ToUpper()), cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id != documentScheme.Id && x.ProjectId == documentScheme.ProjectId && x.Name.ToUpper() == documentScheme.Name.ToUpper(), cancellationToken: cancellationToken);
         string msg;
         if (questionnaire_db is not null)
         {
-            msg = $"Опрос/анкета с таким именем уже существует: #{questionnaire_db.Id} '{questionnaire_db.Name}' `{questionnaire_db.SystemName}`";
+            msg = $"Опрос/анкета с таким именем уже существует: #{questionnaire_db.Id} '{questionnaire_db.Name}'";
             res.AddError(msg);
             logger.LogError(msg);
             return res;
@@ -2208,7 +2182,7 @@ public class ConstructorService(
             return res;
         }
 
-        if (questionnaire_db.SystemName == documentScheme.SystemName && questionnaire_db.Name == documentScheme.Name && questionnaire_db.Description == documentScheme.Description)
+        if (questionnaire_db.Name == documentScheme.Name && questionnaire_db.Description == documentScheme.Description)
         {
             msg = $"Опрос/анкета #{documentScheme.Id} не требует изменений в БД";
             res.AddInfo(msg);
@@ -2216,7 +2190,6 @@ public class ConstructorService(
         }
         else
         {
-            questionnaire_db.SystemName = documentScheme.SystemName;
             questionnaire_db.Name = documentScheme.Name;
             questionnaire_db.Description = documentScheme.Description;
             context_forms.Update(questionnaire_db);

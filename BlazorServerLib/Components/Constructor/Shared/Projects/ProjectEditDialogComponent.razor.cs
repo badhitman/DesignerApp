@@ -44,7 +44,7 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     public required UserInfoModel CurrentUser { get; set; }
 
     /// <inheritdoc/>
-    protected bool CanSave => !string.IsNullOrWhiteSpace(projectObject.Name) && !string.IsNullOrWhiteSpace(projectObject.SystemName) && (!ProjectForEdit.Equals(projectObject) || ProjectForEdit.Id < 1);
+    protected bool CanSave => !string.IsNullOrWhiteSpace(projectObject.Name) && (!ProjectForEdit.Equals(projectObject) || ProjectForEdit.Id < 1);
 
     void ResetForm()
     {

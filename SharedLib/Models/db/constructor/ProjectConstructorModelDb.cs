@@ -10,17 +10,9 @@ namespace SharedLib;
 /// <summary>
 /// Project (for constructor)
 /// </summary>
-[Index(nameof(SystemName)), Index(nameof(OwnerUserId))]
-[Index(nameof(OwnerUserId), nameof(SystemName), IsUnique = true)]
+[Index(nameof(OwnerUserId))]
 public class ProjectConstructorModelDB : EntryDescriptionSwitchableModel
 {
-    /// <summary>
-    /// System name
-    /// </summary>
-    [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = GlobalStaticConstants.NAME_SPACE_TEMPLATE_MESSAGE)]
-    public required string SystemName { get; set; }
-
     /// <summary>
     ///  Owner user (of Identity)
     /// </summary>
@@ -67,7 +59,6 @@ public class ProjectConstructorModelDB : EntryDescriptionSwitchableModel
     public void Reload(ProjectViewModel project)
     {
         Name = project.Name;
-        SystemName = project.SystemName;
         Description = project.Description;
         Id = project.Id;
         IsDisabled = project.IsDisabled;

@@ -40,7 +40,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     public required Action<int> SelectedDirectoryChangeHandler { get; set; }
 
 
-    SystemEntryModel[] allDirectories = default!;
+    EntryModel[] allDirectories = default!;
 
     /// <summary>
     /// Выбранный справочник/список
@@ -58,7 +58,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     }
     int _selected_dir_id;
 
-    SystemEntryModel directoryObject = default!;
+    EntryModel directoryObject = default!;
 
     static readonly DirectoryNavStatesEnum[] ModesForHideSelector = [DirectoryNavStatesEnum.Create, DirectoryNavStatesEnum.Rename];
 
@@ -74,8 +74,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(directoryObject.Name) || string.IsNullOrWhiteSpace(directoryObject.SystemName))
-                return "Введите название и системное имя";
+            if (string.IsNullOrWhiteSpace(directoryObject.Name))
+                return "Введите название";
 
             return "Создать";
         }
@@ -112,7 +112,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, SystemName = directoryObject.SystemName, ProjectId = ParentFormsPage.MainProject.Id });
+        TResponseStrictModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, ProjectId = ParentFormsPage.MainProject.Id });
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
         {
@@ -149,7 +149,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
 
     void ResetNavForm(bool stateHasChanged = false)
     {
-        directoryObject = SystemEntryModel.BuildEmpty();
+        directoryObject = EntryModel.BuildEmpty();
         DirectoryNavState = DirectoryNavStatesEnum.None;
 
         if (stateHasChanged)
@@ -167,7 +167,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
         ResetNavForm();
 
         IsBusyProgress = true;
-        TResponseStrictModel<SystemEntryModel[]> rest = await ConstructorRepo.GetDirectories(ParentFormsPage.MainProject.Id);
+        TResponseStrictModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
         allDirectories = rest.Response;

@@ -49,7 +49,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     public required ConstructorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
-    protected IEnumerable<SystemEntryModel> Entries = default!;
+    protected IEnumerable<EntryModel> Entries = default!;
 
     /// <inheritdoc/>
     public string DomID => $"{Field.GetType().FullName}_{Field.Id}";
@@ -78,7 +78,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseStrictModel<SystemEntryModel[]> rest = await ConstructorRepo.GetDirectories(Form.ProjectId);
+        TResponseStrictModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(Form.ProjectId);
         IsBusyProgress = false;
 
         Entries = rest.Response;

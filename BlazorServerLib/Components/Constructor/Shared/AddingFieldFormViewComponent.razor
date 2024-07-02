@@ -22,10 +22,6 @@ else
         <input @bind-value="FieldName" @bind-value:event="oninput" placeholder="Название" type="text" id="inputName" class="form-control" autocomplete="off">
     </div>
 
-    <div class="col-auto">
-        <input @bind-value="FieldSystemName" @bind-value:event="oninput" placeholder="Системное имя" type="text" id="inputSystemName" class="form-control" autocomplete="off">
-    </div>
-
     switch (SelectedTypeFieldForAdding)
     {
         case int.MaxValue:

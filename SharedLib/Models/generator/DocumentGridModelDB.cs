@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Табличная часть документа
 /// </summary>
-public class DocumentGridModelDB : RealTypeModel
+public class DocumentGridModelDB : EntryDescriptionModel
 {
     /// <summary>
     /// FK: Документ - владелец табличной части

@@ -37,7 +37,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
 
 
     /// <inheritdoc/>
-    protected IEnumerable<SystemEntryModel> Entries = [];
+    protected IEnumerable<EntryModel> Entries = [];
     /// <inheritdoc/>
     public int SelectedDirectoryField
     {
@@ -60,7 +60,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseStrictModel<SystemEntryModel[]> rest = await ConstructorRepo.GetDirectories(Form.ProjectId);
+        TResponseStrictModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(Form.ProjectId);
         IsBusyProgress = false;
         StateHasChangedHandler(FieldObject, GetType());
 

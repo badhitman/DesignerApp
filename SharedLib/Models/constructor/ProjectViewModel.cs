@@ -16,7 +16,6 @@ public class ProjectViewModel : EntryDescriptionSwitchableModel
         {
             OwnerUserId = other.OwnerUserId,
             Name = other.Name,
-            SystemName = other.SystemName,
             Description = other.Description,
             Id = other.Id,
             IsDisabled = other.IsDisabled,
@@ -28,11 +27,6 @@ public class ProjectViewModel : EntryDescriptionSwitchableModel
     /// Владелец проекта (user id of Identity)
     /// </summary>
     public required string OwnerUserId { get; set; }
-
-    /// <inheritdoc/>
-    [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.NAME_SPACE_TEMPLATE, ErrorMessage = GlobalStaticConstants.NAME_SPACE_TEMPLATE_MESSAGE)]
-    public required string SystemName { get; set; }
 
     /// <summary>
     /// Участники проекта
@@ -49,7 +43,7 @@ public class ProjectViewModel : EntryDescriptionSwitchableModel
     public override bool Equals(object? obj)
     {
         if (obj is ProjectViewModel other)
-            return Id == other.Id && SystemName == other.SystemName && Name == other.Name && Description == other.Description && IsDisabled == other.IsDisabled;
+            return Id == other.Id && Name == other.Name && Description == other.Description && IsDisabled == other.IsDisabled;
 
         return false;
     }
@@ -64,7 +58,6 @@ public class ProjectViewModel : EntryDescriptionSwitchableModel
     public void Reload(ProjectViewModel other)
     {
         Id = other.Id;
-        SystemName = other.SystemName;
         Name = other.Name;
         Description = other.Description;
         IsDisabled = other.IsDisabled;

@@ -12,7 +12,7 @@ else
 {
     <select @bind="SelectedDirectoryField" class="form-select" id="inputGroupSelect01">
         <option value="0" selected disabled="@(SelectedDirectoryField > 0)">Выбор справочника...</option>
-        @foreach (SystemEntryModel e in Entries)
+        @foreach (EntryModel e in Entries)
         {
             <option value="@e.Id">
                 @e.Name

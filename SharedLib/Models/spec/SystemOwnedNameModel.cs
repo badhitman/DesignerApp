@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// System OwnedNamed
+/// OwnedNamed
 /// </summary>
-public class SystemOwnedNameModel : SystemNameModel
+public class OwnedNameModel : SimpleNameModel
 {
     /// <summary>
     /// Владелец
@@ -15,6 +15,6 @@ public class SystemOwnedNameModel : SystemNameModel
     public int OwnerId { get; set; }
 
     /// <inheritdoc/>
-    public static SystemOwnedNameModel BuildEmpty(int ownerId)
-        => new() { Name = "", SystemName = "", OwnerId = ownerId };
+    public static OwnedNameModel BuildEmpty(int ownerId)
+        => new() { Name = "", OwnerId = ownerId };
 }

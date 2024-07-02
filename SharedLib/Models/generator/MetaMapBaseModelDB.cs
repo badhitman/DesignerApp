@@ -11,7 +11,7 @@ namespace SharedLib.Models;
 /// </summary>
 [Index(nameof(PropertyType))]
 [Index(nameof(PropertyLinkId))]
-public abstract class MetaMapBaseModelDB : RealTypeModel
+public abstract class MetaMapBaseModelDB : EntryDescriptionModel
 {
     /// <summary>
     /// Тип поля (перечисление, документ)

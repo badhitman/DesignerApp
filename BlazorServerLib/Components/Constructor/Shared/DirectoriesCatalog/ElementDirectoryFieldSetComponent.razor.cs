@@ -28,7 +28,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public SystemEntryModel ElementObject { get; set; } = default!;
+    public EntryModel ElementObject { get; set; } = default!;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
