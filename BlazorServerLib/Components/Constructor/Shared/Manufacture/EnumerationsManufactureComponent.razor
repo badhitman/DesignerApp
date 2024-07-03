@@ -3,9 +3,23 @@
         <h5 class="card-title">Справочники</h5>
         <h6 class="card-subtitle mb-2 text-body-secondary">перечисления/списки</h6>
 
+        <MudTreeView T="EntryModel">
+            @foreach (DirectoryConstructorModelDB d in ManufactureParentView.CurrentProject.Directories!)
+            {
+                <MudTreeViewItem Value='@(new EntryModel(){ Id = d.Id, Name = d.Name})' Text="@d.Name" Icon="@Icons.Custom.Uncategorized.Folder">
+                    @foreach (ElementOfDirectoryConstructorModelDB se in d.Elements!)
+                    {
+                        <MudTreeViewItem Value='@(new EntryModel(){ Id = se.Id, Name = se.Name})' Text="@se.Name" Icon="@Icons.Material.Filled.Label" IconColor="Color.Info" />
+                    }
+                </MudTreeViewItem>
+            }
+        </MudTreeView>
     </div>
 </div>
 
 @code {
+    [CascadingParameter, EditorRequired]
+    public required ManufactureComponent ManufactureParentView { get; set; }
+
 
 }
