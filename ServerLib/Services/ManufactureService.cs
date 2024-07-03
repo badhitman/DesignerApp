@@ -11,28 +11,36 @@ public class ManufactureService(
     IUsersProfilesService usersProfilesRepo) : IManufactureService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<CodeGeneratorConfigModel>> ReadManufactureConfig(int projectId, string? userId = null)
+    public async Task<TResponseModel<ManageManufactureModelDB>> ReadManufactureConfig(int projectId, string? userId = null)
     {
-        TResponseModel<CodeGeneratorConfigModel> res = new();
-        TResponseModel<UserInfoModel?> call_user = await usersProfilesRepo.FindByIdAsync(userId);
+        TResponseModel<ManageManufactureModelDB> res = new();
+        TResponseModel<UserInfoModel?> user = await usersProfilesRepo.FindByIdAsync(userId);
 
-        if (!call_user.Success() || call_user.Response is null)
+        if (!user.Success() || user.Response is null)
         {
-            res.AddRangeMessages(call_user.Messages);
+            res.AddRangeMessages(user.Messages);
             return res;
         }
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
+        res.Response = await context_forms
+            .Manufactures
+            .FirstOrDefaultAsync(x => x.ProjectId == projectId && x.UserId == user.Response.UserId);
 
-
-        ManageManufactureModelDB? manufacture = await context_forms.Manufactures.FirstOrDefaultAsync(x => x.ProjectId == projectId && x.UserId == call_user.Response.UserId);
-
-        if(manufacture is null)
+        if (res.Response is null)
         {
+            string project_name = await context_forms
+                        .Projects
+                        .Where(x => x.Id == projectId)
+                        .Select(x => x.Name)
+                        .FirstAsync();
 
+            res.Response = new ManageManufactureModelDB() { UserId = user.Response.UserId, Namespace = GlobalTools.TranslitToSystemName(project_name) };
+            await context_forms.AddAsync(res.Response);
+            await context_forms.SaveChangesAsync();
         }
 
-        throw new NotImplementedException();
+        return res;
     }
 }

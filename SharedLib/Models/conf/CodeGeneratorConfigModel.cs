@@ -21,20 +21,24 @@ public class CodeGeneratorConfigModel
     /// <summary>
     /// Путь размещения файлов моделей перечисления
     /// </summary>
+    [Required(AllowEmptyStrings = false)]
     public string EnumDirectoryPath { get; set; } = "gen_enumerations";
 
     /// <summary>
     /// Путь размещения файлов моделей документов
     /// </summary>
+    [Required(AllowEmptyStrings = false)]
     public string DocumentsMastersDbDirectoryPath { get; set; } = "gen_documents";
 
     /// <summary>
     /// Папка размещения инфраструктуры доступа к данным
     /// </summary>
+    [Required(AllowEmptyStrings = false)]
     public string AccessDataDirectoryPath { get; set; } = "gen_crud";
 
     /// <summary>
-    /// Папака размещения файлов контроллеров
+    /// Папка размещения файлов контроллеров
     /// </summary>
+    [Required(AllowEmptyStrings = false)]
     public string ControllersDirectoryPath { get; set; } = "gen_controllers";
 }

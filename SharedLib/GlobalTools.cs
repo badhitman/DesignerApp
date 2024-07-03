@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 
 namespace SharedLib;
@@ -123,37 +124,39 @@ public static class GlobalTools
     #endregion
 
     /// <summary>
-    /// Транслит словарь
-    /// </summary>
-    public static readonly Dictionary<char, string> TranslitMap = new() { {'q', "й"}, {'w', "ц"}, {'e', "у"}, {'r', "к"}, {'t', "е"}, {'y', "н"},
-        {'u', "г"}, {'i', "ш"}, {'o', "щ"}, {'p', "з"}, {'[', "х"}, {']', "ъ"}, { 'a', "ф"}, {'s', "ы"}, {'d', "в"}, {'f', "а"}, {'g', "п"},
-        {'h', "р"}, {'j', "о"}, {'k', "л"}, {'l', "д"}, {';', "ж"}, {'\'', "э"}, { 'z', "я"}, {'x', "ч"}, {'c', "с"}, {'v', "м"}, {'b', "и"},
-        {'n', "т"}, {'m', "ь"}, {',', "б"}, {'.', "ю"}, { 'Q', "Й"}, {'W', "Ц"}, {'E', "У"}, {'R', "К"}, {'T', "Е"}, {'Y', "Н"}, {'U', "Г"},
-        {'I', "Ш"}, {'O', "Щ"}, {'P', "З"}, { 'A', "Ф"}, {'S', "Ы"}, {'D', "В"}, {'F', "А"}, {'G', "П"}, {'H', "Р"}, {'J', "О"}, {'K', "Л"},
-        {'L', "Д"}, {'Z', "Я"}, {'X', "Ч"}, {'C', "С"}, {'V', "М"}, {'B', "И"}, {'N', "Т"}, {'M', "Ь"},
-
-        {'й', "q"}, {'ц', "w"}, {'у', "e"}, {'к', "r"}, {'е', "t"}, {'н', "y"},
-        {'г', "u"}, {'ш', "i"}, {'щ', "o"}, {'з', "p"}, {'х', "["}, {'ъ', "]"}, { 'ф', "a"}, {'ы', "s"}, {'в', "d"}, {'а', "f"}, {'п', "g"},
-        {'р', "h"}, {'о', "j"}, {'л', "k"}, {'д', "l"}, {'ж', ";"}, {'э', "\'"}, { 'я', "z"}, {'ч', "x"}, {'с', "c"}, {'м', "v"}, {'и', "b"},
-        {'т', "n"}, {'ь', "m"}, {'б', ","}, {'ю', "."}, { 'Й', "Q"}, {'Ц', "W"}, {'У', "E"}, {'К', "R"}, {'Е', "T"}, {'Н', "Y"}, {'Г', "U"},
-        {'Ш', "I"}, {'Щ', "O"}, {'З', "P"}, { 'Ф', "A"}, {'Ы', "S"}, {'В', "D"}, {'А', "F"}, {'П', "G"}, {'Р', "H"}, {'О', "J"}, {'Л', "K"},
-        {'Д', "L"}, {'Я', "Z"}, {'Ч', "X"}, {'С', "C"}, {'М', "V"}, {'И', "B"}, {'Т', "N"}, {'Ь', "M"}
-    };
-
-    /// <summary>
     /// Транслит строки
     /// </summary>
-    public static string GetTranslitString(string inc_data)
+    public static string GetTranslitString(string str)
     {
-        StringBuilder res = new();
-        foreach (char kc in inc_data)
+        string[] lat_up = ["A", "B", "V", "G", "D", "E", "Yo", "Zh", "Z", "I", "Y", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "Kh", "Ts", "Ch", "Sh", "Shch", "\"", "Y", "'", "E", "Yu", "Ya"];
+        string[] lat_low = ["a", "b", "v", "g", "d", "e", "yo", "zh", "z", "i", "y", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "kh", "ts", "ch", "sh", "shch", "\"", "y", "'", "e", "yu", "ya"];
+        string[] rus_up = ["А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я"];
+        string[] rus_low = ["а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"];
+        for (int i = 0; i <= 32; i++)
         {
-            if (!TranslitMap.TryGetValue(kc, out string? tc) || string.IsNullOrEmpty(tc))
-                break;
-            res.Append(tc);
+            str = str.Replace(rus_up[i], lat_up[i]);
+            str = str.Replace(rus_low[i], lat_low[i]);
         }
+        return str;
+    }
 
-        return res.ToString();
+    /// <summary>
+    /// Транслит названия в латиницу CamelCase
+    /// </summary>
+    public static string TranslitToSystemName(string str)
+    {
+        str = Regex.Replace(str, @"[^\w\d_]+", " ").Trim();
+
+        if (str.Length == 0)
+            return str;
+
+        string[] segments = str.Split(' ');
+        if (segments.Length != 0)
+            str = string.Join("", segments.Select(x => $"{x[0..1].ToUpper()}{x[1..]}"));
+        else
+            str = $"{str[0..1].ToUpper()}{str[1..]}";
+
+        return str;
     }
 
     /// <summary>

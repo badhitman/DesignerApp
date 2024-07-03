@@ -704,7 +704,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Сгенерировать дамп данных в формате JSON
     /// </summary>
-    /// <param name="archive">Пакет сжатых файлов в формате zip-архива.</param>
     /// <param name="json_raw">json данные для записи</param>
     async Task GenerateJsonDump(string json_raw)
     {
@@ -925,8 +924,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Генерация регистратора служб Refit для клиента
     /// </summary>
-    /// <param name="archive">Пакет сжатых файлов в формате zip-архива.</param>
-    /// <param name="project_info">Информация о проекте</param>
     /// <param name="types">Типы для регистрации</param>
     async Task GenRefitDI(IEnumerable<string> types)
     {

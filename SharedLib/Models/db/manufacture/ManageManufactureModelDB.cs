@@ -5,7 +5,7 @@ namespace SharedLib;
 /// <summary>
 /// ManageManufacture
 /// </summary>
-public class ManageManufactureModelDB
+public class ManageManufactureModelDB : CodeGeneratorConfigModel
 {
     /// <summary>
     /// Идентификатор/Key

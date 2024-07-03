@@ -1,22 +1,36 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<h3>ConfigManufactureComponent</h3>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Нройки</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">Базовая конфигурация</h6>
+
+    </div>
+</div>
 
 @code {
     [Inject]
     IManufactureService ManufactureRepo { get; set; } = default!;
+
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
 
 
     [Parameter, EditorRequired]
     public required MainProjectViewModel MainProject { get; set; }
 
 
-    CodeGeneratorConfigModel ProjectInfo = default!;
+    ManageManufactureModelDB Manufacture = default!;
 
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        var res = await ManufactureRepo.ReadManufactureConfig(MainProject.Id);
+        TResponseModel<ManageManufactureModelDB> res = await ManufactureRepo.ReadManufactureConfig(MainProject.Id);
         IsBusyProgress = false;
+
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+
+        Manufacture = res.Response ?? throw new Exception();
     }
 }
