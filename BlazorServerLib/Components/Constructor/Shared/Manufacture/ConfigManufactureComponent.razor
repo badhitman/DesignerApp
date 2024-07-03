@@ -76,7 +76,7 @@
             }
         </div>
         <div class="d-grid gap-2 mt-4">
-            <button disabled="@(Manufacture.Equals(manufactureEdit))" @onclick="UpdateManufacture" class="btn btn-primary" type="button">Сохранить</button>
+            <button disabled="@(Manufacture.Equals(manufactureEdit))" @onclick="UpdateManufacture" class="btn btn-@(Manufacture.Equals(manufactureEdit) ? "outline-secondary" : "primary")" type="button">Сохранить</button>
         </div>
     </div>
 </div>
@@ -104,7 +104,8 @@
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
-        Manufacture = GlobalTools.CreateDeepCopy(manufactureEdit);
+        if (res.Success())
+            Manufacture = GlobalTools.CreateDeepCopy(manufactureEdit);
     }
 
 

@@ -2,6 +2,7 @@
 using SharedLib;
 using DbcLib;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace ServerLib;
 
@@ -51,6 +52,9 @@ public class ManufactureService(
         if (!IsValid)
             return ResponseBaseModel.CreateError(ValidationResults);
 
+        if (!string.IsNullOrEmpty(manufacture.ControllersDirectoryPath) && !Regex.IsMatch(manufacture.ControllersDirectoryPath, GlobalStaticConstants.FOLDER_NAME_TEMPLATE))
+            return ResponseBaseModel.CreateError($"Не корректное имя папки контроллеров: {CodeGeneratorConfigModel.MessageErrorTemplateNameFolder}");
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ManageManufactureModelDB manufacture_db = await context_forms.Manufactures.FirstAsync(x => x.Id == manufacture.Id);
         if (manufacture_db.Equals(manufacture))
@@ -60,6 +64,6 @@ public class ManufactureService(
         context_forms.Update(manufacture_db);
         await context_forms.SaveChangesAsync();
 
-        return ResponseBaseModel.CreateSuccess("Обновлено");
+        return ResponseBaseModel.CreateSuccess("Обновление успешно выполнено");
     }
 }

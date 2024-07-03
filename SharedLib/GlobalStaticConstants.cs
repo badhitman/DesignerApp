@@ -242,6 +242,11 @@ public static partial class GlobalStaticConstants
     /// <summary>
     /// Шаблон системного имени
     /// </summary>
+    public const string FOLDER_NAME_TEMPLATE = @"^[a-zA-Z0-9_-]{2,128}$";
+
+    /// <summary>
+    /// Шаблон системного имени
+    /// </summary>
     public const string SYSTEM_NAME_TEMPLATE = @"^[a-zA-Z][a-zA-Z0-9_]{1,72}[a-zA-Z0-9]{0,128}$";
 
     /// <summary>

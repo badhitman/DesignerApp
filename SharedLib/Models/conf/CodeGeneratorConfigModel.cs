@@ -11,7 +11,8 @@ namespace SharedLib;
 /// </summary>
 public class CodeGeneratorConfigModel
 {
-    const string _message_error_template = "Может содержать латинские буквы и цифры. Первым символом должна идти буква. Минимум 2 символа!";
+    /// <inheritdoc/>
+    public const string MessageErrorTemplateNameFolder = "Может содержать латинские буквы, цифры, дефис и знак подчёркивания. Минимум 2 символа!";
 
     /// <summary>
     /// Пространство имён
@@ -24,21 +25,21 @@ public class CodeGeneratorConfigModel
     /// Путь размещения файлов моделей перечисления
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.SYSTEM_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей перечисления: {_message_error_template}")]
+    [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей перечисления: {MessageErrorTemplateNameFolder}")]
     public string EnumDirectoryPath { get; set; } = "gen_enumerations";
 
     /// <summary>
     /// Путь размещения файлов моделей документов
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.SYSTEM_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей документов: {_message_error_template}")]
+    [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей документов: {MessageErrorTemplateNameFolder}")]
     public string DocumentsMastersDbDirectoryPath { get; set; } = "gen_documents";
 
     /// <summary>
     /// Папка размещения инфраструктуры доступа к данным
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.SYSTEM_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {_message_error_template}")]
+    [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {MessageErrorTemplateNameFolder}")]
     public string AccessDataDirectoryPath { get; set; } = "gen_crud";
 
     /// <summary>
