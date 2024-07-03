@@ -186,23 +186,26 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             #region контроллеры тела документа
 
-            service_instance = $"_{service_type_name}".ToLower();
-            controller_name = $"{doc_obj.SystemName}Controller";
-            zipEntry = archive.CreateEntry(Path.Combine(conf.ControllersDirectoryPath, $"{controller_name}.cs"));
-            writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name, ["Microsoft.AspNetCore.Mvc", "SharedLib.Models"]);
-            await writer.WriteLineAsync("\t[Route(\"api/[controller]\")]");
-            await writer.WriteLineAsync("\t[ApiController]");
-            await writer.WriteLineAsync($"\tpublic partial class {controller_name} : ControllerBase");
-            await writer.WriteLineAsync("\t{");
-            await writer.WriteLineAsync($"\t\treadonly I{service_type_name} {service_instance};");
-            await writer.WriteLineAsync();
-            await writer.WriteLineAsync($"\t\tpublic {controller_name}(I{service_type_name} set{service_instance})");
-            await writer.WriteLineAsync("\t\t{");
-            await writer.WriteLineAsync($"\t\t\t{service_instance} = set{service_instance};");
-            await writer.WriteLineAsync("\t\t}");
-            await writer.WriteLineAsync();
-            await WriteDocumentControllers(writer, service_instance, doc_obj.SystemName, $"Документ: {doc_obj.Name}", true);
+            if (!string.IsNullOrWhiteSpace(conf.ControllersDirectoryPath))
+            {
+                service_instance = $"_{service_type_name}".ToLower();
+                controller_name = $"{doc_obj.SystemName}Controller";
+                zipEntry = archive.CreateEntry(Path.Combine(conf.ControllersDirectoryPath, $"{controller_name}.cs"));
+                writer = new(zipEntry.Open(), Encoding.UTF8);
+                await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name, ["Microsoft.AspNetCore.Mvc", "SharedLib.Models"]);
+                await writer.WriteLineAsync("\t[Route(\"api/[controller]\")]");
+                await writer.WriteLineAsync("\t[ApiController]");
+                await writer.WriteLineAsync($"\tpublic partial class {controller_name} : ControllerBase");
+                await writer.WriteLineAsync("\t{");
+                await writer.WriteLineAsync($"\t\treadonly I{service_type_name} {service_instance};");
+                await writer.WriteLineAsync();
+                await writer.WriteLineAsync($"\t\tpublic {controller_name}(I{service_type_name} set{service_instance})");
+                await writer.WriteLineAsync("\t\t{");
+                await writer.WriteLineAsync($"\t\t\t{service_instance} = set{service_instance};");
+                await writer.WriteLineAsync("\t\t}");
+                await writer.WriteLineAsync();
+                await WriteDocumentControllers(writer, service_instance, doc_obj.SystemName, $"Документ: {doc_obj.Name}", true);
+            }
 
             #endregion
 
@@ -364,23 +367,26 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                     #region контроллеры табличной части документа
 
-                    service_instance = $"_{service_type_name}".ToLower();
-                    controller_name = $"{grid.SystemName}Controller";
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.ControllersDirectoryPath, $"{controller_name}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, $"{grid.Name} (табличная часть)", ["Microsoft.AspNetCore.Mvc", "SharedLib.Models"]);
-                    await writer.WriteLineAsync("\t[Route(\"api/[controller]\")]");
-                    await writer.WriteLineAsync("\t[ApiController]");
-                    await writer.WriteLineAsync($"\tpublic partial class {controller_name} : ControllerBase");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync($"\t\treadonly I{service_type_name} {service_instance};");
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync($"\t\tpublic {controller_name}(I{service_type_name} set_{service_instance})");
-                    await writer.WriteLineAsync("\t\t{");
-                    await writer.WriteLineAsync($"\t\t\t{service_instance} = set_{service_instance};");
-                    await writer.WriteLineAsync("\t\t}");
-                    await writer.WriteLineAsync();
-                    await WriteDocumentControllers(writer, service_instance, grid.SystemName, $"Табличная часть: {grid.Name} // для документа: {doc_obj.Name}", false);
+                    if (!string.IsNullOrWhiteSpace(conf.ControllersDirectoryPath))
+                    {
+                        service_instance = $"_{service_type_name}".ToLower();
+                        controller_name = $"{grid.SystemName}Controller";
+                        zipEntry = archive.CreateEntry(Path.Combine(conf.ControllersDirectoryPath, $"{controller_name}.cs"));
+                        writer = new(zipEntry.Open(), Encoding.UTF8);
+                        await WriteHead(writer, project.Name, conf.Namespace, $"{grid.Name} (табличная часть)", ["Microsoft.AspNetCore.Mvc", "SharedLib.Models"]);
+                        await writer.WriteLineAsync("\t[Route(\"api/[controller]\")]");
+                        await writer.WriteLineAsync("\t[ApiController]");
+                        await writer.WriteLineAsync($"\tpublic partial class {controller_name} : ControllerBase");
+                        await writer.WriteLineAsync("\t{");
+                        await writer.WriteLineAsync($"\t\treadonly I{service_type_name} {service_instance};");
+                        await writer.WriteLineAsync();
+                        await writer.WriteLineAsync($"\t\tpublic {controller_name}(I{service_type_name} set_{service_instance})");
+                        await writer.WriteLineAsync("\t\t{");
+                        await writer.WriteLineAsync($"\t\t\t{service_instance} = set_{service_instance};");
+                        await writer.WriteLineAsync("\t\t}");
+                        await writer.WriteLineAsync();
+                        await WriteDocumentControllers(writer, service_instance, grid.SystemName, $"Табличная часть: {grid.Name} // для документа: {doc_obj.Name}", false);
+                    }
 
                     #endregion
 
