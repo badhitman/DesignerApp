@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib;
 
@@ -27,4 +27,16 @@ public class EntryModel
 
     /// <inheritdoc/>
     public static EntryModel Build(string name) => new() { Name = name };
+
+    /// <inheritdoc/>
+    public static EntryModel Build(EntryModel sender) => new() { Name = sender.Name };
+
+    /// <inheritdoc/>
+    public static EntryModel BuildEmpty() => new() { Name = "" };
+
+    /// <inheritdoc/>
+    public void Update(EntryModel elementObjectEdit)
+    {
+        Name = elementObjectEdit.Name;
+    }
 }
