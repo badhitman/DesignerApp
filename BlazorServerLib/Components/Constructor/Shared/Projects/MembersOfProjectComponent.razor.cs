@@ -65,11 +65,13 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
         ProjectsList.StateHasChangedCall();
     }
 
-    /// <inheritdoc/>
-    public async Task RemoveMember(string user_id)
+    async Task Closed(MudChip<EntryAltModel> chip)
     {
+        if (chip.Value is null)
+            throw new Exception();
+
         IsBusyProgress = true;
-        ResponseBaseModel res = await ConstructorRepo.DeleteMemberFromProject(ProjectView.Id, user_id);
+        ResponseBaseModel res = await ConstructorRepo.DeleteMemberFromProject(ProjectView.Id, chip.Value.Id);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 

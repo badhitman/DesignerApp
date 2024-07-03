@@ -64,7 +64,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             { x => x.ParentFormsPage, ParentFormsPage }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>($"Редактирование формы #{rest.Response?.Id}", parameters, options).Result;
+        DialogResult? result = await DialogServiceRepo.Show<EditFormDialogComponent>($"Редактирование формы #{rest.Response?.Id}", parameters, options).Result;
 
         if (table is not null)
             await table.ReloadServerData();
@@ -106,7 +106,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             { x => x.ParentFormsPage, ParentFormsPage }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await DialogServiceRepo.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;
+        DialogResult? result = await DialogServiceRepo.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;
 
         if (table is not null)
             await table.ReloadServerData();
@@ -115,7 +115,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Загрузка данных форм
     /// </summary>
-    protected async Task<TableData<FormConstructorModelDB>> ServerReload(TableState state)
+    protected async Task<TableData<FormConstructorModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         _table_state = state;
         await RestJson();

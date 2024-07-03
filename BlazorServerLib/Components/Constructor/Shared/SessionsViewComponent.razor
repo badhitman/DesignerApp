@@ -32,7 +32,7 @@
         </form>
     </div>
     <div class="card-body">
-        <MudTable ServerData="@(new Func<TableState, Task<TableData<SessionOfDocumentDataModelDB>>>(ServerReload))" Loading="IsBusyProgress" Dense="true" Hover="true" Striped="true" @ref="table">
+        <MudTable ServerData="@(new Func<TableState, CancellationToken, Task<TableData<SessionOfDocumentDataModelDB>>>(ServerReload))" Loading="IsBusyProgress" Dense="true" Hover="true" Striped="true" @ref="table">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Ссылки/сессии</MudText>
                 <MudSpacer />
@@ -55,7 +55,7 @@
                     <div class="hstack gap-3">
                         @if (string.IsNullOrEmpty(context.SessionToken) || context.SessionStatus == SessionsStatusesEnum.None)
                         {
-                            <MudChip Variant="Variant.Outlined" Size="Size.Small">
+                            <MudChip T="string" Variant="Variant.Outlined" Size="Size.Small">
                                 <NavLink title="Доступ к заполнению заблокирован" class="nav-link text-muted" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/protected/{context.Id}")">
                                     Аннулирован
                                 </NavLink>
@@ -63,7 +63,7 @@
                         }
                         else if (context.SessionStatus == SessionsStatusesEnum.Sended)
                         {
-                            <MudChip Icon="@Icons.Material.Outlined.CircleNotifications" Color="Color.Info" Size="Size.Small">
+                            <MudChip T="string" Icon="@Icons.Material.Outlined.CircleNotifications" Color="Color.Info" Size="Size.Small">
                                 <NavLink title="Данные отправлены на проверку администратору" class="nav-link text-light" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{context.SessionToken}")">
                                     Проверка
                                 </NavLink>
@@ -71,7 +71,7 @@
                         }
                         else if (context.SessionStatus == SessionsStatusesEnum.Accepted)
                         {
-                            <MudChip Icon="@Icons.Material.Filled.VerifiedUser" Color="Color.Success" Variant="Variant.Outlined" Size="Size.Small">
+                            <MudChip T="string" Icon="@Icons.Material.Filled.VerifiedUser" Color="Color.Success" Variant="Variant.Outlined" Size="Size.Small">
                                 <NavLink title="Анкета принята" class="nav-link text-secondary" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{context.SessionToken}")">
                                     Принято
                                 </NavLink>
@@ -111,7 +111,7 @@
                         <span>@context.Editors</span>
                         <MudSpacer />
                         <MudIconButton OnClick="async () => { await EditSession(context); }" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" Color="@(Color.Dark)" aria-label="Редактировать" />
-                        <MudIconButton Title="ВНИМАНИЕ! Операция не обратимая!!!" OnClick="async () => { await DeleteSession(context.Id);  }" Size="Size.Small" Icon="@Icons.Material.Filled.DeleteOutline" Color="@(Color.Warning)" aria-label="Удалить" />
+                        <MudIconButton title="ВНИМАНИЕ! Операция не обратимая!!!" OnClick="async () => { await DeleteSession(context.Id);  }" Size="Size.Small" Icon="@Icons.Material.Filled.DeleteOutline" Color="@(Color.Warning)" aria-label="Удалить" />
                     </div>
                 </MudTd>
             </RowTemplate>

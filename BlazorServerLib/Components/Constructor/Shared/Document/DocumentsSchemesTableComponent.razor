@@ -1,9 +1,9 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<MudTable Class="d-flex flex-column flex-grow-1" Loading="IsBusyProgress" ServerData="@(new Func<TableState, Task<TableData<DocumentSchemeConstructorModelDB>>>(ServerReload))" Dense="true" Hover="true" Striped="true" @ref="table">
+<MudTable Class="d-flex flex-column flex-grow-1" Loading="IsBusyProgress" ServerData="@(new Func<TableState, CancellationToken, Task<TableData<DocumentSchemeConstructorModelDB>>>(ServerReload))" Dense="true" Hover="true" Striped="true" @ref="table">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Анкеты</MudText>
-        <MudIconButton Disabled="@(!ParentFormsPage.CanEditProject)" Title="Создать новый опрос/анкету" OnClick="() => DocumentOpenDialog()" Icon="@Icons.Material.Filled.AddBox"></MudIconButton>
+        <MudIconButton Disabled="@(!ParentFormsPage.CanEditProject)" title="Создать новый опрос/анкету" OnClick="() => DocumentOpenDialog()" Icon="@Icons.Material.Filled.AddBox"></MudIconButton>
         <MudSpacer />
         <MudTextField Disabled="IsBusyProgress" T="string" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Поиск по имени опроса, вкладки или формы" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
@@ -55,7 +55,7 @@
                     <div>&nbsp;</div>
 
                     <MudSpacer />
-                    <MudIconButton Title="Удалить опрос/анкету" OnClick="() => DeleteDocument(context.Id)" Icon="@Icons.Material.Filled.Delete" aria-label="Delete" Size="Size.Small"></MudIconButton>
+                    <MudIconButton title="Удалить опрос/анкету" OnClick="() => DeleteDocument(context.Id)" Icon="@Icons.Material.Filled.Delete" aria-label="Delete" Size="Size.Small"></MudIconButton>
                 </div>
             </MudTd>
         }

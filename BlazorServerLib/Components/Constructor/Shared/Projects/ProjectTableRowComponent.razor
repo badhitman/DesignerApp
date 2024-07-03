@@ -27,12 +27,12 @@
         }
         else
         {
-            <MudIconButton Class="me-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Сделать основным" OnClick="SetMainProjectHandle"></MudIconButton>
+            <MudIconButton Class="me-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" title="Сделать основным" OnClick="SetMainProjectHandle"></MudIconButton>
         }
         @if (IsMyProject)
         {
-            <MudIconButton Class="me-2" Color="@(ProjectRow.IsDisabled ? Color.Info : Color.Default)" Icon="@(ProjectRow.IsDisabled ? Icons.Material.Filled.FlashOff : Icons.Material.Filled.FlashOn)" aria-label="disable" Size="Size.Small" Title="@(ProjectRow.IsDisabled? "Включение проекта":"Отключение проекта")" OnClick="DeleteProject"></MudIconButton>
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" Title="Редактирование проекта" OnClick="EditProject"></MudIconButton>
+            <MudIconButton Class="me-2" Color="@(ProjectRow.IsDisabled ? Color.Info : Color.Default)" Icon="@(ProjectRow.IsDisabled ? Icons.Material.Filled.FlashOff : Icons.Material.Filled.FlashOn)" aria-label="disable" Size="Size.Small" OnClick="DeleteProject"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" title="Редактирование проекта" OnClick="EditProject"></MudIconButton>
         }
     </td>
 </tr>

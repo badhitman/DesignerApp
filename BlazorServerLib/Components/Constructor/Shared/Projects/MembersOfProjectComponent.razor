@@ -25,10 +25,10 @@ else if (ProjectView.Members is null)
 }
 else
 {
-    <MudChipSet AllClosable="true">
+    <MudChipSet T="EntryAltModel" AllClosable="true">
         @foreach (EntryAltModel member in ProjectView.Members)
         {
-            <MudChip Text="@member.Name" OnClose="() => RemoveMember(member.Id)"></MudChip>
+            <MudChip T="EntryAltModel" Value="member" Text="@member.Name" OnClose="Closed"></MudChip>
         }
     </MudChipSet>
 }

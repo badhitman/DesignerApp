@@ -66,7 +66,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
-    protected async Task<TableData<DocumentSchemeConstructorModelDB>> ServerReload(TableState state)
+    protected async Task<TableData<DocumentSchemeConstructorModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");
@@ -100,7 +100,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
         };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await DialogServiceRepo.Show<EditDocumentSchemeDialogComponent>(document_scheme.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{document_scheme.Id}", parameters, options).Result;
+        DialogResult? result = await DialogServiceRepo.Show<EditDocumentSchemeDialogComponent>(document_scheme.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{document_scheme.Id}", parameters, options).Result;
         if (table is not null)
             await table.ReloadServerData();
     }

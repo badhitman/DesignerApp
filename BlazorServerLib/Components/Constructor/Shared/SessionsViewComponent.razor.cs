@@ -69,7 +69,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    protected private async Task<TableData<SessionOfDocumentDataModelDB>> ServerReload(TableState state)
+    protected private async Task<TableData<SessionOfDocumentDataModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(CurrentUser.UserId))
             throw new Exception("Не определён текущий пользователь");
@@ -122,7 +122,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             { x => x.Session, rest.Response }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult result = await DialogServiceRepo.Show<EditSessionDialogComponent>($"Редактирование сессии. Опрос/анкета: '{rest.Response?.Owner?.Name}'", parameters, options).Result;
+        DialogResult? result = await DialogServiceRepo.Show<EditSessionDialogComponent>($"Редактирование сессии. Опрос/анкета: '{rest.Response?.Owner?.Name}'", parameters, options).Result;
         if (table is not null)
             await table.ReloadServerData();
     }

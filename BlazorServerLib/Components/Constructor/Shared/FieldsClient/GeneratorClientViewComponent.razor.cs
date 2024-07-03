@@ -35,7 +35,7 @@ public partial class GeneratorClientViewComponent : FieldComponentBaseModel
         }
     }
 
-    protected private Task<IEnumerable<string>> SearchElements(string value)
+    protected private Task<IEnumerable<string>> SearchElements(string value, CancellationToken token)
     {
         if (string.IsNullOrEmpty(value))
             return Task.FromResult(Elements);
