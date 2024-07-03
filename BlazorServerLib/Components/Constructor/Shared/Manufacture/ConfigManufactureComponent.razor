@@ -9,7 +9,7 @@
             <label for="namespaceFormControlInput1" class="form-label">Пространство имён (базовое)</label>
             <input @bind-value="manufactureEdit.Namespace" @bind-value:event="oninput" type="text" class="form-control" id="namespaceFormControlInput1" placeholder="Your project system name" aria-describedby="namespaceHelpBlock">
         </div>
-        @if (manufactureEdit.Namespace.Equals(GlobalTools.TranslitToSystemName(MainProject.Name)))
+        @if (manufactureEdit.Namespace.Equals(GlobalTools.TranslitToSystemName(ManufactureParentView.CurrentProject.Name)))
         {
             <div id="namespaceHelpBlock" class="form-text">
                 Пространство имён было сгенерировано автоматически. Измените на своё, пожалуйста
@@ -17,7 +17,8 @@
         }
 
         <hr class="mb-5">
-        <p class="card-text">Имена папок для сохранения файлов.
+        <p class="card-text">
+            Имена папок для сохранения файлов.
             Генератор кода создаст Zip архив в котором будет набор требуемых файлов, которые в свою очередь будут сгруппированы по папкам внутри архива.
         </p>
 
@@ -91,8 +92,8 @@
     ISnackbar SnackbarRepo { get; set; } = default!;
 
 
-    [Parameter, EditorRequired]
-    public required MainProjectViewModel MainProject { get; set; }
+    [CascadingParameter, EditorRequired]
+    public required ManufactureComponent ManufactureParentView { get; set; }
 
 
     ManageManufactureModelDB Manufacture = default!;
@@ -114,7 +115,7 @@
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseModel<ManageManufactureModelDB> res = await ManufactureRepo.ReadManufactureConfig(MainProject.Id);
+        TResponseModel<ManageManufactureModelDB> res = await ManufactureRepo.ReadManufactureConfig(ManufactureParentView.MainProjectId);
         IsBusyProgress = false;
 
         if (!res.Success())

@@ -26,24 +26,24 @@ public class CodeGeneratorConfigModel
     /// </summary>
     [Required(AllowEmptyStrings = false)]
     [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей перечисления: {MessageErrorTemplateNameFolder}")]
-    public string EnumDirectoryPath { get; set; } = "gen_enumerations";
+    public string EnumDirectoryPath { get; set; } = "enumerations_generation";
 
     /// <summary>
     /// Путь размещения файлов моделей документов
     /// </summary>
     [Required(AllowEmptyStrings = false)]
     [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей документов: {MessageErrorTemplateNameFolder}")]
-    public string DocumentsMastersDbDirectoryPath { get; set; } = "gen_documents";
+    public string DocumentsMastersDbDirectoryPath { get; set; } = "documents_generation";
 
     /// <summary>
     /// Папка размещения инфраструктуры доступа к данным
     /// </summary>
     [Required(AllowEmptyStrings = false)]
     [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {MessageErrorTemplateNameFolder}")]
-    public string AccessDataDirectoryPath { get; set; } = "gen_crud";
+    public string AccessDataDirectoryPath { get; set; } = "crud_generation";
 
     /// <summary>
     /// Папка размещения файлов контроллеров
     /// </summary>
-    public string? ControllersDirectoryPath { get; set; } = "gen_controllers";
+    public string? ControllersDirectoryPath { get; set; } = "controllers_generation";
 }
