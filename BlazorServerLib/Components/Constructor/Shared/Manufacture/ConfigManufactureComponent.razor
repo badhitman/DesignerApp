@@ -1,5 +1,22 @@
-﻿<h3>ConfigManufactureComponent</h3>
+﻿@inherits BlazorBusyComponentBaseModel
+
+<h3>ConfigManufactureComponent</h3>
 
 @code {
+    [Inject]
+    IManufactureService ManufactureRepo { get; set; } = default!;
 
+
+    [Parameter, EditorRequired]
+    public required MainProjectViewModel MainProject { get; set; }
+
+
+    CodeGeneratorConfigModel ProjectInfo = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusyProgress = true;
+        var res = await ManufactureRepo.ReadManufactureConfig(MainProject.Id);
+        IsBusyProgress = false;
+    }
 }

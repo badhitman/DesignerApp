@@ -42,8 +42,8 @@
 </h3>
 
 <CascadingValue Value="CurrentUser">
-    <CascadingValue Value="this">
-        <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
+    <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
+        <CascadingValue Value="this">
             <MudTabPanel Disabled="IsBusyProgress" Text="Проекты">
                 <ProjectsListComponent />
             </MudTabPanel>
@@ -59,15 +59,15 @@
             <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки">
                 <SessionsViewComponent />
             </MudTabPanel>
-            <AuthorizeView Roles="admin,manufacture">
-                <Authorized>
-                    <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="C# .NET">
-                        <ManufactureComponent MainProject="MainProject!" />
-                    </MudTabPanel>
-                </Authorized>
-            </AuthorizeView>
-        </MudTabs>
-    </CascadingValue>
+        </CascadingValue>
+        <AuthorizeView Roles="admin,manufacture">
+            <Authorized>
+                <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="C# .NET">
+                    <ManufactureComponent MainProject="MainProject!" />
+                </MudTabPanel>
+            </Authorized>
+        </AuthorizeView>
+    </MudTabs>
 </CascadingValue>
 
 @if (MainProject is null)

@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
@@ -10,9 +12,11 @@ namespace SharedLib;
 public class CodeGeneratorConfigModel
 {
     /// <summary>
-    /// О проекте
+    /// Пространство имён
     /// </summary>
-    public required NameSpacedModel ProjectInfo { get; set; }
+    [Required(AllowEmptyStrings = false)]
+    [Namespace]
+    public required string Namespace { get; set; }
 
     /// <summary>
     /// Путь размещения файлов моделей перечисления

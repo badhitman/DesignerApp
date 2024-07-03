@@ -134,6 +134,7 @@ builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>(
 builder.Services.AddScoped<IUsersProfilesService, UsersProfilesService>();
 builder.Services.AddScoped<ITelegramWebService, TelegramWebService>();
 builder.Services.AddScoped<IConstructorService, ConstructorService>();
+builder.Services.AddScoped<IManufactureService, ManufactureService>();
 
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();

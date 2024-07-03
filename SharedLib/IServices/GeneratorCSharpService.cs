@@ -7,13 +7,649 @@ using System.Reflection;
 using SharedLib.Models;
 using Newtonsoft.Json;
 using System.Text;
+using System.IO;
 
 namespace SharedLib.Services;
 
 /// <inheritdoc/>
-public class GeneratorCSharpService : IGeneratorCSharpService
+public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectViewModel project)
 {
     static Dictionary<string, string> services_di = [];
+
+    ZipArchive archive = default!;
+
+    /// <summary>
+    /// Формирование данных
+    /// </summary>
+    public async Task<Stream> GetZipArchive(StructureProjectModel dump)
+    {
+        List<string> stat =
+        [
+            $"Перечислений: {dump.Enums.Count()} (элементов всего: {dump.Enums.Sum(x => x.EnumItems?.Count())})",
+            $"Документов: {dump.Documents.Count()} (полей всего: {dump.Documents.Sum(x => x.PropertiesBody?.Count()) + dump.Documents.Sum(x => x.Grids?.SelectMany(y => y.Properties!).Count())})",
+            $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
+            $"{conf.EnumDirectoryPath} - папка перечислений",
+            $"",
+            $"{conf.AccessDataDirectoryPath} - папка файлов сервисов backend служб доступа к данным (CRUD) и классов/моделей ответов",
+            $"\t> crud_interfaces: интерфейсы низкоуровневого доступа к контексту таблиц базы данных",
+            $"\t\t> crud_implementations: реализация интерфейсов crud_interfaces",
+            $"······················································",
+            $"\t> service_interfaces: интерфейсы функционального/промежуточного (между контроллером и низкоуровневым DB доступом) доступа к данным",
+            $"\t\t> service_implementations: реализация интерфейсов service_interfaces",
+            $"······················································",
+            $"\tresponse_models: модели ответов контроллеров, которые в свою очередь получают их от функциональных/промежуточных служб доступа",
+            $"××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××",
+            $"",
+            $"LayerContextPartGen.cs - разделяемый [public partial class LayerContext : DbContext] класс.",
+            $"refit_di.cs - [public static class RefitExtensionDesignerDI].[public static void BuildRefitServicesDI(this IServiceCollection services, ClientConfigModel conf, TimeSpan handler_lifetime)]",
+            $"services_di.cs - [public static class ServicesExtensionDesignerDI].[public static void BuildDesignerServicesDI(this IServiceCollection services)]"
+        ];
+        services_di = [];
+
+        MemoryStream ms = new();
+        archive = new(ms, ZipArchiveMode.Create);
+
+        await ReadmeGen(stat);
+        await EnumsGen(dump.Enums);
+        await DocumentsShemaGen(dump.Documents);
+        await DbContextGen(dump.Documents);
+        await DbTableAccessGen(dump.Documents);
+        await GenServicesDI();
+        string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented);
+        await GenerateJsonDump(json_raw);
+
+        archive.Dispose();
+        await ms.FlushAsync();
+        services_di.Clear();
+        return ms;
+    }
+
+    async Task DbTableAccessGen(IEnumerable<DocumentFitModel> docs)
+    {
+        string crud_type_name, service_type_name, response_type_name, controller_name, service_instance;
+        ZipArchiveEntry zipEntry;
+        StreamWriter writer;
+
+        foreach (DocumentFitModel doc_obj in docs)
+        {
+            #region модели ответов тела документа (rest/api)
+
+            response_type_name = $"{doc_obj.SystemName}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
+            zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, $"{doc_obj.SystemName} : Response model (single object)", ["SharedLib.Models"]);
+
+            await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
+            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync("\t\t/// <summary>");
+            await writer.WriteLineAsync($"\t\t/// Результат запроса [{doc_obj.SystemName}] (полезная нагрузка)");
+            await writer.WriteLineAsync("\t\t/// </summary>");
+            await writer.WriteLineAsync($"\t\tpublic {doc_obj.SystemName}? {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
+            await WriteEnd(writer);
+
+
+            response_type_name = $"{doc_obj.SystemName}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
+            zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, $"{doc_obj.SystemName} : Response model (collection objects)", ["SharedLib.Models"]);
+
+            await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
+            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync("\t\t/// <summary>");
+            await writer.WriteLineAsync($"\t\t/// Результат запроса [{doc_obj.SystemName}] (полезная нагрузка)");
+            await writer.WriteLineAsync("\t\t/// </summary>");
+            await writer.WriteLineAsync($"\t\tpublic IEnumerable<{doc_obj.SystemName}> {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
+            await WriteEnd(writer);
+
+
+            response_type_name = $"{doc_obj.SystemName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
+            zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, $"{doc_obj.SystemName} : Response model (paginations collection of objects)", ["SharedLib.Models"]);
+
+            await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : FindResponseModel");
+            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync("\t\t/// <summary>");
+            await writer.WriteLineAsync($"\t\t/// Результат запроса [{doc_obj.SystemName}] (полезная нагрузка)");
+            await writer.WriteLineAsync("\t\t/// </summary>");
+            await writer.WriteLineAsync($"\t\tpublic IEnumerable<{doc_obj.SystemName}> DataRows {{ get; set; }}");
+            await WriteEnd(writer);
+
+            #endregion
+
+            #region тело документа
+
+            crud_type_name = $"I{doc_obj.SystemName}{GlobalStaticConstants.DATABASE_TABLE_ACESSOR_PREFIX}";
+            services_di.Add(crud_type_name, crud_type_name[1..]);
+            zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "crud_interfaces", $"{crud_type_name}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name, ["SharedLib.Models"]);
+
+            await writer.WriteLineAsync($"\tpublic partial interface {crud_type_name} : SharedLib.ISavingChanges");
+            await writer.WriteLineAsync("\t{");
+
+            await WriteDocumentCrudInterface(writer, doc_obj.SystemName, doc_obj.Name, true);
+
+            crud_type_name = crud_type_name[1..];
+            zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "crud_implementations", $"{crud_type_name}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib.Models"]);
+
+            await writer.WriteLineAsync($"\tpublic partial class {crud_type_name} : I{crud_type_name}");
+            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync("\t\treadonly DbAppContext _db_context;");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync("\t\t/// <summary>");
+            await writer.WriteLineAsync("\t\t/// Конструктор");
+            await writer.WriteLineAsync("\t\t/// </summary>");
+            await writer.WriteLineAsync($"\t\tpublic {crud_type_name}(DbAppContext set_db_context)");
+            await writer.WriteLineAsync("\t\t{");
+            await writer.WriteLineAsync("\t\t\t_db_context = set_db_context;");
+            await writer.WriteLineAsync("\t\t}");
+            await writer.WriteLineAsync();
+
+            await WriteDocumentCrudInterfaceImplementation(writer, doc_obj.SystemName, true);
+
+
+
+            service_type_name = $"I{doc_obj.SystemName}{GlobalStaticConstants.SERVICE_ACESSOR_PREFIX}";
+            services_di.Add(service_type_name, service_type_name[1..]);
+            zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "service_interfaces", $"{service_type_name}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name, ["SharedLib.Models"]);
+
+            await writer.WriteLineAsync($"\tpublic partial interface {service_type_name}");
+            await writer.WriteLineAsync("\t{");
+
+            await WriteDocumentServicesInterface(writer, doc_obj.SystemName, doc_obj.Name, true);
+
+            service_type_name = service_type_name[1..];
+            zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "service_implementations", $"{service_type_name}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, null, ["SharedLib.Models"]);
+
+            await writer.WriteLineAsync($"\tpublic partial class {service_type_name} : I{service_type_name}");
+            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync($"\t\treadonly I{crud_type_name} _crud_accessor;");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync("\t\t/// <summary>");
+            await writer.WriteLineAsync("\t\t/// Конструктор");
+            await writer.WriteLineAsync("\t\t/// </summary>");
+            await writer.WriteLineAsync($"\t\tpublic {service_type_name}(I{crud_type_name} set_crud_accessor)");
+            await writer.WriteLineAsync("\t\t{");
+            await writer.WriteLineAsync("\t\t\t_crud_accessor = set_crud_accessor;");
+            await writer.WriteLineAsync("\t\t}");
+            await writer.WriteLineAsync();
+            await WriteDocumentServicesInterfaceImplementation(writer, doc_obj.SystemName, true);
+
+            #endregion
+
+            #region контроллеры тела документа
+
+            service_instance = $"_{service_type_name}".ToLower();
+            controller_name = $"{doc_obj.SystemName}Controller";
+            zipEntry = archive.CreateEntry(Path.Combine(conf.ControllersDirectoryPath, $"{controller_name}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name, ["Microsoft.AspNetCore.Mvc", "SharedLib.Models"]);
+            await writer.WriteLineAsync("\t[Route(\"api/[controller]\")]");
+            await writer.WriteLineAsync("\t[ApiController]");
+            await writer.WriteLineAsync($"\tpublic partial class {controller_name} : ControllerBase");
+            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync($"\t\treadonly I{service_type_name} {service_instance};");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync($"\t\tpublic {controller_name}(I{service_type_name} set{service_instance})");
+            await writer.WriteLineAsync("\t\t{");
+            await writer.WriteLineAsync($"\t\t\t{service_instance} = set{service_instance};");
+            await writer.WriteLineAsync("\t\t}");
+            await writer.WriteLineAsync();
+            await WriteDocumentControllers(writer, service_instance, doc_obj.SystemName, $"Документ: {doc_obj.Name}", true);
+
+            #endregion
+
+            //#region refit/rest (тело документа)
+
+            //rest_service_name = $"I{doc_obj.SystemName}RestService";
+            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), $"{rest_service_name}.cs"));
+            //writer = new(enumEntry.Open(), Encoding.UTF8);
+            //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"REST служба работы с API -> {project_info.Name}", ["Refit", "SharedLib.Models"]);
+            //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
+            //await writer.WriteLineAsync("\t{");
+            //await WriteRestServiceInterface(writer, doc_obj.SystemName, doc_obj.Name, true, false, false);
+
+            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), $"{rest_service_name[1..]}.cs"));
+            //writer = new(enumEntry.Open(), Encoding.UTF8);
+            //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
+            //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
+            //await writer.WriteLineAsync("\t{");
+            //await WriteRestServiceImplementation(writer, doc_obj.SystemName, true);
+
+            //rest_service_name = $"I{doc_obj.SystemName}RefitProvider";
+            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
+            //writer = new(enumEntry.Open(), Encoding.UTF8);
+            //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
+            //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
+            //await writer.WriteLineAsync("\t{");
+            //await WriteRestServiceInterface(writer, doc_obj.SystemName, doc_obj.Name, true, true, false);
+
+            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), "core", $"{rest_service_name[1..]}.cs"));
+            //writer = new(enumEntry.Open(), Encoding.UTF8);
+            //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
+            //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
+            //await writer.WriteLineAsync("\t{");
+            //await WriteRefitProviderImplementation(writer, doc_obj.SystemName, true);
+
+            //rest_service_name = $"I{doc_obj.SystemName}RefitService";
+            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
+            //writer = new(enumEntry.Open(), Encoding.UTF8);
+            //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
+            //await writer.WriteLineAsync("\t[Headers(\"Content-Type: application/json\")]");
+            //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
+            //await writer.WriteLineAsync("\t{");
+            //await WriteRestServiceInterface(writer, doc_obj.SystemName, doc_obj.Name, true, true, true);
+
+            //#endregion
+
+            if (doc_obj.Grids is not null)
+                foreach (GridFitModel grid in doc_obj.Grids)
+                {
+
+                    if (!grid.Properties?.Any() == true)
+                        continue;
+
+                    #region модели ответов табличной части документа (rest/api)
+
+                    response_type_name = $"{grid.SystemName}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
+                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, project.Name, conf.Namespace, $"{grid.SystemName} : Response model (single object)", ["SharedLib.Models"]);
+                    await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
+                    await writer.WriteLineAsync("\t{");
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// Результат запроса [{grid.SystemName}] (полезная нагрузка)");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic {grid.SystemName} {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
+                    await WriteEnd(writer);
+
+
+                    response_type_name = $"{grid.SystemName}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
+                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, project.Name, conf.Namespace, $"{grid.SystemName} : Response model (collection objects)", ["SharedLib.Models"]);
+                    await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
+                    await writer.WriteLineAsync("\t{");
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// Результат запроса [{grid.SystemName}] (полезная нагрузка)");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic IEnumerable<{grid.SystemName}> {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
+                    await WriteEnd(writer);
+
+                    response_type_name = $"{grid.SystemName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
+                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, project.Name, conf.Namespace, $"{grid.SystemName} : Response model (paginations collection of objects)", new string[] { "SharedLib.Models" });
+                    await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : FindResponseModel");
+                    await writer.WriteLineAsync("\t{");
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// Результат запроса [{grid.SystemName}] (полезная нагрузка)");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic IEnumerable<{grid.SystemName}> DataRows {{ get; set; }}");
+                    await WriteEnd(writer);
+
+                    #endregion
+
+                    #region табличная часть документа
+
+                    crud_type_name = $"I{grid.SystemName}{GlobalStaticConstants.DATABASE_TABLE_ACESSOR_PREFIX}";
+                    services_di.Add(crud_type_name, crud_type_name[1..]);
+                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "crud_interfaces", $"{crud_type_name}.cs"));
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, project.Name, conf.Namespace, $"Табличная часть документа: {grid.Name}", ["SharedLib.Models"]);
+
+                    await writer.WriteLineAsync($"\tpublic partial interface {crud_type_name} : SharedLib.ISavingChanges");
+                    await writer.WriteLineAsync("\t{");
+
+                    await WriteDocumentCrudInterface(writer, $"{grid.SystemName}", grid.Name, false);
+
+                    crud_type_name = crud_type_name[1..];
+                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "crud_implementations", $"{crud_type_name}.cs"));
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, project.Name, conf.Namespace, null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib.Models"]);
+                    await writer.WriteLineAsync($"\tpublic partial class {crud_type_name} : I{crud_type_name}");
+                    await writer.WriteLineAsync("\t{");
+                    await writer.WriteLineAsync("\t\treadonly DbAppContext _db_context;");
+                    await writer.WriteLineAsync();
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync("\t\t/// Конструктор");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic {crud_type_name}(DbAppContext set_db_context)");
+                    await writer.WriteLineAsync("\t\t{");
+                    await writer.WriteLineAsync("\t\t\t_db_context = set_db_context;");
+                    await writer.WriteLineAsync("\t\t}");
+                    await writer.WriteLineAsync();
+                    await WriteDocumentCrudInterfaceImplementation(writer, $"{grid.SystemName}", false);
+
+
+
+                    service_type_name = $"I{grid.SystemName}{GlobalStaticConstants.SERVICE_ACESSOR_PREFIX}";
+                    services_di.Add(service_type_name, service_type_name[1..]);
+                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "service_interfaces", $"{service_type_name}.cs"));
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, project.Name, conf.Namespace, grid.Name, ["SharedLib.Models"]);
+
+                    await writer.WriteLineAsync($"\tpublic partial interface {service_type_name}");
+                    await writer.WriteLineAsync("\t{");
+
+                    await WriteDocumentServicesInterface(writer, grid.SystemName, grid.Name, false);
+
+                    service_type_name = service_type_name[1..];
+                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "service_implementations", $"{service_type_name}.cs"));
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, project.Name, conf.Namespace, null, ["SharedLib.Models"]);
+
+                    await writer.WriteLineAsync($"\tpublic partial class {service_type_name} : I{service_type_name}");
+                    await writer.WriteLineAsync("\t{");
+                    await writer.WriteLineAsync($"\t\treadonly I{crud_type_name} _crud_accessor;");
+                    await writer.WriteLineAsync();
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync("\t\t/// Конструктор");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic {service_type_name}(I{crud_type_name} set_crud_accessor)");
+                    await writer.WriteLineAsync("\t\t{");
+                    await writer.WriteLineAsync("\t\t\t_crud_accessor = set_crud_accessor;");
+                    await writer.WriteLineAsync("\t\t}");
+                    await writer.WriteLineAsync();
+                    await WriteDocumentServicesInterfaceImplementation(writer, grid.SystemName, false);
+
+                    #endregion
+
+                    #region контроллеры табличной части документа
+
+                    service_instance = $"_{service_type_name}".ToLower();
+                    controller_name = $"{grid.SystemName}Controller";
+                    zipEntry = archive.CreateEntry(Path.Combine(conf.ControllersDirectoryPath, $"{controller_name}.cs"));
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, project.Name, conf.Namespace, $"{grid.Name} (табличная часть)", ["Microsoft.AspNetCore.Mvc", "SharedLib.Models"]);
+                    await writer.WriteLineAsync("\t[Route(\"api/[controller]\")]");
+                    await writer.WriteLineAsync("\t[ApiController]");
+                    await writer.WriteLineAsync($"\tpublic partial class {controller_name} : ControllerBase");
+                    await writer.WriteLineAsync("\t{");
+                    await writer.WriteLineAsync($"\t\treadonly I{service_type_name} {service_instance};");
+                    await writer.WriteLineAsync();
+                    await writer.WriteLineAsync($"\t\tpublic {controller_name}(I{service_type_name} set_{service_instance})");
+                    await writer.WriteLineAsync("\t\t{");
+                    await writer.WriteLineAsync($"\t\t\t{service_instance} = set_{service_instance};");
+                    await writer.WriteLineAsync("\t\t}");
+                    await writer.WriteLineAsync();
+                    await WriteDocumentControllers(writer, service_instance, grid.SystemName, $"Табличная часть: {grid.Name} // для документа: {doc_obj.Name}", false);
+
+                    #endregion
+
+                    //#region refit табличная часть
+
+                    //rest_service_name = $"I{grid.SystemName}RestService";
+                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), $"{rest_service_name}.cs"));
+                    //writer = new(enumEntry.Open(), Encoding.UTF8);
+                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"REST служба работы с API -> {project_info.Name}", new string[] { "Refit", "SharedLib.Models" });
+                    //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
+                    //await writer.WriteLineAsync("\t{");
+                    //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, false, false);
+
+                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), $"{rest_service_name[1..]}.cs"));
+                    //writer = new(enumEntry.Open(), Encoding.UTF8);
+                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
+                    //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
+                    //await writer.WriteLineAsync("\t{");
+                    //await WriteRestServiceImplementation(writer, grid.SystemName, false);
+
+                    //rest_service_name = $"I{grid.SystemName}RefitProvider";
+                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
+                    //writer = new(enumEntry.Open(), Encoding.UTF8);
+                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
+                    //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
+                    //await writer.WriteLineAsync("\t{");
+                    //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, true, false);
+
+                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), "core", $"{rest_service_name[1..]}.cs"));
+                    //writer = new(enumEntry.Open(), Encoding.UTF8);
+                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
+                    //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
+                    //await writer.WriteLineAsync("\t{");
+                    //await WriteRefitProviderImplementation(writer, grid.SystemName, false);
+
+                    //rest_service_name = $"I{grid.SystemName}RefitService";
+                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
+                    //writer = new(enumEntry.Open(), Encoding.UTF8);
+                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
+                    //await writer.WriteLineAsync("\t[Headers(\"Content-Type: application/json\")]");
+                    //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
+                    //await writer.WriteLineAsync("\t{");
+                    //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, true, true);
+
+                    //#endregion
+                }
+        }
+    }
+
+    async Task DbContextGen(IEnumerable<DocumentFitModel> docs)
+    {
+        ZipArchiveEntry zipEntry = archive.CreateEntry("LayerContextPartGen.cs");
+        StreamWriter writer = new(zipEntry.Open(), Encoding.UTF8);
+        await WriteHead(writer, project.Name, "DbLayerLib", "Database context", ["Microsoft.EntityFrameworkCore", conf.Namespace]);
+
+        await writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
+        await writer.WriteLineAsync("\t{");
+        bool is_first_item = true;
+        foreach (DocumentFitModel doc_obj in docs)
+        {
+            if (!is_first_item)
+                await writer.WriteLineAsync();
+            else
+                is_first_item = false;
+
+            await writer.WriteLineAsync("\t\t/// <summary>");
+            await writer.WriteLineAsync($"\t\t/// {doc_obj.Description}");
+            await writer.WriteLineAsync("\t\t/// </summary>");
+            writer.WriteLine($"\t\tpublic DbSet<{doc_obj.SystemName}> {doc_obj.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+
+            if (doc_obj.Grids is not null)
+                foreach (GridFitModel? grid in doc_obj.Grids)
+                {
+                    await writer.WriteLineAsync();
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// {grid.Name} [Табличная часть: {doc_obj.Name}]");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic DbSet<{grid.SystemName}> {grid.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+                }
+        }
+
+        await WriteEnd(writer);
+    }
+
+    async Task DocumentsShemaGen(IEnumerable<DocumentFitModel> docs)
+    {
+        ZipArchiveEntry zipEntry;
+        StreamWriter writer;
+        string type_class_name;
+
+        bool is_first_item;
+        foreach (DocumentFitModel doc_obj in docs)
+        {
+            type_class_name = doc_obj.SystemName;
+
+            zipEntry = archive.CreateEntry(Path.Combine(conf.DocumentsMastersDbDirectoryPath, $"{type_class_name}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name);
+
+            await writer.WriteLineAsync($"\tpublic partial class {doc_obj.SystemName} : SharedLib.Models.IdRemovableModel");
+            await writer.WriteLineAsync("\t{");
+            is_first_item = true;
+            if (doc_obj.PropertiesBody is not null)
+                foreach (DocumentPropertyFitModel property in doc_obj.PropertiesBody.OrderBy(x => x.SortIndex))
+                {
+                    if (!is_first_item)
+                    {
+                        await writer.WriteLineAsync();
+                    }
+                    else
+                    {
+                        is_first_item = false;
+                    }
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// {property.Name}");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    switch (property.PropertyType)
+                    {
+                        case PropertyTypesEnum.String:
+                            await writer.WriteLineAsync($"\t\tpublic string {property.SystemName} {{ get; set; }}");
+                            break;
+                        case PropertyTypesEnum.Int:
+                            await writer.WriteLineAsync($"\t\tpublic int {property.SystemName} {{ get; set; }}");
+                            break;
+                        case PropertyTypesEnum.Decimal:
+                            await writer.WriteLineAsync($"\t\tpublic decimal {property.SystemName} {{ get; set; }}");
+                            break;
+                        case PropertyTypesEnum.Bool:
+                            await writer.WriteLineAsync($"\t\tpublic bool {property.SystemName} {{ get; set; }}");
+                            break;
+                        case PropertyTypesEnum.DateTime:
+                            await writer.WriteLineAsync($"\t\tpublic DateTime {property.SystemName} {{ get; set; }}");
+                            break;
+                        case PropertyTypesEnum.SimpleEnum:
+                            await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
+                            break;
+                        case PropertyTypesEnum.Document:
+                            await writer.WriteLineAsync($"\t\tpublic int {property.SystemName}Id {{ get; set; }}");
+                            await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
+                            break;
+                        default:
+                            throw new Exception();
+                    }
+                }
+
+            if (doc_obj.Grids is not null)
+                foreach (GridFitModel grid in doc_obj.Grids)
+                {
+                    await writer.WriteLineAsync();
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// '{grid.Name}': Табличная часть документа");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic ICollection<{grid.SystemName}> {grid.SystemName}{GlobalStaticConstants.TABLE_PROPERTY_NAME_PREFIX} {{ get; set; }}");
+                }
+
+            await WriteEnd(writer);
+
+            if (doc_obj.Grids is not null)
+                foreach (GridFitModel grid in doc_obj.Grids)
+                {
+                    type_class_name = $"{grid.SystemName}";
+
+
+                    zipEntry = archive.CreateEntry(Path.Combine(conf.DocumentsMastersDbDirectoryPath, $"{grid.SystemName}.cs"));
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name);
+
+                    await writer.WriteLineAsync($"\tpublic partial class {grid.SystemName} : SharedLib.Models.IdRemovableModel");
+                    await writer.WriteLineAsync("\t{");
+
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// (FK) {grid.Name}");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic int {grid.SystemName}OwnerId {{ get; set; }}");
+                    await writer.WriteLineAsync();
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// {grid.Name}");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic {grid.SystemName} {grid.SystemName}Owner {{ get; set; }}");
+
+                    if (grid.Properties is not null)
+                        foreach (DocumentPropertyFitModel property in grid.Properties.OrderBy(x => x.SortIndex))
+                        {
+                            await writer.WriteLineAsync();
+                            await writer.WriteLineAsync("\t\t/// <summary>");
+                            await writer.WriteLineAsync($"\t\t/// {property.Name}");
+                            await writer.WriteLineAsync("\t\t/// </summary>");
+                            switch (property.PropertyType)
+                            {
+                                case PropertyTypesEnum.String:
+                                    await writer.WriteLineAsync($"\t\tpublic string {property.SystemName} {{ get; set; }}");
+                                    break;
+                                case PropertyTypesEnum.Int:
+                                    await writer.WriteLineAsync($"\t\tpublic int {property.SystemName} {{ get; set; }}");
+                                    break;
+                                case PropertyTypesEnum.Decimal:
+                                    await writer.WriteLineAsync($"\t\tpublic decimal {property.SystemName} {{ get; set; }}");
+                                    break;
+                                case PropertyTypesEnum.Bool:
+                                    await writer.WriteLineAsync($"\t\tpublic bool {property.SystemName} {{ get; set; }}");
+                                    break;
+                                case PropertyTypesEnum.DateTime:
+                                    await writer.WriteLineAsync($"\t\tpublic DateTime {property.SystemName} {{ get; set; }}");
+                                    break;
+                                case PropertyTypesEnum.SimpleEnum:
+                                    await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
+                                    break;
+                                case PropertyTypesEnum.Document:
+                                    await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
+                                    break;
+                                default:
+                                    throw new Exception();
+                            }
+                        }
+
+                    await WriteEnd(writer);
+                }
+        }
+    }
+
+    async Task EnumsGen(IEnumerable<EnumFitModel> enums)
+    {
+        ZipArchiveEntry zipEntry;
+        StreamWriter writer;
+        bool is_first_item;
+        foreach (EnumFitModel enum_obj in enums)
+        {
+            zipEntry = archive.CreateEntry(Path.Combine(conf.EnumDirectoryPath, $"{enum_obj.SystemName}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, enum_obj.Name);
+
+            await writer.WriteLineAsync($"\tpublic enum {enum_obj.SystemName}");
+            await writer.WriteLineAsync("\t{");
+            is_first_item = true;
+            if (enum_obj.EnumItems is not null)
+                foreach (SortableFitModel enum_item in enum_obj.EnumItems.OrderBy(x => x.SortIndex))
+                {
+                    if (!is_first_item)
+                    {
+                        await writer.WriteLineAsync();
+                    }
+                    else
+                    {
+                        is_first_item = false;
+                    }
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// {enum_item.Description}");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\t{enum_item.Name},");
+                }
+
+            await WriteEnd(writer);
+        }
+    }
+
+    async Task ReadmeGen(IEnumerable<string> stat)
+    {
+        string app_version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
+        ZipArchiveEntry readmeEntry = archive.CreateEntry("Readme.txt");
+        using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
+        await writer.WriteLineAsync($"Генератор C# комплекта - ver: {app_version} (by © https://github.com/badhitman - @fakegov)");
+        await writer.WriteLineAsync($"'{project.Name}' `{conf.Namespace}`");
+        await writer.WriteLineAsync($"============ {DateTime.Now} ============");
+        await writer.WriteLineAsync();
+        //
+        foreach (string row_line in stat)
+            await writer.WriteLineAsync(row_line);
+    }
+
 
     /// <summary>
     /// Записать вступление файла
@@ -70,7 +706,7 @@ public class GeneratorCSharpService : IGeneratorCSharpService
     /// </summary>
     /// <param name="archive">Пакет сжатых файлов в формате zip-архива.</param>
     /// <param name="json_raw">json данные для записи</param>
-    static async Task GenerateJsonDump(ZipArchive archive, string json_raw)
+    async Task GenerateJsonDump(string json_raw)
     {
         ZipArchiveEntry readmeEntry = archive.CreateEntry("dump.json");
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
@@ -80,13 +716,11 @@ public class GeneratorCSharpService : IGeneratorCSharpService
     /// <summary>
     /// Генерация файла регистрации DI служб
     /// </summary>
-    /// <param name="archive">Пакет сжатых файлов в формате zip-архива.</param>
-    /// <param name="project_info">Информация о проекте</param>
-    static async Task GenServicesDI(ZipArchive archive, NameSpacedModel project_info)
+    async Task GenServicesDI()
     {
         ZipArchiveEntry readmeEntry = archive.CreateEntry("services_di.cs");
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer, project_info.Name, null, "di services", [project_info.Namespace]);
+        await WriteHead(writer, project.Name, null, "di services", [conf.Namespace]);
         await writer.WriteLineAsync("\tpublic static class ServicesExtensionDesignerDI");
         await writer.WriteLineAsync("\t{");
         await writer.WriteLineAsync("\t\tpublic static void BuildDesignerServicesDI(this IServiceCollection services)");
@@ -94,36 +728,6 @@ public class GeneratorCSharpService : IGeneratorCSharpService
         foreach (KeyValuePair<string, string> kvp in services_di)
             await writer.WriteLineAsync($"\t\t\tservices.AddScoped<{kvp.Key}, {kvp.Value}>();");
 
-        await WriteEnd(writer);
-    }
-
-    /// <summary>
-    /// Генерация регистратора служб Refit для клиента
-    /// </summary>
-    /// <param name="archive">Пакет сжатых файлов в формате zip-архива.</param>
-    /// <param name="project_info">Информация о проекте</param>
-    /// <param name="types">Типы для регистрации</param>
-#pragma warning disable IDE0051 // Удалите неиспользуемые закрытые члены
-    static async Task GenRefitDI(ZipArchive archive, NameSpacedModel project_info, IEnumerable<string> types)
-#pragma warning restore IDE0051 // Удалите неиспользуемые закрытые члены
-    {
-        ZipArchiveEntry readmeEntry = archive.CreateEntry("refit_di.cs");
-        using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer, project_info.Name, null, "di refit", new string[] { project_info.Namespace, "Refit", "SharedLib.Models", "SharedLib", "Microsoft.Extensions.DependencyInjection" });
-        await writer.WriteLineAsync("\tpublic static class RefitExtensionDesignerDI");
-        await writer.WriteLineAsync("\t{");
-        await writer.WriteLineAsync("\t\tpublic static void BuildRefitServicesDI(this IServiceCollection services, ClientConfigModel conf, TimeSpan handler_lifetime)");
-        await writer.WriteLineAsync("\t\t{");
-        foreach (string s in types)
-        {
-            await writer.WriteLineAsync($"\t\t\tservices.AddRefitClient<I{s}RefitService>()");
-            await writer.WriteLineAsync("\t\t\t\t.ConfigureHttpClient(c => c.BaseAddress = conf.ApiConfig.Url)");
-            await writer.WriteLineAsync("\t\t\t\t.AddHttpMessageHandler<RefitHeadersDelegatingHandler>()");
-            await writer.WriteLineAsync("\t\t\t\t.SetHandlerLifetime(handler_lifetime);");
-            await writer.WriteLineAsync($"\t\t\tservices.AddScoped<I{s}RefitProvider, {s}RefitProvider>();");
-            await writer.WriteLineAsync($"\t\t\tservices.AddScoped<I{s}RestService, {s}RestService>();");
-            await writer.WriteLineAsync();
-        }
         await WriteEnd(writer);
     }
 
@@ -318,6 +922,34 @@ public class GeneratorCSharpService : IGeneratorCSharpService
     }
 
 #pragma warning disable IDE0051 // Удалите неиспользуемые закрытые члены
+    /// <summary>
+    /// Генерация регистратора служб Refit для клиента
+    /// </summary>
+    /// <param name="archive">Пакет сжатых файлов в формате zip-архива.</param>
+    /// <param name="project_info">Информация о проекте</param>
+    /// <param name="types">Типы для регистрации</param>
+    async Task GenRefitDI(IEnumerable<string> types)
+    {
+        ZipArchiveEntry readmeEntry = archive.CreateEntry("refit_di.cs");
+        using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
+        await WriteHead(writer, project.Name, null, "di refit", new string[] { conf.Namespace, "Refit", "SharedLib.Models", "SharedLib", "Microsoft.Extensions.DependencyInjection" });
+        await writer.WriteLineAsync("\tpublic static class RefitExtensionDesignerDI");
+        await writer.WriteLineAsync("\t{");
+        await writer.WriteLineAsync("\t\tpublic static void BuildRefitServicesDI(this IServiceCollection services, ClientConfigModel conf, TimeSpan handler_lifetime)");
+        await writer.WriteLineAsync("\t\t{");
+        foreach (string s in types)
+        {
+            await writer.WriteLineAsync($"\t\t\tservices.AddRefitClient<I{s}RefitService>()");
+            await writer.WriteLineAsync("\t\t\t\t.ConfigureHttpClient(c => c.BaseAddress = conf.ApiConfig.Url)");
+            await writer.WriteLineAsync("\t\t\t\t.AddHttpMessageHandler<RefitHeadersDelegatingHandler>()");
+            await writer.WriteLineAsync("\t\t\t\t.SetHandlerLifetime(handler_lifetime);");
+            await writer.WriteLineAsync($"\t\t\tservices.AddScoped<I{s}RefitProvider, {s}RefitProvider>();");
+            await writer.WriteLineAsync($"\t\t\tservices.AddScoped<I{s}RestService, {s}RestService>();");
+            await writer.WriteLineAsync();
+        }
+        await WriteEnd(writer);
+    }
+
     /// <summary>
     /// Запись реализации Rest/refit сервиса
     /// </summary>
@@ -1248,641 +1880,5 @@ public class GeneratorCSharpService : IGeneratorCSharpService
         await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
         await writer.WriteLineAsync($"\t\tpublic Task RemoveRangeAsync(IEnumerable<int> ids, bool auto_save = true);");
         await WriteEnd(writer);
-    }
-
-
-
-    /// <inheritdoc/>
-    public async Task DbTableAccessGen(IEnumerable<DocumentFitModel> docs, ZipArchive archive, string dir, NameSpacedModel project_info, string controllers_directory_path)
-    {
-        string crud_type_name, service_type_name, response_type_name, controller_name, service_instance;
-        ZipArchiveEntry enumEntry;
-        StreamWriter writer;
-
-        foreach (DocumentFitModel doc_obj in docs)
-        {
-            #region модели ответов тела документа (rest/api)
-
-            response_type_name = $"{doc_obj.SystemName}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
-            enumEntry = archive.CreateEntry(Path.Combine(dir, "response_models", $"{response_type_name}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, $"{doc_obj.SystemName} : Response model (single object)", ["SharedLib.Models"]);
-
-            await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
-            await writer.WriteLineAsync("\t{");
-            await writer.WriteLineAsync("\t\t/// <summary>");
-            await writer.WriteLineAsync($"\t\t/// Результат запроса [{doc_obj.SystemName}] (полезная нагрузка)");
-            await writer.WriteLineAsync("\t\t/// </summary>");
-            await writer.WriteLineAsync($"\t\tpublic {doc_obj.SystemName}? {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
-            await WriteEnd(writer);
-
-
-            response_type_name = $"{doc_obj.SystemName}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
-            enumEntry = archive.CreateEntry(Path.Combine(dir, "response_models", $"{response_type_name}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, $"{doc_obj.SystemName} : Response model (collection objects)", ["SharedLib.Models"]);
-
-            await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
-            await writer.WriteLineAsync("\t{");
-            await writer.WriteLineAsync("\t\t/// <summary>");
-            await writer.WriteLineAsync($"\t\t/// Результат запроса [{doc_obj.SystemName}] (полезная нагрузка)");
-            await writer.WriteLineAsync("\t\t/// </summary>");
-            await writer.WriteLineAsync($"\t\tpublic IEnumerable<{doc_obj.SystemName}> {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
-            await WriteEnd(writer);
-
-
-            response_type_name = $"{doc_obj.SystemName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-            enumEntry = archive.CreateEntry(Path.Combine(dir, "response_models", $"{response_type_name}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, $"{doc_obj.SystemName} : Response model (paginations collection of objects)", ["SharedLib.Models"]);
-
-            await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : FindResponseModel");
-            await writer.WriteLineAsync("\t{");
-            await writer.WriteLineAsync("\t\t/// <summary>");
-            await writer.WriteLineAsync($"\t\t/// Результат запроса [{doc_obj.SystemName}] (полезная нагрузка)");
-            await writer.WriteLineAsync("\t\t/// </summary>");
-            await writer.WriteLineAsync($"\t\tpublic IEnumerable<{doc_obj.SystemName}> DataRows {{ get; set; }}");
-            await WriteEnd(writer);
-
-            #endregion
-
-            #region тело документа
-
-            crud_type_name = $"I{doc_obj.SystemName}{GlobalStaticConstants.DATABASE_TABLE_ACESSOR_PREFIX}";
-            services_di.Add(crud_type_name, crud_type_name[1..]);
-            enumEntry = archive.CreateEntry(Path.Combine(dir, "crud_interfaces", $"{crud_type_name}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, doc_obj.Name, ["SharedLib.Models"]);
-
-            await writer.WriteLineAsync($"\tpublic partial interface {crud_type_name} : SharedLib.ISavingChanges");
-            await writer.WriteLineAsync("\t{");
-
-            await WriteDocumentCrudInterface(writer, doc_obj.SystemName, doc_obj.Name, true);
-
-            crud_type_name = crud_type_name[1..];
-            enumEntry = archive.CreateEntry(Path.Combine(dir, "crud_implementations", $"{crud_type_name}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib.Models"]);
-
-            await writer.WriteLineAsync($"\tpublic partial class {crud_type_name} : I{crud_type_name}");
-            await writer.WriteLineAsync("\t{");
-            await writer.WriteLineAsync("\t\treadonly DbAppContext _db_context;");
-            await writer.WriteLineAsync();
-            await writer.WriteLineAsync("\t\t/// <summary>");
-            await writer.WriteLineAsync("\t\t/// Конструктор");
-            await writer.WriteLineAsync("\t\t/// </summary>");
-            await writer.WriteLineAsync($"\t\tpublic {crud_type_name}(DbAppContext set_db_context)");
-            await writer.WriteLineAsync("\t\t{");
-            await writer.WriteLineAsync("\t\t\t_db_context = set_db_context;");
-            await writer.WriteLineAsync("\t\t}");
-            await writer.WriteLineAsync();
-
-            await WriteDocumentCrudInterfaceImplementation(writer, doc_obj.SystemName, true);
-
-
-
-            service_type_name = $"I{doc_obj.SystemName}{GlobalStaticConstants.SERVICE_ACESSOR_PREFIX}";
-            services_di.Add(service_type_name, service_type_name[1..]);
-            enumEntry = archive.CreateEntry(Path.Combine(dir, "service_interfaces", $"{service_type_name}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, doc_obj.Name, ["SharedLib.Models"]);
-
-            await writer.WriteLineAsync($"\tpublic partial interface {service_type_name}");
-            await writer.WriteLineAsync("\t{");
-
-            await WriteDocumentServicesInterface(writer, doc_obj.SystemName, doc_obj.Name, true);
-
-            service_type_name = service_type_name[1..];
-            enumEntry = archive.CreateEntry(Path.Combine(dir, "service_implementations", $"{service_type_name}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, null, ["SharedLib.Models"]);
-
-            await writer.WriteLineAsync($"\tpublic partial class {service_type_name} : I{service_type_name}");
-            await writer.WriteLineAsync("\t{");
-            await writer.WriteLineAsync($"\t\treadonly I{crud_type_name} _crud_accessor;");
-            await writer.WriteLineAsync();
-            await writer.WriteLineAsync("\t\t/// <summary>");
-            await writer.WriteLineAsync("\t\t/// Конструктор");
-            await writer.WriteLineAsync("\t\t/// </summary>");
-            await writer.WriteLineAsync($"\t\tpublic {service_type_name}(I{crud_type_name} set_crud_accessor)");
-            await writer.WriteLineAsync("\t\t{");
-            await writer.WriteLineAsync("\t\t\t_crud_accessor = set_crud_accessor;");
-            await writer.WriteLineAsync("\t\t}");
-            await writer.WriteLineAsync();
-            await WriteDocumentServicesInterfaceImplementation(writer, doc_obj.SystemName, true);
-
-            #endregion
-
-            #region контроллеры тела документа
-
-            service_instance = $"_{service_type_name}".ToLower();
-            controller_name = $"{doc_obj.SystemName}Controller";
-            enumEntry = archive.CreateEntry(Path.Combine(controllers_directory_path, $"{controller_name}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, doc_obj.Name, ["Microsoft.AspNetCore.Mvc", "SharedLib.Models"]);
-            await writer.WriteLineAsync("\t[Route(\"api/[controller]\")]");
-            await writer.WriteLineAsync("\t[ApiController]");
-            await writer.WriteLineAsync($"\tpublic partial class {controller_name} : ControllerBase");
-            await writer.WriteLineAsync("\t{");
-            await writer.WriteLineAsync($"\t\treadonly I{service_type_name} {service_instance};");
-            await writer.WriteLineAsync();
-            await writer.WriteLineAsync($"\t\tpublic {controller_name}(I{service_type_name} set{service_instance})");
-            await writer.WriteLineAsync("\t\t{");
-            await writer.WriteLineAsync($"\t\t\t{service_instance} = set{service_instance};");
-            await writer.WriteLineAsync("\t\t}");
-            await writer.WriteLineAsync();
-            await WriteDocumentControllers(writer, service_instance, doc_obj.SystemName, $"Документ: {doc_obj.Name}", true);
-
-            #endregion
-
-            //#region refit/rest (тело документа)
-
-            //rest_service_name = $"I{doc_obj.SystemName}RestService";
-            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), $"{rest_service_name}.cs"));
-            //writer = new(enumEntry.Open(), Encoding.UTF8);
-            //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"REST служба работы с API -> {project_info.Name}", ["Refit", "SharedLib.Models"]);
-            //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
-            //await writer.WriteLineAsync("\t{");
-            //await WriteRestServiceInterface(writer, doc_obj.SystemName, doc_obj.Name, true, false, false);
-
-            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), $"{rest_service_name[1..]}.cs"));
-            //writer = new(enumEntry.Open(), Encoding.UTF8);
-            //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
-            //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
-            //await writer.WriteLineAsync("\t{");
-            //await WriteRestServiceImplementation(writer, doc_obj.SystemName, true);
-
-            //rest_service_name = $"I{doc_obj.SystemName}RefitProvider";
-            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
-            //writer = new(enumEntry.Open(), Encoding.UTF8);
-            //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
-            //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
-            //await writer.WriteLineAsync("\t{");
-            //await WriteRestServiceInterface(writer, doc_obj.SystemName, doc_obj.Name, true, true, false);
-
-            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), "core", $"{rest_service_name[1..]}.cs"));
-            //writer = new(enumEntry.Open(), Encoding.UTF8);
-            //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
-            //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
-            //await writer.WriteLineAsync("\t{");
-            //await WriteRefitProviderImplementation(writer, doc_obj.SystemName, true);
-
-            //rest_service_name = $"I{doc_obj.SystemName}RefitService";
-            //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, doc_obj.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
-            //writer = new(enumEntry.Open(), Encoding.UTF8);
-            //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
-            //await writer.WriteLineAsync("\t[Headers(\"Content-Type: application/json\")]");
-            //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
-            //await writer.WriteLineAsync("\t{");
-            //await WriteRestServiceInterface(writer, doc_obj.SystemName, doc_obj.Name, true, true, true);
-
-            //#endregion
-
-            if (doc_obj.Grids is not null)
-                foreach (GridFitModel grid in doc_obj.Grids)
-                {
-
-                    if (!grid.Properties?.Any() == true)
-                        continue;
-
-                    #region модели ответов табличной части документа (rest/api)
-
-                    response_type_name = $"{grid.SystemName}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
-                    enumEntry = archive.CreateEntry(Path.Combine(dir, "response_models", $"{response_type_name}.cs"));
-                    writer = new(enumEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project_info.Name, project_info.Namespace, $"{grid.SystemName} : Response model (single object)", ["SharedLib.Models"]);
-                    await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// Результат запроса [{grid.SystemName}] (полезная нагрузка)");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic {grid.SystemName} {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
-                    await WriteEnd(writer);
-
-
-                    response_type_name = $"{grid.SystemName}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
-                    enumEntry = archive.CreateEntry(Path.Combine(dir, "response_models", $"{response_type_name}.cs"));
-                    writer = new(enumEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project_info.Name, project_info.Namespace, $"{grid.SystemName} : Response model (collection objects)", ["SharedLib.Models"]);
-                    await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// Результат запроса [{grid.SystemName}] (полезная нагрузка)");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic IEnumerable<{grid.SystemName}> {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
-                    await WriteEnd(writer);
-
-                    response_type_name = $"{grid.SystemName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-                    enumEntry = archive.CreateEntry(Path.Combine(dir, "response_models", $"{response_type_name}.cs"));
-                    writer = new(enumEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project_info.Name, project_info.Namespace, $"{grid.SystemName} : Response model (paginations collection of objects)", new string[] { "SharedLib.Models" });
-                    await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : FindResponseModel");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// Результат запроса [{grid.SystemName}] (полезная нагрузка)");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic IEnumerable<{grid.SystemName}> DataRows {{ get; set; }}");
-                    await WriteEnd(writer);
-
-                    #endregion
-
-                    #region табличная часть документа
-
-                    crud_type_name = $"I{grid.SystemName}{GlobalStaticConstants.DATABASE_TABLE_ACESSOR_PREFIX}";
-                    services_di.Add(crud_type_name, crud_type_name[1..]);
-                    enumEntry = archive.CreateEntry(Path.Combine(dir, "crud_interfaces", $"{crud_type_name}.cs"));
-                    writer = new(enumEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project_info.Name, project_info.Namespace, $"Табличная часть документа: {grid.Name}", ["SharedLib.Models"]);
-
-                    await writer.WriteLineAsync($"\tpublic partial interface {crud_type_name} : SharedLib.ISavingChanges");
-                    await writer.WriteLineAsync("\t{");
-
-                    await WriteDocumentCrudInterface(writer, $"{grid.SystemName}", grid.Name, false);
-
-                    crud_type_name = crud_type_name[1..];
-                    enumEntry = archive.CreateEntry(Path.Combine(dir, "crud_implementations", $"{crud_type_name}.cs"));
-                    writer = new(enumEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project_info.Name, project_info.Namespace, null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib.Models"]);
-                    await writer.WriteLineAsync($"\tpublic partial class {crud_type_name} : I{crud_type_name}");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync("\t\treadonly DbAppContext _db_context;");
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync("\t\t/// Конструктор");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic {crud_type_name}(DbAppContext set_db_context)");
-                    await writer.WriteLineAsync("\t\t{");
-                    await writer.WriteLineAsync("\t\t\t_db_context = set_db_context;");
-                    await writer.WriteLineAsync("\t\t}");
-                    await writer.WriteLineAsync();
-                    await WriteDocumentCrudInterfaceImplementation(writer, $"{grid.SystemName}", false);
-
-
-
-                    service_type_name = $"I{grid.SystemName}{GlobalStaticConstants.SERVICE_ACESSOR_PREFIX}";
-                    services_di.Add(service_type_name, service_type_name[1..]);
-                    enumEntry = archive.CreateEntry(Path.Combine(dir, "service_interfaces", $"{service_type_name}.cs"));
-                    writer = new(enumEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project_info.Name, project_info.Namespace, grid.Name, ["SharedLib.Models"]);
-
-                    await writer.WriteLineAsync($"\tpublic partial interface {service_type_name}");
-                    await writer.WriteLineAsync("\t{");
-
-                    await WriteDocumentServicesInterface(writer, grid.SystemName, grid.Name, false);
-
-                    service_type_name = service_type_name[1..];
-                    enumEntry = archive.CreateEntry(Path.Combine(dir, "service_implementations", $"{service_type_name}.cs"));
-                    writer = new(enumEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project_info.Name, project_info.Namespace, null, ["SharedLib.Models"]);
-
-                    await writer.WriteLineAsync($"\tpublic partial class {service_type_name} : I{service_type_name}");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync($"\t\treadonly I{crud_type_name} _crud_accessor;");
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync("\t\t/// Конструктор");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic {service_type_name}(I{crud_type_name} set_crud_accessor)");
-                    await writer.WriteLineAsync("\t\t{");
-                    await writer.WriteLineAsync("\t\t\t_crud_accessor = set_crud_accessor;");
-                    await writer.WriteLineAsync("\t\t}");
-                    await writer.WriteLineAsync();
-                    await WriteDocumentServicesInterfaceImplementation(writer, grid.SystemName, false);
-
-                    #endregion
-
-                    #region контроллеры табличной части документа
-
-                    service_instance = $"_{service_type_name}".ToLower();
-                    controller_name = $"{grid.SystemName}Controller";
-                    enumEntry = archive.CreateEntry(Path.Combine(controllers_directory_path, $"{controller_name}.cs"));
-                    writer = new(enumEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project_info.Name, project_info.Namespace, $"{grid.Name} (табличная часть)", ["Microsoft.AspNetCore.Mvc", "SharedLib.Models"]);
-                    await writer.WriteLineAsync("\t[Route(\"api/[controller]\")]");
-                    await writer.WriteLineAsync("\t[ApiController]");
-                    await writer.WriteLineAsync($"\tpublic partial class {controller_name} : ControllerBase");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync($"\t\treadonly I{service_type_name} {service_instance};");
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync($"\t\tpublic {controller_name}(I{service_type_name} set_{service_instance})");
-                    await writer.WriteLineAsync("\t\t{");
-                    await writer.WriteLineAsync($"\t\t\t{service_instance} = set_{service_instance};");
-                    await writer.WriteLineAsync("\t\t}");
-                    await writer.WriteLineAsync();
-                    await WriteDocumentControllers(writer, service_instance, grid.SystemName, $"Табличная часть: {grid.Name} // для документа: {doc_obj.Name}", false);
-
-                    #endregion
-
-                    //#region refit табличная часть
-
-                    //rest_service_name = $"I{grid.SystemName}RestService";
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), $"{rest_service_name}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"REST служба работы с API -> {project_info.Name}", new string[] { "Refit", "SharedLib.Models" });
-                    //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, false, false);
-
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), $"{rest_service_name[1..]}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
-                    //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRestServiceImplementation(writer, grid.SystemName, false);
-
-                    //rest_service_name = $"I{grid.SystemName}RefitProvider";
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
-                    //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, true, false);
-
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), "core", $"{rest_service_name[1..]}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
-                    //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRefitProviderImplementation(writer, grid.SystemName, false);
-
-                    //rest_service_name = $"I{grid.SystemName}RefitService";
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
-                    //await writer.WriteLineAsync("\t[Headers(\"Content-Type: application/json\")]");
-                    //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, true, true);
-
-                    //#endregion
-                }
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task DbContextGen(IEnumerable<DocumentFitModel> docs, ZipArchive archive, NameSpacedModel project_info)
-    {
-        ZipArchiveEntry enumEntry = archive.CreateEntry("LayerContextPartGen.cs");
-        StreamWriter writer = new(enumEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer, project_info.Name, "DbLayerLib", "Database context", ["Microsoft.EntityFrameworkCore", project_info.Namespace]);
-
-        await writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
-        await writer.WriteLineAsync("\t{");
-        bool is_first_item = true;
-        foreach (DocumentFitModel doc_obj in docs)
-        {
-            if (!is_first_item)
-                await writer.WriteLineAsync();
-            else
-                is_first_item = false;
-
-            await writer.WriteLineAsync("\t\t/// <summary>");
-            await writer.WriteLineAsync($"\t\t/// {doc_obj.Description}");
-            await writer.WriteLineAsync("\t\t/// </summary>");
-            writer.WriteLine($"\t\tpublic DbSet<{doc_obj.SystemName}> {doc_obj.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
-
-            if (doc_obj.Grids is not null)
-                foreach (GridFitModel? grid in doc_obj.Grids)
-                {
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {grid.Name} [Табличная часть: {doc_obj.Name}]");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic DbSet<{grid.SystemName}> {grid.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
-                }
-        }
-
-        await WriteEnd(writer);
-    }
-
-    /// <inheritdoc/>
-    public async Task DocumentsShemaGen(IEnumerable<DocumentFitModel> docs, ZipArchive archive, string dir, NameSpacedModel project_info)
-    {
-        ZipArchiveEntry enumEntry;
-        StreamWriter writer;
-        string type_class_name;
-
-        bool is_first_item;
-        foreach (DocumentFitModel doc_obj in docs)
-        {
-            type_class_name = doc_obj.SystemName;
-
-            enumEntry = archive.CreateEntry(Path.Combine(dir, $"{type_class_name}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, doc_obj.Name);
-
-            await writer.WriteLineAsync($"\tpublic partial class {doc_obj.SystemName} : SharedLib.Models.IdRemovableModel");
-            await writer.WriteLineAsync("\t{");
-            is_first_item = true;
-            if (doc_obj.PropertiesBody is not null)
-                foreach (DocumentPropertyFitModel property in doc_obj.PropertiesBody.OrderBy(x => x.SortIndex))
-                {
-                    if (!is_first_item)
-                    {
-                        await writer.WriteLineAsync();
-                    }
-                    else
-                    {
-                        is_first_item = false;
-                    }
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {property.Name}");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    switch (property.PropertyType)
-                    {
-                        case PropertyTypesEnum.String:
-                            await writer.WriteLineAsync($"\t\tpublic string {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.Int:
-                            await writer.WriteLineAsync($"\t\tpublic int {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.Decimal:
-                            await writer.WriteLineAsync($"\t\tpublic decimal {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.Bool:
-                            await writer.WriteLineAsync($"\t\tpublic bool {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.DateTime:
-                            await writer.WriteLineAsync($"\t\tpublic DateTime {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.SimpleEnum:
-                            await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.Document:
-                            await writer.WriteLineAsync($"\t\tpublic int {property.SystemName}Id {{ get; set; }}");
-                            await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
-                            break;
-                        default:
-                            throw new Exception();
-                    }
-                }
-
-            if (doc_obj.Grids is not null)
-                foreach (GridFitModel grid in doc_obj.Grids)
-                {
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// '{grid.Name}': Табличная часть документа");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic ICollection<{grid.SystemName}> {grid.SystemName}{GlobalStaticConstants.TABLE_PROPERTY_NAME_PREFIX} {{ get; set; }}");
-                }
-
-            await WriteEnd(writer);
-
-            if (doc_obj.Grids is not null)
-                foreach (GridFitModel grid in doc_obj.Grids)
-                {
-                    type_class_name = $"{grid.SystemName}";
-
-
-                    enumEntry = archive.CreateEntry(Path.Combine(dir, $"{grid.SystemName}.cs"));
-                    writer = new(enumEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project_info.Name, project_info.Namespace, doc_obj.Name);
-
-                    await writer.WriteLineAsync($"\tpublic partial class {grid.SystemName} : SharedLib.Models.IdRemovableModel");
-                    await writer.WriteLineAsync("\t{");
-
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// (FK) {grid.Name}");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic int {grid.SystemName}OwnerId {{ get; set; }}");
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {grid.Name}");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic {grid.SystemName} {grid.SystemName}Owner {{ get; set; }}");
-
-                    if (grid.Properties is not null)
-                        foreach (DocumentPropertyFitModel property in grid.Properties.OrderBy(x => x.SortIndex))
-                        {
-                            await writer.WriteLineAsync();
-                            await writer.WriteLineAsync("\t\t/// <summary>");
-                            await writer.WriteLineAsync($"\t\t/// {property.Name}");
-                            await writer.WriteLineAsync("\t\t/// </summary>");
-                            switch (property.PropertyType)
-                            {
-                                case PropertyTypesEnum.String:
-                                    await writer.WriteLineAsync($"\t\tpublic string {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.Int:
-                                    await writer.WriteLineAsync($"\t\tpublic int {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.Decimal:
-                                    await writer.WriteLineAsync($"\t\tpublic decimal {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.Bool:
-                                    await writer.WriteLineAsync($"\t\tpublic bool {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.DateTime:
-                                    await writer.WriteLineAsync($"\t\tpublic DateTime {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.SimpleEnum:
-                                    await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.Document:
-                                    await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
-                                    break;
-                                default:
-                                    throw new Exception();
-                            }
-                        }
-
-                    await WriteEnd(writer);
-                }
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task EnumsGen(IEnumerable<EnumFitModel> enums, ZipArchive archive, string dir, NameSpacedModel project_info)
-    {
-        ZipArchiveEntry enumEntry;
-        StreamWriter writer;
-        bool is_first_item;
-        foreach (EnumFitModel enum_obj in enums)
-        {
-            enumEntry = archive.CreateEntry(Path.Combine(dir, $"{enum_obj.SystemName}.cs"));
-            writer = new(enumEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project_info.Name, project_info.Namespace, enum_obj.Name);
-
-            await writer.WriteLineAsync($"\tpublic enum {enum_obj.SystemName}");
-            await writer.WriteLineAsync("\t{");
-            is_first_item = true;
-            if (enum_obj.EnumItems is not null)
-                foreach (SortableFitModel enum_item in enum_obj.EnumItems.OrderBy(x => x.SortIndex))
-                {
-                    if (!is_first_item)
-                    {
-                        await writer.WriteLineAsync();
-                    }
-                    else
-                    {
-                        is_first_item = false;
-                    }
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {enum_item.Description}");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\t{enum_item.Name},");
-                }
-
-            await WriteEnd(writer);
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<Stream> GetFullStream(StructureProjectModel dump, CodeGeneratorConfigModel conf)
-    {
-        List<string> stat =
-        [
-            $"Перечислений: {dump.Enums.Count()} (элементов всего: {dump.Enums.Sum(x => x.EnumItems?.Count())})",
-            $"Документов: {dump.Documents.Count()} (полей всего: {dump.Documents.Sum(x => x.PropertiesBody?.Count()) + dump.Documents.Sum(x => x.Grids?.SelectMany(y => y.Properties!).Count())})",
-            $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
-            $"{conf.EnumDirectoryPath} - папка перечислений",
-            $"",
-            $"{conf.AccessDataDirectoryPath} - папка файлов сервисов backend служб доступа к данным (CRUD) и классов/моделей ответов",
-            $"\t> crud_interfaces: интерфейсы низкоуровневого доступа к контексту таблиц базы данных",
-            $"\t\t> crud_implementations: реализация интерфейсов crud_interfaces",
-            $"······················································",
-            $"\t> service_interfaces: интерфейсы функционального/промежуточного (между контроллером и низкоуровневым DB доступом) доступа к данным",
-            $"\t\t> service_implementations: реализация интерфейсов service_interfaces",
-            $"······················································",
-            $"\tresponse_models: модели ответов контроллеров, которые в свою очередь получают их от функциональных/промежуточных служб доступа",
-            $"××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××",
-            $"",
-            $"LayerContextPartGen.cs - разделяемый [public partial class LayerContext : DbContext] класс.",
-            $"refit_di.cs - [public static class RefitExtensionDesignerDI].[public static void BuildRefitServicesDI(this IServiceCollection services, ClientConfigModel conf, TimeSpan handler_lifetime)]",
-            $"services_di.cs - [public static class ServicesExtensionDesignerDI].[public static void BuildDesignerServicesDI(this IServiceCollection services)]"
-        ];
-        services_di = [];
-        using MemoryStream zipToOpen = new();
-        using (ZipArchive archive = new(zipToOpen, ZipArchiveMode.Create))
-        {
-            await ReadmeGen(archive, stat, conf.ProjectInfo);
-            await EnumsGen(dump.Enums, archive, conf.EnumDirectoryPath, conf.ProjectInfo);
-            await DocumentsShemaGen(dump.Documents, archive, conf.DocumentsMastersDbDirectoryPath, conf.ProjectInfo);
-            await DbContextGen(dump.Documents, archive, conf.ProjectInfo);
-            await DbTableAccessGen(dump.Documents, archive, conf.AccessDataDirectoryPath, conf.ProjectInfo, conf.ControllersDirectoryPath);
-            await GenServicesDI(archive, conf.ProjectInfo);
-            //await GenRefitDI(archive, conf.ProjectInfo, dump.Documents.Select(x => x.SystemName));
-            string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented);
-            await GenerateJsonDump(archive, json_raw);
-        }
-        await zipToOpen.FlushAsync();
-        services_di.Clear();
-        return new MemoryStream(zipToOpen.ToArray());
-    }
-
-    /// <inheritdoc/>
-    public async Task ReadmeGen(ZipArchive archive, IEnumerable<string> stat, NameSpacedModel project_info)
-    {
-        string app_version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
-        ZipArchiveEntry readmeEntry = archive.CreateEntry("Readme.txt");
-        using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        await writer.WriteLineAsync($"Генератор C# комплекта - ver: {app_version} (by © https://github.com/badhitman - @fakegov)");
-        await writer.WriteLineAsync($"'{project_info.Name}' `{project_info.Namespace}`");
-        await writer.WriteLineAsync($"============ {DateTime.Now} ============");
-        await writer.WriteLineAsync();
-        //
-        foreach (string row_line in stat)
-            await writer.WriteLineAsync(row_line);
     }
 }
