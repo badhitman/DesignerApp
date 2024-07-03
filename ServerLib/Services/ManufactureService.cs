@@ -55,6 +55,16 @@ public class ManufactureService(
         if (!string.IsNullOrEmpty(manufacture.ControllersDirectoryPath) && !Regex.IsMatch(manufacture.ControllersDirectoryPath, GlobalStaticConstants.FOLDER_NAME_TEMPLATE))
             return ResponseBaseModel.CreateError($"Не корректное имя папки контроллеров: {CodeGeneratorConfigModel.MessageErrorTemplateNameFolder}");
 
+        string?[] folder_names = [manufacture.ControllersDirectoryPath, manufacture.AccessDataDirectoryPath, manufacture.EnumDirectoryPath, manufacture.DocumentsMastersDbDirectoryPath];
+        folder_names = folder_names
+            .GroupBy(x => x)
+            .Where(x => x.Count() > 1)
+            .Select(x => x.Key)
+            .ToArray();
+
+        if (folder_names.Length != 0)
+            return ResponseBaseModel.CreateError($"Имена папок должны быть уникальные. Есть дубликаты: {string.Join(";", folder_names)}");
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ManageManufactureModelDB manufacture_db = await context_forms.Manufactures.FirstAsync(x => x.Id == manufacture.Id);
         if (manufacture_db.Equals(manufacture))
