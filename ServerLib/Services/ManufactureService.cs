@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using SharedLib;
 using DbcLib;
+using System.ComponentModel.DataAnnotations;
 
 namespace ServerLib;
 
@@ -30,17 +30,36 @@ public class ManufactureService(
 
         if (res.Response is null)
         {
-            string project_name = await context_forms
+            var project_db = await context_forms
                         .Projects
                         .Where(x => x.Id == projectId)
-                        .Select(x => x.Name)
+                        .Select(x => new { x.Id, x.Name })
                         .FirstAsync();
 
-            res.Response = new ManageManufactureModelDB() { UserId = user.Response.UserId, Namespace = GlobalTools.TranslitToSystemName(project_name) };
+            res.Response = new ManageManufactureModelDB() { UserId = user.Response.UserId, Namespace = GlobalTools.TranslitToSystemName(project_db.Name), ProjectId = project_db.Id };
             await context_forms.AddAsync(res.Response);
             await context_forms.SaveChangesAsync();
         }
 
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> Update(ManageManufactureModelDB manufacture)
+    {
+        (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(manufacture);
+        if (!IsValid)
+            return ResponseBaseModel.CreateError(ValidationResults);
+
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        ManageManufactureModelDB manufacture_db = await context_forms.Manufactures.FirstAsync(x => x.Id == manufacture.Id);
+        if (manufacture_db.Equals(manufacture))
+            return ResponseBaseModel.CreateInfo("Обновление не требуется. Объекты равны");
+
+        manufacture_db.Reload(manufacture);
+        context_forms.Update(manufacture_db);
+        await context_forms.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess("Обновлено");
     }
 }

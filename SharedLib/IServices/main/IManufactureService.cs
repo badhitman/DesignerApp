@@ -13,4 +13,9 @@ public interface IManufactureService
     /// Прочитать конфигурацию генератора кода
     /// </summary>
     public Task<TResponseModel<ManageManufactureModelDB>> ReadManufactureConfig(int projectId, string? userId = null);
+
+    /// <summary>
+    /// Обновить
+    /// </summary>
+    public Task<ResponseBaseModel> Update(ManageManufactureModelDB manufacture);
 }

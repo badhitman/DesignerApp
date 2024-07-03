@@ -2,9 +2,82 @@
 
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">Нройки</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Базовая конфигурация</h6>
+        <h5 class="card-title">Настройки</h5>
+        <h6 class="card-subtitle mb-4 text-body-secondary">предварительная конфигурация</h6>
 
+        <div class="mb-3">
+            <label for="namespaceFormControlInput1" class="form-label">Пространство имён (базовое)</label>
+            <input @bind-value="manufactureEdit.Namespace" @bind-value:event="oninput" type="text" class="form-control" id="namespaceFormControlInput1" placeholder="Your project system name" aria-describedby="namespaceHelpBlock">
+        </div>
+        @if (manufactureEdit.Namespace.Equals(GlobalTools.TranslitToSystemName(MainProject.Name)))
+        {
+            <div id="namespaceHelpBlock" class="form-text">
+                Пространство имён было сгенерировано автоматически. Измените на своё, пожалуйста
+            </div>
+        }
+
+        <hr class="mb-5">
+        <p class="card-text">Имена папок для сохранения файлов.</p>
+
+        <div class="row align-items-center mt-2" title="Обязательно для заполнения">
+            <div class="col-sm-2">
+                <label for="inputEnumDirectoryPath" class="col-form-label">
+                    Списки/Перечисления
+                    <sup class="text-danger">*</sup>
+                </label>
+            </div>
+            <div class="col-sm-10">
+                <input @bind-value="manufactureEdit.EnumDirectoryPath" @bind-value:event="oninput" type="text" id="inputEnumDirectoryPath" class="form-control">
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-2" title="Обязательно для заполнения">
+            <div class="col-sm-2">
+                <label for="inputDocumentsMastersDbDirectoryPath" class="col-form-label">
+                    Документы
+                    <sup class="text-danger">*</sup>
+                </label>
+            </div>
+            <div class="col-sm-10">
+                <input @bind-value="manufactureEdit.DocumentsMastersDbDirectoryPath" @bind-value:event="oninput" type="text" id="inputDocumentsMastersDbDirectoryPath" class="form-control">
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-2" title="Обязательно для заполнения">
+            <div class="col-sm-2">
+                <label for="inputAccessDataDirectoryPath" class="col-form-label">
+                    Службы DI
+                    <sup class="text-danger">*</sup>
+                </label>
+            </div>
+            <div class="col-sm-10">
+                <input @bind-value="manufactureEdit.AccessDataDirectoryPath" @bind-value:event="oninput" type="text" id="inputAccessDataDirectoryPath" class="form-control">
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-2" title="Если не заполнено, то выгрузка контроллеров не произведётся">
+            <div class="col-sm-2">
+                <label for="inputControllersDirectoryPath" class="col-form-label">
+                    Контроллеры ASP
+                    <sup class="text-primary-emphasis">?</sup>
+                </label>
+            </div>
+            <div class="col-sm-@(string.IsNullOrWhiteSpace(manufactureEdit.ControllersDirectoryPath)?"8":"10")">
+                <input @bind-value="manufactureEdit.ControllersDirectoryPath" @bind-value:event="oninput" type="text" id="inputControllersDirectoryPath" class="form-control" aria-describedby="controllersDirectoryPathHelpInline">
+            </div>
+
+            @if (string.IsNullOrWhiteSpace(manufactureEdit.ControllersDirectoryPath))
+            {
+                <div class="col-sm-2">
+                    <span id="controllersDirectoryPathHelpInline" class="form-text">
+                        Контроллеры не требуются.
+                    </span>
+                </div>
+            }
+        </div>
+        <div class="d-grid gap-2 mt-4">
+            <button disabled="@(Manufacture.Equals(manufactureEdit))" @onclick="UpdateManufacture" class="btn btn-primary" type="button">Сохранить</button>
+        </div>
     </div>
 </div>
 
@@ -21,6 +94,19 @@
 
 
     ManageManufactureModelDB Manufacture = default!;
+    ManageManufactureModelDB manufactureEdit = default!;
+
+
+    async Task UpdateManufacture()
+    {
+        IsBusyProgress = true;
+        ResponseBaseModel res = await ManufactureRepo.Update(manufactureEdit);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+
+        Manufacture = GlobalTools.CreateDeepCopy(manufactureEdit);
+    }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,5 +118,8 @@
             SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         Manufacture = res.Response ?? throw new Exception();
+        manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture);
+
+
     }
 }

@@ -1,13 +1,25 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<h3>Генерация кода C#</h3>
 
-<CascadingValue Value="this">
-    <ConfigManufactureComponent MainProject="MainProject" />
-    <EnumerationsManufactureComponent />
-    <DocumentsManufactureComponent />
-    <FormsManufactureComponent />
-</CascadingValue>
+<div class="vstack gap-3">
+    <div class="p-2"><h3>Генерация кода C#</h3></div>
+
+    <CascadingValue Value="this">
+        <div class="p-2">
+            <ConfigManufactureComponent MainProject="MainProject" />
+        </div>
+        <div class="p-2">
+            <EnumerationsManufactureComponent />
+        </div>
+        <div class="p-2">
+            <DocumentsManufactureComponent />
+        </div>
+        <div class="p-2">
+            <FormsManufactureComponent />
+        </div>
+    </CascadingValue>
+</div>
+
 
 @code {
     [Inject]

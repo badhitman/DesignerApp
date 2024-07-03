@@ -156,7 +156,7 @@ public static class GlobalTools
         else
             str = $"{str[0..1].ToUpper()}{str[1..]}";
 
-        return str;
+        return GetTranslitString(str);
     }
 
     /// <summary>

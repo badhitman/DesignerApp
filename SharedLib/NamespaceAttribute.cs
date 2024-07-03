@@ -16,7 +16,7 @@ public class NamespaceAttribute : ValidationAttribute
             if (CheckNS(ns))
                 return true;
             else
-                ErrorMessage = "Некорректное namespace";
+                ErrorMessage = "Некорректное пространство имён (namespace)";
         }
         return false;
     }
@@ -26,6 +26,6 @@ public class NamespaceAttribute : ValidationAttribute
         if (string.IsNullOrEmpty(ns))
             return false;
 
-        return ns.Split('.').All(x => Regex.IsMatch(GlobalStaticConstants.SYSTEM_NAME_TEMPLATE, x));
+        return ns.Split('.').All(x => Regex.IsMatch(x, GlobalStaticConstants.SYSTEM_NAME_TEMPLATE));
     }
 }
