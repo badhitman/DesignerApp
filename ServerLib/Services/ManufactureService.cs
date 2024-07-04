@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 using SharedLib;
 using DbcLib;
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 
 namespace ServerLib;
 
@@ -46,7 +46,41 @@ public class ManufactureService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> Update(ManageManufactureModelDB manufacture)
+    public async Task<ResponseBaseModel> SetOrDeleteSystemName(UpdateSystemNameModel request)
+    {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        ManufactureSystemNameModelDB? snMan = await context_forms.SystemNamesManufactures.FirstOrDefaultAsync();
+        if (string.IsNullOrWhiteSpace(request.SystemName))
+        {
+            if (snMan == null)
+                return ResponseBaseModel.CreateInfo("Значение отсутствует. Удаление не требуется.");
+            else
+            {
+                context_forms.Remove(snMan);
+                await context_forms.SaveChangesAsync();
+                return ResponseBaseModel.CreateInfo("Значение удалено.");
+            }
+        }
+        else
+        {
+            if (snMan == null)
+            {
+                await context_forms.AddAsync(ManufactureSystemNameModelDB.Build(request));
+                await context_forms.SaveChangesAsync();
+                return ResponseBaseModel.CreateInfo("Значение создано.");
+            }
+            else
+            {
+                snMan.SystemName = request.SystemName;
+                context_forms.Update(snMan);
+                await context_forms.SaveChangesAsync();
+                return ResponseBaseModel.CreateInfo("Значение обновлено.");
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> UpdateManufactureConfig(ManageManufactureModelDB manufacture)
     {
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(manufacture);
         if (!IsValid)

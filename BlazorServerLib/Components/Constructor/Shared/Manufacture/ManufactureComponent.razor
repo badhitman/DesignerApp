@@ -28,20 +28,29 @@
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+    [Inject]
+    IManufactureService ManufactureRepo { get; set; } = default!;
+
 
     [Parameter, EditorRequired]
     public required int MainProjectId { get; set; }
 
 
     public ProjectConstructorModelDB CurrentProject { get; private set; } = default!;
+    public ManageManufactureModelDB Manufacture { get; private set; } = default!;
 
     public async Task ReloadProjectData()
     {
         IsBusyProgress = true;
-        ProjectConstructorModelDB? rest = await ConstructorRepo.ReadProject(MainProjectId);
+        ProjectConstructorModelDB? rest = await ConstructorRepo.ReadProject(MainProjectId);        
+        CurrentProject = rest ?? throw new Exception();
+                
+        TResponseModel<ManageManufactureModelDB> res = await ManufactureRepo.ReadManufactureConfig(MainProjectId);
         IsBusyProgress = false;
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
 
-        CurrentProject = rest ?? throw new Exception("Данные проекта не удалось получить");
+        Manufacture = res.Response ?? throw new Exception();
     }
 
     protected override async Task OnInitializedAsync()

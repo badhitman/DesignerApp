@@ -9,4 +9,9 @@ public partial class LayerContext
     /// Projects
     /// </summary>
     public DbSet<ManageManufactureModelDB> Manufactures { get; set; }
+
+    /// <summary>
+    /// Системные имена
+    /// </summary>
+    public DbSet<ManufactureSystemNameModelDB> SystemNamesManufactures { get; set; }
 }

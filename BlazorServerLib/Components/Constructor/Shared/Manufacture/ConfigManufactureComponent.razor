@@ -79,7 +79,11 @@
             }
         </div>
         <div class="d-grid gap-2 mt-4">
-            <button disabled="@(Manufacture.Equals(manufactureEdit))" @onclick="UpdateManufacture" class="btn btn-@(Manufacture.Equals(manufactureEdit) ? "outline-secondary" : "primary")" type="button">Сохранить</button>
+            <button @onclick="() => { manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture); }" disabled="@(Manufacture.Equals(manufactureEdit))" @onclick="UpdateManufacture" class="btn btn-@(Manufacture.Equals(manufactureEdit) ? "outline-secondary" : "primary")" type="button">Сохранить</button>
+            @if (!Manufacture.Equals(manufactureEdit))
+            {
+                <button title="Сбросить изменения и вернуть исходные значения настроек" @onclick="() => { manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture); }" class="btn btn-outline-info" type="button">Отмена</button>
+            }
         </div>
     </div>
 </div>
@@ -96,34 +100,24 @@
     public required ManufactureComponent ManufactureParentView { get; set; }
 
 
-    ManageManufactureModelDB Manufacture = default!;
     ManageManufactureModelDB manufactureEdit = default!;
 
+
+    ManageManufactureModelDB Manufacture => ManufactureParentView.Manufacture;
 
     async Task UpdateManufacture()
     {
         IsBusyProgress = true;
-        ResponseBaseModel res = await ManufactureRepo.Update(manufactureEdit);
+        ResponseBaseModel res = await ManufactureRepo.UpdateManufactureConfig(manufactureEdit);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         if (res.Success())
-            Manufacture = GlobalTools.CreateDeepCopy(manufactureEdit);
+            Manufacture.Reload(manufactureEdit);
     }
 
-
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        IsBusyProgress = true;
-        TResponseModel<ManageManufactureModelDB> res = await ManufactureRepo.ReadManufactureConfig(ManufactureParentView.MainProjectId);
-        IsBusyProgress = false;
-
-        if (!res.Success())
-            SnackbarRepo.ShowMessagesResponse(res.Messages);
-
-        Manufacture = res.Response ?? throw new Exception();
         manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture);
-
-
     }
 }

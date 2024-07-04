@@ -1,0 +1,29 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
+    <MudText Style="justify-self: start;">@Item.Text</MudText>
+    <div style="justify-self: end;">
+        <form class="row">
+            <div class="col-auto">
+                <label for="input_@($"DomID")" class="col-form-label">SystemName</label>
+            </div>
+            <div class="col-auto">
+                <input @bind-value="itemSystemName" @bind-value:event="oninput" type="text" class="form-control form-control-sm" id="input_@($"DomID")" placeholder="def: @(GlobalTools.TranslitToSystemName(Item.Value!.Name))" aria-describedby="@($"DomID")HelpInline">
+            </div>
+            <div class="col-auto">
+                <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                    <button @onclick="SaveSystemName" disabled="@(!IsEdit)" type="button" class="btn btn-primary btn-sm">Сохранить</button>
+                    @if (IsEdit)
+                    {
+                        <button @onclick="() => { itemSystemName = Item.Value?.Name ?? throw new Exception(); }" title="Отменить изменение системного имени" disabled="@(!IsEdit)" type="button" class="btn btn-outline-info btn-sm">Отмена</button>
+                    }
+                </div>
+            </div>
+            <div class="col-auto">
+                <span id="@($"DomID")HelpInline" class="form-text">
+                    Имя типа данных C#.
+                </span>
+            </div>
+        </form>
+    </div>
+</div>

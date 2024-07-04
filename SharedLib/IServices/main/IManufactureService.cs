@@ -15,7 +15,15 @@ public interface IManufactureService
     public Task<TResponseModel<ManageManufactureModelDB>> ReadManufactureConfig(int projectId, string? userId = null);
 
     /// <summary>
-    /// Обновить
+    /// Обновить конфигурацию генератора кода
     /// </summary>
-    public Task<ResponseBaseModel> Update(ManageManufactureModelDB manufacture);
+    public Task<ResponseBaseModel> UpdateManufactureConfig(ManageManufactureModelDB manufacture);
+
+    /// <summary>
+    /// Установить системное имя сущности.
+    /// </summary>
+    /// <remarks>
+    /// Если установить null (или пустую строку), тогда значение удаляется
+    /// </remarks>
+    public Task<ResponseBaseModel> SetOrDeleteSystemName(UpdateSystemNameModel request);
 }

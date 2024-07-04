@@ -3,16 +3,14 @@
         <h5 class="card-title">Справочники</h5>
         <h6 class="card-subtitle mb-2 text-body-secondary">перечисления/списки</h6>
 
-        <MudTreeView T="EntryModel">
-            @foreach (DirectoryConstructorModelDB d in ManufactureParentView.CurrentProject.Directories!)
-            {
-                <MudTreeViewItem Value='@(new EntryModel(){ Id = d.Id, Name = d.Name})' Text="@d.Name" Icon="@Icons.Custom.Uncategorized.Folder">
-                    @foreach (ElementOfDirectoryConstructorModelDB se in d.Elements!)
-                    {
-                        <MudTreeViewItem Value='@(new EntryModel(){ Id = se.Id, Name = se.Name})' Text="@se.Name" Icon="@Icons.Material.Filled.Label" IconColor="Color.Info" />
-                    }
+        <MudTreeView Items="@TreeItems" Hover="true">
+            <ItemTemplate Context="item">
+                <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" IconColor="@(item.Icon!.Equals(icon_directory) ? Color.Default : Color.Info)">
+                    <BodyContent>
+                        <SystemNameManufactureComponent Item="item" />
+                    </BodyContent>
                 </MudTreeViewItem>
-            }
+            </ItemTemplate>
         </MudTreeView>
     </div>
 </div>
@@ -21,5 +19,31 @@
     [CascadingParameter, EditorRequired]
     public required ManufactureComponent ManufactureParentView { get; set; }
 
+    List<TreeItemData<EntryTagModel>> TreeItems { get; set; } = [];
+    public class TreeItemData : TreeItemData<EntryTagModel>
+    {
+        public TreeItemData(EntryTagModel entry, string icon) : base(entry)
+        {
+            Text = entry.Name;
+            Icon = icon;
+        }
+    }
+    const string icon_directory = Icons.Custom.Uncategorized.Folder;
+    const string icon_element = Icons.Material.Filled.Label;
 
+    const string type_name_directory = nameof(DirectoryConstructorModelDB);
+    const string type_name_element_of_directory = nameof(ElementOfDirectoryConstructorModelDB);
+
+    protected override void OnInitialized()
+    {
+        ManufactureParentView
+        .CurrentProject
+        .Directories!.ForEach(x =>
+        {
+            TreeItems.Add(new TreeItemData(new EntryTagModel() { Name = x.Name, Id = x.Id, Tag = type_name_directory }, icon_directory)
+                {
+                    Children = [.. x.Elements!.Select(y => new TreeItemData(new EntryTagModel() { Id = y.Id, Name = y.Name, Tag = type_name_element_of_directory }, icon_element))]
+                });
+        });
+    }
 }
