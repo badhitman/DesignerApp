@@ -5,7 +5,7 @@
 
         <MudTreeView Items="@TreeItems" Hover="true">
             <ItemTemplate Context="item">
-                <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" IconColor="@(item.Icon!.Equals(icon_doc) ? Color.Default : Color.Primary)">
+                <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" IconColor="@(item.Icon!.Equals(icon_doc) ? Color.Default : (item.Icon!.Equals(icon_form_of_tab) ? Color.Info : Color.Primary))">
                     <BodyContent>
                         <SystemNameManufactureComponent Item="item" />
                     </BodyContent>
@@ -26,19 +26,49 @@
 
     const string icon_doc = Icons.Material.Filled.BusinessCenter;
     const string icon_tab_of_doc = Icons.Material.Filled.CollectionsBookmark;
+    const string icon_form_of_tab = Icons.Material.Filled.EventNote;
 
     const string type_name_document = nameof(DocumentSchemeConstructorModelDB);
     const string type_name_tab_of_document = nameof(TabOfDocumentSchemeConstructorModelDB);
+    const string type_name_form_of_tab = nameof(FormConstructorModelDB);
+
 
     protected override void OnInitialized()
     {
+        Func<FormConstructorModelDB, int, int, TreeItemDataModel> FormToTabTreeItem = (FormConstructorModelDB form, int doc_id, int tab_id) =>
+                    {
+                        EntryTagModel et = new EntryTagModel()
+                            {
+                                Id = form.Id,
+                                Name = form.Name,
+                                Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}"
+                            };
+
+                        return new TreeItemDataModel(et, icon_form_of_tab);
+                    };
+
+        Func<TabOfDocumentSchemeConstructorModelDB, int, TreeItemDataModel> TabToTreeItem = (TabOfDocumentSchemeConstructorModelDB tab, int doc_id) =>
+                {
+                    EntryTagModel et = new EntryTagModel()
+                        {
+                            Id = tab.Id,
+                            Name = tab.Name,
+                            Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}"
+                        };
+
+                    return new TreeItemDataModel(et, icon_tab_of_doc)
+                        {
+                            Children = [.. tab.JoinsForms!.Select(x => FormToTabTreeItem(x.Form!, doc_id, tab.Id))]
+                        };
+                };
+
         ManufactureParentView
         .CurrentProject
         .Documents!.ForEach(x =>
         {
             TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = x.Name, Id = x.Id, Tag = type_name_document }, icon_doc)
                 {
-                    Children = [.. x.Pages!.Select(y => new TreeItemDataModel(new EntryTagModel() { Id = y.Id, Name = y.Name, Tag = $"{type_name_document}#{x.Id} {type_name_tab_of_document}" }, icon_tab_of_doc))]
+                    Children = [.. x.Pages!.Select(y => TabToTreeItem(y, x.Id))]
                 });
         });
     }
