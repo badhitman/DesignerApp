@@ -60,7 +60,7 @@ public class ManufactureService(
     public async Task<ResponseBaseModel> SetOrDeleteSystemName(UpdateSystemNameModel request)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ManufactureSystemNameModelDB? snMan = await context_forms.SystemNamesManufactures.FirstOrDefaultAsync(x => x.TypeDataName == request.TypeDataName && x.ManufactureId == request.ManufactureId);
+        ManufactureSystemNameModelDB? snMan = await context_forms.SystemNamesManufactures.FirstOrDefaultAsync(x => x.TypeDataName == request.TypeDataName && x.ManufactureId == request.ManufactureId && x.TypeDataId == request.TypeDataId);
         if (string.IsNullOrWhiteSpace(request.SystemName))
         {
             if (snMan == null)

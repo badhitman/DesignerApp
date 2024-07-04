@@ -35,7 +35,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected string DomID => $"{Item.Value!.Tag}_{Item.Value!.Id}";
 
-    bool IsEdit => !itemSystemName.Equals(SystemNamesManufacture.FirstOrDefault(x => x.TypeDataName.Equals(Item.Value?.Tag))?.SystemName ?? "");
+    bool IsEdit => !itemSystemName.Equals(SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName.Equals(Item.Value.Tag))?.SystemName ?? "");
 
     async Task SaveSystemName()
     {
@@ -57,6 +57,6 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        itemSystemName = SystemNamesManufacture.FirstOrDefault(x => x.TypeDataName == Item.Value?.Tag)?.SystemName ?? "";
+        itemSystemName = SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? "";
     }
 }

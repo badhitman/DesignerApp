@@ -8,7 +8,7 @@
             <ConfigManufactureComponent />
         </div>
         <div class="p-2">
-            <CascadingValue Value="@SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DirectoryTypeName)).Select(Exchange).ToArray()">
+            <CascadingValue Value="@SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DirectoryTypeName)).ToArray()">
                 <EnumerationsManufactureComponent @ref="enumerations_ref" />
             </CascadingValue>
         </div>
@@ -43,14 +43,6 @@
     public ManageManufactureModelDB Manufacture { get; private set; } = default!;
 
     SystemNameEntryModel[] SystemNamesManufacture = default!;
-
-    SystemNameEntryModel Exchange(SystemNameEntryModel sender)
-    {
-        if (sender.TypeDataName.StartsWith($"{DirectoryTypeName}#"))
-            sender.TypeDataName = sender.TypeDataName[(sender.TypeDataName.IndexOf(" ") + 1)..];
-
-        return sender;
-    }
 
     public async Task ReloadProjectData()
     {
