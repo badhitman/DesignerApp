@@ -3,9 +3,43 @@
         <h5 class="card-title">Документы</h5>
         <h6 class="card-subtitle mb-2 text-body-secondary">бизнес-сущности</h6>
 
+        <MudTreeView Items="@TreeItems" Hover="true">
+            <ItemTemplate Context="item">
+                <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" IconColor="@(item.Icon!.Equals(icon_doc) ? Color.Default : Color.Primary)">
+                    <BodyContent>
+                        <SystemNameManufactureComponent Item="item" />
+                    </BodyContent>
+                </MudTreeViewItem>
+            </ItemTemplate>
+        </MudTreeView>
     </div>
 </div>
 
 @code {
+    [CascadingParameter, EditorRequired]
+    public required ManufactureComponent ManufactureParentView { get; set; }
 
+    [CascadingParameter, EditorRequired]
+    public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
+
+    List<TreeItemData<EntryTagModel>> TreeItems { get; set; } = [];
+
+    const string icon_doc = Icons.Material.Filled.BusinessCenter;
+    const string icon_tab_of_doc = Icons.Material.Filled.CollectionsBookmark;
+
+    const string type_name_document = nameof(DocumentSchemeConstructorModelDB);
+    const string type_name_tab_of_document = nameof(TabOfDocumentSchemeConstructorModelDB);
+
+    protected override void OnInitialized()
+    {
+        ManufactureParentView
+        .CurrentProject
+        .Documents!.ForEach(x =>
+        {
+            TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = x.Name, Id = x.Id, Tag = type_name_document }, icon_doc)
+                {
+                    Children = [.. x.Pages!.Select(y => new TreeItemDataModel(new EntryTagModel() { Id = y.Id, Name = y.Name, Tag = $"{type_name_document}#{x.Id} {type_name_tab_of_document}" }, icon_tab_of_doc))]
+                });
+        });
+    }
 }

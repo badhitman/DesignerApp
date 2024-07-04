@@ -13,7 +13,9 @@
             </CascadingValue>
         </div>
         <div class="p-2">
-            <DocumentsManufactureComponent />
+            <CascadingValue Value="@SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DocumentSchemeConstructor)).ToArray()">
+                <DocumentsManufactureComponent />
+            </CascadingValue>
         </div>
         <div class="p-2">
             <FormsManufactureComponent />
@@ -38,6 +40,7 @@
     EnumerationsManufactureComponent enumerations_ref = default!;
 
     const string DirectoryTypeName = nameof(DirectoryConstructorModelDB);
+    const string DocumentSchemeConstructor = nameof(DocumentSchemeConstructorModelDB);
 
     public ProjectConstructorModelDB CurrentProject { get; private set; } = default!;
     public ManageManufactureModelDB Manufacture { get; private set; } = default!;

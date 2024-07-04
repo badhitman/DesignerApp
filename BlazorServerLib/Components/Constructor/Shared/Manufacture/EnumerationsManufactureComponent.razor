@@ -25,14 +25,7 @@
     public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
 
     List<TreeItemData<EntryTagModel>> TreeItems { get; set; } = [];
-    public class TreeItemData : TreeItemData<EntryTagModel>
-    {
-        public TreeItemData(EntryTagModel entry, string icon) : base(entry)
-        {
-            Text = entry.Name;
-            Icon = icon;
-        }
-    }
+    
     const string icon_directory = Icons.Custom.Uncategorized.Folder;
     const string icon_element = Icons.Material.Filled.Label;
 
@@ -45,9 +38,9 @@
         .CurrentProject
         .Directories!.ForEach(x =>
         {
-            TreeItems.Add(new TreeItemData(new EntryTagModel() { Name = x.Name, Id = x.Id, Tag = type_name_directory }, icon_directory)
+            TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = x.Name, Id = x.Id, Tag = type_name_directory }, icon_directory)
                 {
-                    Children = [.. x.Elements!.Select(y => new TreeItemData(new EntryTagModel() { Id = y.Id, Name = y.Name, Tag = $"{type_name_directory}#{x.Id} {type_name_element_of_directory}" }, icon_element))]
+                    Children = [.. x.Elements!.Select(y => new TreeItemDataModel(new EntryTagModel() { Id = y.Id, Name = y.Name, Tag = $"{type_name_directory}#{x.Id} {type_name_element_of_directory}" }, icon_element))]
                 });
         });
     }
