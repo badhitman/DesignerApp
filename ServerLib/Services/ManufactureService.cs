@@ -71,6 +71,9 @@ public class ManufactureService(
             }
             else
             {
+                if (snMan.SystemName == request.SystemName)
+                    return ResponseBaseModel.CreateInfo("Обновления системного имени не требуется.");
+
                 snMan.SystemName = request.SystemName;
                 context_forms.Update(snMan);
                 await context_forms.SaveChangesAsync();

@@ -42,7 +42,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         if (res.Success())
-            Item.Value!.Name = itemSystemName;
+            Item.Value.Name = itemSystemName;
     }
 
     /// <inheritdoc/>
