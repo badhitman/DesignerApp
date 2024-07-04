@@ -79,7 +79,7 @@
             }
         </div>
         <div class="d-grid gap-2 mt-4">
-            <button @onclick="() => { manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture); }" disabled="@(Manufacture.Equals(manufactureEdit))" @onclick="UpdateManufacture" class="btn btn-@(Manufacture.Equals(manufactureEdit) ? "outline-secondary" : "primary")" type="button">Сохранить</button>
+            <button @onclick="UpdateManufacture" class="btn btn-@(Manufacture.Equals(manufactureEdit) ? "outline-secondary" : "primary")" type="button">Сохранить</button>
             @if (!Manufacture.Equals(manufactureEdit))
             {
                 <button title="Сбросить изменения и вернуть исходные значения настроек" @onclick="() => { manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture); }" class="btn btn-outline-info" type="button">Отмена</button>

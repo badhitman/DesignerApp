@@ -12,7 +12,7 @@
             </div>
             <div class="col-auto">
                 <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
-                    <button @onclick="SaveSystemName" disabled="@(!IsEdit)" type="button" class="btn btn-primary btn-sm">Сохранить</button>
+                    <button data-name="@Item.Value!.Name" @onclick="SaveSystemName" disabled="@(!IsEdit)" type="button" class="btn btn-@(IsEdit ? "primary" : "outline-secondary") btn-sm">Сохранить</button>
                     @if (IsEdit)
                     {
                         <button @onclick="() => { itemSystemName = Item.Value?.Name ?? throw new Exception(); }" title="Отменить изменение системного имени" disabled="@(!IsEdit)" type="button" class="btn btn-outline-info btn-sm">Отмена</button>

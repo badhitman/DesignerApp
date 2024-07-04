@@ -26,4 +26,9 @@ public interface IManufactureService
     /// Если установить null (или пустую строку), тогда значение удаляется
     /// </remarks>
     public Task<ResponseBaseModel> SetOrDeleteSystemName(UpdateSystemNameModel request);
+
+    /// <summary>
+    /// Получить системные имена для генератора кода
+    /// </summary>
+    public Task<SystemNameEntryModel[]> GetSystemNames(int manufactureId);
 }

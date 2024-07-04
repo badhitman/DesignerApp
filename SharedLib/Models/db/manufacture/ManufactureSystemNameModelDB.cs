@@ -6,7 +6,7 @@ namespace SharedLib;
 /// <summary>
 /// ManufactureSystemName
 /// </summary>
-[Index(nameof(TypeData), nameof(ManufactureId), nameof(SystemName), IsUnique = true)]
+[Index(nameof(TypeDataName), nameof(ManufactureId), nameof(SystemName), IsUnique = true)]
 public class ManufactureSystemNameModelDB : UpdateSystemNameModel
 {
     /// <summary>
@@ -22,7 +22,7 @@ public class ManufactureSystemNameModelDB : UpdateSystemNameModel
         {
             ManufactureId = request.ManufactureId,
             SystemName = request.SystemName,
-            TypeData = request.TypeData,
+            TypeDataName = request.TypeDataName,
         };
     }
 }

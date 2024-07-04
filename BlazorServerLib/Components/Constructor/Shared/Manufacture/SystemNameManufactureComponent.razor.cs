@@ -16,6 +16,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     [Inject]
     IManufactureService ManufactureRepo { get; set; } = default!;
 
+
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required TreeItemData<EntryTagModel> Item { get; set; }
@@ -24,12 +25,17 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     [CascadingParameter, EditorRequired]
     public required ManufactureComponent ManufactureParentView { get; set; }
 
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
+
+
     string itemSystemName = default!;
 
     /// <inheritdoc/>
     protected string DomID => $"{Item.Value!.Tag}_{Item.Value!.Id}";
 
-    bool IsEdit => !Item.Value!.Name.Equals(itemSystemName);
+    bool IsEdit => !itemSystemName.Equals(SystemNamesManufacture.FirstOrDefault(x => x.TypeDataName.Equals(Item.Value?.Tag))?.SystemName ?? "");
 
     async Task SaveSystemName()
     {
@@ -37,17 +43,20 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
             throw new Exception();
 
         IsBusyProgress = true;
-        ResponseBaseModel res = await ManufactureRepo.SetOrDeleteSystemName(new UpdateSystemNameModel() { TypeData = Item.Value.Tag, ManufactureId = ManufactureParentView.Manufacture.Id });
+        ResponseBaseModel res = await ManufactureRepo.SetOrDeleteSystemName(new UpdateSystemNameModel() { TypeDataId = Item.Value.Id, SystemName = itemSystemName, TypeDataName = Item.Value.Tag, ManufactureId = ManufactureParentView.Manufacture.Id });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         if (res.Success())
-            Item.Value.Name = itemSystemName;
+        {
+            await ManufactureParentView.GetSystemNames();
+            ManufactureParentView.StateHasChangedCall();
+        }
     }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        itemSystemName = Item.Value?.Name ?? throw new Exception();
+        itemSystemName = SystemNamesManufacture.FirstOrDefault(x => x.TypeDataName == Item.Value?.Tag)?.SystemName ?? "";
     }
 }

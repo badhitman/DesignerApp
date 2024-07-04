@@ -12,6 +12,17 @@ public class ManufactureService(
     IUsersProfilesService usersProfilesRepo) : IManufactureService
 {
     /// <inheritdoc/>
+    public async Task<SystemNameEntryModel[]> GetSystemNames(int manufactureId)
+    {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        return await context_forms
+            .SystemNamesManufactures
+            .Where(x => x.ManufactureId == manufactureId)
+            .Select(x => new SystemNameEntryModel() { TypeDataName = x.TypeDataName, SystemName = x.SystemName, TypeDataId = x.TypeDataId })
+            .ToArrayAsync();
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<ManageManufactureModelDB>> ReadManufactureConfig(int projectId, string? userId = null)
     {
         TResponseModel<ManageManufactureModelDB> res = new();
@@ -49,7 +60,7 @@ public class ManufactureService(
     public async Task<ResponseBaseModel> SetOrDeleteSystemName(UpdateSystemNameModel request)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ManufactureSystemNameModelDB? snMan = await context_forms.SystemNamesManufactures.FirstOrDefaultAsync();
+        ManufactureSystemNameModelDB? snMan = await context_forms.SystemNamesManufactures.FirstOrDefaultAsync(x => x.TypeDataName == request.TypeDataName && x.ManufactureId == request.ManufactureId);
         if (string.IsNullOrWhiteSpace(request.SystemName))
         {
             if (snMan == null)
