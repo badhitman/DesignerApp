@@ -57,7 +57,7 @@
                     </form>
                 </TabComponent>
                 <TabComponent Tooltip="Поля формы" Title="Поля формы" IsDisabled="@(Form.Id < 1)">
-                    @if (Form.FormsDirectoriesLinks is null || Form.Fields is null)
+                    @if (Form.FieldsDirectoriesLinks is null || Form.Fields is null)
                     {
                         <blockquote class="blockquote">
                             <p>Форма пустая. Отсутствуют поля</p>

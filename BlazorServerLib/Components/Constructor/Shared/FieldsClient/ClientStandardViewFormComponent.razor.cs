@@ -52,10 +52,10 @@ public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseMo
         if (form is not null)
             Form.Reload(form);
 
-        if (Form.FormsDirectoriesLinks is not null && Form.FormsDirectoriesLinks.Count != 0)
+        if (Form.FieldsDirectoriesLinks is not null && Form.FieldsDirectoriesLinks.Count != 0)
         {
             IsBusyProgress = true;
-            Directories = await ConstructorRepo.ReadDirectories(Form.FormsDirectoriesLinks.Select(x => x.DirectoryId).Distinct());
+            Directories = await ConstructorRepo.ReadDirectories(Form.FieldsDirectoriesLinks.Select(x => x.DirectoryId).Distinct());
             IsBusyProgress = false;
         }
 

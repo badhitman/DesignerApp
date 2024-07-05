@@ -146,9 +146,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         get
         {
             if (Field is FieldFormConstructorModelDB sf)
-                return sf.SortIndex < (Form.Fields?.Count() + Form.FormsDirectoriesLinks?.Count());
+                return sf.SortIndex < (Form.Fields?.Count() + Form.FieldsDirectoriesLinks?.Count());
             else if (Field is LinkDirectoryToFormConstructorModelDB df)
-                return df.SortIndex < (Form.Fields?.Count() + Form.FormsDirectoriesLinks?.Count());
+                return df.SortIndex < (Form.Fields?.Count() + Form.FieldsDirectoriesLinks?.Count());
             else
                 SnackbarRepo.Add("ошибка C0688447-05EE-4982-B9E0-D48C7DA89C3F", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
@@ -351,7 +351,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        if (rest.Response?.Fields is null || rest.Response?.FormsDirectoriesLinks is null)
+        if (rest.Response?.Fields is null || rest.Response?.FieldsDirectoriesLinks is null)
         {
             SnackbarRepo.Add($"Ошибка DA9D4B08-EBB7-47C3-BA72-F3BB81E1A7E3 rest.Content.Form?.Fields is null || rest.Content.Form?.FormsDirectoriesLinks is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
@@ -380,9 +380,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         }
         else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
         {
-            if (rest.Response.FormsDirectoriesLinks.Any(x => x.Id == _field_master.Id))
+            if (rest.Response.FieldsDirectoriesLinks.Any(x => x.Id == _field_master.Id))
             {
-                Field.Update(rest.Response.FormsDirectoriesLinks.First(x => x.Id == _field_master.Id));
+                Field.Update(rest.Response.FieldsDirectoriesLinks.First(x => x.Id == _field_master.Id));
                 _field_master = new LinkDirectoryToFormConstructorModelDB()
                 {
                     Css = Field.Css,

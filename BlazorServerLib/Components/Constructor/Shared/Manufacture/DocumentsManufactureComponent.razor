@@ -25,27 +25,55 @@
     List<TreeItemData<EntryTagModel>> TreeItems { get; set; } = [];
 
     const string icon_doc = Icons.Material.Filled.BusinessCenter;
-    const string icon_tab_of_doc = Icons.Material.Filled.CollectionsBookmark;
+    const string icon_tab_of_doc = Icons.Material.Filled.Tab;
     const string icon_form_of_tab = Icons.Material.Filled.EventNote;
+    const string icon_field_of_form = Icons.Material.Filled.DragHandle;
 
+    /// <summary>
+    /// имя типа данных: документы
+    /// </summary>
     const string type_name_document = nameof(DocumentSchemeConstructorModelDB);
+    /// <summary>
+    /// имя типа данных: табы/вкладки документов
+    /// </summary>
     const string type_name_tab_of_document = nameof(TabOfDocumentSchemeConstructorModelDB);
+    /// <summary>
+    /// имя типа данных: формы
+    /// </summary>
     const string type_name_form_of_tab = nameof(FormConstructorModelDB);
-
+    /// <summary>
+    /// имя типа данных: поля формы
+    /// </summary>
+    const string type_name_field_of_form = nameof(FieldFormConstructorModelDB);
 
     protected override void OnInitialized()
     {
-        Func<FormConstructorModelDB, int, int, TreeItemDataModel> FormToTabTreeItem = (FormConstructorModelDB form, int doc_id, int tab_id) =>
-                    {
-                        EntryTagModel et = new EntryTagModel()
-                            {
-                                Id = form.Id,
-                                Name = form.Name,
-                                Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}"
-                            };
+        Func<FieldFormBaseLowConstructorModel, int, int, int, TreeItemDataModel> FieldToTreeItem = (FieldFormBaseLowConstructorModel field, int doc_id, int tab_id, int form_id) =>
+                {
+                    EntryTagModel et = new EntryTagModel()
+                        {
+                            Id = field.Id,
+                            Name = field.Name,
+                            Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}#{form_id} {type_name_field_of_form}"
+                        };
 
-                        return new TreeItemDataModel(et, icon_form_of_tab);
-                    };
+                    return new TreeItemDataModel(et, icon_field_of_form);
+                };
+
+        Func<FormConstructorModelDB, int, int, TreeItemDataModel> FormToTreeItem = (FormConstructorModelDB form, int doc_id, int tab_id) =>
+                            {
+                                EntryTagModel et = new EntryTagModel()
+                                    {
+                                        Id = form.Id,
+                                        Name = form.Name,
+                                        Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}"
+                                    };
+
+                                return new TreeItemDataModel(et, icon_form_of_tab)
+                                    {
+                                        Children = [.. form.AllFields!.Select(x => FieldToTreeItem(x, doc_id, tab_id, form.Id))]
+                                    };
+                            };
 
         Func<TabOfDocumentSchemeConstructorModelDB, int, TreeItemDataModel> TabToTreeItem = (TabOfDocumentSchemeConstructorModelDB tab, int doc_id) =>
                 {
@@ -58,7 +86,7 @@
 
                     return new TreeItemDataModel(et, icon_tab_of_doc)
                         {
-                            Children = [.. tab.JoinsForms!.Select(x => FormToTabTreeItem(x.Form!, doc_id, tab.Id))]
+                            Children = [.. tab.JoinsForms!.Select(x => FormToTreeItem(x.Form!, doc_id, tab.Id))]
                         };
                 };
 

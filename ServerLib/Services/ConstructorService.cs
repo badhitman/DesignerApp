@@ -50,7 +50,7 @@ public class ConstructorService(
             .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
-            .ThenInclude(x => x!.FormsDirectoriesLinks) // поля
+            .ThenInclude(x => x!.FieldsDirectoriesLinks) // поля
 
             .Include(x => x.Project)
 
@@ -143,7 +143,7 @@ public class ConstructorService(
         session_Document.LastDocumentUpdateActivity = DateTime.Now;
 
         TabJoinDocumentSchemeConstructorModelDB? form_join = session_Document.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
-        if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null)
+        if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена. ошибка 2494D4D2-24E1-48D4-BC9C-C27D327D98B8");
             return res;
@@ -202,7 +202,7 @@ public class ConstructorService(
             return (TResponseStrictModel<int>)ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (в статусе {session.SessionStatus}).");
 
         TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
-        if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null || !form_join.IsTable)
+        if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null || !form_join.IsTable)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 6342356D-0491-45BC-A33D-B95F5D7DCB5F");
             return res;
@@ -241,7 +241,7 @@ public class ConstructorService(
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (статус {session.SessionStatus}).");
 
         TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
-        if (form_join?.Form?.Fields is null || form_join.Form.FormsDirectoriesLinks is null || !form_join.IsTable)
+        if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null || !form_join.IsTable)
             return ResponseBaseModel.CreateError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 66A38A11-CD9B-4F9E-8B5C-49E60109442D");
 
         ValueDataForSessionOfDocumentModelDB[] values_for_delete = session.DataSessionValues.Where(x => x.RowNum == req.GroupByRowNum && x.TabJoinDocumentSchemeId == form_join.Id).ToArray();
@@ -375,8 +375,12 @@ public class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
             .Projects
-            //.Include(x => x.Members)
-            .Include(x => x.Forms)
+            
+            .Include(x => x.Forms!)
+            .ThenInclude(x => x.Fields)
+
+            .Include(x => x.Forms!)
+            .ThenInclude(x => x.FieldsDirectoriesLinks)
 
             .Include(x => x.Directories!)
             .ThenInclude(x => x.Elements)
@@ -384,6 +388,9 @@ public class ConstructorService(
             .Include(x => x.Documents!)
             .ThenInclude(x => x.Pages!)
             .ThenInclude(x => x.JoinsForms)
+
+            //.Include(x => x.Documents!)
+            //.ThenInclude(x=>x.)
 
             .FirstOrDefaultAsync(x => x.Id == project_id);
     }
@@ -715,7 +722,7 @@ public class ConstructorService(
                 await context_forms.SaveChangesAsync();
 
                 _form_seed.Fields = [new FieldFormConstructorModelDB() { Name = "Test text", OwnerId = _form_seed.Id, SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12" }];
-                _form_seed.FormsDirectoriesLinks = [new LinkDirectoryToFormConstructorModelDB() { Name = "Test Directory", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
+                _form_seed.FieldsDirectoriesLinks = [new LinkDirectoryToFormConstructorModelDB() { Name = "Test Directory", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
 
                 context_forms.Update(_form_seed);
                 await context_forms.SaveChangesAsync();
@@ -1244,7 +1251,7 @@ public class ConstructorService(
         int[] ids = await q.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
 
         res.Elements = ids.Length != 0
-            ? await context_forms.Forms.Where(x => ids.Contains(x.Id)).Include(x => x.Fields).Include(x => x.FormsDirectoriesLinks).ToArrayAsync(cancellationToken: cancellationToken)
+            ? await context_forms.Forms.Where(x => ids.Contains(x.Id)).Include(x => x.Fields).Include(x => x.FieldsDirectoriesLinks).ToArrayAsync(cancellationToken: cancellationToken)
             : Enumerable.Empty<FormConstructorModelDB>();
         return res;
     }
@@ -1258,7 +1265,7 @@ public class ConstructorService(
             Response = await context_forms
             .Forms
             .Include(x => x.Fields)
-            .Include(x => x.FormsDirectoriesLinks!)
+            .Include(x => x.FieldsDirectoriesLinks!)
             .ThenInclude(x => x.Directory)
             .FirstOrDefaultAsync(x => x.Id == form_id, cancellationToken: cancellationToken)
         };
@@ -1361,7 +1368,7 @@ public class ConstructorService(
         form_db = await context_forms
             .Forms
             .Include(x => x.Fields)
-            .Include(x => x.FormsDirectoriesLinks)
+            .Include(x => x.FieldsDirectoriesLinks)
             .FirstOrDefaultAsync(x => x.Id == form.Id, cancellationToken: cancellationToken);
 
         if (form_db is null)
@@ -1438,10 +1445,10 @@ public class ConstructorService(
             .Include(x => x.Owner)
             .ThenInclude(x => x!.Fields)
             .Include(x => x.Owner)
-            .ThenInclude(x => x!.FormsDirectoriesLinks)
+            .ThenInclude(x => x!.FieldsDirectoriesLinks)
             .FirstOrDefaultAsync(x => x.Id == field_id, cancellationToken: cancellationToken);
 
-        if (field_db?.Owner?.Fields is null || field_db?.Owner?.FormsDirectoriesLinks is null)
+        if (field_db?.Owner?.Fields is null || field_db?.Owner?.FieldsDirectoriesLinks is null)
         {
             res.AddError($"Поле формы (простого типа) #{field_id} не найден в БД. ошибка D4B94965-1C93-478E-AC8A-8F75C0D6455E");
             return res;
@@ -1472,9 +1479,9 @@ public class ConstructorService(
             context_forms.Update(field_db);
             context_forms.Update(_fns);
         }
-        else if (field_db.Owner.FormsDirectoriesLinks!.Any(x => x.SortIndex == next_index))
+        else if (field_db.Owner.FieldsDirectoriesLinks!.Any(x => x.SortIndex == next_index))
         {
-            LinkDirectoryToFormConstructorModelDB _fnsd = field_db.Owner.FormsDirectoriesLinks!.First(x => x.SortIndex == next_index);
+            LinkDirectoryToFormConstructorModelDB _fnsd = field_db.Owner.FieldsDirectoriesLinks!.First(x => x.SortIndex == next_index);
             res.AddInfo($"Поля формы меняются индексами сортировки: #{_fnsd.Id} i:{_fnsd.SortIndex} '{_fnsd.Name}' (тип: справочник) && #{field_db.Id} i:{field_db.SortIndex} '{field_db.Name}' (простой тип)");
 
             _fnsd.SortIndex = field_db.SortIndex;
@@ -1491,7 +1498,7 @@ public class ConstructorService(
             res.Response = await context_forms
                 .Forms
                 .Include(x => x.Fields)
-                .Include(x => x.FormsDirectoriesLinks)
+                .Include(x => x.FieldsDirectoriesLinks)
                 .FirstAsync(x => x.Id == field_db.OwnerId, cancellationToken: cancellationToken);
         }
 
@@ -1514,7 +1521,7 @@ public class ConstructorService(
             .Include(x => x.Owner)
             .ThenInclude(x => x!.Fields)
             .Include(x => x.Owner)
-            .ThenInclude(x => x!.FormsDirectoriesLinks)
+            .ThenInclude(x => x!.FieldsDirectoriesLinks)
             .FirstOrDefaultAsync(x => x.Id == field_id, cancellationToken: cancellationToken);
 
         if (field_db?.Owner is null)
@@ -1548,9 +1555,9 @@ public class ConstructorService(
             context_forms.Update(field_db);
             context_forms.Update(_fns);
         }
-        else if (field_db.Owner.FormsDirectoriesLinks!.Any(x => x.SortIndex == next_index))
+        else if (field_db.Owner.FieldsDirectoriesLinks!.Any(x => x.SortIndex == next_index))
         {
-            LinkDirectoryToFormConstructorModelDB _fnsd = field_db.Owner.FormsDirectoriesLinks!.First(x => x.SortIndex == next_index);
+            LinkDirectoryToFormConstructorModelDB _fnsd = field_db.Owner.FieldsDirectoriesLinks!.First(x => x.SortIndex == next_index);
             res.AddInfo($"Поля формы меняются индексами сортировки: #{_fnsd.Id} i:{_fnsd.SortIndex} '{_fnsd.Name}' (тип: справочник) && #{field_db.Id} i:{field_db.SortIndex} '{field_db.Name}' (тип: справочник)");
 
             _fnsd.SortIndex = field_db.SortIndex;
@@ -1567,7 +1574,7 @@ public class ConstructorService(
             res.Response = await context_forms
                 .Forms
                 .Include(x => x.Fields)
-                .Include(x => x.FormsDirectoriesLinks)
+                .Include(x => x.FieldsDirectoriesLinks)
                 .FirstAsync(x => x.Id == field_db.OwnerId, cancellationToken: cancellationToken);
         }
 
@@ -1594,11 +1601,11 @@ public class ConstructorService(
         FormConstructorModelDB? form_db = await context_forms
             .Forms
             .Include(x => x.Fields)
-            .Include(x => x.FormsDirectoriesLinks)
+            .Include(x => x.FieldsDirectoriesLinks)
             .FirstOrDefaultAsync(x => x.Id == form_field.OwnerId, cancellationToken: cancellationToken);
 
         string msg;
-        if (form_db?.Fields is null || form_db.FormsDirectoriesLinks is null)
+        if (form_db?.Fields is null || form_db.FieldsDirectoriesLinks is null)
         {
             msg = $"Форма #{form_field.OwnerId} не найдена в БД";
             res.AddError(msg);
@@ -1620,8 +1627,8 @@ public class ConstructorService(
         FieldFormConstructorModelDB? form_field_db;
         if (form_field.Id < 1)
         {
-            int _sort_index = form_db.FormsDirectoriesLinks.Count != 0
-                ? form_db.FormsDirectoriesLinks.Max(x => x.SortIndex)
+            int _sort_index = form_db.FieldsDirectoriesLinks.Count != 0
+                ? form_db.FieldsDirectoriesLinks.Max(x => x.SortIndex)
                 : 0;
 
             _sort_index = Math.Max(_sort_index, form_db.Fields.Count != 0 ? form_db.Fields.Max(x => x.SortIndex) : 0);
@@ -1773,11 +1780,11 @@ public class ConstructorService(
         FormConstructorModelDB? form_db = await context_forms
             .Forms
             .Include(x => x.Fields)
-            .Include(x => x.FormsDirectoriesLinks)
+            .Include(x => x.FieldsDirectoriesLinks)
             .FirstOrDefaultAsync(x => x.Id == field_directory.OwnerId, cancellationToken: cancellationToken);
 
         string msg;
-        if (form_db?.Fields is null || form_db.FormsDirectoriesLinks is null)
+        if (form_db?.Fields is null || form_db.FieldsDirectoriesLinks is null)
         {
             msg = $"Форма #{field_directory.OwnerId} не найдена в БД";
             res.AddError(msg);
@@ -1785,7 +1792,7 @@ public class ConstructorService(
             return res;
         }
 
-        if (field_directory.Id > 0 && !form_db.FormsDirectoriesLinks.Any(x => x.Id == field_directory.Id))
+        if (field_directory.Id > 0 && !form_db.FieldsDirectoriesLinks.Any(x => x.Id == field_directory.Id))
             return ResponseBaseModel.CreateError($"Поле (списочного типа #{field_directory.Id}) для формы #{form_db.Id} не найдено в БД, либо принадлежит другой форме или относится к иному виду поля");
 
         ResponseBaseModel check_project = await CanEditProject(form_db.ProjectId);
@@ -1799,7 +1806,7 @@ public class ConstructorService(
         LinkDirectoryToFormConstructorModelDB? form_field_db;
         if (field_directory.Id < 1)
         {
-            int _sort_index = form_db.FormsDirectoriesLinks.Count != 0 ? form_db.FormsDirectoriesLinks.Max(x => x.SortIndex) : 0;
+            int _sort_index = form_db.FieldsDirectoriesLinks.Count != 0 ? form_db.FieldsDirectoriesLinks.Max(x => x.SortIndex) : 0;
             _sort_index = Math.Max(_sort_index, form_db.Fields.Count != 0 ? form_db.Fields.Max(x => x.SortIndex) : 0);
 
             form_field_db = new()
@@ -1823,7 +1830,7 @@ public class ConstructorService(
             return res;
         }
 
-        form_field_db = form_db.FormsDirectoriesLinks.First(x => x.Id == field_directory.Id);
+        form_field_db = form_db.FieldsDirectoriesLinks.First(x => x.Id == field_directory.Id);
 
         using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context_forms.Database.BeginTransaction(isolationLevel: System.Data.IsolationLevel.Serializable);
 
@@ -2035,7 +2042,7 @@ public class ConstructorService(
         res.Response = context_forms
             .Forms
             .Include(x => x.Fields)
-            .Include(x => x.FormsDirectoriesLinks!)
+            .Include(x => x.FieldsDirectoriesLinks!)
             .ThenInclude(x => x.Directory)
             .FirstOrDefault(x => x.Id == form.Id);
 
@@ -2252,7 +2259,7 @@ public class ConstructorService(
 
            .Include(x => x.JoinsForms!)
            .ThenInclude(x => x.Form)
-           .ThenInclude(x => x!.FormsDirectoriesLinks)
+           .ThenInclude(x => x!.FieldsDirectoriesLinks)
 
            .FirstOrDefaultAsync(x => x.Id == tab_of_document_scheme_id, cancellationToken: cancellationToken)
         };
@@ -2795,7 +2802,7 @@ public class ConstructorService(
             .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
-            .ThenInclude(x => x!.FormsDirectoriesLinks) // поля
+            .ThenInclude(x => x!.FieldsDirectoriesLinks) // поля
 
             .AsSingleQuery()
             .FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken)
@@ -3048,7 +3055,7 @@ public class ConstructorService(
             .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
-            .ThenInclude(x => x!.FormsDirectoriesLinks) // поля
+            .ThenInclude(x => x!.FieldsDirectoriesLinks) // поля
             .AsSingleQuery()
             .FirstOrDefaultAsync(x => x.Id == session_id, cancellationToken: cancellationToken);
 

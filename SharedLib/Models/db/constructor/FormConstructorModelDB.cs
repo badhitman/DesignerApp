@@ -29,7 +29,7 @@ public class FormConstructorModelDB : FormBaseConstructorModel
     /// <summary>
     /// Связи форм со списками/связями
     /// </summary>
-    public List<LinkDirectoryToFormConstructorModelDB>? FormsDirectoriesLinks { get; set; }
+    public List<LinkDirectoryToFormConstructorModelDB>? FieldsDirectoriesLinks { get; set; }
 
     /// <summary>
     /// Все поля формы (единым списком + сквозная сортировка)
@@ -49,8 +49,8 @@ public class FormConstructorModelDB : FormBaseConstructorModel
                     f.OwnerId = Id;
                     res.Add((f, f.SortIndex));
                 }
-            if (FormsDirectoriesLinks is not null && FormsDirectoriesLinks.Count != 0)
-                foreach (LinkDirectoryToFormConstructorModelDB dl in FormsDirectoriesLinks)
+            if (FieldsDirectoriesLinks is not null && FieldsDirectoriesLinks.Count != 0)
+                foreach (LinkDirectoryToFormConstructorModelDB dl in FieldsDirectoriesLinks)
                 {
                     dl.Owner ??= this;
                     dl.OwnerId = Id;
@@ -77,7 +77,7 @@ public class FormConstructorModelDB : FormBaseConstructorModel
             Css = other.Css,
             AddRowButtonTitle = other.AddRowButtonTitle,
             Fields = other.Fields,
-            FormsDirectoriesLinks = other.FormsDirectoriesLinks,
+            FieldsDirectoriesLinks = other.FieldsDirectoriesLinks,
             Id = other.Id,
             ProjectId = other.ProjectId,
             Project = other.Project,
@@ -139,27 +139,27 @@ public class FormConstructorModelDB : FormBaseConstructorModel
                 Fields.AddRange(_fields);
         }
 
-        if (other.FormsDirectoriesLinks is not null)
+        if (other.FieldsDirectoriesLinks is not null)
         {
-            FormsDirectoriesLinks ??= [];
+            FieldsDirectoriesLinks ??= [];
 
-            int findDirectory_link_for_remove_action() => FormsDirectoriesLinks.FindIndex(x => !other.FormsDirectoriesLinks.Any(y => y.Id == x.Id));
+            int findDirectory_link_for_remove_action() => FieldsDirectoriesLinks.FindIndex(x => !other.FieldsDirectoriesLinks.Any(y => y.Id == x.Id));
             i = findDirectory_link_for_remove_action();
             while (i != -1)
             {
-                FormsDirectoriesLinks.RemoveAt(i);
+                FieldsDirectoriesLinks.RemoveAt(i);
                 i = findDirectory_link_for_remove_action();
             }
             LinkDirectoryToFormConstructorModelDB? fo;
-            foreach (LinkDirectoryToFormConstructorModelDB f in FormsDirectoriesLinks)
+            foreach (LinkDirectoryToFormConstructorModelDB f in FieldsDirectoriesLinks)
             {
-                fo = other.FormsDirectoriesLinks.FirstOrDefault(x => x.Id == f.Id);
+                fo = other.FieldsDirectoriesLinks.FirstOrDefault(x => x.Id == f.Id);
                 if (fo is not null)
                     f.Update(fo);
             }
-            LinkDirectoryToFormConstructorModelDB[] _fields = other.FormsDirectoriesLinks.Where(x => !FormsDirectoriesLinks.Any(y => y.Id == x.Id)).ToArray();
+            LinkDirectoryToFormConstructorModelDB[] _fields = other.FieldsDirectoriesLinks.Where(x => !FieldsDirectoriesLinks.Any(y => y.Id == x.Id)).ToArray();
             if (_fields.Length != 0)
-                FormsDirectoriesLinks.AddRange(_fields);
+                FieldsDirectoriesLinks.AddRange(_fields);
         }
 
         return this;
