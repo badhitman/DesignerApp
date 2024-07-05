@@ -3,9 +3,9 @@
         <h5 class="card-title">Документы</h5>
         <h6 class="card-subtitle mb-2 text-body-secondary">бизнес-сущности</h6>
 
-        <MudTreeView Items="@TreeItems" Hover="true">
+        <MudTreeView @ref="TreeView_ref" Items="@TreeItems" Hover="true">
             <ItemTemplate Context="item">
-                <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" IconColor="@(item.Icon!.Equals(icon_doc) ? Color.Default : (item.Icon!.Equals(icon_form_of_tab) ? Color.Info : Color.Primary))">
+                <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" IconColor="@GetColor(item.Icon)">
                     <BodyContent>
                         <SystemNameManufactureComponent Item="item" />
                     </BodyContent>
@@ -26,7 +26,7 @@
 
     const string icon_doc = Icons.Material.Filled.BusinessCenter;
     const string icon_tab_of_doc = Icons.Material.Filled.Tab;
-    const string icon_form_of_tab = Icons.Material.Filled.EventNote;
+    const string icon_form_of_tab = Icons.Material.Filled.DynamicForm;
     const string icon_field_of_form = Icons.Material.Filled.DragHandle;
 
     /// <summary>
@@ -46,6 +46,18 @@
     /// </summary>
     const string type_name_field_of_form = nameof(FieldFormConstructorModelDB);
 
+    MudTreeView<EntryTagModel>? TreeView_ref;
+
+
+    Color GetColor(string? icon)
+    => icon switch
+    {
+        icon_form_of_tab => Color.Info,
+        icon_tab_of_doc => Color.Primary,
+        icon_field_of_form => Color.Success,
+        _ => Color.Default
+    };
+      
     protected override void OnInitialized()
     {
         Func<FieldFormBaseLowConstructorModel, int, int, int, TreeItemDataModel> FieldToTreeItem = (FieldFormBaseLowConstructorModel field, int doc_id, int tab_id, int form_id) =>
@@ -57,7 +69,10 @@
                             Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}#{form_id} {type_name_field_of_form}"
                         };
 
-                    return new TreeItemDataModel(et, icon_field_of_form);
+                    return new TreeItemDataModel(et, icon_field_of_form) 
+                    { 
+                        Tooltip = "Поле внутри формы" 
+                    };
                 };
 
         Func<FormConstructorModelDB, int, int, TreeItemDataModel> FormToTreeItem = (FormConstructorModelDB form, int doc_id, int tab_id) =>
@@ -71,6 +86,7 @@
 
                                 return new TreeItemDataModel(et, icon_form_of_tab)
                                     {
+                                        Tooltip = "Форма, размещённая внутри таба/вкладки",
                                         Children = [.. form.AllFields!.Select(x => FieldToTreeItem(x, doc_id, tab_id, form.Id))]
                                     };
                             };
@@ -86,6 +102,7 @@
 
                     return new TreeItemDataModel(et, icon_tab_of_doc)
                         {
+                            Tooltip = "Вкладка/Таб документа",
                             Children = [.. tab.JoinsForms!.Select(x => FormToTreeItem(x.Form!, doc_id, tab.Id))]
                         };
                 };
@@ -96,8 +113,15 @@
         {
             TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = x.Name, Id = x.Id, Tag = type_name_document }, icon_doc)
                 {
+                    Tooltip = "Документ (схема данных бизнес-сущности)",
                     Children = [.. x.Pages!.Select(y => TabToTreeItem(y, x.Id))]
                 });
         });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (TreeView_ref is not null && firstRender)
+            await TreeView_ref.ExpandAllAsync();
     }
 }

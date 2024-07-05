@@ -30,6 +30,8 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
 
 
+    TreeItemDataModel ItemModel = default!;
+
     string itemSystemName = default!;
 
     /// <inheritdoc/>
@@ -57,6 +59,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
+        ItemModel = (TreeItemDataModel)Item;
         itemSystemName = SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? "";
     }
 }

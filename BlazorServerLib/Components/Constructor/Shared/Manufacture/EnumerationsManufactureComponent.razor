@@ -5,7 +5,7 @@
         <h5 class="card-title">Справочники</h5>
         <h6 class="card-subtitle mb-2 text-body-secondary">перечисления/списки</h6>
 
-        <MudTreeView Items="@TreeItems" Hover="true">
+        <MudTreeView @ref="TreeView_ref" Items="@TreeItems" Hover="true">
             <ItemTemplate Context="item">
                 <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" IconColor="@(item.Icon!.Equals(icon_directory) ? Color.Default : Color.Info)">
                     <BodyContent>
@@ -25,12 +25,14 @@
     public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
 
     List<TreeItemData<EntryTagModel>> TreeItems { get; set; } = [];
-    
+
     const string icon_directory = Icons.Custom.Uncategorized.Folder;
     const string icon_element = Icons.Material.Filled.Label;
 
     const string type_name_directory = nameof(DirectoryConstructorModelDB);
     const string type_name_element_of_directory = nameof(ElementOfDirectoryConstructorModelDB);
+
+    MudTreeView<EntryTagModel>? TreeView_ref;
 
     protected override void OnInitialized()
     {
@@ -43,5 +45,11 @@
                     Children = [.. x.Elements!.Select(y => new TreeItemDataModel(new EntryTagModel() { Id = y.Id, Name = y.Name, Tag = $"{type_name_directory}#{x.Id} {type_name_element_of_directory}" }, icon_element))]
                 });
         });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (TreeView_ref is not null && firstRender)
+            await TreeView_ref.ExpandAllAsync();
     }
 }
