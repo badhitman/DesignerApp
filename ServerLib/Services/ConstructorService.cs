@@ -375,7 +375,7 @@ public class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
             .Projects
-            
+
             .Include(x => x.Forms!)
             .ThenInclude(x => x.Fields)
 
@@ -585,8 +585,15 @@ public class ConstructorService(
             return ResponseBaseModel.CreateInfo("Пользователь не является участником проекта. Удаление не требуется");
 
         context_forms.Remove(memberDb);
-        await context_forms.SaveChangesAsync();
 
+        ProjectUseConstructorModelDb? main_project_for_member = await context_forms
+            .ProjectsUse
+            .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == member_user_id);
+
+        if(main_project_for_member is not null)
+            context_forms.Remove(main_project_for_member);
+
+        await context_forms.SaveChangesAsync();
         return ResponseBaseModel.CreateSuccess($"Пользователь {userDb.UserName} успешно исключён из проекта '{memberDb.Project!.Name}'");
     }
 
