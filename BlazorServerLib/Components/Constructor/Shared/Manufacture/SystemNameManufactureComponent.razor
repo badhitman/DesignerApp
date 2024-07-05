@@ -15,31 +15,22 @@
     <div style="justify-self: end;">
         <form class="row">
             <div class="col-auto" title="Системное имя объекта для генератора кода C# (имя типа данных)">
-                <label for="input_@($"DomID")" class="col-form-label">SystemName</label>
+                <label for="input_@DomID" class="col-form-label">SystemName</label>
             </div>
             <div class="col-auto">
-                @if (string.IsNullOrWhiteSpace(itemSystemName))
-                {
-                    <MudTooltip Text="Если не указать своё системное имя, тогда оно будет автоматически сформировано транслитом названия">
-                        <input @bind-value="itemSystemName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(itemSystemName) ? " border border-warning-subtle" : "")" id="input_@($"DomID")" placeholder="def: @(GlobalTools.TranslitToSystemName(Item.Value!.Name))" aria-describedby="@($"DomID")HelpInline">
-                    </MudTooltip>
-                }
-                else
-                {
-                    <input @bind-value="itemSystemName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(itemSystemName) ? " border border-warning-subtle" : "")" id="input_@($"DomID")" placeholder="def: @(GlobalTools.TranslitToSystemName(Item.Value!.Name))" aria-describedby="@($"DomID")HelpInline">
-                }
+                <input title="@(string.IsNullOrWhiteSpace(itemSystemName) ? "Если не указать своё системное имя, тогда оно будет автоматически сформировано транслитом названия" : "")" @bind-value="itemSystemName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(itemSystemName) ? " border border-warning-subtle" : "")" id="input_@DomID" placeholder="def: @(GlobalTools.TranslitToSystemName(Item.Value!.Name))">
             </div>
             <div class="col-auto">
                 <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
                     <button data-name="@Item.Value!.Name" @onclick="SaveSystemName" disabled="@(!IsEdit)" type="button" class="btn btn-@(IsEdit ? "primary" : "outline-secondary") btn-sm">Сохранить</button>
                     @if (IsEdit)
                     {
-                        <button @onclick="() => { itemSystemName = SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? string.Empty; }" title="Отменить изменение системного имени" disabled="@(!IsEdit)" type="button" class="btn btn-outline-info btn-sm">Отмена</button>
+                        <button @onclick="() => { itemSystemName = SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? string.Empty; }" title="Отменить изменение системного имени" type="button" class="btn btn-outline-info btn-sm">Отмена</button>
                     }
                 </div>
             </div>
-            <div class="col-auto">
-                <span id="@($"DomID")HelpInline" class="form-text">
+            <div class="col-auto visually-hidden">
+                <span id="@(DomID)HelpInline" class="form-text">
                     Имя типа данных C#.
                 </span>
             </div>

@@ -72,6 +72,8 @@ public class ManufactureService(
                 return ResponseBaseModel.CreateInfo("Значение удалено.");
             }
         }
+        else if (Regex.IsMatch(request.SystemName, GlobalStaticConstants.SYSTEM_NAME_TEMPLATE))
+            return ResponseBaseModel.CreateError(GlobalStaticConstants.SYSTEM_NAME_TEMPLATE_MESSAGE);
         else
         {
             if (snMan == null)
