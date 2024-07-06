@@ -57,7 +57,9 @@
         icon_field_of_form => Color.Success,
         _ => Color.Default
     };
-      
+
+    static TypesFieldsFormsEnum[] skip_fields = [TypesFieldsFormsEnum.Generator, TypesFieldsFormsEnum.ProgramCalculationDouble];
+
     protected override void OnInitialized()
     {
         Func<FieldFormBaseLowConstructorModel, int, int, int, TreeItemDataModel> FieldToTreeItem = (FieldFormBaseLowConstructorModel field, int doc_id, int tab_id, int form_id) =>
@@ -69,10 +71,10 @@
                             Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}#{form_id} {type_name_field_of_form}"
                         };
 
-                    return new TreeItemDataModel(et, icon_field_of_form) 
-                    { 
-                        Tooltip = "Поле внутри формы" 
-                    };
+                    return new TreeItemDataModel(et, icon_field_of_form)
+                        {
+                            Tooltip = "Поле внутри формы"
+                        };
                 };
 
         Func<FormConstructorModelDB, int, int, TreeItemDataModel> FormToTreeItem = (FormConstructorModelDB form, int doc_id, int tab_id) =>
@@ -84,10 +86,23 @@
                                         Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}"
                                     };
 
+                                Func<FieldFormBaseLowConstructorModel, bool> fieldPredicate = (FieldFormBaseLowConstructorModel field) =>
+                                {
+                                    if (field is FieldFormConstructorModelDB ff && skip_fields.Contains(ff.TypeField))
+                                    {
+                                        if (skip_fields.Contains(ff.TypeField))
+                                            return false;
+                                        if (Enum.TryParse(ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, PropsTypesMDFieldsEnum.None.ToString())?.ToString(), out PropsTypesMDFieldsEnum _mode))
+                                            return _mode != PropsTypesMDFieldsEnum.Template;
+                                    }
+
+                                    return true;
+                                };
+
                                 return new TreeItemDataModel(et, icon_form_of_tab)
                                     {
                                         Tooltip = "Форма, размещённая внутри таба/вкладки",
-                                        Children = [.. form.AllFields!.Select(x => FieldToTreeItem(x, doc_id, tab_id, form.Id))]
+                                        Children = [.. form.AllFields.Where(fieldPredicate).Select(field => FieldToTreeItem(field, doc_id, tab_id, form.Id))]
                                     };
                             };
 

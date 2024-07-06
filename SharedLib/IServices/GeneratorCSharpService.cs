@@ -7,9 +7,8 @@ using System.Reflection;
 using SharedLib.Models;
 using Newtonsoft.Json;
 using System.Text;
-using System.IO;
 
-namespace SharedLib.Services;
+namespace SharedLib;
 
 /// <inheritdoc/>
 public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectViewModel project)
@@ -26,7 +25,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         List<string> stat =
         [
             $"Перечислений: {dump.Enums.Count()} (элементов всего: {dump.Enums.Sum(x => x.EnumItems?.Count())})",
-            $"Документов: {dump.Documents.Count()} (полей всего: {dump.Documents.Sum(x => x.PropertiesBody?.Count()) + dump.Documents.Sum(x => x.Grids?.SelectMany(y => y.Properties!).Count())})",
+            //$"Документов: {dump.Documents.Count()} (полей всего: {dump.Documents.Sum(x => x.PropertiesBody?.Count()) + dump.Documents.Sum(x => x.Grids?.SelectMany(y => y.Properties!).Count())})",
             $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
             $"{conf.EnumDirectoryPath} - папка перечислений",
             $"",
@@ -252,7 +251,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             //#endregion
 
-            if (doc_obj.Grids is not null)
+            /*if (doc_obj.Grids is not null)
                 foreach (GridFitModel grid in doc_obj.Grids)
                 {
 
@@ -432,7 +431,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, true, true);
 
                     //#endregion
-                }
+                }*/
         }
     }
 
@@ -457,15 +456,15 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await writer.WriteLineAsync("\t\t/// </summary>");
             writer.WriteLine($"\t\tpublic DbSet<{doc_obj.SystemName}> {doc_obj.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
 
-            if (doc_obj.Grids is not null)
-                foreach (GridFitModel? grid in doc_obj.Grids)
-                {
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {grid.Name} [Табличная часть: {doc_obj.Name}]");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic DbSet<{grid.SystemName}> {grid.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
-                }
+            //if (doc_obj.Grids is not null)
+            //    foreach (GridFitModel? grid in doc_obj.Grids)
+            //    {
+            //        await writer.WriteLineAsync();
+            //        await writer.WriteLineAsync("\t\t/// <summary>");
+            //        await writer.WriteLineAsync($"\t\t/// {grid.Name} [Табличная часть: {doc_obj.Name}]");
+            //        await writer.WriteLineAsync("\t\t/// </summary>");
+            //        await writer.WriteLineAsync($"\t\tpublic DbSet<{grid.SystemName}> {grid.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+            //    }
         }
 
         await WriteEnd(writer);
@@ -489,6 +488,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await writer.WriteLineAsync($"\tpublic partial class {doc_obj.SystemName} : SharedLib.Models.IdRemovableModel");
             await writer.WriteLineAsync("\t{");
             is_first_item = true;
+            /*
             if (doc_obj.PropertiesBody is not null)
                 foreach (DocumentPropertyFitModel property in doc_obj.PropertiesBody.OrderBy(x => x.SortIndex))
                 {
@@ -604,6 +604,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                     await WriteEnd(writer);
                 }
+        */
         }
     }
 

@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib.Models;
 
@@ -22,7 +22,7 @@ public class EnumDesignItemModelDB : EntryDescriptionModel
     /// <summary>
     /// Индекс сортировки
     /// </summary>
-    public uint SortIndex { get; set; }
+    public int SortIndex { get; set; }
 
     /// <summary>
     /// Владелец элемента/перечисления

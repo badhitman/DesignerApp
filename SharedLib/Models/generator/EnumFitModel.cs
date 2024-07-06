@@ -2,28 +2,33 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib.Models;
 
 /// <summary>
 /// Перечисление (лёгкая модель)
 /// </summary>
-public class EnumFitModel : SystemEntryDescriptionModel
+public class EnumFitModel
 {
+    /// <summary>
+    /// SystemName
+    /// </summary>
+    public required string SystemName { get; set; }
+
+    /// <summary>
+    /// Имя объекта
+    /// </summary>
+    [Required(AllowEmptyStrings = false, ErrorMessage = "Поле наименования обязательно для заполнения")]
+    public virtual required string Name { get; set; }
+
+    /// <summary>
+    /// Описание/примечание для объекта
+    /// </summary>
+    public string? Description { get; set; }
+
     /// <summary>
     /// Элементы/состав перечисления
     /// </summary>
-    public IEnumerable<SortableFitModel>? EnumItems { get; set; }
-
-    /// <inheritdoc/>
-    public static explicit operator EnumFitModel(EnumDesignModelDB v)
-    {
-        return new EnumFitModel()
-        {
-            Description = v.Description,
-            Id = v.Id,
-            Name = v.Name,
-            SystemName = v.SystemName,
-            EnumItems = v.EnumItems?.Select(x => (SortableFitModel)x)
-        };
-    }
+    public SortableFitModel[]? EnumItems { get; set; }
 }

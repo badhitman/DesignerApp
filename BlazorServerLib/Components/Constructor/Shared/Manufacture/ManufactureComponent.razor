@@ -1,4 +1,6 @@
 ﻿@using BlazorWebLib.Components.Constructor.Pages
+@using SharedLib.Models
+
 @inherits BlazorBusyComponentBaseModel
 
 <div class="vstack gap-3">
@@ -6,7 +8,7 @@
 
     <CascadingValue Value="this">
         <div class="p-2">
-            <ConfigManufactureComponent />
+            <ConfigManufactureComponent @ref="_conf" />
         </div>
         <div class="p-2">
             <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DirectoryTypeName)).ToArray()">
@@ -21,10 +23,8 @@
     </CascadingValue>
 
     <div class="d-grid gap-2">
-        <button class="btn btn-primary" type="button">Скачать C# .NET</button>
-        <button class="btn btn-primary" type="button">Дамп JSON</button>
+        <button @onclick="DownLoad" class="btn btn-primary" type="button">Скачать C# .NET</button>
     </div>
-
 </div>
 
 @code {
@@ -45,6 +45,8 @@
     public required ConstructorPage ParentFormsPage { get; set; }
 
 
+    ConfigManufactureComponent _conf = default!;
+
     EnumerationsManufactureComponent enumerations_ref = default!;
 
     const string DirectoryTypeName = nameof(DirectoryConstructorModelDB);
@@ -52,6 +54,59 @@
 
     public ProjectConstructorModelDB CurrentProject { get; private set; } = default!;
     public ManageManufactureModelDB Manufacture { get; private set; } = default!;
+
+    void DownLoad()
+    {
+        ArgumentNullException.ThrowIfNull(CurrentProject.Directories);
+        ArgumentNullException.ThrowIfNull(CurrentProject.Documents);
+        ArgumentNullException.ThrowIfNull(ParentFormsPage.MainProject);
+
+        Func<DirectoryConstructorModelDB, EnumFitModel> enum_convert = (DirectoryConstructorModelDB dir) =>
+        {
+            ArgumentNullException.ThrowIfNull(dir.Elements);
+
+            string get_sn = ParentFormsPage
+            .SystemNamesManufacture
+            .FirstOrDefault(x => x.TypeDataName == DirectoryTypeName)?.SystemName ?? GlobalTools.TranslitToSystemName(dir.Name);
+
+            return new EnumFitModel()
+                {
+                    SystemName = get_sn,
+                    Name = dir.Name,
+                    Description = dir.Description,
+                    EnumItems = dir.Elements.Select(e => new SortableFitModel()
+                    {
+                        Name = e.Name,
+                        SortIndex = e.SortIndex,
+                        Description = e.Description,
+                    }).ToArray()
+                };
+        };
+
+        Func<DocumentSchemeConstructorModelDB, DocumentFitModel> document_convert = (DocumentSchemeConstructorModelDB doc) =>
+        {
+            string get_sn = ParentFormsPage
+            .SystemNamesManufacture
+            .FirstOrDefault(x => x.TypeDataName == DocumentSchemeConstructor)?.SystemName ?? GlobalTools.TranslitToSystemName(doc.Name);
+
+            return new DocumentFitModel()
+                {
+                    SystemName = get_sn,
+                    Name = doc.Name,
+                    Description = doc.Description,
+                };
+        };
+
+        StructureProjectModel struct_project = new StructureProjectModel()
+            {
+                Enums = CurrentProject.Directories.Select(enum_convert),
+                Documents = CurrentProject.Documents.Select(document_convert)
+            };
+
+        CodeGeneratorConfigModel conf_gen = new() { Namespace = "" };
+
+        GeneratorCSharpService gen = new(conf_gen, ParentFormsPage.MainProject);
+    }
 
     public async Task ReloadProjectData()
     {

@@ -2,7 +2,9 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-namespace SharedLib.Models;
+using SharedLib.Models;
+
+namespace SharedLib;
 
 /// <summary>
 /// Структура/Состав проекта
@@ -18,15 +20,4 @@ public class StructureProjectModel
     /// Документы проекта
     /// </summary>
     public required IEnumerable<DocumentFitModel> Documents { get; set; }
-
-    /// <summary>
-    /// Адаптер конвертации перечислений
-    /// </summary>
-    public IEnumerable<EnumDesignModelDB> EnumsProxyAdapter
-    {
-        set
-        {
-            Enums = value.Select(x => (EnumFitModel)x);
-        }
-    }
 }

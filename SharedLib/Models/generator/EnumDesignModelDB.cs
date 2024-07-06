@@ -23,9 +23,4 @@ public class EnumDesignModelDB : SystemEntryDescriptionModel
     /// Проект, за которым закреплено перечисление
     /// </summary>
     public ProjectConstructorModelDB? Project { get; set; }
-
-    /// <summary>
-    /// Связи полей документов с типами данных
-    /// </summary>
-    public IEnumerable<DocumentPropertyLinkModelDB>? PropertiesTypesLinks { get; set; }
 }
