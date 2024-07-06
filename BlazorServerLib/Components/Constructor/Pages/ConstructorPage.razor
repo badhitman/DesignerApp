@@ -62,7 +62,7 @@
             <AuthorizeView Roles="admin,manufacture">
                 <Authorized>
                     <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="C# .NET">
-                        <ManufactureComponent MainProjectId="MainProject!.Id" />
+                        <ManufactureComponent />
                     </MudTabPanel>
                 </Authorized>
             </AuthorizeView>

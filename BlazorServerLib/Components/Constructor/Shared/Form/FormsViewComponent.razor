@@ -12,12 +12,8 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd>
-            <p style="cursor:pointer;" @onclick="async () => { await OpenForm(context); }">
+            <p style="cursor:pointer;" @onclick="async () => { await OpenForm(context); }" class="position-relative">
                 @context.Name
-                @{
-                    
-                }
-                <sup class="ms-1 border" title="Системное имя">@context.Id</sup>
             </p>
             <div class="d-flex flex-wrap">
                 @foreach (FieldFormBaseLowConstructorModel fb in context.AllFields)
