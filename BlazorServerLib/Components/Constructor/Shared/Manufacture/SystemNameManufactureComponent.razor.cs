@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorWebLib.Components.Constructor.Pages;
+using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
@@ -24,10 +25,12 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required ManufactureComponent ManufactureParentView { get; set; }
-
-    /// <inheritdoc/>
+    
+    /// <summary>
+    /// Родительская страница форм
+    /// </summary>
     [CascadingParameter, EditorRequired]
-    public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
+    public required ConstructorPage ParentFormsPage { get; set; }
 
 
     TreeItemDataModel ItemModel = default!;
@@ -37,7 +40,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected string DomID => $"{Item.Value!.Tag}_{Item.Value!.Id}";
 
-    bool IsEdit => !itemSystemName.Equals(SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName.Equals(Item.Value.Tag))?.SystemName ?? "");
+    bool IsEdit => !itemSystemName.Equals(ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName.Equals(Item.Value.Tag))?.SystemName ?? "");
 
     async Task SaveSystemName()
     {
@@ -51,8 +54,8 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
 
         if (res.Success())
         {
-            await ManufactureParentView.GetSystemNames();
-            ManufactureParentView.StateHasChangedCall();
+            await ParentFormsPage.GetSystemNames();
+            ParentFormsPage.StateHasChangedCall();
         }
     }
 
@@ -60,6 +63,6 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     protected override void OnInitialized()
     {
         ItemModel = (TreeItemDataModel)Item;
-        itemSystemName = SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? "";
+        itemSystemName = ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? "";
     }
 }

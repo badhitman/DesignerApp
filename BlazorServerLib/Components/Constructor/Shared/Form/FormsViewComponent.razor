@@ -14,6 +14,9 @@
         <MudTd>
             <p style="cursor:pointer;" @onclick="async () => { await OpenForm(context); }">
                 @context.Name
+                @{
+                    
+                }
                 <sup class="ms-1 border" title="Системное имя">@context.Id</sup>
             </p>
             <div class="d-flex flex-wrap">

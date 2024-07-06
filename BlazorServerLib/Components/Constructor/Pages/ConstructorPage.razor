@@ -59,14 +59,14 @@
             <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки">
                 <SessionsViewComponent />
             </MudTabPanel>
+            <AuthorizeView Roles="admin,manufacture">
+                <Authorized>
+                    <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="C# .NET">
+                        <ManufactureComponent MainProjectId="MainProject!.Id" />
+                    </MudTabPanel>
+                </Authorized>
+            </AuthorizeView>
         </CascadingValue>
-        <AuthorizeView Roles="admin,manufacture">
-            <Authorized>
-                <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="C# .NET">
-                    <ManufactureComponent MainProjectId="MainProject!.Id" />
-                </MudTabPanel>
-            </Authorized>
-        </AuthorizeView>
     </MudTabs>
 </CascadingValue>
 

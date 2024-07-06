@@ -1,4 +1,5 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using BlazorWebLib.Components.Constructor.Pages
+@inherits BlazorBusyComponentBaseModel
 
 <div class="vstack gap-3">
     <div class="p-2"><h3>Генерация кода C#</h3></div>
@@ -8,16 +9,22 @@
             <ConfigManufactureComponent />
         </div>
         <div class="p-2">
-            <CascadingValue Value="@SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DirectoryTypeName)).ToArray()">
+            <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DirectoryTypeName)).ToArray()">
                 <EnumerationsManufactureComponent @ref="enumerations_ref" />
             </CascadingValue>
         </div>
         <div class="p-2">
-            <CascadingValue Value="@SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DocumentSchemeConstructor)).ToArray()">
+            <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DocumentSchemeConstructor)).ToArray()">
                 <DocumentsManufactureComponent />
             </CascadingValue>
         </div>
     </CascadingValue>
+
+    <div class="d-grid gap-2">
+        <button class="btn btn-primary" type="button">Скачать C# .NET</button>
+        <button class="btn btn-primary" type="button">Дамп JSON</button>
+    </div>
+
 </div>
 
 @code {
@@ -31,8 +38,12 @@
     IManufactureService ManufactureRepo { get; set; } = default!;
 
 
-    [Parameter, EditorRequired]
-    public required int MainProjectId { get; set; }
+    /// <summary>
+    /// Родительская страница форм
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required ConstructorPage ParentFormsPage { get; set; }
+
 
     EnumerationsManufactureComponent enumerations_ref = default!;
 
@@ -42,28 +53,17 @@
     public ProjectConstructorModelDB CurrentProject { get; private set; } = default!;
     public ManageManufactureModelDB Manufacture { get; private set; } = default!;
 
-    SystemNameEntryModel[] SystemNamesManufacture = default!;
-
     public async Task ReloadProjectData()
     {
         IsBusyProgress = true;
-        ProjectConstructorModelDB? rest_project = await ConstructorRepo.ReadProject(MainProjectId);
+        ProjectConstructorModelDB? rest_project = await ConstructorRepo.ReadProject(ParentFormsPage.MainProject!.Id);
         CurrentProject = rest_project ?? throw new Exception();
 
-        TResponseModel<ManageManufactureModelDB> rest_manufacture = await ManufactureRepo.ReadManufactureConfig(MainProjectId);
+        TResponseModel<ManageManufactureModelDB> rest_manufacture = await ManufactureRepo.ReadManufactureConfig(ParentFormsPage.MainProject.Id);
         if (!rest_manufacture.Success())
             SnackbarRepo.ShowMessagesResponse(rest_manufacture.Messages);
         Manufacture = rest_manufacture.Response ?? throw new Exception();
-        SystemNamesManufacture = await ManufactureRepo.GetSystemNames(MainProjectId);
         IsBusyProgress = false;
-    }
-
-    public async Task GetSystemNames()
-    {
-        IsBusyProgress = true;
-        SystemNamesManufacture = await ManufactureRepo.GetSystemNames(MainProjectId);
-        IsBusyProgress = false;
-        enumerations_ref.StateHasChangedCall();
     }
 
     protected override async Task OnInitializedAsync()

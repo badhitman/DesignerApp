@@ -21,6 +21,12 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+    [Inject]
+    IManufactureService ManufactureRepo { get; set; } = default!;
+
+
+    /// <inheritdoc/>
+    public SystemNameEntryModel[] SystemNamesManufacture = default!;
 
     /// <inheritdoc/>
     UserInfoModel CurrentUser = default!;
@@ -33,14 +39,17 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     /// </summary>
     public bool CanEditProject { get; private set; }
 
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
         TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
-        IsBusyProgress = false;
+
         if (currentUser.Response is null)
             throw new Exception("Current user is null");
+
+        IsBusyProgress = false;
 
         CurrentUser = currentUser.Response;
         if (!currentUser.Success())
@@ -57,11 +66,24 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
         CanEditProject = false;
         IsBusyProgress = true;
         TResponseModel<MainProjectViewModel> currentMainProject = await ConstructorRepo.GetCurrentMainProject(CurrentUser.UserId);
-        IsBusyProgress = false;
+
         if (!currentMainProject.Success())
             SnackbarRepo.ShowMessagesResponse(currentMainProject.Messages);
 
         MainProject = currentMainProject.Response;
+        await GetSystemNames();
+
+        IsBusyProgress = false;
+
         CanEditProject = MainProject is not null && (!MainProject.IsDisabled || MainProject.OwnerUserId.Equals(CurrentUser.UserId) || CurrentUser.IsAdmin);
+    }
+
+    /// <inheritdoc/>
+    public async Task GetSystemNames()
+    {
+        IsBusyProgress = true;
+        if (MainProject is not null)
+            SystemNamesManufacture = await ManufactureRepo.GetSystemNames(MainProject!.Id);
+        IsBusyProgress = false;
     }
 }

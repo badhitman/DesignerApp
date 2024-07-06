@@ -7,6 +7,7 @@ using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
+using static MudBlazor.CategoryTypes;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Form;
 
@@ -30,6 +31,15 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
+
+
+    string? GetSystemNameForm(int form_id) 
+        => ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == form_id && x.TypeDataName.Equals(type_name_form_of_tab))?.SystemName ?? "";
+
+    /// <summary>
+    /// имя типа данных: формы
+    /// </summary>
+    const string type_name_form_of_tab = nameof(FormConstructorModelDB);
 
     /// <summary>
     /// Таблица

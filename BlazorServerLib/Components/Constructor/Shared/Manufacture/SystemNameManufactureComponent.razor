@@ -18,14 +18,14 @@
                 <label for="input_@DomID" class="col-form-label">SystemName</label>
             </div>
             <div class="col-auto">
-                <input title="@(string.IsNullOrWhiteSpace(itemSystemName) ? "Если не указать своё системное имя, тогда оно будет автоматически сформировано транслитом названия" : "")" @bind-value="itemSystemName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(itemSystemName) ? " border border-warning-subtle" : "")" id="input_@DomID" placeholder="def: @(GlobalTools.TranslitToSystemName(Item.Value!.Name))">
+                <input title="@(string.IsNullOrWhiteSpace(itemSystemName) ? "Если не указать своё системное имя, тогда оно будет автоматически сформировано транслитом названия" : "")" @bind-value="itemSystemName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(itemSystemName) ? " border border-warning-subtle" : "")" id="input_@DomID" placeholder="auto: @(GlobalTools.TranslitToSystemName(Item.Value!.Name))">
             </div>
             <div class="col-auto">
                 <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
                     <button data-name="@Item.Value!.Name" @onclick="SaveSystemName" disabled="@(!IsEdit)" type="button" class="btn btn-@(IsEdit ? "primary" : "outline-secondary") btn-sm">Сохранить</button>
                     @if (IsEdit)
                     {
-                        <button @onclick="() => { itemSystemName = SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? string.Empty; }" title="Отменить изменение системного имени" type="button" class="btn btn-outline-info btn-sm">Отмена</button>
+                        <button @onclick="() => { itemSystemName = ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? string.Empty; }" title="Отменить изменение системного имени" type="button" class="btn btn-outline-info btn-sm">Отмена</button>
                     }
                 </div>
             </div>
