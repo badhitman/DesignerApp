@@ -16,6 +16,10 @@
 </div>
 
 @code {
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
+
+
     [CascadingParameter, EditorRequired]
     public required ManufactureComponent ManufactureParentView { get; set; }
 
@@ -71,10 +75,35 @@
                             Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}#{form_id} {type_name_field_of_form}"
                         };
 
-                    return new TreeItemDataModel(et, icon_field_of_form)
+                    TreeItemDataModel _res = new TreeItemDataModel(et, icon_field_of_form)
                         {
                             Tooltip = "Поле внутри формы"
                         };
+
+                    if (field is FieldFormConstructorModelDB ff)
+                    {
+                        _res.Information = $"<span class='badge text-bg-light text-wrap'>{ff.TypeField.DescriptionInfo()}</span>";
+
+                        if (skip_fields.Contains(ff.TypeField) || Enum.TryParse(ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, PropsTypesMDFieldsEnum.None.ToString())?.ToString(), out PropsTypesMDFieldsEnum _mode) && _mode == PropsTypesMDFieldsEnum.Template)
+                        {
+                            _res.CSS = "text-decoration-line-through";
+                            _res.Tooltip = "Поле формы не будет выгружено: данный тип поля не поддерживается для выгрузки";
+                        }
+
+                        string? descriptor = ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
+                        DeclarationAbstraction? _d = DeclarationAbstraction.GetHandlerService(descriptor ?? "");
+                        _res.Information = $"{_res.Information} <b>{_d?.Name ?? descriptor}</b> <u>{ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)}</u>";
+                    }
+                    else if (field is LinkDirectoryToFormConstructorModelDB df)
+                        _res.Information = $"<span class='badge bg-success text-wrap'>Справочник/Список</span> {df.Directory?.Name}";
+                    else
+                    {
+                        string msg = "ошибка 60F310E5-52C0-4E13-AD2C-10D9B09B6DD8";
+                        SnackbarRepo.Add(msg, Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+                        _res.Information = msg;
+                    }
+
+                    return _res;
                 };
 
         Func<FormConstructorModelDB, int, int, TreeItemDataModel> FormToTreeItem = (FormConstructorModelDB form, int doc_id, int tab_id) =>
@@ -86,23 +115,10 @@
                                         Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}"
                                     };
 
-                                Func<FieldFormBaseLowConstructorModel, bool> fieldPredicate = (FieldFormBaseLowConstructorModel field) =>
-                                {
-                                    if (field is FieldFormConstructorModelDB ff && skip_fields.Contains(ff.TypeField))
-                                    {
-                                        if (skip_fields.Contains(ff.TypeField))
-                                            return false;
-                                        if (Enum.TryParse(ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, PropsTypesMDFieldsEnum.None.ToString())?.ToString(), out PropsTypesMDFieldsEnum _mode))
-                                            return _mode != PropsTypesMDFieldsEnum.Template;
-                                    }
-
-                                    return true;
-                                };
-
                                 return new TreeItemDataModel(et, icon_form_of_tab)
                                     {
                                         Tooltip = "Форма, размещённая внутри таба/вкладки",
-                                        Children = [.. form.AllFields.Where(fieldPredicate).Select(field => FieldToTreeItem(field, doc_id, tab_id, form.Id))]
+                                        Children = [.. form.AllFields.Select(field => FieldToTreeItem(field, doc_id, tab_id, form.Id))]
                                     };
                             };
 

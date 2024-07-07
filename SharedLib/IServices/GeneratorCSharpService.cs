@@ -476,7 +476,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         StreamWriter writer;
         string type_class_name;
 
-        bool is_first_item;
+        //bool is_first_item;
         foreach (DocumentFitModel doc_obj in docs)
         {
             type_class_name = doc_obj.SystemName;
@@ -487,7 +487,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             await writer.WriteLineAsync($"\tpublic partial class {doc_obj.SystemName} : SharedLib.Models.IdRemovableModel");
             await writer.WriteLineAsync("\t{");
-            is_first_item = true;
+            //is_first_item = true;
+            
             /*
             if (doc_obj.PropertiesBody is not null)
                 foreach (DocumentPropertyFitModel property in doc_obj.PropertiesBody.OrderBy(x => x.SortIndex))

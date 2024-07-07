@@ -23,7 +23,7 @@
     </CascadingValue>
 
     <div class="d-grid gap-2">
-        <button @onclick="DownLoad" class="btn btn-primary" type="button">Скачать C# .NET</button>
+        <button @onclick="Download" class="btn btn-primary" type="button">Скачать C# .NET</button>
     </div>
 </div>
 
@@ -55,7 +55,7 @@
     public ProjectConstructorModelDB CurrentProject { get; private set; } = default!;
     public ManageManufactureModelDB Manufacture { get; private set; } = default!;
 
-    void DownLoad()
+    void Download()
     {
         ArgumentNullException.ThrowIfNull(CurrentProject.Directories);
         ArgumentNullException.ThrowIfNull(CurrentProject.Documents);

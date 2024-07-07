@@ -1,17 +1,22 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
 <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
-    @if (string.IsNullOrWhiteSpace(ItemModel.Tooltip))
-    {
-        <MudText Style="justify-self: start;">@Item.Text</MudText>
-    }
-    else
-    {
-        <MudTooltip Text="@ItemModel.Tooltip" Placement="Placement.Left">
+    <MudStack Row="true">
+        @if (string.IsNullOrWhiteSpace(ItemModel.Tooltip))
+        {
             <MudText Style="justify-self: start;">@Item.Text</MudText>
-        </MudTooltip>
-    }
-
+        }
+        else
+        {
+            <MudTooltip Text="@ItemModel.Tooltip" Placement="Placement.Left">
+                <MudText Style="justify-self: start;">@Item.Text</MudText>
+            </MudTooltip>
+        }
+        @if (!string.IsNullOrWhiteSpace(ItemModel.Information))
+        {
+            @InformationMS
+        }
+    </MudStack>
     <div style="justify-self: end;">
         <form class="row">
             <div class="col-auto" title="Системное имя объекта для генератора кода C# (имя типа данных)">
