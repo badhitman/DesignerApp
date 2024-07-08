@@ -39,6 +39,8 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
     IEnumerable<CommandEntryModel> Entries = [];
     string? selected_generator_field;
 
+    DeclarationAbstraction? _declaration;
+
     /// <inheritdoc/>
     public string? SelectedGeneratorField
     {
@@ -48,6 +50,9 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
             selected_generator_field = value;
             FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, OptionsGeneration);
             FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, SelectedGeneratorField);
+            if (!string.IsNullOrEmpty(selected_generator_field))
+                _declaration = DeclarationAbstraction.GetHandlerService(selected_generator_field);
+
             StateHasChangedHandler(FieldObject, GetType());
         }
     }

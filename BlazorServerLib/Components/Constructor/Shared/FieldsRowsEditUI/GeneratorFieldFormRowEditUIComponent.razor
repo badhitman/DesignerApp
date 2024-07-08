@@ -19,7 +19,11 @@
     </label>
     <input @bind-value="GeneratorFieldParameter" @bind-value:event="oninput" type="text" class="form-control" id="exampleInputParameter1_@(DomID)" name="exampleInputParameter1_@(DomID)" aria-describedby="@($"exampleInputParameter1_{DomID}Help")" readonly="@(!ParentFormsPage.CanEditProject)">
     <div id="@($"exampleInputParameter1_{DomID}Help")" class="form-text">
-        JSON объект-словарь параметров
+        JSON объект-словарь параметров (@(_dc?.AllowCallWithoutParameters == true ? "не" : "")обязательно)
+        @if (_dc?.AllowCallWithoutParameters != true)
+        {
+            <sup class="text-danger">*</sup>
+        }
     </div>
 </div>
 @{

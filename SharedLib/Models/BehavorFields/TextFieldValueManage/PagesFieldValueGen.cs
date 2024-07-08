@@ -13,7 +13,7 @@ public class PagesFieldValueGen : FieldValueGeneratorAbstraction
     public override string Name => "Вкладки анкеты";
 
     /// <inheritdoc/>
-    public override string? About => "Получить перечень имён вклдок опроса/анкеты. Будет генерироваться список из имён вкладок текущего опроса";
+    public override string? About => "Получить перечень имён вкладок опроса/анкеты. Будет генерироваться список из имён вкладок текущего опроса. Параметры вызова игнорируются";
 
     /// <inheritdoc/>
     public override bool AllowCallWithoutParameters => true;
