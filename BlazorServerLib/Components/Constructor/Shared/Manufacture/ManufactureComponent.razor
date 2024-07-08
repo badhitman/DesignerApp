@@ -23,8 +23,14 @@
     </CascadingValue>
 
     <div class="d-grid gap-2">
-        <button @onclick="Download" class="btn btn-primary" type="button">Скачать C# .NET</button>
+        <button disabled="@(_errors.Any())" @onclick="Download" class="btn btn-primary" type="button">Скачать C# .NET</button>
     </div>
+    <ul class="list-group">
+        @foreach (string e in _errors)
+        {
+            <li class="list-group-item list-group-item-danger">@e</li>
+        }
+    </ul>
 </div>
 
 @code {
@@ -54,6 +60,28 @@
 
     public ProjectConstructorModelDB CurrentProject { get; private set; } = default!;
     public ManageManufactureModelDB Manufacture { get; private set; } = default!;
+
+    List<string> _errors = [];
+    public void TreeBuildDoneAction(IEnumerable<TreeItemDataModel> treeItems)
+    {
+        foreach (TreeItemDataModel ti_document in treeItems)
+        {
+            if (ti_document.Children is not null)
+                foreach (TreeItemDataModel ti_tab in ti_document.Children)
+                {
+                    if (ti_tab.Children is not null)
+                        foreach (TreeItemDataModel ti_form in ti_tab.Children)
+                        {
+                            if (ti_form.Children is not null)
+                                foreach (TreeItemDataModel ti_field in ti_form.Children)
+                                {
+                                    if (!string.IsNullOrEmpty(ti_field.ErrorMessage))
+                                        _errors.Add(ti_field.ErrorMessage);
+                                }
+                        }
+                }
+        }
+    }
 
     void Download()
     {

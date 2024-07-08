@@ -18,9 +18,9 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
 
 
     VirtualColumnCalculationAbstraction? _calculation_service;
-    CommandsAsEntriesModel? _md;
+    CommandAsEntryModel? _md;
     /// <inheritdoc/>
-    public string AboutCalculationFieldValue => $"{CalculationsAsEntries.FirstOrDefault(x => x.Id == Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString())?.Name ?? "ошибка 99A9A8C3-4748-45BD-B4C9-A34BA6C13ECF"}: {Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
+    public string AboutCalculationFieldValue => $"{CalculationsAsEntries?.FirstOrDefault(x => x.Id == Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString())?.Name ?? "ошибка 99A9A8C3-4748-45BD-B4C9-A34BA6C13ECF"}: {Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
     string? CalculateFieldValue
     {
         get
@@ -201,6 +201,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
                     _dateTimeFieldValue = _out_dt;
                 break;
             case TypesFieldsFormsEnum.ProgramCalculationDouble:
+                CalculationsAsEntries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
                 _stringFieldValue = "<calculator>";
                 break;
             default:

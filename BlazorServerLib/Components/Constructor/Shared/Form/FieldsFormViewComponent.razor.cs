@@ -163,6 +163,9 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
             StateHasChanged();
             return;
         }
+
+        bool change_type = _field_master.GetType() != _sender.GetType();
+
         field_creating_field_ref?.Update(_sender);
         if (_sender is LinkDirectoryToFormConstructorModelDB directory_field)
         {
@@ -183,13 +186,19 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
         else if (_sender is FieldFormConstructorModelDB standard_field)
         {
+
             if (initiator == typeof(AddingFieldFormViewComponent))
             {
                 _field_master.Required = standard_field.Required;
                 _field_master.Name = standard_field.Name;
 
-                if (_field_master is FieldFormConstructorModelDB sfl)
+                //if (_field_master is FieldFormConstructorModelDB sfl)
+                //    standard_field.MetadataValueType = sfl.MetadataValueType;
+
+                if (!change_type && _field_master is FieldFormConstructorModelDB sfl)
                     standard_field.MetadataValueType = sfl.MetadataValueType;
+                else
+                    standard_field.MetadataValueType = null;
             }
             else
             {

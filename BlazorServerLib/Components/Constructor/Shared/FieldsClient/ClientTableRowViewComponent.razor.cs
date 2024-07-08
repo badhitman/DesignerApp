@@ -58,7 +58,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
         else if (string.IsNullOrWhiteSpace(_fb.MetadataValueType) || !CellsValuesOfCurrentRow.Any() || Query(_fb.MetadataValueType) is null)
             return null;
 
-        CommandsAsEntriesModel? _md = DeclarationAbstraction.ParseCommandsAsEntries(_fb.MetadataValueType);
+        CommandAsEntryModel? _md = DeclarationAbstraction.ParseCommandsAsEntries(_fb.MetadataValueType);
 
         if (_md?.Options.Any() != true)
             return null;

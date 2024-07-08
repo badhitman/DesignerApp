@@ -26,6 +26,7 @@
     [CascadingParameter, EditorRequired]
     public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
 
+
     List<TreeItemData<EntryTagModel>> TreeItems { get; set; } = [];
 
     const string icon_doc = Icons.Material.Filled.BusinessCenter;
@@ -89,10 +90,16 @@
                             _res.IsDisabled = true;
                             _res.Tooltip = "Поле формы не будет выгружено: данный тип поля не поддерживается для выгрузки";
                         }
+                        else
+                        {
+                            string? descriptor = ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
+                            DeclarationAbstraction? _d = DeclarationAbstraction.GetHandlerService(descriptor ?? "");
+                            string? parameter = ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
+                            _res.Information = $"{_res.Information} <b>{_d?.Name ?? descriptor}</b> <u>{parameter}</u>";
 
-                        string? descriptor = ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
-                        DeclarationAbstraction? _d = DeclarationAbstraction.GetHandlerService(descriptor ?? "");
-                        _res.Information = $"{_res.Information} <b>{_d?.Name ?? descriptor}</b> <u>{ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)}</u>";
+                            if (!_res.IsDisabled && _d is not null && !_d.AllowCallWithoutParameters && string.IsNullOrEmpty(parameter))
+                                _res.ErrorMessage = "Не указаны параметры";
+                        }
                     }
                     else if (field is LinkDirectoryToFormConstructorModelDB df)
                         _res.Information = $"<span class='badge bg-success text-wrap'>Справочник/Список</span> {df.Directory?.Name}";
@@ -148,6 +155,7 @@
                     Children = [.. x.Pages!.Select(y => TabToTreeItem(y, x.Id))]
                 });
         });
+        ManufactureParentView.TreeBuildDoneAction(TreeItems.Select(x => (TreeItemDataModel)x));
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

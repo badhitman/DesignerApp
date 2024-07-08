@@ -15,5 +15,5 @@ public abstract class VirtualColumnCalculationAbstraction : DeclarationAbstracti
     /// <param name="row_cells_data">Данные строки (все колонки/поля данных)</param>
     /// <param name="calculation_cells">поля для расчётов</param>
     /// <returns>Результат выполнения функции</returns>
-    public abstract double Calculate(Dictionary<string, double> row_cells_data, IEnumerable<string> calculation_cells);
+    public abstract double Calculate(Dictionary<string, double> row_cells_data, IEnumerable<string>? calculation_cells);
 }

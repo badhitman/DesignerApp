@@ -66,7 +66,7 @@ public abstract class DeclarationAbstraction
         }
     }
 
-    static readonly Dictionary<string, CommandsAsEntriesModel> ParseCalculationsAsEntriesCache = [];
+    static readonly Dictionary<string, CommandAsEntryModel> ParseCalculationsAsEntriesCache = [];
 
     /// <summary>
     /// Кэш деклараций
@@ -103,14 +103,14 @@ public abstract class DeclarationAbstraction
     /// <summary>
     /// Парсить строку JSON в команду
     /// </summary>
-    public static CommandsAsEntriesModel? ParseCommandsAsEntries(string json_data)
+    public static CommandAsEntryModel? ParseCommandsAsEntries(string json_data)
     {
         if (string.IsNullOrWhiteSpace(json_data))
             return null;
 
         lock (ParseCalculationsAsEntriesCache)
         {
-            if (ParseCalculationsAsEntriesCache.TryGetValue(json_data, out CommandsAsEntriesModel? c))
+            if (ParseCalculationsAsEntriesCache.TryGetValue(json_data, out CommandAsEntryModel? c))
                 return c;
 
             Dictionary<string, string>? kvp = JsonConvert.DeserializeObject<Dictionary<string, string>>(json_data);
@@ -120,7 +120,7 @@ public abstract class DeclarationAbstraction
                 //if (pd is not null)
                 //    _v.Options = pd;
 
-                CommandsAsEntriesModel _v = new()
+                CommandAsEntryModel _v = new()
                 {
                     CommandName = kvp[nameof(MetadataExtensionsFormFieldsEnum.Descriptor)],
                     Options = pd ?? []

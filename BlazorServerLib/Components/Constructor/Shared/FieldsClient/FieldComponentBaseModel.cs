@@ -54,9 +54,6 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     [CascadingParameter]
     public TabJoinDocumentSchemeConstructorModelDB? PageJoinForm { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter]
-    public IEnumerable<EntryAltDescriptionModel> CalculationsAsEntries { get; set; } = default!;
 
     /// <summary>
     /// Доступ к перечню полей формы. Каждое поле формы добавляет себя к этому перечню при инициализации (в <c>OnInitialized()</c>) базового <cref name="FieldBaseClientComponent">компонента</cref>
@@ -71,6 +68,9 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     [Parameter]
     public uint GroupByRowNum { get; set; }
 
+
+    /// <inheritdoc/>
+    protected IEnumerable<CommandEntryModel>? CalculationsAsEntries { get; set; } = default!;
 
     /// <summary>
     /// Признак того, что поле находится в состоянии реального использования, а не в конструкторе или режим demo

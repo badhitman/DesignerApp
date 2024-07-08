@@ -20,6 +20,14 @@ public class TreeItemDataModel : TreeItemData<EntryTagModel>
     public bool IsDisabled { get; set; }
 
     /// <summary>
+    /// Сообщение об ошибке валидации.
+    /// </summary>
+    /// <remarks>
+    /// При построении структуры/дерева выгрузки производится валидация узлов
+    /// </remarks>
+    public string? ErrorMessage { get; set; }
+
+    /// <summary>
     /// Информация
     /// </summary>
     public string? Information { get; set; }

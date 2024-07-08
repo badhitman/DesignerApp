@@ -45,10 +45,13 @@
                         }
                     </div>
                 </div>
-                <div class="col-auto visually-hidden">
-                    <span id="@(DomID)HelpInline" class="form-text">
-                        Имя типа данных C#.
-                    </span>
+                <div class="col-auto @(string.IsNullOrWhiteSpace(ItemModel.ErrorMessage) ? "visually-hidden" : "")">
+                    @if (!string.IsNullOrWhiteSpace(ItemModel.ErrorMessage))
+                    {
+                        <span id="@(DomID)HelpInline" class="form-text">
+                            @ItemModel.ErrorMessage
+                        </span>
+                    }
                 </div>
             </form>
         }

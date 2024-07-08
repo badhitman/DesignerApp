@@ -27,8 +27,8 @@ public partial class ProgramCalculationFieldFormUIComponent : ComponentBase
         set
         {
             _fields_names = value;
-            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, SelectedProgramCalculationField);
-            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, FieldsNames);
+            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, SelectedProgramCalculationField);
+            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, FieldsNames);
             StateHasChangedHandler(FieldObject, GetType());
         }
     }
@@ -42,8 +42,8 @@ public partial class ProgramCalculationFieldFormUIComponent : ComponentBase
         private set
         {
             selected_program_calculation_field = value;
-            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, SelectedProgramCalculationField);
-            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, FieldsNames);
+            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, SelectedProgramCalculationField);
+            FieldObject.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter, FieldsNames);
             StateHasChangedHandler(FieldObject, GetType());
         }
     }

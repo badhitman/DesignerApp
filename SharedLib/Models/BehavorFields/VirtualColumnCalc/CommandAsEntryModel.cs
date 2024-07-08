@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// CommandsAsEntries
 /// </summary>
-public class CommandsAsEntriesModel
+public class CommandAsEntryModel
 {
     /// <summary>
     /// CommandName
