@@ -20,7 +20,10 @@
     <div style="justify-self: end;">
         <form class="row">
             <div class="col-auto" title="Системное имя объекта для генератора кода C# (имя типа данных)">
-                <label for="input_@DomID" class="col-form-label">SystemName</label>
+                @if (string.IsNullOrWhiteSpace(itemSystemName))
+                {
+                    <label for="input_@DomID" class="col-form-label">SystemName</label>
+                }
             </div>
             <div class="col-auto">
                 <input title="@(string.IsNullOrWhiteSpace(itemSystemName) ? "Если не указать своё системное имя, тогда оно будет автоматически сформировано транслитом названия" : "")" @bind-value="itemSystemName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(itemSystemName) ? " border border-warning-subtle" : "")" id="input_@DomID" placeholder="auto: @(GlobalTools.TranslitToSystemName(Item.Value!.Name))">
