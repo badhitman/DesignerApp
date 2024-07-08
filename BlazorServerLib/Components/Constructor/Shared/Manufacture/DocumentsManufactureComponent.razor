@@ -86,7 +86,7 @@
 
                         if (skip_fields.Contains(ff.TypeField) || Enum.TryParse(ff.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, PropsTypesMDFieldsEnum.None.ToString())?.ToString(), out PropsTypesMDFieldsEnum _mode) && _mode == PropsTypesMDFieldsEnum.Template)
                         {
-                            _res.CSS = "text-decoration-line-through";
+                            _res.IsDisabled = true;
                             _res.Tooltip = "Поле формы не будет выгружено: данный тип поля не поддерживается для выгрузки";
                         }
 

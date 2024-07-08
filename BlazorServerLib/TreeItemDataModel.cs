@@ -12,9 +12,12 @@ public class TreeItemDataModel : TreeItemData<EntryTagModel>
     public string? Tooltip { get; set; }
 
     /// <summary>
-    /// Стиль для добавления элементу
+    /// Признак того что элемент не может быть выгружен в генератор кода.
     /// </summary>
-    public string? CSS { get; set; }
+    /// <remarks>
+    /// Например поле типа [генератор]
+    /// </remarks>
+    public bool IsDisabled { get; set; }
 
     /// <summary>
     /// Информация
