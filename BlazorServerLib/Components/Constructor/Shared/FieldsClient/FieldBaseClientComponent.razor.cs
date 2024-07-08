@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
@@ -51,7 +50,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
             return _calculation_service.Calculate(columns, _md.Options).ToString();
         }
     }
-    static IEnumerable<EntryAltDescriptionModel> Entries = [];
+    static IEnumerable<CommandEntryModel> Entries = [];
 
     /// <summary>
     /// Вид параметра
@@ -173,7 +172,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         switch (Field.TypeField)
         {
             case TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password or TypesFieldsFormsEnum.Time or TypesFieldsFormsEnum.Generator:
-                EntryAltDescriptionModel? _current_agent = Entries.FirstOrDefault(x => $"{x.Name} #{x.Id}".Equals(Parameter));
+                CommandEntryModel? _current_agent = Entries.FirstOrDefault(x => $"{x.Name} #{x.Id}".Equals(Parameter));
                 if (_current_agent is not null)
                 {
                     TextFieldValueAgent? _declaration = DeclarationAbstraction.GetHandlerService(_current_agent.Id) as TextFieldValueAgent;

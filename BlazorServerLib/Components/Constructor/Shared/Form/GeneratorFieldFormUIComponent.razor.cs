@@ -36,7 +36,7 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
         }
     }
 
-    IEnumerable<EntryAltDescriptionModel> Entries = [];
+    IEnumerable<CommandEntryModel> Entries = [];
     string? selected_generator_field;
 
     /// <inheritdoc/>
@@ -55,7 +55,7 @@ public partial class GeneratorFieldFormUIComponent : ComponentBase
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        Entries = DeclarationAbstraction.CommandsAsEntries<FieldValueGeneratorAbstraction>().ToArray();
+        Entries = [.. DeclarationAbstraction.CommandsAsEntries<FieldValueGeneratorAbstraction>()];
 
         if (Entries.Any())
             SelectedGeneratorField = Entries.First().Id;

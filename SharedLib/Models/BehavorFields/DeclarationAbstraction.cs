@@ -21,16 +21,20 @@ public abstract class DeclarationAbstraction
     /// </summary>
     public abstract string? About { get; }
 
+    /// <summary>
+    /// Разрешение запуска/вызова без параметров
+    /// </summary>
+    public virtual bool AllowCallWithoutParameters { get; } = false;
 
     /// <summary>
     /// Кэш команд
     /// </summary>
-    static readonly Dictionary<string, EntryAltDescriptionModel[]> _commands_cache = [];
+    static readonly Dictionary<string, CommandEntryModel[]> _commands_cache = [];
 
     /// <summary>
     /// Все программные калькуляции
     /// </summary>
-    public static EntryAltDescriptionModel[] CommandsAsEntries<T>()
+    public static CommandEntryModel[] CommandsAsEntries<T>()
     {
         Type _current_type = typeof(T);
         string? type_name = _current_type.FullName;
@@ -39,14 +43,14 @@ public abstract class DeclarationAbstraction
 
         lock (_commands_cache)
         {
-            if (_commands_cache.TryGetValue(type_name, out EntryAltDescriptionModel[]? _vcc))
+            if (_commands_cache.TryGetValue(type_name, out CommandEntryModel[]? _vcc))
                 return _vcc;
 
             IEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())
             .Where(p => _current_type.IsAssignableFrom(p) && _current_type != p && !p.IsAbstract && !p.IsInterface);
 
-            EntryAltDescriptionModel[] res = types.Select(x =>
+            CommandEntryModel[] res = types.Select(x =>
             {
                 if (Activator.CreateInstance(x) is not T obj)
                     throw new Exception("error 919F8FF2-B902-4112-8680-67352F369F0C");
@@ -54,7 +58,7 @@ public abstract class DeclarationAbstraction
                 if (obj is not DeclarationAbstraction _set)
                     throw new Exception("error EF8D4F4A-F578-44C6-B78C-BA7685662938");
 
-                return new EntryAltDescriptionModel() { Id = x.Name, Name = _set.Name, Description = _set.About };
+                return new CommandEntryModel() { Id = x.Name, Name = _set.Name, Description = _set.About, AllowCallWithoutParameters = _set.AllowCallWithoutParameters };
             }).ToArray();
 
             _commands_cache.Add(type_name, res);
@@ -109,27 +113,21 @@ public abstract class DeclarationAbstraction
             if (ParseCalculationsAsEntriesCache.TryGetValue(json_data, out CommandsAsEntriesModel? c))
                 return c;
 
-            try
+            Dictionary<string, string>? kvp = JsonConvert.DeserializeObject<Dictionary<string, string>>(json_data);
+            if (kvp is not null)
             {
-                Dictionary<string, string>? kvp = JsonConvert.DeserializeObject<Dictionary<string, string>>(json_data);
-                if (kvp is not null)
-                {
-                    string[]? pd = JsonConvert.DeserializeObject<string[]>(kvp[nameof(MetadataExtensionsFormFieldsEnum.Parameter)]);
-                    if (pd is not null)
-                    {
-                        CommandsAsEntriesModel _v = new()
-                        {
-                            CommandName = kvp[nameof(MetadataExtensionsFormFieldsEnum.Descriptor)],
-                            Options = pd
-                        };
-                        ParseCalculationsAsEntriesCache.Add(json_data, _v);
-                        return _v;
-                    }
-                }
-            }
-            catch
-            {
+                string[]? pd = JsonConvert.DeserializeObject<string[]>(kvp[nameof(MetadataExtensionsFormFieldsEnum.Parameter)]);
+                //if (pd is not null)
+                //    _v.Options = pd;
 
+                CommandsAsEntriesModel _v = new()
+                {
+                    CommandName = kvp[nameof(MetadataExtensionsFormFieldsEnum.Descriptor)],
+                    Options = pd ?? []
+                };
+
+                ParseCalculationsAsEntriesCache.Add(json_data, _v);
+                return _v;
             }
         }
 

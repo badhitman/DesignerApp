@@ -2,7 +2,7 @@
     Агенты
 </sup>
 <ul class="shadow-lg dropdown-menu@(IsOpenMenu?" show":"")">
-    @foreach (EntryAltDescriptionModel row_element in DeclarationAbstraction.CommandsAsEntries<TextFieldValueAgent>())
+    @foreach (CommandEntryModel row_element in DeclarationAbstraction.CommandsAsEntries<TextFieldValueAgent>())
     {
         <li @onclick="() => { IsOpenMenu = false; SelectAgentHandle(row_element); }" title="@row_element.Description">
             <span class="dropdown-item@($"{row_element.Name} #{row_element.Id}".Equals(SelectedAgent) ? " active" : "")">

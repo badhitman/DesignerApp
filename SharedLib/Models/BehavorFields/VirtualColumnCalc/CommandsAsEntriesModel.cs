@@ -5,17 +5,17 @@
 namespace SharedLib;
 
 /// <summary>
-/// 
+/// CommandsAsEntries
 /// </summary>
 public class CommandsAsEntriesModel
 {
     /// <summary>
-    /// 
+    /// CommandName
     /// </summary>
-    public string CommandName { get; set; } = default!;
+    public required string CommandName { get; set; }
 
     /// <summary>
-    /// 
+    /// Options
     /// </summary>
-    public IEnumerable<string> Options { get; set; } = default!;
+    public required IEnumerable<string> Options { get; set; }
 }

@@ -33,7 +33,7 @@ public partial class ProgramCalculationFieldFormUIComponent : ComponentBase
         }
     }
 
-    readonly IEnumerable<EntryAltDescriptionModel> Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
+    readonly IEnumerable<CommandEntryModel> Entries = DeclarationAbstraction.CommandsAsEntries<VirtualColumnCalculationAbstraction>();
     string? selected_program_calculation_field;
     /// <inheritdoc/>
     public string? SelectedProgramCalculationField

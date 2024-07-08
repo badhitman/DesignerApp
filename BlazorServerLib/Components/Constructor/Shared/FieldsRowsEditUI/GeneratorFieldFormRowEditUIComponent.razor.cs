@@ -36,7 +36,7 @@ public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBas
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
 
     DeclarationAbstraction? _dc = null;
-    IEnumerable<EntryAltDescriptionModel> Entries = Enumerable.Empty<EntryAltDescriptionModel>();
+    IEnumerable<CommandEntryModel> Entries = [];
 
     string? GeneratorClass
     {
@@ -55,12 +55,7 @@ public partial class GeneratorFieldFormRowEditUIComponent : FieldFormEditFormBas
                 Field.SetValueOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor, value);
                 _dc = DeclarationAbstraction.GetHandlerService(value);
                 if (_dc is not null)
-                {
-                    //if (_dc is NetvorksAccessFieldValueGen na)
-                    //    RequestModel = na.RequestModel;
-                    //else
-                        RequestModel = new object();
-                }
+                    RequestModel = new object();
                 else
                     SnackbarRepo.Add($"Тип данных не определён `{value}`. error BD37DC45-22F0-4D78-B879-0897611F681A", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             }
