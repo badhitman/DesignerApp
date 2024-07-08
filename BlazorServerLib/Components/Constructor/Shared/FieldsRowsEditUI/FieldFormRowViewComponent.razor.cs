@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
+using System.Linq;
 
 namespace BlazorWebLib.Components.Constructor.Shared.FieldsRowsEditUI;
 
@@ -121,9 +122,24 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             {
                 if (_field_master is FieldFormConstructorModelDB sf)
                 {
-                    string? descriptor = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
-                    DeclarationAbstraction? _d = DeclarationAbstraction.GetHandlerService(descriptor ?? "");
-                    _information_field = $"<b>{_d?.Name ?? descriptor}</b> <u>{sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)}</u>";
+                    string? _descriptor = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
+                    string? _parameter = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
+
+                    DeclarationAbstraction? _d = string.IsNullOrEmpty(_descriptor) ? null : DeclarationAbstraction.GetHandlerService(_descriptor);
+                    _information_field = $"<b>{_d?.Name ?? _descriptor}</b> <u{(string.IsNullOrWhiteSpace(_parameter) ? " title='имена колонок/полей не указаны.'" : "")}>{_parameter ?? "-нет-"}</u>";
+                    if (!string.IsNullOrEmpty(_parameter) && _parameter.TryParseJson<string[]>(out string[]? out_res) && out_res is not null && out_res.Length != 0)
+                    {
+                        string[] lost_fields = out_res
+                            .Where(x => !Form.AllFields.Any(y => y.Name.Equals(x)))
+                            .ToArray();
+
+                        if (lost_fields.Length != 0)
+                        {
+                            string msg = $"Некоторых полей нет в форме: {string.Join("; ", lost_fields)};";
+                            SnackbarRepo.Error(msg);
+                            _information_field = $"{_information_field} <span class='font-monospace text-danger'>{msg}</span>";
+                        }
+                    }
                 }
                 else if (_field_master is LinkDirectoryToFormConstructorModelDB df)
                     _information_field = df.Directory?.Name;
