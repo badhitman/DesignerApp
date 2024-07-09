@@ -40,7 +40,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected string DomID => $"{Item.Value!.Tag}_{Item.Value!.Id}";
 
-    bool IsEdit => !itemSystemName.Equals(ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName.Equals(Item.Value.Tag))?.SystemName ?? "");
+    bool IsEdit => !itemSystemName.Equals(ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.Qualification == ItemModel.Qualification && x.TypeDataId == Item.Value!.Id && x.TypeDataName.Equals(Item.Value.Tag))?.SystemName ?? "");
 
     /// <inheritdoc/>
     protected MarkupString InformationMS => (MarkupString)(ItemModel.Information ?? "");

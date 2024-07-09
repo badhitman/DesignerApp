@@ -60,7 +60,10 @@ public class ManufactureService(
     public async Task<ResponseBaseModel> SetOrDeleteSystemName(UpdateSystemNameModel request)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ManufactureSystemNameModelDB? snMan = await context_forms.SystemNamesManufactures.FirstOrDefaultAsync(x => x.TypeDataName == request.TypeDataName && x.ManufactureId == request.ManufactureId && x.TypeDataId == request.TypeDataId);
+        ManufactureSystemNameModelDB? snMan = await context_forms
+            .SystemNamesManufactures
+            .FirstOrDefaultAsync(x => x.Qualification == request.Qualification && x.TypeDataName == request.TypeDataName && x.ManufactureId == request.ManufactureId && x.TypeDataId == request.TypeDataId);
+
         if (string.IsNullOrWhiteSpace(request.SystemName))
         {
             if (snMan == null)
@@ -78,6 +81,9 @@ public class ManufactureService(
         {
             if (snMan == null)
             {
+                if (await context_forms.SystemNamesManufactures.AnyAsync(x => x.SystemName == request.SystemName && x.TypeDataName == request.TypeDataName && x.ManufactureId == request.ManufactureId && x.TypeDataId == request.TypeDataId))
+                    return ResponseBaseModel.CreateError("Имя не уникально. Задайте другое имя");
+
                 await context_forms.AddAsync(ManufactureSystemNameModelDB.Build(request));
                 await context_forms.SaveChangesAsync();
                 return ResponseBaseModel.CreateInfo("Значение создано.");
@@ -86,6 +92,9 @@ public class ManufactureService(
             {
                 if (snMan.SystemName == request.SystemName)
                     return ResponseBaseModel.CreateInfo("Обновления системного имени не требуется.");
+
+                if (await context_forms.SystemNamesManufactures.AnyAsync(x => x.Id != snMan.Id && x.SystemName == request.SystemName && x.TypeDataName == request.TypeDataName && x.ManufactureId == request.ManufactureId && x.TypeDataId == request.TypeDataId))
+                    return ResponseBaseModel.CreateError("Имя не уникально. Задайте другое имя");
 
                 snMan.SystemName = request.SystemName;
                 context_forms.Update(snMan);

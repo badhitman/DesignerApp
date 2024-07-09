@@ -51,6 +51,8 @@
     /// </summary>
     const string type_name_field_of_form = nameof(FieldFormConstructorModelDB);
 
+    const string type_name_base_field_of_form = nameof(FieldFormBaseLowConstructorModel);
+
     MudTreeView<EntryTagModel>? TreeView_ref;
 
     Color GetColor(string? icon)
@@ -72,7 +74,7 @@
                         {
                             Id = field.Id,
                             Name = field.Name,
-                            Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}#{form_id} {type_name_field_of_form}"
+                            Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}#{form_id} {type_name_base_field_of_form}"
                         };
 
                     TreeItemDataModel _res = new TreeItemDataModel(et, icon_field_of_form)
