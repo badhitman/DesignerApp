@@ -56,12 +56,12 @@
             <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Документы">
                 <DocumentsSchemesTableComponent />
             </MudTabPanel>
-            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки">
+            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки" BadgeData='"live"' BadgeColor="Color.Info" ToolTip="Доступ к заполнению данными документов (в т.ч. анонимные пользователи)">
                 <SessionsViewComponent />
             </MudTabPanel>
             <AuthorizeView Roles="admin,manufacture">
                 <Authorized>
-                    <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="C# .NET">
+                    <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text=".NET" BadgeData='"C#"' BadgeColor="Color.Primary" ToolTip="Генерация кодовой базы C# .NET">
                         <ManufactureComponent />
                     </MudTabPanel>
                 </Authorized>
