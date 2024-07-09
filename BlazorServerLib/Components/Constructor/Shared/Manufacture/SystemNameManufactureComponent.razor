@@ -41,7 +41,7 @@
                         <button data-name="@Item.Value!.Name" @onclick="SaveSystemName" disabled="@(!IsEdit)" type="button" class="btn btn-@(IsEdit ? "primary" : "outline-secondary") btn-sm">Сохранить</button>
                         @if (IsEdit)
                         {
-                            <button @onclick="() => { itemSystemName = ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? string.Empty; }" title="Отменить изменение системного имени" type="button" class="btn btn-outline-info btn-sm">Отмена</button>
+                            <button @onclick="() => { itemSystemName = ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.Qualification == ItemModel.Qualification && x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? string.Empty; }" title="Отменить изменение системного имени" type="button" class="btn btn-outline-info btn-sm">Отмена</button>
                         }
                     </div>
                 </div>
