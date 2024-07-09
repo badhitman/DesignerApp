@@ -2,13 +2,12 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
-using System.Linq;
+using BlazorLib;
 
 namespace BlazorWebLib.Components.Constructor.Shared.FieldsRowsEditUI;
 
@@ -125,9 +124,13 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                     string? _descriptor = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
                     string? _parameter = sf.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
 
-                    DeclarationAbstraction? _d = string.IsNullOrEmpty(_descriptor) ? null : DeclarationAbstraction.GetHandlerService(_descriptor);
-                    _information_field = $"<b>{_d?.Name ?? _descriptor}</b> <u{(string.IsNullOrWhiteSpace(_parameter) ? " title='имена колонок/полей не указаны.'" : "")}>{_parameter ?? "-нет-"}</u>";
-                    if (!string.IsNullOrEmpty(_parameter) && _parameter.TryParseJson<string[]>(out string[]? out_res) && out_res is not null && out_res.Length != 0)
+                    if (!string.IsNullOrEmpty(_descriptor))
+                    {
+                        DeclarationAbstraction? _d = string.IsNullOrEmpty(_descriptor) ? null : DeclarationAbstraction.GetHandlerService(_descriptor);
+                        _information_field = $"<b title='Имя вызываемого метода'>{_d?.Name ?? _descriptor}</b> {(string.IsNullOrWhiteSpace(_parameter) ? "" : $"<code title='параметры запуска'>{_parameter}</code>")}";
+                    }
+
+                    if (!string.IsNullOrEmpty(_parameter) && _parameter.TryParseJson(out string[]? out_res) && out_res is not null && out_res.Length != 0)
                     {
                         string[] lost_fields = out_res
                             .Where(x => !Form.AllFields.Any(y => y.Name.Equals(x)))
@@ -151,7 +154,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                     return (MarkupString)_information_field;
                 }
             }
-            _information_field ??= $"<ошибка ACE8845D-6DA2-41E1-B420-727BDD5791E1> : {_field_master.GetType().FullName}";
+            _information_field ??= "";
             return (MarkupString)_information_field;
         }
     }
@@ -162,9 +165,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         get
         {
             if (Field is FieldFormConstructorModelDB sf)
-                return sf.SortIndex < (Form.Fields?.Count() + Form.FieldsDirectoriesLinks?.Count());
+                return sf.SortIndex < (Form.Fields?.Count + Form.FieldsDirectoriesLinks?.Count);
             else if (Field is LinkDirectoryToFormConstructorModelDB df)
-                return df.SortIndex < (Form.Fields?.Count() + Form.FieldsDirectoriesLinks?.Count());
+                return df.SortIndex < (Form.Fields?.Count + Form.FieldsDirectoriesLinks?.Count);
             else
                 SnackbarRepo.Add("ошибка C0688447-05EE-4982-B9E0-D48C7DA89C3F", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 
