@@ -77,7 +77,8 @@
 
                     TreeItemDataModel _res = new TreeItemDataModel(et, icon_field_of_form)
                         {
-                            Tooltip = "Поле внутри формы"
+                            Tooltip = "Поле внутри формы",
+                            Qualification = field.GetType().Name
                         };
 
                     if (field is FieldFormConstructorModelDB ff)
@@ -123,6 +124,7 @@
 
                                 return new TreeItemDataModel(et, icon_form_of_tab)
                                     {
+                                        Qualification = type_name_form_of_tab,
                                         Tooltip = "Форма, размещённая внутри таба/вкладки",
                                         Children = [.. form.AllFields.Select(field => FieldToTreeItem(field, doc_id, tab_id, form.Id))]
                                     };
@@ -139,6 +141,7 @@
 
                     return new TreeItemDataModel(et, icon_tab_of_doc)
                         {
+                            Qualification = type_name_document,
                             Tooltip = "Вкладка/Таб документа",
                             Children = [.. tab.JoinsForms!.Select(x => FormToTreeItem(x.Form!, doc_id, tab.Id))]
                         };
@@ -150,6 +153,7 @@
         {
             TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = x.Name, Id = x.Id, Tag = type_name_document }, icon_doc)
                 {
+                    Qualification = type_name_tab_of_document,
                     Tooltip = "Документ (схема данных бизнес-сущности)",
                     Children = [.. x.Pages!.Select(y => TabToTreeItem(y, x.Id))]
                 });

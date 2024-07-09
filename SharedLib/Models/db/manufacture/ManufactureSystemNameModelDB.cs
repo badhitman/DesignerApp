@@ -24,6 +24,7 @@ public class ManufactureSystemNameModelDB : UpdateSystemNameModel
             SystemName = request.SystemName,
             TypeDataName = request.TypeDataName,
             TypeDataId = request.TypeDataId,
+            Qualification = request.Qualification,
         };
     }
 }

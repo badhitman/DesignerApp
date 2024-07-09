@@ -32,6 +32,11 @@ public class TreeItemDataModel : TreeItemData<EntryTagModel>
     /// </summary>
     public string? Information { get; set; }
 
+    /// <summary>
+    /// Квалификация сущности
+    /// </summary>
+    public required string Qualification { get; set; }
+
     /// <inheritdoc/>
     public TreeItemDataModel(EntryTagModel entry, string icon) : base(entry)
     {

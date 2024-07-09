@@ -51,7 +51,8 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
             throw new Exception();
 
         IsBusyProgress = true;
-        ResponseBaseModel res = await ManufactureRepo.SetOrDeleteSystemName(new UpdateSystemNameModel() { TypeDataId = Item.Value.Id, SystemName = itemSystemName, TypeDataName = Item.Value.Tag, ManufactureId = ManufactureParentView.Manufacture.Id });
+        ResponseBaseModel res = await ManufactureRepo
+            .SetOrDeleteSystemName(new UpdateSystemNameModel() { SystemName = itemSystemName, Qualification = ItemModel.Qualification, TypeDataId = Item.Value.Id, TypeDataName = Item.Value.Tag, ManufactureId = ManufactureParentView.Manufacture.Id });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
@@ -66,6 +67,10 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     protected override void OnInitialized()
     {
         ItemModel = (TreeItemDataModel)Item;
-        itemSystemName = ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag)?.SystemName ?? "";
+        SystemNameEntryModel? _sn = ParentFormsPage
+            .SystemNamesManufacture
+            .FirstOrDefault(x => x.Qualification == ItemModel.Qualification && x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag);
+
+        itemSystemName = _sn?.SystemName ?? "";
     }
 }

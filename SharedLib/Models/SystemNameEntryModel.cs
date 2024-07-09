@@ -13,10 +13,12 @@ public class SystemNameEntryModel
     /// <summary>
     /// Тип данных, для которого выполняется запрос: перечисление, элемент перечисления, документ, таб документа, форма и т.д.
     /// </summary>
-    /// <remarks>
-    /// Используется имя типа данных DbSet { nameof(MyType) } соответствующего объекта
-    /// </remarks>
     public required string TypeDataName { get; set; }
+
+    /// <summary>
+    /// Квалификация сущности
+    /// </summary>
+    public required string Qualification {  get; set; }
 
     /// <summary>
     /// Если установить null (или пустую строку), тогда значение удаляется

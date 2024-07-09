@@ -18,7 +18,7 @@ public class ManufactureService(
         return await context_forms
             .SystemNamesManufactures
             .Where(x => x.ManufactureId == manufactureId)
-            .Select(x => new SystemNameEntryModel() { TypeDataName = x.TypeDataName, SystemName = x.SystemName, TypeDataId = x.TypeDataId })
+            .Select(x => new SystemNameEntryModel() { Qualification = x.Qualification, TypeDataName = x.TypeDataName, SystemName = x.SystemName, TypeDataId = x.TypeDataId })
             .ToArrayAsync();
     }
 

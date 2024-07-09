@@ -42,7 +42,8 @@
         {
             TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = x.Name, Id = x.Id, Tag = type_name_directory }, icon_directory)
                 {
-                    Children = [.. x.Elements!.Select(y => new TreeItemDataModel(new EntryTagModel() { Id = y.Id, Name = y.Name, Tag = $"{type_name_directory}#{x.Id} {type_name_element_of_directory}" }, icon_element))]
+                    Qualification = type_name_directory,
+                    Children = [.. x.Elements!.Select(y => new TreeItemDataModel(new EntryTagModel() { Id = y.Id, Name = y.Name, Tag = $"{type_name_directory}#{x.Id} {type_name_element_of_directory}" }, icon_element) { Qualification = type_name_element_of_directory })]
                 });
         });
     }
