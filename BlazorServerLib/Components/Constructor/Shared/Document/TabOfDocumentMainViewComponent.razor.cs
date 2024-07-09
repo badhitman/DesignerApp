@@ -133,7 +133,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
             throw new Exception("CurrentUser is null");
 
         IsBusyProgress = true;
-        TabOfDocumentSchemeResponseModel rest = await ConstructorRepo.MoveTabDocumentSchemeJoinForm(PageJoinForm.Id, direct);
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabDocumentSchemeJoinForm(PageJoinForm.Id, direct);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

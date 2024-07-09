@@ -2252,12 +2252,12 @@ public class ConstructorService(
     // табы/вкладки схожи по смыслу табов/вкладок в Excel. Т.е. обычная группировка разных рабочих пространств со своим именем 
     #region табы документов    
     /// <inheritdoc/>
-    public async Task<TabOfDocumentSchemeResponseModel> GetTabOfDocumentScheme(int tab_of_document_scheme_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> GetTabOfDocumentScheme(int tab_of_document_scheme_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        TabOfDocumentSchemeResponseModel res = new()
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> res = new()
         {
-            TabOfDocumentScheme = await context_forms
+            Response = await context_forms
            .TabsOfDocumentsSchemes
 
            .Include(x => x.JoinsForms!)
@@ -2271,7 +2271,7 @@ public class ConstructorService(
            .FirstOrDefaultAsync(x => x.Id == tab_of_document_scheme_id, cancellationToken: cancellationToken)
         };
 
-        if (res.TabOfDocumentScheme is null)
+        if (res.Response is null)
             res.AddError($"Форма #{tab_of_document_scheme_id} не найдена в БД");
 
         return res;
@@ -2365,9 +2365,9 @@ public class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<TabOfDocumentSchemeResponseModel> CreateOrUpdateTabOfDocumentScheme(EntryDescriptionOwnedModel tab_of_document_scheme, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> CreateOrUpdateTabOfDocumentScheme(EntryDescriptionOwnedModel tab_of_document_scheme, CancellationToken cancellationToken = default)
     {
-        TabOfDocumentSchemeResponseModel res = new();
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> res = new();
 
         tab_of_document_scheme.Name = Regex.Replace(tab_of_document_scheme.Name, @"\s+", " ").Trim();
 
@@ -2409,6 +2409,7 @@ public class ConstructorService(
         TabOfDocumentSchemeConstructorModelDB? tab_of_document_scheme_db;
         if (tab_of_document_scheme.Id < 1)
         {
+            tab_of_document_scheme.Id = 0;
             int _sort_index = document_scheme_db.Pages!.Count != 0 ? document_scheme_db.Pages!.Max(x => x.SortIndex) : 0;
 
             tab_of_document_scheme_db = TabOfDocumentSchemeConstructorModelDB.Build(tab_of_document_scheme, document_scheme_db, _sort_index + 1);
@@ -2418,7 +2419,7 @@ public class ConstructorService(
             msg = $"Страница анкеты/опроса создано #{tab_of_document_scheme_db.Id}";
             res.AddSuccess(msg);
             logger.LogInformation(msg);
-            res.TabOfDocumentScheme = tab_of_document_scheme_db;
+            res.Response = tab_of_document_scheme_db;
             return res;
         }
 
@@ -2461,7 +2462,7 @@ public class ConstructorService(
             .Where(u => u.Id == current_project_id)
             .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
 
-        res.TabOfDocumentScheme = tab_of_document_scheme_db;
+        res.Response = tab_of_document_scheme_db;
         return res;
     }
 
@@ -2522,9 +2523,9 @@ public class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<TabOfDocumentSchemeResponseModel> MoveTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> MoveTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default)
     {
-        TabOfDocumentSchemeResponseModel res = new();
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> res = new();
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_join_db = await context_forms
@@ -2581,7 +2582,7 @@ public class ConstructorService(
         if (!res.Success())
             return res;
 
-        res.TabOfDocumentScheme = await context_forms
+        res.Response = await context_forms
             .TabsOfDocumentsSchemes
             .Include(x => x.JoinsForms)
             .FirstAsync(x => x.Id == questionnaire_page_join_db.OwnerId, cancellationToken: cancellationToken);
@@ -2590,7 +2591,7 @@ public class ConstructorService(
 
         int i = 0;
         bool is_upd = false;
-        foreach (TabJoinDocumentSchemeConstructorModelDB p in res.TabOfDocumentScheme.JoinsForms!)
+        foreach (TabJoinDocumentSchemeConstructorModelDB p in res.Response.JoinsForms!)
         {
             i++;
             is_upd = is_upd || p.SortIndex != i;
@@ -2600,7 +2601,7 @@ public class ConstructorService(
         if (is_upd)
         {
             res.AddWarning("Исправлена пересортица");
-            context_forms.UpdateRange(res.TabOfDocumentScheme.JoinsForms);
+            context_forms.UpdateRange(res.Response.JoinsForms);
             await context_forms.SaveChangesAsync(cancellationToken);
 
             context_forms

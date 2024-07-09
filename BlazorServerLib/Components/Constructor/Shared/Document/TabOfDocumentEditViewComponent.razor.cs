@@ -256,7 +256,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             throw new Exception("CurrentUser is null");
 
         IsBusyProgress = true;
-        TabOfDocumentSchemeResponseModel rest = await ConstructorRepo.CreateOrUpdateTabOfDocumentScheme(new EntryDescriptionOwnedModel() { Id = DocumentPage.Id, OwnerId = DocumentPage.OwnerId, Name = DocumentPage.Name, Description = DocumentPage.Description });
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.CreateOrUpdateTabOfDocumentScheme(new EntryDescriptionOwnedModel() { Id = DocumentPage.Id, OwnerId = DocumentPage.OwnerId, Name = DocumentPage.Name, Description = DocumentPage.Description });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -266,14 +266,14 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             ParentFormsPage.StateHasChangedCall();
             return;
         }
-        if (rest.TabOfDocumentScheme is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"Ошибка 07653445-0B30-46CB-9B79-3B068BAB9AEB rest.Content.DocumentPage is null", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
         int i = DocumentPage.Id;
-        DocumentPage.Id = rest.TabOfDocumentScheme.Id;
-        SetIdForPageHandle(i, rest.TabOfDocumentScheme);
+        DocumentPage.Id = rest.Response.Id;
+        SetIdForPageHandle(i, rest.Response);
 
         DescriptionOrigin = Description;
         NameOrigin = Name;
@@ -288,7 +288,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             return;
 
         IsBusyProgress = true;
-        TabOfDocumentSchemeResponseModel rest = await ConstructorRepo.GetTabOfDocumentScheme(DocumentPage.Id);
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetTabOfDocumentScheme(DocumentPage.Id);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -297,14 +297,14 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             SnackbarRepo.Add($"Ошибка 815BCE17-9180-4C27-8016-BEB5244A3454 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
-        if (rest.TabOfDocumentScheme is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"Ошибка 5B879025-EC6E-4989-9A75-5844BD20DF0B Content [rest.Content.DocumentPage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        DocumentPage.JoinsForms = rest.TabOfDocumentScheme?.JoinsForms;
-        DocumentPage.Owner = rest.TabOfDocumentScheme?.Owner;
+        DocumentPage.JoinsForms = rest.Response?.JoinsForms;
+        DocumentPage.Owner = rest.Response?.Owner;
         SetIdForPageHandle(DocumentPage.Id, DocumentPage);
         StateHasChanged();
     }

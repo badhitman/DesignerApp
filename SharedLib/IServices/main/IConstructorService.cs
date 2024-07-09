@@ -256,7 +256,7 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/создать таб/вкладку схемы документа
     /// </summary>
-    public Task<TabOfDocumentSchemeResponseModel> CreateOrUpdateTabOfDocumentScheme(EntryDescriptionOwnedModel questionnaire_page, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> CreateOrUpdateTabOfDocumentScheme(EntryDescriptionOwnedModel questionnaire_page, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Перемещение страницы опроса/анкеты (сортировка страниц внутри опроса/анкеты)
@@ -266,7 +266,7 @@ public interface IConstructorService
     /// <summary>
     /// Получить страницу анкеты/опроса
     /// </summary>
-    public Task<TabOfDocumentSchemeResponseModel> GetTabOfDocumentScheme(int questionnaire_page_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> GetTabOfDocumentScheme(int questionnaire_page_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить страницу опроса/анкеты
@@ -287,7 +287,7 @@ public interface IConstructorService
     /// <summary>
     /// Сдвинуть связь [таба/вкладки схемы документа] с [формой] (изменение сортировки/последовательности)
     /// </summary>
-    public Task<TabOfDocumentSchemeResponseModel> MoveTabDocumentSchemeJoinForm(int questionnaire_page_join_form_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> MoveTabDocumentSchemeJoinForm(int questionnaire_page_join_form_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить связь [таба/вкладки схемы документа] с [формой] 

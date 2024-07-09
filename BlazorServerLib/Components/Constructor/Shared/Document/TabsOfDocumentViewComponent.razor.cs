@@ -52,7 +52,7 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         _ = InvokeAsync(async () =>
         {
-            TabOfDocumentSchemeResponseModel rest = await ConstructorRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
+            TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -61,12 +61,12 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
                 SnackbarRepo.Add($"Ошибка 16188CA3-EC20-4743-A31C-DA497CABDEB5 Action: {rest.Message()}", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
-            if (rest.TabOfDocumentScheme is null)
+            if (rest.Response is null)
             {
                 SnackbarRepo.Add($"Ошибка E7427B3A-68CB-4560-B2E0-4AF69F2EDA72 [rest.Content.DocumentPage is null]", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
                 return;
             }
-            TabOfDocumentScheme = rest.TabOfDocumentScheme;
+            TabOfDocumentScheme = rest.Response;
             TabOfDocumentScheme.JoinsForms = TabOfDocumentScheme.JoinsForms?.OrderBy(x => x.SortIndex).ToList();
             StateHasChanged();
         });
@@ -101,11 +101,11 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
         {
             SnackbarRepo.Add($"Дозагрузка `{nameof(TabOfDocumentScheme.JoinsForms)}` в `{nameof(TabOfDocumentScheme)} ['{TabOfDocumentScheme.Name}' #{TabOfDocumentScheme.Id}]`", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             IsBusyProgress = true;
-            TabOfDocumentSchemeResponseModel rest = await ConstructorRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
+            TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
-            TabOfDocumentScheme.JoinsForms = rest.TabOfDocumentScheme?.JoinsForms;
+            TabOfDocumentScheme.JoinsForms = rest.Response?.JoinsForms;
         }
     }
 }
