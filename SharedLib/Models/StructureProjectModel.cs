@@ -14,10 +14,10 @@ public class StructureProjectModel
     /// <summary>
     /// Перечисления проекта
     /// </summary>
-    public required IEnumerable<EnumFitModel> Enums { get; set; }
+    public required EnumFitModel[] Enums { get; set; }
 
     /// <summary>
     /// Документы проекта
     /// </summary>
-    public required IEnumerable<DocumentFitModel> Documents { get; set; }
+    public required DocumentFitModel[] Documents { get; set; }
 }

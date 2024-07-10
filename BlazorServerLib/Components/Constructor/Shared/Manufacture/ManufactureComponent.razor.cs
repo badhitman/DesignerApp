@@ -85,19 +85,17 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     {
         ArgumentNullException.ThrowIfNull(dir.Elements);
 
-        TreeItemDataModel? tree_item = enumerations_ref.TreeItems.FirstOrDefault(x => x.Value?.Id == dir.Id) as TreeItemDataModel;
-        ArgumentNullException.ThrowIfNull(tree_item?.Children);
+        TreeItemDataModel tree_item = (TreeItemDataModel)enumerations_ref.TreeItems.First(x => x.Value?.Id == dir.Id);
+        ArgumentNullException.ThrowIfNull(tree_item.Children);
 
         return new EnumFitModel()
         {
             SystemName = tree_item.SystemName ?? GlobalTools.TranslitToSystemName(dir.Name),
             Name = dir.Name,
             Description = dir.Description,
-            EnumItems = dir.Elements.Select(e =>
+            EnumItems = dir.Elements.Count < 1 ? [] : dir.Elements.Select(e =>
             {
-
-                tree_item = tree_item.Children.FirstOrDefault(x => x.Value?.Id == e.Id) as TreeItemDataModel;
-                ArgumentNullException.ThrowIfNull(tree_item?.Children);
+                tree_item = (TreeItemDataModel)tree_item.Children.First(x => x.Value?.Id == e.Id);
 
                 return new SortableFitModel()
                 {
@@ -112,30 +110,30 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
     DocumentFitModel DocumentConvert(DocumentSchemeConstructorModelDB doc)
     {
-        TreeItemDataModel? document_tree_item = documents_ref.TreeItems.FirstOrDefault(x => x.Value?.Id == doc.Id) as TreeItemDataModel;
-        ArgumentNullException.ThrowIfNull(document_tree_item?.Children);
+        TreeItemDataModel document_tree_item = (TreeItemDataModel)documents_ref.TreeItems.First(x => x.Value?.Id == doc.Id);
+        ArgumentNullException.ThrowIfNull(document_tree_item.Children);
 
         TabFitModel TabConvert(TabOfDocumentSchemeConstructorModelDB tab)
         {
             ArgumentNullException.ThrowIfNull(tab.JoinsForms);
 
-            TreeItemDataModel? tab_tree_item = document_tree_item.Children.FirstOrDefault(x => x.Value?.Id == doc.Id) as TreeItemDataModel;
-            ArgumentNullException.ThrowIfNull(tab_tree_item?.Children);
+            TreeItemDataModel tab_tree_item = (TreeItemDataModel)document_tree_item.Children.First(x => x.Value?.Id == doc.Id);
+            ArgumentNullException.ThrowIfNull(tab_tree_item.Children);
 
             FormFitModel FormConvert(TabJoinDocumentSchemeConstructorModelDB joinForm)
             {
                 ArgumentNullException.ThrowIfNull(joinForm.Form);
 
-                TreeItemDataModel? form_tree_item = tab_tree_item.Children.FirstOrDefault(x => x.Value?.Id == joinForm.Form.Id) as TreeItemDataModel;
-                ArgumentNullException.ThrowIfNull(form_tree_item?.Children);
+                TreeItemDataModel form_tree_item = (TreeItemDataModel)tab_tree_item.Children.First(x => x.Value?.Id == joinForm.Form.Id);
+                ArgumentNullException.ThrowIfNull(form_tree_item.Children);
+
+                IEnumerable<TreeItemDataModel> fieldsNodes = form_tree_item
+                        .Children.Cast<TreeItemDataModel>();
 
                 FieldFitModel FieldConvert(FieldFormConstructorModelDB field)
                 {
-                    TreeItemDataModel? field_tree_item = form_tree_item
-                        .Children.Cast<TreeItemDataModel>()
-                        .FirstOrDefault(x => x.Value?.Id == field.Id && x.Qualification == FieldFormConstructorTypeName);
-
-                    ArgumentNullException.ThrowIfNull(field_tree_item);
+                    TreeItemDataModel field_tree_item = fieldsNodes
+                        .First(x => x.Value?.Id == field.Id && x.Qualification == FieldFormConstructorTypeName);
 
                     return new FieldFitModel()
                     {
@@ -153,16 +151,14 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
                 FieldAkaDirectoryFitModel FieldAkaDirectoryConvert(FieldFormAkaDirectoryConstructorModelDB field)
                 {
-                    TreeItemDataModel? field_dir_tree_item = form_tree_item
-                        .Children.Cast<TreeItemDataModel>()
-                        .FirstOrDefault(x => x.Value?.Id == field.Id && x.Qualification == FieldFormAkaDirectoryConstructorTypeName);
+                    TreeItemDataModel field_dir_tree_item = fieldsNodes
+                        .First(x => x.Value?.Id == field.Id && x.Qualification == FieldFormAkaDirectoryConstructorTypeName);
 
                     ArgumentNullException.ThrowIfNull(field_dir_tree_item);
 
-
                     return new FieldAkaDirectoryFitModel()
                     {
-                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().FirstOrDefault(x => x.Qualification == FieldFormAkaDirectoryConstructorTypeName && x.Value!.Id == field.Id)?.SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
+                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Qualification == FieldFormAkaDirectoryConstructorTypeName && x.Value!.Id == field.Id).SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
 
                         Name = field.Name,
                         SortIndex = field.SortIndex,
@@ -231,8 +227,8 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
         StructureProjectModel struct_project = new()
         {
-            Enums = CurrentProject.Directories.Select(EnumConvert),
-            Documents = CurrentProject.Documents.Select(DocumentConvert)
+            Enums = [.. CurrentProject.Directories.Select(EnumConvert)],
+            Documents = [.. CurrentProject.Documents.Select(DocumentConvert)],
         };
 
         CodeGeneratorConfigModel conf_gen = Manufacture;
