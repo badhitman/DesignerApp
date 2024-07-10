@@ -155,9 +155,13 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
                     ArgumentNullException.ThrowIfNull(field_dir_tree_item);
 
+#if DEBUG
+                    TreeItemDataModel? tid = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().FirstOrDefault(x => x.Value!.Id == field.Id);
+#endif
+
                     return new FieldAkaDirectoryFitModel()
                     {
-                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Qualification == FieldFormAkaDirectoryConstructorTypeName && x.Value!.Id == field.Id).SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
+                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Value!.Id == field.Id).SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
 
                         Name = field.Name,
                         SortIndex = field.SortIndex,
@@ -171,14 +175,17 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
                 return new FormFitModel()
                 {
-                    Name = joinForm.Name,
+                    Name = joinForm.Form.Name,
                     Css = joinForm.Form.Css,
                     Description = joinForm.Form.Description,
                     SortIndex = joinForm.SortIndex,
-                    SystemName = tab_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(joinForm.Form.Name),
+                    SystemName = form_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(joinForm.Form.Name),
                     IsTable = joinForm.IsTable,
+
                     SimpleFields = joinForm.Form.Fields is null ? null : [.. joinForm.Form.Fields.Select(FieldConvert)],
-                    FieldsAtDirectories = joinForm.Form.FieldsDirectoriesLinks is null ? null : [.. joinForm.Form.FieldsDirectoriesLinks.Select(FieldAkaDirectoryConvert)]
+                    FieldsAtDirectories = joinForm.Form.FieldsDirectoriesLinks is null ? null : [.. joinForm.Form.FieldsDirectoriesLinks.Select(FieldAkaDirectoryConvert)],
+
+                    JoinName = joinForm.Name,
                 };
             }
 

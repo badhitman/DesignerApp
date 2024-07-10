@@ -10,6 +10,11 @@ namespace SharedLib.Models;
 public class FormFitModel : BaseFormFitModel
 {
     /// <summary>
+    /// Имя связи формы с табом
+    /// </summary>
+    public string? JoinName { get; set; }
+
+    /// <summary>
     /// Табличная часть
     /// </summary>
     public bool IsTable { get; set; }
