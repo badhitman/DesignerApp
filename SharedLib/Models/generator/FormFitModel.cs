@@ -10,6 +10,11 @@ namespace SharedLib.Models;
 public class FormFitModel : BaseFormFitModel
 {
     /// <summary>
+    /// Табличная часть
+    /// </summary>
+    public bool IsTable { get; set; }
+
+    /// <summary>
     /// Простые поля
     /// </summary>
     public FieldFitModel[]? SimpleFields { get; set; }

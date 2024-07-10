@@ -103,9 +103,9 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
         ResponseBaseModel rest;
         IsBusyProgress = true;
-        if (_field_master is LinkDirectoryToFormConstructorModelDB directory_field)
+        if (_field_master is FieldFormAkaDirectoryConstructorModelDB directory_field)
         {
-            rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(new LinkDirectoryToFormConstructorModelDB()
+            rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(new FieldFormAkaDirectoryConstructorModelDB()
             {
                 Description = directory_field.Description,
                 DirectoryId = directory_field.DirectoryId,
@@ -158,14 +158,14 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         bool change_type = _field_master.GetType() != _sender.GetType();
 
         field_creating_field_ref?.Update(_sender);
-        if (_sender is LinkDirectoryToFormConstructorModelDB directory_field)
+        if (_sender is FieldFormAkaDirectoryConstructorModelDB directory_field)
         {
             if (initiator == typeof(AddingFieldFormViewComponent))
             {
                 _field_master.Required = directory_field.Required;
                 _field_master.Name = directory_field.Name;
 
-                if (_field_master is LinkDirectoryToFormConstructorModelDB dl)
+                if (_field_master is FieldFormAkaDirectoryConstructorModelDB dl)
                     directory_field.DirectoryId = dl.DirectoryId;
             }
             else

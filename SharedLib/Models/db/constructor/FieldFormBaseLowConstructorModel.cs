@@ -46,7 +46,7 @@ public class FieldFormBaseLowConstructorModel : EntryDescriptionOwnedModel
             _ft.TypeField = _fo.TypeField;
             _ft.MetadataValueType = _fo.MetadataValueType;
         }
-        else if (this is LinkDirectoryToFormConstructorModelDB _ft2 && field is LinkDirectoryToFormConstructorModelDB _fo2)
+        else if (this is FieldFormAkaDirectoryConstructorModelDB _ft2 && field is FieldFormAkaDirectoryConstructorModelDB _fo2)
         {
             _ft2.SortIndex = _fo2.SortIndex;
             //
@@ -63,8 +63,8 @@ public class FieldFormBaseLowConstructorModel : EntryDescriptionOwnedModel
 
         if (o is FieldFormConstructorModelDB sf)
             return sf.Equals((FieldFormConstructorModelDB)this);
-        else if (o is LinkDirectoryToFormConstructorModelDB df)
-            return df.Equals((LinkDirectoryToFormConstructorModelDB)this);
+        else if (o is FieldFormAkaDirectoryConstructorModelDB df)
+            return df.Equals((FieldFormAkaDirectoryConstructorModelDB)this);
 
         FieldFormBaseLowConstructorModel other = (FieldFormBaseLowConstructorModel)o;
         return
@@ -82,7 +82,7 @@ public class FieldFormBaseLowConstructorModel : EntryDescriptionOwnedModel
     {
         if (this is FieldFormConstructorModelDB sf)
             return sf.GetHashCode();
-        else if (this is LinkDirectoryToFormConstructorModelDB df)
+        else if (this is FieldFormAkaDirectoryConstructorModelDB df)
             return df.GetHashCode();
         else
             return $"{Id} '{Name}' [{Description}] -{Hint} `{Required}` {OwnerId} *{Css}*".GetHashCode();

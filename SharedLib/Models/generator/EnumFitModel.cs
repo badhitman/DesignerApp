@@ -12,5 +12,5 @@ public class EnumFitModel : BaseFitModel
     /// <summary>
     /// Элементы/состав перечисления
     /// </summary>
-    public SortableFitModel[]? EnumItems { get; set; }
+    public required SortableFitModel[] EnumItems { get; set; }
 }

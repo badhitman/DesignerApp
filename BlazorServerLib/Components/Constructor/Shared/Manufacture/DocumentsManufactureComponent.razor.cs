@@ -26,11 +26,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
     const string icon_tab_of_doc = Icons.Material.Filled.Tab;
     const string icon_form_of_tab = Icons.Material.Filled.DynamicForm;
     const string icon_field_of_form = Icons.Material.Filled.DragHandle;
-
-    /// <summary>
-    /// имя типа данных: документы
-    /// </summary>
-    const string type_name_document = nameof(DocumentSchemeConstructorModelDB);
+        
     /// <summary>
     /// имя типа данных: табы/вкладки документов
     /// </summary>
@@ -39,13 +35,8 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
     /// имя типа данных: формы
     /// </summary>
     const string type_name_form_of_tab = nameof(FormConstructorModelDB);
-    /// <summary>
-    /// имя типа данных: поля формы
-    /// </summary>
-    const string type_name_field_of_form = nameof(FieldFormConstructorModelDB);
 
     const string type_name_base_field_of_form = nameof(FieldFormBaseLowConstructorModel);
-
 
     /// <summary>
     /// Дерево/структура
@@ -73,7 +64,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
             {
                 Id = field.Id,
                 Name = field.Name,
-                Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}#{form_id} {type_name_base_field_of_form}"
+                Tag = $"{ManufactureComponent.DocumentSchemeConstructorTypeName}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}#{form_id} {type_name_base_field_of_form}"
             };
 
             TreeItemDataModel _res = new(et, icon_field_of_form)
@@ -103,7 +94,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
                         _res.ErrorMessage = "Не указаны параметры";
                 }
             }
-            else if (field is LinkDirectoryToFormConstructorModelDB df)
+            else if (field is FieldFormAkaDirectoryConstructorModelDB df)
                 _res.Information = $"<span class='badge bg-success text-wrap'>Справочник/Список</span> {df.Directory?.Name}";
             else
             {
@@ -121,7 +112,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
             {
                 Id = form.Id,
                 Name = form.Name,
-                Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}",
+                Tag = $"{ManufactureComponent.DocumentSchemeConstructorTypeName}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}",
             };
 
             return new TreeItemDataModel(et, icon_form_of_tab)
@@ -139,7 +130,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
             {
                 Id = tab.Id,
                 Name = tab.Name,
-                Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}"
+                Tag = $"{ManufactureComponent.DocumentSchemeConstructorTypeName}#{doc_id} {type_name_tab_of_document}"
             };
 
             return new TreeItemDataModel(et, icon_tab_of_doc)
@@ -155,9 +146,9 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
         .CurrentProject
         .Documents!.ForEach(doc =>
         {
-            TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = doc.Name, Id = doc.Id, Tag = type_name_document }, icon_doc)
+            TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = doc.Name, Id = doc.Id, Tag = ManufactureComponent.DocumentSchemeConstructorTypeName }, icon_doc)
             {
-                SystemName = SystemNamesManufacture.GetSystemName(doc.Id, type_name_document),
+                SystemName = SystemNamesManufacture.GetSystemName(doc.Id, ManufactureComponent.DocumentSchemeConstructorTypeName),
                 Tooltip = "Документ (схема данных бизнес-сущности)",
                 Children = [.. doc.Pages!.Select(y => TabToTreeItem(y, doc.Id))],
                 ErrorMessage = doc.Pages!.Count == 0 ? $"Документ '{doc.Name}' пустой - не имеет вкладок/табов" : null

@@ -34,9 +34,27 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     EnumerationsManufactureComponent enumerations_ref = default!;
     DocumentsManufactureComponent documents_ref = default!;
 
-    const string DirectoryTypeName = nameof(DirectoryConstructorModelDB);
-    const string DocumentSchemeConstructorTypeName = nameof(DocumentSchemeConstructorModelDB);
-    const string ElementOfDirectoryConstructorTypeName = nameof(ElementOfDirectoryConstructorModelDB);
+    /// <summary>
+    /// DirectoryConstructorModelDB
+    /// </summary>
+    public static readonly string DirectoryTypeName = nameof(DirectoryConstructorModelDB);
+    /// <summary>
+    /// ElementOfDirectoryConstructorModelDB
+    /// </summary>
+    public static readonly string ElementOfDirectoryConstructorTypeName = nameof(ElementOfDirectoryConstructorModelDB);
+
+    /// <summary>
+    /// DocumentSchemeConstructorModelDB
+    /// </summary>
+    public static readonly string DocumentSchemeConstructorTypeName = nameof(DocumentSchemeConstructorModelDB);
+    /// <summary>
+    /// FieldFormConstructorModelDB
+    /// </summary>
+    public static readonly string FieldFormConstructorTypeName = nameof(FieldFormConstructorModelDB);
+    /// <summary>
+    /// FieldFormAkaDirectoryConstructorModelDB
+    /// </summary>
+    public static readonly string FieldFormAkaDirectoryConstructorTypeName = nameof(FieldFormAkaDirectoryConstructorModelDB);
 
     /// <summary>
     /// Текущий проект
@@ -92,16 +110,100 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
         };
     }
 
-    BaseFitModel DocumentConvert(DocumentSchemeConstructorModelDB doc)
+    DocumentFitModel DocumentConvert(DocumentSchemeConstructorModelDB doc)
     {
-        TreeItemDataModel? tree_item = documents_ref.TreeItems.FirstOrDefault(x => x.Value?.Id == doc.Id) as TreeItemDataModel;
-        ArgumentNullException.ThrowIfNull(tree_item);
+        TreeItemDataModel? document_tree_item = documents_ref.TreeItems.FirstOrDefault(x => x.Value?.Id == doc.Id) as TreeItemDataModel;
+        ArgumentNullException.ThrowIfNull(document_tree_item?.Children);
 
-        return new BaseFitModel()
+        TabFitModel TabConvert(TabOfDocumentSchemeConstructorModelDB tab)
         {
-            SystemName = tree_item.SystemName ?? GlobalTools.TranslitToSystemName(doc.Name),
+            ArgumentNullException.ThrowIfNull(tab.JoinsForms);
+
+            TreeItemDataModel? tab_tree_item = document_tree_item.Children.FirstOrDefault(x => x.Value?.Id == doc.Id) as TreeItemDataModel;
+            ArgumentNullException.ThrowIfNull(tab_tree_item?.Children);
+
+            FormFitModel FormConvert(TabJoinDocumentSchemeConstructorModelDB joinForm)
+            {
+                ArgumentNullException.ThrowIfNull(joinForm.Form);
+
+                TreeItemDataModel? form_tree_item = tab_tree_item.Children.FirstOrDefault(x => x.Value?.Id == joinForm.Form.Id) as TreeItemDataModel;
+                ArgumentNullException.ThrowIfNull(form_tree_item?.Children);
+
+                FieldFitModel FieldConvert(FieldFormConstructorModelDB field)
+                {
+                    TreeItemDataModel? field_tree_item = form_tree_item
+                        .Children.Cast<TreeItemDataModel>()
+                        .FirstOrDefault(x => x.Value?.Id == field.Id && x.Qualification == FieldFormConstructorTypeName);
+
+                    ArgumentNullException.ThrowIfNull(field_tree_item);
+
+                    return new FieldFitModel()
+                    {
+                        Name = field.Name,
+                        SortIndex = field.SortIndex,
+                        Css = field.Css,
+                        Description = field.Description,
+                        Hint = field.Hint,
+                        MetadataValueType = field.MetadataValueType,
+                        Required = field.Required,
+                        TypeField = field.TypeField,
+                        SystemName = field_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
+                    };
+                }
+
+                FieldAkaDirectoryFitModel FieldAkaDirectoryConvert(FieldFormAkaDirectoryConstructorModelDB field)
+                {
+                    TreeItemDataModel? field_dir_tree_item = form_tree_item
+                        .Children.Cast<TreeItemDataModel>()
+                        .FirstOrDefault(x => x.Value?.Id == field.Id && x.Qualification == FieldFormAkaDirectoryConstructorTypeName);
+
+                    ArgumentNullException.ThrowIfNull(field_dir_tree_item);
+
+
+                    return new FieldAkaDirectoryFitModel()
+                    {
+                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().FirstOrDefault(x => x.Qualification == FieldFormAkaDirectoryConstructorTypeName && x.Value!.Id == field.Id)?.SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
+
+                        Name = field.Name,
+                        SortIndex = field.SortIndex,
+                        SystemName = field_dir_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
+                        Css = field.Css,
+                        Description = field.Description,
+                        Hint = field.Hint,
+                        Required = field.Required,
+                    };
+                }
+
+                return new FormFitModel()
+                {
+                    Name = joinForm.Name,
+                    Css = joinForm.Form.Css,
+                    Description = joinForm.Form.Description,
+                    SortIndex = joinForm.SortIndex,
+                    SystemName = tab_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(joinForm.Form.Name),
+                    IsTable = joinForm.IsTable,
+                    SimpleFields = joinForm.Form.Fields is null ? null : [.. joinForm.Form.Fields.Select(FieldConvert)],
+                    FieldsAtDirectories = joinForm.Form.FieldsDirectoriesLinks is null ? null : [.. joinForm.Form.FieldsDirectoriesLinks.Select(FieldAkaDirectoryConvert)]
+                };
+            }
+
+            return new TabFitModel()
+            {
+                Name = tab.Name,
+                Description = tab.Description,
+                SortIndex = tab.SortIndex,
+                SystemName = tab_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(tab.Name),
+                Forms = [.. tab.JoinsForms.Select(FormConvert)],
+            };
+        }
+
+
+        return new DocumentFitModel()
+        {
+            SystemName = document_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(doc.Name),
             Name = doc.Name,
             Description = doc.Description,
+            Tabs = [.. doc.Pages!.Select(TabConvert)]
         };
     }
 

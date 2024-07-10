@@ -13,14 +13,4 @@ public class TabFitModel : SortableFitModel
     /// Формы документа
     /// </summary>
     public required FormFitModel[] Forms { get; set; }
-
-    /// <summary>
-    /// Отображать заголовок таблицы
-    /// </summary>
-    public bool ShowTitle { get; set; }
-
-    /// <summary>
-    /// Табличная часть
-    /// </summary>
-    public bool IsTable { get; set; }
 }

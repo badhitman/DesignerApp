@@ -10,11 +10,6 @@ namespace SharedLib.Models;
 public abstract class BaseFormFitModel : SortableFitModel
 {
     /// <summary>
-    /// Подсказка
-    /// </summary>
-    public string? Hint { get; set; }
-
-    /// <summary>
     /// CSS класс формы
     /// </summary>
     public string? Css { get; set; }

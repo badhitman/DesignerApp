@@ -29,7 +29,7 @@ public class FormConstructorModelDB : FormBaseConstructorModel
     /// <summary>
     /// Связи форм со списками/связями
     /// </summary>
-    public List<LinkDirectoryToFormConstructorModelDB>? FieldsDirectoriesLinks { get; set; }
+    public List<FieldFormAkaDirectoryConstructorModelDB>? FieldsDirectoriesLinks { get; set; }
 
     /// <summary>
     /// Все поля формы (единым списком + сквозная сортировка)
@@ -50,7 +50,7 @@ public class FormConstructorModelDB : FormBaseConstructorModel
                     res.Add((f, f.SortIndex));
                 }
             if (FieldsDirectoriesLinks is not null && FieldsDirectoriesLinks.Count != 0)
-                foreach (LinkDirectoryToFormConstructorModelDB dl in FieldsDirectoriesLinks)
+                foreach (FieldFormAkaDirectoryConstructorModelDB dl in FieldsDirectoriesLinks)
                 {
                     dl.Owner ??= this;
                     dl.OwnerId = Id;
@@ -150,14 +150,14 @@ public class FormConstructorModelDB : FormBaseConstructorModel
                 FieldsDirectoriesLinks.RemoveAt(i);
                 i = findDirectory_link_for_remove_action();
             }
-            LinkDirectoryToFormConstructorModelDB? fo;
-            foreach (LinkDirectoryToFormConstructorModelDB f in FieldsDirectoriesLinks)
+            FieldFormAkaDirectoryConstructorModelDB? fo;
+            foreach (FieldFormAkaDirectoryConstructorModelDB f in FieldsDirectoriesLinks)
             {
                 fo = other.FieldsDirectoriesLinks.FirstOrDefault(x => x.Id == f.Id);
                 if (fo is not null)
                     f.Update(fo);
             }
-            LinkDirectoryToFormConstructorModelDB[] _fields = other.FieldsDirectoriesLinks.Where(x => !FieldsDirectoriesLinks.Any(y => y.Id == x.Id)).ToArray();
+            FieldFormAkaDirectoryConstructorModelDB[] _fields = other.FieldsDirectoriesLinks.Where(x => !FieldsDirectoriesLinks.Any(y => y.Id == x.Id)).ToArray();
             if (_fields.Length != 0)
                 FieldsDirectoriesLinks.AddRange(_fields);
         }

@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Документ
 /// </summary>
-public class DocumentFitModel : SortableFitModel
+public class DocumentFitModel : BaseFitModel
 {
     /// <summary>
     /// Формы документа

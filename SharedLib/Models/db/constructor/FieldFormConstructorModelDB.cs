@@ -85,7 +85,7 @@ public class FieldFormConstructorModelDB : FieldFormBaseConstructorModel
     {
         base.Update(form_field);
 
-        if (form_field is LinkDirectoryToFormConstructorModelDB df)
+        if (form_field is FieldFormAkaDirectoryConstructorModelDB df)
             return;
 
             if (form_field is FieldFormConstructorModelDB _f)

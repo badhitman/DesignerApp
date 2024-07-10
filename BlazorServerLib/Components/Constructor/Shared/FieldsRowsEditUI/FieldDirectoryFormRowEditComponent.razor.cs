@@ -30,11 +30,11 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public Action<LinkDirectoryToFormConstructorModelDB> StateHasChangedHandler { get; set; } = default!;
+    public Action<FieldFormAkaDirectoryConstructorModelDB> StateHasChangedHandler { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public LinkDirectoryToFormConstructorModelDB Field { get; set; } = default!;
+    public FieldFormAkaDirectoryConstructorModelDB Field { get; set; } = default!;
 
     /// <summary>
     /// Форма
@@ -68,7 +68,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     }
 
     /// <inheritdoc/>
-    public void Update(LinkDirectoryToFormConstructorModelDB field)
+    public void Update(FieldFormAkaDirectoryConstructorModelDB field)
     {
         Field.Update(field);
         StateHasChanged();

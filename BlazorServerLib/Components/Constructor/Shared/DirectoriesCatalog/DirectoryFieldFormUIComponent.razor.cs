@@ -24,7 +24,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required LinkDirectoryToFormConstructorModelDB FieldObject { get; set; }
+    public required FieldFormAkaDirectoryConstructorModelDB FieldObject { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter]

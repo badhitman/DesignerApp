@@ -15,7 +15,7 @@ public static partial class GlobalTools
     /// <returns>Системное имя объекта</returns>
     /// <remarks>
     /// <paramref name="qualification"/>, например, используется для уточнения типа поля документа. Поля документа базово предоставляются как <see cref="FieldFormBaseLowConstructorModel"/>,
-    /// но реально существуют в одном из двух производных типов: <see cref="FieldFormConstructorModelDB"/> (простой тип поля: строка, число и т.п.) или <see cref="LinkDirectoryToFormConstructorModelDB"/> (поле типа 'справочник/список/перечисление'):
+    /// но реально существуют в одном из двух производных типов: <see cref="FieldFormConstructorModelDB"/> (простой тип поля: строка, число и т.п.) или <see cref="FieldFormAkaDirectoryConstructorModelDB"/> (поле типа 'справочник/список/перечисление'):
     /// в таком случае тип поля будет указан базовый <see cref="FieldFormBaseLowConstructorModel"/>, а в квалификаторе уточнение имени производного типа (или null, если не требуется)
     /// </remarks>
     public static string? GetSystemName(this SystemNameEntryModel[] systemNamesManufacture, int typeDataId, string typeDataName, string? qualification = null)

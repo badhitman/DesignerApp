@@ -31,5 +31,5 @@ public class DirectoryConstructorModelDB : EntryConstructedModel
     /// <summary>
     /// Связи форм со списками/связями
     /// </summary>
-    public List<LinkDirectoryToFormConstructorModelDB>? FormsDirectoriesLinks { get; set; }
+    public List<FieldFormAkaDirectoryConstructorModelDB>? FormsDirectoriesLinks { get; set; }
 }

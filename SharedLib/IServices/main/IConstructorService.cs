@@ -218,7 +218,7 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/создать поле формы (тип: справочник/список)
     /// </summary>
-    public Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(LinkDirectoryToFormConstructorModelDB field_directory, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(FieldFormAkaDirectoryConstructorModelDB field_directory, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить поле формы (тип: справочник/список)

@@ -10,6 +10,11 @@ namespace SharedLib.Models;
 public abstract class BaseRequiredmFormFitModel : BaseFormFitModel
 {
     /// <summary>
+    /// Подсказка
+    /// </summary>
+    public string? Hint { get; set; }
+
+    /// <summary>
     /// Обязательность для заполнения
     /// </summary>
     public bool Required { get; set; }

@@ -22,9 +22,6 @@ public partial class EnumerationsManufactureComponent : BlazorBusyComponentBaseM
     const string icon_directory = Icons.Custom.Uncategorized.Folder;
     const string icon_element = Icons.Material.Filled.Label;
 
-    const string type_name_directory = nameof(DirectoryConstructorModelDB);
-    const string type_name_element_of_directory = nameof(ElementOfDirectoryConstructorModelDB);
-
     /// <inheritdoc/>
     public List<TreeItemData<EntryTagModel>> TreeItems { get; private set; } = [];
     MudTreeView<EntryTagModel>? TreeView_ref;
@@ -44,7 +41,7 @@ public partial class EnumerationsManufactureComponent : BlazorBusyComponentBaseM
                 {
                     Id = el.Id,
                     Name = el.Name,
-                    Tag = $"{type_name_directory}#{dir.Id} {type_name_element_of_directory}",
+                    Tag = $"{ManufactureComponent.DirectoryTypeName}#{dir.Id} {ManufactureComponent.ElementOfDirectoryConstructorTypeName}",
                 };
 
                 TreeItemDataModel _ti = new(_et, icon_element)
@@ -55,10 +52,10 @@ public partial class EnumerationsManufactureComponent : BlazorBusyComponentBaseM
                 return _ti;
             }
 
-            EntryTagModel _et = EntryTagModel.Build(dir.Id, dir.Name, type_name_directory);
+            EntryTagModel _et = EntryTagModel.Build(dir.Id, dir.Name, ManufactureComponent.DirectoryTypeName);
             TreeItemDataModel _ti = new(_et, icon_directory)
             {
-                SystemName = SystemNamesManufacture.GetSystemName(dir.Id, type_name_directory),
+                SystemName = SystemNamesManufacture.GetSystemName(dir.Id, ManufactureComponent.DirectoryTypeName),
                 Children = dir.Elements is null ? null : [.. dir.Elements.Select(ElementOfDirectoryToTreeItem)],
                 ErrorMessage = dir.Elements!.Count == 0 ? $"Список/справочник '{dir.Name}' не имеет элементов перечисления" : null,
             };

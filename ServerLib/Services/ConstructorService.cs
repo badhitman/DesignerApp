@@ -729,7 +729,7 @@ public class ConstructorService(
                 await context_forms.SaveChangesAsync();
 
                 _form_seed.Fields = [new FieldFormConstructorModelDB() { Name = "Test text", OwnerId = _form_seed.Id, SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12" }];
-                _form_seed.FieldsDirectoriesLinks = [new LinkDirectoryToFormConstructorModelDB() { Name = "Test Directory", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
+                _form_seed.FieldsDirectoriesLinks = [new FieldFormAkaDirectoryConstructorModelDB() { Name = "Test Directory", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
 
                 context_forms.Update(_form_seed);
                 await context_forms.SaveChangesAsync();
@@ -1488,7 +1488,7 @@ public class ConstructorService(
         }
         else if (field_db.Owner.FieldsDirectoriesLinks!.Any(x => x.SortIndex == next_index))
         {
-            LinkDirectoryToFormConstructorModelDB _fnsd = field_db.Owner.FieldsDirectoriesLinks!.First(x => x.SortIndex == next_index);
+            FieldFormAkaDirectoryConstructorModelDB _fnsd = field_db.Owner.FieldsDirectoriesLinks!.First(x => x.SortIndex == next_index);
             res.AddInfo($"Поля формы меняются индексами сортировки: #{_fnsd.Id} i:{_fnsd.SortIndex} '{_fnsd.Name}' (тип: справочник) && #{field_db.Id} i:{field_db.SortIndex} '{field_db.Name}' (простой тип)");
 
             _fnsd.SortIndex = field_db.SortIndex;
@@ -1523,7 +1523,7 @@ public class ConstructorService(
         TResponseModel<FormConstructorModelDB> res = new();
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        LinkDirectoryToFormConstructorModelDB? field_db = await context_forms
+        FieldFormAkaDirectoryConstructorModelDB? field_db = await context_forms
             .LinksDirectoriesToForms
             .Include(x => x.Owner)
             .ThenInclude(x => x!.Fields)
@@ -1564,7 +1564,7 @@ public class ConstructorService(
         }
         else if (field_db.Owner.FieldsDirectoriesLinks!.Any(x => x.SortIndex == next_index))
         {
-            LinkDirectoryToFormConstructorModelDB _fnsd = field_db.Owner.FieldsDirectoriesLinks!.First(x => x.SortIndex == next_index);
+            FieldFormAkaDirectoryConstructorModelDB _fnsd = field_db.Owner.FieldsDirectoriesLinks!.First(x => x.SortIndex == next_index);
             res.AddInfo($"Поля формы меняются индексами сортировки: #{_fnsd.Id} i:{_fnsd.SortIndex} '{_fnsd.Name}' (тип: справочник) && #{field_db.Id} i:{field_db.SortIndex} '{field_db.Name}' (тип: справочник)");
 
             _fnsd.SortIndex = field_db.SortIndex;
@@ -1627,7 +1627,7 @@ public class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Id != form_field.Id && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase));
+        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(FieldFormAkaDirectoryConstructorModelDB) && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Id != form_field.Id && x.Name.Equals(form_field.Name, StringComparison.OrdinalIgnoreCase));
         if (duplicate_field is not null)
             return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}'");
 
@@ -1766,7 +1766,7 @@ public class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(LinkDirectoryToFormConstructorModelDB field_directory, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(FieldFormAkaDirectoryConstructorModelDB field_directory, CancellationToken cancellationToken = default)
     {
         field_directory.Name = Regex.Replace(field_directory.Name, @"\s+", " ").Trim();
 
@@ -1806,11 +1806,11 @@ public class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(LinkDirectoryToFormConstructorModelDB) && x.Id != field_directory.Id && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase));
+        FieldFormBaseLowConstructorModel? duplicate_field = form_db.AllFields.FirstOrDefault(x => (x.GetType() == typeof(FieldFormAkaDirectoryConstructorModelDB) && x.Id != field_directory.Id && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase)) || (x.GetType() == typeof(FieldFormConstructorModelDB)) && x.Name.Equals(field_directory.Name, StringComparison.OrdinalIgnoreCase));
         if (duplicate_field is not null)
             return ResponseBaseModel.CreateError($"Поле с таким именем уже существует: '{duplicate_field.Name}'");
 
-        LinkDirectoryToFormConstructorModelDB? form_field_db;
+        FieldFormAkaDirectoryConstructorModelDB? form_field_db;
         if (field_directory.Id < 1)
         {
             int _sort_index = form_db.FieldsDirectoriesLinks.Count != 0 ? form_db.FieldsDirectoriesLinks.Max(x => x.SortIndex) : 0;
@@ -1974,7 +1974,7 @@ public class ConstructorService(
     public async Task<ResponseBaseModel> FormFieldDirectoryDelete(int field_directory_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        LinkDirectoryToFormConstructorModelDB? field_db = await context_forms
+        FieldFormAkaDirectoryConstructorModelDB? field_db = await context_forms
             .LinksDirectoriesToForms
             .Include(x => x.Owner)
             .FirstOrDefaultAsync(x => x.Id == field_directory_id, cancellationToken: cancellationToken);
@@ -2010,13 +2010,13 @@ public class ConstructorService(
     {
         TResponseModel<FormConstructorModelDB> res = new();
         int i = 0;
-        List<LinkDirectoryToFormConstructorModelDB> fields_dir = [];
+        List<FieldFormAkaDirectoryConstructorModelDB> fields_dir = [];
         List<FieldFormConstructorModelDB> fields_st = [];
 
         foreach (FieldFormBaseLowConstructorModel fb in form.AllFields)
         {
             i++;
-            if (fb is LinkDirectoryToFormConstructorModelDB fs)
+            if (fb is FieldFormAkaDirectoryConstructorModelDB fs)
             {
                 if (i != fs.SortIndex)
                 {

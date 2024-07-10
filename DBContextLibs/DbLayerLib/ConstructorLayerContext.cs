@@ -49,7 +49,7 @@ public partial class LayerContext
     /// <summary>
     /// Связи форм со списками/справочниками
     /// </summary>
-    public DbSet<LinkDirectoryToFormConstructorModelDB> LinksDirectoriesToForms { get; set; }
+    public DbSet<FieldFormAkaDirectoryConstructorModelDB> LinksDirectoriesToForms { get; set; }
 
 
     /// <summary>

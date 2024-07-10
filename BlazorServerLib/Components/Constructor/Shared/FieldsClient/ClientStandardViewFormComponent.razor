@@ -37,7 +37,7 @@ else
                         <FieldBaseClientComponent GroupByRowNum="@RowNum" FieldsReferring="FieldsReferring" />
                     </CascadingValue>
                 }
-                else if (fb is LinkDirectoryToFormConstructorModelDB fd)
+                else if (fb is FieldFormAkaDirectoryConstructorModelDB fd)
                 {
                     <CascadingValue Value="fd">
                         <FieldDirectoryClientComponent DirectoryObject="@Directories.FirstOrDefault(x => x.Id == fd.DirectoryId)" GroupByRowNum="@RowNum" FieldsReferring="FieldsReferring" />

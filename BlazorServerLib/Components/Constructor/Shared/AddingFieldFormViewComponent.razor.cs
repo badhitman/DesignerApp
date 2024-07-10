@@ -26,14 +26,14 @@ public partial class AddingFieldFormViewComponent : ComponentBase
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
 
-    LinkDirectoryToFormConstructorModelDB FieldObjectForDirectory
+    FieldFormAkaDirectoryConstructorModelDB FieldObjectForDirectory
     {
         get
         {
             if (_field_object_master is null)
                 return new() { Name = "", OwnerId = Form.Id };
 
-            LinkDirectoryToFormConstructorModelDB res = new()
+            FieldFormAkaDirectoryConstructorModelDB res = new()
             {
                 Id = _field_object_master.Id,
                 Description = _field_object_master.Description,
@@ -44,7 +44,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
                 Css = _field_object_master.Css
             };
 
-            if (_field_object_master is LinkDirectoryToFormConstructorModelDB directory_field)
+            if (_field_object_master is FieldFormAkaDirectoryConstructorModelDB directory_field)
             {
                 res.DirectoryId = directory_field.DirectoryId;
                 res.SortIndex = directory_field.SortIndex;

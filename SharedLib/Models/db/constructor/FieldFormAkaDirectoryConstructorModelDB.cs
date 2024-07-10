@@ -10,7 +10,7 @@ namespace SharedLib;
 /// связь формы со списком/справочником
 /// </summary>
 [Index(nameof(SortIndex))]
-public class LinkDirectoryToFormConstructorModelDB : FieldFormBaseLowConstructorModel
+public class FieldFormAkaDirectoryConstructorModelDB : FieldFormBaseLowConstructorModel
 {
     /// <summary>
     /// Сортировка 
@@ -34,7 +34,7 @@ public class LinkDirectoryToFormConstructorModelDB : FieldFormBaseLowConstructor
     /// <summary>
     /// Update
     /// </summary>
-    public void Update(LinkDirectoryToFormConstructorModelDB field)
+    public void Update(FieldFormAkaDirectoryConstructorModelDB field)
     {
         base.Update(field);
         SortIndex = field.SortIndex;
@@ -48,7 +48,7 @@ public class LinkDirectoryToFormConstructorModelDB : FieldFormBaseLowConstructor
         if (o?.GetType() != GetType())
             return false;
 
-        LinkDirectoryToFormConstructorModelDB other = (LinkDirectoryToFormConstructorModelDB)o;
+        FieldFormAkaDirectoryConstructorModelDB other = (FieldFormAkaDirectoryConstructorModelDB)o;
 
         return
             other.Id == Id &&
