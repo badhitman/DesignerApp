@@ -18,7 +18,7 @@ public class SystemNameEntryModel
     /// <summary>
     /// Квалификация сущности
     /// </summary>
-    public required string Qualification {  get; set; }
+    public string? Qualification {  get; set; }
 
     /// <summary>
     /// Если установить null (или пустую строку), тогда значение удаляется

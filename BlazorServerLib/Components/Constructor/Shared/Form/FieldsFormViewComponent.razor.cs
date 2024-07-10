@@ -118,17 +118,8 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
         else if (_field_master is FieldFormConstructorModelDB standard_field)
         {
-            rest = await ConstructorRepo.FormFieldUpdateOrCreate(new FieldFormBaseConstructorModel()
-            {
-                Description = standard_field.Description,
-                Hint = standard_field.Hint,
-                Id = standard_field.Id,
-                MetadataValueType = standard_field.MetadataValueType,
-                Name = standard_field.Name,
-                OwnerId = Form.Id,
-                Required = standard_field.Required,
-                TypeField = standard_field.TypeField
-            });
+            standard_field.OwnerId = Form.Id;
+            rest = await ConstructorRepo.FormFieldUpdateOrCreate(standard_field);
         }
         else
         {

@@ -35,12 +35,12 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
 
     TreeItemDataModel ItemModel = default!;
 
-    string itemSystemName = default!;
+    string? itemSystemName;
 
     /// <inheritdoc/>
-    protected string DomID => $"{Item.Value!.Tag}_{Item.Value!.Id}";
+    protected string DomID => $"{Item.Value!.Tag}-{Item.Value!.Id}";
 
-    bool IsEdit => !itemSystemName.Equals(ParentFormsPage.SystemNamesManufacture.FirstOrDefault(x => x.Qualification == ItemModel.Qualification && x.TypeDataId == Item.Value!.Id && x.TypeDataName.Equals(Item.Value.Tag))?.SystemName ?? "");
+    bool IsEdit => itemSystemName != ItemModel.SystemName;
 
     /// <inheritdoc/>
     protected MarkupString InformationMS => (MarkupString)(ItemModel.Information ?? "");
@@ -52,14 +52,21 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
 
         IsBusyProgress = true;
         ResponseBaseModel res = await ManufactureRepo
-            .SetOrDeleteSystemName(new UpdateSystemNameModel() { SystemName = itemSystemName, Qualification = ItemModel.Qualification, TypeDataId = Item.Value.Id, TypeDataName = Item.Value.Tag, ManufactureId = ManufactureParentView.Manufacture.Id });
+            .SetOrDeleteSystemName(new UpdateSystemNameModel()
+            {
+                TypeDataId = Item.Value.Id,
+                SystemName = itemSystemName,
+                TypeDataName = Item.Value.Tag,
+                Qualification = ItemModel.Qualification,
+                ManufactureId = ManufactureParentView.Manufacture.Id,
+            });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         if (res.Success())
         {
             await ParentFormsPage.GetSystemNames();
-            ParentFormsPage.StateHasChangedCall();
+            ItemModel.SystemName = itemSystemName;
         }
     }
 
@@ -67,10 +74,8 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     protected override void OnInitialized()
     {
         ItemModel = (TreeItemDataModel)Item;
-        SystemNameEntryModel? _sn = ParentFormsPage
-            .SystemNamesManufacture
-            .FirstOrDefault(x => x.Qualification == ItemModel.Qualification && x.TypeDataId == Item.Value!.Id && x.TypeDataName == Item.Value.Tag);
+        ArgumentNullException.ThrowIfNull(Item.Value?.Tag);
 
-        itemSystemName = _sn?.SystemName ?? "";
+        itemSystemName = ItemModel.SystemName;
     }
 }

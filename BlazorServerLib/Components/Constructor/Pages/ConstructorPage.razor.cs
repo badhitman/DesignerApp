@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using BlazorWebLib.Components.Constructor.Shared.Manufacture;
 
 namespace BlazorWebLib.Components.Constructor.Pages;
 
@@ -25,6 +26,9 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     IManufactureService ManufactureRepo { get; set; } = default!;
 
 
+    ManufactureComponent? manufacture_ref = default!;
+
+
     /// <inheritdoc/>
     public SystemNameEntryModel[] SystemNamesManufacture = default!;
 
@@ -38,7 +42,6 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     /// Проверка разрешения редактировать проект
     /// </summary>
     public bool CanEditProject { get; private set; }
-
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -71,11 +74,10 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
             SnackbarRepo.ShowMessagesResponse(currentMainProject.Messages);
 
         MainProject = currentMainProject.Response;
+        CanEditProject = MainProject is not null && (!MainProject.IsDisabled || MainProject.OwnerUserId.Equals(CurrentUser.UserId) || CurrentUser.IsAdmin);
+        IsBusyProgress = false;
         await GetSystemNames();
 
-        IsBusyProgress = false;
-
-        CanEditProject = MainProject is not null && (!MainProject.IsDisabled || MainProject.OwnerUserId.Equals(CurrentUser.UserId) || CurrentUser.IsAdmin);
     }
 
     /// <inheritdoc/>
@@ -85,5 +87,6 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
         if (MainProject is not null)
             SystemNamesManufacture = await ManufactureRepo.GetSystemNames(MainProject!.Id);
         IsBusyProgress = false;
+        manufacture_ref?.StateHasChangedCall();
     }
 }

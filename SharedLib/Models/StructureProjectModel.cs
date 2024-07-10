@@ -19,5 +19,5 @@ public class StructureProjectModel
     /// <summary>
     /// Документы проекта
     /// </summary>
-    public required IEnumerable<DocumentFitModel> Documents { get; set; }
+    public required IEnumerable<BaseFitModel> Documents { get; set; }
 }

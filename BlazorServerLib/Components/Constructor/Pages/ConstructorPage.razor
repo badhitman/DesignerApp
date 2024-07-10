@@ -62,7 +62,7 @@
             <AuthorizeView Roles="admin,manufacture">
                 <Authorized>
                     <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text=".NET" BadgeData='"C#"' BadgeColor="Color.Primary" ToolTip="Генерация кодовой базы C# .NET">
-                        <ManufactureComponent />
+                        <ManufactureComponent @ref="manufacture_ref" />
                     </MudTabPanel>
                 </Authorized>
             </AuthorizeView>

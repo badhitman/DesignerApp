@@ -63,13 +63,13 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         return ms;
     }
 
-    async Task DbTableAccessGen(IEnumerable<DocumentFitModel> docs)
+    async Task DbTableAccessGen(IEnumerable<BaseFitModel> docs)
     {
         string crud_type_name, service_type_name, response_type_name, controller_name, service_instance;
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
 
-        foreach (DocumentFitModel doc_obj in docs)
+        foreach (BaseFitModel doc_obj in docs)
         {
             #region модели ответов тела документа (rest/api)
 
@@ -435,7 +435,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         }
     }
 
-    async Task DbContextGen(IEnumerable<DocumentFitModel> docs)
+    async Task DbContextGen(IEnumerable<BaseFitModel> docs)
     {
         ZipArchiveEntry zipEntry = archive.CreateEntry("LayerContextPartGen.cs");
         StreamWriter writer = new(zipEntry.Open(), Encoding.UTF8);
@@ -444,7 +444,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
         await writer.WriteLineAsync("\t{");
         bool is_first_item = true;
-        foreach (DocumentFitModel doc_obj in docs)
+        foreach (BaseFitModel doc_obj in docs)
         {
             if (!is_first_item)
                 await writer.WriteLineAsync();
@@ -470,14 +470,14 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await WriteEnd(writer);
     }
 
-    async Task DocumentsShemaGen(IEnumerable<DocumentFitModel> docs)
+    async Task DocumentsShemaGen(IEnumerable<BaseFitModel> docs)
     {
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
         string type_class_name;
 
         //bool is_first_item;
-        foreach (DocumentFitModel doc_obj in docs)
+        foreach (BaseFitModel doc_obj in docs)
         {
             type_class_name = doc_obj.SystemName;
 

@@ -13,8 +13,8 @@
             </CascadingValue>
         </div>
         <div class="p-2">
-            <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DocumentSchemeConstructor)).ToArray()">
-                <DocumentsManufactureComponent />
+            <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DocumentSchemeConstructorTypeName)).ToArray()">
+                <DocumentsManufactureComponent @ref="documents_ref" />
             </CascadingValue>
         </div>
     </CascadingValue>

@@ -5,12 +5,12 @@
 namespace SharedLib.Models;
 
 /// <summary>
-/// SortableFitModel
+/// Базовая модель
 /// </summary>
-public class SortableFitModel : BaseFitModel
+public abstract class BaseRequiredmFormFitModel : BaseFormFitModel
 {
     /// <summary>
-    /// Индекс сортировки
+    /// Обязательность для заполнения
     /// </summary>
-    public required int SortIndex { get; set; }
+    public bool Required { get; set; }
 }

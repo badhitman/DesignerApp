@@ -32,9 +32,11 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     ConfigManufactureComponent _conf = default!;
 
     EnumerationsManufactureComponent enumerations_ref = default!;
+    DocumentsManufactureComponent documents_ref = default!;
 
     const string DirectoryTypeName = nameof(DirectoryConstructorModelDB);
-    const string DocumentSchemeConstructor = nameof(DocumentSchemeConstructorModelDB);
+    const string DocumentSchemeConstructorTypeName = nameof(DocumentSchemeConstructorModelDB);
+    const string ElementOfDirectoryConstructorTypeName = nameof(ElementOfDirectoryConstructorModelDB);
 
     /// <summary>
     /// Текущий проект
@@ -47,7 +49,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
     readonly List<string> _errors = [];
     /// <summary>
-    /// Build еree вoneAction
+    /// Build tree doneAction
     /// </summary>
     public void TreeBuildDoneAction(IEnumerable<TreeItemDataModel> treeItems)
     {
@@ -65,54 +67,42 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     {
         ArgumentNullException.ThrowIfNull(dir.Elements);
 
-        string get_sn = ParentFormsPage
-        .SystemNamesManufacture
-        .FirstOrDefault(x => x.TypeDataName == DirectoryTypeName)?.SystemName ?? GlobalTools.TranslitToSystemName(dir.Name);
+        TreeItemDataModel? tree_item = enumerations_ref.TreeItems.FirstOrDefault(x => x.Value?.Id == dir.Id) as TreeItemDataModel;
+        ArgumentNullException.ThrowIfNull(tree_item?.Children);
 
         return new EnumFitModel()
         {
-            SystemName = get_sn,
+            SystemName = tree_item.SystemName ?? GlobalTools.TranslitToSystemName(dir.Name),
             Name = dir.Name,
             Description = dir.Description,
-            EnumItems = dir.Elements.Select(e => new SortableFitModel()
+            EnumItems = dir.Elements.Select(e =>
             {
-                Name = e.Name,
-                SortIndex = e.SortIndex,
-                Description = e.Description,
+
+                tree_item = tree_item.Children.FirstOrDefault(x => x.Value?.Id == e.Id) as TreeItemDataModel;
+                ArgumentNullException.ThrowIfNull(tree_item?.Children);
+
+                return new SortableFitModel()
+                {
+                    SystemName = tree_item.SystemName ?? GlobalTools.TranslitToSystemName(e.Name),
+                    Name = e.Name,
+                    SortIndex = e.SortIndex,
+                    Description = e.Description,
+                };
             }).ToArray()
         };
     }
 
-    DocumentFitModel DocumentConvert(DocumentSchemeConstructorModelDB doc)
+    BaseFitModel DocumentConvert(DocumentSchemeConstructorModelDB doc)
     {
-        string get_sn = ParentFormsPage
-        .SystemNamesManufacture
-        .FirstOrDefault(x => x.TypeDataName == DocumentSchemeConstructor)?.SystemName ?? GlobalTools.TranslitToSystemName(doc.Name);
+        TreeItemDataModel? tree_item = documents_ref.TreeItems.FirstOrDefault(x => x.Value?.Id == doc.Id) as TreeItemDataModel;
+        ArgumentNullException.ThrowIfNull(tree_item);
 
-        return new DocumentFitModel()
+        return new BaseFitModel()
         {
-            SystemName = get_sn,
+            SystemName = tree_item.SystemName ?? GlobalTools.TranslitToSystemName(doc.Name),
             Name = doc.Name,
             Description = doc.Description,
         };
-    }
-
-    void Download()
-    {
-        ArgumentNullException.ThrowIfNull(CurrentProject.Directories);
-        ArgumentNullException.ThrowIfNull(CurrentProject.Documents);
-        ArgumentNullException.ThrowIfNull(ParentFormsPage.MainProject);
-
-
-        StructureProjectModel struct_project = new()
-        {
-            Enums = CurrentProject.Directories.Select(EnumConvert),
-            Documents = CurrentProject.Documents.Select(DocumentConvert)
-        };
-
-        CodeGeneratorConfigModel conf_gen = Manufacture;
-
-        GeneratorCSharpService gen = new(conf_gen, ParentFormsPage.MainProject);
     }
 
     /// <summary>
@@ -129,6 +119,30 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
             SnackbarRepo.ShowMessagesResponse(rest_manufacture.Messages);
         Manufacture = rest_manufacture.Response ?? throw new Exception();
         IsBusyProgress = false;
+    }
+
+    void Download()
+    {
+        ArgumentNullException.ThrowIfNull(CurrentProject.Directories);
+        ArgumentNullException.ThrowIfNull(CurrentProject.Documents);
+        ArgumentNullException.ThrowIfNull(ParentFormsPage.MainProject);
+
+        StructureProjectModel struct_project = new()
+        {
+            Enums = CurrentProject.Directories.Select(EnumConvert),
+            Documents = CurrentProject.Documents.Select(DocumentConvert)
+        };
+
+        CodeGeneratorConfigModel conf_gen = Manufacture;
+        GeneratorCSharpService gen = new(conf_gen, ParentFormsPage.MainProject);
+    }
+
+    /// <inheritdoc/>
+    public override void StateHasChangedCall()
+    {
+        enumerations_ref.StateHasChangedCall();
+        documents_ref.StateHasChangedCall();
+        base.StateHasChangedCall();
     }
 
     /// <inheritdoc/>

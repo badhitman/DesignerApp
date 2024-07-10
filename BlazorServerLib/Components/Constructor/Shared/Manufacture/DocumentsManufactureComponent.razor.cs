@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Manufacture;
 
-public partial class DocumentsManufactureComponent : ComponentBase
+/// <summary>
+/// DocumentsManufactureComponent
+/// </summary>
+public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
@@ -17,9 +21,6 @@ public partial class DocumentsManufactureComponent : ComponentBase
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
-
-
-    List<TreeItemData<EntryTagModel>> TreeItems { get; set; } = [];
 
     const string icon_doc = Icons.Material.Filled.BusinessCenter;
     const string icon_tab_of_doc = Icons.Material.Filled.Tab;
@@ -45,6 +46,11 @@ public partial class DocumentsManufactureComponent : ComponentBase
 
     const string type_name_base_field_of_form = nameof(FieldFormBaseLowConstructorModel);
 
+
+    /// <summary>
+    /// Дерево/структура
+    /// </summary>
+    public List<TreeItemData<EntryTagModel>> TreeItems { get; private set; } = [];
     MudTreeView<EntryTagModel>? TreeView_ref;
 
     static Color GetColor(string? icon)
@@ -56,7 +62,7 @@ public partial class DocumentsManufactureComponent : ComponentBase
         _ => Color.Default
     };
 
-    static TypesFieldsFormsEnum[] skip_fields = [TypesFieldsFormsEnum.Generator, TypesFieldsFormsEnum.ProgramCalculationDouble];
+    static readonly TypesFieldsFormsEnum[] skip_fields = [TypesFieldsFormsEnum.Generator, TypesFieldsFormsEnum.ProgramCalculationDouble];
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -72,6 +78,7 @@ public partial class DocumentsManufactureComponent : ComponentBase
 
             TreeItemDataModel _res = new(et, icon_field_of_form)
             {
+                SystemName = SystemNamesManufacture.GetSystemName(field.Id, et.Tag, field.GetType().Name),
                 Tooltip = "Поле внутри формы",
                 Qualification = field.GetType().Name
             };
@@ -114,14 +121,15 @@ public partial class DocumentsManufactureComponent : ComponentBase
             {
                 Id = form.Id,
                 Name = form.Name,
-                Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}"
+                Tag = $"{type_name_document}#{doc_id} {type_name_tab_of_document}#{tab_id} {type_name_form_of_tab}",
             };
 
             return new TreeItemDataModel(et, icon_form_of_tab)
             {
-                Qualification = type_name_form_of_tab,
+                SystemName = SystemNamesManufacture.GetSystemName(form.Id, et.Tag),
                 Tooltip = "Форма, размещённая внутри таба/вкладки",
-                Children = [.. form.AllFields.Select(field => FieldToTreeItem(field, doc_id, tab_id, form.Id))]
+                Children = [.. form.AllFields.Select(field => FieldToTreeItem(field, doc_id, tab_id, form.Id))],
+                ErrorMessage = form.AllFields.Length == 0 ? $"Форма '{form.Name}' пустая - нет ни одного поля" : null
             };
         }
 
@@ -136,24 +144,26 @@ public partial class DocumentsManufactureComponent : ComponentBase
 
             return new TreeItemDataModel(et, icon_tab_of_doc)
             {
-                Qualification = type_name_document,
+                SystemName = SystemNamesManufacture.GetSystemName(tab.Id, et.Tag),
                 Tooltip = "Вкладка/Таб документа",
-                Children = [.. tab.JoinsForms!.Select(x => FormToTreeItem(x.Form!, doc_id, tab.Id))]
+                Children = [.. tab.JoinsForms!.Select(x => FormToTreeItem(x.Form!, doc_id, tab.Id))],
+                ErrorMessage = tab.JoinsForms!.Count == 0 ? $"Таб/Вкладка '{tab.Name}' пустая - нет ни одной формы" : null
             };
         }
 
         ManufactureParentView
         .CurrentProject
-        .Documents!.ForEach(x =>
+        .Documents!.ForEach(doc =>
         {
-            TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = x.Name, Id = x.Id, Tag = type_name_document }, icon_doc)
+            TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = doc.Name, Id = doc.Id, Tag = type_name_document }, icon_doc)
             {
-                Qualification = type_name_tab_of_document,
+                SystemName = SystemNamesManufacture.GetSystemName(doc.Id, type_name_document),
                 Tooltip = "Документ (схема данных бизнес-сущности)",
-                Children = [.. x.Pages!.Select(y => TabToTreeItem(y, x.Id))]
+                Children = [.. doc.Pages!.Select(y => TabToTreeItem(y, doc.Id))],
+                ErrorMessage = doc.Pages!.Count == 0 ? $"Документ '{doc.Name}' пустой - не имеет вкладок/табов" : null
             });
         });
-        ManufactureParentView.TreeBuildDoneAction(TreeItems.Select(x => (TreeItemDataModel)x));
+        ManufactureParentView.TreeBuildDoneAction(TreeItems.Cast<TreeItemDataModel>());
     }
 
     /// <inheritdoc/>

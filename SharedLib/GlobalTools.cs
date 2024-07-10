@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////
 
 using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -17,7 +16,7 @@ namespace SharedLib;
 /// <summary>
 /// Глобальные утилиты
 /// </summary>
-public static class GlobalTools
+public static partial class GlobalTools
 {
     /// <summary>
     /// Перемешать список элементов
@@ -37,12 +36,12 @@ public static class GlobalTools
     }
 
     /// <summary>
-    /// Попытка десереализовать строку
+    /// Попытка де-сереализовать строку
     /// </summary>
     public static bool TryParseJson<T>(this string @this, out T? result)
     {
         bool success = true;
-        JsonSerializerSettings settings = new JsonSerializerSettings
+        JsonSerializerSettings settings = new()
         {
             Error = (sender, args) => { success = false; args.ErrorContext.Handled = true; },
             MissingMemberHandling = MissingMemberHandling.Error
@@ -166,10 +165,11 @@ public static class GlobalTools
             return str;
 
         string[] segments = str.Split(' ');
-        if (segments.Length != 0)
-            str = string.Join("", segments.Select(x => $"{x[0..1].ToUpper()}{x[1..]}"));
-        else
+
+        if (segments.Length <= 1)
             str = $"{str[0..1].ToUpper()}{str[1..]}";
+        else
+            str = string.Join("", segments.Select(x => $"{x[0..1].ToUpper()}{x[1..]}"));
 
         return GetTranslitString(str);
     }
