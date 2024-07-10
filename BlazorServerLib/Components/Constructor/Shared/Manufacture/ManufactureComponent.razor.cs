@@ -85,17 +85,16 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     {
         ArgumentNullException.ThrowIfNull(dir.Elements);
 
-        TreeItemDataModel tree_item = (TreeItemDataModel)enumerations_ref.TreeItems.First(x => x.Value?.Id == dir.Id);
-        ArgumentNullException.ThrowIfNull(tree_item.Children);
+        TreeItemDataModel dir_tree_item = (TreeItemDataModel)enumerations_ref.TreeItems.First(x => x.Value?.Id == dir.Id);
 
         return new EnumFitModel()
         {
-            SystemName = tree_item.SystemName ?? GlobalTools.TranslitToSystemName(dir.Name),
+            SystemName = dir_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(dir.Name),
             Name = dir.Name,
             Description = dir.Description,
             EnumItems = dir.Elements.Count < 1 ? [] : dir.Elements.Select(e =>
             {
-                tree_item = (TreeItemDataModel)tree_item.Children.First(x => x.Value?.Id == e.Id);
+                TreeItemDataModel tree_item = (TreeItemDataModel)dir_tree_item.Children!.First(x => x.Value?.Id == e.Id);
 
                 return new SortableFitModel()
                 {
