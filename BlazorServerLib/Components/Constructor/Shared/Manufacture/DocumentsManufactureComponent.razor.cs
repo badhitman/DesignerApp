@@ -18,15 +18,12 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
     [CascadingParameter, EditorRequired]
     public required ManufactureComponent ManufactureParentView { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
 
     const string icon_doc = Icons.Material.Filled.BusinessCenter;
     const string icon_tab_of_doc = Icons.Material.Filled.Tab;
     const string icon_form_of_tab = Icons.Material.Filled.DynamicForm;
     const string icon_field_of_form = Icons.Material.Filled.DragHandle;
-        
+
     /// <summary>
     /// имя типа данных: табы/вкладки документов
     /// </summary>
@@ -55,8 +52,10 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
 
     static readonly TypesFieldsFormsEnum[] skip_fields = [TypesFieldsFormsEnum.Generator, TypesFieldsFormsEnum.ProgramCalculationDouble];
 
-    /// <inheritdoc/>
-    protected override void OnInitialized()
+    /// <summary>
+    /// Перезагрузить дерево элементов
+    /// </summary>
+    public void ReloadTree()
     {
         TreeItemDataModel FieldToTreeItem(FieldFormBaseLowConstructorModel field, int doc_id, int tab_id, int form_id)
         {
@@ -69,7 +68,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
 
             TreeItemDataModel _res = new(et, icon_field_of_form)
             {
-                SystemName = SystemNamesManufacture.GetSystemName(field.Id, et.Tag, field.GetType().Name),
+                SystemName = ManufactureParentView.ParentFormsPage.SystemNamesManufacture.GetSystemName(field.Id, et.Tag, field.GetType().Name),
                 Tooltip = "Поле внутри формы",
                 Qualification = field.GetType().Name
             };
@@ -117,7 +116,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
 
             return new TreeItemDataModel(et, icon_form_of_tab)
             {
-                SystemName = SystemNamesManufacture.GetSystemName(form.Id, et.Tag),
+                SystemName = ManufactureParentView.ParentFormsPage.SystemNamesManufacture.GetSystemName(form.Id, et.Tag),
                 Tooltip = "Форма, размещённая внутри таба/вкладки",
                 Children = [.. form.AllFields.Select(field => FieldToTreeItem(field, doc_id, tab_id, form.Id))],
                 ErrorMessage = form.AllFields.Length == 0 ? $"Форма '{form.Name}' пустая - нет ни одного поля" : null
@@ -135,7 +134,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
 
             return new TreeItemDataModel(et, icon_tab_of_doc)
             {
-                SystemName = SystemNamesManufacture.GetSystemName(tab.Id, et.Tag),
+                SystemName = ManufactureParentView.ParentFormsPage.SystemNamesManufacture.GetSystemName(tab.Id, et.Tag),
                 Tooltip = "Вкладка/Таб документа",
                 Children = [.. tab.JoinsForms!.Select(x => FormToTreeItem(x.Form!, doc_id, tab.Id))],
                 ErrorMessage = tab.JoinsForms!.Count == 0 ? $"Таб/Вкладка '{tab.Name}' пустая - нет ни одной формы" : null
@@ -148,12 +147,18 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
         {
             TreeItems.Add(new TreeItemDataModel(new EntryTagModel() { Name = doc.Name, Id = doc.Id, Tag = ManufactureComponent.DocumentSchemeConstructorTypeName }, icon_doc)
             {
-                SystemName = SystemNamesManufacture.GetSystemName(doc.Id, ManufactureComponent.DocumentSchemeConstructorTypeName),
+                SystemName = ManufactureParentView.ParentFormsPage.SystemNamesManufacture.GetSystemName(doc.Id, ManufactureComponent.DocumentSchemeConstructorTypeName),
                 Tooltip = "Документ (схема данных бизнес-сущности)",
                 Children = [.. doc.Pages!.Select(y => TabToTreeItem(y, doc.Id))],
                 ErrorMessage = doc.Pages!.Count == 0 ? $"Документ '{doc.Name}' пустой - не имеет вкладок/табов" : null
             });
         });
+    }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        ReloadTree();
         ManufactureParentView.TreeBuildDoneAction(TreeItems.Cast<TreeItemDataModel>());
     }
 

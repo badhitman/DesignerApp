@@ -18,7 +18,7 @@ public static partial class GlobalTools
     /// но реально существуют в одном из двух производных типов: <see cref="FieldFormConstructorModelDB"/> (простой тип поля: строка, число и т.п.) или <see cref="FieldFormAkaDirectoryConstructorModelDB"/> (поле типа 'справочник/список/перечисление'):
     /// в таком случае тип поля будет указан базовый <see cref="FieldFormBaseLowConstructorModel"/>, а в квалификаторе уточнение имени производного типа (или null, если не требуется)
     /// </remarks>
-    public static string? GetSystemName(this SystemNameEntryModel[] systemNamesManufacture, int typeDataId, string typeDataName, string? qualification = null)
+    public static string? GetSystemName(this List<SystemNameEntryModel> systemNamesManufacture, int typeDataId, string typeDataName, string? qualification = null)
     => systemNamesManufacture
         .FirstOrDefault(x => x.Qualification == qualification && x.TypeDataId == typeDataId && x.TypeDataName == typeDataName)?.SystemName;
 }

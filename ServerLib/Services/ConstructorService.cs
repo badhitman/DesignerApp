@@ -2889,7 +2889,7 @@ public partial class ConstructorService(
 
         if (session_db is not null)
         {
-            res.AddError($"Ссылка с таким именем уже существует в БД. Задайте другое имя");
+            res.AddError($"Ссылка для выбранного документа с таким именем уже существует в БД! Для одного и того же документа имена должны быть уникальны.");
             return res;
         }
 

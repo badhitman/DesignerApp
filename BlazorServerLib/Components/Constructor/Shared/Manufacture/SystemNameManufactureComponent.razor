@@ -12,7 +12,7 @@
                 <span class="font-monospace">@Item.Text</span>
             </MudTooltip>
         }
-        @if (!string.IsNullOrWhiteSpace(ItemModel.Information))
+        @if (!string.IsNullOrWhiteSpace(Information))
         {
             @InformationMS
         }
@@ -48,7 +48,7 @@
                 <div class="col-auto @(string.IsNullOrWhiteSpace(ItemModel.ErrorMessage) ? "visually-hidden" : "")">
                     @if (!string.IsNullOrWhiteSpace(ItemModel.ErrorMessage))
                     {
-                        <span id="@(DomID)HelpInline" class="form-text">
+                        <span class="form-text">
                             @ItemModel.ErrorMessage
                         </span>
                     }

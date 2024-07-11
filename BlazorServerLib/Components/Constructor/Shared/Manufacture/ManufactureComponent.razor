@@ -7,16 +7,14 @@
         <div class="p-2">
             <ConfigManufactureComponent @ref="_conf" />
         </div>
-        <div class="p-2">
-            <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DirectoryTypeName)).ToArray()">
+        <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture">
+            <div class="p-2">
                 <EnumerationsManufactureComponent @ref="enumerations_ref" />
-            </CascadingValue>
-        </div>
-        <div class="p-2">
-            <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture.Where(x => x.TypeDataName.StartsWith(DocumentSchemeConstructorTypeName)).ToArray()">
+            </div>
+            <div class="p-2">
                 <DocumentsManufactureComponent @ref="documents_ref" />
-            </CascadingValue>
-        </div>
+            </div>
+        </CascadingValue>
     </CascadingValue>
 
     <div class="d-grid gap-2">

@@ -27,12 +27,28 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     public required ManufactureComponent ManufactureParentView { get; set; }
 
     /// <summary>
-    /// Родительская страница форм
+    /// Родительская страница конструктора
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
 
+    string Information
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(itemSystemName))
+            {
+                string? cn = ManufactureComponent.CheckName(itemSystemName);
+                if (!string.IsNullOrEmpty(cn))
+                {
+                    return cn;
+                }
+            }
+
+            return string.IsNullOrEmpty(ItemModel.Information) ? "" : ItemModel.Information;
+        }
+    }
     TreeItemDataModel ItemModel = default!;
 
     string? itemSystemName;
@@ -43,7 +59,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     bool IsEdit => itemSystemName != ItemModel.SystemName;
 
     /// <inheritdoc/>
-    protected MarkupString InformationMS => (MarkupString)(ItemModel.Information ?? "");
+    protected MarkupString InformationMS => (MarkupString)Information;
 
     async Task SaveSystemName()
     {
@@ -67,6 +83,9 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
         {
             await ParentFormsPage.GetSystemNames();
             ItemModel.SystemName = itemSystemName;
+            int i = ParentFormsPage.SystemNamesManufacture.FindIndex(x => x.TypeDataId == ItemModel.Value!.Id && x.TypeDataName == ItemModel.Value!.Tag && x.Qualification == ItemModel.Qualification);
+            ParentFormsPage.SystemNamesManufacture[i].SystemName = itemSystemName;
+            ManufactureParentView.StateHasChangedCall();
         }
     }
 

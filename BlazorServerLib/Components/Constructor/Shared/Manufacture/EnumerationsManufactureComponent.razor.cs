@@ -14,10 +14,6 @@ public partial class EnumerationsManufactureComponent : BlazorBusyComponentBaseM
     [CascadingParameter, EditorRequired]
     public required ManufactureComponent ManufactureParentView { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required SystemNameEntryModel[] SystemNamesManufacture { get; set; }
-
 
     const string icon_directory = Icons.Custom.Uncategorized.Folder;
     const string icon_element = Icons.Material.Filled.Label;
@@ -26,11 +22,13 @@ public partial class EnumerationsManufactureComponent : BlazorBusyComponentBaseM
     public List<TreeItemData<EntryTagModel>> TreeItems { get; private set; } = [];
     MudTreeView<EntryTagModel>? TreeView_ref;
 
-    /// <inheritdoc/>
-    protected override void OnInitialized()
+    /// <summary>
+    /// Перезагрузить дерево элементов
+    /// </summary>
+    public void ReloadTree()
     {
         ArgumentNullException.ThrowIfNull(ManufactureParentView.CurrentProject.Directories);
-
+        TreeItems.Clear();
         ManufactureParentView
         .CurrentProject
         .Directories.ForEach(dir =>
@@ -46,7 +44,7 @@ public partial class EnumerationsManufactureComponent : BlazorBusyComponentBaseM
 
                 TreeItemDataModel _ti = new(_et, icon_element)
                 {
-                    SystemName = SystemNamesManufacture.GetSystemName(_et.Id, _et.Tag),
+                    SystemName = ManufactureParentView.ParentFormsPage.SystemNamesManufacture.GetSystemName(_et.Id, _et.Tag),
                 };
 
                 return _ti;
@@ -55,13 +53,19 @@ public partial class EnumerationsManufactureComponent : BlazorBusyComponentBaseM
             EntryTagModel _et = EntryTagModel.Build(dir.Id, dir.Name, ManufactureComponent.DirectoryTypeName);
             TreeItemDataModel _ti = new(_et, icon_directory)
             {
-                SystemName = SystemNamesManufacture.GetSystemName(dir.Id, ManufactureComponent.DirectoryTypeName),
+                SystemName = ManufactureParentView.ParentFormsPage.SystemNamesManufacture.GetSystemName(dir.Id, ManufactureComponent.DirectoryTypeName),
                 Children = dir.Elements is null ? null : [.. dir.Elements.Select(ElementOfDirectoryToTreeItem)],
                 ErrorMessage = dir.Elements!.Count == 0 ? $"Список/справочник '{dir.Name}' не имеет элементов перечисления" : null,
             };
 
             TreeItems.Add(_ti);
         });
+    }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        ReloadTree();
     }
 
     /// <inheritdoc/>

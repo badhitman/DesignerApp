@@ -30,5 +30,5 @@ public interface IManufactureService
     /// <summary>
     /// Получить системные имена для генератора кода
     /// </summary>
-    public Task<SystemNameEntryModel[]> GetSystemNames(int manufactureId);
+    public Task<List<SystemNameEntryModel>> GetSystemNames(int manufactureId);
 }

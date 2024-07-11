@@ -42,6 +42,7 @@ public class TreeItemDataModel : TreeItemData<EntryTagModel>
     /// </summary>
     public string? Information { get; set; }
 
+
     /// <inheritdoc/>
     public TreeItemDataModel(EntryTagModel entry, string icon) : base(entry)
     {

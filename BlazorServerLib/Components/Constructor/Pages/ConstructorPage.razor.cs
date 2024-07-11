@@ -30,7 +30,7 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
 
 
     /// <inheritdoc/>
-    public SystemNameEntryModel[] SystemNamesManufacture = default!;
+    public List<SystemNameEntryModel> SystemNamesManufacture = default!;
 
     /// <inheritdoc/>
     UserInfoModel CurrentUser = default!;

@@ -12,14 +12,14 @@ public class ManufactureService(
     IUsersProfilesService usersProfilesRepo) : IManufactureService
 {
     /// <inheritdoc/>
-    public async Task<SystemNameEntryModel[]> GetSystemNames(int manufactureId)
+    public async Task<List<SystemNameEntryModel>> GetSystemNames(int manufactureId)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
             .SystemNamesManufactures
             .Where(x => x.ManufactureId == manufactureId)
             .Select(x => new SystemNameEntryModel() { Qualification = x.Qualification, TypeDataName = x.TypeDataName, SystemName = x.SystemName, TypeDataId = x.TypeDataId })
-            .ToArrayAsync();
+            .ToListAsync();
     }
 
     /// <inheritdoc/>

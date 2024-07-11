@@ -244,7 +244,10 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     public override void StateHasChangedCall()
     {
+        enumerations_ref.ReloadTree();
         enumerations_ref.StateHasChangedCall();
+
+        documents_ref.ReloadTree();
         documents_ref.StateHasChangedCall();
         base.StateHasChangedCall();
     }
@@ -253,5 +256,14 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         await ReloadProjectData();
+    }
+
+    /// <inheritdoc/>
+    public static string? CheckName(string name)
+    {
+        if (!string.IsNullOrEmpty(name) && name[..1] != name[..1].ToUpper())
+            return "<span class=\"text-danger font-monospace\">Первый символ лучше сделать прописным</span>";
+
+        return null;
     }
 }
