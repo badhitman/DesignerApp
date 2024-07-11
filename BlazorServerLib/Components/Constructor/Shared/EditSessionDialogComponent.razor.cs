@@ -95,23 +95,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
 
     void ResetForm()
     {
-        session_origin = new()
-        {
-            ProjectId = Session.ProjectId,
-            Id = Session.Id,
-            CreatedAt = Session.CreatedAt,
-            AuthorUser = Session.AuthorUser,
-            DeadlineDate = Session.DeadlineDate,
-            Description = Session.Description,
-            Editors = Session.Editors,
-            EmailsNotifications = Session.EmailsNotifications,
-            LastDocumentUpdateActivity = Session.LastDocumentUpdateActivity,
-            Name = Session.Name,
-            OwnerId = Session.OwnerId,
-            SessionStatus = Session.SessionStatus,
-            SessionToken = Session.SessionToken,
-            ShowDescriptionAsStartPage = Session.ShowDescriptionAsStartPage
-        };
+        session_origin.Reload(Session);
 
         _currentTemplateInputRichText?.SetValue(session_origin.Description);
 

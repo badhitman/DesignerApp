@@ -177,6 +177,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         SessionOfDocumentDataModelDB req = new()
         {
             Name = NameSessionForCreate,
+            NormalizeUpperName = NameSessionForCreate.Trim().ToUpper(),
             OwnerId = SelectedDocumentSchemeId,
             AuthorUser = current_user.Response.UserId,
             ProjectId = ParentFormsPage.MainProject.Id

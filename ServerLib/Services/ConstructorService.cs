@@ -760,7 +760,17 @@ public partial class ConstructorService(
 
             if (_session_seed is null)
             {
-                _session_seed = new() { ProjectId = project!.Id, AuthorUser = userDb.Id, Name = "Debug session", DeadlineDate = DateTime.Now.AddDays(1), OwnerId = _document_scheme_seed.Id, SessionStatus = SessionsStatusesEnum.InProgress, SessionToken = Guid.NewGuid().ToString() };
+                _session_seed = new()
+                {
+                    ProjectId = project!.Id,
+                    AuthorUser = userDb.Id,
+                    Name = "Debug session",
+                    NormalizeUpperName = "DEBUG SESSION",
+                    DeadlineDate = DateTime.Now.AddDays(1),
+                    OwnerId = _document_scheme_seed.Id,
+                    SessionStatus = SessionsStatusesEnum.InProgress,
+                    SessionToken = Guid.NewGuid().ToString()
+                };
 
                 await context_forms.AddAsync(_session_seed);
                 await context_forms.SaveChangesAsync();
@@ -2879,7 +2889,7 @@ public partial class ConstructorService(
 
         if (session_db is not null)
         {
-            res.AddError($"Ссылка с таким именем уже существует в БД. Задайте новое имя");
+            res.AddError($"Ссылка с таким именем уже существует в БД. Задайте другое имя");
             return res;
         }
 

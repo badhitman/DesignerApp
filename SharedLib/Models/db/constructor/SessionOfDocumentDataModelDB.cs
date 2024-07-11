@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
@@ -16,7 +17,8 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Нормализованное имя: UPPERCASE
     /// </summary>
-    public string? NormalizeUpperName { get; set; }
+    [Required(AllowEmptyStrings = false, ErrorMessage = "Поле наименования обязательно для заполнения")]
+    public required string NormalizeUpperName { get; set; }
 
     /// <summary>
     /// Опрос/анкета
@@ -122,15 +124,20 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
     /// </summary>
     public void Reload(SessionOfDocumentDataModelDB other)
     {
+        ProjectId = other.ProjectId;
+        Id = other.Id;
+        AuthorUser = other.AuthorUser;
+        Editors = other.Editors;
+        OwnerId = other.OwnerId;
         DeadlineDate = other.DeadlineDate;
         ShowDescriptionAsStartPage = other.ShowDescriptionAsStartPage;
-
         LastDocumentUpdateActivity = other.LastDocumentUpdateActivity;
         CreatedAt = other.CreatedAt;
         SessionStatus = other.SessionStatus;
         SessionToken = other.SessionToken;
         EmailsNotifications = other.EmailsNotifications;
         Name = other.Name;
+        NormalizeUpperName = other.NormalizeUpperName;
         Description = other.Description;
         if (other.DataSessionValues is not null)
         {
