@@ -24,7 +24,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         List<string> stat =
         [
-            $"Перечислений: {dump.Enums.Count()} (элементов всего: {dump.Enums.Sum(x => x.EnumItems?.Count())})",
+            $"Перечислений: {dump.Enums.Length} (элементов всего: {dump.Enums.Sum(x => x.EnumItems.Length)})",
             //$"Документов: {dump.Documents.Count()} (полей всего: {dump.Documents.Sum(x => x.PropertiesBody?.Count()) + dump.Documents.Sum(x => x.Grids?.SelectMany(y => y.Properties!).Count())})",
             $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
             $"{conf.EnumDirectoryPath} - папка перечислений",
@@ -40,7 +40,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             $"××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××",
             $"",
             $"LayerContextPartGen.cs - разделяемый [public partial class LayerContext : DbContext] класс.",
-            $"refit_di.cs - [public static class RefitExtensionDesignerDI].[public static void BuildRefitServicesDI(this IServiceCollection services, ClientConfigModel conf, TimeSpan handler_lifetime)]",
+            //$"refit_di.cs - [public static class RefitExtensionDesignerDI].[public static void BuildRefitServicesDI(this IServiceCollection services, ClientConfigModel conf, TimeSpan handler_lifetime)]",
             $"services_di.cs - [public static class ServicesExtensionDesignerDI].[public static void BuildDesignerServicesDI(this IServiceCollection services)]"
         ];
         services_di = [];
@@ -50,17 +50,19 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
         await ReadmeGen(stat);
         await EnumsGen(dump.Enums);
-        await DocumentsShemaGen(dump.Documents);
-        await DbContextGen(dump.Documents);
-        await DbTableAccessGen(dump.Documents);
-        await GenServicesDI();
+        //await DocumentsShemaGen(dump.Documents);
+        //await DbContextGen(dump.Documents);
+        //await DbTableAccessGen(dump.Documents);
+        //await GenServicesDI();
+
         string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented);
         await GenerateJsonDump(json_raw);
 
-        archive.Dispose();
         await ms.FlushAsync();
         services_di.Clear();
-        return ms;
+        archive.Dispose();
+
+        return new MemoryStream(ms.ToArray());
     }
 
     async Task DbTableAccessGen(IEnumerable<BaseFitModel> docs)
@@ -488,124 +490,124 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await writer.WriteLineAsync($"\tpublic partial class {doc_obj.SystemName} : SharedLib.Models.IdRemovableModel");
             await writer.WriteLineAsync("\t{");
             //is_first_item = true;
-            
-            /*
-            if (doc_obj.PropertiesBody is not null)
-                foreach (DocumentPropertyFitModel property in doc_obj.PropertiesBody.OrderBy(x => x.SortIndex))
-                {
-                    if (!is_first_item)
-                    {
-                        await writer.WriteLineAsync();
-                    }
-                    else
-                    {
-                        is_first_item = false;
-                    }
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {property.Name}");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    switch (property.PropertyType)
-                    {
-                        case PropertyTypesEnum.String:
-                            await writer.WriteLineAsync($"\t\tpublic string {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.Int:
-                            await writer.WriteLineAsync($"\t\tpublic int {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.Decimal:
-                            await writer.WriteLineAsync($"\t\tpublic decimal {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.Bool:
-                            await writer.WriteLineAsync($"\t\tpublic bool {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.DateTime:
-                            await writer.WriteLineAsync($"\t\tpublic DateTime {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.SimpleEnum:
-                            await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
-                            break;
-                        case PropertyTypesEnum.Document:
-                            await writer.WriteLineAsync($"\t\tpublic int {property.SystemName}Id {{ get; set; }}");
-                            await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
-                            break;
-                        default:
-                            throw new Exception();
-                    }
-                }
 
-            if (doc_obj.Grids is not null)
-                foreach (GridFitModel grid in doc_obj.Grids)
-                {
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// '{grid.Name}': Табличная часть документа");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic ICollection<{grid.SystemName}> {grid.SystemName}{GlobalStaticConstants.TABLE_PROPERTY_NAME_PREFIX} {{ get; set; }}");
-                }
+
+            //if (doc_obj.PropertiesBody is not null)
+            //    foreach (DocumentPropertyFitModel property in doc_obj.PropertiesBody.OrderBy(x => x.SortIndex))
+            //    {
+            //        if (!is_first_item)
+            //        {
+            //            await writer.WriteLineAsync();
+            //        }
+            //        else
+            //        {
+            //            is_first_item = false;
+            //        }
+            //        await writer.WriteLineAsync("\t\t/// <summary>");
+            //        await writer.WriteLineAsync($"\t\t/// {property.Name}");
+            //        await writer.WriteLineAsync("\t\t/// </summary>");
+            //        switch (property.PropertyType)
+            //        {
+            //            case PropertyTypesEnum.String:
+            //                await writer.WriteLineAsync($"\t\tpublic string {property.SystemName} {{ get; set; }}");
+            //                break;
+            //            case PropertyTypesEnum.Int:
+            //                await writer.WriteLineAsync($"\t\tpublic int {property.SystemName} {{ get; set; }}");
+            //                break;
+            //            case PropertyTypesEnum.Decimal:
+            //                await writer.WriteLineAsync($"\t\tpublic decimal {property.SystemName} {{ get; set; }}");
+            //                break;
+            //            case PropertyTypesEnum.Bool:
+            //                await writer.WriteLineAsync($"\t\tpublic bool {property.SystemName} {{ get; set; }}");
+            //                break;
+            //            case PropertyTypesEnum.DateTime:
+            //                await writer.WriteLineAsync($"\t\tpublic DateTime {property.SystemName} {{ get; set; }}");
+            //                break;
+            //            case PropertyTypesEnum.SimpleEnum:
+            //                await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
+            //                break;
+            //            case PropertyTypesEnum.Document:
+            //                await writer.WriteLineAsync($"\t\tpublic int {property.SystemName}Id {{ get; set; }}");
+            //                await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
+            //                break;
+            //            default:
+            //                throw new Exception();
+            //        }
+            //    }
+
+            //if (doc_obj.Grids is not null)
+            //    foreach (GridFitModel grid in doc_obj.Grids)
+            //    {
+            //        await writer.WriteLineAsync();
+            //        await writer.WriteLineAsync("\t\t/// <summary>");
+            //        await writer.WriteLineAsync($"\t\t/// '{grid.Name}': Табличная часть документа");
+            //        await writer.WriteLineAsync("\t\t/// </summary>");
+            //        await writer.WriteLineAsync($"\t\tpublic ICollection<{grid.SystemName}> {grid.SystemName}{GlobalStaticConstants.TABLE_PROPERTY_NAME_PREFIX} {{ get; set; }}");
+            //    }
 
             await WriteEnd(writer);
 
-            if (doc_obj.Grids is not null)
-                foreach (GridFitModel grid in doc_obj.Grids)
-                {
-                    type_class_name = $"{grid.SystemName}";
+            //if (doc_obj.Grids is not null)
+            //    foreach (GridFitModel grid in doc_obj.Grids)
+            //    {
+            //        type_class_name = $"{grid.SystemName}";
 
 
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.DocumentsMastersDbDirectoryPath, $"{grid.SystemName}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name);
+            //        zipEntry = archive.CreateEntry(Path.Combine(conf.DocumentsMastersDbDirectoryPath, $"{grid.SystemName}.cs"));
+            //        writer = new(zipEntry.Open(), Encoding.UTF8);
+            //        await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name);
 
-                    await writer.WriteLineAsync($"\tpublic partial class {grid.SystemName} : SharedLib.Models.IdRemovableModel");
-                    await writer.WriteLineAsync("\t{");
+            //        await writer.WriteLineAsync($"\tpublic partial class {grid.SystemName} : SharedLib.Models.IdRemovableModel");
+            //        await writer.WriteLineAsync("\t{");
 
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// (FK) {grid.Name}");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic int {grid.SystemName}OwnerId {{ get; set; }}");
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {grid.Name}");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic {grid.SystemName} {grid.SystemName}Owner {{ get; set; }}");
+            //        await writer.WriteLineAsync("\t\t/// <summary>");
+            //        await writer.WriteLineAsync($"\t\t/// (FK) {grid.Name}");
+            //        await writer.WriteLineAsync("\t\t/// </summary>");
+            //        await writer.WriteLineAsync($"\t\tpublic int {grid.SystemName}OwnerId {{ get; set; }}");
+            //        await writer.WriteLineAsync();
+            //        await writer.WriteLineAsync("\t\t/// <summary>");
+            //        await writer.WriteLineAsync($"\t\t/// {grid.Name}");
+            //        await writer.WriteLineAsync("\t\t/// </summary>");
+            //        await writer.WriteLineAsync($"\t\tpublic {grid.SystemName} {grid.SystemName}Owner {{ get; set; }}");
 
-                    if (grid.Properties is not null)
-                        foreach (DocumentPropertyFitModel property in grid.Properties.OrderBy(x => x.SortIndex))
-                        {
-                            await writer.WriteLineAsync();
-                            await writer.WriteLineAsync("\t\t/// <summary>");
-                            await writer.WriteLineAsync($"\t\t/// {property.Name}");
-                            await writer.WriteLineAsync("\t\t/// </summary>");
-                            switch (property.PropertyType)
-                            {
-                                case PropertyTypesEnum.String:
-                                    await writer.WriteLineAsync($"\t\tpublic string {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.Int:
-                                    await writer.WriteLineAsync($"\t\tpublic int {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.Decimal:
-                                    await writer.WriteLineAsync($"\t\tpublic decimal {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.Bool:
-                                    await writer.WriteLineAsync($"\t\tpublic bool {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.DateTime:
-                                    await writer.WriteLineAsync($"\t\tpublic DateTime {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.SimpleEnum:
-                                    await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
-                                    break;
-                                case PropertyTypesEnum.Document:
-                                    await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
-                                    break;
-                                default:
-                                    throw new Exception();
-                            }
-                        }
+            //        if (grid.Properties is not null)
+            //            foreach (DocumentPropertyFitModel property in grid.Properties.OrderBy(x => x.SortIndex))
+            //            {
+            //                await writer.WriteLineAsync();
+            //                await writer.WriteLineAsync("\t\t/// <summary>");
+            //                await writer.WriteLineAsync($"\t\t/// {property.Name}");
+            //                await writer.WriteLineAsync("\t\t/// </summary>");
+            //                switch (property.PropertyType)
+            //                {
+            //                    case PropertyTypesEnum.String:
+            //                        await writer.WriteLineAsync($"\t\tpublic string {property.SystemName} {{ get; set; }}");
+            //                        break;
+            //                    case PropertyTypesEnum.Int:
+            //                        await writer.WriteLineAsync($"\t\tpublic int {property.SystemName} {{ get; set; }}");
+            //                        break;
+            //                    case PropertyTypesEnum.Decimal:
+            //                        await writer.WriteLineAsync($"\t\tpublic decimal {property.SystemName} {{ get; set; }}");
+            //                        break;
+            //                    case PropertyTypesEnum.Bool:
+            //                        await writer.WriteLineAsync($"\t\tpublic bool {property.SystemName} {{ get; set; }}");
+            //                        break;
+            //                    case PropertyTypesEnum.DateTime:
+            //                        await writer.WriteLineAsync($"\t\tpublic DateTime {property.SystemName} {{ get; set; }}");
+            //                        break;
+            //                    case PropertyTypesEnum.SimpleEnum:
+            //                        await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
+            //                        break;
+            //                    case PropertyTypesEnum.Document:
+            //                        await writer.WriteLineAsync($"\t\tpublic {property.PropertyTypeMetadata?.SystemName} {property.SystemName} {{ get; set; }}");
+            //                        break;
+            //                    default:
+            //                        throw new Exception();
+            //                }
+            //            }
 
-                    await WriteEnd(writer);
-                }
-        */
+            //        await WriteEnd(writer);
+            //    }
+
         }
     }
 
@@ -635,9 +637,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                         is_first_item = false;
                     }
                     await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {enum_item.Description}");
+                    await writer.WriteLineAsync($"\t\t/// {enum_item.Name}");
                     await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\t{enum_item.Name},");
+                    await writer.WriteLineAsync($"\t\t{enum_item.SystemName},");
                 }
 
             await WriteEnd(writer);

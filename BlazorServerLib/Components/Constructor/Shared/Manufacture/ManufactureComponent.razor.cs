@@ -1,5 +1,6 @@
 ﻿using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using SharedLib.Models;
 using MudBlazor;
 using SharedLib;
@@ -20,6 +21,10 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
     [Inject]
     IManufactureService ManufactureRepo { get; set; } = default!;
+
+    /// <inheritdoc/>
+    [Inject]
+    protected IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -225,11 +230,14 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = false;
     }
 
-    void Download()
+    async Task Download()
     {
         ArgumentNullException.ThrowIfNull(CurrentProject.Directories);
         ArgumentNullException.ThrowIfNull(CurrentProject.Documents);
         ArgumentNullException.ThrowIfNull(ParentFormsPage.MainProject);
+
+        CodeGeneratorConfigModel conf_gen = Manufacture;
+        GeneratorCSharpService gen = new(conf_gen, ParentFormsPage.MainProject);
 
         StructureProjectModel struct_project = new()
         {
@@ -237,8 +245,19 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
             Documents = [.. CurrentProject.Documents.Select(DocumentConvert)],
         };
 
-        CodeGeneratorConfigModel conf_gen = Manufacture;
-        GeneratorCSharpService gen = new(conf_gen, ParentFormsPage.MainProject);
+        Stream fileStream = await gen.GetZipArchive(struct_project);
+        string fileName = $"project-{CurrentProject.Id}-codebase-{DateTime.Now}.zip";
+
+        using DotNetStreamReference streamRef = new(stream: fileStream);
+        try
+        {
+            await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+            fileStream.Close();
+        }
+        catch (Exception ex)
+        {
+            SnackbarRepo.Add(ex.Message, Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+        }
     }
 
     /// <inheritdoc/>
