@@ -12,13 +12,14 @@ using Newtonsoft.Json;
 using IdentityLib;
 using SharedLib;
 using DbcLib;
+using System.Linq.Expressions;
 
 namespace ServerLib;
 
 /// <summary>
 /// Constructor служба
 /// </summary>
-public class ConstructorService(
+public partial class ConstructorService(
     IDbContextFactory<MainDbAppContext> mainDbFactory,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IUsersProfilesService usersProfilesRepo,
@@ -590,7 +591,7 @@ public class ConstructorService(
             .ProjectsUse
             .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == member_user_id);
 
-        if(main_project_for_member is not null)
+        if (main_project_for_member is not null)
             context_forms.Remove(main_project_for_member);
 
         await context_forms.SaveChangesAsync();
@@ -2851,6 +2852,9 @@ public class ConstructorService(
         if (session_json.SessionStatus == SessionsStatusesEnum.None)
             session_json.SessionToken = null;
 
+        session_json.Name = MyRegexSpices().Replace(session_json.Name.Trim(), " ");
+        session_json.NormalizeUpperName = session_json.Name.ToUpper();
+
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         ApplicationUser? userDb = await identityContext.Users
             .FirstOrDefaultAsync(x => x.Id == session_json.AuthorUser, cancellationToken: cancellationToken);
@@ -2862,6 +2866,23 @@ public class ConstructorService(
         }
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+
+        Expression<Func<SessionOfDocumentDataModelDB, bool>> expr = x
+            => x.Id != session_json.Id &&
+            x.OwnerId == session_json.OwnerId &&
+            x.ProjectId == session_json.ProjectId &&
+            x.NormalizeUpperName == session_json.NormalizeUpperName;
+
+        SessionOfDocumentDataModelDB? session_db = await context_forms
+            .Sessions
+            .FirstOrDefaultAsync(expr, cancellationToken: cancellationToken);
+
+        if (session_db is not null)
+        {
+            res.AddError($"Ссылка с таким именем уже существует в БД. Задайте новое имя");
+            return res;
+        }
+
         if (session_json.Id < 1)
         {
             session_json.CreatedAt = DateTime.Now;
@@ -2871,9 +2892,9 @@ public class ConstructorService(
 
             await context_forms.AddAsync(session_json, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
-            return new() { Response = session_json, Messages = new() { new() { TypeMessage = ResultTypesEnum.Success, Text = $"Создана сессия #{session_json.Id}" } } };
+            return new() { Response = session_json, Messages = [new() { TypeMessage = ResultTypesEnum.Success, Text = $"Создана сессия #{session_json.Id}" }] };
         }
-        SessionOfDocumentDataModelDB? session_db = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == session_json.Id, cancellationToken: cancellationToken);
+        session_db = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == session_json.Id, cancellationToken: cancellationToken);
         string msg;
         if (session_db is null)
         {
@@ -2953,8 +2974,14 @@ public class ConstructorService(
             query = query.Where(x => x.AuthorUser == req.FilterUserId);
 
         if (!string.IsNullOrWhiteSpace(req.SimpleRequest))
-            query = query.Where(x => (x.Name != null && EF.Functions.Like(x.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") || (x.SessionToken != null && x.SessionToken.ToLower() == req.SimpleRequest.ToLower()) || (!string.IsNullOrWhiteSpace(x.EmailsNotifications) && EF.Functions.Like(x.EmailsNotifications.ToLower(), $"%{req.SimpleRequest.ToLower()}%"))));
+        {
+            Expression<Func<SessionOfDocumentDataModelDB, bool>> expr = x
+                => EF.Functions.Like(x.NormalizeUpperName!, $"%{req.SimpleRequest.ToUpper()}%") ||
+                (x.SessionToken != null && x.SessionToken.ToLower() == req.SimpleRequest.ToLower()) ||
+                (!string.IsNullOrWhiteSpace(x.EmailsNotifications) && EF.Functions.Like(x.EmailsNotifications.ToLower(), $"%{req.SimpleRequest.ToLower()}%"));
 
+            query = query.Where(expr);
+        }
         res.TotalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
         query = query.Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
@@ -3079,4 +3106,7 @@ public class ConstructorService(
         return ResponseBaseModel.CreateSuccess($"Сессия #{session_id} успешно удалена из БД");
     }
     #endregion
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex MyRegexSpices();
 }

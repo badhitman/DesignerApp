@@ -10,8 +10,14 @@ namespace SharedLib;
 /// Сессия опроса/анкеты
 /// </summary>
 [Index(nameof(AuthorUser)), Index(nameof(SessionToken)), Index(nameof(SessionStatus)), Index(nameof(CreatedAt)), Index(nameof(LastDocumentUpdateActivity)), Index(nameof(DeadlineDate))]
+[Index(nameof(OwnerId), nameof(ProjectId), nameof(NormalizeUpperName), IsUnique = true)]
 public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
 {
+    /// <summary>
+    /// Нормализованное имя: UPPERCASE
+    /// </summary>
+    public string? NormalizeUpperName { get; set; }
+
     /// <summary>
     /// Опрос/анкета
     /// </summary>
