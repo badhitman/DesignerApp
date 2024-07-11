@@ -829,7 +829,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryConstructedModel _dir, CancellationToken cancellationToken = default)
     {
-        _dir.Name = Regex.Replace(_dir.Name, @"\s+", " ").Trim();
+        _dir.Name = MyRegexSpices().Replace(_dir.Name.Trim(), " ");
         TResponseStrictModel<int> res = new() { Response = 0 };
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(_dir);
         if (!IsValid)
@@ -965,7 +965,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseStrictModel<int>> CreateElementForDirectory(OwnedNameModel element, CancellationToken cancellationToken = default)
     {
-        element.Name = Regex.Replace(element.Name, @"\s+", " ").Trim();
+        element.Name = MyRegexSpices().Replace(element.Name, " ").Trim();
         TResponseStrictModel<int> res = new() { Response = 0 };
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(element);
@@ -1038,7 +1038,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> UpdateElementOfDirectory(EntryModel element, CancellationToken cancellationToken = default)
     {
-        element.Name = Regex.Replace(element.Name, @"\s+", " ").Trim();
+        element.Name = MyRegexSpices().Replace(element.Name, " ").Trim();
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(element);
         if (!IsValid)
             return ResponseBaseModel.CreateError(ValidationResults);
@@ -1329,7 +1329,7 @@ public partial class ConstructorService(
     {
         TResponseModel<FormConstructorModelDB> res = new();
 
-        form.Name = Regex.Replace(form.Name, @"\s+", " ").Trim();
+        form.Name = MyRegexSpices().Replace(form.Name, " ").Trim();
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(form);
         if (!IsValid)
         {
@@ -1597,7 +1597,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> FormFieldUpdateOrCreate(FieldFormBaseConstructorModel form_field, CancellationToken cancellationToken = default)
     {
-        form_field.Name = Regex.Replace(form_field.Name, @"\s+", " ").Trim();
+        form_field.Name = MyRegexSpices().Replace(form_field.Name, " ").Trim();
         form_field.MetadataValueType = form_field.MetadataValueType?.Trim();
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(form_field);
@@ -1769,7 +1769,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(FieldFormAkaDirectoryConstructorModelDB field_directory, CancellationToken cancellationToken = default)
     {
-        field_directory.Name = Regex.Replace(field_directory.Name, @"\s+", " ").Trim();
+        field_directory.Name = MyRegexSpices().Replace(field_directory.Name, " ").Trim();
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(field_directory);
         if (!IsValid)
@@ -2136,7 +2136,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseModel<DocumentSchemeConstructorModelDB>> UpdateOrCreateDocumentScheme(EntryConstructedModel documentScheme, CancellationToken cancellationToken = default)
     {
-        documentScheme.Name = Regex.Replace(documentScheme.Name, @"\s+", " ").Trim();
+        documentScheme.Name = MyRegexSpices().Replace(documentScheme.Name, " ").Trim();
         TResponseModel<DocumentSchemeConstructorModelDB> res = new();
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(documentScheme);
@@ -2370,7 +2370,7 @@ public partial class ConstructorService(
     {
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> res = new();
 
-        tab_of_document_scheme.Name = Regex.Replace(tab_of_document_scheme.Name, @"\s+", " ").Trim();
+        tab_of_document_scheme.Name = MyRegexSpices().Replace(tab_of_document_scheme.Name, " ").Trim();
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(tab_of_document_scheme);
         if (!IsValid)
@@ -2617,7 +2617,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TabJoinDocumentSchemeConstructorModelDB tab_document_scheme_form, CancellationToken cancellationToken = default)
     {
-        tab_document_scheme_form.Name = Regex.Replace(tab_document_scheme_form.Name, @"\s+", " ").Trim();
+        tab_document_scheme_form.Name = MyRegexSpices().Replace(tab_document_scheme_form.Name, " ").Trim();
         tab_document_scheme_form.Description = tab_document_scheme_form.Description?.Trim();
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(tab_document_scheme_form);
