@@ -40,7 +40,15 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     public required Action<int> SelectedDirectoryChangeHandler { get; set; }
 
 
+    /// <summary>
+    /// Current Template InputRichText ref
+    /// </summary>
+    protected InputRichTextComponent? _currentTemplateInputRichText_ref;
+
+
     EntryModel[] allDirectories = default!;
+
+    DirectoryConstructorModelDB? selectedDirectory;
 
     /// <summary>
     /// Выбранный справочник/список
@@ -54,11 +62,18 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
                 SelectedDirectoryChangeHandler(value);
 
             _selected_dir_id = value;
+            if (_selected_dir_id > 0)
+                InvokeAsync(async () =>
+                {
+                    selectedDirectory = await ConstructorRepo.GetDirectory(value);
+                    Description = selectedDirectory.Description;
+                });
         }
     }
     int _selected_dir_id;
 
     EntryModel directoryObject = default!;
+    string? Description { get; set; }
 
     static readonly DirectoryNavStatesEnum[] ModesForHideSelector = [DirectoryNavStatesEnum.Create, DirectoryNavStatesEnum.Rename];
 
@@ -112,7 +127,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, ProjectId = ParentFormsPage.MainProject.Id });
+        TResponseStrictModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new EntryConstructedModel() { Name = directoryObject.Name, ProjectId = ParentFormsPage.MainProject.Id, Description = Description });
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
         {
@@ -134,7 +149,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id));
+        TResponseStrictModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id, Description));
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 

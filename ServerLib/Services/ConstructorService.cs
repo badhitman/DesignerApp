@@ -814,7 +814,11 @@ public partial class ConstructorService(
         if (!ids.Any())
             return [];
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        DirectoryConstructorModelDB[] res = await context_forms.Directories.Include(x => x.Elements).Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken: cancellationToken);
+        DirectoryConstructorModelDB[] res = await context_forms
+            .Directories
+            .Include(x => x.Elements)
+            .Where(x => ids.Contains(x.Id)).
+            ToArrayAsync(cancellationToken: cancellationToken);
 
         return res.Select(x => new EntryNestedModel() { Id = x.Id, Name = x.Name, Childs = x.Elements!.Select(y => new EntryModel() { Id = y.Id, Name = y.Name }) });
     }
@@ -834,6 +838,16 @@ public partial class ConstructorService(
             query = query.Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{name_filter.ToUpper()}%"));
 
         return new TResponseStrictModel<EntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
+    }
+
+    /// <inheritdoc/>
+    public async Task<DirectoryConstructorModelDB> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default)
+    {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        return await context_forms
+            .Directories
+            .Include(x => x.Elements)
+            .FirstAsync(x => x.Id == enumeration_id, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -898,14 +912,15 @@ public partial class ConstructorService(
                 return res;
             }
 
-            if (directory_db.Name.Equals(_dir.Name))
+            if (directory_db.Name.Equals(_dir.Name) && directory_db.Description == _dir.Description)
             {
                 res.AddInfo("Справочник не требует изменения");
             }
             else
             {
-                msg = $"Справочник #{_dir.Id} переименован: `{directory_db.Name}` -> `{_dir.Name}`";
+                msg = $"Справочник #{_dir.Id} обновлён";
                 directory_db.Name = _dir.Name;
+                directory_db.Description = _dir.Description;
                 context_forms.Update(directory_db);
                 await context_forms.SaveChangesAsync(cancellationToken);
                 logger.LogInformation(msg);

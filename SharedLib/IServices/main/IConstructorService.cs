@@ -118,6 +118,11 @@ public interface IConstructorService
     public Task<TResponseStrictModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Получить справочник (список/перечисление)
+    /// </summary>
+    public Task<DirectoryConstructorModelDB> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Обновить/Создать справочник
     /// </summary>
     public Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryConstructedModel _dir, CancellationToken cancellationToken = default);

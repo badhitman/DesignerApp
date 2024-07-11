@@ -84,15 +84,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Записать вступление файла
     /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    /// <param name="project_name">Имя проекта</param>
-    /// <param name="name_space">Пространство имён проекта</param>
-    /// <param name="summary_text">Текст для summary/комментария (если NULL, то документация наследуется: <inheritdoc/>)</param>
-    /// <param name="using_ns">Подключаемые пространства имён (using)</param>
-    static async Task WriteHead(StreamWriter writer, string project_name, string name_space, string summary_text, IEnumerable<string>? using_ns = null)
+    async Task WriteHead(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
     {
         await writer.WriteLineAsync("////////////////////////////////////////////////");
-        await writer.WriteLineAsync($"// Project: {project_name} - by  © https://github.com/badhitman - @fakegov");
+        await writer.WriteLineAsync($"// Project: {project.Name} - by  © https://github.com/badhitman - @fakegov");
         await writer.WriteLineAsync("////////////////////////////////////////////////");
         await writer.WriteLineAsync();
 
@@ -103,20 +98,28 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             await writer.WriteLineAsync();
         }
-        bool ns_is_empty = string.IsNullOrWhiteSpace(name_space);
-        if (!ns_is_empty)
+
+        if (!string.IsNullOrWhiteSpace(conf.Namespace))
         {
-            await writer.WriteLineAsync($"namespace {name_space}");
+            await writer.WriteLineAsync($"namespace {conf.Namespace}");
             await writer.WriteLineAsync("{");
         }
-        string ns_pref = ns_is_empty ? "" : "\t";
-        if (summary_text is not null)
+        string ns_pref = string.IsNullOrWhiteSpace(conf.Namespace) ? "" : "\t";
+
+        if (summary_text?.Any() == true)
             await writer.WriteLineAsync($"{ns_pref}/// <summary>");
 
-        await writer.WriteLineAsync($"{ns_pref}/// {(summary_text is null ? "<inheritdoc/>" : summary_text)}");
+        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"{ns_pref}/// {s.Trim()}")))}");
 
-        if (summary_text is not null)
+        if (summary_text?.Any() == true)
             await writer.WriteLineAsync($"{ns_pref}/// </summary>");
+
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            await writer.WriteLineAsync($"{ns_pref}/// <remarks>");
+            await writer.WriteLineAsync($"{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"{ns_pref}/// {r.Trim()}"))}");
+            await writer.WriteLineAsync($"{ns_pref}/// </remarks>");
+        }
     }
 
     /// <summary>
@@ -148,40 +151,36 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
         bool is_first_item;
+
         foreach (EnumFitModel enum_obj in enums)
         {
             zipEntry = archive.CreateEntry(Path.Combine(conf.EnumDirectoryPath, $"{enum_obj.SystemName}.cs"));
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project.Name, conf.Namespace, $"{enum_obj.Name}");
+
+            await WriteHead(writer, [$"{enum_obj.Name}"], enum_obj.Description);
 
             await writer.WriteLineAsync($"\tpublic enum {enum_obj.SystemName}");
             await writer.WriteLineAsync("\t{");
             is_first_item = true;
-            //HtmlDocument doc;
 
             if (enum_obj.EnumItems is not null)
                 foreach (SortableFitModel enum_item in enum_obj.EnumItems.OrderBy(x => x.SortIndex))
                 {
                     if (!is_first_item)
-                    {
                         await writer.WriteLineAsync();
-                    }
                     else
-                    {
                         is_first_item = false;
-                    }
+
                     await writer.WriteLineAsync("\t\t/// <summary>");
                     await writer.WriteLineAsync($"\t\t/// {enum_item.Name}");
                     await writer.WriteLineAsync("\t\t/// </summary>");
 
-                    //if (!string.IsNullOrWhiteSpace(enum_item.Description))
-                    //{
-                    //    await writer.WriteLineAsync("\t\t/// <remarks>");
-                    //    doc = new HtmlDocument();
-                    //    doc.LoadHtml(enum_item.Description);
-                    //    string[] lines = doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                    //    await writer.WriteLineAsync("\t\t/// </summary>");
-                    //}
+                    if (!string.IsNullOrWhiteSpace(enum_item.Description))
+                    {
+                        await writer.WriteLineAsync("\t\t/// <remarks>");
+                        await writer.WriteLineAsync(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(enum_item.Description).Select(r => $"\t\t{r}")));
+                        await writer.WriteLineAsync("\t\t/// </remarks>");
+                    }
 
                     await writer.WriteLineAsync($"\t\t{enum_item.SystemName},");
                 }
@@ -207,7 +206,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                     zipEntry = archive.CreateEntry(Path.Combine(conf.DocumentsMastersDbDirectoryPath, $"{type_class_name}.cs"));
                     writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, doc_obj.Name);
+
+                    await WriteHead(writer, [doc_obj.Name], doc_obj.Description);
 
                     await writer.WriteLineAsync($"\tpublic partial class {type_class_name} : SharedLib.IdSwitchableModel");
                     await writer.WriteLineAsync("\t{");
@@ -219,13 +219,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                         foreach (FieldFitModel _f in form_obj.SimpleFields)
                         {
                             if (!is_first_item)
-                            {
                                 await writer.WriteLineAsync();
-                            }
                             else
-                            {
                                 is_first_item = false;
-                            }
+
                             await WriteFieldInit(_f);
                             await WriteFieldMain(_f);
                         }
@@ -235,13 +232,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                         foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
                         {
                             if (!is_first_item)
-                            {
                                 await writer.WriteLineAsync();
-                            }
                             else
-                            {
                                 is_first_item = false;
-                            }
+
                             await WriteFieldInit(_f);
                             await WriteFieldMain(_f);
                         }
@@ -251,6 +245,16 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 }
             }
         }
+    }
+
+    static string[] DescriptionHtmlToLinesRemark(string html_description)
+    {
+        HtmlDocument doc = new();
+        doc.LoadHtml(html_description
+            .Replace("</p><p>", $"</p>{Environment.NewLine}<p>")
+            .Replace("</br>", $"</br>{Environment.NewLine}")
+            );
+        return doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 
     Task WriteFieldInit(BaseRequiredmFormFitModel field)
@@ -272,7 +276,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         ZipArchiveEntry zipEntry = archive.CreateEntry("LayerContextPartGen.cs");
         StreamWriter writer = new(zipEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer, project.Name, "DbLayerLib", "Database context", ["Microsoft.EntityFrameworkCore", conf.Namespace]);
+        await WriteHead(writer, ["Database context"], using_ns: ["Microsoft.EntityFrameworkCore", conf.Namespace]);
 
         await writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
         await writer.WriteLineAsync("\t{");

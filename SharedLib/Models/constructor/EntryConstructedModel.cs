@@ -20,13 +20,14 @@ public class EntryConstructedModel : EntryDescriptionModel
     public required int ProjectId { get; set; }
 
     /// <inheritdoc/>
-    public static EntryConstructedModel Build(EntryModel sender, int projectId)
+    public static EntryConstructedModel Build(EntryModel sender, int projectId, string? description = null)
     {
         return new()
         {
             Id = sender.Id,
             Name = sender.Name,
             ProjectId = projectId,
+            Description = description
         };
     }
 }
