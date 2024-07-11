@@ -5,10 +5,12 @@
 using System.IO.Compression;
 using System.Reflection;
 using SharedLib.Models;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System.Text;
+using SharedLib;
 
-namespace SharedLib;
+namespace BlazorLib;
 
 /// <inheritdoc/>
 public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectViewModel project)
@@ -63,6 +65,129 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         archive.Dispose();
 
         return new MemoryStream(ms.ToArray());
+    }
+
+    async Task ReadmeGen(IEnumerable<string> stat)
+    {
+        string app_version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
+        ZipArchiveEntry readmeEntry = archive.CreateEntry("Readme.txt");
+        using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
+        await writer.WriteLineAsync($"Генератор C# комплекта - ver: {app_version} (by © https://github.com/badhitman - @fakegov)");
+        await writer.WriteLineAsync($"'{project.Name}' `{conf.Namespace}`");
+        await writer.WriteLineAsync($"============ {DateTime.Now} ============");
+        await writer.WriteLineAsync();
+        //
+        foreach (string row_line in stat)
+            await writer.WriteLineAsync(row_line);
+    }
+
+    /// <summary>
+    /// Записать вступление файла
+    /// </summary>
+    /// <param name="writer">Поток записи ZIP архива</param>
+    /// <param name="project_name">Имя проекта</param>
+    /// <param name="name_space">Пространство имён проекта</param>
+    /// <param name="type_name">Имя типа данных для комментария (если NULL, то документация наследуется: <inheritdoc/>)</param>
+    /// <param name="using_ns">Подключаемые пространства имён (using)</param>
+    static async Task WriteHead(StreamWriter writer, string project_name, string? name_space, string? type_name, IEnumerable<string>? using_ns = null)
+    {
+        await writer.WriteLineAsync("////////////////////////////////////////////////");
+        await writer.WriteLineAsync($"// Project: {project_name} - by  © https://github.com/badhitman - @fakegov");
+        await writer.WriteLineAsync("////////////////////////////////////////////////");
+        await writer.WriteLineAsync();
+
+        if (using_ns?.Any() == true)
+        {
+            foreach (string u in using_ns)
+                await writer.WriteLineAsync($"{(u.StartsWith("using ", StringComparison.CurrentCultureIgnoreCase) ? u : $"using {u}")}{(u.EndsWith(';') ? "" : ";")}");
+
+            await writer.WriteLineAsync();
+        }
+        bool ns_is_empty = string.IsNullOrWhiteSpace(name_space);
+        if (!ns_is_empty)
+        {
+            await writer.WriteLineAsync($"namespace {name_space}");
+            await writer.WriteLineAsync("{");
+        }
+        string ns_pref = ns_is_empty ? "" : "\t";
+        if (type_name is not null)
+            await writer.WriteLineAsync($"{ns_pref}/// <summary>");
+
+        await writer.WriteLineAsync($"{ns_pref}/// {(type_name is null ? "<inheritdoc/>" : type_name)}");
+
+        if (type_name is not null)
+            await writer.WriteLineAsync($"{ns_pref}/// </summary>");
+    }
+
+    /// <summary>
+    /// Запись финальной части файла и закрытие потока записи
+    /// </summary>
+    /// <param name="writer">Поток записи ZIP архива</param>
+    static async Task WriteEnd(StreamWriter writer)
+    {
+        await writer.WriteLineAsync("\t}");
+        await writer.WriteAsync("}");
+        await writer.FlushAsync();
+        writer.Close();
+        await writer.DisposeAsync();
+    }
+
+    /// <summary>
+    /// Сгенерировать дамп данных в формате JSON
+    /// </summary>
+    /// <param name="json_raw">json данные для записи</param>
+    async Task GenerateJsonDump(string json_raw)
+    {
+        ZipArchiveEntry readmeEntry = archive.CreateEntry("dump.json");
+        using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
+        await writer.WriteLineAsync(json_raw);
+    }
+
+    async Task EnumsGen(IEnumerable<EnumFitModel> enums)
+    {
+        ZipArchiveEntry zipEntry;
+        StreamWriter writer;
+        bool is_first_item;
+        foreach (EnumFitModel enum_obj in enums)
+        {
+            zipEntry = archive.CreateEntry(Path.Combine(conf.EnumDirectoryPath, $"{enum_obj.SystemName}.cs"));
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, project.Name, conf.Namespace, $"{enum_obj.Name}");
+
+            await writer.WriteLineAsync($"\tpublic enum {enum_obj.SystemName}");
+            await writer.WriteLineAsync("\t{");
+            is_first_item = true;
+            //HtmlDocument doc;
+
+            if (enum_obj.EnumItems is not null)
+                foreach (SortableFitModel enum_item in enum_obj.EnumItems.OrderBy(x => x.SortIndex))
+                {
+                    if (!is_first_item)
+                    {
+                        await writer.WriteLineAsync();
+                    }
+                    else
+                    {
+                        is_first_item = false;
+                    }
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync($"\t\t/// {enum_item.Name}");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+
+                    //if (!string.IsNullOrWhiteSpace(enum_item.Description))
+                    //{
+                    //    await writer.WriteLineAsync("\t\t/// <remarks>");
+                    //    doc = new HtmlDocument();
+                    //    doc.LoadHtml(enum_item.Description);
+                    //    string[] lines = doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                    //    await writer.WriteLineAsync("\t\t/// </summary>");
+                    //}
+
+                    await writer.WriteLineAsync($"\t\t{enum_item.SystemName},");
+                }
+
+            await WriteEnd(writer);
+        }
     }
 
     async Task DbTableAccessGen(IEnumerable<BaseFitModel> docs)
@@ -611,116 +736,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         }
     }
 
-    async Task EnumsGen(IEnumerable<EnumFitModel> enums)
-    {
-        ZipArchiveEntry zipEntry;
-        StreamWriter writer;
-        bool is_first_item;
-        foreach (EnumFitModel enum_obj in enums)
-        {
-            zipEntry = archive.CreateEntry(Path.Combine(conf.EnumDirectoryPath, $"{enum_obj.SystemName}.cs"));
-            writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, project.Name, conf.Namespace, enum_obj.Name);
-
-            await writer.WriteLineAsync($"\tpublic enum {enum_obj.SystemName}");
-            await writer.WriteLineAsync("\t{");
-            is_first_item = true;
-            if (enum_obj.EnumItems is not null)
-                foreach (SortableFitModel enum_item in enum_obj.EnumItems.OrderBy(x => x.SortIndex))
-                {
-                    if (!is_first_item)
-                    {
-                        await writer.WriteLineAsync();
-                    }
-                    else
-                    {
-                        is_first_item = false;
-                    }
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {enum_item.Name}");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\t{enum_item.SystemName},");
-                }
-
-            await WriteEnd(writer);
-        }
-    }
-
-    async Task ReadmeGen(IEnumerable<string> stat)
-    {
-        string app_version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
-        ZipArchiveEntry readmeEntry = archive.CreateEntry("Readme.txt");
-        using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        await writer.WriteLineAsync($"Генератор C# комплекта - ver: {app_version} (by © https://github.com/badhitman - @fakegov)");
-        await writer.WriteLineAsync($"'{project.Name}' `{conf.Namespace}`");
-        await writer.WriteLineAsync($"============ {DateTime.Now} ============");
-        await writer.WriteLineAsync();
-        //
-        foreach (string row_line in stat)
-            await writer.WriteLineAsync(row_line);
-    }
-
-
-    /// <summary>
-    /// Записать вступление файла
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    /// <param name="project_name">Имя проекта</param>
-    /// <param name="name_space">Пространство имён проекта</param>
-    /// <param name="type_name">Имя типа данных для комментария (если NULL, то документация наследуется: <inheritdoc/>)</param>
-    /// <param name="using_ns">Подключаемые пространства имён (using)</param>
-    static async Task WriteHead(StreamWriter writer, string project_name, string? name_space, string? type_name, IEnumerable<string>? using_ns = null)
-    {
-        await writer.WriteLineAsync("////////////////////////////////////////////////");
-        await writer.WriteLineAsync($"// Project: {project_name} - by  © https://github.com/badhitman - @fakegov");
-        await writer.WriteLineAsync("////////////////////////////////////////////////");
-        await writer.WriteLineAsync();
-
-        if (using_ns?.Any() == true)
-        {
-            foreach (string u in using_ns)
-                await writer.WriteLineAsync($"{(u.StartsWith("using ", StringComparison.CurrentCultureIgnoreCase) ? u : $"using {u}")}{(u.EndsWith(';') ? "" : ";")}");
-
-            await writer.WriteLineAsync();
-        }
-        bool ns_is_empty = string.IsNullOrWhiteSpace(name_space);
-        if (!ns_is_empty)
-        {
-            await writer.WriteLineAsync($"namespace {name_space}");
-            await writer.WriteLineAsync("{");
-        }
-        if (type_name is not null)
-            await writer.WriteLineAsync($"{(ns_is_empty ? "" : "\t")}/// <summary>");
-
-        await writer.WriteLineAsync($"/// {(type_name is null ? "<inheritdoc/>" : type_name)}");
-
-        if (type_name is not null)
-            await writer.WriteLineAsync($"{(ns_is_empty ? "" : "\t")}/// </summary>");
-    }
-
-    /// <summary>
-    /// Запись финальной части файла и закрытие потока записи
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    static async Task WriteEnd(StreamWriter writer)
-    {
-        await writer.WriteLineAsync("\t}");
-        await writer.WriteAsync("}");
-        await writer.FlushAsync();
-        writer.Close();
-        await writer.DisposeAsync();
-    }
-
-    /// <summary>
-    /// Сгенерировать дамп данных в формате JSON
-    /// </summary>
-    /// <param name="json_raw">json данные для записи</param>
-    async Task GenerateJsonDump(string json_raw)
-    {
-        ZipArchiveEntry readmeEntry = archive.CreateEntry("dump.json");
-        using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        await writer.WriteLineAsync(json_raw);
-    }
 
     /// <summary>
     /// Генерация файла регистрации DI служб
