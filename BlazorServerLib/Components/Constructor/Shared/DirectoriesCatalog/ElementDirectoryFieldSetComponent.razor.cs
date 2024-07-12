@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using static MudBlazor.CategoryTypes;
 
 namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 
@@ -36,7 +37,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required DirectoryElementsListViewComponent ParentDirectoryElementsList { get; set; }
+    public required ElementsOfDirectoryListViewComponent ParentDirectoryElementsList { get; set; }
 
     /// <summary>
     /// Родительская страница форм
@@ -48,8 +49,73 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     [CascadingParameter, EditorRequired]
     public required UserInfoModel CurrentUser { get; set; }
 
-    bool IsEdit = false;
 
+    EntryDescriptionModel? ElementObjectOrign;
+    EntryDescriptionModel? ElementObjectEdit;
+
+
+    /// <summary>
+    /// Current Template InputRichText ref
+    /// </summary>
+    protected InputRichTextComponent? _currentTemplateInputRichText_ref;
+
+    /// <inheritdoc/>
+    protected bool IsEdited => ElementObjectOrign is not null && !ElementObjectOrign.Equals(ElementObjectEdit);
+
+
+    /// <inheritdoc/>
+    protected async Task UpdateElementOfDirectory()
+    {
+        ArgumentNullException.ThrowIfNull(ElementObjectEdit);
+
+        IsBusyProgress = true;
+        ResponseBaseModel rest = await ConstructorRepo.UpdateElementOfDirectory(ElementObjectEdit);
+        IsBusyProgress = false;
+
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (!rest.Success())
+            return;
+
+        ElementObjectOrign = GlobalTools.CreateDeepCopy(ElementObjectEdit);
+
+        IsEdit = false;
+        await ParentDirectoryElementsList.ReloadElements(null, true);
+        StateHasChanged();
+
+        if (!rest.Success())
+        {
+            await ParentFormsPage.ReadCurrentMainProject();
+            ParentFormsPage.StateHasChangedCall();
+        }
+    }
+
+
+    bool IsEdit = false;
+    async Task EditToggle()
+    {
+        IsEdit = !IsEdit;
+        if (!IsEdit)
+        {
+            ElementObjectOrign = null;
+            ElementObjectEdit = null;
+            return;
+        }
+
+        IsBusyProgress = true;
+        ElementObjectOrign = await ConstructorRepo.GetElementOfDirectory(ElementObject.Id);
+        ElementObjectEdit = GlobalTools.CreateDeepCopy(ElementObjectOrign);
+        IsBusyProgress = false;
+    }
+
+    void RsetEdit()
+    {
+        ElementObjectEdit = GlobalTools.CreateDeepCopy(ElementObjectOrign);
+        _currentTemplateInputRichText_ref?.SetValue(ElementObjectEdit?.Description);
+    }
+
+    /// <summary>
+    /// Находится ли элемент в самом верхнем (крайнем) положении
+    /// </summary>
     bool IsMostUp
     {
         get
@@ -57,10 +123,14 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
             if (ParentDirectoryElementsList.EntriesElements is null)
                 throw new Exception("Элементы справочника IsNull");
 
-            return ParentDirectoryElementsList.EntriesElements.FindIndex(x => x.Id == ElementObject.Id) == 0;
+            return ParentDirectoryElementsList
+                .EntriesElements
+                .FindIndex(x => x.Id == ElementObject.Id) == 0;
         }
     }
-
+    /// <summary>
+    /// Находится ли элемент в самом нижнем (крайнем) положении
+    /// </summary>
     bool IsMostDown
     {
         get
@@ -68,7 +138,9 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
             if (ParentDirectoryElementsList.EntriesElements is null)
                 throw new Exception("Элементы справочника IsNull");
 
-            return ParentDirectoryElementsList.EntriesElements.FindIndex(x => x.Id == ElementObject.Id) == ParentDirectoryElementsList.EntriesElements.Count - 1;
+            return ParentDirectoryElementsList
+                .EntriesElements
+                .FindIndex(x => x.Id == ElementObject.Id) == ParentDirectoryElementsList.EntriesElements.Count - 1;
         }
     }
 
@@ -100,13 +172,6 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
             ParentFormsPage.StateHasChangedCall();
         }
         await ParentDirectoryElementsList.ReloadElements(null, true);
-    }
-
-    async void EditDoneHandle()
-    {
-        IsEdit = false;
-        await ParentDirectoryElementsList.ReloadElements(null, true);
-        StateHasChanged();
     }
 
     /// <inheritdoc/>

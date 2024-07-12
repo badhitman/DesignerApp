@@ -48,7 +48,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
 
     EntryModel[] allDirectories = default!;
 
-    DirectoryConstructorModelDB? selectedDirectory;
+    EntryDescriptionModel? selectedDirectory;
 
     /// <summary>
     /// Выбранный справочник/список
@@ -75,7 +75,12 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     EntryModel directoryObject = default!;
     string? Description { get; set; }
 
-    static readonly DirectoryNavStatesEnum[] ModesForHideSelector = [DirectoryNavStatesEnum.Create, DirectoryNavStatesEnum.Rename];
+    static readonly DirectoryNavStatesEnum[] ModesForHideSelector = 
+        [
+        DirectoryNavStatesEnum.Create, 
+        DirectoryNavStatesEnum.Rename,
+        DirectoryNavStatesEnum.Delete
+        ];
 
     /// <summary>
     /// Directory navigation state
@@ -142,6 +147,13 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
         }
     }
 
+    async Task CancelCreatingDirectory()
+    {
+        ResetNavForm();
+        selectedDirectory = await ConstructorRepo.GetDirectory(_selected_dir_id);
+        Description = selectedDirectory.Description;
+    }
+
     /// <inheritdoc/>
     protected async Task SaveRenameDirectory()
     {
@@ -165,6 +177,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     void ResetNavForm(bool stateHasChanged = false)
     {
         directoryObject = EntryModel.BuildEmpty();
+        Description = null;
         DirectoryNavState = DirectoryNavStatesEnum.None;
 
         if (stateHasChanged)

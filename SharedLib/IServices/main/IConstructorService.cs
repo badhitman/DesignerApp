@@ -120,7 +120,7 @@ public interface IConstructorService
     /// <summary>
     /// Получить справочник (список/перечисление)
     /// </summary>
-    public Task<DirectoryConstructorModelDB> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default);
+    public Task<EntryDescriptionModel> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/Создать справочник
@@ -146,7 +146,12 @@ public interface IConstructorService
     /// <summary>
     /// Обновить элемент справочника
     /// </summary>
-    public Task<ResponseBaseModel> UpdateElementOfDirectory(EntryModel element, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> UpdateElementOfDirectory(EntryDescriptionModel element, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Получить элемент справочника/перечисления/списка
+    /// </summary>
+    public Task<EntryDescriptionModel> GetElementOfDirectory(int element_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить элемент справочника/списка

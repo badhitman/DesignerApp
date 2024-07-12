@@ -2,9 +2,25 @@
 
 @if (IsEdit)
 {
-    <div class="input-group input-group-sm">
-        <ElementDirectoryFieldEditComponent EditDoneAction="EditDoneHandle" />
-        <button @onclick="() => { IsEdit = false; }" class="btn btn-outline-secondary" type="button" id="button-addon1">Отмена</button>
+    <div class="alert alert-@(IsEdited ? "success" : "primary")" role="alert">
+        <div class="vstack gap-3">
+            <div class="input-group input-group-sm">
+                @if (IsEdited)
+                {
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Новое имя элемента</span>
+                }
+                <input @bind-value="ElementObjectEdit!.Name" @bind-value:event="oninput" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm">
+
+                @if (IsEdited)
+                {
+                    <button @onclick="RsetEdit" disabled="@(!IsEdited)" class="btn btn-outline-primary" type="button" id="button-addon1">Сброс</button>
+                    <button @onclick="UpdateElementOfDirectory" class="btn btn-outline-success" type="button" id="button-addon1">Сохранить</button>
+                }
+                <button @onclick="EditToggle" class="btn btn@(IsEdited ? "" : "-outline")-secondary" type="button" id="button-addon1">Закрыть</button>
+            </div>
+
+            <InputRichTextComponent @bind-Value="ElementObjectEdit.Description" @ref="_currentTemplateInputRichText_ref" ReadOnly="IsBusyProgress" />
+        </div>
     </div>
 }
 else
@@ -17,7 +33,7 @@ else
     {
         <span @onclick="MoveUp" class="link-@(IsMostUp ? "secondary" : "info") bi bi-arrow-up-square@(IsMostUp ? "" : "-fill") me-2" title="Вверх"></span>
         <span @onclick="MoveDown" class="link-@(IsMostDown ? "secondary" : "info") bi bi-arrow-down-square@(IsMostDown ? "" : "-fill") me-3" title="Вниз"></span>
-        <span @onclick="() => { IsEdit = true; }" class="link-primary bi bi-pen me-2" title="Редактирование элемента"></span>
+        <span @onclick="EditToggle" class="link-primary bi bi-pen me-2" title="Редактирование элемента"></span>
         <span @onclick="DeleteElementOfDirectory" class="link-primary bi bi-trash text-warning" title="Удаление элемента"></span>
     }
 }

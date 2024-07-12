@@ -23,6 +23,7 @@ public class EntryModel
     /// Имя объекта
     /// </summary>
     [Required(AllowEmptyStrings = false, ErrorMessage = "Поле наименования обязательно для заполнения")]
+    [NameValid]
     public virtual required string Name { get; set; }
 
     /// <inheritdoc/>

@@ -178,7 +178,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     if (!string.IsNullOrWhiteSpace(enum_item.Description))
                     {
                         await writer.WriteLineAsync("\t\t/// <remarks>");
-                        await writer.WriteLineAsync(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(enum_item.Description).Select(r => $"\t\t{r}")));
+                        await writer.WriteLineAsync($"{(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(enum_item.Description).Select(r => $"\t\t/// {r}")))}");
                         await writer.WriteLineAsync("\t\t/// </remarks>");
                     }
 
@@ -251,6 +251,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         HtmlDocument doc = new();
         doc.LoadHtml(html_description
+            .Replace("&nbsp;", " ")
+            .Replace("  ", " ")
             .Replace("</p><p>", $"</p>{Environment.NewLine}<p>")
             .Replace("</br>", $"</br>{Environment.NewLine}")
             );

@@ -14,6 +14,20 @@ public class EntryDescriptionModel : EntryModel
     /// </summary>
     public string? Description { get; set; }
 
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj == null) return false;
+
+        if (obj is EntryDescriptionModel e)
+            return Name == e.Name && Description == e.Description && Id == e.Id;
+
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    => $"{Name} {Id} {Description}".GetHashCode();
 
     /// <inheritdoc/>
     public static new EntryDescriptionModel Build(string name)

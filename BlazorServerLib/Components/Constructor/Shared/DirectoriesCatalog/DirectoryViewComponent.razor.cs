@@ -35,7 +35,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 
 
     /// <inheritdoc/>
-    protected DirectoryElementsListViewComponent elementsListOfDirectoryView_ref = default!;
+    protected ElementsOfDirectoryListViewComponent elementsListOfDirectoryView_ref = default!;
 
     /// <inheritdoc/>
     protected DirectoryNavComponent? directoryNav_ref;

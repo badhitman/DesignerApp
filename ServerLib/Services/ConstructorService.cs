@@ -841,13 +841,14 @@ public partial class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<DirectoryConstructorModelDB> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default)
+    public async Task<EntryDescriptionModel> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
             .Directories
-            .Include(x => x.Elements)
-            .FirstAsync(x => x.Id == enumeration_id, cancellationToken: cancellationToken);
+            .Where(x => x.Id == enumeration_id)
+            .Select(x => new EntryDescriptionModel() { Name = x.Name, Id = x.Id, Description = x.Description })
+            .FirstAsync(cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -965,6 +966,17 @@ public partial class ConstructorService(
     #endregion
     #region элементы справочникв/списков
     /// <inheritdoc/>
+    public async Task<EntryDescriptionModel> GetElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
+    {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        return await context_forms
+            .ElementsOfDirectories
+            .Where(x => x.Id == element_id)
+            .Select(x => new EntryDescriptionModel() { Name = x.Name, Id = x.Id, Description = x.Description })
+            .FirstAsync(cancellationToken: cancellationToken);
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<List<EntryModel>>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
         TResponseModel<List<EntryModel>> res = new();
@@ -1061,7 +1073,7 @@ public partial class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> UpdateElementOfDirectory(EntryModel element, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> UpdateElementOfDirectory(EntryDescriptionModel element, CancellationToken cancellationToken = default)
     {
         element.Name = MyRegexSpices().Replace(element.Name, " ").Trim();
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(element);
@@ -1086,7 +1098,7 @@ public partial class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        if (element_db.Name.Equals(element.Name))
+        if (element_db.Name.Equals(element.Name) && element_db.Description?.Equals(element.Description) == true)
         {
             res.AddInfo("Изменений нет - обновления не требуется");
             return res;
@@ -1103,6 +1115,8 @@ public partial class ConstructorService(
         }
 
         element_db.Name = element.Name;
+        element_db.Description = element.Description;
+
         context_forms.Update(element_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 

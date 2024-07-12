@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 /// <summary>
 /// Directory elements-list view
 /// </summary>
-public partial class DirectoryElementsListViewComponent : BlazorBusyComponentBaseModel
+public partial class ElementsOfDirectoryListViewComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Inject]

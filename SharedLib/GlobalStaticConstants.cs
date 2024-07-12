@@ -240,7 +240,7 @@ public static partial class GlobalStaticConstants
     public const string SESSION_MEMCASHE_NAMESPASE = "sessions";
 
     /// <summary>
-    /// Шаблон системного имени
+    /// Шаблон имени папки
     /// </summary>
     public const string FOLDER_NAME_TEMPLATE = @"^[a-zA-Z0-9_-]{2,128}$";
 
@@ -250,7 +250,7 @@ public static partial class GlobalStaticConstants
     public const string SYSTEM_NAME_TEMPLATE = @"^[a-zA-Z][a-zA-Z0-9_]{1,72}[a-zA-Z0-9]{0,128}$";
 
     /// <summary>
-    /// Сообщение для шаблона пространства имён
+    /// Сообщение для шаблона системного имени
     /// </summary>
     public const string SYSTEM_NAME_TEMPLATE_MESSAGE = "Системное имя не корректное. Оно может содержать латинские буквы и цифры. Первым символом должна идти буква. Минимум 2 символа!";
 }

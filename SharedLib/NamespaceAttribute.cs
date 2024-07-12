@@ -6,18 +6,15 @@ namespace SharedLib;
 /// <summary>
 /// Валидация корректности пространства имён
 /// </summary>
-public class NamespaceAttribute : ValidationAttribute
+public partial class NamespaceAttribute : ValidationAttribute
 {
     /// <inheritdoc/>
     public override bool IsValid(object? value)
     {
-        if (value is string ns)
-        {
-            if (CheckNS(ns))
-                return true;
-            else
-                ErrorMessage = "Некорректное пространство имён (namespace)";
-        }
+        if (value is string ns && CheckNS(ns))
+            return true;
+
+        ErrorMessage = "Некорректное пространство имён (namespace)";
         return false;
     }
 
@@ -26,6 +23,9 @@ public class NamespaceAttribute : ValidationAttribute
         if (string.IsNullOrEmpty(ns))
             return false;
 
-        return ns.Split('.').All(x => Regex.IsMatch(x, GlobalStaticConstants.SYSTEM_NAME_TEMPLATE));
+        return ns.Split('.').All(x => MyRegexSystemName().IsMatch(x));
     }
+
+    [GeneratedRegex(GlobalStaticConstants.SYSTEM_NAME_TEMPLATE, RegexOptions.Compiled)]
+    private static partial Regex MyRegexSystemName();
 }
