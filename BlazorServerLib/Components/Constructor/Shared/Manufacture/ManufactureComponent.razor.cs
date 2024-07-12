@@ -70,6 +70,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     /// </summary>
     public ManageManufactureModelDB Manufacture { get; private set; } = default!;
 
+    TResponseModel<Stream>? downloadSource;
     readonly List<string> _errors = [];
     /// <summary>
     /// Build tree doneAction
@@ -245,19 +246,45 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
             Documents = [.. CurrentProject.Documents.Select(DocumentConvert)],
         };
 
-        Stream fileStream = await gen.GetZipArchive(struct_project);
+        var _err = struct_project
+            .Enums
+            .GroupBy(e => e.SystemName)
+            .Select(x => new { SystemName = x.Key, Count = x.Count() })
+            .Where(x => x.Count > 1)
+            .ToArray();
+
+        if (_err.Length != 0)
+        {
+            SnackbarRepo.Add($"Существуют конфликты имён перечислений: {string.Join(";", _err.Select(x => $"{x.SystemName} - {x.Count}"))};", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            return;
+        }
+
+        _err = struct_project
+            .Documents
+            .GroupBy(e => e.SystemName)
+            .Select(x => new { SystemName = x.Key, Count = x.Count() })
+            .Where(x => x.Count > 1)
+            .ToArray();
+
+        if (_err.Length != 0)
+        {
+            SnackbarRepo.Add($"Существуют конфликты имён документов: {string.Join(";", _err.Select(x => $"{x.SystemName} - {x.Count}"))};", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+            return;
+        }
+
+
+        downloadSource = await gen.GetZipArchive(struct_project);
+        if (!downloadSource.Success())
+        {
+            SnackbarRepo.ShowMessagesResponse(downloadSource.Messages);
+            return;
+        }
+        ArgumentNullException.ThrowIfNull(downloadSource.Response);
         string fileName = $"project-{CurrentProject.Id}-codebase-{DateTime.Now}.zip";
 
-        using DotNetStreamReference streamRef = new(stream: fileStream);
-        try
-        {
-            await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
-            fileStream.Close();
-        }
-        catch (Exception ex)
-        {
-            SnackbarRepo.Add(ex.Message, Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-        }
+        using DotNetStreamReference streamRef = new(stream: downloadSource.Response);
+        await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        downloadSource.Response.Close();
     }
 
     /// <inheritdoc/>

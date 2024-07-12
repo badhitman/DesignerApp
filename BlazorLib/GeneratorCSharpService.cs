@@ -16,18 +16,23 @@ namespace BlazorLib;
 public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectViewModel project)
 {
     static Dictionary<string, string> services_di = [];
-
     ZipArchive archive = default!;
+    TResponseModel<Stream> _result = default!;
 
+    #region main
     /// <summary>
     /// Формирование данных
     /// </summary>
-    public async Task<Stream> GetZipArchive(StructureProjectModel dump)
+    public async Task<TResponseModel<Stream>> GetZipArchive(StructureProjectModel dump)
     {
+        _result = new();
         List<string> stat =
         [
             $"Перечислений: {dump.Enums.Length} (элементов всего: {dump.Enums.Sum(x => x.EnumItems.Length)})",
-            //$"Документов: {dump.Documents.Count()} (полей всего: {dump.Documents.Sum(x => x.PropertiesBody?.Count()) + dump.Documents.Sum(x => x.Grids?.SelectMany(y => y.Properties!).Count())})",
+            $"Документов: {dump.Documents.Length} шт.",
+            $"\tвкладок (всего): {dump.Documents.Sum(x => x.Tabs?.Length)}",
+            $"\tформ (всего): {dump.Documents.SelectMany(x => x.Tabs).Sum(x => x.Forms?.Length)}",
+            $"\tполей (всего): {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.SimpleFields?.Length)} [simple field`s] + {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.FieldsAtDirectories?.Length)} [enumerations field`s]",
             $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
             $"{conf.EnumDirectoryPath} - папка перечислений",
             $"",
@@ -47,24 +52,31 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         ];
         services_di = [];
 
-        MemoryStream ms = new();
+        using MemoryStream ms = new();
         archive = new(ms, ZipArchiveMode.Create);
 
         await ReadmeGen(stat);
-        await EnumsGen(dump.Enums);
-        await DocumentsShemaGen(dump.Documents);
-        //await DbContextGen(dump.Documents);
-        //await DbTableAccessGen(dump.Documents);
-        //await GenServicesDI();
+        await EnumerationsGeneration(dump.Enums);
+
+        await DocumentsGeneration(dump.Documents);
+
+        await DbContextGen(dump.Documents);
+        await DbTableAccessGen(dump.Documents);
+        await GenServicesDI();
 
         string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented);
         await GenerateJsonDump(json_raw);
 
-        await ms.FlushAsync();
-        services_di.Clear();
         archive.Dispose();
+        services_di.Clear();
 
-        return new MemoryStream(ms.ToArray());
+        if (!_result.Success())
+            return _result;
+
+        await ms.FlushAsync();
+
+        _result.Response = new MemoryStream(ms.ToArray());
+        return _result;
     }
 
     async Task ReadmeGen(IEnumerable<string> stat)
@@ -82,60 +94,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
 
     /// <summary>
-    /// Записать вступление файла
-    /// </summary>
-    async Task WriteHead(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
-    {
-        await writer.WriteLineAsync("////////////////////////////////////////////////");
-        await writer.WriteLineAsync($"// Project: {project.Name} - by  © https://github.com/badhitman - @fakegov");
-        await writer.WriteLineAsync("////////////////////////////////////////////////");
-        await writer.WriteLineAsync();
-
-        if (using_ns?.Any() == true)
-        {
-            foreach (string u in using_ns)
-                await writer.WriteLineAsync($"{(u.StartsWith("using ", StringComparison.CurrentCultureIgnoreCase) ? u : $"using {u}")}{(u.EndsWith(';') ? "" : ";")}");
-
-            await writer.WriteLineAsync();
-        }
-
-        if (!string.IsNullOrWhiteSpace(conf.Namespace))
-        {
-            await writer.WriteLineAsync($"namespace {conf.Namespace}");
-            await writer.WriteLineAsync("{");
-        }
-        string ns_pref = string.IsNullOrWhiteSpace(conf.Namespace) ? "" : "\t";
-
-        if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"{ns_pref}/// <summary>");
-
-        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"{ns_pref}/// {s.Trim()}")))}");
-
-        if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"{ns_pref}/// </summary>");
-
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            await writer.WriteLineAsync($"{ns_pref}/// <remarks>");
-            await writer.WriteLineAsync($"{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"{ns_pref}/// {r.Trim()}"))}");
-            await writer.WriteLineAsync($"{ns_pref}/// </remarks>");
-        }
-    }
-
-    /// <summary>
-    /// Запись финальной части файла и закрытие потока записи
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    static async Task WriteEnd(StreamWriter writer)
-    {
-        await writer.WriteLineAsync("\t}");
-        await writer.WriteAsync("}");
-        await writer.FlushAsync();
-        writer.Close();
-        await writer.DisposeAsync();
-    }
-
-    /// <summary>
     /// Сгенерировать дамп данных в формате JSON
     /// </summary>
     /// <param name="json_raw">json данные для записи</param>
@@ -145,16 +103,19 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
         await writer.WriteLineAsync(json_raw);
     }
+    #endregion
 
-    async Task EnumsGen(IEnumerable<EnumFitModel> enums)
+    async Task EnumerationsGeneration(IEnumerable<EnumFitModel> enumerations)
     {
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
         bool is_first_item;
+        EntryTypeModel type_entry;
 
-        foreach (EnumFitModel enum_obj in enums)
+        foreach (EnumFitModel enum_obj in enumerations)
         {
-            zipEntry = archive.CreateEntry(Path.Combine(conf.EnumDirectoryPath, $"{enum_obj.SystemName}.cs"));
+            type_entry = GetZipEntryNameForEnumeration(enum_obj);
+            zipEntry = archive.CreateEntry(type_entry.FullEntryName);
             writer = new(zipEntry.Open(), Encoding.UTF8);
 
             await WriteHead(writer, [$"{enum_obj.Name}"], enum_obj.Description);
@@ -189,127 +150,148 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         }
     }
 
-    async Task DocumentsShemaGen(IEnumerable<DocumentFitModel> docs)
+    async Task DocumentsGeneration(IEnumerable<DocumentFitModel> docs)
     {
+        Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> schema = await WriteSchema(docs);
+        if (!_result.Success())
+            return;
+
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
-        string type_class_name;
+        bool is_first_item = true;
 
-        bool is_first_item;
-        foreach (DocumentFitModel doc_obj in docs)
+        foreach (KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> kvp in schema)
         {
-            foreach (TabFitModel tab_obj in doc_obj.Tabs)
+            zipEntry = archive.CreateEntry(kvp.Key.FullEntryName);
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await WriteHead(writer, [kvp.Key.Name], kvp.Key.Description);
+            await writer.WriteLineAsync($"\tpublic partial class {kvp.Key.TypeName} : SharedLib.IdSwitchableModel");
+            await writer.WriteLineAsync("\t{");
+
+            foreach (EntrySchemaTypeModel schema_obj in kvp.Value)
             {
-                foreach (FormFitModel form_obj in tab_obj.Forms)
-                {
-                    type_class_name = $"{doc_obj.SystemName}{tab_obj.SystemName}{form_obj.SystemName}";
+                if (!is_first_item)
+                    await writer.WriteLineAsync();
+                else
+                    is_first_item = false;
 
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.DocumentsMastersDbDirectoryPath, $"{type_class_name}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
+                await writer.WriteLineAsync($"\t\t/// <summary>");
+                await writer.WriteLineAsync($"\t\t/// [tab: {schema_obj.Tab.Name}][form: {schema_obj.Form.Name}]");
+                await writer.WriteLineAsync($"\t\t/// </summary>");
 
-                    await WriteHead(writer, [doc_obj.Name], doc_obj.Description);
+                if (schema_obj.IsTable)
+                    await writer.WriteLineAsync($"\t\tpublic List<{schema_obj.TypeName}>? {schema_obj.TypeName}DataMultiSet {{ get; set; }}");
+                else
+                    await writer.WriteLineAsync($"\t\tpublic {schema_obj.TypeName}? {schema_obj.TypeName}DataSingleSet {{ get; set; }}");
 
-                    await writer.WriteLineAsync($"\tpublic partial class {type_class_name} : SharedLib.IdSwitchableModel");
-                    await writer.WriteLineAsync("\t{");
-
-                    is_first_item = true;
-
-                    if (form_obj.SimpleFields is not null)
-                    {
-                        foreach (FieldFitModel _f in form_obj.SimpleFields)
-                        {
-                            if (!is_first_item)
-                                await writer.WriteLineAsync();
-                            else
-                                is_first_item = false;
-
-                            await WriteFieldInit(_f);
-                            await WriteFieldMain(_f);
-                        }
-                    }
-                    if (form_obj.FieldsAtDirectories is not null)
-                    {
-                        foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
-                        {
-                            if (!is_first_item)
-                                await writer.WriteLineAsync();
-                            else
-                                is_first_item = false;
-
-                            await WriteFieldInit(_f);
-                            await WriteFieldMain(_f);
-                        }
-                    }
-
-                    await WriteEnd(writer);
-                }
             }
+
+            await WriteEnd(writer);
         }
     }
 
-    static string[] DescriptionHtmlToLinesRemark(string html_description)
+    async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> WriteSchema(IEnumerable<DocumentFitModel> docs)
     {
-        HtmlDocument doc = new();
-        doc.LoadHtml(html_description
-            .Replace("&nbsp;", " ")
-            .Replace("  ", " ")
-            .Replace("</p><p>", $"</p>{Environment.NewLine}<p>")
-            .Replace("</br>", $"</br>{Environment.NewLine}")
-            );
-        return doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        ZipArchiveEntry zipEntry;
+        EntryDocumentTypeModel doc_entry;
+        EntrySchemaTypeModel type_entry;
+        Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> schema_data = [];
+
+        foreach (DocumentFitModel doc_obj in docs)
+        {
+            doc_entry = GetDocumentZipEntry(doc_obj);
+            List<EntrySchemaTypeModel> schema_inc = [];
+            foreach (TabFitModel tab_obj in doc_obj.Tabs)
+                foreach (FormFitModel form_obj in tab_obj.Forms)
+                {
+                    type_entry = GetSchemaZipEntry(form_obj, tab_obj, doc_obj);
+                    EntrySchemaTypeModel? _check = schema_inc.FirstOrDefault(x => x.TypeName.Equals(type_entry.TypeName));
+                    if (_check is not null)
+                    {
+                        _result.AddError($"Ошибка генерации схемы данных `{type_entry.TypeName}` [{type_entry.FullEntryName}] для документа '{doc_obj.Name}' ({doc_obj.SystemName}). ");
+                        continue;
+                    }
+
+
+                    zipEntry = archive.CreateEntry(type_entry.FullEntryName);
+
+                    using StreamWriter writer = new(zipEntry.Open(), Encoding.UTF8);
+                    await WriteHead(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
+
+                    await writer.WriteLineAsync($"\tpublic partial class {tab_obj.SystemName}{doc_obj.SystemName}");
+                    await writer.WriteLineAsync("\t{");
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync("\t\t/// Идентификатор/Key");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync("\t\t[Key]");
+                    await writer.WriteLineAsync("\t\tpublic int Id { get; set; }");
+
+                    if (form_obj.SimpleFields is not null)
+                        foreach (FieldFitModel _f in form_obj.SimpleFields)
+                            await WriteField(_f, form_obj, writer);
+                    if (form_obj.FieldsAtDirectories is not null)
+                        foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
+                            await WriteField(_f, form_obj, writer);
+
+                    await WriteEnd(writer);
+                    schema_inc.Add(type_entry);
+                }
+
+            schema_data.Add(doc_entry, schema_inc);
+        }
+
+        return schema_data;
     }
 
-    Task WriteFieldInit(BaseRequiredmFormFitModel field)
+
+
+    Task WriteField(FieldFitModel field, FormFitModel form_obj, StreamWriter writer)
     {
         return Task.CompletedTask;
     }
 
-    Task WriteFieldMain(FieldFitModel field)
+    Task WriteField(FieldAkaDirectoryFitModel field, FormFitModel form_obj, StreamWriter writer)
     {
         return Task.CompletedTask;
     }
 
-    Task WriteFieldMain(FieldAkaDirectoryFitModel field)
-    {
-        return Task.CompletedTask;
-    }
 
-    async Task DbContextGen(IEnumerable<BaseFitModel> docs)
+    async Task DbContextGen(IEnumerable<DocumentFitModel> docs)
     {
         ZipArchiveEntry zipEntry = archive.CreateEntry("LayerContextPartGen.cs");
-        StreamWriter writer = new(zipEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer, ["Database context"], using_ns: ["Microsoft.EntityFrameworkCore", conf.Namespace]);
+        StreamWriter _writer = new(zipEntry.Open(), Encoding.UTF8);
+        await WriteHead(writer: _writer, summary_text: ["Database context"], using_ns: ["Microsoft.EntityFrameworkCore", conf.Namespace]);
 
-        await writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
-        await writer.WriteLineAsync("\t{");
+        await _writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
+        await _writer.WriteLineAsync("\t{");
         bool is_first_item = true;
         foreach (BaseFitModel doc_obj in docs)
         {
             if (!is_first_item)
-                await writer.WriteLineAsync();
+                await _writer.WriteLineAsync();
             else
                 is_first_item = false;
 
-            await writer.WriteLineAsync("\t\t/// <summary>");
-            await writer.WriteLineAsync($"\t\t/// {doc_obj.Description}");
-            await writer.WriteLineAsync("\t\t/// </summary>");
-            writer.WriteLine($"\t\tpublic DbSet<{doc_obj.SystemName}> {doc_obj.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+            await _writer.WriteLineAsync("\t\t/// <summary>");
+            await _writer.WriteLineAsync($"\t\t/// {doc_obj.Name}");
+            await _writer.WriteLineAsync("\t\t/// </summary>");
 
-            //if (doc_obj.Grids is not null)
-            //    foreach (GridFitModel? grid in doc_obj.Grids)
-            //    {
-            //        await writer.WriteLineAsync();
-            //        await writer.WriteLineAsync("\t\t/// <summary>");
-            //        await writer.WriteLineAsync($"\t\t/// {grid.Name} [Табличная часть: {doc_obj.Name}]");
-            //        await writer.WriteLineAsync("\t\t/// </summary>");
-            //        await writer.WriteLineAsync($"\t\tpublic DbSet<{grid.SystemName}> {grid.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
-            //    }
+            if (!string.IsNullOrWhiteSpace(doc_obj.Description))
+            {
+                await _writer.WriteLineAsync("\t\t/// <remarks>");
+                await _writer.WriteLineAsync(string.Join("\n", DescriptionHtmlToLinesRemark(doc_obj.Description).Select(x => $"\t\t/// {x}")));
+                await _writer.WriteLineAsync("\t\t/// </remarks>");
+            }
+
+            _writer.WriteLine($"\t\tpublic DbSet<{doc_obj.SystemName}> {doc_obj.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+
+
         }
 
-        await WriteEnd(writer);
+        await WriteEnd(_writer);
     }
 
-    Task DbTableAccessGen(IEnumerable<BaseFitModel> docs)
+    Task DbTableAccessGen(IEnumerable<DocumentFitModel> docs)
     {
         //string crud_type_name, service_type_name, response_type_name, controller_name, service_instance;
         //ZipArchiveEntry zipEntry;
@@ -1843,4 +1825,96 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync($"\t\tpublic Task RemoveRangeAsync(IEnumerable<int> ids, bool auto_save = true);");
         await WriteEnd(writer);
     }
+
+
+    #region system
+    /// <summary>
+    /// Перечисления/Списки: Путь относительно корня архива, указывающий имя создаваемой записи.
+    /// </summary>
+    EntryTypeModel GetZipEntryNameForEnumeration(EnumFitModel enum_obj)
+        => new(enum_obj.SystemName, conf.EnumDirectoryPath);
+
+    /// <summary>
+    /// Документы (схемы данных): Путь относительно корня архива, указывающий имя создаваемой записи.
+    /// </summary>
+    EntryDocumentTypeModel GetDocumentZipEntry(DocumentFitModel doc_obj)
+        => new(doc_obj, conf.DocumentsMastersDbDirectoryPath);
+
+    /// <summary>
+    /// Схема данных: Путь относительно корня архива, указывающий имя создаваемой записи.
+    /// </summary>
+    EntrySchemaTypeModel GetSchemaZipEntry(FormFitModel form_obj, TabFitModel tab_obj, DocumentFitModel doc_obj)
+        => new(form_obj, tab_obj, doc_obj, conf.DocumentsMastersDbDirectoryPath, "schema");
+
+    /// <summary>
+    /// HTML строку в обычную/нормальную (без тегов).
+    /// например: для добавления в remarks
+    /// </summary>
+    static string[] DescriptionHtmlToLinesRemark(string html_description)
+    {
+        HtmlDocument doc = new();
+        doc.LoadHtml(html_description
+            .Replace("&nbsp;", " ")
+            .Replace("  ", " ")
+            .Replace("</p><p>", $"</p>{Environment.NewLine}<p>")
+            .Replace("</br>", $"</br>{Environment.NewLine}")
+            );
+        return doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+    }
+
+
+    /// <summary>
+    /// Записать вступление файла
+    /// </summary>
+    async Task WriteHead(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
+    {
+        await writer.WriteLineAsync("////////////////////////////////////////////////");
+        await writer.WriteLineAsync($"// Project: {project.Name} - by  © https://github.com/badhitman - @fakegov");
+        await writer.WriteLineAsync("////////////////////////////////////////////////");
+        await writer.WriteLineAsync();
+
+        if (using_ns?.Any() == true)
+        {
+            foreach (string u in using_ns)
+                await writer.WriteLineAsync($"{(u.StartsWith("using ", StringComparison.CurrentCultureIgnoreCase) ? u : $"using {u}")}{(u.EndsWith(';') ? "" : ";")}");
+
+            await writer.WriteLineAsync();
+        }
+
+        if (!string.IsNullOrWhiteSpace(conf.Namespace))
+        {
+            await writer.WriteLineAsync($"namespace {conf.Namespace}");
+            await writer.WriteLineAsync("{");
+        }
+        string ns_pref = string.IsNullOrWhiteSpace(conf.Namespace) ? "" : "\t";
+
+        if (summary_text?.Any() == true)
+            await writer.WriteLineAsync($"{ns_pref}/// <summary>");
+
+        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"{ns_pref}/// {s.Trim()}")))}");
+
+        if (summary_text?.Any() == true)
+            await writer.WriteLineAsync($"{ns_pref}/// </summary>");
+
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            await writer.WriteLineAsync($"{ns_pref}/// <remarks>");
+            await writer.WriteLineAsync($"{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"{ns_pref}/// {r.Trim()}"))}");
+            await writer.WriteLineAsync($"{ns_pref}/// </remarks>");
+        }
+    }
+
+    /// <summary>
+    /// Запись финальной части файла и закрытие потока записи
+    /// </summary>
+    /// <param name="writer">Поток записи ZIP архива</param>
+    static async Task WriteEnd(StreamWriter writer)
+    {
+        await writer.WriteLineAsync("\t}");
+        await writer.WriteAsync("}");
+        await writer.FlushAsync();
+        writer.Close();
+        await writer.DisposeAsync();
+    }
+    #endregion    
 }

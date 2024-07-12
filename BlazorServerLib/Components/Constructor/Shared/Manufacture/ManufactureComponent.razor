@@ -25,5 +25,12 @@
         {
             <li class="list-group-item list-group-item-danger">@e</li>
         }
+        @if (downloadSource is not null)
+        {
+            foreach (ResultMessage e in downloadSource.Messages)
+            {
+                <li class="list-group-item list-group-item-warning">@e</li>
+            }
+        }
     </ul>
 </div>
