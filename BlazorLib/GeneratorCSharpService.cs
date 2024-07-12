@@ -213,15 +213,15 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     await writer.WriteLineAsync("\t{");
 
                     is_first_item = true;
+
                     if (form_obj.SimpleFields is not null)
                     {
                         foreach (FieldFitModel _f in form_obj.SimpleFields)
                         {
-                            if (is_first_item)
-                            {
+                            if (!is_first_item)
                                 await writer.WriteLineAsync();
+                            else
                                 is_first_item = false;
-                            }
 
                             await WriteFieldInit(_f);
                             await WriteFieldMain(_f);
@@ -231,11 +231,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     {
                         foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
                         {
-                            if (is_first_item)
-                            {
+                            if (!is_first_item)
                                 await writer.WriteLineAsync();
+                            else
                                 is_first_item = false;
-                            }
 
                             await WriteFieldInit(_f);
                             await WriteFieldMain(_f);
