@@ -12,7 +12,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MimeKit" Version="4.7.0" />
+		<PackageReference Include="MimeKit" Version="4.7.1" />
 		<PackageReference Include="MailKit" Version="4.7.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="NLog" Version="5.3.2" />
