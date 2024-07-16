@@ -34,7 +34,7 @@
                     }
                 </div>
                 <div class="col-auto">
-                    <input title="@(string.IsNullOrWhiteSpace(itemSystemName) ? "Если не указать своё системное имя, тогда оно будет автоматически сформировано транслитом названия" : "")" @bind-value="itemSystemName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(itemSystemName) ? " border border-warning-subtle" : "")" id="input_@DomID" placeholder="auto: @(GlobalTools.TranslitToSystemName(Item.Value!.Name))">
+                    <input autocomplete="off" title="@(string.IsNullOrWhiteSpace(itemSystemName) ? "Если не указать своё системное имя, тогда оно будет автоматически сформировано транслитом названия" : "")" @bind-value="itemSystemName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(itemSystemName) ? " border border-warning-subtle" : "")" placeholder="auto: @(GlobalTools.TranslitToSystemName(Item.Value!.Name))">
                 </div>
                 <div class="col-auto">
                     <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">

@@ -141,6 +141,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
             };
         }
 
+        TreeItems.Clear();
         ManufactureParentView
         .CurrentProject
         .Documents!.ForEach(doc =>

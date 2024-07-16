@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Newtonsoft.Json;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Manufacture;
 
@@ -56,7 +57,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected string DomID => $"{Item.Value!.Tag}-{Item.Value!.Id}";
 
-    bool IsEdit => itemSystemName != ItemModel.SystemName;
+    bool IsEdit => (itemSystemName ?? "") != (ItemModel.SystemName ?? "");
 
     /// <inheritdoc/>
     protected MarkupString InformationMS => (MarkupString)Information;
@@ -83,8 +84,16 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
         {
             await ParentFormsPage.GetSystemNames();
             ItemModel.SystemName = itemSystemName;
-            int i = ParentFormsPage.SystemNamesManufacture.FindIndex(x => x.TypeDataId == ItemModel.Value!.Id && x.TypeDataName == ItemModel.Value!.Tag && x.Qualification == ItemModel.Qualification);
-            ParentFormsPage.SystemNamesManufacture[i].SystemName = itemSystemName;
+            if (!string.IsNullOrWhiteSpace(ItemModel.SystemName))
+            {
+                int i = ParentFormsPage.SystemNamesManufacture.FindIndex(x => x.TypeDataId == ItemModel.Value!.Id && x.TypeDataName == ItemModel.Value!.Tag && x.Qualification == ItemModel.Qualification);
+
+                if (i < 0)
+                    throw new Exception($"[{nameof(ItemModel.SystemName)}:{ItemModel.SystemName}]\n{JsonConvert.SerializeObject(ParentFormsPage.SystemNamesManufacture)}");
+
+                ParentFormsPage.SystemNamesManufacture[i].SystemName = itemSystemName;
+            }
+
             ManufactureParentView.StateHasChangedCall();
         }
     }
