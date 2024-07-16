@@ -12,6 +12,7 @@ public class FormBaseConstructorModel : EntryConstructedModel
     /// <summary>
     /// CSS класс формы
     /// </summary>
+    /// <remarks>default: css="row"</remarks>
     public string? Css { get; set; } = "row";
 
     /// <summary>

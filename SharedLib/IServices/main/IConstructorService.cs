@@ -213,7 +213,7 @@ public interface IConstructorService
     /// <summary>
     /// Проверить сортировку и нормализовать в случае рассинхрона
     /// </summary>
-    public Task<TResponseModel<FormConstructorModelDB>> CheckAndNormalizeSortIndexFrmFields(FormConstructorModelDB form, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> CheckAndNormalizeSortIndexFrmFields(int form_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/создать поле формы (простой тип)

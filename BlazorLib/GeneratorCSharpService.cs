@@ -247,9 +247,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         return schema_data;
     }
 
-
-
-    async Task WriteField(FieldFitModel field, FormFitModel form_obj, StreamWriter writer)
+    static async Task WriteField(FieldFitModel field, FormFitModel form_obj, StreamWriter writer)
     {
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("\t\t/// <summary>");
@@ -258,7 +256,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.SystemName}{(field.Required ? "" : "?")} {field.SystemName}SimpleField {{ get; set; }}");
     }
 
-    async Task WriteField(FieldAkaDirectoryFitModel field, FormFitModel form_obj, StreamWriter writer)
+    static async Task WriteField(FieldAkaDirectoryFitModel field, FormFitModel form_obj, StreamWriter writer)
     {
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("\t\t/// <summary>");

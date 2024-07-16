@@ -58,7 +58,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     string? Descriptor => Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)?.ToString();
 
     /// <summary>
-    /// Параметре
+    /// Параметр
     /// </summary>
     string? Parameter => Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString();
 

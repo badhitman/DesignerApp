@@ -272,7 +272,6 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-
         downloadSource = await gen.GetZipArchive(struct_project);
         if (!downloadSource.Success())
         {

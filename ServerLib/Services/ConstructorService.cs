@@ -13,6 +13,7 @@ using IdentityLib;
 using SharedLib;
 using DbcLib;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace ServerLib;
 
@@ -695,93 +696,114 @@ public partial class ConstructorService(
 #if DEMO
         if (_seed_call)
         {
-            DirectoryConstructorModelDB? _dir_seed = await context_forms.Directories.FirstOrDefaultAsync(x => x.ProjectId == project!.Id);
+            DirectoryConstructorModelDB? _dir_seed_1, _dir_seed_2 = await context_forms.Directories.FirstOrDefaultAsync(x => x.ProjectId == project!.Id);
 
-            if (_dir_seed is null)
+            if (_dir_seed_2 is null)
             {
-                _dir_seed = new()
+                _dir_seed_1 = new()
+                {
+                    Name = "Preference",
+                    ProjectId = project!.Id,
+                    Elements = [new() { Name = "One", SortIndex = 1 }, new() { Name = "Two", SortIndex = 2 }, new() { Name = "Three", SortIndex = 3 }]
+                };
+
+                _dir_seed_2 = new()
                 {
                     Name = "Булево (логическое)",
                     ProjectId = project!.Id,
+                    Elements = [new() { Name = "Да", SortIndex = 1 }, new() { Name = "Нет", SortIndex = 2 }]
                 };
-                await context_forms.AddAsync(_dir_seed);
+
+                await context_forms.AddRangeAsync(_dir_seed_1, _dir_seed_2);
                 await context_forms.SaveChangesAsync();
-
-                ElementOfDirectoryConstructorModelDB[] _el_of_dir_seed = [
-                    new() { Name = "Да", SortIndex = 1, ParentId = _dir_seed.Id },
-                new() { Name = "Нет", SortIndex = 2, ParentId = _dir_seed.Id }
-                    ];
-
-                await context_forms.AddRangeAsync(_el_of_dir_seed);
-                await context_forms.SaveChangesAsync();
-            }
-
-            FormConstructorModelDB? _form_seed = await context_forms.Forms.FirstOrDefaultAsync(x => x.ProjectId == project!.Id);
-            if (_form_seed is null)
-            {
-                _form_seed = new()
+                FormConstructorModelDB? _form_seed_2, _form_seed_1 = await context_forms.Forms.FirstOrDefaultAsync(x => x.ProjectId == project!.Id);
+                if (_form_seed_1 is null)
                 {
-                    Name = "Тестовая форма (demo)",
-                    ProjectId = project!.Id,
-                    Description = "<p>seed data for debug</p>",
-                };
+                    _form_seed_1 = new()
+                    {
+                        Name = "Bootstrap form (demo 1)",
+                        ProjectId = project!.Id,
+                        Description = "<p>seed data (1) for debug</p>",
+                        FieldsDirectoriesLinks = [new FieldFormAkaDirectoryConstructorModelDB() { Name = "Test Directory", DirectoryId = _dir_seed_2.Id, SortIndex = 2 }],
+                        Fields = [new FieldFormConstructorModelDB() { Name = "Test text", SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12" }],
+                    };
 
-                await context_forms.AddAsync(_form_seed);
-                await context_forms.SaveChangesAsync();
+                    _form_seed_2 = new()
+                    {
+                        Name = "Bootstrap form (demo 2)",
+                        ProjectId = project!.Id,
+                        Description = "<p>seed data (2) for debug</p>",
+                        Css = "row g-3",
+                        FieldsDirectoriesLinks = [new FieldFormAkaDirectoryConstructorModelDB() { Name = "State", DirectoryId = _dir_seed_1.Id, SortIndex = 6, Css = "col-md-4" }],
+                        Fields = [
+                            new FieldFormConstructorModelDB() { Name = "Email", SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-md-6" },
+                            new FieldFormConstructorModelDB() { Name = "Password", SortIndex = 2, TypeField = TypesFieldsFormsEnum.Password, Css = "col-md-6" },
+                            new FieldFormConstructorModelDB() { Name = "Address", SortIndex = 3, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12", MetadataValueType = JsonConvert.SerializeObject(new Dictionary<MetadataExtensionsFormFieldsEnum, object>{ { MetadataExtensionsFormFieldsEnum.Placeholder, "1234 Main St" } }) },
+                            new FieldFormConstructorModelDB() { Name = "Address 2", SortIndex = 4, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12", MetadataValueType = JsonConvert.SerializeObject(new Dictionary<MetadataExtensionsFormFieldsEnum, object>{ { MetadataExtensionsFormFieldsEnum.Placeholder, "Apartment, studio, or floor" } }) },
+                            new FieldFormConstructorModelDB() { Name = "City", SortIndex = 5, TypeField = TypesFieldsFormsEnum.Text, Css = "col-md-6" },
+                            new FieldFormConstructorModelDB() { Name = "Zip", SortIndex = 7, TypeField = TypesFieldsFormsEnum.Text, Css = "col-md-2" },
+                            new FieldFormConstructorModelDB() { Name = "Check me out", SortIndex = 8, TypeField = TypesFieldsFormsEnum.Bool, Css = "col-12" },
+                            ],
+                    };
 
-                _form_seed.Fields = [new FieldFormConstructorModelDB() { Name = "Test text", OwnerId = _form_seed.Id, SortIndex = 1, TypeField = TypesFieldsFormsEnum.Text, Css = "col-12" }];
-                _form_seed.FieldsDirectoriesLinks = [new FieldFormAkaDirectoryConstructorModelDB() { Name = "Test Directory", DirectoryId = _dir_seed.Id, OwnerId = _form_seed.Id, SortIndex = 2 }];
+                    await context_forms.AddRangeAsync(_form_seed_1, _form_seed_2);
+                    await context_forms.SaveChangesAsync();
 
-                context_forms.Update(_form_seed);
-                await context_forms.SaveChangesAsync();
-            }
+                    DocumentSchemeConstructorModelDB? _document_scheme_seed = await context_forms.DocumentSchemes.FirstOrDefaultAsync(x => x.ProjectId == project!.Id);
 
-            DocumentSchemeConstructorModelDB? _document_scheme_seed = await context_forms.DocumentSchemes.FirstOrDefaultAsync(x => x.ProjectId == project!.Id);
+                    if (_document_scheme_seed is null)
+                    {
+                        _document_scheme_seed = new()
+                        {
+                            Name = "Demo",
+                            ProjectId = project!.Id,
+                            Pages = [new ()
+                        {
+                            Name = "Demo seed",
+                            SortIndex = 1,
+                            JoinsForms = [new ()
+                            {
+                                Name = "join form #1",
+                                FormId = _form_seed_1.Id,
+                                SortIndex = 1
+                            },new() {
+                                Name = "join form #2",
+                                FormId = _form_seed_2.Id,
+                                SortIndex = 2
+                            }]
+                        }]
+                        };
 
-            if (_document_scheme_seed is null)
-            {
-                _document_scheme_seed = new() { Name = "Demo", ProjectId = project!.Id };
+                        await context_forms.AddAsync(_document_scheme_seed);
+                        await context_forms.SaveChangesAsync();
+                    }
 
-                await context_forms.AddAsync(_document_scheme_seed);
-                await context_forms.SaveChangesAsync();
+                    SessionOfDocumentDataModelDB? _session_seed = await context_forms.Sessions.FirstOrDefaultAsync(x => x.ProjectId == project!.Id && x.AuthorUser == userDb.Id);
 
-                _document_scheme_seed.Pages = [new TabOfDocumentSchemeConstructorModelDB() { Name = "Demo seed", SortIndex = 1, OwnerId = _document_scheme_seed.Id }];
+                    if (_session_seed is null)
+                    {
+                        _session_seed = new()
+                        {
+                            ProjectId = project!.Id,
+                            AuthorUser = userDb.Id,
+                            Name = "Debug session",
+                            NormalizeUpperName = "DEBUG SESSION",
+                            DeadlineDate = DateTime.Now.AddDays(1),
+                            OwnerId = _document_scheme_seed.Id,
+                            SessionStatus = SessionsStatusesEnum.InProgress,
+                            SessionToken = Guid.NewGuid().ToString()
+                        };
 
-                context_forms.Update(_document_scheme_seed);
-                await context_forms.SaveChangesAsync();
-
-                _document_scheme_seed.Pages[0].JoinsForms = [new TabJoinDocumentSchemeConstructorModelDB() { Name = "join form", FormId = _form_seed.Id, OwnerId = _document_scheme_seed.Pages[0].Id, SortIndex = 1 }];
-
-                context_forms.Update(_document_scheme_seed);
-                await context_forms.SaveChangesAsync();
-            }
-
-            SessionOfDocumentDataModelDB? _session_seed = await context_forms.Sessions.FirstOrDefaultAsync(x => x.ProjectId == project!.Id && x.AuthorUser == userDb.Id);
-
-            if (_session_seed is null)
-            {
-                _session_seed = new()
-                {
-                    ProjectId = project!.Id,
-                    AuthorUser = userDb.Id,
-                    Name = "Debug session",
-                    NormalizeUpperName = "DEBUG SESSION",
-                    DeadlineDate = DateTime.Now.AddDays(1),
-                    OwnerId = _document_scheme_seed.Id,
-                    SessionStatus = SessionsStatusesEnum.InProgress,
-                    SessionToken = Guid.NewGuid().ToString()
-                };
-
-                await context_forms.AddAsync(_session_seed);
-                await context_forms.SaveChangesAsync();
+                        await context_forms.AddAsync(_session_seed);
+                        await context_forms.SaveChangesAsync();
+                    }
+                }
             }
         }
 #endif
 
         return res;
     }
-
-    #endregion
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CanEditProject(int project_id, string? user_id = null)
@@ -803,6 +825,7 @@ public partial class ConstructorService(
             ? ResponseBaseModel.CreateSuccess("Проект доступен для редактирования")
             : ResponseBaseModel.CreateError($"Проект недоступен для редактирования #{project.Id} '{project.Name}'"); ;
     }
+    #endregion
 
     /////////////// Перечисления.
     // Простейший тип данных поля формы, который можно в в последствии использовать в конструкторе форм при добавлении/редактировании полей
@@ -1972,7 +1995,7 @@ public partial class ConstructorService(
             .Projects
             .Where(u => u.Id == form_db.ProjectId)
             .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
-
+        await CheckAndNormalizeSortIndexFrmFields(form_field_db.OwnerId, cancellationToken);
         return res;
     }
 
@@ -2007,6 +2030,7 @@ public partial class ConstructorService(
             .Where(u => u.Id == field_db.Owner.ProjectId)
             .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
 
+        await CheckAndNormalizeSortIndexFrmFields(field_db.OwnerId, cancellationToken);
         return ResponseBaseModel.CreateSuccess($"Поле '{field_db.Name}' {{простого типа}} удалено из формы");
     }
 
@@ -2046,8 +2070,17 @@ public partial class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<FormConstructorModelDB>> CheckAndNormalizeSortIndexFrmFields(FormConstructorModelDB form, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<FormConstructorModelDB>> CheckAndNormalizeSortIndexFrmFields(int form_id, CancellationToken cancellationToken = default)
     {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        IIncludableQueryable<FormConstructorModelDB, DirectoryConstructorModelDB?> _q = context_forms
+            .Forms
+            .Where(x => x.Id == form_id)
+            .Include(x => x.Fields)
+            .Include(x => x.FieldsDirectoriesLinks!)
+            .ThenInclude(x => x.Directory);
+
+        FormConstructorModelDB form = _q.First();
         TResponseModel<FormConstructorModelDB> res = new();
         int i = 0;
         List<FieldFormAkaDirectoryConstructorModelDB> fields_dir = [];
@@ -2075,7 +2108,7 @@ public partial class ConstructorService(
                 }
             }
         }
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+
         if (fields_st.Count != 0)
             context_forms.UpdateRange(fields_st);
         if (fields_dir.Count != 0)
@@ -2086,12 +2119,7 @@ public partial class ConstructorService(
         else
             res.AddInfo("Пересортица отсутствует");
 
-        res.Response = context_forms
-            .Forms
-            .Include(x => x.Fields)
-            .Include(x => x.FieldsDirectoriesLinks!)
-            .ThenInclude(x => x.Directory)
-            .FirstOrDefault(x => x.Id == form.Id);
+        res.Response = await _q.FirstAsync(cancellationToken: cancellationToken);
 
         return res;
     }
