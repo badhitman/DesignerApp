@@ -228,10 +228,14 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                     if (form_obj.SimpleFields is not null)
                         foreach (FieldFitModel _f in form_obj.SimpleFields)
+                        {
                             await WriteField(_f, form_obj, writer);
+                        }
                     if (form_obj.FieldsAtDirectories is not null)
                         foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
+                        {
                             await WriteField(_f, form_obj, writer);
+                        }
 
                     await WriteEnd(writer);
                     schema_inc.Add(type_entry);
@@ -245,14 +249,22 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
 
 
-    Task WriteField(FieldFitModel field, FormFitModel form_obj, StreamWriter writer)
+    async Task WriteField(FieldFitModel field, FormFitModel form_obj, StreamWriter writer)
     {
-        return Task.CompletedTask;
+        await writer.WriteLineAsync();
+        await writer.WriteLineAsync("\t\t/// <summary>");
+        await writer.WriteLineAsync($"\t\t/// {field.Name}");
+        await writer.WriteLineAsync("\t\t/// </summary>");
+        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.SystemName}{(field.Required ? "" : "?")} {field.SystemName}SimpleField {{ get; set; }}");
     }
 
-    Task WriteField(FieldAkaDirectoryFitModel field, FormFitModel form_obj, StreamWriter writer)
+    async Task WriteField(FieldAkaDirectoryFitModel field, FormFitModel form_obj, StreamWriter writer)
     {
-        return Task.CompletedTask;
+        await writer.WriteLineAsync();
+        await writer.WriteLineAsync("\t\t/// <summary>");
+        await writer.WriteLineAsync($"\t\t/// {field.Name}");
+        await writer.WriteLineAsync("\t\t/// </summary>");
+        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.SystemName}{(field.Required ? "" : "?")} {field.SystemName}DirectoryField {{ get; set; }}");
     }
 
 
