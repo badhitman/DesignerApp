@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Поле формы: Справочник/Список/Перечисление
 /// </summary>
-public class FieldAkaDirectoryFitModel : BaseRequiredmFormFitModel
+public class FieldAkaDirectoryFitModel : BaseRequiredFormFitModel
 {
     /// <summary>
     /// Системное Имя : Справочник/Список/Перечисление

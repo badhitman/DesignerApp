@@ -234,7 +234,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     if (form_obj.FieldsAtDirectories is not null)
                         foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
                         {
-                            await WriteField(_f, form_obj, writer);
+                            await WriteField(_f, writer);
                         }
 
                     await WriteEnd(writer);
@@ -253,16 +253,16 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync("\t\t/// <summary>");
         await writer.WriteLineAsync($"\t\t/// {field.Name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.SystemName}{(field.Required ? "" : "?")} {field.SystemName}SimpleField {{ get; set; }}");
+        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.TypeData}{(field.Required ? "" : "?")} {field.SystemName}Field {{ get; set; }}");
     }
 
-    static async Task WriteField(FieldAkaDirectoryFitModel field, FormFitModel form_obj, StreamWriter writer)
+    static async Task WriteField(FieldAkaDirectoryFitModel field, StreamWriter writer)
     {
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("\t\t/// <summary>");
         await writer.WriteLineAsync($"\t\t/// {field.Name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.SystemName}{(field.Required ? "" : "?")} {field.SystemName}DirectoryField {{ get; set; }}");
+        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.DirectorySystemName}{(field.Required ? "" : "?")} {field.SystemName}Field {{ get; set; }}");
     }
 
 

@@ -18,9 +18,9 @@ public enum TypesFieldsFormsEnum
     Text = 10,
 
     /// <summary>
-    /// Пароль
+    /// Секрет
     /// </summary>
-    [Description("Пароль")]
+    [Description("Секрет")]
     Password = 20,
 
     /// <summary>
@@ -69,5 +69,5 @@ public enum TypesFieldsFormsEnum
     /// Генератор (rest-api)
     /// </summary>
     [Description("Генератор")]
-    Generator = 1200
+    Generator = 1200,
 }

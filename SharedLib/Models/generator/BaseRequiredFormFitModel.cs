@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Базовая модель
 /// </summary>
-public abstract class BaseRequiredmFormFitModel : BaseFormFitModel
+public abstract class BaseRequiredFormFitModel : BaseFormFitModel
 {
     /// <summary>
     /// Подсказка

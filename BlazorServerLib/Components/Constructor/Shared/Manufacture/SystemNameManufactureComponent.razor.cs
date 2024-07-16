@@ -1,9 +1,9 @@
 ﻿using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using Newtonsoft.Json;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Manufacture;
 
@@ -42,9 +42,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
             {
                 string? cn = ManufactureComponent.CheckName(itemSystemName);
                 if (!string.IsNullOrEmpty(cn))
-                {
                     return cn;
-                }
             }
 
             return string.IsNullOrEmpty(ItemModel.Information) ? "" : ItemModel.Information;

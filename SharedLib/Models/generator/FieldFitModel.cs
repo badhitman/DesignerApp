@@ -7,7 +7,7 @@ namespace SharedLib.Models;
 /// <summary>
 /// Поле формы
 /// </summary>
-public class FieldFitModel : BaseRequiredmFormFitModel
+public class FieldFitModel : BaseRequiredFormFitModel
 {
     /// <summary>
     /// Тип данных поля
@@ -18,4 +18,19 @@ public class FieldFitModel : BaseRequiredmFormFitModel
     /// Метаданне типа значения (параметры/ограничения)
     /// </summary>
     public string? MetadataValueType { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string TypeData => TypeField switch
+    {
+        TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password => "string",
+        TypesFieldsFormsEnum.Int => "int",
+        TypesFieldsFormsEnum.Double => "double",
+        TypesFieldsFormsEnum.Bool => "bool",
+        TypesFieldsFormsEnum.Date => "DateOnly",
+        TypesFieldsFormsEnum.Time => "TimeOnly",
+        TypesFieldsFormsEnum.DateTime => "DateTime",
+        _ => throw new NotImplementedException()
+    };
 }
