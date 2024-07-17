@@ -56,7 +56,7 @@
             <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Документы">
                 <DocumentsSchemesTableComponent />
             </MudTabPanel>
-            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки" BadgeData='"live"' BadgeColor="Color.Info" ToolTip="Доступ к заполнению данными документов (в т.ч. анонимные пользователи)">
+            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки" ToolTip="Доступ к заполнению данными документов (в т.ч. анонимные пользователи)">
                 <SessionsViewComponent />
             </MudTabPanel>
             <AuthorizeView Roles="admin,manufacture">

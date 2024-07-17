@@ -220,12 +220,6 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
         if (CurrentUser is null)
             throw new Exception("CurrentUser is null");
 
-        if (string.IsNullOrWhiteSpace(addingFormToTabPageName))
-        {
-            SnackbarRepo.Error("Укажите название");
-            return;
-        }
-
         IsBusyProgress = true;
         ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new TabJoinDocumentSchemeConstructorModelDB()
         {
