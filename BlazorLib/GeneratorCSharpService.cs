@@ -58,10 +58,12 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await ReadmeGen(stat);
         await EnumerationsGeneration(dump.Enums);
 
-        await DocumentsGeneration(dump.Documents);
+        Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> schema = await DocumentsGeneration(dump.Documents);
+        if (!_result.Success())
+            return _result;
 
-        await DbContextGen(dump.Documents);
-        await DbTableAccessGen(dump.Documents);
+        await DbContextGen(schema);
+        await DbTableAccessGen(schema);
         await GenServicesDI();
 
         string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented);
@@ -150,11 +152,11 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         }
     }
 
-    async Task DocumentsGeneration(IEnumerable<DocumentFitModel> docs)
+    async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> DocumentsGeneration(IEnumerable<DocumentFitModel> docs)
     {
-        Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> schema = await WriteSchema(docs);
+        Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>? schema = await WriteSchema(docs);
         if (!_result.Success())
-            return;
+            return schema;
 
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
@@ -188,6 +190,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             await WriteEnd(writer);
         }
+        return schema;
     }
 
     async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> WriteSchema(IEnumerable<DocumentFitModel> docs)
@@ -226,10 +229,20 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     await writer.WriteLineAsync("\t\t[Key]");
                     await writer.WriteLineAsync("\t\tpublic int Id { get; set; }");
 
+                    await writer.WriteLineAsync();
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync("\t\t/// [FK: Документ]");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync("\t\tpublic int DocumentId { get; set; }");
+                    await writer.WriteLineAsync("\t\t/// <summary>");
+                    await writer.WriteLineAsync("\t\t/// Документ");
+                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"\t\tpublic {doc_entry.TypeName}? Document {{ get; set; }}");
+
                     if (form_obj.SimpleFields is not null)
                         foreach (FieldFitModel _f in form_obj.SimpleFields)
                         {
-                            await WriteField(_f, form_obj, writer);
+                            await WriteField(_f, writer);
                         }
                     if (form_obj.FieldsAtDirectories is not null)
                         foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
@@ -247,13 +260,13 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         return schema_data;
     }
 
-    static async Task WriteField(FieldFitModel field, FormFitModel form_obj, StreamWriter writer)
+    static async Task WriteField(FieldFitModel field, StreamWriter writer)
     {
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("\t\t/// <summary>");
         await writer.WriteLineAsync($"\t\t/// {field.Name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.TypeData}{(field.Required ? "" : "?")} {field.SystemName}Field {{ get; set; }}");
+        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.TypeData}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
     }
 
     static async Task WriteField(FieldAkaDirectoryFitModel field, StreamWriter writer)
@@ -262,11 +275,11 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync("\t\t/// <summary>");
         await writer.WriteLineAsync($"\t\t/// {field.Name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.DirectorySystemName}{(field.Required ? "" : "?")} {field.SystemName}Field {{ get; set; }}");
+        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.DirectorySystemName}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
     }
 
 
-    async Task DbContextGen(IEnumerable<DocumentFitModel> docs)
+    async Task DbContextGen(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
     {
         ZipArchiveEntry zipEntry = archive.CreateEntry("LayerContextPartGen.cs");
         StreamWriter _writer = new(zipEntry.Open(), Encoding.UTF8);
@@ -275,7 +288,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await _writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
         await _writer.WriteLineAsync("\t{");
         bool is_first_item = true;
-        foreach (BaseFitModel doc_obj in docs)
+        foreach (KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj in docs)
         {
             if (!is_first_item)
                 await _writer.WriteLineAsync();
@@ -283,17 +296,18 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 is_first_item = false;
 
             await _writer.WriteLineAsync("\t\t/// <summary>");
-            await _writer.WriteLineAsync($"\t\t/// {doc_obj.Name}");
+            await _writer.WriteLineAsync($"\t\t/// {doc_obj.Key.Name}");
             await _writer.WriteLineAsync("\t\t/// </summary>");
 
-            if (!string.IsNullOrWhiteSpace(doc_obj.Description))
+            if (!string.IsNullOrWhiteSpace(doc_obj.Key.Description))
             {
                 await _writer.WriteLineAsync("\t\t/// <remarks>");
-                await _writer.WriteLineAsync(string.Join("\n", DescriptionHtmlToLinesRemark(doc_obj.Description).Select(x => $"\t\t/// {x}")));
+                await _writer.WriteLineAsync(string.Join("\n", DescriptionHtmlToLinesRemark(doc_obj.Key.Description).Select(x => $"\t\t/// {x}")));
                 await _writer.WriteLineAsync("\t\t/// </remarks>");
             }
 
-            _writer.WriteLine($"\t\tpublic DbSet<{doc_obj.SystemName}> {doc_obj.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+            _writer.WriteLine($"\t\tpublic DbSet<{doc_obj.Key.TypeName}> {doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+            await _writer.WriteLineAsync();
 
 
         }
@@ -301,13 +315,13 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await WriteEnd(_writer);
     }
 
-    Task DbTableAccessGen(IEnumerable<DocumentFitModel> docs)
+    Task DbTableAccessGen(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
     {
         //string crud_type_name, service_type_name, response_type_name, controller_name, service_instance;
         //ZipArchiveEntry zipEntry;
         //StreamWriter writer;
 
-        foreach (BaseFitModel doc_obj in docs)
+        foreach (KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj in docs)
         {
             #region модели ответов тела документа (rest/api)
 

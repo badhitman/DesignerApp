@@ -122,7 +122,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
         {
             ArgumentNullException.ThrowIfNull(tab.JoinsForms);
 
-            TreeItemDataModel tab_tree_item = (TreeItemDataModel)document_tree_item.Children.First(x => x.Value?.Id == doc.Id);
+            TreeItemDataModel tab_tree_item = (TreeItemDataModel)document_tree_item.Children.First(x => x.Value?.Id == tab.Id);
             ArgumentNullException.ThrowIfNull(tab_tree_item.Children);
 
             FormFitModel FormConvert(TabJoinDocumentSchemeConstructorModelDB joinForm)
@@ -194,6 +194,17 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
                     JoinName = joinForm.Name,
                 };
             }
+
+#if DEBUG
+            TabFitModel v = new()
+            {
+                Name = tab.Name,
+                Description = tab.Description,
+                SortIndex = tab.SortIndex,
+                SystemName = tab_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(tab.Name),
+                Forms = [.. tab.JoinsForms.Select(FormConvert)],
+            };
+#endif
 
             return new TabFitModel()
             {
