@@ -79,15 +79,15 @@ public class TabOfDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
 
         foreach (ValueDataForSessionOfDocumentModelDB val in session.DataSessionValues)
         {
-            if (string.IsNullOrWhiteSpace(val.TabJoinDocumentScheme?.Owner?.Name))
+            if (string.IsNullOrWhiteSpace(val.TabJoinDocumentScheme?.Tab?.Name))
                 continue;
 
-            if (!res.ContainsKey(val.TabJoinDocumentScheme.Owner.Name))
-                res.Add(val.TabJoinDocumentScheme.Owner.Name, []);
-            if (!res[val.TabJoinDocumentScheme.Owner.Name].ContainsKey(val.RowNum))
-                res[val.TabJoinDocumentScheme.Owner.Name].Add(val.RowNum, []);
+            if (!res.ContainsKey(val.TabJoinDocumentScheme.Tab.Name))
+                res.Add(val.TabJoinDocumentScheme.Tab.Name, []);
+            if (!res[val.TabJoinDocumentScheme.Tab.Name].ContainsKey(val.RowNum))
+                res[val.TabJoinDocumentScheme.Tab.Name].Add(val.RowNum, []);
 
-            res[val.TabJoinDocumentScheme.Owner.Name][val.RowNum].Add(val);
+            res[val.TabJoinDocumentScheme.Tab.Name][val.RowNum].Add(val);
         }
         return res;
     }

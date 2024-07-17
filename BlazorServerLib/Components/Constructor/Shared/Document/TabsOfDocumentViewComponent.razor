@@ -49,7 +49,7 @@ else
             {
                 foreach (TabJoinDocumentSchemeConstructorModelDB pjf in TabOfDocumentScheme.JoinsForms.OrderBy(x => x.SortIndex))
                 {
-                    pjf.Owner ??= TabOfDocumentScheme;
+                    pjf.Tab ??= TabOfDocumentScheme;
                     <CascadingValue Value="pjf">
                         <TabOfDocumentMainViewComponent @key="@($"page-{TabOfDocumentScheme.Id}_jform-{pjf.Id}")" UpdatePageActionHandle="UpdatePageAction" CurrentFormJoinEdit="_join_form_id" CanDown="@(CanDownJoinForm(pjf))" CanUp="@(CanUpJoinForm(pjf))" JoinFormHoldHandle="JoinFormHoldAction" />
                     </CascadingValue>

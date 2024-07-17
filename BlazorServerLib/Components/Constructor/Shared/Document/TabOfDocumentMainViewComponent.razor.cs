@@ -100,8 +100,8 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
         }
     }
 
-    string _join_name_origin = "";
-    string PageJoinFormName
+    string? _join_name_origin;
+    string? PageJoinFormName
     {
         get => PageJoinForm.Name;
         set
@@ -160,7 +160,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
             Id = PageJoinForm.Id,
             IsTable = PageJoinForm.IsTable,
             Name = PageJoinForm.Name,
-            OwnerId = PageJoinForm.OwnerId,
+            TabId = PageJoinForm.TabId,
             ShowTitle = PageJoinForm.ShowTitle,
             SortIndex = PageJoinForm.SortIndex
         };

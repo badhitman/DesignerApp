@@ -1721,7 +1721,7 @@ public partial class ConstructorService(
                                                                            join session in context_forms.Sessions on val_s.OwnerId equals session.Id
                                                                            join DocumentScheme in context_forms.DocumentSchemes on session.OwnerId equals DocumentScheme.Id
                                                                            join page in context_forms.TabsOfDocumentsSchemes on DocumentScheme.Id equals page.OwnerId
-                                                                           join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
+                                                                           join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.TabId
                                                                            select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);
 
@@ -1908,7 +1908,7 @@ public partial class ConstructorService(
                                                                            join session in context_forms.Sessions on val_s.OwnerId equals session.Id
                                                                            join DocumentScheme in context_forms.DocumentSchemes on session.OwnerId equals DocumentScheme.Id
                                                                            join page in context_forms.TabsOfDocumentsSchemes on DocumentScheme.Id equals page.OwnerId
-                                                                           join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.OwnerId
+                                                                           join form_join in context_forms.TabsJoinsForms.Where(x => x.FormId == form_db.Id) on page.Id equals form_join.TabId
                                                                            select val_s)
                                                                      .ToListAsync(cancellationToken: cancellationToken);
 
@@ -1916,7 +1916,7 @@ public partial class ConstructorService(
         {
             if (values_updates.Count != 0)
             {
-                msg = $"Тип поля (списочного типа) формы #{field_directory.Id} не может быть изменён ([{form_field_db.DirectoryId}] -> [{field_directory.DirectoryId}]): найдены ссылки введёных значений ({values_updates.Count} штук) для этого поля";
+                msg = $"Тип поля (списочного типа) формы #{field_directory.Id} не может быть изменён ([{form_field_db.DirectoryId}] -> [{field_directory.DirectoryId}]): найдены ссылки введённых значений ({values_updates.Count} штук) для этого поля";
                 res.AddError(msg);
                 logger.LogError(msg);
                 return res;
@@ -2149,7 +2149,7 @@ public partial class ConstructorService(
             query = (from _quest in query
                      join _page in context_forms.TabsOfDocumentsSchemes on _quest.Id equals _page.OwnerId into j_pages
                      from j_page in j_pages.DefaultIfEmpty()
-                     join _join_form in context_forms.TabsJoinsForms on j_page.Id equals _join_form.OwnerId into j_join_forms
+                     join _join_form in context_forms.TabsJoinsForms on j_page.Id equals _join_form.TabId into j_join_forms
                      from j_join_form in j_join_forms.DefaultIfEmpty()
                      join _form in context_forms.Forms on j_join_form.FormId equals _form.Id into j_forms
                      from j_form in j_forms.DefaultIfEmpty()
@@ -2577,15 +2577,15 @@ public partial class ConstructorService(
             Response = await context_forms
             .TabsJoinsForms
             .Include(x => x.Form)
-            .Include(x => x.Owner)
+            .Include(x => x.Tab)
             .ThenInclude(x => x!.JoinsForms)
             .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_join_form_id, cancellationToken: cancellationToken)
         };
 
         if (res.Response is null)
             res.AddError($"Связь #{tab_document_scheme_join_form_id} (форма<->опрос/анкета) не найдена в БД");
-        else if (res.Response.Owner?.JoinsForms is not null)
-            res.Response.Owner.JoinsForms = res.Response.Owner.JoinsForms.OrderBy(x => x.SortIndex).ToList();
+        else if (res.Response.Tab?.JoinsForms is not null)
+            res.Response.Tab.JoinsForms = res.Response.Tab.JoinsForms.OrderBy(x => x.SortIndex).ToList();
 
         return res;
     }
@@ -2598,11 +2598,11 @@ public partial class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_join_db = await context_forms
             .TabsJoinsForms
-            .Include(x => x.Owner)
+            .Include(x => x.Tab)
             .ThenInclude(x => x!.JoinsForms)
             .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_join_form_id, cancellationToken: cancellationToken);
 
-        if (questionnaire_page_join_db?.Owner?.JoinsForms is null)
+        if (questionnaire_page_join_db?.Tab?.JoinsForms is null)
         {
             res.AddError($"Форма для страницы опроса/анкеты #{tab_document_scheme_join_form_id} отсутствует в БД. ошибка 66CB7541-20AE-4C26-A020-3A9546457C3D");
             return res;
@@ -2611,7 +2611,7 @@ public partial class ConstructorService(
         int current_project_id = await (from project in context_forms.Projects
                                         join ds in context_forms.DocumentSchemes on project.Id equals ds.ProjectId
                                         join tds in context_forms.TabsOfDocumentsSchemes on ds.Id equals tds.OwnerId
-                                        where tds.Id == questionnaire_page_join_db.OwnerId
+                                        where tds.Id == questionnaire_page_join_db.TabId
                                         select project.Id)
                                                           .FirstAsync(cancellationToken: cancellationToken);
 
@@ -2622,7 +2622,7 @@ public partial class ConstructorService(
             return res;
         }
 
-        TabJoinDocumentSchemeConstructorModelDB? _fns = questionnaire_page_join_db.Owner.GetOutermostJoinForm(direct, questionnaire_page_join_db.SortIndex);
+        TabJoinDocumentSchemeConstructorModelDB? _fns = questionnaire_page_join_db.Tab.GetOutermostJoinForm(direct, questionnaire_page_join_db.SortIndex);
 
         if (_fns is null)
             res.AddError("Не удалось выполнить перемещение. ошибка ED601887-8BB3-4FB7-96C7-1563FD9B1FCD");
@@ -2653,9 +2653,9 @@ public partial class ConstructorService(
         res.Response = await context_forms
             .TabsOfDocumentsSchemes
             .Include(x => x.JoinsForms)
-            .FirstAsync(x => x.Id == questionnaire_page_join_db.OwnerId, cancellationToken: cancellationToken);
+            .FirstAsync(x => x.Id == questionnaire_page_join_db.TabId, cancellationToken: cancellationToken);
 
-        questionnaire_page_join_db.Owner.JoinsForms = [.. questionnaire_page_join_db.Owner.JoinsForms!.OrderBy(x => x.SortIndex)];
+        questionnaire_page_join_db.Tab.JoinsForms = [.. questionnaire_page_join_db.Tab.JoinsForms!.OrderBy(x => x.SortIndex)];
 
         int i = 0;
         bool is_upd = false;
@@ -2684,7 +2684,10 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TabJoinDocumentSchemeConstructorModelDB tab_document_scheme_form, CancellationToken cancellationToken = default)
     {
-        tab_document_scheme_form.Name = MyRegexSpices().Replace(tab_document_scheme_form.Name, " ").Trim();
+        tab_document_scheme_form.Name = tab_document_scheme_form.Name is null 
+            ? null 
+            : MyRegexSpices().Replace(tab_document_scheme_form.Name, " ").Trim();
+
         tab_document_scheme_form.Description = tab_document_scheme_form.Description?.Trim();
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(tab_document_scheme_form);
@@ -2696,12 +2699,12 @@ public partial class ConstructorService(
         TabOfDocumentSchemeConstructorModelDB? tab_of_document_db = await context_forms
             .TabsOfDocumentsSchemes
             .Include(x => x.JoinsForms)
-            .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_form.OwnerId, cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_form.TabId, cancellationToken: cancellationToken);
 
         string msg;
         if (tab_of_document_db?.JoinsForms is null)
         {
-            msg = $"Страница анкеты/опроса #{tab_document_scheme_form.OwnerId} не найдена в БД";
+            msg = $"Страница анкеты/опроса #{tab_document_scheme_form.TabId} не найдена в БД";
             res.AddError(msg);
             logger.LogError(msg);
             return res;
@@ -2800,7 +2803,7 @@ public partial class ConstructorService(
         int current_project_id = await (from project in context_forms.Projects
                                         join ds in context_forms.DocumentSchemes on project.Id equals ds.ProjectId
                                         join tds in context_forms.TabsOfDocumentsSchemes on ds.Id equals tds.OwnerId
-                                        where tds.Id == questionnaire_page_db.OwnerId
+                                        where tds.Id == questionnaire_page_db.TabId
                                         select project.Id)
                                                            .FirstAsync(cancellationToken: cancellationToken);
 
@@ -3079,7 +3082,7 @@ public partial class ConstructorService(
         var q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
                 join _s in context_forms.Sessions on _vs.OwnerId equals _s.Id
                 join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.TabJoinDocumentSchemeId equals _pjf.Id
-                join _qp in context_forms.TabsOfDocumentsSchemes on _pjf.OwnerId equals _qp.Id
+                join _qp in context_forms.TabsOfDocumentsSchemes on _pjf.TabId equals _qp.Id
                 select new { Value = _vs, Session = _s, DocumentPageJoinForm = _pjf, DocumentPage = _qp };
 
         var data_rows = await q.ToArrayAsync(cancellationToken: cancellationToken);

@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
@@ -10,8 +11,22 @@ namespace SharedLib;
 /// Связь формы со страницей опроса/анкеты
 /// </summary>
 [Index(nameof(SortIndex)), Index(nameof(IsTable))]
-public class TabJoinDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
+public class TabJoinDocumentSchemeConstructorModelDB
 {
+    /// <summary>
+    /// Идентификатор/Key
+    /// </summary>
+    [Key]
+    public int Id { get; set; }
+
+    /// <summary>
+    /// Описание/примечание для объекта
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <inheritdoc/>
+    public string? Name { get; set; }
+
     /// <summary>
     /// Сортировка 
     /// </summary>
@@ -28,9 +43,14 @@ public class TabJoinDocumentSchemeConstructorModelDB : EntryDescriptionOwnedMode
     public bool IsTable { get; set; }
 
     /// <summary>
-    /// Страница
+    /// Таб/Вкладка
     /// </summary>
-    public TabOfDocumentSchemeConstructorModelDB? Owner { get; set; }
+    public int TabId { get; set; }
+
+    /// <summary>
+    /// Таб/Вкладка
+    /// </summary>
+    public TabOfDocumentSchemeConstructorModelDB? Tab { get; set; }
 
     /// <summary>
     /// [FK] Форма

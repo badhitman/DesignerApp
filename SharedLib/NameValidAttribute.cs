@@ -8,12 +8,21 @@ namespace SharedLib;
 /// </summary>
 public partial class NameValidAttribute : ValidationAttribute
 {
+    /// <summary>
+    /// Разрешить пустую строку
+    /// </summary>
+    public bool AllowEmptyStrings { get; set; }
+
     /// <inheritdoc/>
     public override bool IsValid(object? value)
     {
-        if (value is string n && MyRegexName().IsMatch(n) && MyRegexPrefixCheck().IsMatch(n) && MyRegexPostfixCheck().IsMatch(n))
-            return true;
-
+        if (value is string n)
+        {
+            if (AllowEmptyStrings && n == "")
+                return true;
+            if (MyRegexName().IsMatch(n) && MyRegexPrefixCheck().IsMatch(n) && MyRegexPostfixCheck().IsMatch(n))
+                return true;
+        }
         ErrorMessage = "Некорректное имя: первым и последним символом должна идти буква";
         return false;
     }

@@ -230,7 +230,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
         ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new TabJoinDocumentSchemeConstructorModelDB()
         {
             FormId = SelectedFormForAdding,
-            OwnerId = DocumentPage.Id,
+            TabId = DocumentPage.Id,
             Name = addingFormToTabPageName,
         });
         IsBusyProgress = false;
