@@ -111,10 +111,7 @@ public class ManufactureService(
         if (!IsValid)
             return ResponseBaseModel.CreateError(ValidationResults);
 
-        if (!string.IsNullOrEmpty(manufacture.ControllersDirectoryPath) && !Regex.IsMatch(manufacture.ControllersDirectoryPath, GlobalStaticConstants.FOLDER_NAME_TEMPLATE))
-            return ResponseBaseModel.CreateError($"Не корректное имя папки контроллеров: {CodeGeneratorConfigModel.MessageErrorTemplateNameFolder}");
-
-        string?[] folder_names = [manufacture.ControllersDirectoryPath, manufacture.AccessDataDirectoryPath, manufacture.EnumDirectoryPath, manufacture.DocumentsMastersDbDirectoryPath];
+        string?[] folder_names = [manufacture.AccessDataDirectoryPath, manufacture.EnumDirectoryPath, manufacture.DocumentsMastersDbDirectoryPath];
         folder_names = folder_names
             .GroupBy(x => x)
             .Where(x => x.Count() > 1)

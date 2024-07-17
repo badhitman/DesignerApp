@@ -41,9 +41,4 @@ public class CodeGeneratorConfigModel
     [Required(AllowEmptyStrings = false)]
     [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {MessageErrorTemplateNameFolder}")]
     public string AccessDataDirectoryPath { get; set; } = "crud_generation";
-
-    /// <summary>
-    /// Папка размещения файлов контроллеров
-    /// </summary>
-    public string? ControllersDirectoryPath { get; set; } = "controllers_generation";
 }

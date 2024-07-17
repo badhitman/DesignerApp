@@ -56,28 +56,7 @@
             <div class="col-sm-10">
                 <input @bind-value="manufactureEdit.AccessDataDirectoryPath" @bind-value:event="oninput" type="text" id="inputAccessDataDirectoryPath" class="form-control">
             </div>
-        </div>
-
-        <div class="row align-items-center mt-2" title="Если не заполнено, то выгрузка контроллеров не произведётся">
-            <div class="col-sm-2">
-                <label for="inputControllersDirectoryPath" class="col-form-label">
-                    Контроллеры ASP
-                    <sup class="text-primary-emphasis">?</sup>
-                </label>
-            </div>
-            <div class="col-sm-@(string.IsNullOrWhiteSpace(manufactureEdit.ControllersDirectoryPath)?"8":"10")">
-                <input @bind-value="manufactureEdit.ControllersDirectoryPath" @bind-value:event="oninput" type="text" id="inputControllersDirectoryPath" class="form-control" aria-describedby="controllersDirectoryPathHelpInline">
-            </div>
-
-            @if (string.IsNullOrWhiteSpace(manufactureEdit.ControllersDirectoryPath))
-            {
-                <div class="col-sm-2">
-                    <span id="controllersDirectoryPathHelpInline" class="form-text">
-                        Контроллеры не требуются.
-                    </span>
-                </div>
-            }
-        </div>
+        </div>        
         <div class="d-grid gap-2 mt-4">
             <button disabled="@Manufacture.Equals(manufactureEdit)" @onclick="UpdateManufacture" class="btn btn-@(Manufacture.Equals(manufactureEdit) ? "outline-secondary" : "primary")" type="button">Сохранить</button>
             @if (!Manufacture.Equals(manufactureEdit))

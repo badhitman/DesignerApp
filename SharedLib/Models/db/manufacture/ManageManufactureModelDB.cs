@@ -34,7 +34,6 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel
         if (obj is ManageManufactureModelDB other)
             return
                     Id == other.Id &&
-                    ControllersDirectoryPath == other.ControllersDirectoryPath &&
                     DocumentsMastersDbDirectoryPath == other.DocumentsMastersDbDirectoryPath &&
                     UserId == other.UserId &&
                     AccessDataDirectoryPath == other.AccessDataDirectoryPath &&
@@ -47,7 +46,7 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel
 
     /// <inheritdoc/>
     public override int GetHashCode()
-        => $"{Id} {Namespace} {AccessDataDirectoryPath} {ControllersDirectoryPath} {DocumentsMastersDbDirectoryPath} {EnumDirectoryPath} {UserId} {ProjectId}".GetHashCode();
+        => $"{Id} {Namespace} {AccessDataDirectoryPath} {DocumentsMastersDbDirectoryPath} {EnumDirectoryPath} {UserId} {ProjectId}".GetHashCode();
 
     /// <summary>
     /// Reload
@@ -55,7 +54,6 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel
     public void Reload(ManageManufactureModelDB other)
     {
         Id = other.Id;
-        ControllersDirectoryPath = other.ControllersDirectoryPath;
         DocumentsMastersDbDirectoryPath = other.DocumentsMastersDbDirectoryPath;
         UserId = other.UserId;
         AccessDataDirectoryPath = other.AccessDataDirectoryPath;

@@ -25,23 +25,25 @@ public class EntryTypeModel
     /// Имя файла класса (тип данных)
     /// </summary>
     [RegularExpression(GlobalStaticConstants.SYSTEM_NAME_TEMPLATE, ErrorMessage = GlobalStaticConstants.SYSTEM_NAME_TEMPLATE_MESSAGE)]
-    public string TypeName { get; set; }
+    public string TypeName { get; }
 
     /// <summary>
     /// Базовый путь к файлу
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    public string BasePath { get; set; }
+    public string BasePath { get; }
 
     /// <summary>
     /// Префикс пути к файлу
     /// </summary>
-    public string? PrefixPath { get; set; }
+    public string? PrefixPath { get; }
 
     /// <summary>
     /// Полный путь/имя файла типа данных (class)
     /// </summary>
-    public string FullEntryName => string.IsNullOrWhiteSpace(PrefixPath)
-        ? $"{Path.Combine(BasePath, TypeName)}.cs"
-        : $"{Path.Combine(BasePath, PrefixPath, TypeName)}.cs";
+    /// <param name="prefix_type_name">Префикс имени типа данных. Например: I, для объявления интерфейсов</param>
+    /// <returns>Путь к элементу в архиве</returns>
+    public string FullEntryName(string? prefix_type_name = null) => string.IsNullOrWhiteSpace(PrefixPath)
+        ? $"{Path.Combine(BasePath, $"{prefix_type_name}{TypeName}")}.cs"
+        : $"{Path.Combine(BasePath, PrefixPath, $"{prefix_type_name}{TypeName}")}.cs";
 }
