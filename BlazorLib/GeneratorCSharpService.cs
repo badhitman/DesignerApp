@@ -659,9 +659,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         => new($"{doc_obj.TypeName}{GlobalStaticConstants.DATABASE_TABLE_ACESSOR_PREFIX}", conf.AccessDataDirectoryPath);
 
 
-    //implementation//interface
-
-
     /// <summary>
     /// HTML строку в обычную/нормальную (без тегов).
     /// например: для добавления в remarks
