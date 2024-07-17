@@ -295,13 +295,13 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             else
                 is_first_document_item = false;
 
-            SummaryBuilder sb = new(2);
+            SummaryBuilder sb = new() { TabulationsSpiceSize = 2 };
 
-            await _writer.WriteLineAsync(sb.UseSummaryText([$"{doc_obj.Key.Name}"]).SummaryText);
+            await _writer.WriteLineAsync(sb.UseSummaryText([$"{doc_obj.Key.Name}"]).SummaryGet);
             if (!string.IsNullOrWhiteSpace(doc_obj.Key.Description))
             {
                 await _writer.WriteLineAsync("\t\t/// <remarks>");
-                await _writer.WriteLineAsync(string.Join("\n", DescriptionHtmlToLinesRemark(doc_obj.Key.Description).Select(x => $"\t\t/// {x}")));
+                await _writer.WriteLineAsync(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(doc_obj.Key.Description).Select(x => $"\t\t/// {x}")));
                 await _writer.WriteLineAsync("\t\t/// </remarks>");
             }
             _writer.WriteLine($"\t\tpublic DbSet<{doc_obj.Key.TypeName}> {doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
@@ -316,7 +316,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 else
                     is_first_schema_item = false;
 
-                await _writer.WriteLineAsync(sb.UseSummaryText([$"[{schema.Document.Name}]->[{schema.Tab.Name}]->[{schema.Form.Name}]"]).SummaryText);
+                await _writer.WriteLineAsync(sb.UseSummaryText([$"[{schema.Document.Name}]->[{schema.Tab.Name}]->[{schema.Form.Name}]"]).SummaryGet);
                 _writer.WriteLine($"\t\tpublic DbSet<{schema.TypeName}> {schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
             }
             await _writer.WriteLineAsync("#endregion");
@@ -343,7 +343,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await writer.WriteLineAsync($"\tpublic partial interface {type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
 
-            await WriteDocumentCrudInterface(writer, doc_obj);
+            List<SummaryBuilder> builder = await WriteInterface(writer, doc_obj);
 
             zipEntry = archive.CreateEntry(type_entry.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
@@ -352,175 +352,88 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}(IDbContextFactory<DbAppContext> appDbFactory) : I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
 
-            await WriteDocumentCrudInterfaceImplementation(writer, doc_obj);
+            builder.ForEach(sb =>
+            {
+                sb.WriteImplementation(writer);
+            });
+
+            await WriteEnd(writer);
         }
     }
 
     /// <summary>
     /// Запись CRUD интерфейсов служб непосредственного доступа к данным (к таблицам БД)
     /// </summary>
-    static async Task WriteDocumentCrudInterface(StreamWriter writer, KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj)
+    static async Task<List<SummaryBuilder>> WriteInterface(StreamWriter writer, KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj)
     {
-        SummaryBuilder sb = new(2);
+        List<SummaryBuilder> builders_history = [];
 
-        await writer.WriteLineAsync(sb.UseSummaryText([$"Создать/добавить объект: '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj\">Объект добавления в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task AddAsync({doc_obj.Key.TypeName} obj);");
-        await writer.WriteLineAsync();
-
-
-        await writer.WriteLineAsync(sb.UseSummaryText([$"Создать перечень новых объектов: '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_range\">Объекты добавления в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task AddRangeAsync(List<{doc_obj.Key.TypeName}> obj_range);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync(sb.UseSummaryText([$"Прочитать объект БД: '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<{doc_obj.Key.TypeName}> FirstAsync(int id);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync(sb.UseSummaryText([$"Получить (набор): '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"ids\">Идентификаторы объектов</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<List<{doc_obj.Key.TypeName}>> SelectAsync(IEnumerable<int> ids);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync(sb.UseSummaryText([$"Получить (порцию/pagination) документов: '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"pagination_request\">Запрос-пагинатор</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<{doc_obj.Key.TypeName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}> SelectAsync(PaginationRequestModel pagination_request);");
-        await writer.WriteLineAsync();
-
-
-        await writer.WriteLineAsync(sb.UseSummaryText([$"Обновить объект документа: '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj\">Объект обновления в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task UpdateAsync({doc_obj.Key.TypeName} obj);");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync(sb.UseSummaryText([$"\t\t/// Обновить перечень объектов: '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_range\">Объекты обновления в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task UpdateRangeAsync(IEnumerable<{doc_obj.Key.TypeName}> obj_range);");
-        await writer.WriteLineAsync();
-
-
-        await writer.WriteLineAsync(sb.UseSummaryText([$"Инверсия признака удаления: '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task MarkDeleteToggleAsync(int id);");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync(sb.UseSummaryText([$"Удалить: '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task RemoveAsync(int id);");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync(sb.UseSummaryText([$"Удалить перечень: '{doc_obj.Key.Name}'"]).SummaryText);
-        await writer.WriteLineAsync($"\t\t/// <param name=\"ids\">Идентификаторы объектов</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task RemoveRangeAsync(IEnumerable<int> ids);");
-        await WriteEnd(writer);
-    }
-
-    /// <summary>
-    /// Запись CRUD реализаций интерфейсов служб непосредственного доступа к данным (к таблицам БД)
-    /// </summary>
-    static async Task WriteDocumentCrudInterfaceImplementation(StreamWriter writer, KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj)
-    {
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task AddAsync({doc_obj.Key.TypeName} obj_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\tawait _db_context.AddAsync(obj_rest);");
-        await writer.WriteLineAsync("\t\t\t\tawait SaveChangesAsync();");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task AddRangeAsync(IEnumerable<{doc_obj.Key.TypeName}> obj_range)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\tawait _db_context.AddRangeAsync(obj_range);");
-        await writer.WriteLineAsync("\t\t\tawait SaveChangesAsync();");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{doc_obj.Key.TypeName}?> FirstAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await _db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}.FindAsync(id);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<IEnumerable<{doc_obj.Key.TypeName}>> SelectAsync(IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await _db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}.Where(x => ids.Contains(x.Id)).ToArrayAsync();");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{doc_obj.Key.TypeName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}> SelectAsync(PaginationRequestModel request)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\tIQueryable<{doc_obj.Key.TypeName}>? query = _db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}.AsQueryable();");
-        await writer.WriteLineAsync($"\t\t\t{doc_obj.Key.TypeName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX} result = new()");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tPagination = new PaginationResponseModel(request)");
-        await writer.WriteLineAsync("\t\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\t\tTotalRowsCount = await query.CountAsync()");
-        await writer.WriteLineAsync("\t\t\t\t}");
-        await writer.WriteLineAsync("\t\t\t};");
-
-        await writer.WriteLineAsync($"\t\t\tswitch (result.Pagination.SortBy)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tdefault:");
-        await writer.WriteLineAsync("\t\t\t\t\tquery = result.Pagination.SortingDirection == VerticalDirectionsEnum.Up");
-        await writer.WriteLineAsync("\t\t\t\t\t\t? query.OrderByDescending(x => x.Id)");
-        await writer.WriteLineAsync("\t\t\t\t\t\t: query.OrderBy(x => x.Id);");
-        await writer.WriteLineAsync("\t\t\t\t\tbreak;");
-        await writer.WriteLineAsync("\t\t\t}");
-
-        await writer.WriteLineAsync($"\t\t\tquery = query.Skip((result.Pagination.PageNum - 1) * result.Pagination.PageSize).Take(result.Pagination.PageSize);");
-        await writer.WriteLineAsync("\t\t\tresult.DataRows = await query.ToArrayAsync();");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task UpdateAsync({doc_obj.Key.TypeName} obj_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\t_db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}.Update(obj_rest);");
-        await writer.WriteLineAsync("\t\t\tawait SaveChangesAsync();");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task UpdateRangeAsync(IEnumerable<{doc_obj.Key.TypeName}> obj_range)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\t_db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}.UpdateRange(obj_range);");
-        await writer.WriteLineAsync("\t\t\tawait SaveChangesAsync();");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task MarkDeleteToggleAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
+        SummaryBuilder builder = new() { TabulationsSpiceSize = 2 };
         string db_set_name = $"_db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}";
-        await writer.WriteLineAsync($"\t\t\t{doc_obj.Key.TypeName} db_{doc_obj.Key.TypeName}_object = await {db_set_name}.FindAsync(id);");
-        await writer.WriteLineAsync($"\t\t\tdb_{doc_obj.Key.TypeName}_object.IsDeleted = !db_{doc_obj.Key.TypeName}_object.IsDeleted;");
-        await writer.WriteLineAsync($"\t\t\t{db_set_name}.Update(db_{doc_obj.Key.TypeName}_object);");
-        await writer.WriteLineAsync("\t\t\tawait SaveChangesAsync();");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
 
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task RemoveRangeAsync(IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\t{db_set_name}.RemoveRange({db_set_name}.Where(x => ids.Contains(x.Id)));");
-        await writer.WriteLineAsync("\t\t\tawait SaveChangesAsync();");
-        await writer.WriteLineAsync("\t\t}");
+        builders_history.Add(builder
+            .UseSummaryText($"Создать перечень новых объектов: '{doc_obj.Key.Name}'")
+            .UseParameter("obj_range", new($"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты добавления в БД"))
+            .UsePayload(["await _db_context.AddRangeAsync(obj_range);", "await _db_context.SaveChangesAsync();"])
+            .WriteSignatureMethod(writer, "AddAsync").Constructor());
+        writer.WriteLine();
+
+        builders_history.Add(builder
+            .UseSummaryText($"Прочитать перечень объектов: '{doc_obj.Key.Name}'")
+            .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+            .UsePayload([$"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToArrayAsync();"])
+            .WriteSignatureMethod(writer, "ReadAsync", $"List<{doc_obj.Key.TypeName}>").Constructor());
+        writer.WriteLine();
+
+        builders_history.Add(builder
+            .UseSummaryText($"Получить (порцию/pagination) объектов: '{doc_obj.Key.Name}'")
+            .UseParameter("pagination_request", new("PaginationRequestModel", "Запрос-пагинатор"))
+            .UsePayload([
+                $"IQueryable<{doc_obj.Key.TypeName}>? query = {db_set_name}.AsQueryable();"
+                ,$"{doc_obj.Key.TypeName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX} result = new()"
+                ,"{"
+                ,$"\tTPaginationResponseModel<{doc_obj.Key.TypeName}> result = new (request)"
+                ,"\t{"
+                ,$"\t\tTotalRowsCount = await query.CountAsync()"
+                ,"\t}"
+                ,"};"
+                ,"switch (result.Pagination.SortBy)"
+                ,"{"
+                ,"\tdefault:"
+                ,"\t\tquery = result.Pagination.SortingDirection == VerticalDirectionsEnum.Up"
+                ,"\t\t\t? query.OrderByDescending(x => x.Id)"
+                ,"\t\t\t: query.OrderBy(x => x.Id);"
+                ,"\t\tbreak;"
+                ,"query = query.Skip((result.Pagination.PageNum - 1) * result.Pagination.PageSize).Take(result.Pagination.PageSize);"
+                ,"result.Response = await query.ToArrayAsync();"
+                ,"return result;"])
+            .WriteSignatureMethod(writer, "SelectAsync", $"{doc_obj.Key.TypeName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}").Constructor());
+        writer.WriteLine();
+
+        builders_history.Add(builder
+           .UseSummaryText($"Обновить перечень объектов: '{doc_obj.Key.Name}'")
+           .UseParameter("obj_range", new($"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты обновления в БД"))
+           .UsePayload([$"{db_set_name}.Update(obj_rest);"])
+           .UsePayload(["await _db_context.SaveChangesAsync();"])
+           .WriteSignatureMethod(writer, "UpdateAsync").Constructor());
+        writer.WriteLine();
+
+        builders_history.Add(builder
+           .UseSummaryText($"Инверсия признака деактивации объекта: '{doc_obj.Key.Name}'")
+           .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+           .AddParameter("set_mark", new("bool", "Признак, который следует установить"))
+           .UsePayload([$"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteUpdateAsync(b => b.SetProperty(u => u.IsDisabled = set_mark));"])
+           .WriteSignatureMethod(writer, "MarkDeleteToggleAsync").Constructor());
+        writer.WriteLine();
+
+        builders_history.Add(builder
+           .UseSummaryText($"Удалить перечень объектов: '{doc_obj.Key.Name}'")
+           .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+           .UsePayload([$"{db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();"])
+           .WriteSignatureMethod(writer, "RemoveAsync").Constructor());
 
         await WriteEnd(writer);
+        return builders_history;
     }
 
     /// <summary>
@@ -542,7 +455,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
 
 
-    #region system
+    #region tools
     /// <summary>
     /// Перечисления/Списки: Путь относительно корня архива, указывающий имя создаваемой записи.
     /// </summary>

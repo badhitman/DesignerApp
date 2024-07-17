@@ -40,7 +40,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     protected string? searchString;
-    ConstructorFormsDocumentSchemePaginationResponseModel data = new() { DocumentsSchemes = Enumerable.Empty<DocumentSchemeConstructorModelDB>() };
+    TPaginationResponseModel<DocumentSchemeConstructorModelDB> data = new() { Response = [] };
 
     /// <inheritdoc/>
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
@@ -73,16 +73,16 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
 
         SimplePaginationRequestModel req = new();
         IsBusyProgress = true;
-        data = await ConstructorRepo.RequestDocumentsSchemes(req, ParentFormsPage.MainProject.Id);
+        data = await ConstructorRepo.RequestDocumentsSchemes(req, ParentFormsPage.MainProject.Id, token);
         IsBusyProgress = false;
 
-        if (data.DocumentsSchemes is null)
+        if (data.Response is null)
         {
             SnackbarRepo.Add($"rest.Content.Documents is null. error 62D3109B-7349-48E8-932B-762D5B0EA585", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.DocumentsSchemes };
+            return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Response };
         }
 
-        return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.DocumentsSchemes };
+        return new TableData<DocumentSchemeConstructorModelDB>() { TotalItems = data.TotalRowsCount, Items = data.Response };
     }
 
     /// <inheritdoc/>

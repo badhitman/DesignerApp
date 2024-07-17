@@ -61,13 +61,13 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        ConstructorFormsPaginationResponseModel rest = await ConstructorRepo.SelectForms(AltSimplePaginationRequestModel.Build(null, int.MaxValue, 0, true), ParentFormsPage.MainProject.Id);
+        TPaginationResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.SelectForms(AltSimplePaginationRequestModel.Build(null, int.MaxValue, 0, true), ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
-        if (rest.Elements is null)
+        if (rest.Response is null)
             throw new Exception($"Ошибка 973D18EE-ED49-442D-B12B-CDC5A32C8A51 rest.Content.Elements is null");
 
-        AllForms = rest.Elements;
+        AllForms = rest.Response;
     }
 
     /// <inheritdoc/>

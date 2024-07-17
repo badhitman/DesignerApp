@@ -87,17 +87,17 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             ProjectId = ParentFormsPage.MainProject.Id
         };
         IsBusyProgress = true;
-        ConstructorFormsSessionsPaginationResponseModel rest = await ConstructorRepo.RequestSessionsDocuments(req);
+        TPaginationResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.RequestSessionsDocuments(req);
         IsBusyProgress = false;
 
-        if (rest.Sessions is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"rest.Content.Sessions is null. error B1F8BCC4-952B-4C5E-B573-6FA5AD7F3A8A", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return new TableData<SessionOfDocumentDataModelDB>() { TotalItems = totalItems, Items = sessions };
         }
 
         totalItems = rest.TotalRowsCount;
-        sessions = new(rest.Sessions);
+        sessions = new(rest.Response);
 
         return new TableData<SessionOfDocumentDataModelDB>() { TotalItems = totalItems, Items = sessions };
     }
@@ -214,16 +214,16 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        ConstructorFormsDocumentSchemePaginationResponseModel rest = await ConstructorRepo.RequestDocumentsSchemes(new() { PageNum = 0, PageSize = 1000 }, ParentFormsPage.MainProject.Id);
+        TPaginationResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.RequestDocumentsSchemes(new() { PageNum = 0, PageSize = 1000 }, ParentFormsPage.MainProject.Id);
         IsBusyProgress = false;
 
-        if (rest.DocumentsSchemes is null)
+        if (rest.Response is null)
         {
             SnackbarRepo.Add($"rest.Content.Documents is null. error 0A875193-08AA-4678-824D-213BCE33080F", Severity.Error, conf => conf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
 
-        DocumentsAll = rest.DocumentsSchemes;
+        DocumentsAll = rest.Response;
     }
 
     /// <inheritdoc/>

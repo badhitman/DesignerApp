@@ -952,10 +952,10 @@ public partial class ConstructorService(
             }
         }
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == _dir.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == _dir.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         res.Response = directory_db.Id;
         return res;
@@ -979,10 +979,10 @@ public partial class ConstructorService(
         context_forms.Remove(directory_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == directory_db.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == directory_db.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return ResponseBaseModel.CreateSuccess($"Список/справочник #{directory_id} успешно удалён из БД");
     }
@@ -1087,10 +1087,10 @@ public partial class ConstructorService(
         res.Response = dictionary_element_db.Id;
         res.AddSuccess($"Элемент справочника успешно создан #{res.Response}");
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == directory_db.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == directory_db.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return res;
     }
@@ -1145,10 +1145,10 @@ public partial class ConstructorService(
 
         res.AddSuccess("Элемент справочника успешно обновлён");
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == element_db.Parent.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == element_db.Parent.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return res;
     }
@@ -1172,10 +1172,10 @@ public partial class ConstructorService(
         context_forms.Remove(element_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == element_db.Parent.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == element_db.Parent.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return ResponseBaseModel.CreateSuccess($"Элемент справочника #{element_id} успешно удалён из БД");
     }
@@ -1209,10 +1209,10 @@ public partial class ConstructorService(
         context_forms.UpdateRange(new ElementOfDirectoryConstructorModelDB[] { element_db.Parent!.Elements![i], element_db.Parent!.Elements![i - 1] });
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == element_db.Parent.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == element_db.Parent.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return ResponseBaseModel.CreateSuccess("Элемент сдвинут");
     }
@@ -1246,10 +1246,10 @@ public partial class ConstructorService(
         context_forms.UpdateRange(new ElementOfDirectoryConstructorModelDB[] { element_db.Parent!.Elements![i], element_db.Parent!.Elements![i + 1] });
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == element_db.Parent.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == element_db.Parent.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return ResponseBaseModel.CreateSuccess("Элемент сдвинут");
     }
@@ -1292,10 +1292,10 @@ public partial class ConstructorService(
     // Тип данных для полей форм может быть любой из перечня доступных: перечисление (созданное вами же), строка, число, булево, дата и т.д.
     #region формы
     /// <inheritdoc/>
-    public async Task<ConstructorFormsPaginationResponseModel> SelectForms(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default)
+    public async Task<TPaginationResponseModel<FormConstructorModelDB>> SelectForms(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormsPaginationResponseModel res = new(req);
+        TPaginationResponseModel<FormConstructorModelDB> res = new(req);
 
         IQueryable<FormConstructorModelDB> q;
 
@@ -1320,9 +1320,9 @@ public partial class ConstructorService(
 
         int[] ids = await q.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
 
-        res.Elements = ids.Length != 0
-            ? await context_forms.Forms.Where(x => ids.Contains(x.Id)).Include(x => x.Fields).Include(x => x.FieldsDirectoriesLinks).ToArrayAsync(cancellationToken: cancellationToken)
-            : Enumerable.Empty<FormConstructorModelDB>();
+        res.Response = ids.Length != 0
+            ? await context_forms.Forms.Where(x => ids.Contains(x.Id)).Include(x => x.Fields).Include(x => x.FieldsDirectoriesLinks).ToListAsync(cancellationToken: cancellationToken)
+            : [];
         return res;
     }
 
@@ -1495,10 +1495,10 @@ public partial class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == form_db.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == form_db.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return ResponseBaseModel.CreateError("Метод не реализован");
     }
@@ -1572,10 +1572,10 @@ public partial class ConstructorService(
                 .FirstAsync(x => x.Id == field_db.OwnerId, cancellationToken: cancellationToken);
         }
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == field_db.Owner.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == field_db.Owner.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return res;
     }
@@ -1648,10 +1648,10 @@ public partial class ConstructorService(
                 .FirstAsync(x => x.Id == field_db.OwnerId, cancellationToken: cancellationToken);
         }
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == field_db.Owner.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == field_db.Owner.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return res;
     }
@@ -1820,10 +1820,10 @@ public partial class ConstructorService(
             }
         }
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == form_db.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == form_db.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return res;
     }
@@ -1991,10 +1991,11 @@ public partial class ConstructorService(
             }
         }
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == form_db.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == form_db.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
+
         await CheckAndNormalizeSortIndexFrmFields(form_field_db.OwnerId, cancellationToken);
         return res;
     }
@@ -2025,10 +2026,10 @@ public partial class ConstructorService(
         context_forms.Remove(field_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == field_db.Owner.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == field_db.Owner.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         await CheckAndNormalizeSortIndexFrmFields(field_db.OwnerId, cancellationToken);
         return ResponseBaseModel.CreateSuccess($"Поле '{field_db.Name}' {{простого типа}} удалено из формы");
@@ -2061,10 +2062,10 @@ public partial class ConstructorService(
 
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == field_db.Owner.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == field_db.Owner.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return ResponseBaseModel.CreateSuccess("Поле {справочник/список} удалено из формы");
     }
@@ -2131,13 +2132,13 @@ public partial class ConstructorService(
     // Пользователь при добавлении/редактировании строк таблицы будет видеть форму, которую вы настроили для этого, а внутри таба это будет выглядеть как обычная многострочная таблица с колонками, равными полям формы
     #region схема документа
     /// <inheritdoc/>
-    public async Task<ConstructorFormsDocumentSchemePaginationResponseModel> RequestDocumentsSchemes(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken)
+    public async Task<TPaginationResponseModel<DocumentSchemeConstructorModelDB>> RequestDocumentsSchemes(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken)
     {
         if (req.PageSize < 1)
             req.PageSize = 10;
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormsDocumentSchemePaginationResponseModel res = new(req);
+        TPaginationResponseModel<DocumentSchemeConstructorModelDB> res = new(req);
 
         IQueryable<DocumentSchemeConstructorModelDB> query = context_forms
             .DocumentSchemes
@@ -2174,9 +2175,9 @@ public partial class ConstructorService(
 
         int[] ids = await query.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
         query = context_forms.DocumentSchemes.Include(x => x.Pages).Where(x => ids.Contains(x.Id)).Include(x => x.Pages).OrderBy(x => x.Name);
-        res.DocumentsSchemes = ids.Length != 0
-            ? await query.ToArrayAsync(cancellationToken: cancellationToken)
-            : Enumerable.Empty<DocumentSchemeConstructorModelDB>();
+        res.Response = ids.Length != 0
+            ? await query.ToListAsync(cancellationToken: cancellationToken)
+            : [];
 
         return res;
     }
@@ -2281,10 +2282,10 @@ public partial class ConstructorService(
             await context_forms.SaveChangesAsync(cancellationToken);
         }
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == documentScheme.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == documentScheme.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return await GetDocumentScheme(questionnaire_db.Id, cancellationToken);
     }
@@ -2309,10 +2310,10 @@ public partial class ConstructorService(
         context_forms.Remove(document_scheme_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == document_scheme_db.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == document_scheme_db.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return ResponseBaseModel.CreateSuccess($"Опрос/анкета #{document_scheme_id} удалена");
     }
@@ -2424,10 +2425,10 @@ public partial class ConstructorService(
             await context_forms.SaveChangesAsync(cancellationToken);
         }
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == tab_of_document_scheme_db.Owner.ProjectId)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == tab_of_document_scheme_db.Owner.ProjectId)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return res;
     }
@@ -2525,10 +2526,10 @@ public partial class ConstructorService(
             await context_forms.SaveChangesAsync(cancellationToken);
         }
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == current_project_id)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == current_project_id)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         res.Response = tab_of_document_scheme_db;
         return res;
@@ -2559,10 +2560,10 @@ public partial class ConstructorService(
         context_forms.Remove(tab_of_document_scheme_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == current_project_id)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == current_project_id)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return ResponseBaseModel.CreateSuccess($"Страница #{tab_of_document_scheme_id} удалена из опроса/анкеты");
     }
@@ -2672,10 +2673,10 @@ public partial class ConstructorService(
             context_forms.UpdateRange(res.Response.JoinsForms);
             await context_forms.SaveChangesAsync(cancellationToken);
 
-            context_forms
-                .Projects
-                .Where(u => u.Id == current_project_id)
-                .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+            await context_forms
+                 .Projects
+                 .Where(u => u.Id == current_project_id)
+                 .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
         }
 
         return res;
@@ -2684,8 +2685,8 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TabJoinDocumentSchemeConstructorModelDB tab_document_scheme_form, CancellationToken cancellationToken = default)
     {
-        tab_document_scheme_form.Name = tab_document_scheme_form.Name is null 
-            ? null 
+        tab_document_scheme_form.Name = tab_document_scheme_form.Name is null
+            ? null
             : MyRegexSpices().Replace(tab_document_scheme_form.Name, " ").Trim();
 
         tab_document_scheme_form.Description = tab_document_scheme_form.Description?.Trim();
@@ -2780,10 +2781,10 @@ public partial class ConstructorService(
             logger.LogInformation(msg);
             await context_forms.SaveChangesAsync(cancellationToken);
 
-            context_forms
-                .Projects
-                .Where(u => u.Id == current_project_id)
-                .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+            await context_forms
+                 .Projects
+                 .Where(u => u.Id == current_project_id)
+                 .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
         }
 
         return res;
@@ -2814,10 +2815,10 @@ public partial class ConstructorService(
         context_forms.Remove(questionnaire_page_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        context_forms
-            .Projects
-            .Where(u => u.Id == current_project_id)
-            .ExecuteUpdate(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now));
+        await context_forms
+             .Projects
+             .Where(u => u.Id == current_project_id)
+             .ExecuteUpdateAsync(b => b.SetProperty(u => u.SchemeLastUpdated, DateTime.Now), cancellationToken: cancellationToken);
 
         return ResponseBaseModel.CreateSuccess("Связь формы и страницы удалена из опроса/анкеты");
     }
@@ -3021,13 +3022,13 @@ public partial class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<ConstructorFormsSessionsPaginationResponseModel> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default)
+    public async Task<TPaginationResponseModel<SessionOfDocumentDataModelDB>> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ConstructorFormsSessionsPaginationResponseModel res = new(req);
+        TPaginationResponseModel<SessionOfDocumentDataModelDB> res = new(req);
         IQueryable<SessionOfDocumentDataModelDB> query = context_forms
             .Sessions
             .Include(x => x.Owner)
@@ -3055,15 +3056,15 @@ public partial class ConstructorService(
         res.TotalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
         query = query.Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
-        res.Sessions = await query.ToListAsync(cancellationToken: cancellationToken);
+        res.Response = await query.ToListAsync(cancellationToken: cancellationToken);
 
-        if (res.Sessions.Count != 0)
+        if (res.Response.Count != 0)
         {
-            string[] users_ids = res.Sessions.Select(x => x.AuthorUser).Distinct().ToArray();
+            string[] users_ids = res.Response.Select(x => x.AuthorUser).Distinct().ToArray();
             using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
             ApplicationUser[] users_data = await identityContext.Users.Where(x => users_ids.Contains(x.Id)).ToArrayAsync(cancellationToken: cancellationToken);
 
-            res.Sessions.ForEach(x => { x.AuthorUser = users_data.FirstOrDefault(y => y.Id.Equals(x.AuthorUser))?.UserName ?? x.AuthorUser; });
+            res.Response.ForEach(x => { x.AuthorUser = users_data.FirstOrDefault(y => y.Id.Equals(x.AuthorUser))?.UserName ?? x.AuthorUser; });
         }
 
         return res;
