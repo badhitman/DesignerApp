@@ -287,13 +287,13 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
         await _writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
         await _writer.WriteLineAsync("\t{");
-        bool is_first_item = true;
+        bool is_first_document_item = true;
         foreach (KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj in docs)
         {
-            if (!is_first_item)
+            if (!is_first_document_item)
                 await _writer.WriteLineAsync();
             else
-                is_first_item = false;
+                is_first_document_item = false;
 
             await _writer.WriteLineAsync("\t\t/// <summary>");
             await _writer.WriteLineAsync($"\t\t/// {doc_obj.Key.Name}");
@@ -305,11 +305,24 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 await _writer.WriteLineAsync(string.Join("\n", DescriptionHtmlToLinesRemark(doc_obj.Key.Description).Select(x => $"\t\t/// {x}")));
                 await _writer.WriteLineAsync("\t\t/// </remarks>");
             }
-
             _writer.WriteLine($"\t\tpublic DbSet<{doc_obj.Key.TypeName}> {doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+
+            bool is_first_schema_item = true;
             await _writer.WriteLineAsync();
+            await _writer.WriteLineAsync($"#region schema for [{doc_obj.Key.TypeName}]");
+            foreach (EntrySchemaTypeModel schema in doc_obj.Value)
+            {
+                if (!is_first_schema_item)
+                    await _writer.WriteLineAsync();
+                else
+                    is_first_schema_item = false;
 
-
+                await _writer.WriteLineAsync("\t\t/// <summary>");
+                await _writer.WriteLineAsync($"\t\t/// [{schema.Document.Name}]->[{schema.Tab.Name}]->[{schema.Form.Name}]");
+                await _writer.WriteLineAsync("\t\t/// </summary>");
+                _writer.WriteLine($"\t\tpublic DbSet<{schema.TypeName}> {schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+            }
+            await _writer.WriteLineAsync("#endregion");
         }
 
         await WriteEnd(_writer);
@@ -317,15 +330,15 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
     Task DbTableAccessGen(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
     {
-        //string crud_type_name, service_type_name, response_type_name, controller_name, service_instance;
-        //ZipArchiveEntry zipEntry;
-        //StreamWriter writer;
+        string crud_type_name, service_type_name, response_type_name, controller_name, service_instance;
+        ZipArchiveEntry zipEntry;
+        StreamWriter writer;
 
         foreach (KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj in docs)
         {
             #region модели ответов тела документа (rest/api)
 
-            //response_type_name = $"{doc_obj.SystemName}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
+            response_type_name = $"{doc_obj.Key.TypeName}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
             //zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
             //writer = new(zipEntry.Open(), Encoding.UTF8);
             //await WriteHead(writer, project.Name, conf.Namespace, $"{doc_obj.SystemName} : Response model (single object)", ["SharedLib.Models"]);
@@ -501,188 +514,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             //await WriteRestServiceInterface(writer, doc_obj.SystemName, doc_obj.Name, true, true, true);
 
             #endregion
-
-            /*if (doc_obj.Grids is not null)
-                foreach (GridFitModel grid in doc_obj.Grids)
-                {
-
-                    if (!grid.Properties?.Any() == true)
-                        continue;
-
-                    #region модели ответов табличной части документа (rest/api)
-
-                    response_type_name = $"{grid.SystemName}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, $"{grid.SystemName} : Response model (single object)", ["SharedLib.Models"]);
-                    await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// Результат запроса [{grid.SystemName}] (полезная нагрузка)");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic {grid.SystemName} {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
-                    await WriteEnd(writer);
-
-
-                    response_type_name = $"{grid.SystemName}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, $"{grid.SystemName} : Response model (collection objects)", ["SharedLib.Models"]);
-                    await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : ResponseBaseModel");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// Результат запроса [{grid.SystemName}] (полезная нагрузка)");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic IEnumerable<{grid.SystemName}> {GlobalStaticConstants.RESULT_PROPERTY_NAME} {{ get; set; }}");
-                    await WriteEnd(writer);
-
-                    response_type_name = $"{grid.SystemName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "response_models", $"{response_type_name}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, $"{grid.SystemName} : Response model (paginations collection of objects)", new string[] { "SharedLib.Models" });
-                    await writer.WriteLineAsync($"\tpublic partial class {response_type_name} : FindResponseModel");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// Результат запроса [{grid.SystemName}] (полезная нагрузка)");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic IEnumerable<{grid.SystemName}> DataRows {{ get; set; }}");
-                    await WriteEnd(writer);
-
-                    #endregion
-
-                    #region табличная часть документа
-
-                    crud_type_name = $"I{grid.SystemName}{GlobalStaticConstants.DATABASE_TABLE_ACESSOR_PREFIX}";
-                    services_di.Add(crud_type_name, crud_type_name[1..]);
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "crud_interfaces", $"{crud_type_name}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, $"Табличная часть документа: {grid.Name}", ["SharedLib.Models"]);
-
-                    await writer.WriteLineAsync($"\tpublic partial interface {crud_type_name} : SharedLib.ISavingChanges");
-                    await writer.WriteLineAsync("\t{");
-
-                    await WriteDocumentCrudInterface(writer, $"{grid.SystemName}", grid.Name, false);
-
-                    crud_type_name = crud_type_name[1..];
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "crud_implementations", $"{crud_type_name}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib.Models"]);
-                    await writer.WriteLineAsync($"\tpublic partial class {crud_type_name} : I{crud_type_name}");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync("\t\treadonly DbAppContext _db_context;");
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync("\t\t/// Конструктор");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic {crud_type_name}(DbAppContext set_db_context)");
-                    await writer.WriteLineAsync("\t\t{");
-                    await writer.WriteLineAsync("\t\t\t_db_context = set_db_context;");
-                    await writer.WriteLineAsync("\t\t}");
-                    await writer.WriteLineAsync();
-                    await WriteDocumentCrudInterfaceImplementation(writer, $"{grid.SystemName}", false);
-
-
-
-                    service_type_name = $"I{grid.SystemName}{GlobalStaticConstants.SERVICE_ACESSOR_PREFIX}";
-                    services_di.Add(service_type_name, service_type_name[1..]);
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "service_interfaces", $"{service_type_name}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, grid.Name, ["SharedLib.Models"]);
-
-                    await writer.WriteLineAsync($"\tpublic partial interface {service_type_name}");
-                    await writer.WriteLineAsync("\t{");
-
-                    await WriteDocumentServicesInterface(writer, grid.SystemName, grid.Name, false);
-
-                    service_type_name = service_type_name[1..];
-                    zipEntry = archive.CreateEntry(Path.Combine(conf.AccessDataDirectoryPath, "service_implementations", $"{service_type_name}.cs"));
-                    writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, project.Name, conf.Namespace, null, ["SharedLib.Models"]);
-
-                    await writer.WriteLineAsync($"\tpublic partial class {service_type_name} : I{service_type_name}");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync($"\t\treadonly I{crud_type_name} _crud_accessor;");
-                    await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync("\t\t/// Конструктор");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic {service_type_name}(I{crud_type_name} set_crud_accessor)");
-                    await writer.WriteLineAsync("\t\t{");
-                    await writer.WriteLineAsync("\t\t\t_crud_accessor = set_crud_accessor;");
-                    await writer.WriteLineAsync("\t\t}");
-                    await writer.WriteLineAsync();
-                    await WriteDocumentServicesInterfaceImplementation(writer, grid.SystemName, false);
-
-                    #endregion
-
-                    #region контроллеры табличной части документа
-
-                    if (!string.IsNullOrWhiteSpace(conf.ControllersDirectoryPath))
-                    {
-                        service_instance = $"_{service_type_name}".ToLower();
-                        controller_name = $"{grid.SystemName}Controller";
-                        zipEntry = archive.CreateEntry(Path.Combine(conf.ControllersDirectoryPath, $"{controller_name}.cs"));
-                        writer = new(zipEntry.Open(), Encoding.UTF8);
-                        await WriteHead(writer, project.Name, conf.Namespace, $"{grid.Name} (табличная часть)", ["Microsoft.AspNetCore.Mvc", "SharedLib.Models"]);
-                        await writer.WriteLineAsync("\t[Route(\"api/[controller]\")]");
-                        await writer.WriteLineAsync("\t[ApiController]");
-                        await writer.WriteLineAsync($"\tpublic partial class {controller_name} : ControllerBase");
-                        await writer.WriteLineAsync("\t{");
-                        await writer.WriteLineAsync($"\t\treadonly I{service_type_name} {service_instance};");
-                        await writer.WriteLineAsync();
-                        await writer.WriteLineAsync($"\t\tpublic {controller_name}(I{service_type_name} set_{service_instance})");
-                        await writer.WriteLineAsync("\t\t{");
-                        await writer.WriteLineAsync($"\t\t\t{service_instance} = set_{service_instance};");
-                        await writer.WriteLineAsync("\t\t}");
-                        await writer.WriteLineAsync();
-                        await WriteDocumentControllers(writer, service_instance, grid.SystemName, $"Табличная часть: {grid.Name} // для документа: {doc_obj.Name}", false);
-                    }
-
-                    #endregion
-
-                    //#region refit табличная часть
-
-                    //rest_service_name = $"I{grid.SystemName}RestService";
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), $"{rest_service_name}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"REST служба работы с API -> {project_info.Name}", new string[] { "Refit", "SharedLib.Models" });
-                    //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, false, false);
-
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), $"{rest_service_name[1..]}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
-                    //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRestServiceImplementation(writer, grid.SystemName, false);
-
-                    //rest_service_name = $"I{grid.SystemName}RefitProvider";
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
-                    //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, true, false);
-
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), "core", $"{rest_service_name[1..]}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, null, ["SharedLib.Models", "Refit", "Microsoft.Extensions.Logging"]);
-                    //await writer.WriteLineAsync($"\tpublic class {rest_service_name[1..]} : {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRefitProviderImplementation(writer, grid.SystemName, false);
-
-                    //rest_service_name = $"I{grid.SystemName}RefitService";
-                    //enumEntry = archive.CreateEntry(Path.Combine(refit_client_services_dir_name, grid.SystemName.ToLower(), "core", $"{rest_service_name}.cs"));
-                    //writer = new(enumEntry.Open(), Encoding.UTF8);
-                    //await WriteHead(writer, project_info.Name, project_info.NameSpace, $"Refit коннектор к API/{project_info.Name}", ["Refit", "SharedLib.Models"]);
-                    //await writer.WriteLineAsync("\t[Headers(\"Content-Type: application/json\")]");
-                    //await writer.WriteLineAsync($"\tpublic interface {rest_service_name}");
-                    //await writer.WriteLineAsync("\t{");
-                    //await WriteRestServiceInterface(writer, grid.SystemName, doc_obj.Name, false, true, true);
-
-                    //#endregion
-                }*/
         }
         return Task.CompletedTask;
     }
@@ -708,883 +539,98 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
 
     /// <summary>
-    /// Запись контроллеров
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    /// <param name="service_instance">Имя интерфейса промежуточной службы доступа к данным</param>
-    /// <param name="type_name">Имя типа данных (SystemName)</param>
-    /// <param name="name">Наименование типа данных</param>
-    static async Task WriteDocumentControllers(StreamWriter writer, string service_instance, string type_name, string name)
-    {
-        string type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Добавить/создать документ: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"object_rest\">Новый объект '{name}' для записи/добавления в БД</param>");
-        await writer.WriteLineAsync("\t\t[HttpPost($\"{nameof(RouteMethodsPrefixesEnum.AddSingle)}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<IdResponseModel> AddAsync({type_name_gen} object_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.AddAsync(object_rest);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Добавить/создать коллекцию документов: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"objects_range_rest\">Коллекция новых объектов '{name}' для записи/добавления в БД</param>");
-        await writer.WriteLineAsync("\t\t[HttpPost($\"{nameof(RouteMethodsPrefixesEnum.AddRange)}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> AddRangeAsync(IEnumerable<{type_name_gen}> objects_range_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.AddRangeAsync(objects_range_rest);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить документ по идентификатору: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта '{name}'</param>");
-        await writer.WriteLineAsync("\t\t[HttpGet($\"{nameof(RouteMethodsPrefixesEnum.GetSingleById)}/{{id}}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> FirstAsync([FromRoute] int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.FirstAsync(id);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить коллекцию документов по идентификаторам: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"ids\">Идентификаторы объектов '{name}'</param>");
-        await writer.WriteLineAsync("\t\t[HttpGet($\"{nameof(RouteMethodsPrefixesEnum.GetRangeByIds)}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> SelectAsync([FromQuery] IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.SelectAsync(ids);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        //if (is_body_document)
-        //{
-        //    type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        //    await writer.WriteLineAsync("\t\t/// <summary>");
-        //    await writer.WriteLineAsync($"\t\t/// Получить порцию (пагинатор) документов: {name}");
-        //    await writer.WriteLineAsync("\t\t/// </summary>");
-        //    await writer.WriteLineAsync($"\t\t/// <param name=\"request\">Запрос-пагинатор для чтения документов '{name}'</param>");
-        //    await writer.WriteLineAsync("\t\t[HttpGet($\"{nameof(RouteMethodsPrefixesEnum.GetRangePagination)}\")]");
-        //    await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> SelectAsync([FromQuery] PaginationRequestModel request)");
-        //    await writer.WriteLineAsync("\t\t{");
-        //    await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        //    await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.SelectAsync(request);");
-        //    await writer.WriteLineAsync("\t\t}");
-        //    await writer.WriteLineAsync();
-        //}
-        //else
-        //{
-        type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить порцию (пагинатор) строк табличной части документа по идентификатору: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"request\">Запрос-пагинатор (+ идентификатор документа-владельца) для чтения строк табличной части документа '{name}'</param>");
-        await writer.WriteLineAsync("\t\t[HttpGet($\"{nameof(RouteMethodsPrefixesEnum.GetRangeByOwnerId)}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> SelectAsync([FromQuery] GetByIdPaginationRequestModel request)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.SelectAsync(request);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-        //}
-
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Обновить объект в БД: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"object_rest_upd\">Объект '{name}' для обновления в БД</param>");
-        await writer.WriteLineAsync("\t\t[HttpPut($\"{nameof(RouteMethodsPrefixesEnum.UpdateSingle)}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> UpdateAsync({type_name_gen} object_rest_upd)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.UpdateAsync(object_rest_upd);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Обновить коллекцию документов в БД: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"objects_range_rest_upd\">Коллекция объектов '{name}' для обновления в БД</param>");
-        await writer.WriteLineAsync("\t\t[HttpPut($\"{nameof(RouteMethodsPrefixesEnum.UpdateRange)}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> UpdateRangeAsync(IEnumerable<{type_name_gen}> objects_range_rest_upd)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.UpdateRangeAsync(objects_range_rest_upd);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Инвертировать маркер удаления объекта: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта '{name}' для переключения/инверсии пометки удаления</param>");
-        await writer.WriteLineAsync("\t\t[HttpPatch($\"{nameof(RouteMethodsPrefixesEnum.MarkAsDeleteById)}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> MarkDeleteToggleAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.MarkDeleteToggleAsync(id);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Удалить объект из БД по идентификатору: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта '{name}' для удаления из БД</param>");
-        await writer.WriteLineAsync("\t\t[HttpDelete($\"{nameof(RouteMethodsPrefixesEnum.RemoveSingleById)}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> RemoveAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.RemoveAsync(id);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Удалить объекты из БД по идентификаторам: {name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"ids\">Идентификаторы объектов '{name}' для удаления из БД</param>");
-        await writer.WriteLineAsync("\t\t[HttpDelete($\"{nameof(RouteMethodsPrefixesEnum.RemoveRangeByIds)}\")]");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> RemoveRangeAsync(IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\treturn await {service_instance}.RemoveRangeAsync(ids);");
-        await writer.WriteLineAsync("\t\t}");
-
-        await WriteEnd(writer);
-    }
-
-    /// <summary>
-    /// Запись тела метода Rest/Refit сервиса
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    /// <param name="method_name">Имя Rest/Refit метода</param>
-    /// <param name="rest_parameter_name">Имя Rest/Refit параметра</param>
-    /// <param name="response_type_name">Имя Rest/Refit метода</param>
-    static async Task WriteRestServiceBody(StreamWriter writer, string method_name, string rest_parameter_name, string response_type_name)
-    {
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync($"\t\t\t\tApiResponse<{response_type_name}> rest = await _service.{method_name}({rest_parameter_name});");
-        await writer.WriteLineAsync("\t\t\t\tif (rest.StatusCode != System.Net.HttpStatusCode.OK)");
-        await writer.WriteLineAsync("\t\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\t\tresult.Message = $\"HTTP error: [code={rest.StatusCode}] {rest?.Error?.Content}\";");
-        await writer.WriteLineAsync("\t\t\t\t\t_logger.LogError(result.Message);");
-        await writer.WriteLineAsync("\t\t\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t\t\t}");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = rest.Content.IsSuccess;");
-        await writer.WriteLineAsync("\t\t\t\tresult = rest.Content;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync($"\t\t\t\tresult.Message = $\"Exception {{nameof(_service.{method_name})}}\";");
-        await writer.WriteLineAsync("\t\t\t\t_logger.LogError(ex, result.Message);");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\treturn result;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync();
-    }
-
-#pragma warning disable IDE0051 // Удалите неиспользуемые закрытые члены
-    /// <summary>
-    /// Генерация регистратора служб Refit для клиента
-    /// </summary>
-    /// <param name="types">Типы для регистрации</param>
-    Task GenRefitDI(IEnumerable<string> types)
-    {
-        //ZipArchiveEntry readmeEntry = archive.CreateEntry("refit_di.cs");
-        //using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        //await WriteHead(writer, project.Name, null, "di refit", [conf.Namespace, "Refit", "SharedLib.Models", "SharedLib", "Microsoft.Extensions.DependencyInjection"]);
-        //await writer.WriteLineAsync("\tpublic static class RefitExtensionDesignerDI");
-        //await writer.WriteLineAsync("\t{");
-        //await writer.WriteLineAsync("\t\tpublic static void BuildRefitServicesDI(this IServiceCollection services, ClientConfigModel conf, TimeSpan handler_lifetime)");
-        //await writer.WriteLineAsync("\t\t{");
-        //foreach (string s in types)
-        //{
-        //    await writer.WriteLineAsync($"\t\t\tservices.AddRefitClient<I{s}RefitService>()");
-        //    await writer.WriteLineAsync("\t\t\t\t.ConfigureHttpClient(c => c.BaseAddress = conf.ApiConfig.Url)");
-        //    await writer.WriteLineAsync("\t\t\t\t.AddHttpMessageHandler<RefitHeadersDelegatingHandler>()");
-        //    await writer.WriteLineAsync("\t\t\t\t.SetHandlerLifetime(handler_lifetime);");
-        //    await writer.WriteLineAsync($"\t\t\tservices.AddScoped<I{s}RefitProvider, {s}RefitProvider>();");
-        //    await writer.WriteLineAsync($"\t\t\tservices.AddScoped<I{s}RestService, {s}RestService>();");
-        //    await writer.WriteLineAsync();
-        //}
-        //await WriteEnd(writer);
-
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Запись реализации Rest/refit сервиса
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    /// <param name="type_name">Имя типа данных</param>
-    static async Task WriteRestServiceImplementation(StreamWriter writer, string type_name)
-
-    {
-        await writer.WriteLineAsync($"\t\tprivate readonly I{type_name}RefitService _service;");
-        await writer.WriteLineAsync($"\t\tprivate readonly ILogger<{type_name}RestService> _logger;");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync("\t\t/// Конструктор");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\tpublic {type_name}RestService(I{type_name}RefitService set_service, ILogger<{type_name}RestService> set_logger)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t_service = set_service;");
-        await writer.WriteLineAsync("\t\t\t_logger = set_logger;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<IdResponseModel> AddAsync({type_name} object_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\tIdResponseModel result = new();");
-        await WriteRestServiceBody(writer, "AddAsync", "object_rest", "IdResponseModel");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> AddRangeAsync(IEnumerable<{type_name}> objects_range_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\tResponseBaseModel result = new();");
-        await WriteRestServiceBody(writer, "AddRangeAsync", "objects_range_rest", "ResponseBaseModel");
-
-        string type_name_gen = $"{type_name}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> FirstAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync($"\t\t\t{type_name_gen} result = new();");
-        await WriteRestServiceBody(writer, "FirstAsync", "id", type_name_gen);
-
-        type_name_gen = $"{type_name}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> SelectAsync(IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync($"\t\t\t{type_name_gen} result = new();");
-        await WriteRestServiceBody(writer, "SelectAsync", "ids", type_name_gen);
-
-        //if (is_body_document)
-        //{
-        //    type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        //    await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        //    await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> SelectAsync(PaginationRequestModel request)");
-        //    await writer.WriteLineAsync("\t\t{");
-        //    await writer.WriteLineAsync($"\t\t\t{type_name_gen} result = new();");
-        //    await WriteRestServiceBody(writer, "SelectAsync", "request", type_name_gen);
-        //}
-        //else
-        //{
-        type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> SelectAsync(GetByIdPaginationRequestModel request)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync($"\t\t\t{type_name_gen} result = new();");
-        await WriteRestServiceBody(writer, "SelectAsync", "request", type_name_gen);
-        //}
-
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> UpdateAsync({type_name_gen} object_rest_upd)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync($"\t\t\tResponseBaseModel result = new();");
-        await WriteRestServiceBody(writer, "UpdateAsync", "object_rest_upd", "ResponseBaseModel");
-
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> UpdateRangeAsync(IEnumerable<{type_name_gen}> objects_range_rest_upd)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync($"\t\t\tResponseBaseModel result = new();");
-        await WriteRestServiceBody(writer, "UpdateRangeAsync", "objects_range_rest_upd", "ResponseBaseModel");
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> MarkDeleteToggleAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync($"\t\t\tResponseBaseModel result = new();");
-        await WriteRestServiceBody(writer, "MarkDeleteToggleAsync", "id", "ResponseBaseModel");
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> RemoveAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync($"\t\t\tResponseBaseModel result = new();");
-        await WriteRestServiceBody(writer, "RemoveAsync", "id", "ResponseBaseModel");
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> RemoveRangeAsync(IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync($"\t\t\tResponseBaseModel result = new();");
-        await WriteRestServiceBody(writer, "RemoveRangeAsync", "ids", "ResponseBaseModel");
-
-        await WriteEnd(writer);
-    }
-
-    /// <summary>
-    /// Запись реализации Refit провайдера
+    /// Запись CRUD интерфейсов служб непосредственного доступа к данным (к таблицам БД)
     /// </summary>
     /// <param name="writer">Поток записи ZIP архива</param>
     /// <param name="type_name">Имя типа данных (SystemName)</param>
-    static async Task WriteRefitProviderImplementation(StreamWriter writer, string type_name)
-    {
-        string type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync($"\t\tprivate readonly I{type_name_gen}RefitService _api;");
-        await writer.WriteLineAsync($"\t\tprivate readonly ILogger<{type_name_gen}RefitProvider> _logger;");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync("\t\t/// Конструктор");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\tpublic {type_name_gen}RefitProvider(I{type_name}RefitService set_api, ILogger<{type_name_gen}RefitProvider> set_logger)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t_api = set_api;");
-        await writer.WriteLineAsync("\t\t\t_logger = set_logger;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<IdResponseModel>> AddAsync({type_name_gen} object_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.AddAsync(object_rest);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<ResponseBaseModel>> AddRangeAsync(IEnumerable<{type_name_gen}> objects_range_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.AddRangeAsync(objects_range_rest);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<{type_name_gen}>> FirstAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.FirstAsync(id);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<{type_name_gen}>> SelectAsync(IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.SelectAsync(ids);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        //if (is_body_document)
-        //{
-        //    type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        //    await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        //    await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<{type_name_gen}>> SelectAsync(PaginationRequestModel request)");
-        //    await writer.WriteLineAsync("\t\t{");
-        //    await writer.WriteLineAsync("\t\t\treturn await _api.SelectAsync(request);");
-        //    await writer.WriteLineAsync("\t\t}");
-        //    await writer.WriteLineAsync();
-
-        //}
-        //else
-        //{
-        type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<{type_name_gen}>> SelectAsync(GetByIdPaginationRequestModel request)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.SelectAsync(request);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-        //}
-
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<ResponseBaseModel>> UpdateAsync({type_name_gen} object_rest_upd)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.UpdateAsync(object_rest_upd);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<ResponseBaseModel>> UpdateRangeAsync(IEnumerable<{type_name_gen}> objects_range_rest_upd)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.UpdateRangeAsync(objects_range_rest_upd);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<ResponseBaseModel>> MarkDeleteToggleAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.MarkDeleteToggleAsync(id);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<ResponseBaseModel>> RemoveAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.RemoveAsync(id);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ApiResponse<ResponseBaseModel>> RemoveRangeAsync(IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\treturn await _api.RemoveRangeAsync(ids);");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await WriteEnd(writer);
-    }
-
-    /// <summary>
-    /// Запись refit интерфейсов (3 вида)
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    /// <param name="type_name">Имя типа данных (SystemName)</param>
-    /// <param name="name">Название объекта</param>
-    /// <param name="is_refit">refit ответы (ApiResponse) - true. rest/json ответы - false</param>
-    /// <param name="add_attr">Добавить заголовок запроса и refit атрибуты маршрута запросов</param>
-    /// <returns></returns>
-    static async Task WriteRestServiceInterface(StreamWriter writer, string type_name, string name, bool is_refit, bool add_attr)
-    {
-        string type_name_gen = $"{type_name}";
-
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Добавить документ в БД: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Post($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.AddSingle)}}\")]");
-        }
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}IdResponseModel{(is_refit ? ">" : "")}> AddAsync({type_name_gen} object_rest);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Добавить набор документов в БД: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Post($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.AddRange)}}\")]");
-        }
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}ResponseBaseModel{(is_refit ? ">" : "")}> AddRangeAsync(IEnumerable<{type_name_gen}> objects_range_rest);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить документ по идентификатору: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Get($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.GetSingleById)}}/{{{{id}}}}\")]");
-        }
-        type_name_gen = $"{type_name}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}{type_name_gen}{(is_refit ? ">" : "")}> FirstAsync(int id);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить коллекцию документов по идентификаторам: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Get($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.GetRangeByIds)}}\")]");
-        }
-        type_name_gen = $"{type_name}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}{type_name_gen}{(is_refit ? ">" : "")}> SelectAsync(IEnumerable<int> ids);");
-        await writer.WriteLineAsync();
-
-        //if (is_body_document)
-        //{
-        //    await writer.WriteLineAsync($"\t\t/// <summary>");
-        //    await writer.WriteLineAsync($"\t\t/// Получить порцию (пагинатор) документов: {name}");
-        //    await writer.WriteLineAsync($"\t\t/// </summary>");
-        //    if (add_attr)
-        //    {
-        //        await writer.WriteLineAsync($"\t\t[Get($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.GetRangePagination)}}\")]");
-        //    }
-        //    type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        //    await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}{type_name_gen}{(is_refit ? ">" : "")}> SelectAsync(PaginationRequestModel request);");
-        //    await writer.WriteLineAsync();
-        //}
-        //else
-        //{
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить порцию (пагинатор) строк табличной части документа по идентификатору документа: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Get($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.GetRangeByOwnerId)}}\")]");
-        }
-        type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}{type_name_gen}{(is_refit ? ">" : "")}> SelectAsync(GetByIdPaginationRequestModel request);");
-        await writer.WriteLineAsync();
-        //}
-
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Обновить документ в БД: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Put($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.UpdateSingle)}}\")]");
-        }
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}ResponseBaseModel{(is_refit ? ">" : "")}> UpdateAsync({type_name_gen} object_rest_upd);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Обновить коллекцию документов в БД: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Put($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.UpdateRange)}}\")]");
-        }
-        type_name_gen = $"{type_name}";
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}ResponseBaseModel{(is_refit ? ">" : "")}> UpdateRangeAsync(IEnumerable<{type_name_gen}> objects_range_rest_upd);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Инверсия признака \"помечен на удаление\" на противоположное: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Patch($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.MarkAsDeleteById)}}\")]");
-        }
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}ResponseBaseModel{(is_refit ? ">" : "")}> MarkDeleteToggleAsync(int id);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Удалить документ из БД по идентификатору: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Delete($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.RemoveSingleById)}}\")]");
-        }
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}ResponseBaseModel{(is_refit ? ">" : "")}> RemoveAsync(int id);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync($"\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Удалить документы из БД по идентификаторам: {name}");
-        await writer.WriteLineAsync($"\t\t/// </summary>");
-        if (add_attr)
-        {
-            await writer.WriteLineAsync($"\t\t[Delete($\"/api/{type_name.ToLower()}/{{nameof(RouteMethodsPrefixesEnum.RemoveRangeByIds)}}\")]");
-        }
-        await writer.WriteLineAsync($"\t\tpublic Task<{(is_refit ? "ApiResponse<" : "")}ResponseBaseModel{(is_refit ? ">" : "")}> RemoveRangeAsync(IEnumerable<int> ids);");
-
-        await WriteEnd(writer);
-    }
-#pragma warning restore IDE0051 // Удалите неиспользуемые закрытые члены
-
-    /// <summary>
-    /// Записать реализации интерфейса промежуточной службы доступа к данным
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    /// <param name="type_name">Имя типа данных (SystemName)</param>
-    static async Task WriteDocumentServicesInterfaceImplementation(StreamWriter writer, string type_name)
-    {
-        string type_name_gen;
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<IdResponseModel> AddAsync({type_name} obj_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync("\t\t\tIdResponseModel result = new() { IsSuccess = true };");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync($"\t\t\t\tawait _crud_accessor.AddAsync(obj_rest);");
-        await writer.WriteLineAsync($"\t\t\t\tresult.Id = obj_rest.Id;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> AddRangeAsync(IEnumerable<{type_name}> obj_range_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync("\t\t\tResponseBaseModel result = new() { IsSuccess = true };");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync($"\t\t\t\tawait _crud_accessor.AddRangeAsync(obj_range_rest);");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}?> FirstAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\t{type_name_gen} result = new() {{ IsSuccess = true }};");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync($"\t\t\t\tresult.{GlobalStaticConstants.RESULT_PROPERTY_NAME} = await _crud_accessor.FirstAsync(id);");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        type_name_gen = $"{type_name}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> SelectAsync(IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\t{type_name_gen} result = new() {{ IsSuccess = true }};");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync($"\t\t\t\tresult.{GlobalStaticConstants.RESULT_PROPERTY_NAME} = await _crud_accessor.SelectAsync(ids);");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        //if (is_body_document)
-        //{
-        //    type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        //    await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        //    await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> SelectAsync(PaginationRequestModel request)");
-        //    await writer.WriteLineAsync("\t\t{");
-        //    await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        //    await writer.WriteLineAsync($"\t\t\t{type_name_gen} result = new() {{ IsSuccess = true }};");
-        //    await writer.WriteLineAsync("\t\t\ttry");
-        //    await writer.WriteLineAsync("\t\t\t{");
-        //    await writer.WriteLineAsync("\t\t\t\tresult = await _crud_accessor.SelectAsync(request);");
-        //    await writer.WriteLineAsync("\t\t\t}");
-        //    await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        //    await writer.WriteLineAsync("\t\t\t{");
-        //    await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        //    await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        //    await writer.WriteLineAsync("\t\t\t}");
-
-        //    await writer.WriteLineAsync($"\t\t\treturn result;");
-        //    await writer.WriteLineAsync("\t\t}");
-        //    await writer.WriteLineAsync();
-        //}
-        //else
-        //{
-        type_name_gen = $"{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}";
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<{type_name_gen}> SelectAsync(GetByIdPaginationRequestModel request)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync($"\t\t\t{type_name_gen} result = new() {{ IsSuccess = true }};");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult = await _crud_accessor.SelectAsync(request);");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-
-        await writer.WriteLineAsync($"\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-        //}
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> UpdateAsync({type_name} obj_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync("\t\t\tResponseBaseModel result = new() { IsSuccess = true };");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync($"\t\t\t\tawait _crud_accessor.UpdateAsync(obj_rest);");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> UpdateRangeAsync(IEnumerable<{type_name}> obj_range_rest)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync("\t\t\tResponseBaseModel result = new() { IsSuccess = true };");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tawait _crud_accessor.UpdateRangeAsync(obj_range_rest);");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> MarkDeleteToggleAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync("\t\t\tResponseBaseModel result = new() { IsSuccess = true };");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tawait _crud_accessor.MarkDeleteToggleAsync(id);");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> RemoveAsync(int id)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync("\t\t\tResponseBaseModel result = new() { IsSuccess = true };");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tawait _crud_accessor.RemoveRangeAsync(new int[] { id });");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <inheritdoc/>");
-        await writer.WriteLineAsync($"\t\tpublic async Task<ResponseBaseModel> RemoveRangeAsync(IEnumerable<int> ids)");
-        await writer.WriteLineAsync("\t\t{");
-        await writer.WriteLineAsync("\t\t\t//// TODO: Проверить сгенерированный код");
-        await writer.WriteLineAsync("\t\t\tResponseBaseModel result = new() { IsSuccess = true };");
-        await writer.WriteLineAsync("\t\t\ttry");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tawait _crud_accessor.RemoveRangeAsync(ids);");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\tcatch (Exception ex)");
-        await writer.WriteLineAsync("\t\t\t{");
-        await writer.WriteLineAsync("\t\t\t\tresult.IsSuccess = false;");
-        await writer.WriteLineAsync("\t\t\t\tresult.Message = ex.Message;");
-        await writer.WriteLineAsync("\t\t\t}");
-        await writer.WriteLineAsync("\t\t\treturn result;");
-        await writer.WriteLineAsync("\t\t}");
-
-        await WriteEnd(writer);
-    }
-
-    /// <summary>
-    /// Записать интерфейс промежуточной службы доступа к данным
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    /// <param name="type_name">Имя типа данных (SystemName)</param>
-    /// <param name="doc_obj_name">Наименование документа (для документации)</param>
-    static async Task WriteDocumentServicesInterface(StreamWriter writer, string type_name, string doc_obj_name)
+    /// <param name="doc_name">Имя документа для комментариев</param>
+    static async Task WriteDocumentCrudInterface(StreamWriter writer, string type_name, string doc_name)
     {
         await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Создать новый объект документа (запись БД): {doc_obj_name}");
+        await writer.WriteLineAsync($"\t\t/// Создать новый (запись БД): {doc_name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\t/// <param name=\"obj_rest\">Объект добавления в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<IdResponseModel> AddAsync({type_name} obj_rest);");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Создать перечень новых объектов документа: {doc_obj_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_rest_range\">Объекты добавления в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<ResponseBaseModel> AddRangeAsync(IEnumerable<{type_name}> obj_rest_range);");
+        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
+        await writer.WriteLineAsync($"\t\tpublic Task AddAsync({type_name} obj_rest, bool auto_save = true);");
         await writer.WriteLineAsync();
 
         await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Прочитать: {doc_obj_name}");
+        await writer.WriteLineAsync($"\t\t/// Создать перечень новых объектов: {doc_name}");
+        await writer.WriteLineAsync("\t\t/// </summary>");
+        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_rest_range\">Объекты добавления в БД</param>");
+        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
+        await writer.WriteLineAsync($"\t\tpublic Task AddRangeAsync(IEnumerable<{type_name}> obj_rest_range, bool auto_save = true);");
+        await writer.WriteLineAsync();
+
+        await writer.WriteLineAsync("\t\t/// <summary>");
+        await writer.WriteLineAsync($"\t\t/// Прочитать: {doc_name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<{type_name}{GlobalStaticConstants.SINGLE_REPONSE_MODEL_PREFIX}?> FirstAsync(int id);");
+        await writer.WriteLineAsync($"\t\tpublic Task<{type_name}?> FirstAsync(int id);");
         await writer.WriteLineAsync();
+
         await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить (набор): {doc_obj_name}");
+        await writer.WriteLineAsync($"\t\t/// Получить (набор): {doc_name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\t/// <param name=\"ids\">Идентификаторы объектов</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<{type_name}{GlobalStaticConstants.MULTI_REPONSE_MODEL_PREFIX}> SelectAsync(IEnumerable<int> ids);");
+        await writer.WriteLineAsync($"\t\tpublic Task<IEnumerable<{type_name}>> SelectAsync(IEnumerable<int> ids);");
         await writer.WriteLineAsync();
 
         //if (is_body_document)
         //{
         //    await writer.WriteLineAsync("\t\t/// <summary>");
-        //    await writer.WriteLineAsync($"\t\t/// Получить (набор) строк табличной части документа: {doc_obj_name}");
+        //    await writer.WriteLineAsync($"\t\t/// Получить (страницу){(is_body_document ? "" : " строк табличной части")} документов: {doc_name}");
         //    await writer.WriteLineAsync("\t\t/// </summary>");
-        //    await writer.WriteLineAsync($"\t\t/// <param name=\"request\">Пагинация запроса</param>");
-        //    await writer.WriteLineAsync($"\t\tpublic Task<{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}> SelectAsync(PaginationRequestModel request);");
+        //    await writer.WriteLineAsync($"\t\t/// <param name=\"pagination_request\">Запрос-пагинатор</param>");
+        //    await writer.WriteLineAsync($"\t\tpublic Task<{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}> SelectAsync(PaginationRequestModel pagination_request);");
         //    await writer.WriteLineAsync();
         //}
         //else
         //{
         await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить (набор) строк табличной части документа: {doc_obj_name}");
+        await writer.WriteLineAsync($"\t\t/// Получить (набор) строк табличной части документа: {doc_name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"request\">Пагинация запроса</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}> SelectAsync(GetByIdPaginationRequestModel request);");
+        await writer.WriteLineAsync($"\t\t/// <param name=\"pagination_request\">Запрос-пагинатор</param>");
+        await writer.WriteLineAsync($"\t\tpublic Task<{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}> SelectAsync(GetByIdPaginationRequestModel pagination_request);");
         await writer.WriteLineAsync();
         //}
 
         await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Обновить документ: {doc_obj_name}");
+        await writer.WriteLineAsync($"\t\t/// Обновить объект документа: {doc_name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\t/// <param name=\"obj_rest\">Объект обновления в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<ResponseBaseModel> UpdateAsync({type_name} obj_rest);");
+        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
+        await writer.WriteLineAsync($"\t\tpublic Task UpdateAsync({type_name} obj_rest, bool auto_save = true);");
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Обновить перечень документов: {doc_obj_name}");
+        await writer.WriteLineAsync($"\t\t/// Обновить перечень объектов: {doc_name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_range_rest\">Объекты обновления в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<ResponseBaseModel> UpdateRangeAsync(IEnumerable<{type_name}> obj_range_rest);");
+        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_rest_range\">Объекты обновления в БД</param>");
+        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
+        await writer.WriteLineAsync($"\t\tpublic Task UpdateRangeAsync(IEnumerable<{type_name}> obj_rest_range, bool auto_save = true);");
         await writer.WriteLineAsync();
 
 
         await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Инверсия признака удаления: {doc_obj_name}");
+        await writer.WriteLineAsync($"\t\t/// Инверсия признака удаления: {doc_name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<ResponseBaseModel> MarkDeleteToggleAsync(int id);");
+        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
+        await writer.WriteLineAsync($"\t\tpublic Task MarkDeleteToggleAsync(int id, bool auto_save = true);");
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Удалить: {doc_obj_name}");
+        await writer.WriteLineAsync($"\t\t/// Удалить: {doc_name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<ResponseBaseModel> RemoveAsync(int id);");
+        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
+        await writer.WriteLineAsync($"\t\tpublic Task RemoveAsync(int id, bool auto_save = true);");
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Удалить: {doc_obj_name}");
+        await writer.WriteLineAsync($"\t\t/// Удалить перечень: {doc_name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\t/// <param name=\"ids\">Идентификаторы объектов</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<ResponseBaseModel> RemoveRangeAsync(IEnumerable<int> ids);");
-
+        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
+        await writer.WriteLineAsync($"\t\tpublic Task RemoveRangeAsync(IEnumerable<int> ids, bool auto_save = true);");
         await WriteEnd(writer);
     }
 
@@ -1751,102 +797,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync("\t\t}");
         await writer.WriteLineAsync();
 
-        await WriteEnd(writer);
-    }
-
-    /// <summary>
-    /// Запись CRUD интерфейсов служб непосредственного доступа к данным (к таблицам БД)
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    /// <param name="type_name">Имя типа данных (SystemName)</param>
-    /// <param name="doc_name">Имя документа для комментариев</param>
-    static async Task WriteDocumentCrudInterface(StreamWriter writer, string type_name, string doc_name)
-    {
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Создать новый (запись БД): {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_rest\">Объект добавления в БД</param>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task AddAsync({type_name} obj_rest, bool auto_save = true);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Создать перечень новых объектов: {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_rest_range\">Объекты добавления в БД</param>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task AddRangeAsync(IEnumerable<{type_name}> obj_rest_range, bool auto_save = true);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Прочитать: {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<{type_name}?> FirstAsync(int id);");
-        await writer.WriteLineAsync();
-
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить (набор): {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"ids\">Идентификаторы объектов</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<IEnumerable<{type_name}>> SelectAsync(IEnumerable<int> ids);");
-        await writer.WriteLineAsync();
-
-        //if (is_body_document)
-        //{
-        //    await writer.WriteLineAsync("\t\t/// <summary>");
-        //    await writer.WriteLineAsync($"\t\t/// Получить (страницу){(is_body_document ? "" : " строк табличной части")} документов: {doc_name}");
-        //    await writer.WriteLineAsync("\t\t/// </summary>");
-        //    await writer.WriteLineAsync($"\t\t/// <param name=\"pagination_request\">Запрос-пагинатор</param>");
-        //    await writer.WriteLineAsync($"\t\tpublic Task<{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}> SelectAsync(PaginationRequestModel pagination_request);");
-        //    await writer.WriteLineAsync();
-        //}
-        //else
-        //{
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Получить (набор) строк табличной части документа: {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"pagination_request\">Запрос-пагинатор</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task<{type_name}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}> SelectAsync(GetByIdPaginationRequestModel pagination_request);");
-        await writer.WriteLineAsync();
-        //}
-
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Обновить объект документа: {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_rest\">Объект обновления в БД</param>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task UpdateAsync({type_name} obj_rest, bool auto_save = true);");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Обновить перечень объектов: {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"obj_rest_range\">Объекты обновления в БД</param>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task UpdateRangeAsync(IEnumerable<{type_name}> obj_rest_range, bool auto_save = true);");
-        await writer.WriteLineAsync();
-
-
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Инверсия признака удаления: {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта</param>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task MarkDeleteToggleAsync(int id, bool auto_save = true);");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Удалить: {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"id\">Идентификатор объекта</param>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task RemoveAsync(int id, bool auto_save = true);");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// Удалить перечень: {doc_name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"ids\">Идентификаторы объектов</param>");
-        await writer.WriteLineAsync($"\t\t/// <param name=\"auto_save\">Автоматически/сразу сохранить изменения в БД</param>");
-        await writer.WriteLineAsync($"\t\tpublic Task RemoveRangeAsync(IEnumerable<int> ids, bool auto_save = true);");
         await WriteEnd(writer);
     }
 
