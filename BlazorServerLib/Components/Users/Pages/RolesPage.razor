@@ -72,7 +72,7 @@
 
         foodRecallProvider = async req =>
         {
-            RolesPaginationModel res = await UsersManageRepo.FindRolesAsync(new FindWithOwnedRequestModel()
+            TPaginationStrictResponseModel<RoleInfoModel> res = await UsersManageRepo.FindRolesAsync(new FindWithOwnedRequestModel()
                 {
                     OwnerId = OwnerUserId,
                     FindQuery = nameFilter,
@@ -80,7 +80,7 @@
                     PageSize = pagination.ItemsPerPage
                 });
 
-            if (res.Roles is null)
+            if (res.Response is null)
             {
                 string msg = "Roles is null. error {CEB87925-CA09-46EE-BCA4-93B7A5DF52EE}";
                 throw new Exception(msg);
@@ -92,7 +92,7 @@
                 StateHasChanged();
             }
 
-            return GridItemsProviderResult.From<RoleInfoModel>(res.Roles, res.TotalRowsCount);
+            return GridItemsProviderResult.From<RoleInfoModel>(res.Response, res.TotalRowsCount);
         };
     }
 

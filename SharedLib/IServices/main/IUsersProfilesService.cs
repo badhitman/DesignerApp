@@ -220,12 +220,12 @@ public partial interface IUsersProfilesService
     /// <summary>
     /// Пользователи
     /// </summary>
-    public Task<UsersInfoPaginationModel> FindUsersAsync(FindWithOwnedRequestModel req);
+    public Task<TPaginationStrictResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req);
 
     /// <summary>
     /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
     /// </summary>
-    public Task<RolesPaginationModel> FindRolesAsync(FindWithOwnedRequestModel req);
+    public Task<TPaginationStrictResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
 
     /// <summary>
     /// Создать новую роль
