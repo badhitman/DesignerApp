@@ -38,7 +38,7 @@ public static partial class GlobalTools
     /// <summary>
     /// Попытка де-сереализовать строку
     /// </summary>
-    public static bool TryParseJson<T>(this string @this, out T? result)
+    public static bool TryParseJson<T>(this string data, out T? result)
     {
         bool success = true;
         JsonSerializerSettings settings = new()
@@ -46,7 +46,7 @@ public static partial class GlobalTools
             Error = (sender, args) => { success = false; args.ErrorContext.Handled = true; },
             MissingMemberHandling = MissingMemberHandling.Error
         };
-        result = JsonConvert.DeserializeObject<T>(@this, settings);
+        result = JsonConvert.DeserializeObject<T>(data, settings);
         return success;
     }
 
