@@ -381,7 +381,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         builders_history.Add(builder
             .UseSummaryText($"Прочитать перечень объектов: '{doc_obj.Key.Name}'")
             .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
-            .UsePayload([$"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToArrayAsync();"])
+            .UsePayload([$"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();"])
             .WriteSignatureMethod(writer, "ReadAsync", $"List<{doc_obj.Key.TypeName}>").Constructor());
         writer.WriteLine();
 
@@ -390,7 +390,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             .UseParameter("pagination_request", new("PaginationRequestModel", "Запрос-пагинатор"))
             .UsePayload([
                 $"IQueryable<{doc_obj.Key.TypeName}>? query = {db_set_name}.AsQueryable();"
-                ,$"{doc_obj.Key.TypeName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX} result = new()"
+                ,$"TPaginationResponseModel<{doc_obj.Key.TypeName}> result = new()"
                 ,"{"
                 ,$"\tTPaginationResponseModel<{doc_obj.Key.TypeName}> result = new (request)"
                 ,"\t{"
@@ -405,9 +405,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 ,"\t\t\t: query.OrderBy(x => x.Id);"
                 ,"\t\tbreak;"
                 ,"query = query.Skip((result.Pagination.PageNum - 1) * result.Pagination.PageSize).Take(result.Pagination.PageSize);"
-                ,"result.Response = await query.ToArrayAsync();"
+                ,"result.Response = await query.ToListAsync();"
                 ,"return result;"])
-            .WriteSignatureMethod(writer, "SelectAsync", $"{doc_obj.Key.TypeName}{GlobalStaticConstants.PAGINATION_REPONSE_MODEL_PREFIX}").Constructor());
+            .WriteSignatureMethod(writer, "SelectAsync", $"TPaginationResponseModel<{doc_obj.Key.TypeName}>").Constructor());
         writer.WriteLine();
 
         builders_history.Add(builder
