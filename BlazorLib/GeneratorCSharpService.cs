@@ -221,7 +221,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     using StreamWriter writer = new(zipEntry.Open(), Encoding.UTF8);
                     await WriteHead(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
 
-                    await writer.WriteLineAsync($"\tpublic partial class {tab_obj.SystemName}{doc_obj.SystemName}");
+                    await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}");
                     await writer.WriteLineAsync("\t{");
                     await writer.WriteLineAsync("\t\t/// <summary>");
                     await writer.WriteLineAsync("\t\t/// Идентификатор/Key");
