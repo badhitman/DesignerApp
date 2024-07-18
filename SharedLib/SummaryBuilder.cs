@@ -198,7 +198,7 @@ public class SummaryBuilder
     public SummaryBuilder Constructor(bool db_inc = true)
     {
         if (db_inc)
-            Payload.Insert(0, "using DbAppContext _db_context = appDbFactory.CreateDbContext();");
+            Payload.Insert(0, "using LayerContext _db_context = appDbFactory.CreateDbContext();");
 
         SummaryBuilder res = GlobalTools.CreateDeepCopy(this);
         Payload.Clear();

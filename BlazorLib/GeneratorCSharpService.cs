@@ -4,11 +4,11 @@
 
 using System.IO.Compression;
 using System.Reflection;
-using SharedLib.Models;
+using SharedLib;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System.Text;
-using SharedLib;
+using SharedLib.Models;
 
 namespace BlazorLib;
 
@@ -338,7 +338,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             services_di.Add(type_entry.TypeName, type_entry.TypeName[1..]);
             zipEntry = archive.CreateEntry(type_entry.FullEntryName("I"));
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, [doc_obj.Key.Name], null, ["SharedLib.Models"]);
+            await WriteHead(writer, [doc_obj.Key.Name], null, ["SharedLib"]);
 
             await writer.WriteLineAsync($"\tpublic partial interface {type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
@@ -347,9 +347,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             zipEntry = archive.CreateEntry(type_entry.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, [doc_obj.Key.Name[1..]], null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib.Models"]);
+            await WriteHead(writer, [doc_obj.Key.Name[1..]], null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib"]);
 
-            await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}(IDbContextFactory<DbAppContext> appDbFactory) : I{type_entry.TypeName}");
+            await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}(IDbContextFactory<LayerContext> appDbFactory) : I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
 
             builder.ForEach(sb =>
