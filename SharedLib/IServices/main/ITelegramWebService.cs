@@ -55,7 +55,7 @@ public interface ITelegramWebService
     /// Telegram пользователи (сохранённые).
     /// Все пользователи, которые когда либо писали что либо в бота - сохраняются/кэшируются в БД.
     /// </summary>
-    public Task<TelegramUsersPaginationModel> FindUsersTelegramAsync(FindRequestModel req);
+    public Task<TPaginationStrictResponseModel<TelegramUserViewModel>> FindUsersTelegramAsync(FindRequestModel req);
 
     /// <summary>
     /// Установить/обновить основное сообщение в чате в котором Bot ведёт диалог с пользователем.

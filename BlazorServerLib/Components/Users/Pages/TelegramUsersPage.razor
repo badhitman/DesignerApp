@@ -63,14 +63,14 @@
     {
         foodRecallProvider = async req =>
         {
-            TelegramUsersPaginationModel res = await TelegramRepo.FindUsersTelegramAsync(new FindRequestModel()
+            TPaginationStrictResponseModel<TelegramUserViewModel> res = await TelegramRepo.FindUsersTelegramAsync(new FindRequestModel()
                 {
                     FindQuery = Input.FindQuery,
                     PageNum = pagination.CurrentPageIndex,
                     PageSize = pagination.ItemsPerPage
                 });
 
-            if (res.TelegramUsers is null)
+            if (res.Response is null)
             {
                 string msg = "TelegramUsers is null. error {204B22F2-A5B3-4EEF-BC9B-494CEBF266E8}";
                 Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = msg }];
@@ -83,7 +83,7 @@
                 StateHasChanged();
             }
 
-            return GridItemsProviderResult.From<TelegramUserViewModel>(res.TelegramUsers, res.TotalRowsCount);
+            return GridItemsProviderResult.From<TelegramUserViewModel>(res.Response, res.TotalRowsCount);
         };
     }
 

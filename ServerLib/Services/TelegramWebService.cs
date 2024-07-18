@@ -317,7 +317,7 @@ public class TelegramWebService(
     }
 
     /// <inheritdoc/>
-    public async Task<TelegramUsersPaginationModel> FindUsersTelegramAsync(FindRequestModel req)
+    public async Task<TPaginationStrictResponseModel<TelegramUserViewModel>> FindUsersTelegramAsync(FindRequestModel req)
     {
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
         IQueryable<TelegramUserModelDb> query = mainContext.TelegramUsers
@@ -337,9 +337,9 @@ public class TelegramWebService(
 
         TelegramUserModelDb[] users_tg = await query.ToArrayAsync();
         if (users_tg.Length == 0)
-            return new TelegramUsersPaginationModel() { TelegramUsers = [] };
+            return new TPaginationStrictResponseModel<TelegramUserViewModel>() { Response = [] };
 
-        var tg_users_ids = users_tg.Select(y => y.TelegramId).ToList();
+        List<long> tg_users_ids = users_tg.Select(y => y.TelegramId).ToList();
 
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         var users_identity_data = await identityContext.Users
@@ -353,9 +353,9 @@ public class TelegramWebService(
             return TelegramUserViewModel.Build(ctx, id_data?.Id, id_data?.Email);
         }
 
-        return new TelegramUsersPaginationModel()
+        return new TPaginationStrictResponseModel<TelegramUserViewModel>()
         {
-            TelegramUsers = users_tg.Select(x => identity_get(x)).ToList(),
+            Response = users_tg.Select(x => identity_get(x)).ToList(),
             TotalRowsCount = total,
             PageNum = req.PageNum,
             PageSize = req.PageSize,

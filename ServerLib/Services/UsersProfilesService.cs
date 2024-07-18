@@ -703,7 +703,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<RolesPaginationModel> FindRolesAsync(FindWithOwnedRequestModel req)
+    public async Task<TPaginationStrictResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         IQueryable<ApplicationRole> q = identityContext.Roles
@@ -727,9 +727,9 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             })
             .ToArrayAsync();
 
-        return new RolesPaginationModel()
+        return new TPaginationStrictResponseModel<RoleInfoModel>()
         {
-            Roles = roles.Select(x => new RoleInfoModel() { Id = x.Id, Name = x.Name, Title = x.Title, UsersCount = x.UsersCount }).ToList(),
+            Response = roles.Select(x => new RoleInfoModel() { Id = x.Id, Name = x.Name, Title = x.Title, UsersCount = x.UsersCount }).ToList(),
             TotalRowsCount = total,
             PageNum = req.PageNum,
             PageSize = req.PageSize,
@@ -758,7 +758,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     }
 
     /// <inheritdoc/>
-    public async Task<UsersInfoPaginationModel> FindUsersAsync(FindWithOwnedRequestModel req)
+    public async Task<TPaginationStrictResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         IQueryable<ApplicationUser> q = identityContext.Users
@@ -794,7 +794,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
 
         return new()
         {
-            UsersInfo = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.TelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray())).ToList(),
+            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.TelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray())).ToList(),
             TotalRowsCount = total,
             PageNum = req.PageNum,
             PageSize = req.PageSize,
