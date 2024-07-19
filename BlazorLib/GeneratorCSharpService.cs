@@ -420,7 +420,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
            .UseSummaryText($"Инверсия признака деактивации объекта: '{doc_obj.Key.Name}'")
            .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
            .AddParameter("set_mark", new("bool", "Признак, который следует установить"))
-           .UsePayload([$"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteUpdateAsync(b => b.SetProperty(u => u.IsDisabled = set_mark));"])
+           .UsePayload([$"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteUpdateAsync(b => b.SetProperty(u => u.IsDisabled, set_mark));"])
            .WriteSignatureMethod(writer, "MarkDeleteToggleAsync").Constructor());
         writer.WriteLine();
 
