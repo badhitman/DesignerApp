@@ -390,12 +390,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             .UseParameter("pagination_request", new("PaginationRequestModel", "Запрос-пагинатор"))
             .UsePayload([
                 $"IQueryable<{doc_obj.Key.TypeName}>? query = {db_set_name}.AsQueryable();"
-                ,$"TPaginationResponseModel<{doc_obj.Key.TypeName}> result = new()"
+                ,$"TPaginationResponseModel<{doc_obj.Key.TypeName}> result = new(pagination_request)"
                 ,"{"
-                ,$"\tResponse = new (pagination_request)"
-                ,"\t{"
-                ,$"\t\tTotalRowsCount = await query.CountAsync()"
-                ,"\t}"
+                ,$"\tTotalRowsCount = await query.CountAsync()"
                 ,"};"
                 ,"switch (result.SortBy)"
                 ,"{"
@@ -404,6 +401,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 ,"\t\t\t? query.OrderByDescending(x => x.Id)"
                 ,"\t\t\t: query.OrderBy(x => x.Id);"
                 ,"\t\tbreak;"
+                ,"}"
                 ,"query = query.Skip((result.PageNum - 1) * result.PageSize).Take(result.PageSize);"
                 ,"result.Response = await query.ToListAsync();"
                 ,"return result;"])
