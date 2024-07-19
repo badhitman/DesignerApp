@@ -392,19 +392,19 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 $"IQueryable<{doc_obj.Key.TypeName}>? query = {db_set_name}.AsQueryable();"
                 ,$"TPaginationResponseModel<{doc_obj.Key.TypeName}> result = new()"
                 ,"{"
-                ,$"\tTPaginationResponseModel<{doc_obj.Key.TypeName}> result = new (request)"
+                ,$"\tResponse = new (pagination_request)"
                 ,"\t{"
                 ,$"\t\tTotalRowsCount = await query.CountAsync()"
                 ,"\t}"
                 ,"};"
-                ,"switch (result.Pagination.SortBy)"
+                ,"switch (result.SortBy)"
                 ,"{"
                 ,"\tdefault:"
-                ,"\t\tquery = result.Pagination.SortingDirection == VerticalDirectionsEnum.Up"
+                ,"\t\tquery = result.SortingDirection == VerticalDirectionsEnum.Up"
                 ,"\t\t\t? query.OrderByDescending(x => x.Id)"
                 ,"\t\t\t: query.OrderBy(x => x.Id);"
                 ,"\t\tbreak;"
-                ,"query = query.Skip((result.Pagination.PageNum - 1) * result.Pagination.PageSize).Take(result.Pagination.PageSize);"
+                ,"query = query.Skip((result.PageNum - 1) * result.PageSize).Take(result.PageSize);"
                 ,"result.Response = await query.ToListAsync();"
                 ,"return result;"])
             .WriteSignatureMethod(writer, "SelectAsync", $"TPaginationResponseModel<{doc_obj.Key.TypeName}>").Constructor());
@@ -443,13 +443,15 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         ZipArchiveEntry readmeEntry = archive.CreateEntry("services_di.cs");
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer, [project.Name], "di services", [conf.Namespace, "Microsoft.Extensions.DependencyInjection"]);
+        await WriteHead(writer, [project.Name], "di services", ["Microsoft.Extensions.DependencyInjection"]);
+        await writer.WriteLineAsync("\t/// Регистрация сервисов");
         await writer.WriteLineAsync("\tpublic static class ServicesExtensionDesignerDI");
         await writer.WriteLineAsync("\t{");
         await writer.WriteLineAsync("\t\tpublic static void BuildDesignerServicesDI(this IServiceCollection services)");
         await writer.WriteLineAsync("\t\t{");
         foreach (KeyValuePair<string, string> kvp in services_di)
             await writer.WriteLineAsync($"\t\t\tservices.AddScoped<{kvp.Key}, {kvp.Value}>();");
+        await writer.WriteLineAsync("\t\t}");
 
         await WriteEnd(writer);
     }
