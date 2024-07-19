@@ -33,12 +33,12 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             $"\tформ (всего): {dump.Documents.SelectMany(x => x.Tabs).Sum(x => x.Forms?.Length)}",
             $"\tполей (всего): {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.SimpleFields?.Length)} [simple field`s] + {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.FieldsAtDirectories?.Length)} [enumerations field`s]",
             $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
-            $"{conf.EnumDirectoryPath} - папка перечислений",
-            $"{conf.AccessDataDirectoryPath} - папка файлов сервисов backend служб доступа к данным (CRUD) и классов/моделей ответов",
-            $"\t> интерфейсы (+ реализация) доступа к контексту таблиц базы данных для использования их в UI",
+            $"{conf.BlazorDirectoryPath}        - папка Blazor UI",
+            $"{conf.EnumDirectoryPath}          - папка перечислений",
+            $"{conf.AccessDataDirectoryPath}    - папка файлов сервисов backend служб доступа к данным (CRUD) и классов/моделей ответов: интерфейсы (+ реализация) доступа к контексту таблиц базы данных для использования их в UI",
             $"××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××",
-            $"LayerContextPartGen.cs - разделяемый [public partial class LayerContext : DbContext] класс.",
-            $"services_di.cs - [public static class ServicesExtensionDesignerDI].[public static void BuildDesignerServicesDI(this IServiceCollection services)]"
+            $"LayerContextPartGen.cs    - разделяемый [public partial class LayerContext : DbContext] класс.",
+            $"services_di.cs            - [public static class ServicesExtensionDesignerDI].[public static void BuildDesignerServicesDI(this IServiceCollection services)]"
         ];
         services_di = [];
 
@@ -56,7 +56,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await DbContextGen(schema);
         await DbTableAccessGeneration(schema);
         await GenServicesDI();
-        await WriteUI();
+
 
         string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented);
         await GenerateJsonDump(json_raw);
@@ -100,11 +100,74 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
     #endregion
 
-    Task WriteUI()
+     async Task WriteUI(EntrySchemaTypeModel type_entry)
     {
+        ZipArchiveEntry zipEntry;
+        StreamWriter writer;
 
-        return Task.CompletedTask;
+        zipEntry = archive.CreateEntry(type_entry.BlazorFullEntryName());
+        writer = new(zipEntry.Open(), Encoding.UTF8);
+        
+        await WriteHeadBlazor(writer);
+
+        await WriteEndBlazor(writer);
     }
+
+
+    /// <summary>
+    /// Записать вступление файла (для Blazor)
+    /// </summary>
+    async Task WriteHeadBlazor(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
+    {
+        await writer.WriteLineAsync("////////////////////////////////////////////////");
+        await writer.WriteLineAsync($"// Project: {project.Name} - by  © https://github.com/badhitman - @fakegov");
+        await writer.WriteLineAsync("////////////////////////////////////////////////");
+        await writer.WriteLineAsync();
+
+        if (using_ns?.Any() == true)
+        {
+            foreach (string u in using_ns)
+                await writer.WriteLineAsync($"{(u.StartsWith("using ", StringComparison.CurrentCultureIgnoreCase) ? u : $"using {u}")}{(u.EndsWith(';') ? "" : ";")}");
+
+            await writer.WriteLineAsync();
+        }
+
+        if (!string.IsNullOrWhiteSpace(conf.Namespace))
+        {
+            await writer.WriteLineAsync($"namespace {conf.Namespace}");
+            await writer.WriteLineAsync("{");
+        }
+        string ns_pref = string.IsNullOrWhiteSpace(conf.Namespace) ? "" : "\t";
+
+        if (summary_text?.Any() == true)
+            await writer.WriteLineAsync($"{ns_pref}/// <summary>");
+
+        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"{ns_pref}/// {s.Trim()}")))}");
+
+        if (summary_text?.Any() == true)
+            await writer.WriteLineAsync($"{ns_pref}/// </summary>");
+
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            await writer.WriteLineAsync($"{ns_pref}/// <remarks>");
+            await writer.WriteLineAsync($"{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"{ns_pref}/// {r.Trim()}"))}");
+            await writer.WriteLineAsync($"{ns_pref}/// </remarks>");
+        }
+    }
+
+    /// <summary>
+    /// Запись финальной части файла и закрытие потока записи (для Blazor)
+    /// </summary>
+    /// <param name="writer">Поток записи ZIP архива</param>
+    static async Task WriteEndBlazor(StreamWriter writer)
+    {
+        await writer.WriteLineAsync("\t}");
+        await writer.WriteAsync("}");
+        await writer.FlushAsync();
+        writer.Close();
+        await writer.DisposeAsync();
+    }
+
 
     /// <summary>
     /// Справочники/перечисления
@@ -113,20 +176,19 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
-        bool is_first_item;
         EntryTypeModel type_entry;
 
         foreach (EnumFitModel enum_obj in enumerations)
         {
+            bool is_first_item = true;
             type_entry = GetZipEntryNameForEnumeration(enum_obj);
             zipEntry = archive.CreateEntry(type_entry.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
 
-            await WriteHead(writer, [$"{enum_obj.Name}"], enum_obj.Description);
+            await WriteHeadClass(writer, [$"{enum_obj.Name}"], enum_obj.Description);
 
             await writer.WriteLineAsync($"\tpublic enum {enum_obj.SystemName}");
             await writer.WriteLineAsync("\t{");
-            is_first_item = true;
 
             if (enum_obj.EnumItems is not null)
                 foreach (SortableFitModel enum_item in enum_obj.EnumItems.OrderBy(x => x.SortIndex))
@@ -150,7 +212,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     await writer.WriteLineAsync($"\t\t{enum_item.SystemName},");
                 }
 
-            await WriteEnd(writer);
+            await WriteEndClass(writer);
         }
     }
 
@@ -171,7 +233,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         {
             zipEntry = archive.CreateEntry(kvp.Key.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, [kvp.Key.Name], kvp.Key.Description);
+            await WriteHeadClass(writer, [kvp.Key.Name], kvp.Key.Description);
             await writer.WriteLineAsync($"\tpublic partial class {kvp.Key.TypeName} : SharedLib.IdSwitchableModel");
             await writer.WriteLineAsync("\t{");
 
@@ -193,7 +255,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             }
 
-            await WriteEnd(writer);
+            await WriteEndClass(writer);
         }
         return schema;
     }
@@ -223,11 +285,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                         continue;
                     }
 
-
                     zipEntry = archive.CreateEntry(type_entry.FullEntryName());
 
                     using StreamWriter writer = new(zipEntry.Open(), Encoding.UTF8);
-                    await WriteHead(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
+                    await WriteHeadClass(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
 
                     await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}");
                     await writer.WriteLineAsync("\t{");
@@ -247,19 +308,18 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     await writer.WriteLineAsync("\t\t/// </summary>");
                     await writer.WriteLineAsync($"\t\tpublic {doc_entry.TypeName}? Document {{ get; set; }}");
 
-                    if (form_obj.SimpleFields is not null)
+                    if (form_obj.SimpleFields?.Length > 0)
                         foreach (FieldFitModel _f in form_obj.SimpleFields)
-                        {
                             await WriteField(_f, writer);
-                        }
-                    if (form_obj.FieldsAtDirectories is not null)
-                        foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
-                        {
-                            await WriteField(_f, writer);
-                        }
 
-                    await WriteEnd(writer);
+                    if (form_obj.FieldsAtDirectories?.Length > 0)
+                        foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
+                            await WriteField(_f, writer);
+
+                    await WriteEndClass(writer);
                     schema_inc.Add(type_entry);
+                    //
+                    await WriteUI(type_entry);
                 }
 
             schema_data.Add(doc_entry, schema_inc);
@@ -288,7 +348,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         ZipArchiveEntry zipEntry = archive.CreateEntry("LayerContextPartGen.cs");
         StreamWriter _writer = new(zipEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer: _writer, summary_text: ["Database context"], using_ns: ["Microsoft.EntityFrameworkCore"]);
+        await WriteHeadClass(writer: _writer, summary_text: ["Database context"], using_ns: ["Microsoft.EntityFrameworkCore"]);
 
         await _writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
         await _writer.WriteLineAsync("\t{");
@@ -327,7 +387,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await _writer.WriteLineAsync("#endregion");
         }
 
-        await WriteEnd(_writer);
+        await WriteEndClass(_writer);
     }
 
     async Task DbTableAccessGeneration(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
@@ -343,7 +403,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             services_di.Add($"I{type_entry.TypeName}", type_entry.TypeName);
             zipEntry = archive.CreateEntry(type_entry.FullEntryName("I"));
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, [doc_obj.Key.Name], null, ["SharedLib"]);
+            await WriteHeadClass(writer, [doc_obj.Key.Name], null, ["SharedLib"]);
 
             await writer.WriteLineAsync($"\tpublic partial interface I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
@@ -352,7 +412,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             zipEntry = archive.CreateEntry(type_entry.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, [doc_obj.Key.Name], null, ["Microsoft.EntityFrameworkCore", "SharedLib"]);
+            await WriteHeadClass(writer, [doc_obj.Key.Name], null, ["Microsoft.EntityFrameworkCore", "SharedLib"]);
 
             await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}(IDbContextFactory<LayerContext> appDbFactory) : I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
@@ -365,7 +425,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     writer.WriteLine();
             });
 
-            await WriteEnd(writer);
+            await WriteEndClass(writer);
         }
     }
 
@@ -480,7 +540,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         }
         #endregion
 
-        await WriteEnd(writer);
+        await WriteEndClass(writer);
         return builders_history;
     }
 
@@ -491,7 +551,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         ZipArchiveEntry readmeEntry = archive.CreateEntry("services_di.cs");
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer, [project.Name], "di services", ["Microsoft.Extensions.DependencyInjection"]);
+        await WriteHeadClass(writer, [project.Name], "di services", ["Microsoft.Extensions.DependencyInjection"]);
         await writer.WriteLineAsync("\tpublic static class ServicesExtensionDesignerDI");
         await writer.WriteLineAsync("\t{");
         await writer.WriteLineAsync("\t\t/// Регистрация сервисов");
@@ -501,7 +561,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await writer.WriteLineAsync($"\t\t\tservices.AddScoped<{kvp.Key}, {kvp.Value}>();");
         await writer.WriteLineAsync("\t\t}");
 
-        await WriteEnd(writer);
+        await WriteEndClass(writer);
     }
 
     #region tools
@@ -545,9 +605,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
 
     /// <summary>
-    /// Записать вступление файла
+    /// Записать вступление файла (для класса)
     /// </summary>
-    async Task WriteHead(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
+    async Task WriteHeadClass(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
     {
         await writer.WriteLineAsync("////////////////////////////////////////////////");
         await writer.WriteLineAsync($"// Project: {project.Name} - by  © https://github.com/badhitman - @fakegov");
@@ -586,10 +646,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
 
     /// <summary>
-    /// Запись финальной части файла и закрытие потока записи
+    /// Запись финальной части файла и закрытие потока записи (для класса)
     /// </summary>
     /// <param name="writer">Поток записи ZIP архива</param>
-    static async Task WriteEnd(StreamWriter writer)
+    static async Task WriteEndClass(StreamWriter writer)
     {
         await writer.WriteLineAsync("\t}");
         await writer.WriteAsync("}");

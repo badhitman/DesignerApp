@@ -161,10 +161,6 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
                     ArgumentNullException.ThrowIfNull(field_dir_tree_item);
 
-#if DEBUG
-                    TreeItemDataModel? tid = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().FirstOrDefault(x => x.Value!.Id == field.Id);
-#endif
-
                     return new FieldAkaDirectoryFitModel()
                     {
                         DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Value!.Id == field.Id).SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
@@ -194,17 +190,6 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
                     JoinName = joinForm.Name,
                 };
             }
-
-#if DEBUG
-            TabFitModel v = new()
-            {
-                Name = tab.Name,
-                Description = tab.Description,
-                SortIndex = tab.SortIndex,
-                SystemName = tab_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(tab.Name),
-                Forms = [.. tab.JoinsForms.Select(FormConvert)],
-            };
-#endif
 
             return new TabFitModel()
             {
