@@ -413,7 +413,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         builders_history.Add(builder
            .UseSummaryText($"Обновить перечень объектов: '{doc_obj.Key.Name}'")
            .UseParameter("obj_range", new($"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты обновления в БД"))
-           .UsePayload([$"{db_set_name}.Update(obj_rest);"])
+           .UsePayload([$"_db_context.Update(obj_range);"])
            .UsePayload(["await _db_context.SaveChangesAsync();"])
            .WriteSignatureMethod(writer, "UpdateAsync").Constructor());
         writer.WriteLine();
