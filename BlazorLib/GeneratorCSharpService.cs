@@ -4,11 +4,11 @@
 
 using System.IO.Compression;
 using System.Reflection;
-using SharedLib;
+using SharedLib.Models;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System.Text;
-using SharedLib.Models;
+using SharedLib;
 
 namespace BlazorLib;
 
@@ -37,17 +37,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             $"{conf.EnumDirectoryPath} - папка перечислений",
             $"",
             $"{conf.AccessDataDirectoryPath} - папка файлов сервисов backend служб доступа к данным (CRUD) и классов/моделей ответов",
-            $"\t> crud_interfaces: интерфейсы низкоуровневого доступа к контексту таблиц базы данных",
-            $"\t\t> crud_implementations: реализация интерфейсов crud_interfaces",
-            $"······················································",
-            $"\t> service_interfaces: интерфейсы функционального/промежуточного (между контроллером и низкоуровневым DB доступом) доступа к данным",
-            $"\t\t> service_implementations: реализация интерфейсов service_interfaces",
-            $"······················································",
-            $"\tresponse_models: модели ответов контроллеров, которые в свою очередь получают их от функциональных/промежуточных служб доступа",
+            $"\t> интерфейсы (+ реализация) доступа к контексту таблиц базы данных для использования их в UI",
             $"××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××",
             $"",
             $"LayerContextPartGen.cs - разделяемый [public partial class LayerContext : DbContext] класс.",
-            //$"refit_di.cs - [public static class RefitExtensionDesignerDI].[public static void BuildRefitServicesDI(this IServiceCollection services, ClientConfigModel conf, TimeSpan handler_lifetime)]",
             $"services_di.cs - [public static class ServicesExtensionDesignerDI].[public static void BuildDesignerServicesDI(this IServiceCollection services)]"
         ];
         services_di = [];
@@ -432,11 +425,12 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         writer.WriteLine("\t\t#endregion");
         #endregion
 
+        #region ext tables parts
         EntrySchemaTypeModel[] tables = doc_obj.Value.Where(x => x.IsTable).ToArray();
         if (tables.Length != 0)
         {
-            #region ext multiline parts
-            writer.WriteLine("\t\t#region ext parts");
+            writer.WriteLine();
+            writer.WriteLine("\t\t#region tables parts");
 
             foreach (EntrySchemaTypeModel table_schema in tables)
             {
@@ -480,8 +474,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             }
 
             writer.WriteLine("\t\t#endregion");
-            #endregion
         }
+        #endregion
 
         await WriteEnd(writer);
         return builders_history;
