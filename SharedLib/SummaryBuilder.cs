@@ -104,8 +104,7 @@ public class SummaryBuilder
     {
         writer.WriteLine($"{tabs}/// <inheritdoc/>");
         writer.WriteLine($"{tabs}public async {MethodSign}({ParametersSign})");
-        writer.WriteLine($"{tabs}{{");
-        writer.WriteLine($"{tabs}\t//// TODO: Проверить сгенерированный код");
+        writer.WriteLine($"{tabs}{{");        
         foreach (string p in Payload)
             writer.WriteLine($"{tabs}\t{p}");
 

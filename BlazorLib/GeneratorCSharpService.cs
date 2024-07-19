@@ -107,6 +107,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
     #endregion
 
+    /// <summary>
+    /// Справочники/перечисления
+    /// </summary>
     async Task EnumerationsGeneration(IEnumerable<EnumFitModel> enumerations)
     {
         ZipArchiveEntry zipEntry;
@@ -152,9 +155,12 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         }
     }
 
+    /// <summary>
+    /// Документы (бизнес-сущности)
+    /// </summary>
     async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> DocumentsGeneration(IEnumerable<DocumentFitModel> docs)
     {
-        Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>? schema = await WriteSchema(docs);
+        Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>? schema = await WriteModelsSchema(docs);
         if (!_result.Success())
             return schema;
 
@@ -193,7 +199,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         return schema;
     }
 
-    async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> WriteSchema(IEnumerable<DocumentFitModel> docs)
+    /// <summary>
+    /// Схема данных (модели)
+    /// </summary>
+    async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> WriteModelsSchema(IEnumerable<DocumentFitModel> docs)
     {
         ZipArchiveEntry zipEntry;
         EntryDocumentTypeModel doc_entry;
@@ -283,7 +292,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         ZipArchiveEntry zipEntry = archive.CreateEntry("LayerContextPartGen.cs");
         StreamWriter _writer = new(zipEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer: _writer, summary_text: ["Database context"], using_ns: ["Microsoft.EntityFrameworkCore", conf.Namespace]);
+        await WriteHead(writer: _writer, summary_text: ["Database context"], using_ns: ["Microsoft.EntityFrameworkCore"]);
 
         await _writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
         await _writer.WriteLineAsync("\t{");
@@ -347,7 +356,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             zipEntry = archive.CreateEntry(type_entry.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, [doc_obj.Key.Name], null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib"]);
+            await WriteHead(writer, [doc_obj.Key.Name], null, ["Microsoft.EntityFrameworkCore", "SharedLib"]);
 
             await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}(IDbContextFactory<LayerContext> appDbFactory) : I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
@@ -427,7 +436,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         builders_history.Add(builder
            .UseSummaryText($"Удалить перечень объектов: '{doc_obj.Key.Name}'")
            .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
-           .UsePayload([$"{db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();"])
+           .UsePayload([$"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();"])
            .WriteSignatureMethod(writer, "RemoveAsync").Constructor());
 
         await WriteEnd(writer);
@@ -442,9 +451,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         ZipArchiveEntry readmeEntry = archive.CreateEntry("services_di.cs");
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
         await WriteHead(writer, [project.Name], "di services", ["Microsoft.Extensions.DependencyInjection"]);
-        await writer.WriteLineAsync("\t/// Регистрация сервисов");
         await writer.WriteLineAsync("\tpublic static class ServicesExtensionDesignerDI");
         await writer.WriteLineAsync("\t{");
+        await writer.WriteLineAsync("\t\t/// Регистрация сервисов");
         await writer.WriteLineAsync("\t\tpublic static void BuildDesignerServicesDI(this IServiceCollection services)");
         await writer.WriteLineAsync("\t\t{");
         foreach (KeyValuePair<string, string> kvp in services_di)
