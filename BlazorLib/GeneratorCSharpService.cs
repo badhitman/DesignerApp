@@ -361,9 +361,12 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}(IDbContextFactory<LayerContext> appDbFactory) : I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
 
+            int i = builder.Count;
             builder.ForEach(sb =>
             {
                 sb.WriteImplementation(writer);
+                if (--i > 0)
+                    writer.WriteLine();
             });
 
             await WriteEnd(writer);
@@ -376,8 +379,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     static async Task<List<SummaryBuilder>> WriteInterface(StreamWriter writer, KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj)
     {
         List<SummaryBuilder> builders_history = [];
-
         SummaryBuilder builder = new() { TabulationsSpiceSize = 2 };
+
+        #region main
+        writer.WriteLine("\t\t#region main");
         string db_set_name = $"_db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}";
 
         builders_history.Add(builder
@@ -390,54 +395,93 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         builders_history.Add(builder
             .UseSummaryText($"Прочитать перечень объектов: '{doc_obj.Key.Name}'")
             .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
-            .UsePayload([$"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();"])
+            .UsePayload($"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();")
             .WriteSignatureMethod(writer, "ReadAsync", $"List<{doc_obj.Key.TypeName}>").Constructor());
         writer.WriteLine();
 
         builders_history.Add(builder
             .UseSummaryText($"Получить (порцию/pagination) объектов: '{doc_obj.Key.Name}'")
             .UseParameter("pagination_request", new("PaginationRequestModel", "Запрос-пагинатор"))
-            .UsePayload([
-                $"IQueryable<{doc_obj.Key.TypeName}>? query = {db_set_name}.AsQueryable();"
-                ,$"TPaginationResponseModel<{doc_obj.Key.TypeName}> result = new(pagination_request)"
-                ,"{"
-                ,$"\tTotalRowsCount = await query.CountAsync()"
-                ,"};"
-                ,"switch (result.SortBy)"
-                ,"{"
-                ,"\tdefault:"
-                ,"\t\tquery = result.SortingDirection == VerticalDirectionsEnum.Up"
-                ,"\t\t\t? query.OrderByDescending(x => x.Id)"
-                ,"\t\t\t: query.OrderBy(x => x.Id);"
-                ,"\t\tbreak;"
-                ,"}"
-                ,"query = query.Skip((result.PageNum - 1) * result.PageSize).Take(result.PageSize);"
-                ,"result.Response = await query.ToListAsync();"
-                ,"return result;"])
+            .AddPaginationPayload(doc_obj.Key.TypeName, db_set_name)
+            .AddPayload("return result;")
             .WriteSignatureMethod(writer, "SelectAsync", $"TPaginationResponseModel<{doc_obj.Key.TypeName}>").Constructor());
         writer.WriteLine();
 
         builders_history.Add(builder
            .UseSummaryText($"Обновить перечень объектов: '{doc_obj.Key.Name}'")
            .UseParameter("obj_range", new($"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты обновления в БД"))
-           .UsePayload([$"_db_context.Update(obj_range);"])
-           .UsePayload(["await _db_context.SaveChangesAsync();"])
+           .UsePayload($"_db_context.Update(obj_range);")
+           .AddPayload("await _db_context.SaveChangesAsync();")
            .WriteSignatureMethod(writer, "UpdateAsync").Constructor());
-        writer.WriteLine();
-
-        builders_history.Add(builder
-           .UseSummaryText($"Инверсия признака деактивации объекта: '{doc_obj.Key.Name}'")
-           .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
-           .AddParameter("set_mark", new("bool", "Признак, который следует установить"))
-           .UsePayload([$"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteUpdateAsync(b => b.SetProperty(u => u.IsDisabled, set_mark));"])
-           .WriteSignatureMethod(writer, "MarkDeleteToggleAsync").Constructor());
         writer.WriteLine();
 
         builders_history.Add(builder
            .UseSummaryText($"Удалить перечень объектов: '{doc_obj.Key.Name}'")
            .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
-           .UsePayload([$"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();"])
+           .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();")
            .WriteSignatureMethod(writer, "RemoveAsync").Constructor());
+
+        builders_history.Add(builder
+           .UseSummaryText($"Инверсия признака деактивации объекта: '{doc_obj.Key.Name}'")
+           .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+           .AddParameter("set_mark", new("bool", "Признак, который следует установить"))
+           .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteUpdateAsync(b => b.SetProperty(u => u.IsDisabled, set_mark));")
+           .WriteSignatureMethod(writer, "MarkDeleteToggleAsync").Constructor());
+        writer.WriteLine();
+
+        writer.WriteLine("\t\t#endregion");
+        #endregion
+
+        EntrySchemaTypeModel[] tables = doc_obj.Value.Where(x => x.IsTable).ToArray();
+        if (tables.Length != 0)
+        {
+            #region ext multiline parts
+            writer.WriteLine("\t\t#region ext parts");
+
+            foreach (EntrySchemaTypeModel table_schema in tables)
+            {
+                db_set_name = $"_db_context.{table_schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}";
+
+                builders_history.Add(builder
+                    .UseSummaryText($"Создать перечень новых объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
+                    .UseParameter("obj_range", new($"IEnumerable<{table_schema.TypeName}>", "Объекты добавления в БД"))
+                    .UsePayload(["await _db_context.AddRangeAsync(obj_range);", "await _db_context.SaveChangesAsync();"])
+                    .WriteSignatureMethod(writer, "AddAsync").Constructor());
+                writer.WriteLine();
+
+                builders_history.Add(builder
+                    .UseSummaryText($"Прочитать перечень объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
+                    .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+                    .UsePayload($"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();")
+                    .WriteSignatureMethod(writer, "ReadAsync", $"List<{table_schema.TypeName}>").Constructor());
+                writer.WriteLine();
+
+                builders_history.Add(builder
+                    .UseSummaryText($"Получить (порцию/pagination) объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
+                    .UseParameter("pagination_request", new("PaginationRequestModel", "Запрос-пагинатор"))
+                    .AddPaginationPayload(table_schema.TypeName, db_set_name)
+                    .AddPayload("return result;")
+                    .WriteSignatureMethod(writer, "SelectAsync", $"TPaginationResponseModel<{table_schema.TypeName}>").Constructor());
+                writer.WriteLine();
+
+                builders_history.Add(builder
+                   .UseSummaryText($"Обновить перечень объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
+                   .UseParameter("obj_range", new($"IEnumerable<{table_schema.TypeName}>", "Объекты обновления в БД"))
+                   .UsePayload($"_db_context.Update(obj_range);")
+                   .AddPayload("await _db_context.SaveChangesAsync();")
+                   .WriteSignatureMethod(writer, "UpdateAsync").Constructor());
+                writer.WriteLine();
+
+                builders_history.Add(builder
+                   .UseSummaryText($"Удалить перечень объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
+                   .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+                   .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();")
+                   .WriteSignatureMethod(writer, "RemoveAsync").Constructor());
+            }
+
+            writer.WriteLine("\t\t#endregion");
+            #endregion
+        }
 
         await WriteEnd(writer);
         return builders_history;

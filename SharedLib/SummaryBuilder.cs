@@ -6,6 +6,7 @@
 public class SummaryBuilder
 {
     const string inheritdoc = "<inheritdoc/>";
+
     Dictionary<string, ParameterModel>? parameters;
     string tabs = "";
     string[]? _summaryText;
@@ -44,7 +45,7 @@ public class SummaryBuilder
     /// <summary>
     /// Размер отступа в табуляторах
     /// </summary>
-    public byte TabulationsSpiceSize
+    public required byte TabulationsSpiceSize
     {
         get => tabulationsSpiceSize;
         set
@@ -89,7 +90,7 @@ public class SummaryBuilder
         res += $"{Environment.NewLine}{tabs}public {MethodSign}";
 
         if (parameters?.Count > 0)
-            ParametersSign += $"{string.Join(", ", parameters.Select(x => $"{x.Value.type} {x.Key}"))}";
+            ParametersSign += $"{string.Join(", ", parameters.Select(x => $"{x.Value.Type} {x.Key}"))}";
 
         res += $"({ParametersSign})";
 
@@ -104,11 +105,11 @@ public class SummaryBuilder
     {
         writer.WriteLine($"{tabs}/// <inheritdoc/>");
         writer.WriteLine($"{tabs}public async {MethodSign}({ParametersSign})");
-        writer.WriteLine($"{tabs}{{");        
+        writer.WriteLine($"{tabs}{{");
         foreach (string p in Payload)
             writer.WriteLine($"{tabs}\t{p}");
 
-        writer.WriteLine($"{tabs}}}{Environment.NewLine}");
+        writer.WriteLine($"{tabs}}}");
     }
 
     /// <summary>
@@ -164,18 +165,66 @@ public class SummaryBuilder
     /// <summary>
     /// Use payload
     /// </summary>
+    public SummaryBuilder AddPayload(string[] payload)
+    {
+        Payload.AddRange(payload);
+        return this;
+    }
+
+    /// <summary>
+    /// Use payload
+    /// </summary>
+    public SummaryBuilder AddPayload(string payload)
+    {
+        Payload.Add(payload);
+        return this;
+    }
+
+    /// <summary>
+    /// Use payload
+    /// </summary>
     public SummaryBuilder UsePayload(string[] payload)
     {
-        if (payload is not null)
-            Payload.AddRange(payload);
+        Payload.Clear();
+        Payload.AddRange(payload);
+        return this;
+    }
+
+    /// <summary>
+    /// Use payload
+    /// </summary>
+    public SummaryBuilder UsePayload(string payload)
+        => UsePayload([payload]);
+
+    /// <summary>
+    /// Add pagination payload
+    /// </summary>
+    public SummaryBuilder AddPaginationPayload(string type_name, string db_set_name)
+    {
+        AddPayload($"IQueryable<{type_name}>? query = {db_set_name}.AsQueryable();");
+        AddPayload($"TPaginationResponseModel<{type_name}> result = new(pagination_request)");
+        AddPayload("{");
+        AddPayload($"\tTotalRowsCount = await query.CountAsync()");
+        AddPayload("};");
+        AddPayload("switch (result.SortBy)");
+        AddPayload("{");
+        AddPayload("\tdefault:");
+        AddPayload("\t\tquery = result.SortingDirection == VerticalDirectionsEnum.Up");
+        AddPayload("\t\t\t? query.OrderByDescending(x => x.Id)");
+        AddPayload("\t\t\t: query.OrderBy(x => x.Id);");
+        AddPayload("\t\tbreak;");
+        AddPayload("}");
+        AddPayload("query = query.Skip((result.PageNum - 1) * result.PageSize).Take(result.PageSize);");
+        AddPayload("result.Response = await query.ToListAsync();");
 
         return this;
     }
 
+
     void FlushParametersText()
     {
         ParametersGet = parameters?.Count > 0
-        ? $"{string.Join(Environment.NewLine, parameters.Select(x => $"{tabs}/// <param name=\"{x.Key}\">{x.Value.description}</param>"))}"
+        ? $"{string.Join(Environment.NewLine, parameters.Select(x => $"{tabs}/// <param name=\"{x.Key}\">{x.Value.Description}</param>"))}"
         : null;
     }
 
@@ -202,11 +251,7 @@ public class SummaryBuilder
         SummaryBuilder res = GlobalTools.CreateDeepCopy(this);
         Payload.Clear();
 
+
         return res;
     }
 }
-
-/// <summary>
-/// Parameter payload
-/// </summary>
-public record ParameterModel(string type, string description);
