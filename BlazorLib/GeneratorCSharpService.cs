@@ -19,7 +19,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     ZipArchive archive = default!;
     TResponseModel<Stream> _result = default!;
 
-    #region main
     /// <summary>
     /// Формирование данных
     /// </summary>
@@ -35,11 +34,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             $"\tполей (всего): {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.SimpleFields?.Length)} [simple field`s] + {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.FieldsAtDirectories?.Length)} [enumerations field`s]",
             $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
             $"{conf.EnumDirectoryPath} - папка перечислений",
-            $"",
             $"{conf.AccessDataDirectoryPath} - папка файлов сервисов backend служб доступа к данным (CRUD) и классов/моделей ответов",
             $"\t> интерфейсы (+ реализация) доступа к контексту таблиц базы данных для использования их в UI",
             $"××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××",
-            $"",
             $"LayerContextPartGen.cs - разделяемый [public partial class LayerContext : DbContext] класс.",
             $"services_di.cs - [public static class ServicesExtensionDesignerDI].[public static void BuildDesignerServicesDI(this IServiceCollection services)]"
         ];
@@ -55,9 +52,11 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         if (!_result.Success())
             return _result;
 
+
         await DbContextGen(schema);
         await DbTableAccessGeneration(schema);
         await GenServicesDI();
+        await WriteUI();
 
         string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented);
         await GenerateJsonDump(json_raw);
@@ -74,6 +73,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         return _result;
     }
 
+    #region help
     async Task ReadmeGen(IEnumerable<string> stat)
     {
         string app_version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
@@ -99,6 +99,12 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync(json_raw);
     }
     #endregion
+
+    Task WriteUI()
+    {
+
+        return Task.CompletedTask;
+    }
 
     /// <summary>
     /// Справочники/перечисления
@@ -261,7 +267,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
         return schema_data;
     }
-
     static async Task WriteField(FieldFitModel field, StreamWriter writer)
     {
         await writer.WriteLineAsync();
@@ -270,7 +275,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.TypeData}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
     }
-
     static async Task WriteField(FieldAkaDirectoryFitModel field, StreamWriter writer)
     {
         await writer.WriteLineAsync();
@@ -279,7 +283,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.DirectorySystemName}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
     }
-
 
     async Task DbContextGen(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
     {
@@ -500,7 +503,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
         await WriteEnd(writer);
     }
-
 
     #region tools
     /// <summary>

@@ -56,7 +56,20 @@
             <div class="col-sm-10">
                 <input @bind-value="manufactureEdit.AccessDataDirectoryPath" @bind-value:event="oninput" type="text" id="inputAccessDataDirectoryPath" class="form-control">
             </div>
-        </div>        
+        </div>
+
+        <div class="row align-items-center mt-2" title="Обязательно для заполнения">
+            <div class="col-sm-2">
+                <label for="inputBlazorDirectoryPath" class="col-form-label">
+                    Blazor UI
+                    <sup class="text-danger">*</sup>
+                </label>
+            </div>
+            <div class="col-sm-10">
+                <input @bind-value="manufactureEdit.BlazorDirectoryPath" @bind-value:event="oninput" type="text" id="inputBlazorDirectoryPath" class="form-control">
+            </div>
+        </div>
+
         <div class="d-grid gap-2 mt-4">
             <button disabled="@Manufacture.Equals(manufactureEdit)" @onclick="UpdateManufacture" class="btn btn-@(Manufacture.Equals(manufactureEdit) ? "outline-secondary" : "primary")" type="button">Сохранить</button>
             @if (!Manufacture.Equals(manufactureEdit))

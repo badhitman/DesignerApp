@@ -39,6 +39,7 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel
                     AccessDataDirectoryPath == other.AccessDataDirectoryPath &&
                     Namespace == other.Namespace &&
                     EnumDirectoryPath == other.EnumDirectoryPath &&
+                    BlazorDirectoryPath == other.BlazorDirectoryPath &&
                     ProjectId == other.ProjectId;
 
         return false;
@@ -46,7 +47,7 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel
 
     /// <inheritdoc/>
     public override int GetHashCode()
-        => $"{Id} {Namespace} {AccessDataDirectoryPath} {DocumentsMastersDbDirectoryPath} {EnumDirectoryPath} {UserId} {ProjectId}".GetHashCode();
+        => $"{Id} {BlazorDirectoryPath} {Namespace} {AccessDataDirectoryPath} {DocumentsMastersDbDirectoryPath} {EnumDirectoryPath} {UserId} {ProjectId}".GetHashCode();
 
     /// <summary>
     /// Reload
@@ -59,6 +60,7 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel
         AccessDataDirectoryPath = other.AccessDataDirectoryPath;
         Namespace = other.Namespace;
         EnumDirectoryPath = other.EnumDirectoryPath;
+        BlazorDirectoryPath = other.BlazorDirectoryPath;
         ProjectId = other.ProjectId;
     }
 }

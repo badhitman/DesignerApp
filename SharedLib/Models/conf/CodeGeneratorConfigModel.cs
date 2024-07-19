@@ -41,4 +41,14 @@ public class CodeGeneratorConfigModel
     [Required(AllowEmptyStrings = false)]
     [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {MessageErrorTemplateNameFolder}")]
     public string AccessDataDirectoryPath { get; set; } = "crud_generation";
+
+    /// <summary>
+    /// Папка размещения Blazor UI
+    /// </summary>
+    /// <summary>
+    /// Папка размещения инфраструктуры доступа к данным
+    /// </summary>
+    [Required(AllowEmptyStrings = false)]
+    [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {MessageErrorTemplateNameFolder}")]
+    public string BlazorDirectoryPath { get; set; } = "blazor_generation";
 }
