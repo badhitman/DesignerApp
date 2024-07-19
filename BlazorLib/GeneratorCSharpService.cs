@@ -335,19 +335,19 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         {
             type_entry = GetZipEntryNameForDbTableAccess(doc_obj.Key);
 
-            services_di.Add(type_entry.TypeName, type_entry.TypeName[1..]);
+            services_di.Add($"I{type_entry.TypeName}", type_entry.TypeName);
             zipEntry = archive.CreateEntry(type_entry.FullEntryName("I"));
             writer = new(zipEntry.Open(), Encoding.UTF8);
             await WriteHead(writer, [doc_obj.Key.Name], null, ["SharedLib"]);
 
-            await writer.WriteLineAsync($"\tpublic partial interface {type_entry.TypeName}");
+            await writer.WriteLineAsync($"\tpublic partial interface I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
 
             List<SummaryBuilder> builder = await WriteInterface(writer, doc_obj);
 
             zipEntry = archive.CreateEntry(type_entry.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHead(writer, [doc_obj.Key.Name[1..]], null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib"]);
+            await WriteHead(writer, [doc_obj.Key.Name], null, ["DbcLib", "Microsoft.EntityFrameworkCore", "SharedLib"]);
 
             await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}(IDbContextFactory<LayerContext> appDbFactory) : I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
@@ -443,7 +443,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         ZipArchiveEntry readmeEntry = archive.CreateEntry("services_di.cs");
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        await WriteHead(writer, [project.Name], "di services", [conf.Namespace]);
+        await WriteHead(writer, [project.Name], "di services", [conf.Namespace, "Microsoft.Extensions.DependencyInjection"]);
         await writer.WriteLineAsync("\tpublic static class ServicesExtensionDesignerDI");
         await writer.WriteLineAsync("\t{");
         await writer.WriteLineAsync("\t\tpublic static void BuildDesignerServicesDI(this IServiceCollection services)");
