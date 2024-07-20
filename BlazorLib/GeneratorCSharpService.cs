@@ -12,6 +12,20 @@ using SharedLib;
 
 namespace BlazorLib;
 
+/// <summary>
+/// Режимы параметров: обязательный или Nullable
+/// </summary>
+enum ParameterModes { Required, Nullable }
+
+/// <summary>
+/// Параметр компонента
+/// </summary>
+/// <param name="FromRoute">Параметр получает значение из маршрута компонента-страницы</param>
+/// <param name="TypeParameter">Тип параметра</param>
+/// <param name="NameParameter">Имя параметра</param>
+/// <param name="ParameterMode">Режим параметра: обязательный или Nullable</param>
+record ParameterComponent(bool FromRoute, string TypeParameter, string NameParameter, ParameterModes? ParameterMode = null);
+
 /// <inheritdoc/>
 public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectViewModel project)
 {
@@ -100,74 +114,23 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
     #endregion
 
-     async Task WriteUI(EntrySchemaTypeModel type_entry)
+    async Task WriteUI(EntrySchemaTypeModel type_entry)
     {
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
 
         zipEntry = archive.CreateEntry(type_entry.BlazorFullEntryName());
         writer = new(zipEntry.Open(), Encoding.UTF8);
-        
-        await WriteHeadBlazor(writer);
+
+        await WriteHeadBlazor(writer, type_entry.Document.Name, type_entry.Document.Description);
+
+        await WriteSegmentBlazor(writer);
 
         await WriteEndBlazor(writer);
     }
 
 
-    /// <summary>
-    /// Записать вступление файла (для Blazor)
-    /// </summary>
-    async Task WriteHeadBlazor(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
-    {
-        await writer.WriteLineAsync("////////////////////////////////////////////////");
-        await writer.WriteLineAsync($"// Project: {project.Name} - by  © https://github.com/badhitman - @fakegov");
-        await writer.WriteLineAsync("////////////////////////////////////////////////");
-        await writer.WriteLineAsync();
-
-        if (using_ns?.Any() == true)
-        {
-            foreach (string u in using_ns)
-                await writer.WriteLineAsync($"{(u.StartsWith("using ", StringComparison.CurrentCultureIgnoreCase) ? u : $"using {u}")}{(u.EndsWith(';') ? "" : ";")}");
-
-            await writer.WriteLineAsync();
-        }
-
-        if (!string.IsNullOrWhiteSpace(conf.Namespace))
-        {
-            await writer.WriteLineAsync($"namespace {conf.Namespace}");
-            await writer.WriteLineAsync("{");
-        }
-        string ns_pref = string.IsNullOrWhiteSpace(conf.Namespace) ? "" : "\t";
-
-        if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"{ns_pref}/// <summary>");
-
-        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"{ns_pref}/// {s.Trim()}")))}");
-
-        if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"{ns_pref}/// </summary>");
-
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            await writer.WriteLineAsync($"{ns_pref}/// <remarks>");
-            await writer.WriteLineAsync($"{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"{ns_pref}/// {r.Trim()}"))}");
-            await writer.WriteLineAsync($"{ns_pref}/// </remarks>");
-        }
-    }
-
-    /// <summary>
-    /// Запись финальной части файла и закрытие потока записи (для Blazor)
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    static async Task WriteEndBlazor(StreamWriter writer)
-    {
-        await writer.WriteLineAsync("\t}");
-        await writer.WriteAsync("}");
-        await writer.FlushAsync();
-        writer.Close();
-        await writer.DisposeAsync();
-    }
-
+    #region backend
 
     /// <summary>
     /// Справочники/перечисления
@@ -564,6 +527,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await WriteEndClass(writer);
     }
 
+    #endregion
+
     #region tools
     /// <summary>
     /// Перечисления/Списки: Путь относительно корня архива, указывающий имя создаваемой записи.
@@ -593,6 +558,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// </summary>
     static string[] DescriptionHtmlToLinesRemark(string html_description)
     {
+        if (string.IsNullOrWhiteSpace(html_description))
+            return [];
+
         HtmlDocument doc = new();
         doc.LoadHtml(html_description
             .Replace("&nbsp;", " ")
@@ -601,6 +569,49 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             .Replace("</br>", $"</br>{Environment.NewLine}")
             );
         return doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+    }
+
+
+    /// <summary>
+    /// Записать вступление файла (для Blazor)
+    /// </summary>
+    async Task WriteHeadBlazor(StreamWriter writer, string title, string? description = null, IEnumerable<string>? using_ns = null)
+    {
+        await writer.WriteLineAsync($"@* Project: {project.Name} - by  © https://github.com/badhitman - @fakegov *@");
+        await writer.WriteLineAsync();
+        if (using_ns?.Any() == true)
+        {
+            foreach (string u in using_ns)
+                await writer.WriteLineAsync($"{(u.StartsWith("@using ") ? u : $"@using {u}")}");
+
+            await writer.WriteLineAsync();
+        }
+        await writer.WriteLineAsync("@inherits BlazorBusyComponentBaseModel");
+        await writer.WriteLineAsync();
+        await writer.WriteLineAsync("<div class=\"card\">");
+        await writer.WriteLineAsync("\t<div class=\"card-body\">");
+        await writer.WriteLineAsync($"\t\t<h5 class=\"card-title\">{title}</h5>");
+        if (!string.IsNullOrWhiteSpace(description))
+            await writer.WriteLineAsync($"\t\t<h6 class=\"card-subtitle mb-4 text-body-secondary\">{DescriptionHtmlToLinesRemark(description ?? "").FirstOrDefault()}</h6>");
+    }
+
+    static async Task WriteSegmentBlazor(StreamWriter writer)//, ParameterComponent[] parameters
+    {
+        await writer.WriteAsync("\t</div>");
+        await writer.WriteAsync("</div>");
+        await writer.WriteAsync("@code {");
+    }
+
+    /// <summary>
+    /// Запись финальной части файла и закрытие потока записи (для Blazor)
+    /// </summary>
+    /// <param name="writer">Поток записи ZIP архива</param>
+    static async Task WriteEndBlazor(StreamWriter writer)
+    {
+        await writer.WriteAsync("}");
+        await writer.FlushAsync();
+        writer.Close();
+        await writer.DisposeAsync();
     }
 
 
@@ -617,31 +628,27 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         if (using_ns?.Any() == true)
         {
             foreach (string u in using_ns)
-                await writer.WriteLineAsync($"{(u.StartsWith("using ", StringComparison.CurrentCultureIgnoreCase) ? u : $"using {u}")}{(u.EndsWith(';') ? "" : ";")}");
+                await writer.WriteLineAsync($"{(u.StartsWith("using ") ? u : $"using {u}")}{(u.EndsWith(';') ? "" : ";")}");
 
             await writer.WriteLineAsync();
         }
 
-        if (!string.IsNullOrWhiteSpace(conf.Namespace))
-        {
-            await writer.WriteLineAsync($"namespace {conf.Namespace}");
-            await writer.WriteLineAsync("{");
-        }
-        string ns_pref = string.IsNullOrWhiteSpace(conf.Namespace) ? "" : "\t";
+        await writer.WriteLineAsync($"namespace {conf.Namespace}");
+        await writer.WriteLineAsync("{");
 
         if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"{ns_pref}/// <summary>");
+            await writer.WriteLineAsync($"/// <summary>");
 
-        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"{ns_pref}/// {s.Trim()}")))}");
+        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"/// {s.Trim()}")))}");
 
         if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"{ns_pref}/// </summary>");
+            await writer.WriteLineAsync($"/// </summary>");
 
         if (!string.IsNullOrWhiteSpace(description))
         {
-            await writer.WriteLineAsync($"{ns_pref}/// <remarks>");
-            await writer.WriteLineAsync($"{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"{ns_pref}/// {r.Trim()}"))}");
-            await writer.WriteLineAsync($"{ns_pref}/// </remarks>");
+            await writer.WriteLineAsync($"/// <remarks>");
+            await writer.WriteLineAsync($"{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"/// {r.Trim()}"))}");
+            await writer.WriteLineAsync($"/// </remarks>");
         }
     }
 
