@@ -1,5 +1,12 @@
-﻿namespace CodegeneratorLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov
+////////////////////////////////////////////////
 
+namespace CodegeneratorLib;
+
+/// <summary>
+/// Blazor code-generator
+/// </summary>
 public abstract class BlazorCodeGenerator
 {
 

@@ -9,5 +9,13 @@ namespace CodegeneratorLib;
 /// </summary>
 public class ParameterComponentModel(string name, string type, string description) : ParameterModel(name, type, description)
 {
-    public string? Constraints { get; set; }
+    /// <summary>
+    /// Параметр является каскадным
+    /// </summary>
+    public bool IsCascading { get; set; }
+
+    /// <summary>
+    /// Режим работы параметра: обязательный, nullable
+    /// </summary>
+    public ParameterModes? ParameterMode { get; set; }
 }
