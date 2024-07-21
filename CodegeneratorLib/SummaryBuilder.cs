@@ -1,4 +1,6 @@
-﻿namespace SharedLib;
+﻿using SharedLib;
+
+namespace CodegeneratorLib;
 
 /// <summary>
 /// Summary builder

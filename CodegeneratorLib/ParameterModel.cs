@@ -1,4 +1,4 @@
-﻿namespace SharedLib;
+﻿namespace CodegeneratorLib;
 
 /// <summary>
 /// Parameter payload

@@ -4,13 +4,12 @@
 
 using System.IO.Compression;
 using System.Reflection;
-using SharedLib.Models;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLib;
 
-namespace BlazorLib;
+namespace CodegeneratorLib;
 
 /// <summary>
 /// Режимы параметров: обязательный или Nullable

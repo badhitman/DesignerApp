@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SharedLib;
+using System.ComponentModel.DataAnnotations;
 
-namespace SharedLib;
+namespace CodegeneratorLib;
 
 /// <summary>
 /// Entry type

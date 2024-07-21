@@ -1,6 +1,4 @@
-﻿using SharedLib.Models;
-
-namespace SharedLib;
+﻿namespace CodegeneratorLib;
 
 /// <summary>
 /// Entry type

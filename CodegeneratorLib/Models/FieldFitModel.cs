@@ -2,7 +2,9 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-namespace SharedLib.Models;
+using SharedLib;
+
+namespace CodegeneratorLib;
 
 /// <summary>
 /// Поле формы
