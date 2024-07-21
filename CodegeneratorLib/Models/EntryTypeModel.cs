@@ -1,4 +1,8 @@
-﻿using SharedLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using SharedLib;
 using System.ComponentModel.DataAnnotations;
 
 namespace CodegeneratorLib;

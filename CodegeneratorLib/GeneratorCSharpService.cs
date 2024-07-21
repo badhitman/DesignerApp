@@ -11,20 +11,6 @@ using SharedLib;
 
 namespace CodegeneratorLib;
 
-/// <summary>
-/// Режимы параметров: обязательный или Nullable
-/// </summary>
-enum ParameterModes { Required, Nullable }
-
-/// <summary>
-/// Параметр компонента
-/// </summary>
-/// <param name="FromRoute">Параметр получает значение из маршрута компонента-страницы</param>
-/// <param name="TypeParameter">Тип параметра</param>
-/// <param name="NameParameter">Имя параметра</param>
-/// <param name="ParameterMode">Режим параметра: обязательный или Nullable</param>
-record ParameterComponent(bool FromRoute, string TypeParameter, string NameParameter, ParameterModes? ParameterMode = null);
-
 /// <inheritdoc/>
 public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectViewModel project)
 {
