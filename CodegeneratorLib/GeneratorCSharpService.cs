@@ -99,19 +99,15 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
     #endregion
 
-    async Task WriteUI(EntrySchemaTypeModel type_entry)
+    Task WriteUI(EntrySchemaTypeModel type_entry)
     {
-        ZipArchiveEntry zipEntry;
-        StreamWriter writer;
+        //ZipArchiveEntry zipEntry;
+        //StreamWriter writer;
 
-        zipEntry = archive.CreateEntry(type_entry.BlazorFullEntryName());
-        writer = new(zipEntry.Open(), Encoding.UTF8);
+        //zipEntry = archive.CreateEntry(type_entry.BlazorFullEntryName());
+        //writer = new(zipEntry.Open(), Encoding.UTF8);
 
-        await WriteHeadBlazor(writer, type_entry.Document.Name, type_entry.Document.Description);
-
-        await WriteSegmentBlazor(writer);
-
-        await WriteEndBlazor(writer);
+        return Task.CompletedTask;
     }
 
 
@@ -391,21 +387,21 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
         builders_history.Add(builder
             .UseSummaryText($"Создать перечень новых объектов: '{doc_obj.Key.Name}'")
-            .UseParameter("obj_range", new($"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты добавления в БД"))
+            .UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты добавления в БД"))
             .UsePayload(["await _db_context.AddRangeAsync(obj_range);", "await _db_context.SaveChangesAsync();"])
             .WriteSignatureMethod(writer, "AddAsync").Constructor());
         writer.WriteLine();
 
         builders_history.Add(builder
             .UseSummaryText($"Прочитать перечень объектов: '{doc_obj.Key.Name}'")
-            .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+            .UseParameter(new("ids", "IEnumerable<int>", "Идентификаторы объектов"))
             .UsePayload($"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();")
             .WriteSignatureMethod(writer, "ReadAsync", $"List<{doc_obj.Key.TypeName}>").Constructor());
         writer.WriteLine();
 
         builders_history.Add(builder
             .UseSummaryText($"Получить (порцию/pagination) объектов: '{doc_obj.Key.Name}'")
-            .UseParameter("pagination_request", new("PaginationRequestModel", "Запрос-пагинатор"))
+            .UseParameter(new("pagination_request", "PaginationRequestModel", "Запрос-пагинатор"))
             .AddPaginationPayload(doc_obj.Key.TypeName, db_set_name)
             .AddPayload("return result;")
             .WriteSignatureMethod(writer, "SelectAsync", $"TPaginationResponseModel<{doc_obj.Key.TypeName}>").Constructor());
@@ -413,7 +409,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
         builders_history.Add(builder
            .UseSummaryText($"Обновить перечень объектов: '{doc_obj.Key.Name}'")
-           .UseParameter("obj_range", new($"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты обновления в БД"))
+           .UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты обновления в БД"))
            .UsePayload($"_db_context.Update(obj_range);")
            .AddPayload("await _db_context.SaveChangesAsync();")
            .WriteSignatureMethod(writer, "UpdateAsync").Constructor());
@@ -421,14 +417,14 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
         builders_history.Add(builder
            .UseSummaryText($"Удалить перечень объектов: '{doc_obj.Key.Name}'")
-           .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+           .UseParameter(new("ids", "IEnumerable<int>", "Идентификаторы объектов"))
            .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();")
            .WriteSignatureMethod(writer, "RemoveAsync").Constructor());
 
         builders_history.Add(builder
            .UseSummaryText($"Инверсия признака деактивации объекта: '{doc_obj.Key.Name}'")
-           .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
-           .AddParameter("set_mark", new("bool", "Признак, который следует установить"))
+           .UseParameter(new("ids", "IEnumerable<int>", "Идентификаторы объектов"))
+           .AddParameter(new("set_mark", "bool", "Признак, который следует установить"))
            .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteUpdateAsync(b => b.SetProperty(u => u.IsDisabled, set_mark));")
            .WriteSignatureMethod(writer, "MarkDeleteToggleAsync").Constructor());
         writer.WriteLine();
@@ -449,21 +445,21 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                 builders_history.Add(builder
                     .UseSummaryText($"Создать перечень новых объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
-                    .UseParameter("obj_range", new($"IEnumerable<{table_schema.TypeName}>", "Объекты добавления в БД"))
+                    .UseParameter(new("obj_range", $"IEnumerable<{table_schema.TypeName}>", "Объекты добавления в БД"))
                     .UsePayload(["await _db_context.AddRangeAsync(obj_range);", "await _db_context.SaveChangesAsync();"])
                     .WriteSignatureMethod(writer, $"Add{table_schema.TypeName}Async").Constructor());
                 writer.WriteLine();
 
                 builders_history.Add(builder
                     .UseSummaryText($"Прочитать перечень объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
-                    .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+                    .UseParameter(new("ids", "IEnumerable<int>", "Идентификаторы объектов"))
                     .UsePayload($"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();")
                     .WriteSignatureMethod(writer, $"Read{table_schema.TypeName}Async", $"List<{table_schema.TypeName}>").Constructor());
                 writer.WriteLine();
 
                 builders_history.Add(builder
                     .UseSummaryText($"Получить (порцию/pagination) объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
-                    .UseParameter("pagination_request", new("PaginationRequestModel", "Запрос-пагинатор"))
+                    .UseParameter(new("pagination_request", "PaginationRequestModel", "Запрос-пагинатор"))
                     .AddPaginationPayload(table_schema.TypeName, db_set_name)
                     .AddPayload("return result;")
                     .WriteSignatureMethod(writer, $"Select{table_schema.TypeName}Async", $"TPaginationResponseModel<{table_schema.TypeName}>").Constructor());
@@ -471,7 +467,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                 builders_history.Add(builder
                    .UseSummaryText($"Обновить перечень объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
-                   .UseParameter("obj_range", new($"IEnumerable<{table_schema.TypeName}>", "Объекты обновления в БД"))
+                   .UseParameter(new("obj_range", $"IEnumerable<{table_schema.TypeName}>", "Объекты обновления в БД"))
                    .UsePayload($"_db_context.Update(obj_range);")
                    .AddPayload("await _db_context.SaveChangesAsync();")
                    .WriteSignatureMethod(writer, $"Update{table_schema.TypeName}Async").Constructor());
@@ -479,7 +475,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                 builders_history.Add(builder
                    .UseSummaryText($"Удалить перечень объектов: '{table_schema.Tab.Name}' - '{table_schema.Form.Name}'")
-                   .UseParameter("ids", new("IEnumerable<int>", "Идентификаторы объектов"))
+                   .UseParameter(new("ids", "IEnumerable<int>", "Идентификаторы объектов"))
                    .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();")
                    .WriteSignatureMethod(writer, $"Remove{table_schema.TypeName}Async").Constructor());
             }
@@ -556,48 +552,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         return doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 
-
-    /// <summary>
-    /// Записать вступление файла (для Blazor)
-    /// </summary>
-    async Task WriteHeadBlazor(StreamWriter writer, string title, string? description = null, IEnumerable<string>? using_ns = null)
-    {
-        await writer.WriteLineAsync($"@* Project: {project.Name} - by  © https://github.com/badhitman - @fakegov *@");
-        await writer.WriteLineAsync();
-        if (using_ns?.Any() == true)
-        {
-            foreach (string u in using_ns)
-                await writer.WriteLineAsync($"{(u.StartsWith("@using ") ? u : $"@using {u}")}");
-
-            await writer.WriteLineAsync();
-        }
-        await writer.WriteLineAsync("@inherits BlazorBusyComponentBaseModel");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("<div class=\"card\">");
-        await writer.WriteLineAsync("\t<div class=\"card-body\">");
-        await writer.WriteLineAsync($"\t\t<h5 class=\"card-title\">{title}</h5>");
-        if (!string.IsNullOrWhiteSpace(description))
-            await writer.WriteLineAsync($"\t\t<h6 class=\"card-subtitle mb-4 text-body-secondary\">{DescriptionHtmlToLinesRemark(description ?? "").FirstOrDefault()}</h6>");
-    }
-
-    static async Task WriteSegmentBlazor(StreamWriter writer)//, ParameterComponent[] parameters
-    {
-        await writer.WriteAsync("\t</div>");
-        await writer.WriteAsync("</div>");
-        await writer.WriteAsync("@code {");
-    }
-
-    /// <summary>
-    /// Запись финальной части файла и закрытие потока записи (для Blazor)
-    /// </summary>
-    /// <param name="writer">Поток записи ZIP архива</param>
-    static async Task WriteEndBlazor(StreamWriter writer)
-    {
-        await writer.WriteAsync("}");
-        await writer.FlushAsync();
-        writer.Close();
-        await writer.DisposeAsync();
-    }
 
 
     /// <summary>

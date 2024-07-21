@@ -13,7 +13,7 @@ public class SummaryBuilder
 {
     const string inheritdoc = "<inheritdoc/>";
 
-    Dictionary<string, ParameterModel>? parameters;
+    List<ParameterModel>? parameters;
     string tabs = "";
     string[]? _summaryText;
 
@@ -96,7 +96,7 @@ public class SummaryBuilder
         res += $"{Environment.NewLine}{tabs}public {MethodSign}";
 
         if (parameters?.Count > 0)
-            ParametersSign += $"{string.Join(", ", parameters.Select(x => $"{x.Value.Type} {x.Key}"))}";
+            ParametersSign += $"{string.Join(", ", parameters.Select(x => $"{x.Type} {x.Name}"))}";
 
         res += $"({ParametersSign})";
 
@@ -121,14 +121,14 @@ public class SummaryBuilder
     /// <summary>
     /// Use parameter
     /// </summary>
-    public SummaryBuilder UseParameter(string name, ParameterModel metadata)
+    public SummaryBuilder UseParameter(ParameterModel metadata)
     {
         if (parameters is null)
-            parameters = new() { { name, metadata } };
+            parameters = new() { { metadata } };
         else
         {
             parameters.Clear();
-            parameters.Add(name, metadata);
+            parameters.Add(metadata);
         }
         FlushParametersText();
         return this;
@@ -137,12 +137,12 @@ public class SummaryBuilder
     /// <summary>
     /// Add parameter
     /// </summary>
-    public SummaryBuilder AddParameter(string name, ParameterModel metadata)
+    public SummaryBuilder AddParameter(ParameterModel metadata)
     {
         if (parameters is null)
-            parameters = new() { { name, metadata } };
+            parameters = new() { {  metadata } };
         else
-            parameters.Add(name, metadata);
+            parameters.Add( metadata);
 
         FlushParametersText();
         return this;
@@ -230,7 +230,7 @@ public class SummaryBuilder
     void FlushParametersText()
     {
         ParametersGet = parameters?.Count > 0
-        ? $"{string.Join(Environment.NewLine, parameters.Select(x => $"{tabs}/// <param name=\"{x.Key}\">{x.Value.Description}</param>"))}"
+        ? $"{string.Join(Environment.NewLine, parameters.Select(x => $"{tabs}/// <param name=\"{x.Name}\">{x.Description}</param>"))}"
         : null;
     }
 

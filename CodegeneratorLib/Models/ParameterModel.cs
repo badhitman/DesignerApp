@@ -7,16 +7,20 @@ namespace CodegeneratorLib;
 /// <summary>
 /// Parameter payload
 /// </summary>
-public class ParameterModel(string type, string description)
+public class ParameterModel(string name, string type, string description)
 {
+    /// <summary>
+    /// Имя параметра
+    /// </summary>
+    public string Name => name;
 
     /// <summary>
     /// Type parameter
     /// </summary>
-    public string Type { get; set; } = type;
+    public string Type => type;
 
     /// <summary>
     /// Description parameter
     /// </summary>
-    public string Description { get; set; } = description;
+    public string Description => description;
 }
