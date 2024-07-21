@@ -50,19 +50,17 @@ else
             return;
         }
         IsBusyProgress = true;
-        await Task.Run(async () =>
-        {
-            ResponseBaseModel rest = TelegramUserId.HasValue
-            ? await telegramWebRepo.TelegramAccountRemoveJoin(TelegramUserId.Value)
-            : await telegramWebRepo.TelegramAccountRemoveJoin(IdentityUserId!);
-            IsBusyProgress = false;
-            DeleteInit = false;
-            if (!rest.Success())
-                Messages = rest.Messages;
-            else
-                navManager.ReloadPage();
 
-            await InvokeAsync(() => { StateHasChanged(); });
-        });
+        ResponseBaseModel rest = TelegramUserId.HasValue
+        ? await telegramWebRepo.TelegramAccountRemoveJoin(TelegramUserId.Value)
+        : await telegramWebRepo.TelegramAccountRemoveJoin(IdentityUserId!);
+        IsBusyProgress = false;
+        DeleteInit = false;
+        if (!rest.Success())
+            Messages = rest.Messages;
+        else
+            navManager.ReloadPage();
+
+        await InvokeAsync(() => { StateHasChanged(); });
     }
 }

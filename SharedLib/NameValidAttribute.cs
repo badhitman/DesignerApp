@@ -16,6 +16,11 @@ public partial class NameValidAttribute : ValidationAttribute
     /// <inheritdoc/>
     public override bool IsValid(object? value)
     {
+        ErrorMessage = "Некорректное имя: первым и последним символом должна идти буква";
+
+        if (value is null)
+            return AllowEmptyStrings;
+
         if (value is string n)
         {
             if (AllowEmptyStrings && n == "")
@@ -23,7 +28,7 @@ public partial class NameValidAttribute : ValidationAttribute
             if (MyRegexName().IsMatch(n) && MyRegexPrefixCheck().IsMatch(n) && MyRegexPostfixCheck().IsMatch(n))
                 return true;
         }
-        ErrorMessage = "Некорректное имя: первым и последним символом должна идти буква";
+
         return false;
     }
 
