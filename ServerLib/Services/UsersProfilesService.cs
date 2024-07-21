@@ -295,6 +295,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
                 Messages = user.Messages
             };
         }
+        user.ApplicationUser = await userManager.FindByIdAsync(userId) ?? throw new Exception();
         IdentityResult result = await userManager.ResetPasswordAsync(user.ApplicationUser, token, newPassword);
         if (!result.Succeeded)
             return new ResponseBaseModel()
