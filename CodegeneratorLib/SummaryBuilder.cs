@@ -130,6 +130,7 @@ public class SummaryBuilder
             parameters.Clear();
             parameters.Add(metadata);
         }
+
         FlushParametersText();
         return this;
     }
@@ -140,9 +141,9 @@ public class SummaryBuilder
     public SummaryBuilder AddParameter(ParameterModel metadata)
     {
         if (parameters is null)
-            parameters = new() { {  metadata } };
+            parameters = new() { { metadata } };
         else
-            parameters.Add( metadata);
+            parameters.Add(metadata);
 
         FlushParametersText();
         return this;
@@ -248,7 +249,11 @@ public class SummaryBuilder
             SummaryGet = inheritdoc;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Копируется в новый объект и очищается Payload
+    /// </summary>
+    /// <param name="db_inc"></param>
+    /// <returns></returns>
     public SummaryBuilder Constructor(bool db_inc = true)
     {
         if (db_inc)
@@ -256,7 +261,6 @@ public class SummaryBuilder
 
         SummaryBuilder res = GlobalTools.CreateDeepCopy(this);
         Payload.Clear();
-
 
         return res;
     }
