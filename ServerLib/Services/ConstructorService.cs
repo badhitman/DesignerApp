@@ -43,13 +43,13 @@ public partial class ConstructorService(
             .Include(x => x.DataSessionValues)
 
             .Include(s => s.Owner) // опрос/анкета
-            .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
+            .ThenInclude(x => x!.Tabs!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
             .ThenInclude(x => x!.Fields) // поля
 
             .Include(s => s.Owner) // опрос/анкета
-            .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
+            .ThenInclude(x => x!.Tabs!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
             .ThenInclude(x => x!.FieldsDirectoriesLinks) // поля
@@ -130,7 +130,7 @@ public partial class ConstructorService(
         SessionOfDocumentDataModelDB? session_Document = session.Response;
         TResponseModel<SessionOfDocumentDataModelDB> res = new();
 
-        if (session_Document?.Owner?.Pages is null || session_Document.DataSessionValues is null)
+        if (session_Document?.Owner?.Tabs is null || session_Document.DataSessionValues is null)
         {
             res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка B3AC5AAF-A786-4190-9C61-A272F174D940");
             return res;
@@ -144,7 +144,7 @@ public partial class ConstructorService(
 
         session_Document.LastDocumentUpdateActivity = DateTime.Now;
 
-        TabJoinDocumentSchemeConstructorModelDB? form_join = session_Document.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        TabJoinDocumentSchemeConstructorModelDB? form_join = session_Document.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена. ошибка 2494D4D2-24E1-48D4-BC9C-C27D327D98B8");
@@ -194,7 +194,7 @@ public partial class ConstructorService(
         TResponseStrictModel<int> res = new() { Response = 0 };
         SessionOfDocumentDataModelDB? session = get_s.Response;
 
-        if (session?.Owner?.Pages is null || session.DataSessionValues is null)
+        if (session?.Owner?.Tabs is null || session.DataSessionValues is null)
         {
             res.AddError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка 14504D03-88B5-4D1B-AFF2-8DB8D4EB757F");
             return res;
@@ -203,7 +203,7 @@ public partial class ConstructorService(
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
             return (TResponseStrictModel<int>)ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (в статусе {session.SessionStatus}).");
 
-        TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null || !form_join.IsTable)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 6342356D-0491-45BC-A33D-B95F5D7DCB5F");
@@ -236,13 +236,13 @@ public partial class ConstructorService(
             return get_s;
 
         SessionOfDocumentDataModelDB? session = get_s.Response;
-        if (session?.Owner?.Pages is null || session.DataSessionValues is null)
+        if (session?.Owner?.Tabs is null || session.DataSessionValues is null)
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} не найдена в БД. ошибка 5DF6598B-18FF-4E76-AE33-6CE78ACE5442");
 
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (статус {session.SessionStatus}).");
 
-        TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Pages.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null || !form_join.IsTable)
             return ResponseBaseModel.CreateError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 66A38A11-CD9B-4F9E-8B5C-49E60109442D");
 
@@ -388,7 +388,7 @@ public partial class ConstructorService(
             .ThenInclude(x => x.Elements)
 
             .Include(x => x.Documents!)
-            .ThenInclude(x => x.Pages!)
+            .ThenInclude(x => x.Tabs!)
             .ThenInclude(x => x.JoinsForms)
 
             //.Include(x => x.Documents!)
@@ -755,23 +755,32 @@ public partial class ConstructorService(
                     {
                         _document_scheme_seed = new()
                         {
-                            Name = "Demo",
+                            Name = "Demo document",
                             ProjectId = project!.Id,
-                            Pages = [new ()
-                        {
-                            Name = "Demo seed",
-                            SortIndex = 1,
-                            JoinsForms = [new ()
-                            {
-                                Name = "join form #1",
-                                FormId = _form_seed_1.Id,
-                                SortIndex = 1
-                            },new() {
-                                Name = "join form #2",
-                                FormId = _form_seed_2.Id,
-                                SortIndex = 2
+                            Tabs = [new (){
+                                Name = "Demo tab 1",
+                                SortIndex = 1,
+                                JoinsForms = [new ()
+                                {
+                                    Name = "join form #1",
+                                    FormId = _form_seed_1.Id,
+                                    SortIndex = 1
+                                },new() {
+                                    Name = "join form #2",
+                                    FormId = _form_seed_2.Id,
+                                    SortIndex = 2
+                                }]
+                            },new (){
+                                Name = "Demo tab 2",
+                                SortIndex = 2,
+                                JoinsForms = [new ()
+                                {
+                                    Name = "join form #3",
+                                    FormId = _form_seed_1.Id,
+                                    SortIndex = 1, 
+                                    IsTable = true
+                                }]
                             }]
-                        }]
                         };
 
                         await context_forms.AddAsync(_document_scheme_seed);
@@ -2174,7 +2183,7 @@ public partial class ConstructorService(
         query = query.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
         int[] ids = await query.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
-        query = context_forms.DocumentSchemes.Include(x => x.Pages).Where(x => ids.Contains(x.Id)).Include(x => x.Pages).OrderBy(x => x.Name);
+        query = context_forms.DocumentSchemes.Include(x => x.Tabs).Where(x => ids.Contains(x.Id)).Include(x => x.Tabs).OrderBy(x => x.Name);
         res.Response = ids.Length != 0
             ? await query.ToListAsync(cancellationToken: cancellationToken)
             : [];
@@ -2190,7 +2199,7 @@ public partial class ConstructorService(
         {
             Response = await context_forms
             .DocumentSchemes
-            .Include(x => x.Pages!)
+            .Include(x => x.Tabs!)
             .ThenInclude(x => x.JoinsForms)
             .FirstOrDefaultAsync(x => x.Id == document_scheme_id, cancellationToken: cancellationToken)
         };
@@ -2296,7 +2305,7 @@ public partial class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         DocumentSchemeConstructorModelDB? document_scheme_db = await context_forms
             .DocumentSchemes
-            .Include(x => x.Pages!)
+            .Include(x => x.Tabs!)
             .ThenInclude(x => x.JoinsForms)
             .FirstOrDefaultAsync(x => x.Id == document_scheme_id, cancellationToken: cancellationToken);
 
@@ -2355,7 +2364,7 @@ public partial class ConstructorService(
         TabOfDocumentSchemeConstructorModelDB? tab_of_document_scheme_db = await context_forms
             .TabsOfDocumentsSchemes
             .Include(x => x.Owner)
-            .ThenInclude(x => x!.Pages)
+            .ThenInclude(x => x!.Tabs)
             .FirstOrDefaultAsync(x => x.Id == tab_of_document_scheme_id, cancellationToken: cancellationToken);
 
         if (tab_of_document_scheme_db?.Owner is null)
@@ -2371,7 +2380,7 @@ public partial class ConstructorService(
             return res;
         }
 
-        tab_of_document_scheme_db.Owner!.Pages = [.. tab_of_document_scheme_db.Owner.Pages!.OrderBy(x => x.SortIndex)];
+        tab_of_document_scheme_db.Owner!.Tabs = [.. tab_of_document_scheme_db.Owner.Tabs!.OrderBy(x => x.SortIndex)];
 
         TabOfDocumentSchemeConstructorModelDB? _fns = tab_of_document_scheme_db.Owner.GetOutermostPage(direct, tab_of_document_scheme_db.SortIndex);
 
@@ -2405,13 +2414,13 @@ public partial class ConstructorService(
 
         res.Response = await context_forms
             .DocumentSchemes
-            .Include(x => x.Pages)
+            .Include(x => x.Tabs)
             .FirstAsync(x => x.Id == tab_of_document_scheme_db.OwnerId, cancellationToken: cancellationToken);
-        tab_of_document_scheme_db.Owner!.Pages = tab_of_document_scheme_db.Owner.Pages!.OrderBy(x => x.SortIndex).ToList();
+        tab_of_document_scheme_db.Owner!.Tabs = tab_of_document_scheme_db.Owner.Tabs!.OrderBy(x => x.SortIndex).ToList();
 
         int i = 0;
         bool is_upd = false;
-        foreach (TabOfDocumentSchemeConstructorModelDB p in res.Response.Pages!)
+        foreach (TabOfDocumentSchemeConstructorModelDB p in res.Response.Tabs!)
         {
             i++;
             is_upd = is_upd || p.SortIndex != i;
@@ -2421,7 +2430,7 @@ public partial class ConstructorService(
         if (is_upd)
         {
             res.AddWarning("Исправлена пересортица");
-            context_forms.UpdateRange(res.Response.Pages!);
+            context_forms.UpdateRange(res.Response.Tabs!);
             await context_forms.SaveChangesAsync(cancellationToken);
         }
 
@@ -2450,7 +2459,7 @@ public partial class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         DocumentSchemeConstructorModelDB? document_scheme_db = await context_forms
             .DocumentSchemes
-            .Include(x => x.Pages)
+            .Include(x => x.Tabs)
             .FirstOrDefaultAsync(x => x.Id == tab_of_document_scheme.OwnerId, cancellationToken: cancellationToken);
 
         string msg;
@@ -2479,7 +2488,7 @@ public partial class ConstructorService(
         if (tab_of_document_scheme.Id < 1)
         {
             tab_of_document_scheme.Id = 0;
-            int _sort_index = document_scheme_db.Pages!.Count != 0 ? document_scheme_db.Pages!.Max(x => x.SortIndex) : 0;
+            int _sort_index = document_scheme_db.Tabs!.Count != 0 ? document_scheme_db.Tabs!.Max(x => x.SortIndex) : 0;
 
             tab_of_document_scheme_db = TabOfDocumentSchemeConstructorModelDB.Build(tab_of_document_scheme, document_scheme_db, _sort_index + 1);
 
@@ -2492,7 +2501,7 @@ public partial class ConstructorService(
             return res;
         }
 
-        tab_of_document_scheme_db = document_scheme_db.Pages!.FirstOrDefault(x => x.Id == tab_of_document_scheme.Id);
+        tab_of_document_scheme_db = document_scheme_db.Tabs!.FirstOrDefault(x => x.Id == tab_of_document_scheme.Id);
 
         if (tab_of_document_scheme_db is null)
         {
@@ -2873,13 +2882,13 @@ public partial class ConstructorService(
             .Include(x => x.DataSessionValues)
 
             .Include(s => s.Owner) // опрос/анкета
-            .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
+            .ThenInclude(x => x!.Tabs!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
             .ThenInclude(x => x!.Fields) // поля
 
             .Include(s => s.Owner) // опрос/анкета
-            .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
+            .ThenInclude(x => x!.Tabs!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
             .ThenInclude(x => x!.FieldsDirectoriesLinks) // поля
@@ -3152,13 +3161,13 @@ public partial class ConstructorService(
             .Include(x => x.DataSessionValues)
 
             .Include(s => s.Owner) // опрос/анкета
-            .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
+            .ThenInclude(x => x!.Tabs!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
             .ThenInclude(x => x!.Fields) // поля
 
             .Include(s => s.Owner) // опрос/анкета
-            .ThenInclude(x => x!.Pages!) // страницы опроса/анкеты
+            .ThenInclude(x => x!.Tabs!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
             .ThenInclude(x => x!.FieldsDirectoriesLinks) // поля

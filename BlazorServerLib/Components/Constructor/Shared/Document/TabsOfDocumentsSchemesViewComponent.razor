@@ -1,6 +1,6 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-@if (DocumentScheme.Pages is null)
+@if (DocumentScheme.Tabs is null)
 {
     <figure>
         <blockquote class="blockquote">
@@ -14,7 +14,7 @@
 else if (!ParentFormsPage.CanEditProject)
 {
     <MudTabs @bind-ActivePanelIndex="@DocumentIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
-        @if (!DocumentScheme.Pages.Any())
+        @if (!DocumentScheme.Tabs.Any())
         {
             <figure class="text-center mt-3">
                 <blockquote class="blockquote">
@@ -27,7 +27,7 @@ else if (!ParentFormsPage.CanEditProject)
         }
         else
         {
-            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in DocumentScheme.Pages.OrderBy(x => x.SortIndex))
+            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in DocumentScheme.Tabs.OrderBy(x => x.SortIndex))
             {
                 questionnaire_page.Owner = DocumentScheme;
                 <MudTabPanel ID="@($"document-scheme_{questionnaire_page.Id}")"
@@ -44,7 +44,7 @@ else if (!ParentFormsPage.CanEditProject)
 else
 {
     <MudDynamicTabs @bind-ActivePanelIndex="@DocumentIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
-        @if (!DocumentScheme.Pages.Any())
+        @if (!DocumentScheme.Tabs.Any())
         {
             <figure class="text-center mt-3">
                 <blockquote class="blockquote">
@@ -57,7 +57,7 @@ else
         }
         else
         {
-            foreach (TabOfDocumentSchemeConstructorModelDB tab_of_document_scheme in DocumentScheme.Pages.OrderBy(x => x.SortIndex))
+            foreach (TabOfDocumentSchemeConstructorModelDB tab_of_document_scheme in DocumentScheme.Tabs.OrderBy(x => x.SortIndex))
             {
                 tab_of_document_scheme.Owner = DocumentScheme;
                 <MudTabPanel ID="tab_of_document_scheme.Id"

@@ -21,13 +21,13 @@
                     @context.Name
                     <sup>#@context.Id</sup>
                 </span>
-                @if (context.Pages is null)
+                @if (context.Tabs is null)
                 {
                     <span>error 0D40AC25-9774-4CFF-B8D7-4C9EB2F1937B</span>
                 }
                 else
                 {
-                    foreach (TabOfDocumentSchemeConstructorModelDB qp in context.Pages.OrderBy(x => x.SortIndex))
+                    foreach (TabOfDocumentSchemeConstructorModelDB qp in context.Tabs.OrderBy(x => x.SortIndex))
                     {
                         if (string.IsNullOrWhiteSpace(qp.Description))
                         {

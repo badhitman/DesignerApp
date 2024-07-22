@@ -207,7 +207,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
             SystemName = document_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(doc.Name),
             Name = doc.Name,
             Description = doc.Description,
-            Tabs = [.. doc.Pages!.Select(TabConvert)]
+            Tabs = [.. doc.Tabs!.Select(TabConvert)]
         };
     }
 

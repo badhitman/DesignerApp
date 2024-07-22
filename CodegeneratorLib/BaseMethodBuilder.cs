@@ -17,23 +17,39 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
     public static readonly string inheritdoc = "<inheritdoc/>";
 
 
-    /// <summary>
-    /// Summary text
-    /// </summary>
+    /// <inheritdoc/>
     protected string[]? _summaryText;
 
     /// <inheritdoc/>
     public List<string>? Payload { get; set; }
 
-    /// <summary>
-    /// Параметры
-    /// </summary>
+    /// <inheritdoc/>
     public List<ParameterModel>? Parameters { get; set; }
+
 
     /// <summary>
     /// Табы для отступов
     /// </summary>
     protected string tabs = "";
+
+    /// <inheritdoc/>    
+    public string? SummaryGet { get; set; }
+
+    /// <inheritdoc/>   
+    public string? ParametersSign { get; set; }
+
+    /// <inheritdoc/>   
+    public string? MethodName { get; set; }
+
+    /// <inheritdoc/>   
+    public string? Returned { get; set; }
+
+    /// <inheritdoc/>  
+    public string? MethodSign { get; set; }
+
+    /// <inheritdoc/>  
+    public string? ParametersGet { get; set; }
+
 
     byte tabulationsSpiceSize;
     /// <summary>
@@ -58,39 +74,20 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
         }
     }
 
-    /// <inheritdoc/>    
-    public string? SummaryGet { get; set; }
 
-    /// <summary>
-    /// Parameters signature
-    /// </summary>
-    public string? ParametersSign { get; set; }
+    /// <inheritdoc/>
+    public virtual BaseMethodBuilder AddParameter(ParameterModel metadata)
+    {
+        if (Parameters is null)
+            Parameters = new() { { metadata } };
+        else
+            Parameters.Add(metadata);
+        //
+        FlushParametersText();
+        return this;
+    }
 
-    /// <summary>
-    /// Method name
-    /// </summary>
-    public string? MethodName { get; set; }
-
-    /// <summary>
-    /// Возвращаемый тип
-    /// </summary>
-    public string? Returned { get; set; }
-
-    /// <summary>
-    /// Method sign
-    /// </summary>
-    public string? MethodSign { get; set; }
-
-    /// <summary>
-    /// Parameters get text
-    /// </summary>
-    public string? ParametersGet { get; set; }
-
-
-
-    /// <summary>
-    /// Use parameter
-    /// </summary>
+    /// <inheritdoc/>
     public virtual BaseMethodBuilder UseParameter(ParameterModel metadata)
     {
         if (Parameters is null)
@@ -105,10 +102,8 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
         return this;
     }
 
-    /// <summary>
-    /// Set summary text
-    /// </summary>
-    public BaseMethodBuilder UseSummaryText(string[] summaryText)
+    /// <inheritdoc/>
+    public virtual BaseMethodBuilder UseSummaryText(string[] summaryText)
     {
         _summaryText = summaryText;
         FlushSummaryText();
@@ -116,10 +111,8 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
         return this;
     }
 
-    /// <summary>
-    /// Set summary text
-    /// </summary>
-    public BaseMethodBuilder UseSummaryText(string summaryText)
+    /// <inheritdoc/>
+    public virtual BaseMethodBuilder UseSummaryText(string summaryText)
     {
         _summaryText = [summaryText];
         FlushSummaryText();
@@ -127,10 +120,8 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
         return this;
     }
 
-    /// <summary>
-    /// Use payload
-    /// </summary>
-    public BaseMethodBuilder AddPayload(string[] payload)
+    /// <inheritdoc/>
+    public virtual BaseMethodBuilder AddPayload(string[] payload)
     {
         Payload ??= [];
         Payload.AddRange(payload);
@@ -138,10 +129,8 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
         return this;
     }
 
-    /// <summary>
-    /// Use payload
-    /// </summary>
-    public BaseMethodBuilder AddPayload(string payload)
+    /// <inheritdoc/>
+    public virtual BaseMethodBuilder AddPayload(string payload)
     {
         Payload ??= [];
         Payload.Add(payload);
@@ -149,10 +138,8 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
         return this;
     }
 
-    /// <summary>
-    /// Use payload
-    /// </summary>
-    public BaseMethodBuilder UsePayload(string[] payload)
+    /// <inheritdoc/>
+    public virtual BaseMethodBuilder UsePayload(string[] payload)
     {
         if (Payload is null)
             Payload = [];
@@ -164,11 +151,13 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
         return this;
     }
 
-    /// <summary>
-    /// Use payload
-    /// </summary>
-    public BaseMethodBuilder UsePayload(string payload)
+    /// <inheritdoc/>
+    public virtual BaseMethodBuilder UsePayload(string payload)
         => UsePayload([payload]);
+
+    /// <inheritdoc/>
+    public abstract BaseMethodBuilder AddPaginationPayload(string type_name, string db_set_name);
+
 
     /// <inheritdoc/>
     public abstract void FlushParametersText();
@@ -176,24 +165,8 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
     /// <inheritdoc/>
     public abstract void FlushSummaryText();
 
-    /// <inheritdoc/>
-    public abstract BaseMethodBuilder AddPaginationPayload(string type_name, string db_set_name);
 
     /// <inheritdoc/>
-    public BaseMethodBuilder AddParameter(ParameterModel metadata)
-    {
-        if (Parameters is null)
-            Parameters = new() { { metadata } };
-        else
-            Parameters.Add(metadata);
-        //
-        FlushParametersText();
-        return this;
-    }
-
-    /// <summary>
-    /// Возвращает копию текущего объекта и очищает все метаданные билдера
-    /// </summary>
     public T Extract<T>(bool db_inc = true) where T : BaseMethodBuilder
     {
         if (db_inc)

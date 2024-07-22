@@ -9,7 +9,7 @@
         </figcaption>
     </figure>
 }
-else if (SessionOfDocumentData.Owner?.Pages is null)
+else if (SessionOfDocumentData.Owner?.Tabs is null)
 {
     <div class="alert alert-dark" role="alert">
         SessionDocument.Owner?.Pages is null! ошибка 58539246-ACB4-46F0-A9E9-7EF06EEE10E6
@@ -18,7 +18,7 @@ else if (SessionOfDocumentData.Owner?.Pages is null)
 else
 {
     <MudTabs PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
-        @if (!SessionOfDocumentData.Owner.Pages.Any())
+        @if (!SessionOfDocumentData.Owner.Tabs.Any())
         {
             <figure class="text-center mt-3">
                 <blockquote class="blockquote">
@@ -45,7 +45,7 @@ else
 
                 }
             }
-            @foreach (TabOfDocumentSchemeConstructorModelDB tab_of_document_scheme in SessionOfDocumentData.Owner.Pages.OrderBy(x => x.SortIndex))
+            @foreach (TabOfDocumentSchemeConstructorModelDB tab_of_document_scheme in SessionOfDocumentData.Owner.Tabs.OrderBy(x => x.SortIndex))
             {
                 tab_of_document_scheme.Owner ??= SessionOfDocumentData.Owner;
                 if (tab_of_document_scheme.Owner is null)

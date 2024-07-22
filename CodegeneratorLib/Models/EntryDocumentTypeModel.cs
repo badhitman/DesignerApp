@@ -8,14 +8,9 @@ namespace CodegeneratorLib;
 /// Entry Document Type
 /// </summary>
 public class EntryDocumentTypeModel(DocumentFitModel docObj, string basePath) : EntryTypeModel(docObj.SystemName, basePath)
-{//
+{
     /// <summary>
-    /// Название документа
+    /// Document
     /// </summary>
-    public string Name { get; set; } = docObj.Name;
-
-    /// <summary>
-    /// Описание документа
-    /// </summary>
-    public string? Description { get; set; } = docObj.Description;
+    public DocumentFitModel Document { get; set; } = docObj;
 }

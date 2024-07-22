@@ -20,7 +20,7 @@
             @if (DocumentPage.Id > 0)
             {
                 <button @onclick="Delete" class="btn btn@(IsInitDelete ? "" : "-outline")-danger" type="button">@(IsInitDelete ? "Подтвердить удаление" : "Удалить")</button>
-                @if (DocumentPage.Owner?.Pages!.Any(x => x.Id < 1) == true)
+                @if (DocumentPage.Owner?.Tabs!.Any(x => x.Id < 1) == true)
                 {
                     <figure class="text-center">
                         <blockquote class="blockquote">

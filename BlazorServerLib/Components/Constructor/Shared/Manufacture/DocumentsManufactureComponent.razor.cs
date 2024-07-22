@@ -150,8 +150,8 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
             {
                 SystemName = ManufactureParentView.ParentFormsPage.SystemNamesManufacture.GetSystemName(doc.Id, ManufactureComponent.DocumentSchemeConstructorTypeName),
                 Tooltip = "Документ (схема данных бизнес-сущности)",
-                Children = [.. doc.Pages!.Select(y => TabToTreeItem(y, doc.Id))],
-                ErrorMessage = doc.Pages!.Count == 0 ? $"Документ '{doc.Name}' пустой - не имеет вкладок/табов" : null
+                Children = [.. doc.Tabs!.Select(y => TabToTreeItem(y, doc.Id))],
+                ErrorMessage = doc.Tabs!.Count == 0 ? $"Документ '{doc.Name}' пустой - не имеет вкладок/табов" : null
             });
         });
     }

@@ -99,18 +99,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
     #endregion
 
-    Task WriteUI(EntrySchemaTypeModel type_entry)
-    {
-        //ZipArchiveEntry zipEntry;
-        //StreamWriter writer;
-
-        //zipEntry = archive.CreateEntry(type_entry.BlazorFullEntryName());
-        //writer = new(zipEntry.Open(), Encoding.UTF8);
-
-        return Task.CompletedTask;
-    }
-
-
     #region backend
 
     /// <summary>
@@ -177,7 +165,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         {
             zipEntry = archive.CreateEntry(kvp.Key.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHeadClass(writer, [kvp.Key.Name], kvp.Key.Description);
+            await WriteHeadClass(writer, [$"Документ: '{kvp.Key.Document.Name}'"], kvp.Key.Document.Description);
             await writer.WriteLineAsync($"\tpublic partial class {kvp.Key.TypeName} : SharedLib.IdSwitchableModel");
             await writer.WriteLineAsync("\t{");
 
@@ -189,7 +177,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     is_first_item = false;
 
                 await writer.WriteLineAsync($"\t\t/// <summary>");
-                await writer.WriteLineAsync($"\t\t/// [tab: {schema_obj.Tab.Name}][form: {schema_obj.Form.Name}]");
+                await writer.WriteLineAsync($"\t\t/// [tab: {schema_obj.Tab.Name} `{schema_obj.Tab.SystemName}`][form: {schema_obj.Form.Name} `{schema_obj.Form.SystemName}`]");
                 await writer.WriteLineAsync($"\t\t/// </summary>");
 
                 if (schema_obj.IsTable)
@@ -211,30 +199,32 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         ZipArchiveEntry zipEntry;
         EntryDocumentTypeModel doc_entry;
-        EntrySchemaTypeModel type_entry;
+        EntrySchemaTypeModel form_type_entry;
         Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> schema_data = [];
+        BlazorCodeGenerator blazorCode = new();
 
         foreach (DocumentFitModel doc_obj in docs)
         {
             doc_entry = GetDocumentZipEntry(doc_obj);
+            blazorCode.Set(doc_entry);
             List<EntrySchemaTypeModel> schema_inc = [];
             foreach (TabFitModel tab_obj in doc_obj.Tabs)
                 foreach (FormFitModel form_obj in tab_obj.Forms)
                 {
-                    type_entry = GetSchemaZipEntry(form_obj, tab_obj, doc_obj);
-                    EntrySchemaTypeModel? _check = schema_inc.FirstOrDefault(x => x.TypeName.Equals(type_entry.TypeName));
+                    form_type_entry = GetSchemaZipEntry(form_obj, tab_obj, doc_obj);
+                    EntrySchemaTypeModel? _check = schema_inc.FirstOrDefault(x => x.TypeName.Equals(form_type_entry.TypeName));
                     if (_check is not null)
                     {
-                        _result.AddError($"Ошибка генерации схемы данных `{type_entry.TypeName}` [{type_entry.FullEntryName}] для документа '{doc_obj.Name}' ({doc_obj.SystemName}). ");
+                        _result.AddError($"Ошибка генерации схемы данных `{form_type_entry.TypeName}` [{form_type_entry.FullEntryName}] для документа '{doc_obj.Name}' ({doc_obj.SystemName}). ");
                         continue;
                     }
 
-                    zipEntry = archive.CreateEntry(type_entry.FullEntryName());
+                    zipEntry = archive.CreateEntry(form_type_entry.FullEntryName());
 
                     using StreamWriter writer = new(zipEntry.Open(), Encoding.UTF8);
                     await WriteHeadClass(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
 
-                    await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}");
+                    await writer.WriteLineAsync($"\tpublic partial class {form_type_entry.TypeName}");
                     await writer.WriteLineAsync("\t{");
                     await writer.WriteLineAsync("\t\t/// <summary>");
                     await writer.WriteLineAsync("\t\t/// Идентификатор/Key");
@@ -261,9 +251,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                             await WriteField(_f, writer);
 
                     await WriteEndClass(writer);
-                    schema_inc.Add(type_entry);
+                    schema_inc.Add(form_type_entry);
                     //
-                    await WriteUI(type_entry);
+                    blazorCode.Set(form_type_entry);
                 }
 
             schema_data.Add(doc_entry, schema_inc);
@@ -306,11 +296,11 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             ServiceMethodBuilder sb = new() { TabulationsSpiceSize = 2 };
 
-            await _writer.WriteLineAsync(sb.UseSummaryText([$"{doc_obj.Key.Name}"]).SummaryGet);
-            if (!string.IsNullOrWhiteSpace(doc_obj.Key.Description))
+            await _writer.WriteLineAsync(sb.UseSummaryText([$"{doc_obj.Key.Document.Name}"]).SummaryGet);
+            if (!string.IsNullOrWhiteSpace(doc_obj.Key.Document.Description))
             {
                 await _writer.WriteLineAsync("\t\t/// <remarks>");
-                await _writer.WriteLineAsync(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(doc_obj.Key.Description).Select(x => $"\t\t/// {x}")));
+                await _writer.WriteLineAsync(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(doc_obj.Key.Document.Description).Select(x => $"\t\t/// {x}")));
                 await _writer.WriteLineAsync("\t\t/// </remarks>");
             }
             _writer.WriteLine($"\t\tpublic DbSet<{doc_obj.Key.TypeName}> {doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
@@ -347,7 +337,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             services_di.Add($"I{type_entry.TypeName}", type_entry.TypeName);
             zipEntry = archive.CreateEntry(type_entry.FullEntryName("I"));
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHeadClass(writer, [doc_obj.Key.Name], null, ["SharedLib"]);
+            await WriteHeadClass(writer, [doc_obj.Key.Document.Name], null, ["SharedLib"]);
 
             await writer.WriteLineAsync($"\tpublic partial interface I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
@@ -356,7 +346,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             zipEntry = archive.CreateEntry(type_entry.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await WriteHeadClass(writer, [doc_obj.Key.Name], null, ["Microsoft.EntityFrameworkCore", "SharedLib"]);
+            await WriteHeadClass(writer, [doc_obj.Key.Document.Name], null, ["Microsoft.EntityFrameworkCore", "SharedLib"]);
 
             await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}(IDbContextFactory<LayerContext> appDbFactory) : I{type_entry.TypeName}");
             await writer.WriteLineAsync("\t{");
@@ -386,7 +376,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         string db_set_name = $"_db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}";
 
         builders_history.Add(builder
-            .UseSummaryText($"Создать перечень новых объектов: '{doc_obj.Key.Name}'")
+            .UseSummaryText($"Создать перечень новых объектов: '{doc_obj.Key.Document.Name}'")
             .UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты добавления в БД"))
             .UsePayload(["await _db_context.AddRangeAsync(obj_range);", "await _db_context.SaveChangesAsync();"])
             .Extract<ServiceMethodBuilder>()
@@ -394,7 +384,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         writer.WriteLine();
 
         builders_history.Add(builder
-            .UseSummaryText($"Прочитать перечень объектов: '{doc_obj.Key.Name}'")
+            .UseSummaryText($"Прочитать перечень объектов: '{doc_obj.Key.Document.Name}'")
             .UseParameter(new("ids", "IEnumerable<int>", "Идентификаторы объектов"))
             .UsePayload($"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();")
             .Extract<ServiceMethodBuilder>()
@@ -402,7 +392,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         writer.WriteLine();
 
         builders_history.Add(builder
-            .UseSummaryText($"Получить (порцию/pagination) объектов: '{doc_obj.Key.Name}'")
+            .UseSummaryText($"Получить (порцию/pagination) объектов: '{doc_obj.Key.Document.Name}'")
             .UseParameter(new("pagination_request", "PaginationRequestModel", "Запрос-пагинатор"))
             .AddPaginationPayload(doc_obj.Key.TypeName, db_set_name)
             .AddPayload("return result;")
@@ -411,7 +401,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         writer.WriteLine();
 
         builders_history.Add(builder
-           .UseSummaryText($"Обновить перечень объектов: '{doc_obj.Key.Name}'")
+           .UseSummaryText($"Обновить перечень объектов: '{doc_obj.Key.Document.Name}'")
            .UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты обновления в БД"))
            .UsePayload($"_db_context.Update(obj_range);")
            .AddPayload("await _db_context.SaveChangesAsync();")
@@ -420,14 +410,14 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         writer.WriteLine();
 
         builders_history.Add(builder
-           .UseSummaryText($"Удалить перечень объектов: '{doc_obj.Key.Name}'")
+           .UseSummaryText($"Удалить перечень объектов: '{doc_obj.Key.Document.Name}'")
            .UseParameter(new("ids", "IEnumerable<int>", "Идентификаторы объектов"))
            .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();")
            .Extract<ServiceMethodBuilder>()
            .WriteSignatureMethod(writer, "RemoveAsync"));
 
         builders_history.Add(builder
-           .UseSummaryText($"Инверсия признака деактивации объекта: '{doc_obj.Key.Name}'")
+           .UseSummaryText($"Инверсия признака деактивации объекта: '{doc_obj.Key.Document.Name}'")
            .UseParameter(new("ids", "IEnumerable<int>", "Идентификаторы объектов"))
            .AddParameter(new("set_mark", "bool", "Признак, который следует установить"))
            .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteUpdateAsync(b => b.SetProperty(u => u.IsDisabled, set_mark));")
@@ -562,7 +552,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             );
         return doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
-
 
 
     /// <summary>
