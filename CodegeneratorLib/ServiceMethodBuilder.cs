@@ -7,22 +7,12 @@ namespace CodegeneratorLib;
 /// <summary>
 /// Service-method builder
 /// </summary>
-public class ServiceMethodBuilder : BaseBuilder
+public class ServiceMethodBuilder : BaseMethodBuilder
 {
-    /// <summary>
-    /// Method sign
-    /// </summary>
-    public string MethodSign { get; set; } = "";
-
-    /// <summary>
-    /// Parameters get text
-    /// </summary>
-    public string? ParametersGet { get; set; }
-
     /// <summary>
     /// Write method signature
     /// </summary>
-    public override ServiceMethodBuilder WriteSignatureMethod(StreamWriter writer, string methodName, string? returned = null)
+    public ServiceMethodBuilder WriteSignatureMethod(StreamWriter writer, string methodName, string? returned = null)
     {
         MethodName = methodName;
         Returned = returned;
@@ -48,7 +38,7 @@ public class ServiceMethodBuilder : BaseBuilder
     /// <summary>
     /// Write implementations
     /// </summary>
-    public void WriteImplementation(StreamWriter writer)
+    public ServiceMethodBuilder WriteImplementation(StreamWriter writer)
     {
         if (Payload is null)
             throw new Exception();
@@ -60,6 +50,7 @@ public class ServiceMethodBuilder : BaseBuilder
             writer.WriteLine($"{tabs}\t{p}");
         //
         writer.WriteLine($"{tabs}}}");
+        return this;
     }
 
     /// <inheritdoc/>
@@ -106,6 +97,4 @@ public class ServiceMethodBuilder : BaseBuilder
         else
             SummaryGet = inheritdoc;
     }
-
-
 }

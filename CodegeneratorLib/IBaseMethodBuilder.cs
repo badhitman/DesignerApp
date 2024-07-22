@@ -5,9 +5,9 @@
 namespace CodegeneratorLib;
 
 /// <summary>
-/// IBaseBuilder
+/// IBaseMethodBuilder
 /// </summary>
-public interface IBaseBuilder
+public interface IBaseMethodBuilder
 {
     /// <summary>
     /// Payload
@@ -43,25 +43,20 @@ public interface IBaseBuilder
     /// <summary>
     /// UseParameter
     /// </summary>
-    public BaseBuilder UseParameter(ParameterModel metadata);
+    public BaseMethodBuilder UseParameter(ParameterModel metadata);
 
     /// <summary>
     /// AddParameter
     /// </summary>
-    public BaseBuilder AddParameter(ParameterModel metadata);
-
-    /// <summary>
-    /// WriteSignatureMethod
-    /// </summary>
-    public BaseBuilder WriteSignatureMethod(StreamWriter writer, string methodName, string? returned = null);
+    public BaseMethodBuilder AddParameter(ParameterModel metadata);
 
     /// <summary>
     /// AddPaginationPayload
     /// </summary>
-    public BaseBuilder AddPaginationPayload(string type_name, string db_set_name);
+    public BaseMethodBuilder AddPaginationPayload(string type_name, string db_set_name);
 
     /// <summary>
     /// Extract
     /// </summary>
-    public T Extract<T>(bool db_inc = true) where T : BaseBuilder;
+    public T Extract<T>(bool db_inc = true) where T : BaseMethodBuilder;
 }

@@ -3,14 +3,13 @@
 ////////////////////////////////////////////////
 
 using Newtonsoft.Json;
-using SharedLib;
 
 namespace CodegeneratorLib;
 
 /// <summary>
 /// Base builder
 /// </summary>
-public abstract class BaseBuilder : IBaseBuilder
+public abstract class BaseMethodBuilder : IBaseMethodBuilder
 {
     /// <summary>
     /// inheritdoc
@@ -77,12 +76,22 @@ public abstract class BaseBuilder : IBaseBuilder
     /// </summary>
     public string? Returned { get; set; }
 
+    /// <summary>
+    /// Method sign
+    /// </summary>
+    public string? MethodSign { get; set; }
+
+    /// <summary>
+    /// Parameters get text
+    /// </summary>
+    public string? ParametersGet { get; set; }
+
 
 
     /// <summary>
     /// Use parameter
     /// </summary>
-    public BaseBuilder UseParameter(ParameterModel metadata)
+    public virtual BaseMethodBuilder UseParameter(ParameterModel metadata)
     {
         if (Parameters is null)
             Parameters = new() { { metadata } };
@@ -99,7 +108,7 @@ public abstract class BaseBuilder : IBaseBuilder
     /// <summary>
     /// Set summary text
     /// </summary>
-    public BaseBuilder UseSummaryText(string[] summaryText)
+    public BaseMethodBuilder UseSummaryText(string[] summaryText)
     {
         _summaryText = summaryText;
         FlushSummaryText();
@@ -110,7 +119,7 @@ public abstract class BaseBuilder : IBaseBuilder
     /// <summary>
     /// Set summary text
     /// </summary>
-    public BaseBuilder UseSummaryText(string summaryText)
+    public BaseMethodBuilder UseSummaryText(string summaryText)
     {
         _summaryText = [summaryText];
         FlushSummaryText();
@@ -121,7 +130,7 @@ public abstract class BaseBuilder : IBaseBuilder
     /// <summary>
     /// Use payload
     /// </summary>
-    public BaseBuilder AddPayload(string[] payload)
+    public BaseMethodBuilder AddPayload(string[] payload)
     {
         Payload ??= [];
         Payload.AddRange(payload);
@@ -132,7 +141,7 @@ public abstract class BaseBuilder : IBaseBuilder
     /// <summary>
     /// Use payload
     /// </summary>
-    public BaseBuilder AddPayload(string payload)
+    public BaseMethodBuilder AddPayload(string payload)
     {
         Payload ??= [];
         Payload.Add(payload);
@@ -143,10 +152,13 @@ public abstract class BaseBuilder : IBaseBuilder
     /// <summary>
     /// Use payload
     /// </summary>
-    public BaseBuilder UsePayload(string[] payload)
+    public BaseMethodBuilder UsePayload(string[] payload)
     {
-        Payload ??= [];
-        Payload.Clear();
+        if (Payload is null)
+            Payload = [];
+        else
+            Payload.Clear();
+
         Payload.AddRange(payload);
         //
         return this;
@@ -155,7 +167,7 @@ public abstract class BaseBuilder : IBaseBuilder
     /// <summary>
     /// Use payload
     /// </summary>
-    public BaseBuilder UsePayload(string payload)
+    public BaseMethodBuilder UsePayload(string payload)
         => UsePayload([payload]);
 
     /// <inheritdoc/>
@@ -165,13 +177,10 @@ public abstract class BaseBuilder : IBaseBuilder
     public abstract void FlushSummaryText();
 
     /// <inheritdoc/>
-    public abstract BaseBuilder WriteSignatureMethod(StreamWriter writer, string methodName, string? returned = null);
+    public abstract BaseMethodBuilder AddPaginationPayload(string type_name, string db_set_name);
 
     /// <inheritdoc/>
-    public abstract BaseBuilder AddPaginationPayload(string type_name, string db_set_name);
-
-    /// <inheritdoc/>
-    public BaseBuilder AddParameter(ParameterModel metadata)
+    public BaseMethodBuilder AddParameter(ParameterModel metadata)
     {
         if (Parameters is null)
             Parameters = new() { { metadata } };
@@ -185,7 +194,7 @@ public abstract class BaseBuilder : IBaseBuilder
     /// <summary>
     /// Возвращает копию текущего объекта и очищает все метаданные билдера
     /// </summary>
-    public T Extract<T>(bool db_inc = true) where T : BaseBuilder
+    public T Extract<T>(bool db_inc = true) where T : BaseMethodBuilder
     {
         if (db_inc)
             Payload!.Insert(0, "using LayerContext _db_context = appDbFactory.CreateDbContext();");
@@ -199,6 +208,8 @@ public abstract class BaseBuilder : IBaseBuilder
         MethodName = null;
         Returned = null;
         SummaryGet = null;
+        MethodSign = null;
+        ParametersGet = null;
         //
         _summaryText = null;
         Parameters = null;
