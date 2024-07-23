@@ -623,8 +623,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         await writer.WriteLineAsync("\t}");
         await writer.WriteAsync("}");
-        //await writer.FlushAsync();
-        //writer.Close();
         await writer.DisposeAsync();
     }
     #endregion    

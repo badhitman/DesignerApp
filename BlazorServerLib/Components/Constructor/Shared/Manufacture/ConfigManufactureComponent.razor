@@ -67,8 +67,17 @@
                     <sup class="text-danger">*</sup>
                 </label>
             </div>
-            <div class="col-sm-10">
+            <div class="col-sm-8">
                 <input @bind-value="manufactureEdit.BlazorDirectoryPath" @bind-value:event="oninput" type="text" id="inputBlazorDirectoryPath" class="form-control">
+            </div>
+
+            <div class="col-sm-2">
+                <div class="form-check" title="Раздельные файлы: *.razor + *.razor.cs">
+                    <input class="form-check-input" type="checkbox" id="autoSizingCheck" @bind="manufactureEdit.BlazorSplitFiles">
+                    <label class="form-check-label" for="autoSizingCheck">
+                        split classes
+                    </label>
+                </div>
             </div>
         </div>
 

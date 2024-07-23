@@ -40,6 +40,7 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel
                     Namespace == other.Namespace &&
                     EnumDirectoryPath == other.EnumDirectoryPath &&
                     BlazorDirectoryPath == other.BlazorDirectoryPath &&
+                    BlazorSplitFiles == other.BlazorSplitFiles &&
                     ProjectId == other.ProjectId;
 
         return false;
