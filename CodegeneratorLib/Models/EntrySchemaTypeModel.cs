@@ -41,5 +41,5 @@ public class EntrySchemaTypeModel(FormFitModel form, TabFitModel tab, DocumentFi
     /// <param name="postfix_type_name">Постфикс имени компонента Blazor. Например: <c>Page</c> (по умолчанию), для объявления страниц или <c>Component</c> для остальных <c>Blazor Components</c></param>
     /// <returns>Путь к элементу в архиве</returns>
     public string BlazorFormFullEntryName(string? postfix_type_name = "Component")
-        => $"{Path.Combine(BlazorDirectoryPath, "forms", $"{form.SystemName}")}{postfix_type_name}.razor";
+        => $"{Path.Combine(BlazorDirectoryPath, "forms", $"{Form.SystemName}")}{postfix_type_name}.razor";
 }

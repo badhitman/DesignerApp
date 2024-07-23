@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @fakegov
 ////////////////////////////////////////////////
 
+using HtmlGenerator;
+
 namespace CodegeneratorLib;
 
 /// <summary>
@@ -12,11 +14,10 @@ public partial class BlazorCodeGenerator
     /// <summary>
     /// Blazor document: code-generator
     /// </summary>
-    public BlazorCodeGenerator Set(EntryDocumentTypeModel doc_obj)
+    public virtual BlazorCodeGenerator Set(EntryDocumentTypeModel doc_obj)
     {
+        DomElements = BlazorHtmlGenerator.DocumentEditPage(doc_obj);
         Methods.Clear();
-        DomElements.Clear();
-
         return this;
     }
 }

@@ -2,15 +2,9 @@
 // © https://github.com/badhitman - @fakegov
 ////////////////////////////////////////////////
 
-using HtmlGenerator.html5.collections;
-using HtmlGenerator.set.bootstrap;
-using HtmlGenerator.html5.textual;
-using HtmlGenerator.html5.tables;
-using HtmlGenerator.html5.areas;
-using HtmlGenerator.html5.forms;
+using CodegeneratorLib;
 using HtmlGenerator.bootstrap;
 using HtmlGenerator.html5;
-using HtmlGenerator.set;
 
 namespace HtmlGenerator;
 
@@ -19,5 +13,23 @@ namespace HtmlGenerator;
 /// </summary>
 public static class BlazorHtmlGenerator
 {
-    
+    /// <summary>
+    /// DocumentEditPage
+    /// </summary>
+    public static List<safe_base_dom_root> DocumentEditPage(EntryDocumentTypeModel doc_obj)
+    {
+        List<safe_base_dom_root> res = [];
+        res.Add(new EditDocumentBlazorGenerator() { Document = doc_obj });
+        return res;
+    }
+
+    /// <summary>
+    /// FormEditPage
+    /// </summary>
+    public static List<safe_base_dom_root> FormEditPage(EntrySchemaTypeModel form_type_entry)
+    {
+        List<safe_base_dom_root> res = [];
+        res.Add(new EditFormBlazorGenerator() { Form = form_type_entry });
+        return res;
+    }
 }

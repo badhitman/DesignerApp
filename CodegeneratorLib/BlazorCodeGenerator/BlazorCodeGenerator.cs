@@ -17,12 +17,8 @@ public partial class BlazorCodeGenerator
     public virtual string GetView()
     {
         return $"@inherits BlazorBusyComponentBaseModel" +
-            $"{Environment.NewLine}{Environment.NewLine}" +
-            $"<div class=\"card\">{Environment.NewLine}" +
-            $"\t<div class=\"card-body\">{Environment.NewLine}" +
-            $"\t\tThis is some text within a card body.{Environment.NewLine}" +
-            $"\t</div>{Environment.NewLine}" +
-            $"</div>";
+            $"{Environment.NewLine}" +
+            $"{string.Join(Environment.NewLine, DomElements.Select(x => x.GetHTML()))}";
     }
 
     /// <summary>
