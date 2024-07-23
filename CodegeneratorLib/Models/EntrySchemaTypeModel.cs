@@ -7,9 +7,14 @@ namespace CodegeneratorLib;
 /// <summary>
 /// Entry type
 /// </summary>
-public class EntrySchemaTypeModel(FormFitModel form, TabFitModel tab, DocumentFitModel doc, string basePath, string? prefixPath = null)
-    : EntryTypeModel($"{form.SystemName}{tab.SystemName}{doc.SystemName}", basePath, prefixPath)
+public class EntrySchemaTypeModel(FormFitModel form, TabFitModel tab, DocumentFitModel doc, string documentsDirectoryPath, string blazorDirectoryPath, string? prefixPath = null)
+    : EntryTypeModel($"{form.SystemName}{tab.SystemName}{doc.SystemName}", documentsDirectoryPath, prefixPath)
 {
+    /// <summary>
+    /// Blazor Directory Path
+    /// </summary>
+    public string BlazorDirectoryPath { get; set; } = blazorDirectoryPath;
+
     /// <summary>
     /// Таблица данных
     /// </summary>
@@ -18,24 +23,23 @@ public class EntrySchemaTypeModel(FormFitModel form, TabFitModel tab, DocumentFi
     /// <summary>
     /// Документ
     /// </summary>
-    public DocumentFitModel Document = doc;
+    public DocumentFitModel Document { get; set; } = doc;
 
     /// <summary>
     /// Вкладка/таб
     /// </summary>
-    public TabFitModel Tab = tab;
+    public TabFitModel Tab { get; set; } = tab;
 
     /// <summary>
     /// Форма
     /// </summary>
-    public FormFitModel Form = form;
+    public FormFitModel Form { get; set; } = form;
 
     /// <summary>
-    /// Полный путь/имя файла типа данных (Blazor component)
+    /// Полный путь/имя файла формы (Blazor component)
     /// </summary>
     /// <param name="postfix_type_name">Постфикс имени компонента Blazor. Например: <c>Page</c> (по умолчанию), для объявления страниц или <c>Component</c> для остальных <c>Blazor Components</c></param>
     /// <returns>Путь к элементу в архиве</returns>
-    public string BlazorFullEntryName(string? postfix_type_name = "Page") => string.IsNullOrWhiteSpace(PrefixPath)
-        ? $"{Path.Combine(BasePath, $"{TypeName}")}{postfix_type_name}.razor"
-        : $"{Path.Combine(BasePath, PrefixPath, $"{TypeName}")}{postfix_type_name}.razor";
+    public string BlazorFormFullEntryName(string? postfix_type_name = "Component")
+        => $"{Path.Combine(BlazorDirectoryPath, "forms", $"{form.SystemName}")}{postfix_type_name}.razor";
 }

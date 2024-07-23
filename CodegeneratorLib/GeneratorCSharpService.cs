@@ -202,11 +202,21 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         EntrySchemaTypeModel form_type_entry;
         Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> schema_data = [];
         BlazorCodeGenerator blazorCode = new();
+        StreamWriter writer;
 
         foreach (DocumentFitModel doc_obj in docs)
         {
-            doc_entry = GetDocumentZipEntry(doc_obj);
+            doc_entry = GetDocumentObjectZipEntry(doc_obj);
             blazorCode.Set(doc_entry);
+
+            zipEntry = archive.CreateEntry(doc_entry.BlazorFullEntryName());
+            writer = new(zipEntry.Open(), Encoding.UTF8);
+            await writer.WriteLineAsync(blazorCode.GetView());
+            await writer.WriteLineAsync();
+            await writer.WriteAsync(blazorCode.GetCode());
+            await writer.DisposeAsync();
+            HashSet<string> formsCache = [];
+
             List<EntrySchemaTypeModel> schema_inc = [];
             foreach (TabFitModel tab_obj in doc_obj.Tabs)
                 foreach (FormFitModel form_obj in tab_obj.Forms)
@@ -220,8 +230,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     }
 
                     zipEntry = archive.CreateEntry(form_type_entry.FullEntryName());
+                    writer = new(zipEntry.Open(), Encoding.UTF8);
 
-                    using StreamWriter writer = new(zipEntry.Open(), Encoding.UTF8);
                     await WriteHeadClass(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
 
                     await writer.WriteLineAsync($"\tpublic partial class {form_type_entry.TypeName}");
@@ -252,8 +262,23 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                     await WriteEndClass(writer);
                     schema_inc.Add(form_type_entry);
-                    //
-                    blazorCode.Set(form_type_entry);
+                    // formsCache
+
+                    string blazorComponentEntryName = form_type_entry.BlazorFormFullEntryName();
+                    if (!formsCache.Contains(blazorComponentEntryName))
+                    {
+                        blazorCode.Set(form_type_entry);
+
+                        zipEntry = archive.CreateEntry(form_type_entry.BlazorFormFullEntryName());
+                        writer = new(zipEntry.Open(), Encoding.UTF8);
+                        await writer.WriteLineAsync(blazorCode.GetView());
+                        await writer.WriteLineAsync();
+                        await writer.WriteAsync(blazorCode.GetCode());
+                        await writer.DisposeAsync();
+
+                        formsCache.Add(blazorComponentEntryName);
+                    }
+
                 }
 
             schema_data.Add(doc_entry, schema_inc);
@@ -508,7 +533,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
         await WriteEndClass(writer);
     }
-
     #endregion
 
     #region tools
@@ -521,14 +545,14 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Документы (схемы данных): Путь относительно корня архива, указывающий имя создаваемой записи.
     /// </summary>
-    EntryDocumentTypeModel GetDocumentZipEntry(DocumentFitModel doc_obj)
-        => new(doc_obj, conf.DocumentsMastersDbDirectoryPath);
+    EntryDocumentTypeModel GetDocumentObjectZipEntry(DocumentFitModel doc_obj)
+        => new(doc_obj, conf.DocumentsMastersDbDirectoryPath, conf.BlazorDirectoryPath);
 
     /// <summary>
     /// Схема данных: Путь относительно корня архива, указывающий имя создаваемой записи.
     /// </summary>
     EntrySchemaTypeModel GetSchemaZipEntry(FormFitModel form_obj, TabFitModel tab_obj, DocumentFitModel doc_obj)
-        => new(form_obj, tab_obj, doc_obj, conf.DocumentsMastersDbDirectoryPath, "schema");
+        => new(form_obj, tab_obj, doc_obj, conf.DocumentsMastersDbDirectoryPath, conf.BlazorDirectoryPath, "schema");
 
     EntryTypeModel GetZipEntryNameForDbTableAccess(EntryDocumentTypeModel doc_obj)
         => new($"{doc_obj.TypeName}{GlobalStaticConstants.DATABASE_TABLE_ACESSOR_PREFIX}", conf.AccessDataDirectoryPath);
@@ -599,8 +623,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     {
         await writer.WriteLineAsync("\t}");
         await writer.WriteAsync("}");
-        await writer.FlushAsync();
-        writer.Close();
+        //await writer.FlushAsync();
+        //writer.Close();
         await writer.DisposeAsync();
     }
     #endregion    
