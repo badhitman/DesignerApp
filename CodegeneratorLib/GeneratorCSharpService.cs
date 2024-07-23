@@ -270,10 +270,54 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                             await WriteField(_f, writer);
 
                     if (form_obj.FieldsAtDirectories?.Length > 0)
+                    {
                         foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
-                            await WriteField(_f, writer);
+                            await WriteField(_f, form_type_entry, writer);
 
-                    await WriteEndClass(writer);
+                        await WriteEndClass(writer);
+
+                        FieldAkaDirectoryFitModel[] _fields_multi_select = form_obj
+                            .FieldsAtDirectories
+                            .Where(x => x.IsMultiSelect)
+                            .ToArray();
+
+                        if (_fields_multi_select.Length != 0)
+                        {
+                            foreach (FieldAkaDirectoryFitModel field in _fields_multi_select)
+                            {
+                                zipEntry = archive.CreateEntry(form_type_entry.FullEntryName($"{field.DirectorySystemName}Multiple"));//{form_type_entry.Form.SystemName}{form_type_entry.Tab.SystemName}{form_type_entry.Document.SystemName}
+                                writer = new(zipEntry.Open(), Encoding.UTF8);
+
+                                await WriteHeadClass(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
+                                await writer.WriteLineAsync($"\tpublic partial class {field.DirectorySystemName}Multiple{form_type_entry.TypeName}{form_type_entry.Tab.SystemName}{form_type_entry.Document.SystemName}");
+                                await writer.WriteLineAsync("\t{");
+                                await writer.WriteLineAsync("\t\t/// <summary>");
+                                await writer.WriteLineAsync("\t\t/// Идентификатор/Key");
+                                await writer.WriteLineAsync("\t\t/// </summary>");
+                                await writer.WriteLineAsync("\t\t[Key]");
+                                await writer.WriteLineAsync("\t\tpublic int Id { get; set; }");
+
+                                await writer.WriteLineAsync();
+                                await writer.WriteLineAsync("\t\t/// <summary>");
+                                await writer.WriteLineAsync("\t\t/// [FK: Форма в табе]");
+                                await writer.WriteLineAsync("\t\t/// </summary>");
+                                await writer.WriteLineAsync("\t\tpublic int OwnerId { get; set; }");
+                                await writer.WriteLineAsync("\t\t/// <summary>");
+                                await writer.WriteLineAsync("\t\t/// Форма в табе");
+                                await writer.WriteLineAsync("\t\t/// </summary>");
+                                await writer.WriteLineAsync($"\t\tpublic {form_type_entry.TypeName}? Owner {{ get; set; }}");
+
+                                await writer.WriteLineAsync();
+                                await writer.WriteLineAsync("\t\t/// <summary>");
+                                await writer.WriteLineAsync("\t\t/// ");
+                                await writer.WriteLineAsync("\t\t/// </summary>");
+                                await writer.WriteLineAsync($"\t\tpublic {field.DirectorySystemName} {field.SystemName} {{ get; set; }}");
+
+                                await WriteEndClass(writer);
+                            }
+                        }
+                    }
+
                     schema_inc.Add(form_type_entry);
 
                     string blazorComponentEntryName = form_type_entry.BlazorFormFullEntryName();
@@ -319,13 +363,17 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync("\t\t/// </summary>");
         await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.TypeData}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
     }
-    static async Task WriteField(FieldAkaDirectoryFitModel field, StreamWriter writer)
+    static async Task WriteField(FieldAkaDirectoryFitModel field, EntrySchemaTypeModel form_type_entry, StreamWriter writer)
     {
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("\t\t/// <summary>");
         await writer.WriteLineAsync($"\t\t/// {field.Name}");
         await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.DirectorySystemName}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
+
+        if (field.IsMultiSelect)
+            await writer.WriteLineAsync($"\t\tpublic List<{field.DirectorySystemName}Multiple{form_type_entry.Form.SystemName}{form_type_entry.Tab.SystemName}{form_type_entry.Document.SystemName}>? {field.SystemName} {{ get; set; }}");
+        else
+            await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.DirectorySystemName}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
     }
 
     async Task DbContextGen(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
@@ -609,7 +657,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     async Task WriteHeadClass(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
     {
         await writer.WriteLineAsync("////////////////////////////////////////////////");
-        await writer.WriteLineAsync($"// Project: {project.Name} - by  © https://github.com/badhitman - @fakegov");
+        await writer.WriteLineAsync($"// Project: '{project.Name}' by  © https://github.com/badhitman - @fakegov");
         await writer.WriteLineAsync("////////////////////////////////////////////////");
         await writer.WriteLineAsync();
 
@@ -625,12 +673,12 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync("{");
 
         if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"/// <summary>");
+            await writer.WriteLineAsync($"\t/// <summary>");
 
-        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"/// {s.Trim()}")))}");
+        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"\t/// {s.Trim()}")))}");
 
         if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"/// </summary>");
+            await writer.WriteLineAsync($"\t/// </summary>");
 
         if (!string.IsNullOrWhiteSpace(description))
         {
