@@ -212,8 +212,21 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             zipEntry = archive.CreateEntry(doc_entry.BlazorFullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
             await writer.WriteLineAsync(blazorCode.GetView());
-            await writer.WriteLineAsync();
-            await writer.WriteAsync(blazorCode.GetCode());
+
+            if (conf.BlazorSplitFiles)
+            {
+                await writer.DisposeAsync();
+
+                zipEntry = archive.CreateEntry($"{doc_entry.BlazorFullEntryName()}.cs");
+                writer = new(zipEntry.Open(), Encoding.UTF8);
+                await writer.WriteAsync(blazorCode.GetCode());
+            }
+            else
+            {
+                await writer.WriteLineAsync();
+                await writer.WriteAsync(blazorCode.GetCode());
+            }
+
             await writer.DisposeAsync();
             HashSet<string> formsCache = [];
 
@@ -262,7 +275,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                     await WriteEndClass(writer);
                     schema_inc.Add(form_type_entry);
-                    // formsCache
 
                     string blazorComponentEntryName = form_type_entry.BlazorFormFullEntryName();
                     if (!formsCache.Contains(blazorComponentEntryName))
@@ -272,13 +284,26 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                         zipEntry = archive.CreateEntry(form_type_entry.BlazorFormFullEntryName());
                         writer = new(zipEntry.Open(), Encoding.UTF8);
                         await writer.WriteLineAsync(blazorCode.GetView());
+
+                        if (conf.BlazorSplitFiles)
+                        {
+                            await writer.DisposeAsync();
+                            zipEntry = archive.CreateEntry($"{form_type_entry.BlazorFormFullEntryName()}.cs");
+                            writer = new(zipEntry.Open(), Encoding.UTF8);
+                            await writer.WriteAsync(blazorCode.GetCode());
+                        }
+                        else
+                        {
+                            await writer.WriteLineAsync();
+                            await writer.WriteAsync(blazorCode.GetCode());
+                        }
+
                         await writer.WriteLineAsync();
                         await writer.WriteAsync(blazorCode.GetCode());
                         await writer.DisposeAsync();
 
                         formsCache.Add(blazorComponentEntryName);
                     }
-
                 }
 
             schema_data.Add(doc_entry, schema_inc);
