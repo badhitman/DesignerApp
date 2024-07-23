@@ -331,6 +331,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 IsMultiline = df.IsMultiline,
             };
             rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(req);
+            _field_master.Update(req);
             act = () => { ((FieldFormAkaDirectoryConstructorModelDB)Field).Update(df); };
         }
         else
@@ -415,6 +416,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                     DirectoryId = df.DirectoryId,
                     Directory = df.Directory,
                     Owner = df.Owner,
+                    IsMultiline = df.IsMultiline,
                 };
             }
         }

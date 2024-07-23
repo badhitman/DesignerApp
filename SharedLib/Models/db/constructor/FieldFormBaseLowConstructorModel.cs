@@ -52,6 +52,7 @@ public class FieldFormBaseLowConstructorModel : EntryDescriptionOwnedModel
             //
             _ft2.Directory = _fo2.Directory;
             _ft2.DirectoryId = _fo2.DirectoryId;
+            _ft2.IsMultiline = _fo2.IsMultiline;
         }
     }
 
