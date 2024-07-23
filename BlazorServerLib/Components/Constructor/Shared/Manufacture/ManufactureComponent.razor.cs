@@ -172,6 +172,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
                         Description = field.Description,
                         Hint = field.Hint,
                         Required = field.Required,
+                        IsMultiline = field.IsMultiline,
                     };
                 }
 

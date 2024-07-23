@@ -13,4 +13,10 @@ public class FieldAkaDirectoryFitModel : BaseRequiredFormFitModel
     /// Системное Имя : Справочник/Список/Перечисление
     /// </summary>
     public required string DirectorySystemName { get; set; }
+
+
+    /// <summary>
+    /// Множественный выбор
+    /// </summary>
+    public required bool IsMultiline { get; set; }
 }
