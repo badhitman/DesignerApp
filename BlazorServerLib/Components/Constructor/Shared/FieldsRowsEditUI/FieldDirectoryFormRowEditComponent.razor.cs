@@ -70,10 +70,10 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     /// <inheritdoc/>
     public bool IsMultiDirectoryField
     {
-        get => Field.IsMultiline;
+        get => Field.IsMultiSelect;
         private set
         {
-            Field.IsMultiline = value;            
+            Field.IsMultiSelect = value;            
             StateHasChangedHandler(Field);
         }
     }

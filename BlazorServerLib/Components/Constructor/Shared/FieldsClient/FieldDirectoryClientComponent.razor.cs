@@ -60,14 +60,12 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        //options = DirectoryObject.Childs;
-
         if (!string.IsNullOrWhiteSpace(FieldValue))
         {
             int[] selectedIds = JsonConvert.DeserializeObject<int[]>(FieldValue) ?? [];
             if (selectedIds.Length != 0)
             {
-                if (Field.IsMultiline)
+                if (Field.IsMultiSelect)
                 {
                     _options = DirectoryObject.Childs.Where(x => selectedIds.Contains(x.Id)).ToArray();
                 }

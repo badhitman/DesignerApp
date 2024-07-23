@@ -51,10 +51,10 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     /// </summary>
     public bool IsMultiCheckBox
     {
-        get => FieldObject.IsMultiline;
+        get => FieldObject.IsMultiSelect;
         set
         {
-            FieldObject.IsMultiline = value;
+            FieldObject.IsMultiSelect = value;
             StateHasChangedHandler(FieldObject, GetType());
         }
     }

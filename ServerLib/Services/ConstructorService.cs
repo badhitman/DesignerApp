@@ -1890,7 +1890,7 @@ public partial class ConstructorService(
 
             form_field_db = new()
             {
-                IsMultiline = field_directory.IsMultiline,
+                IsMultiSelect = field_directory.IsMultiSelect,
                 Name = field_directory.Name,
                 Css = field_directory.Css,
                 OwnerId = field_directory.OwnerId,
@@ -1951,12 +1951,12 @@ public partial class ConstructorService(
             logger.LogInformation(msg);
             form_field_db.Name = field_directory.Name;
         }
-        if (form_field_db.IsMultiline != field_directory.IsMultiline)
+        if (form_field_db.IsMultiSelect != field_directory.IsMultiSelect)
         {
-            msg = $"Multi признак поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.IsMultiline}] -> [{field_directory.IsMultiline}]";
+            msg = $"Multi признак поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.IsMultiSelect}] -> [{field_directory.IsMultiSelect}]";
             res.AddWarning(msg);
             logger.LogInformation(msg);
-            form_field_db.IsMultiline = field_directory.IsMultiline;
+            form_field_db.IsMultiSelect = field_directory.IsMultiSelect;
         }
         if (form_field_db.Css != field_directory.Css)
         {

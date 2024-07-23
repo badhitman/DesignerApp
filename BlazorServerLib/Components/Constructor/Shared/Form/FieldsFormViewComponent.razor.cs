@@ -114,7 +114,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
                 Required = directory_field.Required,
                 OwnerId = Form.Id,
                 Id = directory_field.Id,
-                IsMultiline = directory_field.IsMultiline,
+                IsMultiSelect = directory_field.IsMultiSelect,
             });
         }
         else if (_field_master is FieldFormConstructorModelDB standard_field)

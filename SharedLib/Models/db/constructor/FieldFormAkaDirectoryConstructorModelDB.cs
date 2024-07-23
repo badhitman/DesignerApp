@@ -20,7 +20,7 @@ public class FieldFormAkaDirectoryConstructorModelDB : FieldFormBaseLowConstruct
     /// <summary>
     /// Множественный выбор
     /// </summary>
-    public bool IsMultiline { get; set; }
+    public bool IsMultiSelect { get; set; }
 
     /// <summary>
     /// Справочник/список
@@ -45,7 +45,7 @@ public class FieldFormAkaDirectoryConstructorModelDB : FieldFormBaseLowConstruct
         SortIndex = field.SortIndex;
         DirectoryId = field.DirectoryId;
         Directory = field.Directory;
-        IsMultiline = field.IsMultiline;
+        IsMultiSelect = field.IsMultiSelect;
     }
 
     /// <inheritdoc/>
@@ -64,13 +64,13 @@ public class FieldFormAkaDirectoryConstructorModelDB : FieldFormBaseLowConstruct
             other.Required == Required &&
             other.OwnerId == OwnerId &&
             other.Css == Css &&
-            other.IsMultiline == IsMultiline &&
+            other.IsMultiSelect == IsMultiSelect &&
             other.Name == Name;
         ;
     }
 
     /// <inheritdoc/>
-    public override int GetHashCode() => $"{IsMultiline}{Id}{DirectoryId}{Hint}{Description}{Required}{OwnerId}{Name}{Css}".GetHashCode();
+    public override int GetHashCode() => $"{IsMultiSelect}{Id}{DirectoryId}{Hint}{Description}{Required}{OwnerId}{Name}{Css}".GetHashCode();
 
     /// <inheritdoc/>
     public override string ToString()

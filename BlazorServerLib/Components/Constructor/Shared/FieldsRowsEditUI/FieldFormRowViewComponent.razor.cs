@@ -96,7 +96,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                     }
                 }
                 else if (_field_master is FieldFormAkaDirectoryConstructorModelDB df)
-                    _type_name = $"<span class='badge bg-success text-wrap position-relative'>Справочник/Список{(df.IsMultiline ? "<span title='мульти-выбор' class='position-absolute top-0 start-100 translate-middle p-1 ms-1 bg-danger border border-light rounded-circle'>ml<span class='visually-hidden'>multi select</span></span>" : "")}</span>";
+                    _type_name = $"<span class='badge bg-success text-wrap position-relative'>Справочник/Список{(df.IsMultiSelect ? "<span title='мульти-выбор' class='position-absolute top-0 start-100 translate-middle p-1 ms-1 bg-danger border border-light rounded-circle'>ml<span class='visually-hidden'>multi select</span></span>" : "")}</span>";
                 else
                 {
                     string msg = "ошибка CDAD94BA-51E8-49F4-9B15-6901494B8EE4";
@@ -328,7 +328,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 OwnerId = df.OwnerId,
                 Required = df.Required,
                 SortIndex = df.SortIndex,
-                IsMultiline = df.IsMultiline,
+                IsMultiSelect = df.IsMultiSelect,
             };
             rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(req);
             _field_master.Update(req);
@@ -416,7 +416,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                     DirectoryId = df.DirectoryId,
                     Directory = df.Directory,
                     Owner = df.Owner,
-                    IsMultiline = df.IsMultiline,
+                    IsMultiSelect = df.IsMultiSelect,
                 };
             }
         }
@@ -505,7 +505,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 OwnerId = df.OwnerId,
                 Required = df.Required,
                 SortIndex = df.SortIndex,
-                IsMultiline = df.IsMultiline,
+                IsMultiSelect = df.IsMultiSelect,
             };
         else
             SnackbarRepo.Add("error 81F06C12-3641-473B-A2DA-9EFC853A0709", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);

@@ -18,5 +18,5 @@ public class FieldAkaDirectoryFitModel : BaseRequiredFormFitModel
     /// <summary>
     /// Множественный выбор
     /// </summary>
-    public required bool IsMultiline { get; set; }
+    public required bool IsMultiSelect { get; set; }
 }
