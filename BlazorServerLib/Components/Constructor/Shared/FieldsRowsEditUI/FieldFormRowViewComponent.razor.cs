@@ -96,7 +96,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                     }
                 }
                 else if (_field_master is FieldFormAkaDirectoryConstructorModelDB df)
-                    _type_name = "<span class='badge bg-success text-wrap'>Справочник/Список</span>";
+                    _type_name = $"<span class='badge bg-success text-wrap position-relative'>Справочник/Список{(df.IsMultiline ? "<span title='мульти-выбор' class='position-absolute top-0 start-100 translate-middle p-1 ms-1 bg-danger border border-light rounded-circle'>ml<span class='visually-hidden'>multi select</span></span>" : "")}</span>";
                 else
                 {
                     string msg = "ошибка CDAD94BA-51E8-49F4-9B15-6901494B8EE4";
@@ -327,7 +327,8 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 Hint = df.Hint,
                 OwnerId = df.OwnerId,
                 Required = df.Required,
-                SortIndex = df.SortIndex
+                SortIndex = df.SortIndex,
+                IsMultiline = df.IsMultiline,
             };
             rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(req);
             act = () => { ((FieldFormAkaDirectoryConstructorModelDB)Field).Update(df); };
@@ -501,7 +502,8 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 Owner = df.Owner,
                 OwnerId = df.OwnerId,
                 Required = df.Required,
-                SortIndex = df.SortIndex
+                SortIndex = df.SortIndex,
+                IsMultiline = df.IsMultiline,
             };
         else
             SnackbarRepo.Add("error 81F06C12-3641-473B-A2DA-9EFC853A0709", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);

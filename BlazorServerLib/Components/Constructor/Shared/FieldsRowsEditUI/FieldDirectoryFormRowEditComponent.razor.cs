@@ -68,6 +68,17 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     }
 
     /// <inheritdoc/>
+    public bool IsMultiDirectoryField
+    {
+        get => Field.IsMultiline;
+        private set
+        {
+            Field.IsMultiline = value;            
+            StateHasChangedHandler(Field);
+        }
+    }
+
+    /// <inheritdoc/>
     public void Update(FieldFormAkaDirectoryConstructorModelDB field)
     {
         Field.Update(field);

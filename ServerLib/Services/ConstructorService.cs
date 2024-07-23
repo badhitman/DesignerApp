@@ -777,7 +777,7 @@ public partial class ConstructorService(
                                 {
                                     Name = "join form #3",
                                     FormId = _form_seed_1.Id,
-                                    SortIndex = 1, 
+                                    SortIndex = 1,
                                     IsTable = true
                                 }]
                             }]
@@ -1890,6 +1890,7 @@ public partial class ConstructorService(
 
             form_field_db = new()
             {
+                IsMultiline = field_directory.IsMultiline,
                 Name = field_directory.Name,
                 Css = field_directory.Css,
                 OwnerId = field_directory.OwnerId,
@@ -1899,7 +1900,7 @@ public partial class ConstructorService(
                 Description = field_directory.Description,
                 Directory = directory_db,
                 DirectoryId = directory_db.Id,
-                SortIndex = _sort_index + 1
+                SortIndex = _sort_index + 1,
             };
             await context_forms.AddAsync(form_field_db, cancellationToken);
             await context_forms.SaveChangesAsync(cancellationToken);
@@ -1950,7 +1951,13 @@ public partial class ConstructorService(
             logger.LogInformation(msg);
             form_field_db.Name = field_directory.Name;
         }
-
+        if (form_field_db.IsMultiline != field_directory.IsMultiline)
+        {
+            msg = $"Multi признак поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.IsMultiline}] -> [{field_directory.IsMultiline}]";
+            res.AddWarning(msg);
+            logger.LogInformation(msg);
+            form_field_db.IsMultiline = field_directory.IsMultiline;
+        }
         if (form_field_db.Css != field_directory.Css)
         {
             msg = $"CSS поля (списочного типа) формы #{field_directory.Id} изменилось: [{form_field_db.Css}] -> [{field_directory.Css}]";

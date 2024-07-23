@@ -16,11 +16,8 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
 {
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
+    IConstructorService ConstructorRepo { get; set; } = default!;
 
-    /// <inheritdoc/>
-    [Inject]
-    protected IConstructorService ConstructorRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -45,6 +42,19 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
         private set
         {
             FieldObject.DirectoryId = value;
+            StateHasChangedHandler(FieldObject, GetType());
+        }
+    }
+
+    /// <summary>
+    /// Мультвыбор
+    /// </summary>
+    public bool IsMultiCheckBox
+    {
+        get => FieldObject.IsMultiline;
+        set
+        {
+            FieldObject.IsMultiline = value;
             StateHasChangedHandler(FieldObject, GetType());
         }
     }

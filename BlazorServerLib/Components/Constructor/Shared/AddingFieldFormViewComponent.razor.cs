@@ -26,6 +26,14 @@ public partial class AddingFieldFormViewComponent : ComponentBase
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
 
+
+    /*
+     /// <inheritdoc/>
+    [CascadingParameter]
+    public Action<FieldFormBaseLowConstructorModel, Type> StateHasChangedHandler { get; set; } = default!;
+     */
+
+
     FieldFormAkaDirectoryConstructorModelDB FieldObjectForDirectory
     {
         get
@@ -110,7 +118,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
             if (_field_object_master is null)
                 throw new Exception("Поле формы не инициализировано");
 
-            StateHasChangedHandler(_field_object_master, this.GetType());
+            StateHasChangedHandler(_field_object_master, GetType());
         }
     }
 
@@ -131,7 +139,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
             _field_object_master.Required = FieldIsRequired;
             ChildUpdates();
 
-            StateHasChangedHandler(_field_object_master, this.GetType());
+            StateHasChangedHandler(_field_object_master, GetType());
         }
     }
 
@@ -151,7 +159,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
             _field_object_master.Required = _field_is_required;
             _field_object_master.Name = _field_name ?? "";
             ChildUpdates();
-            StateHasChangedHandler(_field_object_master, this.GetType());
+            StateHasChangedHandler(_field_object_master, GetType());
         }
     }
 

@@ -25,9 +25,7 @@ else
     switch (SelectedTypeFieldForAdding)
     {
         case int.MaxValue:
-            <div class="col-auto">
-                <DirectoryFieldFormUIComponent @ref="FieldDirUI" FieldObject="FieldObjectForDirectory" />
-            </div>
+            <DirectoryFieldFormUIComponent @ref="FieldDirUI" FieldObject="FieldObjectForDirectory" />
             break;
         case (int)TypesFieldsFormsEnum.Text:
             <TextFieldFormUIComponent @ref="FieldTextUI" FieldObject="FieldObjectStandard" />

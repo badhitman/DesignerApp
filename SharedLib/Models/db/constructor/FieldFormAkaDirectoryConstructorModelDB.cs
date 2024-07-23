@@ -64,7 +64,7 @@ public class FieldFormAkaDirectoryConstructorModelDB : FieldFormBaseLowConstruct
             other.Required == Required &&
             other.OwnerId == OwnerId &&
             other.Css == Css &&
-            other.IsMultiline == other.IsMultiline &&
+            other.IsMultiline == IsMultiline &&
             other.Name == Name;
         ;
     }

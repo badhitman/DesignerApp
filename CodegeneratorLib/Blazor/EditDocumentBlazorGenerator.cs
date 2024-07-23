@@ -30,4 +30,17 @@ public class EditDocumentBlazorGenerator : safe_base_dom_root
     /// div
     /// </summary>
     public override string tag_custom_name => "div";
+
+    /// <inheritdoc/>
+    public override string GetHTML(int deep = 0)
+    {
+        if (Childs is null)
+            Childs = [];
+        else
+            Childs.Clear();
+
+        Childs = [new MudTabsProvider() { TabsPanels = [.. Document.Document.Tabs.Select(x => new MudTabPanelProvider() { Text = x.Name })] }];
+
+        return base.GetHTML(deep);
+    }
 }
