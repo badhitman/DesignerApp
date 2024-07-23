@@ -37,10 +37,19 @@ public class EditDocumentBlazorGenerator : safe_base_dom_root
         if (Childs is null)
             Childs = [];
         else
-            Childs.Clear();
+            Childs.Clear();//base_dom_root
 
-        Childs = [new MudTabsProvider() { TabsPanels = [.. Document.Document.Tabs.Select(x => new MudTabPanelProvider() { Text = x.Name })] }];
+
+
+        Childs = [new MudTabsProvider() { TabsPanels = [.. Document.Document.Tabs.Select(ConvertTab)] }];
 
         return base.GetHTML(deep);
+    }
+
+    static MudTabPanelProvider ConvertTab(TabFitModel _tab)
+    {
+        MudTabPanelProvider res = new() { Text = _tab.Name };
+        res.AddDomNode(new p("тело вкладки/таба"));
+        return res;
     }
 }

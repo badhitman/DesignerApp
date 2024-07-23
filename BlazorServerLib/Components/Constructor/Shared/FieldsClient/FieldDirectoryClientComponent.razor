@@ -1,41 +1,11 @@
 ﻿@inherits FieldComponentBaseModel
 
-<label for="@($"{DomID}")" class="form-label">
-    @if (!string.IsNullOrWhiteSpace(Field.Name))
-    {
-        @Field.Name
-    }
-    else
-    {
-        @((MarkupString)"&nbsp;")
-    }
-    @if (Field.Required)
-    {
-        <sup class="text-danger">*</sup>
-    }
-</label>
-<select disabled="@(SessionDocument is null)" @bind="SelectedElement" id="@($"{DomID}")" name="@($"{DomID}")" class="form-select @Field.Css" aria-label="@Field.Name" aria-describedby="@($"{DomID}Help")">
+<MudSelect Disabled="@(SessionDocument is null)" T="EntryModel" Label="@Field.Name" MultiSelection="@Field.IsMultiline" @bind-Value="detect_value" @bind-SelectedValues="options" HelperText="@Field.Hint" ToStringFunc="@converter">
     @if (DirectoryObject?.Childs.Any() == true)
-    {
-        EntryModel? esf = DirectoryObject.Childs.FirstOrDefault(x => x.Name.Equals(FieldValue));
-        <option disabled="@(SelectedElement > 0 && Field.Required)" value="0">Выбор</option>
-        @if (!string.IsNullOrWhiteSpace(FieldValue) && esf is null)
-        {
-            <option disabled value="-1">@FieldValue</option>
-        }
+    {        
         @foreach (EntryModel d in DirectoryObject.Childs)
         {
-            <option value="@d.Id">@d.Name</option>
+            <MudSelectItem T="EntryModel" Value="@d">@d.Name</MudSelectItem>
         }
     }
-</select>
-<div id="@($"{DomID}Help")" class="form-text">
-    @if (!string.IsNullOrWhiteSpace(Field.Hint))
-    {
-        @Field.Hint
-    }
-    else
-    {
-        @((MarkupString)"&nbsp;")
-    }
-</div>
+</MudSelect>

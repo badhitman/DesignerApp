@@ -39,4 +39,28 @@ public class EntryModel
     {
         Name = elementObjectEdit.Name;
     }
+
+    /// <inheritdoc/>
+    public static bool operator ==(EntryModel e1, EntryModel e2)
+        => e1.Id == e2.Id && e1.Name == e2.Name;
+
+    /// <inheritdoc/>
+    public static bool operator !=(EntryModel e1, EntryModel e2)
+        => !(e1 == e2);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj is null)
+            return false;
+
+        if (obj is EntryModel _e)
+            return Id == _e.Id && Name == _e.Name;
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode() 
+        => $"{Id} {Name}".GetHashCode();
 }

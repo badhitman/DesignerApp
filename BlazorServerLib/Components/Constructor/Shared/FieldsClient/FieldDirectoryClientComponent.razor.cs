@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Constructor.Shared.FieldsClient;
@@ -22,45 +23,62 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
     [Parameter, EditorRequired]
     public required EntryNestedModel DirectoryObject { get; set; }
 
-
-    int _selectedElement;
-    /// <inheritdoc/>
-    protected int SelectedElement
+    EntryModel? _detect_value;
+    EntryModel? detect_value
     {
-        get => _selectedElement;
+        get => _detect_value;
         set
         {
-            _selectedElement = value;
+            _detect_value = value;
+        }
+    }
+
+    IEnumerable<EntryModel> _options = [];
+    IEnumerable<EntryModel> options
+    {
+        get => _options;
+        set
+        {
+            _options = value;
             InvokeAsync(async () =>
             {
-                if (_selectedElement == 0)
+                if (!_options.Any())
                     await SetValue(null, Field.Name);
                 else
-                {
-                    string? _set_val = DirectoryObject?.Childs.FirstOrDefault(x => x.Id == _selectedElement)?.Name;
-                    await SetValue(_set_val ?? "error {D21CC2F7-0B44-4BB3-A755-5A9C598D6E15}", Field.Name);
-                }
+                    await SetValue($"[{string.Join(",", _options.Select(x => x.Id))}]", Field.Name);
             });
         }
     }
+
+    Func<EntryModel?, string> converter = p => p?.Name ?? "";
 
     string? FieldValue => SessionDocument?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.RowNum == GroupByRowNum)?.Value;
 
     /// <inheritdoc/>
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{DocumentPage?.Id}-{Field.Id}";
-    EntryModel? detect_value = null;
 
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
+        //options = DirectoryObject.Childs;
+
         if (!string.IsNullOrWhiteSpace(FieldValue))
         {
-            detect_value = DirectoryObject?.Childs.Any() == true ? DirectoryObject.Childs.FirstOrDefault(x => x.Name.Equals(FieldValue, StringComparison.OrdinalIgnoreCase)) : null;
+            int[] selectedIds = JsonConvert.DeserializeObject<int[]>(FieldValue) ?? [];
+            if (selectedIds.Length != 0)
+            {
+                if (Field.IsMultiline)
+                {
+                    _options = DirectoryObject.Childs.Where(x => selectedIds.Contains(x.Id)).ToArray();
+                }
+                else
+                {
+                    detect_value = DirectoryObject.Childs.Any() ? DirectoryObject.Childs.FirstOrDefault(x => selectedIds.Contains(x.Id)) : null;
 
-            if (detect_value is null)
-                SnackbarRepo.Add($"{nameof(detect_value)} is null for '{FieldValue}'. error 2357552A-D878-4849-ADC5-98C070EC279F", MudBlazor.Severity.Error, c => c.DuplicatesBehavior = MudBlazor.SnackbarDuplicatesBehavior.Allow);
-            else
-                _selectedElement = detect_value.Id;
+                    if (detect_value is null)
+                        SnackbarRepo.Add($"{nameof(detect_value)} is null for '{FieldValue}'. error 2357552A-D878-4849-ADC5-98C070EC279F", MudBlazor.Severity.Error, c => c.DuplicatesBehavior = MudBlazor.SnackbarDuplicatesBehavior.Allow);
+                }
+            }
         }
         FieldsReferring?.Add(this);
     }
