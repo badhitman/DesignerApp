@@ -29,5 +29,5 @@ public class EditDocumentBlazorGenerator : safe_base_dom_root
     /// <summary>
     /// div
     /// </summary>
-    public override string? tag_custom_name => "div";
+    public override string tag_custom_name => "div";
 }

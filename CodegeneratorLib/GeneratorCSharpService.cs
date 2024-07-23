@@ -219,12 +219,12 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                 zipEntry = archive.CreateEntry($"{doc_entry.BlazorFullEntryName()}.cs");
                 writer = new(zipEntry.Open(), Encoding.UTF8);
-                await writer.WriteAsync(blazorCode.GetCode());
+                await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
             }
             else
             {
                 await writer.WriteLineAsync();
-                await writer.WriteAsync(blazorCode.GetCode());
+                await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
             }
 
             await writer.DisposeAsync();
@@ -290,16 +290,16 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                             await writer.DisposeAsync();
                             zipEntry = archive.CreateEntry($"{form_type_entry.BlazorFormFullEntryName()}.cs");
                             writer = new(zipEntry.Open(), Encoding.UTF8);
-                            await writer.WriteAsync(blazorCode.GetCode());
+                            await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
                         }
                         else
                         {
                             await writer.WriteLineAsync();
-                            await writer.WriteAsync(blazorCode.GetCode());
+                            await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
                         }
 
                         await writer.WriteLineAsync();
-                        await writer.WriteAsync(blazorCode.GetCode());
+                        await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
                         await writer.DisposeAsync();
 
                         formsCache.Add(blazorComponentEntryName);

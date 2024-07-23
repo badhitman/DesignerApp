@@ -10,5 +10,5 @@ public class MudTabsProvider : safe_base_dom_root
     /// <summary>
     /// MudTabs
     /// </summary>
-    public override string? tag_custom_name => "MudTabs";
+    public override string tag_custom_name => "MudTabs";
 }

@@ -24,11 +24,14 @@ public partial class BlazorCodeGenerator
     /// <summary>
     /// Get BlazorComponent: code part
     /// </summary>
-    public virtual string GetCode()
+    public virtual string GetCode(bool wrap_code)
     {
-        return $"@code {{{Environment.NewLine}" +
-            $"\t{Environment.NewLine}" +
-            $"}};";
+        if (wrap_code)
+            return $"@code {{{Environment.NewLine}" +
+                $"\t{Environment.NewLine}" +
+                $"}}";
+        else
+            return "";
     }
 
     /// <summary>
