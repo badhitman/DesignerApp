@@ -19,7 +19,7 @@ public partial class BlazorCodeGenerator
         ComponentName = form_type_entry.BlazorComponentName();
         ComponentDescription = $"[doc: '{form_type_entry.Document.Name}' `{form_type_entry.Document.SystemName}`] [tab: '{form_type_entry.Tab.Name}' `{form_type_entry.Tab.SystemName}`] [form: '{form_type_entry.Form.Name}' `{form_type_entry.Form.SystemName}`]";
         DomElements = BlazorHtmlGenerator.FormEditPage(form_type_entry);
-        Methods.Clear();
+        //
         return this;
     }
 }

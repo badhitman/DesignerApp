@@ -3,11 +3,9 @@
 ////////////////////////////////////////////////
 
 using CodegeneratorLib;
-using HtmlGenerator.html5;
-using HtmlGenerator.html5.areas;
-using HtmlGenerator.html5.textual;
+using HtmlGenerator.bootstrap;
 
-namespace HtmlGenerator.bootstrap;
+namespace HtmlGenerator.blazor;
 
 /// <summary>
 /// Класс Web/DOM 
@@ -22,7 +20,7 @@ public class EditFormBlazorGenerator : CardBootstrap
     /// <inheritdoc/>
     public override string GetHTML(int deep = 0)
     {
-        CardBody = [new p("This is some text within a card body.")];
+        CardBody = [.. Form.Form.AllFields.Select(x => new FieldOfFormBlazorGenerator() { Field = x, Form = Form })];
         return base.GetHTML(deep);
     }
 }

@@ -3,11 +3,9 @@
 ////////////////////////////////////////////////
 
 using CodegeneratorLib;
-using HtmlGenerator.html5;
-using HtmlGenerator.html5.areas;
-using HtmlGenerator.html5.textual;
+using HtmlGenerator.bootstrap;
 
-namespace HtmlGenerator.bootstrap;
+namespace HtmlGenerator.blazor;
 
 /// <summary>
 /// Класс Web/DOM 

@@ -28,4 +28,23 @@ public class FormFitModel : BaseFormFitModel
     /// Поля типа: справочник/список/перечисление
     /// </summary>
     public FieldAkaDirectoryFitModel[]? FieldsAtDirectories { get; set; }
+
+    /// <summary>
+    /// Все поля формы (отсортированные)
+    /// </summary>
+    public List<BaseRequiredFormFitModel> AllFields
+    {
+        get
+        {
+            List<BaseRequiredFormFitModel> res = [];
+
+            if (SimpleFields?.Any() == true)
+                res.AddRange(SimpleFields);
+
+            if (FieldsAtDirectories?.Any() == true)
+                res.AddRange(FieldsAtDirectories);
+
+            return [.. res.OrderBy(x => x.SortIndex)];
+        }
+    }
 }
