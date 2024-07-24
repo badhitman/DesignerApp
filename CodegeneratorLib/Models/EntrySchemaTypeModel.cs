@@ -38,7 +38,7 @@ public class EntrySchemaTypeModel(FormFitModel form, TabFitModel tab, DocumentFi
     /// <summary>
     /// Route
     /// </summary>
-    public string Route => $"['{Document.Name}' `{Document.SystemName}`]->['{Tab.Name}' `{Tab.SystemName}`]->['{Form.Name}' `{Form.SystemName}`]";//$"[{schema.Document.Name}]->[{schema.Tab.Name}]->[{schema.Form.Name}]"
+    public string Route => $"['{Document.Name}' `{Document.SystemName}`] ['{Tab.Name}' `{Tab.SystemName}`] ['{Form.Name}' `{Form.SystemName}`]";
 
     /// <summary>
     /// Полный путь/имя файла формы (Blazor component)

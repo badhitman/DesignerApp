@@ -34,6 +34,9 @@ public partial class BlazorCodeGenerator
                 $"}}";
         else
             return
+                $"/// <summary>{Environment.NewLine}" +
+                $"/// {ComponentDescription}{Environment.NewLine}" +
+                $"/// </summary>{Environment.NewLine}" +
                 $"public partial class {ComponentName}: BlazorLib.BlazorBusyComponentBaseModel{Environment.NewLine}" +
                 $"{{{Environment.NewLine}" +
                  $"{_raw}{Environment.NewLine}" +
@@ -41,9 +44,14 @@ public partial class BlazorCodeGenerator
     }
 
     /// <summary>
-    /// ComponentName
+    /// Имя компонента
     /// </summary>
     public string? ComponentName { get; private set; }
+
+    /// <summary>
+    /// Описание компонента
+    /// </summary>
+    public string? ComponentDescription { get; private set; }
 
     /// <summary>
     /// Методы компонента
