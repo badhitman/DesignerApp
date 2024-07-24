@@ -521,7 +521,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
            .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteUpdateAsync(b => b.SetProperty(u => u.IsDisabled, set_mark));")
            .Extract<ServiceMethodBuilder>()
            .WriteSignatureMethod(writer, "MarkDeleteToggleAsync"));
-        writer.WriteLine();
 
         writer.WriteLine("\t\t#endregion");
         #endregion

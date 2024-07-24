@@ -161,9 +161,13 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
                     ArgumentNullException.ThrowIfNull(field_dir_tree_item);
 
+#if DEBUG
+
+#endif
+
                     return new FieldAkaDirectoryFitModel()
                     {
-                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Value!.Id == field.Id).SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
+                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Value!.Id == field.DirectoryId).SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
 
                         Name = field.Name,
                         SortIndex = field.SortIndex,
