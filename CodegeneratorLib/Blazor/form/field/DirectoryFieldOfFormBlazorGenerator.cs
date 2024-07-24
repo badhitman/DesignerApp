@@ -21,4 +21,6 @@ public class DirectoryFieldOfFormBlazorGenerator : safe_base_dom_root
     /// Форма
     /// </summary>
     public required EntrySchemaTypeModel Form { get; set; }
+
+
 }

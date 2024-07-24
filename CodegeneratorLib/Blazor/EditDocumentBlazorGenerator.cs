@@ -33,7 +33,7 @@ public class EditDocumentBlazorGenerator : CardBootstrap
         MudTabPanelProvider res = new()
         {
             Text = _tab.Name,
-            BodyElements = _tab.Forms.Select(x => new EditFormBlazorGenerator() { Form = new(x, _tab, Document.Document, "", "") })
+            BodyElements = _tab.Forms.Select(x => new EditFormBlazorGenerator() { Form = new(x, _tab, Document.Document, "*", "*") })
         };
         return res;
     }
