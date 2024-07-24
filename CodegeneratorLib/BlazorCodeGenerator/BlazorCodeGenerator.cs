@@ -33,10 +33,10 @@ public partial class BlazorCodeGenerator
                 $"{_raw}" +
                 $"}}";
         else
-            return 
-                $"{ComponentName}: BlazorLib.BlazorBusyComponentBaseModel" +
-                $"{{" +
-                 $"{_raw}" +
+            return
+                $"public partial class {ComponentName}: BlazorLib.BlazorBusyComponentBaseModel{Environment.NewLine}" +
+                $"{{{Environment.NewLine}" +
+                 $"{_raw}{Environment.NewLine}" +
                 $"}}";
     }
 
