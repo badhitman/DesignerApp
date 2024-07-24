@@ -12,44 +12,27 @@ namespace HtmlGenerator.bootstrap;
 /// <summary>
 /// Класс Web/DOM 
 /// </summary>
-public class EditDocumentBlazorGenerator : safe_base_dom_root
+public class EditDocumentBlazorGenerator : CardBootstrap
 {
-    /// <inheritdoc/>
-    public EditDocumentBlazorGenerator()
-    {
-        AddCSS("card");
-        Childs = [new div() { }.AddCSS("card-body").AddDomNode(new p("This is some text within a card body."))];
-    }
-
     /// <summary>
     /// Документ
     /// </summary>
     public required EntryDocumentTypeModel Document { get; set; }
 
-    /// <summary>
-    /// div
-    /// </summary>
-    public override string tag_custom_name => "div";
-
     /// <inheritdoc/>
     public override string GetHTML(int deep = 0)
     {
-        if (Childs is null)
-            Childs = [];
-        else
-            Childs.Clear();//base_dom_root
-
-
-
-        Childs = [new MudTabsProvider() { TabsPanels = [.. Document.Document.Tabs.Select(ConvertTab)] }];
-
+        CardBody = [new MudTabsProvider() { TabsPanels = [.. Document.Document.Tabs.Select(ConvertTab)] }];
         return base.GetHTML(deep);
     }
 
-    static MudTabPanelProvider ConvertTab(TabFitModel _tab)
+    /// <summary>
+    /// Convert Tab: TabFitModel to MudTabPanelProvider
+    /// </summary>
+    public MudTabPanelProvider ConvertTab(TabFitModel _tab)
     {
         MudTabPanelProvider res = new() { Text = _tab.Name };
-        res.AddDomNode(new p("тело вкладки/таба"));
+        res.AddRangeDomNode(_tab.Forms.Select(x => new EditFormBlazorGenerator() { Form = new(x, _tab, Document.Document, "", "") }));
         return res;
     }
 }

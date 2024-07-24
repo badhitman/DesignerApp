@@ -401,7 +401,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             bool is_first_schema_item = true;
             await _writer.WriteLineAsync();
-            await _writer.WriteLineAsync($"#region schema for [{doc_obj.Key.TypeName}]");
+            await _writer.WriteLineAsync("#region schema");
             foreach (EntrySchemaTypeModel schema in doc_obj.Value)
             {
                 if (!is_first_schema_item)
@@ -412,14 +412,24 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 await _writer.WriteLineAsync(sb.UseSummaryText([schema.Route]).SummaryGet);
                 await _writer.WriteLineAsync($"\t\tpublic DbSet<{schema.TypeName}> {schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
 
-                if (schema.Form.FieldsAtDirectories is not null)
-                    foreach (var _fd in schema.Form.FieldsAtDirectories.Where(x => x.IsMultiSelect))
+                IEnumerable<FieldAkaDirectoryFitModel>? fieldsAtDirectories = schema
+                        .Form
+                        .FieldsAtDirectories?
+                        .Where(x => x.IsMultiSelect);
+
+                if (fieldsAtDirectories?.Any() == true)
+                {
+                    await _writer.WriteLineAsync();
+                    await _writer.WriteLineAsync("#region multiselect enumerations");
+                    foreach (FieldAkaDirectoryFitModel? _fd in fieldsAtDirectories)
                     {
                         await _writer.WriteLineAsync($"\t\t/// <summary>");
                         await _writer.WriteLineAsync($"\t\t/// {schema.Route} ['{_fd.Name}' `{_fd.SystemName}`]");
                         await _writer.WriteLineAsync($"\t\t/// <summary>");
                         await _writer.WriteLineAsync($"\t\tpublic DbSet<{_fd.DirectorySystemName}Multiple{schema.TypeName}> {_fd.DirectorySystemName}Multiple{schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
                     }
+                    await _writer.WriteLineAsync("#endregion");
+                }
             }
             await _writer.WriteLineAsync("#endregion");
         }
@@ -506,14 +516,14 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             .WriteSignatureMethod(writer, "SelectAsync", $"TPaginationResponseModel<{doc_obj.Key.TypeName}>"));
         writer.WriteLine();
 
-        builders_history.Add(builder
-           .UseSummaryText($"Обновить перечень объектов: '{doc_obj.Key.Document.Name}'")
-           .UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты обновления в БД"))
-           .UsePayload($"_db_context.Update(obj_range);")
-           .AddPayload("await _db_context.SaveChangesAsync();")
-           .Extract<ServiceMethodBuilder>()
-           .WriteSignatureMethod(writer, "UpdateAsync"));
-        writer.WriteLine();
+        //builders_history.Add(builder
+        //   .UseSummaryText($"Обновить перечень объектов: '{doc_obj.Key.Document.Name}'")
+        //   .UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты обновления в БД"))
+        //   .UsePayload($"_db_context.Update(obj_range);")
+        //   .AddPayload("await _db_context.SaveChangesAsync();")
+        //   .Extract<ServiceMethodBuilder>()
+        //   .WriteSignatureMethod(writer, "UpdateAsync"));
+        //writer.WriteLine();
 
         builders_history.Add(builder
            .UseSummaryText($"Удалить перечень объектов: '{doc_obj.Key.Document.Name}'")
@@ -592,7 +602,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         }
         #endregion
 
-        #region ext part: enumerations multiselect
+        /*#region ext part: enumerations multiselect
         ext_source = doc_obj.Value.Where(x => x.Form.FieldsAtDirectories?.Any(y => y.IsMultiSelect) == true).ToArray();
         if (ext_source.Length != 0)
         {
@@ -615,7 +625,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             writer.WriteLine("\t\t#endregion");
         }
-        #endregion
+        #endregion*/
 
         await WriteEndClass(writer);
         return builders_history;
