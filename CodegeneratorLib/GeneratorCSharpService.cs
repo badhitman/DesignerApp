@@ -21,7 +21,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Формирование данных
     /// </summary>
-    public async Task<TResponseModel<Stream>> GetZipArchive(StructureProjectModel dump)
+    public virtual async Task<TResponseModel<Stream>> GetZipArchive(StructureProjectModel dump)
     {
         _result = new();
         List<string> stat =
@@ -104,7 +104,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Справочники/перечисления
     /// </summary>
-    async Task EnumerationsGeneration(IEnumerable<EnumFitModel> enumerations)
+    public virtual async Task EnumerationsGeneration(IEnumerable<EnumFitModel> enumerations)
     {
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
@@ -151,7 +151,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Документы (бизнес-сущности)
     /// </summary>
-    async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> DocumentsGeneration(IEnumerable<DocumentFitModel> docs)
+    public virtual async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> DocumentsGeneration(IEnumerable<DocumentFitModel> docs)
     {
         Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>? schema = await WriteModelsSchema(docs);
         if (!_result.Success())
@@ -195,7 +195,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Схема данных (модели)
     /// </summary>
-    async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> WriteModelsSchema(IEnumerable<DocumentFitModel> docs)
+    public virtual async Task<Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>>> WriteModelsSchema(IEnumerable<DocumentFitModel> docs)
     {
         ZipArchiveEntry zipEntry;
         EntryDocumentTypeModel doc_entry;
@@ -376,7 +376,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.DirectorySystemName}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
     }
 
-    async Task DbContextGen(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
+    /// <summary>
+    /// База данных
+    /// </summary>
+    public virtual async Task DbContextGen(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
     {
         ZipArchiveEntry zipEntry = archive.CreateEntry("LayerContextPartGen.cs");
         StreamWriter _writer = new(zipEntry.Open(), Encoding.UTF8);
@@ -422,7 +425,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await WriteEndClass(_writer);
     }
 
-    async Task DbTableAccessGeneration(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
+    /// <summary>
+    /// Службы
+    /// </summary>
+    public virtual async Task DbTableAccessGeneration(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
     {
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
@@ -464,7 +470,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Запись CRUD интерфейсов служб непосредственного доступа к данным (к таблицам БД)
     /// </summary>
-    static async Task<List<ServiceMethodBuilder>> WriteInterface(StreamWriter writer, KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj)
+    public virtual async Task<List<ServiceMethodBuilder>> WriteInterface(StreamWriter writer, KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj)
     {
         List<ServiceMethodBuilder> builders_history = [];
         ServiceMethodBuilder builder = new() { TabulationsSpiceSize = 2 };
@@ -589,7 +595,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Генерация файла регистрации DI служб
     /// </summary>
-    async Task GenServicesDI()
+    public virtual async Task GenServicesDI()
     {
         ZipArchiveEntry readmeEntry = archive.CreateEntry("services_di.cs");
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
@@ -611,22 +617,25 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Перечисления/Списки: Путь относительно корня архива, указывающий имя создаваемой записи.
     /// </summary>
-    EntryTypeModel GetZipEntryNameForEnumeration(EnumFitModel enum_obj)
+    public virtual EntryTypeModel GetZipEntryNameForEnumeration(EnumFitModel enum_obj)
         => new(enum_obj.SystemName, conf.EnumDirectoryPath);
 
     /// <summary>
     /// Документы (схемы данных): Путь относительно корня архива, указывающий имя создаваемой записи.
     /// </summary>
-    EntryDocumentTypeModel GetDocumentObjectZipEntry(DocumentFitModel doc_obj)
+    public virtual EntryDocumentTypeModel GetDocumentObjectZipEntry(DocumentFitModel doc_obj)
         => new(doc_obj, conf.DocumentsMastersDbDirectoryPath, conf.BlazorDirectoryPath);
 
     /// <summary>
     /// Схема данных: Путь относительно корня архива, указывающий имя создаваемой записи.
     /// </summary>
-    EntrySchemaTypeModel GetSchemaZipEntry(FormFitModel form_obj, TabFitModel tab_obj, DocumentFitModel doc_obj)
+    public virtual EntrySchemaTypeModel GetSchemaZipEntry(FormFitModel form_obj, TabFitModel tab_obj, DocumentFitModel doc_obj)
         => new(form_obj, tab_obj, doc_obj, conf.DocumentsMastersDbDirectoryPath, conf.BlazorDirectoryPath, "schema");
 
-    EntryTypeModel GetZipEntryNameForDbTableAccess(EntryDocumentTypeModel doc_obj)
+    /// <summary>
+    /// DB TableAccess
+    /// </summary>
+    public virtual EntryTypeModel GetZipEntryNameForDbTableAccess(EntryDocumentTypeModel doc_obj)
         => new($"{doc_obj.TypeName}{GlobalStaticConstants.DATABASE_TABLE_ACESSOR_PREFIX}", conf.AccessDataDirectoryPath);
 
 
@@ -653,7 +662,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <summary>
     /// Записать вступление файла (для класса)
     /// </summary>
-    async Task WriteHeadClass(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
+    public virtual async Task WriteHeadClass(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
     {
         await writer.WriteLineAsync("////////////////////////////////////////////////");
         await writer.WriteLineAsync($"// Project: '{project.Name}' by  © https://github.com/badhitman - @fakegov");
@@ -691,7 +700,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// Запись финальной части файла и закрытие потока записи (для класса)
     /// </summary>
     /// <param name="writer">Поток записи ZIP архива</param>
-    static async Task WriteEndClass(StreamWriter writer)
+    public virtual async Task WriteEndClass(StreamWriter writer)
     {
         await writer.WriteLineAsync("\t}");
         await writer.WriteAsync("}");
