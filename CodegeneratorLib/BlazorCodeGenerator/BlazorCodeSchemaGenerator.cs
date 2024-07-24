@@ -16,6 +16,7 @@ public partial class BlazorCodeGenerator
     /// </summary>
     public virtual BlazorCodeGenerator Set(EntrySchemaTypeModel form_type_entry)
     {
+        ComponentName = form_type_entry.BlazorComponentName();
         DomElements = BlazorHtmlGenerator.FormEditPage(form_type_entry);
         Methods.Clear();
         return this;

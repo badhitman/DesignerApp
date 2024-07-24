@@ -36,10 +36,20 @@ public class EntrySchemaTypeModel(FormFitModel form, TabFitModel tab, DocumentFi
     public FormFitModel Form { get; set; } = form;
 
     /// <summary>
+    /// Route
+    /// </summary>
+    public string Route => $"['{Document.Name}' `{Document.SystemName}`]->['{Tab.Name}' `{Tab.SystemName}`]->['{Form.Name}' `{Form.SystemName}`]";//$"[{schema.Document.Name}]->[{schema.Tab.Name}]->[{schema.Form.Name}]"
+
+    /// <summary>
     /// Полный путь/имя файла формы (Blazor component)
     /// </summary>
     /// <param name="postfix_type_name">Постфикс имени компонента Blazor. Например: <c>Page</c> (по умолчанию), для объявления страниц или <c>Component</c> для остальных <c>Blazor Components</c></param>
     /// <returns>Путь к элементу в архиве</returns>
-    public string BlazorFormFullEntryName(string? postfix_type_name = "Component")
-        => $"{Path.Combine(BlazorDirectoryPath, "forms", $"{Form.SystemName}")}{postfix_type_name}.razor";
+    public string BlazorFormFullEntryName(string postfix_type_name = "Component")
+        => $"{Path.Combine(BlazorDirectoryPath, "forms", BlazorComponentName(postfix_type_name))}.razor";
+
+    /// <summary>
+    /// Blazor Component name
+    /// </summary>
+    public string BlazorComponentName(string postfix_type_name = "Component") => $"{Form.SystemName}{postfix_type_name}";
 }

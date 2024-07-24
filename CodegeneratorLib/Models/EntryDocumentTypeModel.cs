@@ -25,7 +25,12 @@ public class EntryDocumentTypeModel(DocumentFitModel docObj, string documentsDir
     /// </summary>
     /// <param name="postfix_type_name">Постфикс имени компонента Blazor. Например: <c>Page</c> (по умолчанию), для объявления страниц или <c>Component</c> для остальных <c>Blazor Components</c></param>
     /// <returns>Путь к элементу в архиве</returns>
-    public string BlazorFullEntryName(string postfix_type_name = "Page") => string.IsNullOrWhiteSpace(PrefixPath)
-        ? $"{Path.Combine(BlazorDirectoryPath, $"{TypeName}")}{postfix_type_name}.razor"
-        : $"{Path.Combine(BlazorDirectoryPath, PrefixPath, $"{TypeName}")}{postfix_type_name}.razor";
+    public string BlazorFormFullEntryName(string postfix_type_name = "Page") => string.IsNullOrWhiteSpace(PrefixPath)
+        ? $"{Path.Combine(BlazorDirectoryPath, BlazorComponentName(postfix_type_name))}.razor"
+        : $"{Path.Combine(BlazorDirectoryPath, PrefixPath, BlazorComponentName(postfix_type_name))}.razor";
+
+    /// <summary>
+    /// Blazor Component name
+    /// </summary>
+    public string BlazorComponentName(string postfix_type_name = "Page") => $"{TypeName}{postfix_type_name}";
 }

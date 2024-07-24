@@ -208,7 +208,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             doc_entry = GetDocumentObjectZipEntry(doc_obj);
             blazorCode.Set(doc_entry);
 
-            zipEntry = archive.CreateEntry(doc_entry.BlazorFullEntryName());
+            zipEntry = archive.CreateEntry(doc_entry.BlazorFormFullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
             await writer.WriteLineAsync(blazorCode.GetView());
 
@@ -216,15 +216,13 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             {
                 await writer.DisposeAsync();
 
-                zipEntry = archive.CreateEntry($"{doc_entry.BlazorFullEntryName()}.cs");
+                zipEntry = archive.CreateEntry($"{doc_entry.BlazorFormFullEntryName()}.cs");
                 writer = new(zipEntry.Open(), Encoding.UTF8);
-                await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
             }
             else
-            {
                 await writer.WriteLineAsync();
-                await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
-            }
+
+            await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
 
             await writer.DisposeAsync();
             HashSet<string> formsCache = [];
@@ -334,15 +332,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                             await writer.DisposeAsync();
                             zipEntry = archive.CreateEntry($"{form_type_entry.BlazorFormFullEntryName()}.cs");
                             writer = new(zipEntry.Open(), Encoding.UTF8);
-                            await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
                         }
                         else
-                        {
                             await writer.WriteLineAsync();
-                            await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
-                        }
 
-                        await writer.WriteLineAsync();
                         await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
                         await writer.DisposeAsync();
 
@@ -416,13 +409,15 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 else
                     is_first_schema_item = false;
 
-                await _writer.WriteLineAsync(sb.UseSummaryText([$"[{schema.Document.Name}]->[{schema.Tab.Name}]->[{schema.Form.Name}]"]).SummaryGet);
+                await _writer.WriteLineAsync(sb.UseSummaryText([schema.Route]).SummaryGet);
                 await _writer.WriteLineAsync($"\t\tpublic DbSet<{schema.TypeName}> {schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
 
                 if (schema.Form.FieldsAtDirectories is not null)
                     foreach (var _fd in schema.Form.FieldsAtDirectories.Where(x => x.IsMultiSelect))
                     {
-                        await _writer.WriteLineAsync($"");
+                        await _writer.WriteLineAsync($"\t\t/// <summary>");
+                        await _writer.WriteLineAsync($"\t\t/// {schema.Route} ['{_fd.Name}' `{_fd.SystemName}`]");
+                        await _writer.WriteLineAsync($"\t\t/// <summary>");
                         await _writer.WriteLineAsync($"\t\tpublic DbSet<{_fd.DirectorySystemName}Multiple{schema.TypeName}> {_fd.DirectorySystemName}Multiple{schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
                     }
             }

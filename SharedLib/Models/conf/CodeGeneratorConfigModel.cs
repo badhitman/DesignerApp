@@ -33,7 +33,7 @@ public class CodeGeneratorConfigModel
     /// </summary>
     [Required(AllowEmptyStrings = false)]
     [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей документов: {MessageErrorTemplateNameFolder}")]
-    public string DocumentsMastersDbDirectoryPath { get; set; } = "documents_generation";
+    public string DocumentsMastersDbDirectoryPath { get; set; } = "models_generation";
 
     /// <summary>
     /// Папка размещения инфраструктуры доступа к данным

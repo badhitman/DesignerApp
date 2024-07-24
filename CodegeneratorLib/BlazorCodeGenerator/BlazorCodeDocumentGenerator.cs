@@ -16,6 +16,7 @@ public partial class BlazorCodeGenerator
     /// </summary>
     public virtual BlazorCodeGenerator Set(EntryDocumentTypeModel doc_obj)
     {
+        ComponentName = doc_obj.BlazorComponentName();
         DomElements = BlazorHtmlGenerator.DocumentEditPage(doc_obj);
         Methods.Clear();
         return this;

@@ -26,13 +26,24 @@ public partial class BlazorCodeGenerator
     /// </summary>
     public virtual string GetCode(bool wrap_code)
     {
+        string _raw = "\t/// TODO: xxx";
+
         if (wrap_code)
             return $"@code {{{Environment.NewLine}" +
-                $"\t{Environment.NewLine}/// TODO: xxx" +
+                $"{_raw}" +
                 $"}}";
         else
-            return "/// TODO: xxx";
+            return 
+                $"{ComponentName}: BlazorLib.BlazorBusyComponentBaseModel" +
+                $"{{" +
+                 $"{_raw}" +
+                $"}}";
     }
+
+    /// <summary>
+    /// ComponentName
+    /// </summary>
+    public string? ComponentName { get; private set; }
 
     /// <summary>
     /// Методы компонента
