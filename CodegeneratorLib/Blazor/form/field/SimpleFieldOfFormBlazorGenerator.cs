@@ -6,6 +6,7 @@ using CodegeneratorLib;
 using HtmlGenerator.html5;
 using HtmlGenerator.html5.areas;
 using HtmlGenerator.html5.forms;
+using HtmlGenerator.mud;
 
 namespace HtmlGenerator.blazor;
 
@@ -46,6 +47,9 @@ public class SimpleFieldOfFormBlazorGenerator : safe_base_dom_root
                 Childs.Add(GetCheckBox());
                 break;
             case SharedLib.TypesFieldsFormsEnum.Double:
+                Childs.Add(new MudNumericFieldProvider() { IsDouble = true });
+                break;
+            case SharedLib.TypesFieldsFormsEnum.Int:
 
                 break;
             case SharedLib.TypesFieldsFormsEnum.Time:
