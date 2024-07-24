@@ -481,13 +481,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         writer.WriteLine("\t\t#region main");
         string db_set_name = $"_db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}";
 
-#if DEBUG
-        BaseMethodBuilder bi = builder.UseSummaryText($"Создать перечень новых объектов: '{doc_obj.Key.Document.Name}'");
-        bi = bi.UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты добавления в БД"));
-        bi = bi.UsePayload($"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();");
-        bi = bi.Extract<ServiceMethodBuilder>();
-#endif
-
         builders_history.Add(builder
             .UseSummaryText($"Создать перечень новых объектов: '{doc_obj.Key.Document.Name}'")
             .UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты добавления в БД"))
@@ -541,14 +534,15 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         writer.WriteLine("\t\t#endregion");
         #endregion
 
-        #region ext tables parts
-        EntrySchemaTypeModel[] tables = doc_obj.Value.Where(x => x.IsTable).ToArray();
-        if (tables.Length != 0)
+        EntrySchemaTypeModel[] ext_source;
+        #region ext part: tables
+        ext_source = doc_obj.Value.Where(x => x.IsTable).ToArray();
+        if (ext_source.Length != 0)
         {
             writer.WriteLine();
-            writer.WriteLine("\t\t#region tables parts");
+            writer.WriteLine("\t\t#region tables");
 
-            foreach (EntrySchemaTypeModel table_schema in tables)
+            foreach (EntrySchemaTypeModel table_schema in ext_source)
             {
                 db_set_name = $"_db_context.{table_schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}";
 
@@ -593,6 +587,31 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                    .Extract<ServiceMethodBuilder>()
                    .WriteSignatureMethod(writer, $"Remove{table_schema.TypeName}Async"));
             }
+
+            writer.WriteLine("\t\t#endregion");
+        }
+        #endregion
+
+        #region ext part: enumerations multiselect
+        ext_source = doc_obj.Value.Where(x => x.Form.FieldsAtDirectories?.Any(y => y.IsMultiSelect) == true).ToArray();
+        if (ext_source.Length != 0)
+        {
+            writer.WriteLine();
+            writer.WriteLine("\t\t#region enumerations multiselect");
+
+            foreach (EntrySchemaTypeModel _schema in ext_source)
+                foreach (FieldAkaDirectoryFitModel _field in _schema.Form.FieldsAtDirectories!.Where(x => x.IsMultiSelect))
+                {
+                    //db_set_name = $"_db_context.{_field.SystemName}Multiple{_schema.Form.SystemName}{_schema.Tab.SystemName}{_schema.Document.SystemName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}";
+
+                    //builders_history.Add(builder
+                    //.UseSummaryText($"Прочитать перечень объектов: '{_schema.Tab.Name}' - '{_schema.Form.Name}'")
+                    //.UseParameter(new("ids", "IEnumerable<int>", "Идентификаторы объектов"))
+                    //.UsePayload($"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();")
+                    //.Extract<ServiceMethodBuilder>()
+                    //.WriteSignatureMethod(writer, $"Read{_schema.TypeName}Async", $"List<{_schema.TypeName}>"));
+                    //writer.WriteLine();
+                }
 
             writer.WriteLine("\t\t#endregion");
         }
