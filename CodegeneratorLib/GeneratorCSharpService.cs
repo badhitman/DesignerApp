@@ -287,8 +287,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                                 zipEntry = archive.CreateEntry(form_type_entry.FullEntryName($"{field.DirectorySystemName}Multiple"));
                                 writer = new(zipEntry.Open(), Encoding.UTF8);
                                 //
-                                await WriteHeadClass(writer, [$"[{doc_obj.Name}] [{tab_obj.Name}] [{form_obj.Name}] [{field.Name}]"], null, ["System.ComponentModel.DataAnnotations", "Microsoft.EntityFrameworkCore"]);
-                                await writer.WriteLineAsync($"[Index(nameof(OwnerId), nameof({field.SystemName}), IsUnique = true)]");
+                                await WriteHeadClass(writer, [$"[doc: '{doc_obj.Name}' `{doc_obj.SystemName}`] [tab: '{tab_obj.Name}' `{tab_obj.SystemName}`] [form: '{form_obj.Name}' `{form_obj.SystemName}`] [field: '{field.Name}' `{field.SystemName}`]"], null, ["System.ComponentModel.DataAnnotations", "Microsoft.EntityFrameworkCore"]);
+                                await writer.WriteLineAsync($"\t[Index(nameof(OwnerId), nameof({field.SystemName}), IsUnique = true)]");
                                 await writer.WriteLineAsync($"\tpublic partial class {field.DirectorySystemName}Multiple{form_type_entry.TypeName}");
                                 await writer.WriteLineAsync("\t{");
                                 await writer.WriteLineAsync("\t\t/// <summary>");
@@ -309,7 +309,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                                 await writer.WriteLineAsync();
                                 await writer.WriteLineAsync("\t\t/// <summary>");
-                                await writer.WriteLineAsync("\t\t/// ");
+                                await writer.WriteLineAsync($"\t\t/// {field.Name}");
                                 await writer.WriteLineAsync("\t\t/// </summary>");
                                 await writer.WriteLineAsync($"\t\tpublic {field.DirectorySystemName} {field.SystemName} {{ get; set; }}");
 
@@ -486,6 +486,13 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         writer.WriteLine("\t\t#region main");
         string db_set_name = $"_db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}";
 
+#if DEBUG
+        BaseMethodBuilder bi = builder.UseSummaryText($"Создать перечень новых объектов: '{doc_obj.Key.Document.Name}'");
+        bi = bi.UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты добавления в БД"));
+        bi = bi.UsePayload($"return await {db_set_name}.Where(x => ids.Contains(x.Id)).ToListAsync();");
+        bi = bi.Extract<ServiceMethodBuilder>();
+#endif
+
         builders_history.Add(builder
             .UseSummaryText($"Создать перечень новых объектов: '{doc_obj.Key.Document.Name}'")
             .UseParameter(new("obj_range", $"IEnumerable<{doc_obj.Key.TypeName}>", "Объекты добавления в БД"))
@@ -526,6 +533,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
            .UsePayload($"await {db_set_name}.Where(x => ids.Contains(x.Id)).ExecuteDeleteAsync();")
            .Extract<ServiceMethodBuilder>()
            .WriteSignatureMethod(writer, "RemoveAsync"));
+        writer.WriteLine();
 
         builders_history.Add(builder
            .UseSummaryText($"Инверсия признака деактивации объекта: '{doc_obj.Key.Document.Name}'")

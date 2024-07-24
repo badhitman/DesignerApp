@@ -18,7 +18,7 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
 
 
     /// <inheritdoc/>
-    protected string[]? _summaryText;
+    public string[]? SummaryText;
 
     /// <inheritdoc/>
     public List<string>? Payload { get; set; }
@@ -105,7 +105,7 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
     /// <inheritdoc/>
     public virtual BaseMethodBuilder UseSummaryText(string[] summaryText)
     {
-        _summaryText = summaryText;
+        SummaryText = summaryText;
         FlushSummaryText();
         //
         return this;
@@ -114,7 +114,7 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
     /// <inheritdoc/>
     public virtual BaseMethodBuilder UseSummaryText(string summaryText)
     {
-        _summaryText = [summaryText];
+        SummaryText = [summaryText];
         FlushSummaryText();
         //
         return this;
@@ -184,7 +184,7 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
         MethodSign = null;
         ParametersGet = null;
         //
-        _summaryText = null;
+        SummaryText = null;
         Parameters = null;
         //
         return JsonConvert.DeserializeObject<T>(json_raw) ?? throw new Exception($"Ошибка десериализации [{typeof(T).FullName}] {json_raw}");
