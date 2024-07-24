@@ -289,7 +289,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                                 writer = new(zipEntry.Open(), Encoding.UTF8);
 
                                 await WriteHeadClass(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
-                                await writer.WriteLineAsync($"\tpublic partial class {field.DirectorySystemName}Multiple{form_type_entry.TypeName}{form_type_entry.Tab.SystemName}{form_type_entry.Document.SystemName}");
+                                await writer.WriteLineAsync($"\tpublic partial class {field.DirectorySystemName}Multiple{form_type_entry.TypeName}");
                                 await writer.WriteLineAsync("\t{");
                                 await writer.WriteLineAsync("\t\t/// <summary>");
                                 await writer.WriteLineAsync("\t\t/// Идентификатор/Key");
