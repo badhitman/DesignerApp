@@ -100,7 +100,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     #endregion
 
     #region backend
-
     /// <summary>
     /// Справочники/перечисления
     /// </summary>
@@ -377,7 +376,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     }
 
     /// <summary>
-    /// База данных
+    /// DbContext
     /// </summary>
     public virtual async Task DbContextGen(Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> docs)
     {
@@ -417,7 +416,14 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     is_first_schema_item = false;
 
                 await _writer.WriteLineAsync(sb.UseSummaryText([$"[{schema.Document.Name}]->[{schema.Tab.Name}]->[{schema.Form.Name}]"]).SummaryGet);
-                _writer.WriteLine($"\t\tpublic DbSet<{schema.TypeName}> {schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+                await _writer.WriteLineAsync($"\t\tpublic DbSet<{schema.TypeName}> {schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+
+                if (schema.Form.FieldsAtDirectories is not null)
+                    foreach (var _fd in schema.Form.FieldsAtDirectories.Where(x => x.IsMultiSelect))
+                    {
+                        await _writer.WriteLineAsync($"");
+                        await _writer.WriteLineAsync($"\t\tpublic DbSet<{_fd.DirectorySystemName}Multiple{schema.TypeName}> {_fd.DirectorySystemName}Multiple{schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+                    }
             }
             await _writer.WriteLineAsync("#endregion");
         }
