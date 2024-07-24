@@ -7,6 +7,7 @@ using HtmlGenerator.html5;
 using HtmlGenerator.html5.areas;
 using HtmlGenerator.html5.forms;
 using HtmlGenerator.mud;
+using SharedLib;
 
 namespace HtmlGenerator.blazor;
 
@@ -43,28 +44,19 @@ public class SimpleFieldOfFormBlazorGenerator : safe_base_dom_root
 
         switch (Field.TypeField)
         {
-            case SharedLib.TypesFieldsFormsEnum.Bool:
+            case TypesFieldsFormsEnum.Bool:
                 Childs.Add(GetCheckBox());
                 break;
-            case SharedLib.TypesFieldsFormsEnum.Double:
+            case TypesFieldsFormsEnum.Double:
                 Childs.Add(new MudNumericFieldProvider() { IsDouble = true });
                 break;
-            case SharedLib.TypesFieldsFormsEnum.Int:
+            case TypesFieldsFormsEnum.Int:
+                Childs.Add(new MudNumericFieldProvider() { IsDouble = false });
+                break;
+            case TypesFieldsFormsEnum.Time or TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Date or TypesFieldsFormsEnum.DateTime:
 
                 break;
-            case SharedLib.TypesFieldsFormsEnum.Time:
-
-                break;
-            case SharedLib.TypesFieldsFormsEnum.Text:
-
-                break;
-            case SharedLib.TypesFieldsFormsEnum.Password:
-
-                break;
-            case SharedLib.TypesFieldsFormsEnum.Date:
-
-                break;
-            case SharedLib.TypesFieldsFormsEnum.DateTime:
+            case TypesFieldsFormsEnum.Password:
 
                 break;
             default:
