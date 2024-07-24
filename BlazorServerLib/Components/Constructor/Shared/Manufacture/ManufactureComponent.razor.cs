@@ -167,7 +167,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
                     return new FieldAkaDirectoryFitModel()
                     {
-                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Value!.Id == field.DirectoryId).SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
+                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Value!.Id == field.DirectoryId).SystemName ?? GlobalTools.TranslitToSystemName(field.Directory!.Name),
 
                         Name = field.Name,
                         SortIndex = field.SortIndex,
