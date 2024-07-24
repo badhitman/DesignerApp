@@ -286,8 +286,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                             {
                                 zipEntry = archive.CreateEntry(form_type_entry.FullEntryName($"{field.DirectorySystemName}Multiple"));
                                 writer = new(zipEntry.Open(), Encoding.UTF8);
-
-                                await WriteHeadClass(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
+                                //
+                                await WriteHeadClass(writer, [$"[{doc_obj.Name}] [{tab_obj.Name}] [{form_obj.Name}] [{field.Name}]"], null, ["System.ComponentModel.DataAnnotations", "Microsoft.EntityFrameworkCore"]);
+                                await writer.WriteLineAsync($"[Index(nameof(OwnerId), nameof({field.SystemName}), IsUnique = true)]");
                                 await writer.WriteLineAsync($"\tpublic partial class {field.DirectorySystemName}Multiple{form_type_entry.TypeName}");
                                 await writer.WriteLineAsync("\t{");
                                 await writer.WriteLineAsync("\t\t/// <summary>");
