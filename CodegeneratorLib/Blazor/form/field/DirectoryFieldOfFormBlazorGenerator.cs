@@ -3,24 +3,22 @@
 ////////////////////////////////////////////////
 
 using CodegeneratorLib;
-using HtmlGenerator.bootstrap;
+using HtmlGenerator.html5;
 
 namespace HtmlGenerator.blazor;
 
 /// <summary>
-/// Класс Web/DOM 
+/// Simple Field
 /// </summary>
-public class EditFormBlazorGenerator : CardBootstrap
+public class DirectoryFieldOfFormBlazorGenerator : safe_base_dom_root
 {
+    /// <summary>
+    /// Field
+    /// </summary>
+    public required FieldAkaDirectoryFitModel Field { get; set; }
+
     /// <summary>
     /// Форма
     /// </summary>
     public required EntrySchemaTypeModel Form { get; set; }
-
-    /// <inheritdoc/>
-    public override string GetHTML(int deep = 0)
-    {
-        CardBody = [.. Form.Form.AllFields.Select(x => new WrapperFieldOfFormBlazorGenerator() { Field = x, Form = Form })];
-        return base.GetHTML(deep);
-    }
 }

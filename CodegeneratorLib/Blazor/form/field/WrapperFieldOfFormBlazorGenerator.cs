@@ -3,15 +3,14 @@
 ////////////////////////////////////////////////
 
 using CodegeneratorLib;
-using HtmlGenerator.bootstrap;
 using HtmlGenerator.html5;
 
 namespace HtmlGenerator.blazor;
 
 /// <summary>
-/// Поле формы
+/// Поле формы (определение требуемой модели поля формы)
 /// </summary>
-public class FieldOfFormBlazorGenerator : safe_base_dom_root
+public class WrapperFieldOfFormBlazorGenerator : safe_base_dom_root
 {
     /// <summary>
     /// Поле формы
@@ -34,11 +33,12 @@ public class FieldOfFormBlazorGenerator : safe_base_dom_root
         else
             Childs.Clear();
 
-        TextInputBootstrap res = new(Field.Name, $"{Field.SystemName}-{Form.Form.SystemName}-{Form.Tab.SystemName}-{Form.Document.SystemName}");
-        res.AddCSS(Field.Css);
-        res.Hint = Field.Hint;
+        AddCSS(string.IsNullOrWhiteSpace(Field.Css) ? "col-12" : Field.Css);
 
-        AddDomNode(res);
+        if (Field is FieldFitModel ff)
+            Childs.Add(new SimpleFieldOfFormBlazorGenerator() { Field = ff, Form = Form });
+        else if (Field is FieldAkaDirectoryFitModel fd)
+            Childs.Add(new DirectoryFieldOfFormBlazorGenerator() { Field = fd, Form = Form });
 
         return base.GetHTML(deep);
     }

@@ -4,6 +4,7 @@
 
 using CodegeneratorLib;
 using HtmlGenerator.bootstrap;
+using HtmlGenerator.mud;
 
 namespace HtmlGenerator.blazor;
 
@@ -29,8 +30,11 @@ public class EditDocumentBlazorGenerator : CardBootstrap
     /// </summary>
     public MudTabPanelProvider ConvertTab(TabFitModel _tab)
     {
-        MudTabPanelProvider res = new() { Text = _tab.Name };
-        res.AddRangeDomNode(_tab.Forms.Select(x => new EditFormBlazorGenerator() { Form = new(x, _tab, Document.Document, "", "") }));
+        MudTabPanelProvider res = new()
+        {
+            Text = _tab.Name,
+            BodyElements = _tab.Forms.Select(x => new EditFormBlazorGenerator() { Form = new(x, _tab, Document.Document, "", "") })
+        };
         return res;
     }
 }
