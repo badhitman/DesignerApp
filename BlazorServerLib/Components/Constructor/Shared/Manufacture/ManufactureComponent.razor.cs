@@ -188,7 +188,6 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
                     SortIndex = joinForm.SortIndex,
                     SystemName = form_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(joinForm.Form.Name),
                     IsTable = joinForm.IsTable,
-                     Form = new(),
 
                     SimpleFields = joinForm.Form.Fields is null ? null : [.. joinForm.Form.Fields.Select(FieldConvert)],
                     FieldsAtDirectories = joinForm.Form.FieldsDirectoriesLinks is null ? null : [.. joinForm.Form.FieldsDirectoriesLinks.Select(FieldAkaDirectoryConvert)],
