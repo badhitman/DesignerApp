@@ -34,6 +34,25 @@ public class SimpleFieldOfFormBlazorGenerator : safe_base_dom_root
         .AddDomNode(new label(Field.Name, dom_id));
     }
 
+    static string GetType(TypesFieldsFormsEnum t) => t switch
+    {
+        TypesFieldsFormsEnum.Time => "InputType.Time",
+        TypesFieldsFormsEnum.Date => "InputType.Date",
+        TypesFieldsFormsEnum.DateTime => "InputType.DateTimeLocal",
+        TypesFieldsFormsEnum.Password => "InputType.Password",
+        TypesFieldsFormsEnum.Text => "InputType.Text",
+        _ => throw new Exception()
+    };
+
+    static string GetDescriptorType(TypesFieldsFormsEnum t) => t switch
+    {
+        TypesFieldsFormsEnum.Time => "TimeOnly",
+        TypesFieldsFormsEnum.Date => "DateOnly",
+        TypesFieldsFormsEnum.DateTime => "DateTime",
+        TypesFieldsFormsEnum.Password or TypesFieldsFormsEnum.Text => "string",
+        _ => throw new Exception()
+    };
+
     /// <inheritdoc/>
     public override string GetHTML(int deep = 0)
     {
@@ -53,20 +72,12 @@ public class SimpleFieldOfFormBlazorGenerator : safe_base_dom_root
             case TypesFieldsFormsEnum.Int:
                 Childs.Add(new MudNumericFieldProvider() { IsDouble = false });
                 break;
-            case TypesFieldsFormsEnum.Time or TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Date or TypesFieldsFormsEnum.DateTime:
-
-                break;
-            case TypesFieldsFormsEnum.Password:
-
+            case TypesFieldsFormsEnum.Time or TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Date or TypesFieldsFormsEnum.DateTime or TypesFieldsFormsEnum.Password:
+                Childs.Add(new MudTextFieldProvider() { DescriptorType = GetDescriptorType(Field.TypeField), InputType = GetType(Field.TypeField) });
                 break;
             default:
                 throw new Exception();
         }
-
-        //TextInputBootstrap res = new(Field.Name, $"{Field.SystemName}-{Form.Form.SystemName}-{Form.Tab.SystemName}-{Form.Document.SystemName}");
-        //res.AddCSS(Field.Css);
-        //res.Hint = Field.Hint;
-        //AddDomNode(res);
 
         return base.GetHTML(deep);
     }
