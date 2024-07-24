@@ -28,10 +28,10 @@ public partial class BlazorCodeGenerator
     {
         if (wrap_code)
             return $"@code {{{Environment.NewLine}" +
-                $"\t{Environment.NewLine}" +
+                $"\t{Environment.NewLine}/// TODO: xxx" +
                 $"}}";
         else
-            return "";
+            return "/// TODO: xxx";
     }
 
     /// <summary>
