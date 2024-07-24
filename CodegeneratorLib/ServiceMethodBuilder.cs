@@ -95,6 +95,6 @@ public class ServiceMethodBuilder : BaseMethodBuilder
             SummaryGet = $"{res}{Environment.NewLine}{tabs}/// </summary>";
         }
         else
-            SummaryGet = inheritdoc;
+            SummaryGet = $"{tabs}///{inheritdoc}";
     }
 }
