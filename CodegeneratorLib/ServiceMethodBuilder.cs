@@ -78,7 +78,7 @@ public class ServiceMethodBuilder : BaseMethodBuilder
     /// <inheritdoc/>
     public override void FlushParametersText()
     {
-        ParametersGet = Parameters?.Count > 0
+        ParametersGet = Parameters?.Count > 0 && _summaryText?.Length > 0
         ? $"{string.Join(Environment.NewLine, Parameters.Select(x => $"{tabs}/// <param name=\"{x.Name}\">{x.Description}</param>"))}"
         : null;
     }
@@ -95,6 +95,9 @@ public class ServiceMethodBuilder : BaseMethodBuilder
             SummaryGet = $"{res}{Environment.NewLine}{tabs}/// </summary>";
         }
         else
+        {
             SummaryGet = $"{tabs}///{inheritdoc}";
+            ParametersGet = null;
+        }
     }
 }

@@ -66,8 +66,7 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
                 for (int i = 0; i < value; i++)
                     tabs += "\t";
 
-                FlushParametersText();
-                FlushSummaryText();
+                FlushParametersText();// FlushSummaryText();
             }
             //
             tabulationsSpiceSize = value;
