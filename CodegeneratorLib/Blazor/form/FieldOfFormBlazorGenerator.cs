@@ -36,6 +36,7 @@ public class FieldOfFormBlazorGenerator : safe_base_dom_root
 
         TextInputBootstrap res = new(Field.Name, $"{Field.SystemName}-{Form.Form.SystemName}-{Form.Tab.SystemName}-{Form.Document.SystemName}");
         res.AddCSS(Field.Css);
+        res.Hint = Field.Hint;
 
         AddDomNode(res);
 
