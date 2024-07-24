@@ -285,7 +285,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                         {
                             foreach (FieldAkaDirectoryFitModel field in _fields_multi_select)
                             {
-                                zipEntry = archive.CreateEntry(form_type_entry.FullEntryName($"{field.DirectorySystemName}Multiple"));//{form_type_entry.Form.SystemName}{form_type_entry.Tab.SystemName}{form_type_entry.Document.SystemName}
+                                zipEntry = archive.CreateEntry(form_type_entry.FullEntryName($"{field.DirectorySystemName}Multiple"));
                                 writer = new(zipEntry.Open(), Encoding.UTF8);
 
                                 await WriteHeadClass(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
