@@ -675,7 +675,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         if (summary_text?.Any() == true)
             await writer.WriteLineAsync($"\t/// <summary>");
 
-        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "<inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"\t/// {s.Trim()}")))}");
+        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "\t/// <inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"\t/// {s.Trim()}")))}");
 
         if (summary_text?.Any() == true)
             await writer.WriteLineAsync($"\t/// </summary>");
