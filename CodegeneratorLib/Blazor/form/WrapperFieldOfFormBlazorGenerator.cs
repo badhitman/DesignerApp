@@ -7,6 +7,7 @@ using HtmlGenerator.html5.forms;
 using HtmlGenerator.html5;
 using HtmlGenerator.mud;
 using SharedLib;
+using HtmlGenerator.bootstrap;
 
 namespace CodegeneratorLib;
 
@@ -28,14 +29,6 @@ public class WrapperFieldOfFormBlazorGenerator : safe_base_dom_root
     /// <inheritdoc/>
     public override string? tag_custom_name => "div";
 
-    div GetCheckBox()
-    {
-        string dom_id = $"{Field.SystemName}-{Form.Form.SystemName}-{Form.Tab.SystemName}-{Form.Document.SystemName}";
-        return (div)new div() { }
-        .AddDomNode(new input() { Id_DOM = dom_id, })
-        .AddDomNode(new label(Field.Name, dom_id));
-    }
-
     /// <inheritdoc/>
     public override string GetHTML(int deep = 0)
     {
@@ -51,7 +44,7 @@ public class WrapperFieldOfFormBlazorGenerator : safe_base_dom_root
             switch (ff.TypeField)
             {
                 case TypesFieldsFormsEnum.Bool:
-                    Childs.Add(GetCheckBox());
+                    Childs.Add(new CheckboxInputBootstrap(Field.Name, $"{Field.SystemName}-{Form.Form.SystemName}-{Form.Tab.SystemName}-{Form.Document.SystemName}"));
                     break;
                 case TypesFieldsFormsEnum.Int:
                     Childs.Add(new MudNumericFieldProvider() { IsDouble = false });
