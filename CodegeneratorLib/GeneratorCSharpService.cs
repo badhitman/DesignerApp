@@ -18,7 +18,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     static Dictionary<string, string> services_di = [];
     ZipArchive archive = default!;
     TResponseModel<Stream> _result = default!;
-   static string _tab = base_dom_root.TabString;
+    static string _tab = base_dom_root.TabString;
 
     /// <summary>
     /// Формирование данных
@@ -110,7 +110,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
         EntryTypeModel type_entry;
-        
+
         foreach (EnumFitModel enum_obj in enumerations)
         {
             bool is_first_item = true;
@@ -422,15 +422,13 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 if (fieldsAtDirectories?.Any() == true)
                 {
                     await _writer.WriteLineAsync();
-                    await _writer.WriteLineAsync("#region multiselect enumerations");
                     foreach (FieldAkaDirectoryFitModel? _fd in fieldsAtDirectories)
                     {
                         await _writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
-                        await _writer.WriteLineAsync($"{_tab}{_tab}/// {schema.Route} ['{_fd.Name}' `{_fd.SystemName}`]");
+                        await _writer.WriteLineAsync($"{_tab}{_tab}/// MULTISELECT ENUMERATIONS: {schema.Route} ['{_fd.Name}' `{_fd.SystemName}`]");
                         await _writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
                         await _writer.WriteLineAsync($"{_tab}{_tab}public DbSet<{_fd.DirectorySystemName}Multiple{schema.TypeName}> {_fd.DirectorySystemName}Multiple{schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
                     }
-                    await _writer.WriteLineAsync("#endregion");
                 }
             }
             await _writer.WriteLineAsync("#endregion");
