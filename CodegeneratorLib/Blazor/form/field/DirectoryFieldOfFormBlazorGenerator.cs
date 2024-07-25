@@ -3,14 +3,14 @@
 ////////////////////////////////////////////////
 
 using CodegeneratorLib;
-using HtmlGenerator.html5;
+using HtmlGenerator.mud;
 
 namespace HtmlGenerator.blazor;
 
 /// <summary>
 /// Simple Field
 /// </summary>
-public class DirectoryFieldOfFormBlazorGenerator : safe_base_dom_root
+public class DirectoryFieldOfFormBlazorGenerator : MudSelectProvider
 {
     /// <summary>
     /// Field

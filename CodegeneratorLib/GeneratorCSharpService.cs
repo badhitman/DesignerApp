@@ -8,6 +8,7 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLib;
+using HtmlGenerator.html5;
 
 namespace CodegeneratorLib;
 
@@ -17,6 +18,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     static Dictionary<string, string> services_di = [];
     ZipArchive archive = default!;
     TResponseModel<Stream> _result = default!;
+   static string _tab = base_dom_root.TabString;
 
     /// <summary>
     /// Формирование данных
@@ -28,9 +30,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         [
             $"Перечислений: {dump.Enums.Length} (элементов всего: {dump.Enums.Sum(x => x.EnumItems.Length)})",
             $"Документов: {dump.Documents.Length} шт.",
-            $"\tвкладок (всего): {dump.Documents.Sum(x => x.Tabs?.Length)}",
-            $"\tформ (всего): {dump.Documents.SelectMany(x => x.Tabs).Sum(x => x.Forms?.Length)}",
-            $"\tполей (всего): {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.SimpleFields?.Length)} [simple field`s] + {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.FieldsAtDirectories?.Length)} [enumerations field`s]",
+            $"{base_dom_root.TabString}вкладок (всего): {dump.Documents.Sum(x => x.Tabs?.Length)}",
+            $"{base_dom_root.TabString}форм (всего): {dump.Documents.SelectMany(x => x.Tabs).Sum(x => x.Forms?.Length)}",
+            $"{base_dom_root.TabString}полей (всего): {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.SimpleFields?.Length)} [simple field`s] + {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.FieldsAtDirectories?.Length)} [enumerations field`s]",
             $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
             $"{conf.BlazorDirectoryPath}        - папка Blazor UI",
             $"{conf.EnumDirectoryPath}          - папка перечислений",
@@ -108,7 +110,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         ZipArchiveEntry zipEntry;
         StreamWriter writer;
         EntryTypeModel type_entry;
-
+        
         foreach (EnumFitModel enum_obj in enumerations)
         {
             bool is_first_item = true;
@@ -118,8 +120,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
             await WriteHeadClass(writer, [$"{enum_obj.Name}"], enum_obj.Description);
 
-            await writer.WriteLineAsync($"\tpublic enum {enum_obj.SystemName}");
-            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync($"{_tab}public enum {enum_obj.SystemName}");
+            await writer.WriteLineAsync($"{_tab}{{");
 
             if (enum_obj.EnumItems is not null)
                 foreach (SortableFitModel enum_item in enum_obj.EnumItems.OrderBy(x => x.SortIndex))
@@ -129,18 +131,18 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     else
                         is_first_item = false;
 
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync($"\t\t/// {enum_item.Name}");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// {enum_item.Name}");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
 
                     if (!string.IsNullOrWhiteSpace(enum_item.Description))
                     {
-                        await writer.WriteLineAsync("\t\t/// <remarks>");
-                        await writer.WriteLineAsync($"{(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(enum_item.Description).Select(r => $"\t\t/// {r}")))}");
-                        await writer.WriteLineAsync("\t\t/// </remarks>");
+                        await writer.WriteLineAsync($"{_tab}{_tab}/// <remarks>");
+                        await writer.WriteLineAsync($"{(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(enum_item.Description).Select(r => $"{_tab}{_tab}/// {r}")))}");
+                        await writer.WriteLineAsync($"{_tab}{_tab}/// </remarks>");
                     }
 
-                    await writer.WriteLineAsync($"\t\t{enum_item.SystemName},");
+                    await writer.WriteLineAsync($"{_tab}{_tab}{enum_item.SystemName},");
                 }
 
             await WriteEndClass(writer);
@@ -165,8 +167,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             zipEntry = archive.CreateEntry(kvp.Key.FullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
             await WriteHeadClass(writer, [$"Документ: '{kvp.Key.Document.Name}'"], kvp.Key.Document.Description);
-            await writer.WriteLineAsync($"\tpublic partial class {kvp.Key.TypeName} : SharedLib.IdSwitchableModel");
-            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync($"{_tab}public partial class {kvp.Key.TypeName} : SharedLib.IdSwitchableModel");
+            await writer.WriteLineAsync($"{_tab}{{");
 
             foreach (EntrySchemaTypeModel schema_obj in kvp.Value)
             {
@@ -175,14 +177,14 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                 else
                     is_first_item = false;
 
-                await writer.WriteLineAsync($"\t\t/// <summary>");
-                await writer.WriteLineAsync($"\t\t/// [tab: {schema_obj.Tab.Name} `{schema_obj.Tab.SystemName}`][form: {schema_obj.Form.Name} `{schema_obj.Form.SystemName}`]");
-                await writer.WriteLineAsync($"\t\t/// </summary>");
+                await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                await writer.WriteLineAsync($"{_tab}{_tab}/// [tab: {schema_obj.Tab.Name} `{schema_obj.Tab.SystemName}`][form: {schema_obj.Form.Name} `{schema_obj.Form.SystemName}`]");
+                await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
 
                 if (schema_obj.IsTable)
-                    await writer.WriteLineAsync($"\t\tpublic List<{schema_obj.TypeName}>? {schema_obj.TypeName}DataMultiSet {{ get; set; }}");
+                    await writer.WriteLineAsync($"{_tab}{_tab}public List<{schema_obj.TypeName}>? {schema_obj.TypeName}DataMultiSet {{ get; set; }}");
                 else
-                    await writer.WriteLineAsync($"\t\tpublic {schema_obj.TypeName}? {schema_obj.TypeName}DataSingleSet {{ get; set; }}");
+                    await writer.WriteLineAsync($"{_tab}{_tab}public {schema_obj.TypeName}? {schema_obj.TypeName}DataSingleSet {{ get; set; }}");
 
             }
 
@@ -244,23 +246,23 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
                     await WriteHeadClass(writer, [tab_obj.Name], tab_obj.Description, ["System.ComponentModel.DataAnnotations"]);
 
-                    await writer.WriteLineAsync($"\tpublic partial class {form_type_entry.TypeName}");
-                    await writer.WriteLineAsync("\t{");
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync("\t\t/// Идентификатор/Key");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync("\t\t[Key]");
-                    await writer.WriteLineAsync("\t\tpublic int Id { get; set; }");
+                    await writer.WriteLineAsync($"{_tab}public partial class {form_type_entry.TypeName}");
+                    await writer.WriteLineAsync($"{_tab}{{");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// Идентификатор/Key");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
+                    await writer.WriteLineAsync($"{_tab}{_tab}[Key]");
+                    await writer.WriteLineAsync($"{_tab}{_tab}public int Id {{ get; set; }}");
 
                     await writer.WriteLineAsync();
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync("\t\t/// [FK: Документ]");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync("\t\tpublic int DocumentId { get; set; }");
-                    await writer.WriteLineAsync("\t\t/// <summary>");
-                    await writer.WriteLineAsync("\t\t/// Документ");
-                    await writer.WriteLineAsync("\t\t/// </summary>");
-                    await writer.WriteLineAsync($"\t\tpublic {doc_entry.TypeName}? Document {{ get; set; }}");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// [FK: Документ]");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
+                    await writer.WriteLineAsync($"{_tab}{_tab}public int DocumentId {{ get; set; }}");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// Документ");
+                    await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
+                    await writer.WriteLineAsync($"{_tab}{_tab}public {doc_entry.TypeName}? Document {{ get; set; }}");
 
                     if (form_obj.SimpleFields?.Length > 0)
                         foreach (FieldFitModel _f in form_obj.SimpleFields)
@@ -286,30 +288,30 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                                 writer = new(zipEntry.Open(), Encoding.UTF8);
                                 //
                                 await WriteHeadClass(writer, [$"[doc: '{doc_obj.Name}' `{doc_obj.SystemName}`] [tab: '{tab_obj.Name}' `{tab_obj.SystemName}`] [form: '{form_obj.Name}' `{form_obj.SystemName}`] [field: '{field.Name}' `{field.SystemName}`]"], null, ["System.ComponentModel.DataAnnotations", "Microsoft.EntityFrameworkCore"]);
-                                await writer.WriteLineAsync($"\t[Index(nameof(OwnerId), nameof({field.SystemName}), IsUnique = true)]");
-                                await writer.WriteLineAsync($"\tpublic partial class {field.DirectorySystemName}Multiple{form_type_entry.TypeName}");
-                                await writer.WriteLineAsync("\t{");
-                                await writer.WriteLineAsync("\t\t/// <summary>");
-                                await writer.WriteLineAsync("\t\t/// Идентификатор/Key");
-                                await writer.WriteLineAsync("\t\t/// </summary>");
-                                await writer.WriteLineAsync("\t\t[Key]");
-                                await writer.WriteLineAsync("\t\tpublic int Id { get; set; }");
+                                await writer.WriteLineAsync($"{_tab}[Index(nameof(OwnerId), nameof({field.SystemName}), IsUnique = true)]");
+                                await writer.WriteLineAsync($"{_tab}public partial class {field.DirectorySystemName}Multiple{form_type_entry.TypeName}");
+                                await writer.WriteLineAsync($"{_tab}{{");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// Идентификатор/Key");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
+                                await writer.WriteLineAsync($"{_tab}{_tab}[Key]");
+                                await writer.WriteLineAsync($"{_tab}{_tab}public int Id {{ get; set; }}");
 
                                 await writer.WriteLineAsync();
-                                await writer.WriteLineAsync("\t\t/// <summary>");
-                                await writer.WriteLineAsync("\t\t/// [FK: Форма в табе]");
-                                await writer.WriteLineAsync("\t\t/// </summary>");
-                                await writer.WriteLineAsync("\t\tpublic int OwnerId { get; set; }");
-                                await writer.WriteLineAsync("\t\t/// <summary>");
-                                await writer.WriteLineAsync("\t\t/// Форма в табе");
-                                await writer.WriteLineAsync("\t\t/// </summary>");
-                                await writer.WriteLineAsync($"\t\tpublic {form_type_entry.TypeName}? Owner {{ get; set; }}");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// [FK: Форма в табе]");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
+                                await writer.WriteLineAsync($"{_tab}{_tab}public int OwnerId {{ get; set; }}");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// Форма в табе");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
+                                await writer.WriteLineAsync($"{_tab}{_tab}public {form_type_entry.TypeName}? Owner {{ get; set; }}");
 
                                 await writer.WriteLineAsync();
-                                await writer.WriteLineAsync("\t\t/// <summary>");
-                                await writer.WriteLineAsync($"\t\t/// {field.Name}");
-                                await writer.WriteLineAsync("\t\t/// </summary>");
-                                await writer.WriteLineAsync($"\t\tpublic {field.DirectorySystemName} {field.SystemName} {{ get; set; }}");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// {field.Name}");
+                                await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
+                                await writer.WriteLineAsync($"{_tab}{_tab}public {field.DirectorySystemName} {field.SystemName} {{ get; set; }}");
 
                                 await WriteEndClass(writer);
                             }
@@ -351,22 +353,22 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     static async Task WriteField(FieldFitModel field, StreamWriter writer)
     {
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// {field.Name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
-        await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.TypeData}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
+        await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+        await writer.WriteLineAsync($"{_tab}{_tab}/// {field.Name}");
+        await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
+        await writer.WriteLineAsync($"{_tab}{_tab}public{(field.Required ? " required" : "")} {field.TypeData}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
     }
     static async Task WriteField(FieldAkaDirectoryFitModel field, EntrySchemaTypeModel form_type_entry, StreamWriter writer)
     {
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync("\t\t/// <summary>");
-        await writer.WriteLineAsync($"\t\t/// {field.Name}");
-        await writer.WriteLineAsync("\t\t/// </summary>");
+        await writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+        await writer.WriteLineAsync($"{_tab}{_tab}/// {field.Name}");
+        await writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
 
         if (field.IsMultiSelect)
-            await writer.WriteLineAsync($"\t\tpublic List<{field.DirectorySystemName}Multiple{form_type_entry.Form.SystemName}{form_type_entry.Tab.SystemName}{form_type_entry.Document.SystemName}>? {field.SystemName} {{ get; set; }}");
+            await writer.WriteLineAsync($"{_tab}{_tab}public List<{field.DirectorySystemName}Multiple{form_type_entry.Form.SystemName}{form_type_entry.Tab.SystemName}{form_type_entry.Document.SystemName}>? {field.SystemName} {{ get; set; }}");
         else
-            await writer.WriteLineAsync($"\t\tpublic{(field.Required ? " required" : "")} {field.DirectorySystemName}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
+            await writer.WriteLineAsync($"{_tab}{_tab}public{(field.Required ? " required" : "")} {field.DirectorySystemName}{(field.Required ? "" : "?")} {field.SystemName} {{ get; set; }}");
     }
 
     /// <summary>
@@ -378,8 +380,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         StreamWriter _writer = new(zipEntry.Open(), Encoding.UTF8);
         await WriteHeadClass(writer: _writer, summary_text: ["Database context"], using_ns: ["Microsoft.EntityFrameworkCore"]);
 
-        await _writer.WriteLineAsync("\tpublic partial class LayerContext : DbContext");
-        await _writer.WriteLineAsync("\t{");
+        await _writer.WriteLineAsync($"{_tab}public partial class LayerContext : DbContext");
+        await _writer.WriteLineAsync($"{_tab}{{");
         bool is_first_document_item = true;
         foreach (KeyValuePair<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> doc_obj in docs)
         {
@@ -393,11 +395,11 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await _writer.WriteLineAsync(sb.UseSummaryText([$"{doc_obj.Key.Document.Name}"]).SummaryGet);
             if (!string.IsNullOrWhiteSpace(doc_obj.Key.Document.Description))
             {
-                await _writer.WriteLineAsync("\t\t/// <remarks>");
-                await _writer.WriteLineAsync(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(doc_obj.Key.Document.Description).Select(x => $"\t\t/// {x}")));
-                await _writer.WriteLineAsync("\t\t/// </remarks>");
+                await _writer.WriteLineAsync($"{_tab}{_tab}/// <remarks>");
+                await _writer.WriteLineAsync(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(doc_obj.Key.Document.Description).Select(x => $"{_tab}{_tab}/// {x}")));
+                await _writer.WriteLineAsync($"{_tab}{_tab}/// </remarks>");
             }
-            _writer.WriteLine($"\t\tpublic DbSet<{doc_obj.Key.TypeName}> {doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+            _writer.WriteLine($"{_tab}{_tab}public DbSet<{doc_obj.Key.TypeName}> {doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
 
             bool is_first_schema_item = true;
             await _writer.WriteLineAsync();
@@ -410,7 +412,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     is_first_schema_item = false;
 
                 await _writer.WriteLineAsync(sb.UseSummaryText([schema.Route]).SummaryGet);
-                await _writer.WriteLineAsync($"\t\tpublic DbSet<{schema.TypeName}> {schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+                await _writer.WriteLineAsync($"{_tab}{_tab}public DbSet<{schema.TypeName}> {schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
 
                 IEnumerable<FieldAkaDirectoryFitModel>? fieldsAtDirectories = schema
                         .Form
@@ -423,10 +425,10 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     await _writer.WriteLineAsync("#region multiselect enumerations");
                     foreach (FieldAkaDirectoryFitModel? _fd in fieldsAtDirectories)
                     {
-                        await _writer.WriteLineAsync($"\t\t/// <summary>");
-                        await _writer.WriteLineAsync($"\t\t/// {schema.Route} ['{_fd.Name}' `{_fd.SystemName}`]");
-                        await _writer.WriteLineAsync($"\t\t/// <summary>");
-                        await _writer.WriteLineAsync($"\t\tpublic DbSet<{_fd.DirectorySystemName}Multiple{schema.TypeName}> {_fd.DirectorySystemName}Multiple{schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
+                        await _writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                        await _writer.WriteLineAsync($"{_tab}{_tab}/// {schema.Route} ['{_fd.Name}' `{_fd.SystemName}`]");
+                        await _writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                        await _writer.WriteLineAsync($"{_tab}{_tab}public DbSet<{_fd.DirectorySystemName}Multiple{schema.TypeName}> {_fd.DirectorySystemName}Multiple{schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
                     }
                     await _writer.WriteLineAsync("#endregion");
                 }
@@ -455,8 +457,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             writer = new(zipEntry.Open(), Encoding.UTF8);
             await WriteHeadClass(writer, [doc_obj.Key.Document.Name], null, ["SharedLib"]);
 
-            await writer.WriteLineAsync($"\tpublic partial interface I{type_entry.TypeName}");
-            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync($"{_tab}public partial interface I{type_entry.TypeName}");
+            await writer.WriteLineAsync($"{_tab}{{");
 
             List<ServiceMethodBuilder> builder = await WriteInterface(writer, doc_obj);
 
@@ -464,8 +466,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             writer = new(zipEntry.Open(), Encoding.UTF8);
             await WriteHeadClass(writer, [doc_obj.Key.Document.Name], null, ["Microsoft.EntityFrameworkCore", "SharedLib"]);
 
-            await writer.WriteLineAsync($"\tpublic partial class {type_entry.TypeName}(IDbContextFactory<LayerContext> appDbFactory) : I{type_entry.TypeName}");
-            await writer.WriteLineAsync("\t{");
+            await writer.WriteLineAsync($"{_tab}public partial class {type_entry.TypeName}(IDbContextFactory<LayerContext> appDbFactory) : I{type_entry.TypeName}");
+            await writer.WriteLineAsync($"{_tab}{{");
 
             int i = builder.Count;
             builder.ForEach(sb =>
@@ -488,7 +490,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         ServiceMethodBuilder builder = new() { TabulationsSpiceSize = 2 };
 
         #region main
-        writer.WriteLine("\t\t#region main");
+        writer.WriteLine($"{_tab}{_tab}#region main");
         string db_set_name = $"_db_context.{doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX}";
 
         builders_history.Add(builder
@@ -541,7 +543,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
            .Extract<ServiceMethodBuilder>()
            .WriteSignatureMethod(writer, "MarkDeleteToggleAsync"));
 
-        writer.WriteLine("\t\t#endregion");
+        writer.WriteLine($"{_tab}{_tab}#endregion");
         #endregion
 
         EntrySchemaTypeModel[] ext_source;
@@ -550,7 +552,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         if (ext_source.Length != 0)
         {
             writer.WriteLine();
-            writer.WriteLine("\t\t#region tables");
+            writer.WriteLine($"{_tab}{_tab}#region tables");
 
             foreach (EntrySchemaTypeModel table_schema in ext_source)
             {
@@ -598,7 +600,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                    .WriteSignatureMethod(writer, $"Remove{table_schema.TypeName}Async"));
             }
 
-            writer.WriteLine("\t\t#endregion");
+            writer.WriteLine($"{_tab}{_tab}#endregion");
         }
         #endregion
 
@@ -607,7 +609,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         if (ext_source.Length != 0)
         {
             writer.WriteLine();
-            writer.WriteLine("\t\t#region enumerations multiselect");
+            writer.WriteLine($"{_tab}{_tab}#region enumerations multiselect");
 
             foreach (EntrySchemaTypeModel _schema in ext_source)
                 foreach (FieldAkaDirectoryFitModel _field in _schema.Form.FieldsAtDirectories!.Where(x => x.IsMultiSelect))
@@ -623,7 +625,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     //writer.WriteLine();
                 }
 
-            writer.WriteLine("\t\t#endregion");
+            writer.WriteLine($"{_tab}{_tab}#endregion");
         }
         #endregion*/
 
@@ -639,14 +641,14 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         ZipArchiveEntry readmeEntry = archive.CreateEntry("services_di.cs");
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
         await WriteHeadClass(writer, [project.Name], "di services", ["Microsoft.Extensions.DependencyInjection"]);
-        await writer.WriteLineAsync("\tpublic static class ServicesExtensionDesignerDI");
-        await writer.WriteLineAsync("\t{");
-        await writer.WriteLineAsync("\t\t/// Регистрация сервисов");
-        await writer.WriteLineAsync("\t\tpublic static void BuildDesignerServicesDI(this IServiceCollection services)");
-        await writer.WriteLineAsync("\t\t{");
+        await writer.WriteLineAsync($"{_tab}public static class ServicesExtensionDesignerDI");
+        await writer.WriteLineAsync($"{_tab}{{");
+        await writer.WriteLineAsync($"{_tab}{_tab}/// Регистрация сервисов");
+        await writer.WriteLineAsync($"{_tab}{_tab}public static void BuildDesignerServicesDI(this IServiceCollection services)");
+        await writer.WriteLineAsync($"{_tab}{_tab}{{");
         foreach (KeyValuePair<string, string> kvp in services_di)
-            await writer.WriteLineAsync($"\t\t\tservices.AddScoped<{kvp.Key}, {kvp.Value}>();");
-        await writer.WriteLineAsync("\t\t}");
+            await writer.WriteLineAsync($"{_tab}{_tab}{_tab}services.AddScoped<{kvp.Key}, {kvp.Value}>();");
+        await writer.WriteLineAsync($"{_tab}{_tab}}}");
 
         await WriteEndClass(writer);
     }
@@ -720,12 +722,12 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await writer.WriteLineAsync("{");
 
         if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"\t/// <summary>");
+            await writer.WriteLineAsync($"{_tab}/// <summary>");
 
-        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? "\t/// <inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"\t/// {s.Trim()}")))}");
+        await writer.WriteLineAsync($"{(summary_text?.Any() != true ? $"{_tab}/// <inheritdoc/>" : string.Join(Environment.NewLine, summary_text.Select(s => $"{_tab}/// {s.Trim()}")))}");
 
         if (summary_text?.Any() == true)
-            await writer.WriteLineAsync($"\t/// </summary>");
+            await writer.WriteLineAsync($"{_tab}/// </summary>");
 
         if (!string.IsNullOrWhiteSpace(description))
         {
@@ -741,7 +743,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     /// <param name="writer">Поток записи ZIP архива</param>
     public virtual async Task WriteEndClass(StreamWriter writer)
     {
-        await writer.WriteLineAsync("\t}");
+        await writer.WriteLineAsync($"{_tab}}}");
         await writer.WriteAsync("}");
         await writer.DisposeAsync();
     }

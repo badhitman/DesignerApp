@@ -26,7 +26,7 @@ public partial class BlazorCodeGenerator
     /// </summary>
     public virtual string GetCode(bool wrap_code)
     {
-        string _raw = "\t// TODO: xxx";
+        string _raw = $"{base_dom_root.TabString}// TODO: xxx";
 
         if (wrap_code)
             return $"@code {{{Environment.NewLine}" +

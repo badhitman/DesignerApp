@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @fakegov
 ////////////////////////////////////////////////
 
+using HtmlGenerator.html5;
 using Newtonsoft.Json;
 
 namespace CodegeneratorLib;
@@ -64,7 +65,7 @@ public abstract class BaseMethodBuilder : IBaseMethodBuilder
             {
                 tabs = "";
                 for (int i = 0; i < value; i++)
-                    tabs += "\t";
+                    tabs += base_dom_root.TabString;
 
                 FlushParametersText();
                 FlushSummaryText();

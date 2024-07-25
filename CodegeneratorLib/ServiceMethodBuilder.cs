@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @fakegov
 ////////////////////////////////////////////////
 
+using HtmlGenerator.html5;
+
 namespace CodegeneratorLib;
 
 /// <summary>
@@ -9,6 +11,8 @@ namespace CodegeneratorLib;
 /// </summary>
 public class ServiceMethodBuilder : BaseMethodBuilder
 {
+    static string _tab = base_dom_root.TabString;
+
     /// <summary>
     /// Write method signature
     /// </summary>
@@ -47,7 +51,7 @@ public class ServiceMethodBuilder : BaseMethodBuilder
         writer.WriteLine($"{tabs}public async {MethodSign}({ParametersSign})");
         writer.WriteLine($"{tabs}{{");
         foreach (string p in Payload)
-            writer.WriteLine($"{tabs}\t{p}");
+            writer.WriteLine($"{tabs}{_tab}{p}");
         //
         writer.WriteLine($"{tabs}}}");
         return this;
@@ -59,15 +63,15 @@ public class ServiceMethodBuilder : BaseMethodBuilder
         AddPayload($"IQueryable<{type_name}>? query = {db_set_name}.AsQueryable();");
         AddPayload($"TPaginationResponseModel<{type_name}> result = new(pagination_request)");
         AddPayload("{");
-        AddPayload($"\tTotalRowsCount = await query.CountAsync()");
+        AddPayload($"{_tab}TotalRowsCount = await query.CountAsync()");
         AddPayload("};");
         AddPayload("switch (result.SortBy)");
         AddPayload("{");
-        AddPayload("\tdefault:");
-        AddPayload("\t\tquery = result.SortingDirection == VerticalDirectionsEnum.Up");
-        AddPayload("\t\t\t? query.OrderByDescending(x => x.Id)");
-        AddPayload("\t\t\t: query.OrderBy(x => x.Id);");
-        AddPayload("\t\tbreak;");
+        AddPayload($"{_tab}default:");
+        AddPayload($"{_tab}{_tab}query = result.SortingDirection == VerticalDirectionsEnum.Up");
+        AddPayload($"{_tab}{_tab}{_tab}? query.OrderByDescending(x => x.Id)");
+        AddPayload($"{_tab}{_tab}{_tab}: query.OrderBy(x => x.Id);");
+        AddPayload($"{_tab}{_tab}break;");
         AddPayload("}");
         AddPayload("query = query.Skip((result.PageNum - 1) * result.PageSize).Take(result.PageSize);");
         AddPayload("result.Response = await query.ToListAsync();");
