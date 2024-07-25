@@ -5,7 +5,7 @@
 using CodegeneratorLib;
 using HtmlGenerator.bootstrap;
 
-namespace HtmlGenerator.blazor;
+namespace CodegeneratorLib;
 
 /// <summary>
 /// Класс Web/DOM 

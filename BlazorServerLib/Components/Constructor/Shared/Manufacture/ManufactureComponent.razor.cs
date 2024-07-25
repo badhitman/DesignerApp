@@ -160,15 +160,11 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
                         .First(x => x.Value?.Id == field.Id && x.Qualification == FieldFormAkaDirectoryConstructorTypeName);
 
                     ArgumentNullException.ThrowIfNull(field_dir_tree_item);
-
-#if DEBUG
-
-#endif
-
+                    TreeItemDataModel _dir = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Value!.Id == field.DirectoryId);
                     return new FieldAkaDirectoryFitModel()
                     {
-                        DirectorySystemName = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Value!.Id == field.DirectoryId).SystemName ?? GlobalTools.TranslitToSystemName(field.Directory!.Name),
-
+                        DirectorySystemName = _dir.SystemName ?? GlobalTools.TranslitToSystemName(field.Directory!.Name),
+                        Items = _dir.Children!.Select(x => new EntryModel() { Name = x.Value!.Name, Id = x.Value.Id }),
                         Name = field.Name,
                         SortIndex = field.SortIndex,
                         SystemName = field_dir_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(field.Name),

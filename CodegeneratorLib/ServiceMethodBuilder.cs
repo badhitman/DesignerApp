@@ -11,7 +11,7 @@ namespace CodegeneratorLib;
 /// </summary>
 public class ServiceMethodBuilder : BaseMethodBuilder
 {
-    static string _tab = base_dom_root.TabString;
+    static readonly string _tab = base_dom_root.TabString;
 
     /// <summary>
     /// Write method signature

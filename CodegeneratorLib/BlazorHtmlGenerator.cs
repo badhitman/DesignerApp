@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////
 
 using CodegeneratorLib;
-using HtmlGenerator.blazor;
 using HtmlGenerator.html5;
 
 namespace HtmlGenerator;

@@ -2,14 +2,13 @@
 // © https://github.com/badhitman - @fakegov
 ////////////////////////////////////////////////
 
-using CodegeneratorLib;
 using HtmlGenerator.html5;
 using HtmlGenerator.html5.areas;
 using HtmlGenerator.html5.forms;
 using HtmlGenerator.mud;
 using SharedLib;
 
-namespace HtmlGenerator.blazor;
+namespace CodegeneratorLib;
 
 /// <summary>
 /// Поле формы (определение требуемой модели поля формы)
@@ -67,7 +66,7 @@ public class WrapperFieldOfFormBlazorGenerator : safe_base_dom_root
             }
         }
         else if (Field is FieldAkaDirectoryFitModel fd)
-            Childs.Add(new DirectoryFieldOfFormBlazorGenerator() { Field = fd, Form = Form });
+            Childs.Add(new DirectoryFieldOfFormBlazorGenerator() { Field = fd, Form = Form, TypeNameEnum = fd.SystemName, Options = fd.Items.Select(x => (x.Id.ToString(), x.Name)).ToArray() });
 
         return base.GetHTML(deep);
     }

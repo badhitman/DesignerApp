@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using SharedLib;
+
 namespace CodegeneratorLib;
 
 /// <summary>
@@ -14,6 +16,10 @@ public class FieldAkaDirectoryFitModel : BaseRequiredFormFitModel
     /// </summary>
     public required string DirectorySystemName { get; set; }
 
+    /// <summary>
+    /// Элементы перечисления
+    /// </summary>
+    public required IEnumerable<EntryModel> Items { get; set; }
 
     /// <summary>
     /// Множественный выбор

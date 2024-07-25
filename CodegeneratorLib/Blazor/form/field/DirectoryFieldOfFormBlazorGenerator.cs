@@ -5,7 +5,7 @@
 using CodegeneratorLib;
 using HtmlGenerator.mud;
 
-namespace HtmlGenerator.blazor;
+namespace CodegeneratorLib;
 
 /// <summary>
 /// Simple Field
