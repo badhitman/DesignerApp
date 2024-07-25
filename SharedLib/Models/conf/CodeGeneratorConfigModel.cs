@@ -26,21 +26,21 @@ public class CodeGeneratorConfigModel
     /// Путь размещения файлов моделей перечисления
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей перечисления: {MessageErrorTemplateNameFolder}")]
+    [Namespace(Mode = SegmentationsNamespaceModesEnum.Any, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей перечисления: {MessageErrorTemplateNameFolder}")]
     public string EnumDirectoryPath { get; set; } = "enumerations_generation";
 
     /// <summary>
     /// Путь размещения файлов моделей документов
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей документов: {MessageErrorTemplateNameFolder}")]
+    [Namespace(Mode = SegmentationsNamespaceModesEnum.Any, ErrorMessage = $"Укажите корректное имя папки размещения файлов моделей документов: {MessageErrorTemplateNameFolder}")]
     public string DocumentsMastersDbDirectoryPath { get; set; } = "models_generation";
 
     /// <summary>
     /// Папка размещения инфраструктуры доступа к данным
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {MessageErrorTemplateNameFolder}")]
+    [Namespace(Mode = SegmentationsNamespaceModesEnum.Any, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {MessageErrorTemplateNameFolder}")]
     public string AccessDataDirectoryPath { get; set; } = "crud_generation";
 
     /// <summary>
@@ -50,7 +50,7 @@ public class CodeGeneratorConfigModel
     /// Папка размещения инфраструктуры доступа к данным
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    [RegularExpression(GlobalStaticConstants.FOLDER_NAME_TEMPLATE, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {MessageErrorTemplateNameFolder}")]
+    [Namespace(Mode = SegmentationsNamespaceModesEnum.Any, ErrorMessage = $"Укажите корректное имя папки размещения файлов инфраструктуры доступа к данным: {MessageErrorTemplateNameFolder}")]
     public string BlazorDirectoryPath { get; set; } = "blazor_generation";
 
     /// <summary>

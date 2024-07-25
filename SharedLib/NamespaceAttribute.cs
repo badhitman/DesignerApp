@@ -80,8 +80,10 @@ public partial class NamespaceAttribute : ValidationAttribute
     /// <summary>
     /// Нормализация пространства имён: заменяет все возможные разделители на один ваш
     /// </summary>
-    public static string NormalizeNameSpice(string raw_name_spice, SegmentationsNamespaceModesEnum set_segmentation_symbol)
-        => SegmentationsSymbolsMyRegex().Replace(raw_name_spice, set_segmentation_symbol.DescriptionInfo());
+    public static string NormalizeNameSpice(string raw_name_spice, string set_segmentation_symbol)
+    {
+        return SegmentationsSymbolsMyRegex().Replace(raw_name_spice, set_segmentation_symbol);
+    }
 
     [GeneratedRegex(GlobalStaticConstants.SYSTEM_NAME_TEMPLATE, RegexOptions.Compiled)]
     private static partial Regex MyRegexSystemName();

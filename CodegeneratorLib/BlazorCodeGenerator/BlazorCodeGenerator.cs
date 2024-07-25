@@ -39,12 +39,19 @@ public partial class BlazorCodeGenerator
                 $"{_raw}" +
                 $"}}";
         else
+        {
+            string c_ns = string.IsNullOrWhiteSpace(ComponentDestination) ? "no_set_namespace" : NamespaceAttribute.NormalizeNameSpice(ComponentDestination, ".");
+            while (c_ns.EndsWith('.'))
+                c_ns = c_ns[..^1];
+            while (c_ns.StartsWith('.'))
+                c_ns = c_ns[1..];
+
             return
                 $"////////////////////////////////////////////////{Environment.NewLine}" +
                 $"// © https://github.com/badhitman - @fakegov{Environment.NewLine}" +
                 $"////////////////////////////////////////////////{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
-                $"{ComponentNamespace}{Environment.NewLine}" +
+                $"{c_ns}{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
                 $"/// <summary>{Environment.NewLine}" +
                 $"/// {ComponentDescription}{Environment.NewLine}" +
@@ -53,6 +60,7 @@ public partial class BlazorCodeGenerator
                 $"{{{Environment.NewLine}" +
                  $"{_raw}{Environment.NewLine}" +
                 $"}}";
+        }
     }
 
     /// <summary>
@@ -66,9 +74,9 @@ public partial class BlazorCodeGenerator
     public virtual string? ComponentDescription { get; set; }
 
     /// <summary>
-    /// Пространство имён компонента
+    /// Расположение компонента
     /// </summary>
-    public virtual string? ComponentNamespace { get; set; }
+    public virtual string? ComponentDestination { get; set; }
 
     /// <summary>
     /// Методы компонента

@@ -18,8 +18,11 @@ public class EntryTypeModel
     public EntryTypeModel(string typeName, string basePath, string? prefixPath = null)
     {
         TypeName = typeName;
-        BasePath = basePath;
-        PrefixPath = prefixPath;
+        BasePath = NamespaceAttribute.NormalizeNameSpice(basePath, Path.PathSeparator.ToString());
+        PrefixPath = prefixPath is null 
+            ? null 
+            : NamespaceAttribute.NormalizeNameSpice(prefixPath, Path.PathSeparator.ToString());
+
         //
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(this);
         if (!IsValid)
