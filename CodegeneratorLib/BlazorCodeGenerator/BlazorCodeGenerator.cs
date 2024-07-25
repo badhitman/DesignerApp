@@ -59,11 +59,13 @@ public partial class BlazorCodeGenerator
                 c_ns = c_ns[..^1];
             while (c_ns.StartsWith('.'))
                 c_ns = c_ns[1..];
-
+            // using Microsoft.AspNetCore.Components;
             return
                 $"////////////////////////////////////////////////{Environment.NewLine}" +
                 $"// © https://github.com/badhitman - @fakegov{Environment.NewLine}" +
                 $"////////////////////////////////////////////////{Environment.NewLine}" +
+                $"{Environment.NewLine}" +
+                $"using Microsoft.AspNetCore.Components;{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
                 $"namespace {c_ns};{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
