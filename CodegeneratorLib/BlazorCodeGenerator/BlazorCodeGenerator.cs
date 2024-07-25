@@ -37,7 +37,7 @@ public partial class BlazorCodeGenerator
                 $"/// <summary>{Environment.NewLine}" +
                 $"/// {ComponentDescription}{Environment.NewLine}" +
                 $"/// </summary>{Environment.NewLine}" +
-                $"public partial class {ComponentName}: BlazorLib.BlazorBusyComponentBaseModel{Environment.NewLine}" +
+                $"public partial class {ComponentName} : BlazorLib.BlazorBusyComponentBaseModel{Environment.NewLine}" +
                 $"{{{Environment.NewLine}" +
                  $"{_raw}{Environment.NewLine}" +
                 $"}}";
