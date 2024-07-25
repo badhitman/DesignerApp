@@ -34,6 +34,12 @@ public partial class BlazorCodeGenerator
                 $"}}";
         else
             return
+                $"////////////////////////////////////////////////{Environment.NewLine}" +
+                $"// © https://github.com/badhitman - @fakegov{Environment.NewLine}" +
+                $"////////////////////////////////////////////////{Environment.NewLine}" +
+                $"{Environment.NewLine}" +
+                $"{Environment.NewLine}" +
+                $"{Environment.NewLine}" +
                 $"/// <summary>{Environment.NewLine}" +
                 $"/// {ComponentDescription}{Environment.NewLine}" +
                 $"/// </summary>{Environment.NewLine}" +
