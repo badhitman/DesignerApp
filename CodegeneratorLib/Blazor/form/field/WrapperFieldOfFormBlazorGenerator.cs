@@ -66,7 +66,7 @@ public class WrapperFieldOfFormBlazorGenerator : safe_base_dom_root
             }
         }
         else if (Field is FieldAkaDirectoryFitModel fd)
-            Childs.Add(new DirectoryFieldOfFormBlazorGenerator() { Field = fd, Form = Form, TypeNameEnum = fd.SystemName, Options = fd.Items.Select(x => (x.Id.ToString(), x.Name)).ToArray() });
+            Childs.Add(new MudSelectProvider() { TypeNameEnum = fd.SystemName, Options = fd.Items.Select(x => (x.Id.ToString(), x.Name)).ToArray() });
 
         return base.GetHTML(deep);
     }
