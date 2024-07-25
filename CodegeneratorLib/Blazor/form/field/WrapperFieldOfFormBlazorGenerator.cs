@@ -2,9 +2,9 @@
 // © https://github.com/badhitman - @fakegov
 ////////////////////////////////////////////////
 
-using HtmlGenerator.html5;
 using HtmlGenerator.html5.areas;
 using HtmlGenerator.html5.forms;
+using HtmlGenerator.html5;
 using HtmlGenerator.mud;
 using SharedLib;
 
@@ -90,5 +90,4 @@ public class WrapperFieldOfFormBlazorGenerator : safe_base_dom_root
         TypesFieldsFormsEnum.Password or TypesFieldsFormsEnum.Text => "string",
         _ => throw new Exception()
     };
-
 }

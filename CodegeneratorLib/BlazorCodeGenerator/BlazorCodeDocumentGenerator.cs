@@ -18,7 +18,7 @@ public partial class BlazorCodeGenerator
     {
         ComponentName = doc_obj.BlazorComponentName();
         ComponentDescription = $"[doc: '{doc_obj.Document.Name}' `{doc_obj.Document.SystemName}`]";
-        DomElements = BlazorHtmlGenerator.DocumentEditPage(doc_obj);
+        DomElements = [new EditDocumentBlazorGenerator() { Document = doc_obj }];
         Methods.Clear();
         return this;
     }
