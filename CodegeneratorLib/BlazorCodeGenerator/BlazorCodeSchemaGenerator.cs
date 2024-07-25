@@ -16,6 +16,7 @@ public partial class BlazorCodeGenerator
     /// </summary>
     public virtual BlazorCodeGenerator Set(EntrySchemaTypeModel form_type_entry)
     {
+        ComponentNamespace = $"{Config.Namespace}.{Config.BlazorDirectoryPath}.{EntrySchemaTypeModel.FormsSegmentName}";
         ComponentName = form_type_entry.BlazorComponentName();
         ComponentDescription = $"[doc: '{form_type_entry.Document.Name}' `{form_type_entry.Document.SystemName}`] [tab: '{form_type_entry.Tab.Name}' `{form_type_entry.Tab.SystemName}`] [form: '{form_type_entry.Form.Name}' `{form_type_entry.Form.SystemName}`]";
         DomElements = [new EditFormBlazorGenerator() { Form = form_type_entry }];

@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using HtmlGenerator.html5;
+using SharedLib;
 
 namespace CodegeneratorLib;
 
@@ -11,6 +12,11 @@ namespace CodegeneratorLib;
 /// </summary>
 public partial class BlazorCodeGenerator
 {
+    /// <summary>
+    /// CodeGeneratorConfigModel
+    /// </summary>
+    public required CodeGeneratorConfigModel Config { get; set; }
+
     /// <summary>
     /// Get BlazorComponent: view part
     /// </summary>
@@ -38,7 +44,7 @@ public partial class BlazorCodeGenerator
                 $"// © https://github.com/badhitman - @fakegov{Environment.NewLine}" +
                 $"////////////////////////////////////////////////{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
-                $"{Environment.NewLine}" +
+                $"{ComponentNamespace}{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
                 $"/// <summary>{Environment.NewLine}" +
                 $"/// {ComponentDescription}{Environment.NewLine}" +
@@ -52,17 +58,22 @@ public partial class BlazorCodeGenerator
     /// <summary>
     /// Имя компонента
     /// </summary>
-    public string? ComponentName { get; private set; }
+    public virtual string? ComponentName { get; set; }
 
     /// <summary>
     /// Описание компонента
     /// </summary>
-    public string? ComponentDescription { get; private set; }
+    public virtual string? ComponentDescription { get; set; }
+
+    /// <summary>
+    /// Пространство имён компонента
+    /// </summary>
+    public virtual string? ComponentNamespace { get; set; }
 
     /// <summary>
     /// Методы компонента
     /// </summary>
-    public List<BlazorMethodBuilder> Methods { get; set; } = [];
+    public virtual List<BlazorMethodBuilder> Methods { get; set; } = [];
 
     /// <summary>
     /// Dom элементы

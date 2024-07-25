@@ -202,7 +202,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         EntryDocumentTypeModel doc_entry;
         EntrySchemaTypeModel form_type_entry;
         Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> schema_data = [];
-        BlazorCodeGenerator blazorCode = new();
+        BlazorCodeGenerator blazorCode = new() { Config = conf };
         StreamWriter writer;
 
         foreach (DocumentFitModel doc_obj in docs)
@@ -427,7 +427,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     {
                         await _writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
                         await _writer.WriteLineAsync($"{_tab}{_tab}/// {schema.Route} ['{_fd.Name}' `{_fd.SystemName}`]");
-                        await _writer.WriteLineAsync($"{_tab}{_tab}/// <summary>");
+                        await _writer.WriteLineAsync($"{_tab}{_tab}/// </summary>");
                         await _writer.WriteLineAsync($"{_tab}{_tab}public DbSet<{_fd.DirectorySystemName}Multiple{schema.TypeName}> {_fd.DirectorySystemName}Multiple{schema.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
                     }
                     await _writer.WriteLineAsync("#endregion");
@@ -731,9 +731,9 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
 
         if (!string.IsNullOrWhiteSpace(description))
         {
-            await writer.WriteLineAsync($"/// <remarks>");
-            await writer.WriteLineAsync($"{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"/// {r.Trim()}"))}");
-            await writer.WriteLineAsync($"/// </remarks>");
+            await writer.WriteLineAsync($"{_tab}/// <remarks>");
+            await writer.WriteLineAsync($"{_tab}{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"/// {r.Trim()}"))}");
+            await writer.WriteLineAsync($"{_tab}/// </remarks>");
         }
     }
 
