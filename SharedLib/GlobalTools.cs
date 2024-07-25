@@ -36,6 +36,30 @@ public static partial class GlobalTools
     }
 
     /// <summary>
+    /// PascalCase to kebab-case
+    /// </summary>
+    public static string PascalToKebabCase(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return value;
+
+        value = MyPascalToKebabCaseRegex().Replace(value, "-$1")
+            .Trim()
+            .ToLower();
+
+        while (value.StartsWith('-'))
+            value = value[1..];
+
+        while (value.EndsWith('-'))
+            value = value[..^1];
+
+        while (value.Contains("--"))
+            value = value.Replace("--", "-");
+
+        return value;
+    }
+
+    /// <summary>
     /// Попытка де-сереализовать строку
     /// </summary>
     public static bool TryParseJson<T>(this string data, out T? result)
@@ -321,4 +345,7 @@ public static partial class GlobalTools
         {"video/x-msvideo", new[]{"avi"}},
         {"video/mp4", new[]{"m4v", "mp4"} }
     };
+
+    [GeneratedRegex("(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z0-9])", RegexOptions.Compiled)]
+    private static partial Regex MyPascalToKebabCaseRegex();
 }

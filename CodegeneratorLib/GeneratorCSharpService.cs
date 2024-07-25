@@ -208,11 +208,17 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         foreach (DocumentFitModel doc_obj in docs)
         {
             doc_entry = GetDocumentObjectZipEntry(doc_obj);
-            blazorCode.Set(doc_entry);
+            blazorCode.Set(doc_entry,
+                [new ParameterComponentModel("Id", "int", "Идентификатор объекта-документа. Если null - тогда создание нового")
+                {
+                    IsCascading = false,
+                    IsSupplyParameterFromQuery = false,
+                    ParameterMode = ParameterModes.Nullable
+                }]);
 
             zipEntry = archive.CreateEntry(doc_entry.BlazorFormFullEntryName());
             writer = new(zipEntry.Open(), Encoding.UTF8);
-            await writer.WriteLineAsync(blazorCode.GetView());
+            await writer.WriteLineAsync(blazorCode.GetView([$"@page \"/{GlobalTools.PascalToKebabCase(doc_obj.SystemName)}/edit/{{int?:Id}}\""]));
 
             if (conf.BlazorSplitFiles)
             {

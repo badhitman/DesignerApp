@@ -20,9 +20,9 @@ public partial class BlazorCodeGenerator
     /// <summary>
     /// Get BlazorComponent: view part
     /// </summary>
-    public virtual string GetView()
+    public virtual string GetView(IEnumerable<string>? routesView = null)
     {
-        return $"@inherits BlazorBusyComponentBaseModel" +
+        return $"{(routesView?.Any() == true ? $"{string.Join(Environment.NewLine, routesView)}{Environment.NewLine}{Environment.NewLine}" : "")}@inherits BlazorBusyComponentBaseModel" +
             $"{Environment.NewLine}" +
             $"{string.Join(Environment.NewLine, DomElements.Select(x => x.GetHTML()))}";
     }
@@ -32,7 +32,21 @@ public partial class BlazorCodeGenerator
     /// </summary>
     public virtual string GetCode(bool wrap_code)
     {
-        string _raw = $"{base_dom_root.TabString}// TODO: xxx";
+        static string convert(ParameterComponentModel parameter)
+        {
+            string res = $"{base_dom_root.TabString}[{(parameter.IsCascading ? "Cascading" : "")}Parameter";
+            if (parameter.IsSupplyParameterFromQuery)
+                res += $", SupplyParameterFromQuery";
+
+            res += $"{(parameter.ParameterMode == ParameterModes.Required ? ", RequiredEditor" : "")}]{Environment.NewLine}";
+            res += $"{base_dom_root.TabString}public {(parameter.ParameterMode == ParameterModes.Required ? "required " : "")}{parameter.Type}{(parameter.ParameterMode == ParameterModes.Nullable ? "?" : "")} {parameter.Name} {{ get; set; }}";
+
+            return $"{res}{Environment.NewLine}";
+        }
+
+        string _raw = Parameters?.Count > 0
+            ? $"{string.Join(Environment.NewLine, Parameters.Select(convert))}"
+            : "";
 
         if (wrap_code)
             return $"@code {{{Environment.NewLine}" +
@@ -56,7 +70,7 @@ public partial class BlazorCodeGenerator
                 $"/// <summary>{Environment.NewLine}" +
                 $"/// {ComponentDescription}{Environment.NewLine}" +
                 $"/// </summary>{Environment.NewLine}" +
-                $"public partial class {ComponentName} : BlazorLib.BlazorBusyComponentBaseModel{Environment.NewLine}" +
+                $"public partial class {ComponentName} : BlazorBusyComponentBaseModel{Environment.NewLine}" +
                 $"{{{Environment.NewLine}" +
                  $"{_raw}{Environment.NewLine}" +
                 $"}}";
@@ -77,6 +91,11 @@ public partial class BlazorCodeGenerator
     /// Расположение компонента
     /// </summary>
     public virtual string? ComponentDestination { get; set; }
+
+    /// <summary>
+    /// Параметры компонента
+    /// </summary>
+    public List<ParameterComponentModel>? Parameters { get; set; }
 
     /// <summary>
     /// Методы компонента
