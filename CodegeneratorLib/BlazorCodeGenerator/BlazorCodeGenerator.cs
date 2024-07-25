@@ -34,7 +34,10 @@ public partial class BlazorCodeGenerator
     {
         static string convert(ParameterComponentModel parameter)
         {
-            string res = $"{base_dom_root.TabString}[{(parameter.IsCascading ? "Cascading" : "")}Parameter";
+            string res = $"{base_dom_root.TabString}/// <summary>{Environment.NewLine}" +
+                $"{base_dom_root.TabString}/// {parameter.Description}{Environment.NewLine}" +
+                $"{base_dom_root.TabString}/// </summary>{Environment.NewLine}" +
+                $"{base_dom_root.TabString}[{(parameter.IsCascading ? "Cascading" : "")}Parameter";
             if (parameter.IsSupplyParameterFromQuery)
                 res += $", SupplyParameterFromQuery";
 
