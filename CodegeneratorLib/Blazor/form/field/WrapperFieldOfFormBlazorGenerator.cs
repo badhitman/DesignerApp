@@ -60,13 +60,13 @@ public class WrapperFieldOfFormBlazorGenerator : safe_base_dom_root
                     Childs.Add(new MudNumericFieldProvider() { IsDouble = true });
                     break;
                 case TypesFieldsFormsEnum.Time or TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Date or TypesFieldsFormsEnum.DateTime or TypesFieldsFormsEnum.Password:
-                    Childs.Add(new MudTextFieldProvider() { DescriptorType = GetDescriptorType(ff.TypeField), InputType = GetType(ff.TypeField) });
+                    Childs.Add(new MudTextFieldProvider() { Label = ff.Name, DescriptorType = GetDescriptorType(ff.TypeField), InputType = GetType(ff.TypeField) });
                     break;
                 default: throw new Exception();
             }
         }
         else if (Field is FieldAkaDirectoryFitModel fd)
-            Childs.Add(new MudSelectProvider() { TypeNameEnum = fd.SystemName, Options = fd.Items.Select(x => (x.Id.ToString(), x.Name)).ToArray() });
+            Childs.Add(new MudSelectProvider() { Label = Field.Name, Hint = Field.Hint, TypeNameEnum = fd.SystemName, Options = fd.Items.Select(x => (x.Id.ToString(), x.Name)).ToArray() });
 
         return base.GetHTML(deep);
     }
