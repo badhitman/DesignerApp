@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using System.ComponentModel.DataAnnotations;
+using static SharedLib.NamespaceAttribute;
 
 namespace SharedLib;
 
@@ -18,7 +19,7 @@ public class CodeGeneratorConfigModel
     /// Пространство имён
     /// </summary>
     [Required(AllowEmptyStrings = false)]
-    [Namespace]
+    [Namespace(Mode = SegmentationsNamespaceModesEnum.Any)]
     public required string Namespace { get; set; }
 
     /// <summary>
