@@ -14,7 +14,7 @@ public partial class BlazorCodeGenerator
     /// <summary>
     /// Blazor form: code-generator
     /// </summary>
-    public virtual BlazorCodeGenerator Set(EntrySchemaTypeModel form_type_entry, List<ParameterComponentModel>? parameters = null)
+    public virtual BlazorCodeGenerator SetForm(EntrySchemaTypeModel form_type_entry, List<ParameterComponentModel>? parameters = null)
     {
         Parameters = parameters;
         ComponentDestination = $"BlazorLib.{Config.BlazorDirectoryPath}.{EntrySchemaTypeModel.FormsSegmentName}";

@@ -12,7 +12,7 @@ public partial class BlazorCodeGenerator
     /// <summary>
     /// Blazor document: code-generator
     /// </summary>
-    public virtual BlazorCodeGenerator Set(EntryDocumentTypeModel doc_obj, List<ParameterComponentModel>? parameters = null)
+    public virtual BlazorCodeGenerator SetEditDocument(EntryDocumentTypeModel doc_obj, List<ParameterComponentModel>? parameters = null)
     {
         Parameters = parameters;
         ComponentDestination = $"BlazorLib.{Config.BlazorDirectoryPath}";
