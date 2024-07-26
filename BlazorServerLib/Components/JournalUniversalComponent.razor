@@ -1,0 +1,11 @@
+﻿@page "/documents-journal/{DocumentType:string}"
+
+@inherits BlazorBusyComponentBaseModel
+
+<h3>JournalUniversalComponent</h3>
+
+@code {
+    [Parameter]
+    public required string DocumentType { get; set; }
+
+}
