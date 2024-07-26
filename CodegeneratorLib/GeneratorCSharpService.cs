@@ -240,6 +240,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         foreach (DocumentFitModel doc_obj in docs)
         {
             doc_entry = GetDocumentObjectZipEntry(doc_obj);
+
+            #region edit document
             blazorCode.SetEditDocument(doc_entry,
                 [new ParameterComponentModel("Id", "int", "Идентификатор объекта-документа. Если null - тогда создание нового")
                 {
@@ -269,6 +271,8 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             await writer.WriteAsync(blazorCode.GetCode(!conf.BlazorSplitFiles));
 
             await writer.DisposeAsync();
+            #endregion
+
             HashSet<string> formsCache = [];
 
             List<EntrySchemaTypeModel> schema_inc = [];
