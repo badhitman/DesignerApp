@@ -51,6 +51,12 @@ if (Path.Exists(Path.Combine(curr_dir, "appsettings.json")))
 if (Path.Exists(Path.Combine(curr_dir, $"appsettings.{env.EnvironmentName}.json")))
     builder.Configuration.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
+if (Path.Exists(Path.Combine(curr_dir, $"bottom-menu.json")))
+    builder.Configuration.AddJsonFile($"bottom-menu.json", optional: true, reloadOnChange: true);
+
+if (Path.Exists(Path.Combine(curr_dir, $"bottom-menu.{env.EnvironmentName}.json")))
+    builder.Configuration.AddJsonFile($"bottom-menu.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
 // Secrets
 string secretPath = Path.Combine("..", "secrets");
 for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
