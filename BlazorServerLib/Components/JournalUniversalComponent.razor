@@ -1,4 +1,4 @@
-﻿@page "/documents-journal/{DocumentType:string}"
+﻿@page "/documents-journal/{DocumentType}"
 
 @inherits BlazorBusyComponentBaseModel
 
@@ -6,6 +6,10 @@
 
 @code {
     [Parameter]
-    public required string DocumentType { get; set; }
+    public string? DocumentType { get; set; }
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 }
