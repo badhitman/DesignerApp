@@ -23,7 +23,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // NLog: Setup NLog for Dependency injection
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(options => { options.PopoverOptions.CheckForPopoverProvider = false; });
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -146,6 +146,7 @@ builder.Services.AddScoped<IUsersProfilesService, UsersProfilesService>();
 builder.Services.AddScoped<ITelegramWebService, TelegramWebService>();
 builder.Services.AddScoped<IConstructorService, ConstructorService>();
 builder.Services.AddScoped<IManufactureService, ManufactureService>();
+builder.Services.AddScoped<IJournalUniversalService, JournalUniversalService>();
 
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();

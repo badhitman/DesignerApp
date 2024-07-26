@@ -1,15 +1,51 @@
 ﻿@page "/documents-journal/{DocumentType}"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using MudBlazor
 
 @inherits BlazorBusyComponentBaseModel
 
 <h3>JournalUniversalComponent</h3>
 
-@code {
-    [Parameter]
-    public string? DocumentType { get; set; }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
+@if (ColumnsNames is null)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Метаданные отсутствуют.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Документ: <cite title="@DocumentType">@DocumentType</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Журнал: @DocumentType</MudText>
+            <MudSpacer />
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            @foreach (EntryAltModel col_name in ColumnsNames)
+            {
+                <MudTh><MudTableSortLabel SortLabel="@col_name.Id" T="KeyValuePair<int, Dictionary<string, object>>">@col_name.Name</MudTableSortLabel></MudTh>
+            }
+        </HeaderContent>
+        <RowTemplate>
+            @foreach (EntryAltModel col_name in ColumnsNames)
+            {
+                <MudTd DataLabel="@col_name.Id">@context.Value[col_name.Id]</MudTd>
+            }
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
 }

@@ -61,44 +61,22 @@ namespace CodegeneratorLib.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на @page &quot;/documents-journal/{DocumentType:string}&quot;
-        ///
-        ///@inherits BlazorBusyComponentBaseModel
-        ///
-        ///&lt;h3&gt;JournalUniversalComponent&lt;/h3&gt;
-        ///
-        ///@code {
-        ///    [Parameter]
-        ///    public required string DocumentType { get; set; }
-        ///
-        ///}.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static string JournalUniversalComponent_razor {
+        internal static byte[] JournalUniversalComponent_razor {
             get {
-                return ResourceManager.GetString("JournalUniversalComponent_razor", resourceCulture);
+                object obj = ResourceManager.GetObject("JournalUniversalComponent_razor", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на ////////////////////////////////////////////////
-        ///// © https://github.com/badhitman - @fakegov 
-        ///////////////////////////////////////////////////
-        ///
-        ///using BlazorLib;
-        ///
-        ///namespace BlazorWebLib.Components;
-        ///
-        ////// &lt;summary&gt;
-        ////// Журнал документов (универсальный)
-        ////// &lt;/summary&gt;
-        ///public partial class JournalUniversalComponent : BlazorBusyComponentBaseModel
-        ///{
-        ///
-        ///}.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static string JournalUniversalComponent_razor_cs {
+        internal static byte[] JournalUniversalComponent_razor_cs {
             get {
-                return ResourceManager.GetString("JournalUniversalComponent_razor_cs", resourceCulture);
+                object obj = ResourceManager.GetObject("JournalUniversalComponent_razor_cs", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

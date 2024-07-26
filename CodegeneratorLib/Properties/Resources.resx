@@ -119,9 +119,9 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="JournalUniversalComponent_razor" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\BlazorServerLib\Components\JournalUniversalComponent.razor;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\..\BlazorServerLib\Components\JournalUniversalComponent.razor;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="JournalUniversalComponent_razor_cs" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\BlazorServerLib\Components\JournalUniversalComponent.razor.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\..\BlazorServerLib\Components\JournalUniversalComponent.razor.cs;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
