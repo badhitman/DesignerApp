@@ -183,19 +183,19 @@ public class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainD
             }
 
             if (doc_db.Tabs is null || doc_db.Tabs.Count == 0)
-                return new KeyValuePair<int, Dictionary<string, object>>(doc_db.Id, new() { { doc_db.Name, "документ не сконфигурирован" } });
+                return new KeyValuePair<int, Dictionary<string, object>>(_session.Id, new() { { doc_db.Name, "документ не сконфигурирован" } });
             else if (doc_db.Tabs.Count == 1)
             {
                 TabOfDocumentSchemeConstructorModelDB _tab = doc_db.Tabs[0];
                 if (_tab.JoinsForms is null || _tab.JoinsForms.Count == 0)
-                    return new KeyValuePair<int, Dictionary<string, object>>(_tab.Id, new() { { _tab.Name, AboutTab(_tab) } });
+                    return new KeyValuePair<int, Dictionary<string, object>>(_session.Id, new() { { _tab.Name, AboutTab(_tab) } });
                 else if (_tab.JoinsForms.Count == 1)
                 {
                     TabJoinDocumentSchemeConstructorModelDB _join = _tab.JoinsForms[0];
                     FormConstructorModelDB _form = _join.Form ?? throw new Exception();
                     FieldFormBaseLowConstructorModel[] _fields = _form.AllFields;
                     if (_fields.Length == 0)
-                        return new KeyValuePair<int, Dictionary<string, object>>(_form.Id, new() { { _form.Name, AboutForm(_form) } });
+                        return new KeyValuePair<int, Dictionary<string, object>>(_session.Id, new() { { _form.Name, AboutForm(_form) } });
                     else
                     {
                         Dictionary<string, object> _fields_raw = [];
@@ -204,7 +204,7 @@ public class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainD
                             foreach (FieldFormBaseLowConstructorModel _f in _fields)
                                 _fields_raw.Add(_f.Name, "");
 
-                            return new KeyValuePair<int, Dictionary<string, object>>(_form.Id, _fields_raw);
+                            return new KeyValuePair<int, Dictionary<string, object>>(_session.Id, _fields_raw);
                         }
 
                         //IGrouping<uint, ValueDataForSessionOfDocumentModelDB>[]? rows_data = _session.RowsData(_form.Id);
@@ -216,7 +216,7 @@ public class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainD
                         foreach (FieldFormBaseLowConstructorModel f in _fields)
                             _fields_raw.Add(f.Name, data.FirstOrDefault()?.Value ?? "");
 
-                        return new KeyValuePair<int, Dictionary<string, object>>(_form.Id, _fields_raw);
+                        return new KeyValuePair<int, Dictionary<string, object>>(_session.Id, _fields_raw);
                     }
                 }
                 else
@@ -227,14 +227,14 @@ public class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainD
                         _raw_forms.Add(x.Form!.Name, AboutForm(x.Form));
                     });
 
-                    return new KeyValuePair<int, Dictionary<string, object>>(_tab.Id, _raw_forms);
+                    return new KeyValuePair<int, Dictionary<string, object>>(_session.Id, _raw_forms);
                 }
             }
             else
             {
                 Dictionary<string, object> columns_tabs = [];
                 doc_db.Tabs.ForEach(x => { columns_tabs.Add(x.Name, AboutTab(x)); });
-                return new KeyValuePair<int, Dictionary<string, object>>(doc_db.Id, columns_tabs);
+                return new KeyValuePair<int, Dictionary<string, object>>(_session.Id, columns_tabs);
             }
         }
 

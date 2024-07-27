@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 
-namespace BlazorWebLib.Components;
+namespace BlazorWebLib.Components.Pages;
 
 /// <summary>
 /// Журнал документов (универсальный)

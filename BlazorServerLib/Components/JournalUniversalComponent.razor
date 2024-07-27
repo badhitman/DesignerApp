@@ -83,12 +83,18 @@ else
             {
                 <MudTh><MudTableSortLabel SortLabel="@col_name.Id" T="KeyValuePair<int, Dictionary<string, object>>">@col_name.Name</MudTableSortLabel></MudTh>
             }
+            <MudTh></MudTh>
         </HeaderContent>
         <RowTemplate>
             @foreach (EntryAltModel col_name in ColumnsNames)
             {
                 <MudTd DataLabel="@col_name.Id">@context.Value[col_name.Name!]</MudTd>
             }
+            <MudTd>
+                <MudStack Row>
+                    <MudLink Href="@($"/document-{SelectedJournal}/edit-{@context.Key}")" Typo="Typo.body2">edit</MudLink>
+                </MudStack>
+            </MudTd>
         </RowTemplate>
         <NoRecordsContent>
             <MudText>Ни чего не найдено</MudText>
