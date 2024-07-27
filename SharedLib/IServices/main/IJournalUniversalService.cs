@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IJournalUniversalService
 {
     /// <summary>
+    /// Получить свои документы: имя документа и идентификатор проекта, которому принадлежит этот документ
+    /// </summary>
+    public Task<EntryAltTagModel[]> GetMyDocumentsSchemas();
+
+    /// <summary>
     /// Получить колонки документа по его имени
     /// </summary>
     public Task<TResponseModel<EntryAltModel[]?>> GetColumnsForJournal(string document_name, int? projectId);

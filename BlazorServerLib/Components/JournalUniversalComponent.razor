@@ -1,29 +1,81 @@
-﻿@page "/documents-journal/{DocumentType}"
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+﻿@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @using MudBlazor
 
 @inherits BlazorBusyComponentBaseModel
 
-<h3>JournalUniversalComponent</h3>
-
-@if (ColumnsNames is null)
+@if (ColumnsNames is null || DocumentsSchemes is null)
 {
     <figure>
         <blockquote class="blockquote">
             <p>Метаданные отсутствуют.</p>
         </blockquote>
         <figcaption class="blockquote-footer">
-            Документ: <cite title="@DocumentType">@DocumentType</cite>
+            Документ: <cite title="@DocumentNameOrIdType">@DocumentNameOrIdType</cite>
         </figcaption>
     </figure>
 }
+else if (DocumentsSchemes.Length == 0)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Данных нет.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Документов не создано
+        </figcaption>
+    </figure>
+}
+else if (DocumentsSchemes is not null && DocumentsSchemes.Length > 1)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Коллизия метаданных.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Документ: <cite title="@DocumentNameOrIdType">@DocumentNameOrIdType</cite> найден в нескольких проектах
+        </figcaption>
+    </figure>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Схема документа</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (DocumentSchemeConstructorModelDB r in DocumentsSchemes)
+            {
+                <tr>
+                    <th scope="row"><a href="/documents-journal/@r.Id">@r.Name (@r.Project?.Name)</a></th>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 else
 {
+    if (MySchemas is not null)
+    {
+        <select @bind="SelectedJournal" class="form-select mb-2" aria-label="Default select example">
+            @if (MySchemas.Length == 0)
+            {
+                <option disabled selected>Журналов нет</option>
+            }
+            else
+            {
+                foreach (EntryAltTagModel _e in MySchemas)
+                {
+                    <option title="Проект: @_e.Tag" value="@_e.Id">@_e.Name (@_e.Tag)</option>
+                }
+            }
+        </select>
+    }
+
     <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Журнал: @DocumentType</MudText>
+            <MudText Typo="Typo.h6">Журнал</MudText>
             <MudSpacer />
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+            <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <HeaderContent>
@@ -35,14 +87,14 @@ else
         <RowTemplate>
             @foreach (EntryAltModel col_name in ColumnsNames)
             {
-                <MudTd DataLabel="@col_name.Id">@context.Value[col_name.Id]</MudTd>
+                <MudTd DataLabel="@col_name.Id">@context.Value[col_name.Name!]</MudTd>
             }
         </RowTemplate>
         <NoRecordsContent>
-            <MudText>No matching records found</MudText>
+            <MudText>Ни чего не найдено</MudText>
         </NoRecordsContent>
         <LoadingContent>
-            <MudText>Loading...</MudText>
+            <MudText>Загрузка...</MudText>
         </LoadingContent>
         <PagerContent>
             <MudTablePager />

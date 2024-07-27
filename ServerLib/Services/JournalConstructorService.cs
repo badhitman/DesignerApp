@@ -141,28 +141,6 @@ public class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainD
     {
         TPaginationResponseModel<KeyValuePair<int, Dictionary<string, object>>> res = new();
 
-#if DEBUG
-        List<KeyValuePair<int, Dictionary<string, object>>> documents = [
-            new(1, new()
-            {
-                { "Name", "Sam" }, { "Position", "CPA" }, { "YearsEmployed", 23 }, { "Salary", 87_000 }, { "Rating", 4 }
-            }),
-            new(2, new()
-            {
-                { "Name", "Alicia" }, { "Position", "Product Manager" }, { "YearsEmployed", 11 }, { "Salary", 143_000 }, { "Rating", 5 }
-            }),
-            new(3, new()
-            {
-                { "Name", "Ira" }, { "Position", "Developer" }, { "YearsEmployed", 4 }, { "Salary", 92_000 }, { "Rating", 3 }
-            }),
-            new(4, new()
-            {
-                { "Name", "John" }, { "Position", "IT Director" }, { "YearsEmployed", 17 }, { "Salary", 229_000 }, { "Rating", 4 }
-            })
-        ];
-        res.Response = documents;
-#endif
-
         TResponseModel<DocumentSchemeConstructorModelDB[]?> find_doc = await FindDocumentSchemes(req.DocumentNameOrId, projectId);
         if (!find_doc.Success() || find_doc.Response is null || find_doc.Response.Length == 0 || find_doc.Response.Length > 1)
             return res;
@@ -184,24 +162,122 @@ public class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainD
             .Include(x => x.DataSessionValues)
             .ToArrayAsync();
 
-        static KeyValuePair<int, Dictionary<string, object>> ConvertTab(TabOfDocumentSchemeConstructorModelDB _tab)
+        KeyValuePair<int, Dictionary<string, object>> SessionConvert(SessionOfDocumentDataModelDB _session)
         {
-            Dictionary<string, object> rows_data = [];
-            rows_data.Add(_tab.Name, _tab.Name);
-            KeyValuePair<int, Dictionary<string, object>> res = new(_tab.Id, rows_data);
+            string AboutTab(TabOfDocumentSchemeConstructorModelDB _tab)
+            {
+                if (_tab.JoinsForms is null || _tab.JoinsForms.Count == 0)
+                    return "форм на вкладке нет";
+                else if (_tab.JoinsForms.Count == 1)
+                    return AboutForm(_tab.JoinsForms[0].Form!);
+                else
+                    return $"{_tab.JoinsForms.Count} форм.";
+            }
 
-            return res;
+            string AboutForm(FormConstructorModelDB _form)
+            {
+                if (_form.AllFields.Length == 0)
+                    return "без полей";
+
+                return $"{_form.AllFields.Length} полей";
+            }
+
+            if (doc_db.Tabs is null || doc_db.Tabs.Count == 0)
+                return new KeyValuePair<int, Dictionary<string, object>>(doc_db.Id, new() { { doc_db.Name, "документ не сконфигурирован" } });
+            else if (doc_db.Tabs.Count == 1)
+            {
+                TabOfDocumentSchemeConstructorModelDB _tab = doc_db.Tabs[0];
+                if (_tab.JoinsForms is null || _tab.JoinsForms.Count == 0)
+                    return new KeyValuePair<int, Dictionary<string, object>>(_tab.Id, new() { { _tab.Name, AboutTab(_tab) } });
+                else if (_tab.JoinsForms.Count == 1)
+                {
+                    TabJoinDocumentSchemeConstructorModelDB _join = _tab.JoinsForms[0];
+                    FormConstructorModelDB _form = _join.Form ?? throw new Exception();
+                    FieldFormBaseLowConstructorModel[] _fields = _form.AllFields;
+                    if (_fields.Length == 0)
+                        return new KeyValuePair<int, Dictionary<string, object>>(_form.Id, new() { { _form.Name, AboutForm(_form) } });
+                    else
+                    {
+                        Dictionary<string, object> _fields_raw = [];
+                        if (_session.DataSessionValues is null || _session.DataSessionValues.Count == 0)
+                        {
+                            foreach (FieldFormBaseLowConstructorModel _f in _fields)
+                                _fields_raw.Add(_f.Name, "");
+
+                            return new KeyValuePair<int, Dictionary<string, object>>(_form.Id, _fields_raw);
+                        }
+
+                        //IGrouping<uint, ValueDataForSessionOfDocumentModelDB>[]? rows_data = _session.RowsData(_form.Id);
+                        ValueDataForSessionOfDocumentModelDB[] data = _session
+                            .DataSessionValues
+                            .Where(x => x.TabJoinDocumentSchemeId == _join.TabId)
+                            .ToArray();
+
+                        foreach (FieldFormBaseLowConstructorModel f in _fields)
+                            _fields_raw.Add(f.Name, data.FirstOrDefault()?.Value ?? "");
+
+                        return new KeyValuePair<int, Dictionary<string, object>>(_form.Id, _fields_raw);
+                    }
+                }
+                else
+                {
+                    Dictionary<string, object> _raw_forms = [];
+                    _tab.JoinsForms.ForEach(x =>
+                    {
+                        _raw_forms.Add(x.Form!.Name, AboutForm(x.Form));
+                    });
+
+                    return new KeyValuePair<int, Dictionary<string, object>>(_tab.Id, _raw_forms);
+                }
+            }
+            else
+            {
+                Dictionary<string, object> columns_tabs = [];
+                doc_db.Tabs.ForEach(x => { columns_tabs.Add(x.Name, AboutTab(x)); });
+                return new KeyValuePair<int, Dictionary<string, object>>(doc_db.Id, columns_tabs);
+            }
         }
 
-        if (doc_db.Tabs?.Count > 1)
-        {
-            res.Response = doc_db.Tabs
-                .Select(ConvertTab)
+        res.Response = sessions_db
+            .Select(SessionConvert)
+            .ToList();
+
+        if (!string.IsNullOrWhiteSpace(req.SearchString))
+            res.Response = res.Response
+                .Where(x => x.Value.Any(y => y.Value.ToString()?.Contains(req.SearchString, StringComparison.OrdinalIgnoreCase) == true))
                 .ToList();
 
-            return res;
+        res.TotalRowsCount = res.Response.Count;
+
+        if (!string.IsNullOrWhiteSpace(req.SortBy))
+        {
+            res.Response = req.SortingDirection == VerticalDirectionsEnum.Up
+                ? [.. res.Response.OrderBy(x => x.Value[req.SortBy])]
+                : [.. res.Response.OrderByDescending(x => x.Value[req.SortBy])];
         }
 
+        res.Response = res.Response
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize)
+            .ToList();
+
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<EntryAltTagModel[]> GetMyDocumentsSchemas()
+    {
+        TResponseModel<UserInfoModel?> current_user = await usersProfilesRepo.FindByIdAsync();
+        if (!current_user.Success() || current_user.Response is null)
+            return [];
+
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+
+        IQueryable<EntryAltTagModel> pre_q = from scheme in context_forms.DocumentSchemes
+                                             join pt in context_forms.Projects on scheme.ProjectId equals pt.Id
+                                             where pt.OwnerUserId == current_user.Response.UserId || context_forms.MembersOfProjects.Any(x => x.ProjectId == pt.Id && x.UserId == current_user.Response.UserId)
+                                             select new EntryAltTagModel() { Id = scheme.Id.ToString(), Name = scheme.Name, Tag = pt.Name };
+
+        return await pre_q.OrderBy(x => x.Name).ToArrayAsync();
     }
 }

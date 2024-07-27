@@ -14,6 +14,7 @@ using Transmission.Receives.web;
 using BlazorLib;
 using RemoteCallLib;
 using MudBlazor.Services;
+using System.Reflection;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
