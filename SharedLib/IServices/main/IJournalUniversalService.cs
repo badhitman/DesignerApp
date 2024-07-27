@@ -15,12 +15,12 @@ public interface IJournalUniversalService
     public Task<TResponseModel<EntryAltModel[]?>> GetColumnsForJournal(string document_name, int? projectId);
 
     /// <summary>
-    /// Найти документ по его имени (или номеру)
+    /// Найти схемы документов по имени (или номеру)
     /// </summary>
-    public Task<TResponseModel<DocumentSchemeConstructorModelDB[]?>> FindDocumentScheme(string document_name, int? projectId, bool includeTabs);
+    public Task<TResponseModel<DocumentSchemeConstructorModelDB[]?>> FindDocumentSchemes(string document_name, int? projectId);
 
     /// <summary>
     /// Получить порцию документов
     /// </summary>
-    public Task<TPaginationResponseModel<KeyValuePair<int, Dictionary<string, object>>[]?>> SelectJournalPart(TPaginationRequestModel<string> req, int? projectId);
+    public Task<TPaginationResponseModel<KeyValuePair<int, Dictionary<string, object>>>> SelectJournalPart(SelectJournalPartRequestModel req, int? projectId);
 }

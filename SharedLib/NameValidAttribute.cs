@@ -25,17 +25,34 @@ public partial class NameValidAttribute : ValidationAttribute
         {
             if (AllowEmptyStrings && n == "")
                 return true;
-            if (MyRegexName().IsMatch(n) && MyRegexPrefixCheck().IsMatch(n) && MyRegexPostfixCheck().IsMatch(n))
-                return true;
+
+            return MyRegexName().IsMatch(n) &&
+                MyRegexPrefixCheck().IsMatch(n) &&
+                MyRegexPostfixCheck().IsMatch(n);
         }
 
         return false;
     }
 
+    /// <summary>
+    /// Начинается с символа и заканчивается символом.
+    /// </summary>
+    /// <remarks>Символом считается так же цифры и знак нижнего подчёркивания:
+    /// требуется доп проверка для исключения цифр и знак подчёркивания в начале (см: <see cref="MyRegexPrefixCheck"/>), а так же следует исключить возможность окончание на знак подчёркивания (см: <see cref="MyRegexPostfixCheck"/>)</remarks>
     [GeneratedRegex(@"^\w+.*\w$", RegexOptions.Compiled)]
     private static partial Regex MyRegexName();
+
+    /// <summary>
+    /// В начале не цифра и не знак подчёркивания.
+    /// </summary>
+    /// <remarks>Т.е. в сочетании с <see cref="MyRegexName"/> достигается утверждение: начало имени может быть только буква!</remarks>
     [GeneratedRegex(@"^[^\d_]", RegexOptions.Compiled)]
     private static partial Regex MyRegexPrefixCheck();
-    [GeneratedRegex(@"[^\d_]$")]
+
+    /// <summary>
+    /// Окончание не должно быть символом нижнего подчёркивания.
+    /// </summary>
+    /// <remarks>Т.е. в сочетании с <see cref="MyRegexName"/> достигается утверждение: окончание имени может быть либо буква либо цифра!</remarks>
+    [GeneratedRegex(@"[^_]$")]
     private static partial Regex MyRegexPostfixCheck();
 }
