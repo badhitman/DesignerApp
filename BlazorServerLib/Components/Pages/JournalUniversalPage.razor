@@ -1,5 +1,5 @@
-﻿@page "/documents-journal"
-@page "/documents-journal/{DocumentNameOrIdType}"
+﻿@page "/documents-journal/{DocumentNameOrId}"
+@page "/documents-journal"
 
 @attribute [Authorize]
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
@@ -10,4 +10,18 @@
 
 <h3>Документы</h3>
 
-<JournalUniversalComponent DocumentNameOrIdType="@DocumentNameOrIdType" ProjectId="ProjectId" ShowNavigation="true" />
+<JournalUniversalComponent DocumentNameOrIdType="@DocumentNameOrId" ProjectId="ProjectId" ShowNavigation="true" />
+
+@code{
+    /// <summary>
+    /// Тип документа
+    /// </summary>
+    [Parameter]
+    public string? DocumentNameOrId { get; set; }
+
+    /// <summary>
+    /// ProjectId
+    /// </summary>
+    [Parameter, SupplyParameterFromQuery]
+    public int? ProjectId { get; set; }
+}

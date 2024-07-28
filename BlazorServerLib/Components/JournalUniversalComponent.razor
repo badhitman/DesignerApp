@@ -92,7 +92,7 @@ else
             }
             <MudTd>
                 <MudStack Row>
-                    <MudLink Href="@($"/document-{SelectedJournal}/edit-{@context.Key}")" Typo="Typo.body2">edit</MudLink>
+                    <MudLink Href="@($"/journal-{GlobalTools.PascalToKebabCase(SelectedJournal ?? "null")}/document/{@context.Key}")" Typo="Typo.body2">edit</MudLink>
                 </MudStack>
             </MudTd>
         </RowTemplate>

@@ -1,0 +1,35 @@
+﻿@page "/journal-{DocumentNameOrId}/document"
+@page "/journal-{DocumentNameOrId}/document/"
+@page "/journal-{DocumentNameOrId}/document/{DocumentKey:int?}"
+
+<h3>DocumentEditPage</h3>
+
+@if (string.IsNullOrWhiteSpace(DocumentNameOrId))
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Не указано имя журнала.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Требуется указать <cite title="Имя типа данных документа">имя журнала</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    <DocumentEditComponent DocumentNameOrId="@DocumentNameOrId" DocumentId="Math.Max(DocumentKey.GetValueOrDefault(0),0)" />
+}
+
+@code {
+    /// <summary>
+    /// Тип документа
+    /// </summary>
+    [Parameter]
+    public string? DocumentNameOrId { get; set; }
+
+    /// <summary>
+    /// ProjectId
+    /// </summary>
+    [Parameter]
+    public int? DocumentKey { get; set; }
+}
