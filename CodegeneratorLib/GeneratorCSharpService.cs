@@ -39,10 +39,16 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             $"{conf.EnumDirectoryPath}          - папка перечислений",
             $"{conf.AccessDataDirectoryPath}    - папка файлов сервисов backend служб доступа к данным (CRUD) и классов/моделей ответов: интерфейсы (+ реализация) доступа к контексту таблиц базы данных для использования их в UI",
             $"××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××",
+            $"Вспомогательные файлы (зависимости типов): ",
+            $"{base_dom_root.TabString}> {conf.DocumentsMastersDbDirectoryPath}/SelectJournalPartRequestModel.cs",
+            $"{base_dom_root.TabString}> {conf.DocumentsMastersDbDirectoryPath}/IJournalUniversalService.cs",
+            $"{base_dom_root.TabString}> {conf.BlazorDirectoryPath}/JournalUniversalComponent.razor (+ отдельный JournalUniversalComponent.razor.cs)",
+            $"××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××",
             $"bottom-menu.Development.json  - навигация по созданным страницам" +
             $"LayerContextPartGen.cs        - разделяемый [public partial class LayerContext : DbContext] класс.",
             $"services_di.cs                - [public static class ServicesExtensionDesignerDI].[public static void BuildDesignerServicesDI(this IServiceCollection services)]"
         ];
+
         services_di = [];
 
         using MemoryStream ms = new();
@@ -60,7 +66,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await DbContextGen(schema);
         await DbTableAccessGeneration(schema);
         await GenServicesDI();
-
+        await WriteResources();
 
         string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented);
         await GenerateJsonDump(json_raw);
@@ -119,6 +125,21 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         //
         foreach (string row_line in stat)
             await writer.WriteLineAsync(row_line);
+    }
+
+    async Task WriteResources()
+    {
+        using (Stream s = archive.CreateEntry($"{conf.DocumentsMastersDbDirectoryPath}/IJournalUniversalService.cs").Open())
+            await s.WriteAsync(Properties.Resources.IJournalUniversalService_cs);
+
+        using (Stream s = archive.CreateEntry($"{conf.DocumentsMastersDbDirectoryPath}/SelectJournalPartRequestModel.cs").Open())
+            await s.WriteAsync(Properties.Resources.SelectJournalPartRequestModel_cs);
+
+        using (Stream s = archive.CreateEntry($"{conf.BlazorDirectoryPath}/JournalUniversalComponent.razor").Open())
+            await s.WriteAsync(Properties.Resources.JournalUniversalComponent_razor);
+
+        using (Stream s = archive.CreateEntry($"{conf.BlazorDirectoryPath}/JournalUniversalComponent.razor.cs").Open())
+            await s.WriteAsync(Properties.Resources.JournalUniversalComponent_razor_cs);
     }
 
     /// <summary>

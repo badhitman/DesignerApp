@@ -63,6 +63,16 @@ namespace CodegeneratorLib.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
+        internal static byte[] IJournalUniversalService_cs {
+            get {
+                object obj = ResourceManager.GetObject("IJournalUniversalService_cs", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
         internal static byte[] JournalUniversalComponent_razor {
             get {
                 object obj = ResourceManager.GetObject("JournalUniversalComponent_razor", resourceCulture);
@@ -76,6 +86,16 @@ namespace CodegeneratorLib.Properties {
         internal static byte[] JournalUniversalComponent_razor_cs {
             get {
                 object obj = ResourceManager.GetObject("JournalUniversalComponent_razor_cs", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] SelectJournalPartRequestModel_cs {
+            get {
+                object obj = ResourceManager.GetObject("SelectJournalPartRequestModel_cs", resourceCulture);
                 return ((byte[])(obj));
             }
         }
