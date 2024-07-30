@@ -7,22 +7,12 @@ namespace SharedLib;
 /// <summary>
 /// Journal Universal
 /// </summary>
-public interface IJournalUniversalService
+public partial interface IJournalUniversalService
 {
-    /// <summary>
-    /// Получить свои документы: имя документа и идентификатор проекта, которому принадлежит этот документ
-    /// </summary>
-    public Task<EntryAltTagModel[]> GetMyDocumentsSchemas();
-
     /// <summary>
     /// Получить колонки документа по его имени
     /// </summary>
     public Task<TResponseModel<EntryAltModel[]?>> GetColumnsForJournal(string document_name, int? projectId);
-
-    /// <summary>
-    /// Найти схемы документов по имени (или номеру)
-    /// </summary>
-    public Task<TResponseModel<DocumentSchemeConstructorModelDB[]?>> FindDocumentSchemes(string document_name, int? projectId);
 
     /// <summary>
     /// Получить порцию документов

@@ -2,12 +2,15 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components;
 
+/// <summary>
+/// Document edit
+/// </summary>
 public partial class DocumentEditComponent : BlazorBusyComponentBaseModel
 {
     [Inject]

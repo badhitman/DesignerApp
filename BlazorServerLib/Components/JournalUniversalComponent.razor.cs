@@ -126,8 +126,8 @@ public partial class JournalUniversalComponent : BlazorBusyComponentBaseModel
         {
             IsBusyProgress = true;
             TResponseModel<EntryAltModel[]?> res = await JournalRepo.GetColumnsForJournal(SelectedJournal, ProjectId);
-            ColumnsNames = res.Response;
             SnackbarRepo.ShowMessagesResponse(res.Messages);
+            ColumnsNames = res.Response;
             IsBusyProgress = false;
         }
         if (table is not null)

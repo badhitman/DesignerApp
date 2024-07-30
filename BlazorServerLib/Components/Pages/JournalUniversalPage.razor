@@ -11,17 +11,3 @@
 <h3>Документы</h3>
 
 <JournalUniversalComponent DocumentNameOrIdType="@DocumentNameOrId" ProjectId="ProjectId" ShowNavigation="true" />
-
-@code{
-    /// <summary>
-    /// Тип документа
-    /// </summary>
-    [Parameter]
-    public string? DocumentNameOrId { get; set; }
-
-    /// <summary>
-    /// ProjectId
-    /// </summary>
-    [Parameter, SupplyParameterFromQuery]
-    public int? ProjectId { get; set; }
-}

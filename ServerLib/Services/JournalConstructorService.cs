@@ -12,77 +12,14 @@ namespace ServerLib;
 /// <summary>
 /// Journal Constructor
 /// </summary>
-public class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainDbFactory, IUsersProfilesService usersProfilesRepo) : IJournalUniversalService
+public partial class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainDbFactory, IUsersProfilesService usersProfilesRepo) : IJournalUniversalService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<DocumentSchemeConstructorModelDB[]?>> FindDocumentSchemes(string document_name, int? projectId)
-    {
-        TResponseModel<DocumentSchemeConstructorModelDB[]?> res = new();
-
-        TResponseModel<UserInfoModel?> current_user = await usersProfilesRepo.FindByIdAsync();
-        if (!current_user.Success())
-        {
-            res.Messages = current_user.Messages;
-            return res;
-        }
-
-        if (current_user.Response is null)
-        {
-            res.AddError("Пользователь сессии не найден");
-            return res;
-        }
-
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-
-        IQueryable<DocumentSchemeConstructorModelDB> pre_q = from scheme in context_forms.DocumentSchemes
-                                                             join pt in context_forms.Projects on scheme.ProjectId equals pt.Id
-                                                             where pt.OwnerUserId == current_user.Response.UserId || context_forms.MembersOfProjects.Any(x => x.ProjectId == pt.Id && x.UserId == current_user.Response.UserId)
-                                                             select scheme;
-
-        if (projectId.HasValue)
-            pre_q = pre_q.Where(x => x.ProjectId == projectId.Value);
-
-        static IIncludableQueryable<DocumentSchemeConstructorModelDB, List<ElementOfDirectoryConstructorModelDB>> IncQuery(IQueryable<DocumentSchemeConstructorModelDB> mq)
-        {
-            return mq
-            .Include(x => x.Tabs!)
-            .ThenInclude(x => x.JoinsForms!)
-            .ThenInclude(x => x.Form!)
-            .ThenInclude(x => x.Fields)
-            .Include(x => x.Tabs!)
-            .ThenInclude(x => x.JoinsForms!)
-            .ThenInclude(x => x.Form!)
-            .ThenInclude(x => x.FieldsDirectoriesLinks!)
-            .ThenInclude(x => x.Directory!)
-            .ThenInclude(x => x.Elements!);
-        }
-
-        res.Response = int.TryParse(document_name, out int doc_id)
-            ? await IncQuery(pre_q.Where(f => f.Id == doc_id)).ToArrayAsync()
-            : await IncQuery(pre_q.Where(f => f.Name == document_name)).ToArrayAsync();
-
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<EntryAltModel[]?>> GetColumnsForJournal(string journal_name, int? projectId)
+    public async Task<TResponseModel<EntryAltModel[]?>> GetColumnsForJournal(string journal_name_or_id, int? projectId)
     {
         TResponseModel<EntryAltModel[]?> res = new();
 
-#if DEBUG
-        if (journal_name.Equals("test", StringComparison.OrdinalIgnoreCase))
-        {
-            res.Response = [
-            new EntryAltModel() { Id = "Name",          Name = "Имя" },
-            new EntryAltModel() { Id = "Position",      Name = "Дол-ть" },
-            new EntryAltModel() { Id = "YearsEmployed", Name = "Стаж" },
-            new EntryAltModel() { Id = "Salary",        Name = "Оклад" },
-            new EntryAltModel() { Id = "Rating",        Name = "Ур-нь" }];
-            return res;
-        }
-#endif
-
-        TResponseModel<DocumentSchemeConstructorModelDB[]?> find_doc = await FindDocumentSchemes(journal_name, projectId);
+        TResponseModel<DocumentSchemeConstructorModelDB[]?> find_doc = await FindDocumentSchemes(journal_name_or_id, projectId);
         if (!find_doc.Success())
         {
             res.Messages = find_doc.Messages;
@@ -91,13 +28,13 @@ public class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainD
 
         if (find_doc.Response is null || find_doc.Response.Length == 0)
         {
-            res.AddError($"Документ '{journal_name}' не найден в базе данных");
+            res.AddError($"Документ '{journal_name_or_id}' не найден в базе данных");
             return res;
         }
 
         if (find_doc.Response.Length > 1)
         {
-            res.AddWarning($"Найдено несколько документов '{journal_name}'. {string.Join(", ", find_doc.Response.Select(x => $"<a href='/documents-journal/{x.Id}?ProjectId={x.ProjectId}'>{x.Name}</a>"))};");
+            res.AddWarning($"Найдено несколько документов '{journal_name_or_id}'. {string.Join(", ", find_doc.Response.Select(x => $"<a href='/documents-journal/{x.Id}?ProjectId={x.ProjectId}'>{x.Name}</a>"))};");
             return res;
         }
 
@@ -260,6 +197,56 @@ public class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainD
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
             .ToList();
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<DocumentSchemeConstructorModelDB[]?>> FindDocumentSchemes(string document_name_or_id, int? projectId)
+    {
+        TResponseModel<DocumentSchemeConstructorModelDB[]?> res = new();
+
+        TResponseModel<UserInfoModel?> current_user = await usersProfilesRepo.FindByIdAsync();
+        if (!current_user.Success())
+        {
+            res.Messages = current_user.Messages;
+            return res;
+        }
+
+        if (current_user.Response is null)
+        {
+            res.AddError("Пользователь сессии не найден");
+            return res;
+        }
+
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+
+        IQueryable<DocumentSchemeConstructorModelDB> pre_q = from scheme in context_forms.DocumentSchemes
+                                                             join pt in context_forms.Projects on scheme.ProjectId equals pt.Id
+                                                             where pt.OwnerUserId == current_user.Response.UserId || context_forms.MembersOfProjects.Any(x => x.ProjectId == pt.Id && x.UserId == current_user.Response.UserId)
+                                                             select scheme;
+
+        if (projectId.HasValue)
+            pre_q = pre_q.Where(x => x.ProjectId == projectId.Value);
+
+        static IIncludableQueryable<DocumentSchemeConstructorModelDB, List<ElementOfDirectoryConstructorModelDB>> IncQuery(IQueryable<DocumentSchemeConstructorModelDB> mq)
+        {
+            return mq
+            .Include(x => x.Tabs!)
+            .ThenInclude(x => x.JoinsForms!)
+            .ThenInclude(x => x.Form!)
+            .ThenInclude(x => x.Fields)
+            .Include(x => x.Tabs!)
+            .ThenInclude(x => x.JoinsForms!)
+            .ThenInclude(x => x.Form!)
+            .ThenInclude(x => x.FieldsDirectoriesLinks!)
+            .ThenInclude(x => x.Directory!)
+            .ThenInclude(x => x.Elements!);
+        }
+
+        res.Response = int.TryParse(document_name_or_id, out int doc_id)
+            ? await IncQuery(pre_q.Where(f => f.Id == doc_id)).ToArrayAsync()
+            : await IncQuery(pre_q.Where(f => f.Name == document_name_or_id)).ToArrayAsync();
 
         return res;
     }
