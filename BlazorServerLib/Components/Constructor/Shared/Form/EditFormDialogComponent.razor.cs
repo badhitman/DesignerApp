@@ -7,6 +7,7 @@ using BlazorLib;
 using MudBlazor;
 using SharedLib;
 using BlazorWebLib.Components.Constructor.Pages;
+using BlazorLib.Components.Shared.tabs;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Form;
 
@@ -39,6 +40,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required UserInfoModel CurrentUser { get; set; }
 
+    TabSetComponent tab_set_ref = default!;
 
     /// <inheritdoc/>
     protected FieldsFormViewComponent? _fields_view_ref;

@@ -22,7 +22,7 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
     /// </summary>
     public int TabJoinDocumentSchemeId { get; set; }
     /// <summary>
-    /// Связь со схемой документа
+    /// Связь формы с вкладкой/табом и далее со схемой документа
     /// </summary>
     public TabJoinDocumentSchemeConstructorModelDB? TabJoinDocumentScheme { get; set; }
 

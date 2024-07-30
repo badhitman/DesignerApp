@@ -1,0 +1,14 @@
+﻿@using MudBlazor
+
+@inherits TTabOfDocumenBaseComponent
+
+<div class="card">
+    <div class="card-body">
+        <CascadingValue Value="this">
+            @foreach (FormFitModel form in TabMetadata.Forms)
+            {
+                <FormOfTabConstructorComponent DocumentMetadata="DocumentMetadata" FormMetadata="form" TabMetadata="TabMetadata" ID="@TabMetadata.SystemName" />
+            }
+        </CascadingValue>
+    </div>
+</div>

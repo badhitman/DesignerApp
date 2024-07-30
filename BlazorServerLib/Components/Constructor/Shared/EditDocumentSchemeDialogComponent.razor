@@ -13,7 +13,7 @@
         else
         {
             <TabSetComponent>
-                <TabComponent Tooltip="Базовые настройки" Title="Параметры">
+                <TabComponent Tooltip="Базовые настройки" Title="Параметры" SystemName="@DocumentScheme.Id.ToString()">
                     <form class="row g-3" autocomplete="off">
                         <div class="col-12">
                             <label for="inputName4" class="form-label">Название</label>
@@ -42,7 +42,7 @@
                         </div>
                     </form>
                 </TabComponent>
-                <TabComponent IsDisabled="@(DocumentScheme.Id < 1)" Tooltip="Состав опроса/анкеты" Title="Страницы">
+                <TabComponent IsDisabled="@(DocumentScheme.Id < 1)" Tooltip="Состав опроса/анкеты" Title="Страницы" SystemName="@DocumentScheme.Id.ToString()">
                     <CascadingValue Value="CurrentUser">
                         <CascadingValue Value="ParentFormsPage">
                             <TabsOfDocumentsSchemesViewComponent @ref="pages_questionnaires_view_ref" DocumentScheme="DocumentScheme" />

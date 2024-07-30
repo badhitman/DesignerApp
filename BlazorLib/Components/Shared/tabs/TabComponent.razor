@@ -1,8 +1,7 @@
 ﻿@implements ITab
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-<li title="@Tooltip" class="nav-item">
+<li title="@Tooltip">
     <a @onclick="ActivateTabHandler" class="nav-link @TitleCssClass" role="button">
-       @Title
+        @Title
     </a>
 </li>

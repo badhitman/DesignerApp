@@ -25,6 +25,10 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel
     /// </summary>
     public int ProjectId { get; set; }
 
+    /// <summary>
+    /// System names
+    /// </summary>
+    public List<ManufactureSystemNameModelDB>? SystemNames { get; set; }
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)

@@ -15,6 +15,11 @@ public class ManufactureSystemNameModelDB : UpdateSystemNameModel
     [Key]
     public int Id { get; set; }
 
+    /// <summary>
+    /// Manufacture
+    /// </summary>
+    public ManageManufactureModelDB? Manufacture { get; set; }
+
     /// <inheritdoc/>
     public static ManufactureSystemNameModelDB Build(UpdateSystemNameModel request)
     {

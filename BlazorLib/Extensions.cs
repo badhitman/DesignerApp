@@ -1,5 +1,7 @@
 ﻿using SharedLib;
 using MudBlazor;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace BlazorLib;
 
@@ -8,6 +10,24 @@ namespace BlazorLib;
 /// </summary>
 public static class Extensions
 {
+    /// <summary>
+    /// Название параметра в URL
+    /// </summary>
+    public const string ActiveTabName = "tab";
+
+    /// <summary>
+    /// Получит имя вкладки
+    /// </summary>
+    public static string? GetTabNameFromUrl(this NavigationManager nav)
+    {
+        var uri = new Uri(nav.Uri);
+        var queryParameters = QueryHelpers.ParseQuery(uri.Query);
+
+        return queryParameters.TryGetValue(ActiveTabName, out var tabName)
+            ? tabName.ToString()
+            : null;
+    }
+
     /// <inheritdoc/>
     public static void ShowMessagesResponse(this ISnackbar SnackbarRepo, IEnumerable<ResultMessage> messages)
     {

@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -33,6 +34,25 @@ public static partial class GlobalTools
             list[k] = list[n];
             list[n] = value;
         }
+    }
+
+    /// <summary>
+    /// HTML строку в обычную/нормальную (без тегов).
+    /// например: для добавления в remarks
+    /// </summary>
+    public static string[] DescriptionHtmlToLinesRemark(string html_description)
+    {
+        if (string.IsNullOrWhiteSpace(html_description))
+            return [];
+
+        HtmlDocument doc = new();
+        doc.LoadHtml(html_description
+            .Replace("&nbsp;", " ")
+            .Replace("  ", " ")
+            .Replace("</p><p>", $"</p>{Environment.NewLine}<p>")
+            .Replace("</br>", $"</br>{Environment.NewLine}")
+            );
+        return doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 
     /// <summary>

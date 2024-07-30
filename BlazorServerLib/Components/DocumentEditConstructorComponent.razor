@@ -1,0 +1,51 @@
+﻿@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using MudBlazor
+@using System.Diagnostics
+
+@inherits DocumentEditBaseComponent
+
+@if (schemes is null || schemes.Length == 0)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Метаданные схемы документа не загружены.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Схема данных <cite title="документа/схемы">@DocumentNameOrId</cite> отсутсвует
+        </figcaption>
+    </figure>
+}
+else if (schemes.Length > 1)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Коллизия имени метаданных схемы документа.</p>
+        </blockquote>
+        @foreach (DocumentSchemeConstructorModelDB _sc in schemes)
+        {
+            <figcaption class="blockquote-footer">
+                <a href="@($"/journal-{_sc.Id}/project-{_sc.ProjectId}/document/{DocumentKey}")">@_sc.Name</a>
+            </figcaption>
+        }
+
+    </figure>
+}
+else
+{
+    DocumentSchemeConstructorModelDB scheme_obj = schemes[0];
+    scheme_obj.Tabs = schemes[0].Tabs?.OrderBy(x => x.SortIndex).ToList();
+    DocumentMetadata.Tabs = DocumentMetadata.Tabs.OrderBy(x => x.SortIndex).ToArray();
+
+    <TabSetComponent>
+        @for (int i = 0; i < DocumentMetadata.Tabs.Length; i++)
+        {
+            TabFitModel tab = DocumentMetadata.Tabs[i];
+            TabOfDocumentSchemeConstructorModelDB tdb = scheme_obj.Tabs![i];
+            //Debug.WriteLine(tab.Name);
+            <TabComponent @key="@($"{scheme_obj.Id}-{tab.SystemName}-{tdb.Id}")" Title="@tab.Name" SystemName='@tab.SystemName'>
+                <TabOfDocumentConstructorComponent DocumentMetadata="DocumentMetadata" TabMetadata="tab" DocumentKey="DocumentKey" TabId="@tdb.Id" />
+            </TabComponent>
+        }
+    </TabSetComponent>
+}

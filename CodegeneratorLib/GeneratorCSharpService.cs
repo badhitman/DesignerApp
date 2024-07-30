@@ -191,7 +191,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     if (!string.IsNullOrWhiteSpace(enum_item.Description))
                     {
                         await writer.WriteLineAsync($"{Tab}{Tab}/// <remarks>");
-                        await writer.WriteLineAsync($"{(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(enum_item.Description).Select(r => $"{Tab}{Tab}/// {r}")))}");
+                        await writer.WriteLineAsync($"{(string.Join(Environment.NewLine, GlobalTools.DescriptionHtmlToLinesRemark(enum_item.Description).Select(r => $"{Tab}{Tab}/// {r}")))}");
                         await writer.WriteLineAsync($"{Tab}{Tab}/// </remarks>");
                     }
 
@@ -463,7 +463,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             if (!string.IsNullOrWhiteSpace(doc_obj.Key.Document.Description))
             {
                 await _writer.WriteLineAsync($"{Tab}{Tab}/// <remarks>");
-                await _writer.WriteLineAsync(string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(doc_obj.Key.Document.Description).Select(x => $"{Tab}{Tab}/// {x}")));
+                await _writer.WriteLineAsync(string.Join(Environment.NewLine, GlobalTools.DescriptionHtmlToLinesRemark(doc_obj.Key.Document.Description).Select(x => $"{Tab}{Tab}/// {x}")));
                 await _writer.WriteLineAsync($"{Tab}{Tab}/// </remarks>");
             }
             _writer.WriteLine($"{Tab}{Tab}public DbSet<{doc_obj.Key.TypeName}> {doc_obj.Key.TypeName}{GlobalStaticConstants.CONTEXT_DATA_SET_PREFIX} {{ get; set; }}");
@@ -745,25 +745,6 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         => new($"{doc_obj.TypeName}{GlobalStaticConstants.DATABASE_TABLE_ACESSOR_PREFIX}", conf.AccessDataDirectoryPath);
 
 
-    /// <summary>
-    /// HTML строку в обычную/нормальную (без тегов).
-    /// например: для добавления в remarks
-    /// </summary>
-    static string[] DescriptionHtmlToLinesRemark(string html_description)
-    {
-        if (string.IsNullOrWhiteSpace(html_description))
-            return [];
-
-        HtmlDocument doc = new();
-        doc.LoadHtml(html_description
-            .Replace("&nbsp;", " ")
-            .Replace("  ", " ")
-            .Replace("</p><p>", $"</p>{Environment.NewLine}<p>")
-            .Replace("</br>", $"</br>{Environment.NewLine}")
-            );
-        return doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-    }
-
 
     /// <summary>
     /// Записать вступление файла (для класса)
@@ -797,7 +778,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         if (!string.IsNullOrWhiteSpace(description))
         {
             await writer.WriteLineAsync($"{Tab}/// <remarks>");
-            await writer.WriteLineAsync($"{Tab}{string.Join(Environment.NewLine, DescriptionHtmlToLinesRemark(description).Select(r => $"/// {r.Trim()}"))}");
+            await writer.WriteLineAsync($"{Tab}{string.Join(Environment.NewLine, GlobalTools.DescriptionHtmlToLinesRemark(description).Select(r => $"/// {r.Trim()}"))}");
             await writer.WriteLineAsync($"{Tab}/// </remarks>");
         }
     }

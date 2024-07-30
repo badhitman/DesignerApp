@@ -1,0 +1,40 @@
+﻿@inherits FormBaseModel
+
+<div class="card">
+    <div class="card-body">
+        <div class="@FormMetadata.Css" title="@(string.IsNullOrWhiteSpace(FormMetadata.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(FormMetadata.Description)))">
+            @foreach (BaseRequiredFormFitModel field in FormMetadata.AllFields)
+            {
+                <div class="@field.Css" title="@(string.IsNullOrWhiteSpace(field.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(field.Description)))">
+                    @if (field is FieldFitModel bf)
+                    {
+                        switch (bf.TypeField)
+                        {
+                            case TypesFieldsFormsEnum.Bool:
+                                break;
+                        }
+                    }
+                    else if (field is FieldAkaDirectoryFitModel df)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                </div>
+            }
+        </div>
+        <div class="btn-group btn-group-lg" role="group" aria-label="Large button group">
+            @if (IsEdited)
+            {
+                <button @onclick="SaveForm" type="button" class="btn btn-outline-primary">Сохранить</button>
+                <button @onclick="ResetForm" type="button" class="btn btn-outline-primary">Отмена</button>
+            }
+            else
+            {
+                <button disabled type="button" class="btn btn-outline-secondary">Сохранить...</button>
+            }
+        </div>
+    </div>
+</div>

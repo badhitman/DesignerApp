@@ -4,7 +4,7 @@
 <MudDialog Style="min-width:100%">
     <DialogContent>
         <TabSetComponent>
-            <TabComponent Tooltip="Базовые настройки" Title="Параметры">
+            <TabComponent Tooltip="Базовые настройки" Title="Параметры" SystemName="@($"base-{ProjectForEdit.Id}")">
                 <form class="row">
                     <div class="col-12">
                         <label for="inputProjectName4" class="form-label">Название</label>
@@ -25,7 +25,7 @@
                     }
                 </form>
             </TabComponent>
-            <TabComponent Tooltip="Базовые настройки" Title="Участники" IsDisabled="@(projectObject.Id < 1)">
+            <TabComponent Tooltip="Доступ" Title="Участники" IsDisabled="@(projectObject.Id < 1)" SystemName="@($"access-{ProjectForEdit.Id}")">
                 <MembersOfProjectComponent ProjectView="projectObject" ProjectsList="ParentListProjects" />
             </TabComponent>
         </TabSetComponent>

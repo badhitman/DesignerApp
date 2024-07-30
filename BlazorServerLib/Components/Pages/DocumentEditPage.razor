@@ -2,6 +2,10 @@
 @page "/journal-{DocumentNameOrId}/document/"
 @page "/journal-{DocumentNameOrId}/document/{DocumentKey:int?}"
 
+@page "/journal-{DocumentNameOrId}/project-{ProjectId}/document"
+@page "/journal-{DocumentNameOrId}/project-{ProjectId}/document/"
+@page "/journal-{DocumentNameOrId}/project-{ProjectId}/document/{DocumentKey:int?}"
+
 <h3>DocumentEditPage</h3>
 
 @if (string.IsNullOrWhiteSpace(DocumentNameOrId))
@@ -11,13 +15,13 @@
             <p>Не указано имя журнала.</p>
         </blockquote>
         <figcaption class="blockquote-footer">
-            Требуется указать <cite title="Имя типа данных документа">имя журнала</cite>
+            Требуется указать <cite title="Имя типа данных документа">имя журнала/документа</cite>
         </figcaption>
     </figure>
 }
 else
 {
-    <DocumentEditComponent DocumentNameOrId="@DocumentNameOrId" DocumentId="Math.Max(DocumentKey.GetValueOrDefault(0),0)" />
+    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" DocumentKey="Math.Max(DocumentKey.GetValueOrDefault(0), 0)" ProjectId="ProjectId" />
 }
 
 @code {
@@ -32,4 +36,10 @@ else
     /// </summary>
     [Parameter]
     public int? DocumentKey { get; set; }
+
+    /// <summary>
+    /// Project Id
+    /// </summary>
+    [Parameter]
+    public int? ProjectId { get; set; }
 }
