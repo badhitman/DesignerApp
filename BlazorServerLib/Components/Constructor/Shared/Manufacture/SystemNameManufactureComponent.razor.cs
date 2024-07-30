@@ -1,4 +1,8 @@
-﻿using BlazorWebLib.Components.Constructor.Pages;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 using BlazorLib;

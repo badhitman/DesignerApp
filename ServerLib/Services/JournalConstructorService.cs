@@ -14,6 +14,109 @@ namespace ServerLib;
 /// </summary>
 public partial class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainDbFactory, IUsersProfilesService usersProfilesRepo) : IJournalUniversalService
 {
+
+    static EnumFitModel EnumConvert(DirectoryConstructorModelDB dir, List<SystemNameEntryModel> systemNamesManufacture)
+    {
+        ArgumentNullException.ThrowIfNull(dir.Elements);
+        //
+        return new EnumFitModel()
+        {
+            SystemName = systemNamesManufacture.GetSystemName(dir.Id, dir.GetType().Name) ?? GlobalTools.TranslitToSystemName(dir.Name),
+            Name = dir.Name,
+            Description = dir.Description,
+            EnumItems = dir.Elements.Count < 1 ? [] : dir.Elements.Select(e =>
+            {
+                return new SortableFitModel()
+                {
+                    SystemName = systemNamesManufacture.GetSystemName(e.Id, e.GetType().Name, null) ?? GlobalTools.TranslitToSystemName(e.Name),
+                    Name = e.Name,
+                    SortIndex = e.SortIndex,
+                    Description = e.Description,
+                };
+            }).ToArray()
+        };
+    }
+
+    static DocumentFitModel DocumentConvert(DocumentSchemeConstructorModelDB doc, List<SystemNameEntryModel> systemNamesManufacture)
+    {
+        ArgumentNullException.ThrowIfNull(doc.Tabs);
+
+        TabFitModel TabConvert(TabOfDocumentSchemeConstructorModelDB tab)
+        {
+            ArgumentNullException.ThrowIfNull(tab.JoinsForms);
+            FormFitModel FormConvert(TabJoinDocumentSchemeConstructorModelDB joinForm)
+            {
+                ArgumentNullException.ThrowIfNull(joinForm.Form);
+                FieldFitModel FieldConvert(FieldFormConstructorModelDB field)
+                {
+                    return new FieldFitModel()
+                    {
+                        Name = field.Name,
+                        SortIndex = field.SortIndex,
+                        Css = field.Css,
+                        Description = field.Description,
+                        Hint = field.Hint,
+                        MetadataValueType = field.MetadataValueType,
+                        Required = field.Required,
+                        TypeField = field.TypeField,
+                        SystemName = systemNamesManufacture.GetSystemName(field.Id, $"{doc.GetType().Name}#{doc.Id} {tab.GetType().Name}#{tab.Id} {joinForm.Form.GetType().Name}#{joinForm.Form.Id} {nameof(FieldFormBaseLowConstructorModel)}", field.GetType().Name) ?? GlobalTools.TranslitToSystemName(field.Name),
+                    };
+                }
+
+                FieldAkaDirectoryFitModel FieldAkaDirectoryConvert(FieldFormAkaDirectoryConstructorModelDB field)
+                {
+                    ArgumentNullException.ThrowIfNull(field.Directory?.Elements);
+                    return new FieldAkaDirectoryFitModel()
+                    {
+                        DirectorySystemName = systemNamesManufacture.GetSystemName(field.Directory.Id, $"", field.GetType().Name) ?? GlobalTools.TranslitToSystemName(field.Directory!.Name),
+                        Items = [.. field.Directory.Elements.Cast<EntryModel>()],
+                        Name = field.Name,
+                        SortIndex = field.SortIndex,
+                        SystemName = systemNamesManufacture.GetSystemName(field.Id, $"{doc.GetType().Name}#{doc.Id} {tab.GetType().Name}#{tab.Id} {joinForm.Form.GetType().Name}#{joinForm.Form.Id} {nameof(FieldFormBaseLowConstructorModel)}", field.GetType().Name) ?? GlobalTools.TranslitToSystemName(field.Name),
+                        Css = field.Css,
+                        Description = field.Description,
+                        Hint = field.Hint,
+                        Required = field.Required,
+                        IsMultiSelect = field.IsMultiSelect,
+                    };
+                }
+
+                return new FormFitModel()
+                {
+                    Name = joinForm.Form.Name,
+                    Css = joinForm.Form.Css,
+                    Description = joinForm.Form.Description,
+                    SortIndex = joinForm.SortIndex,
+                    SystemName = systemNamesManufacture.GetSystemName(joinForm.Form.Id, $"{doc.GetType().Name}#{doc.Id} {tab.GetType().Name}#{tab.Id} {joinForm.Form.GetType().Name}") ?? GlobalTools.TranslitToSystemName(joinForm.Form.Name), // form_tree_item.SystemName,
+                    IsTable = joinForm.IsTable,
+
+                    SimpleFields = joinForm.Form.Fields is null ? null : [.. joinForm.Form.Fields.Select(FieldConvert)],
+                    FieldsAtDirectories = joinForm.Form.FieldsDirectoriesLinks is null ? null : [.. joinForm.Form.FieldsDirectoriesLinks.Select(FieldAkaDirectoryConvert)],
+
+                    JoinName = joinForm.Name,
+                };
+            }
+
+            return new TabFitModel()
+            {
+                Name = tab.Name,
+                Description = tab.Description,
+                SortIndex = tab.SortIndex,
+                SystemName = systemNamesManufacture.GetSystemName(tab.Id, $"{doc.GetType().Name}#{doc.Id} {tab.GetType().Name}") ?? GlobalTools.TranslitToSystemName(tab.Name), // tab_tree_item.SystemName,
+                Forms = [.. tab.JoinsForms.Select(FormConvert)],
+            };
+        }
+
+        return new DocumentFitModel()
+        {
+            SystemName = systemNamesManufacture.GetSystemName(doc.Id, doc.GetType().Name) ?? GlobalTools.TranslitToSystemName(doc.Name),
+            Name = doc.Name,
+            Description = doc.Description,
+            Tabs = [.. doc.Tabs!.Select(TabConvert)]
+        };
+    }
+
+
     /// <inheritdoc/>
     public async Task<TResponseModel<EntryAltModel[]?>> GetColumnsForJournal(string journal_name_or_id, int? projectId)
     {

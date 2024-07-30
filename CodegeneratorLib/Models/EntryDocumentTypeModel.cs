@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using SharedLib;
+
 namespace CodegeneratorLib;
 
 /// <summary>

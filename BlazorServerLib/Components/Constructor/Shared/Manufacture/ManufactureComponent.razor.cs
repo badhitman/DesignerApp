@@ -1,4 +1,8 @@
-﻿using BlazorWebLib.Components.Constructor.Pages;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @fakegov 
+////////////////////////////////////////////////
+
+using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -87,24 +91,20 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    EnumFitModel EnumConvert(DirectoryConstructorModelDB dir)
+    static EnumFitModel EnumConvert(DirectoryConstructorModelDB dir, List<SystemNameEntryModel> systemNamesManufacture)
     {
         ArgumentNullException.ThrowIfNull(dir.Elements);
-
-        TreeItemDataModel dir_tree_item = (TreeItemDataModel)enumerations_ref.TreeItems.First(x => x.Value?.Id == dir.Id);
-
+        //
         return new EnumFitModel()
         {
-            SystemName = dir_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(dir.Name),
+            SystemName = systemNamesManufacture.GetSystemName(dir.Id, dir.GetType().Name) ?? GlobalTools.TranslitToSystemName(dir.Name),
             Name = dir.Name,
             Description = dir.Description,
             EnumItems = dir.Elements.Count < 1 ? [] : dir.Elements.Select(e =>
             {
-                TreeItemDataModel tree_item = (TreeItemDataModel)dir_tree_item.Children!.First(x => x.Value?.Id == e.Id);
-
                 return new SortableFitModel()
                 {
-                    SystemName = tree_item.SystemName ?? GlobalTools.TranslitToSystemName(e.Name),
+                    SystemName = systemNamesManufacture.GetSystemName(e.Id, e.GetType().Name, null) ?? GlobalTools.TranslitToSystemName(e.Name),
                     Name = e.Name,
                     SortIndex = e.SortIndex,
                     Description = e.Description,
@@ -113,33 +113,18 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
         };
     }
 
-    DocumentFitModel DocumentConvert(DocumentSchemeConstructorModelDB doc)
+    static DocumentFitModel DocumentConvert(DocumentSchemeConstructorModelDB doc, List<SystemNameEntryModel> systemNamesManufacture)
     {
-        TreeItemDataModel document_tree_item = (TreeItemDataModel)documents_ref.TreeItems.First(x => x.Value?.Id == doc.Id);
-        ArgumentNullException.ThrowIfNull(document_tree_item.Children);
+        ArgumentNullException.ThrowIfNull(doc.Tabs);
 
         TabFitModel TabConvert(TabOfDocumentSchemeConstructorModelDB tab)
         {
             ArgumentNullException.ThrowIfNull(tab.JoinsForms);
-
-            TreeItemDataModel tab_tree_item = (TreeItemDataModel)document_tree_item.Children.First(x => x.Value?.Id == tab.Id);
-            ArgumentNullException.ThrowIfNull(tab_tree_item.Children);
-
             FormFitModel FormConvert(TabJoinDocumentSchemeConstructorModelDB joinForm)
             {
                 ArgumentNullException.ThrowIfNull(joinForm.Form);
-
-                TreeItemDataModel form_tree_item = (TreeItemDataModel)tab_tree_item.Children.First(x => x.Value?.Id == joinForm.Form.Id);
-                ArgumentNullException.ThrowIfNull(form_tree_item.Children);
-
-                IEnumerable<TreeItemDataModel> fieldsNodes = form_tree_item
-                        .Children.Cast<TreeItemDataModel>();
-
                 FieldFitModel FieldConvert(FieldFormConstructorModelDB field)
                 {
-                    TreeItemDataModel field_tree_item = fieldsNodes
-                        .First(x => x.Value?.Id == field.Id && x.Qualification == FieldFormConstructorTypeName);
-
                     return new FieldFitModel()
                     {
                         Name = field.Name,
@@ -150,24 +135,20 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
                         MetadataValueType = field.MetadataValueType,
                         Required = field.Required,
                         TypeField = field.TypeField,
-                        SystemName = field_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
+                        SystemName = systemNamesManufacture.GetSystemName(field.Id, $"{doc.GetType().Name}#{doc.Id} {tab.GetType().Name}#{tab.Id} {joinForm.Form.GetType().Name}#{joinForm.Form.Id} {nameof(FieldFormBaseLowConstructorModel)}", field.GetType().Name) ?? GlobalTools.TranslitToSystemName(field.Name),
                     };
                 }
 
                 FieldAkaDirectoryFitModel FieldAkaDirectoryConvert(FieldFormAkaDirectoryConstructorModelDB field)
                 {
-                    TreeItemDataModel field_dir_tree_item = fieldsNodes
-                        .First(x => x.Value?.Id == field.Id && x.Qualification == FieldFormAkaDirectoryConstructorTypeName);
-
-                    ArgumentNullException.ThrowIfNull(field_dir_tree_item);
-                    TreeItemDataModel _dir = enumerations_ref.TreeItems.Cast<TreeItemDataModel>().First(x => x.Value!.Id == field.DirectoryId);
+                    ArgumentNullException.ThrowIfNull(field.Directory?.Elements);
                     return new FieldAkaDirectoryFitModel()
                     {
-                        DirectorySystemName = _dir.SystemName ?? GlobalTools.TranslitToSystemName(field.Directory!.Name),
-                        Items = _dir.Children!.Select(x => new EntryModel() { Name = x.Value!.Name, Id = x.Value.Id }),
+                        DirectorySystemName = systemNamesManufacture.GetSystemName(field.Directory.Id, $"", field.GetType().Name) ?? GlobalTools.TranslitToSystemName(field.Directory!.Name),
+                        Items = [.. field.Directory.Elements.Cast<EntryModel>()],
                         Name = field.Name,
                         SortIndex = field.SortIndex,
-                        SystemName = field_dir_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(field.Name),
+                        SystemName = systemNamesManufacture.GetSystemName(field.Id, $"{doc.GetType().Name}#{doc.Id} {tab.GetType().Name}#{tab.Id} {joinForm.Form.GetType().Name}#{joinForm.Form.Id} {nameof(FieldFormBaseLowConstructorModel)}", field.GetType().Name) ?? GlobalTools.TranslitToSystemName(field.Name),
                         Css = field.Css,
                         Description = field.Description,
                         Hint = field.Hint,
@@ -182,7 +163,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
                     Css = joinForm.Form.Css,
                     Description = joinForm.Form.Description,
                     SortIndex = joinForm.SortIndex,
-                    SystemName = form_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(joinForm.Form.Name),
+                    SystemName = systemNamesManufacture.GetSystemName(joinForm.Form.Id, $"{doc.GetType().Name}#{doc.Id} {tab.GetType().Name}#{tab.Id} {joinForm.Form.GetType().Name}") ?? GlobalTools.TranslitToSystemName(joinForm.Form.Name), // form_tree_item.SystemName,
                     IsTable = joinForm.IsTable,
 
                     SimpleFields = joinForm.Form.Fields is null ? null : [.. joinForm.Form.Fields.Select(FieldConvert)],
@@ -197,15 +178,14 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
                 Name = tab.Name,
                 Description = tab.Description,
                 SortIndex = tab.SortIndex,
-                SystemName = tab_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(tab.Name),
+                SystemName = systemNamesManufacture.GetSystemName(tab.Id, $"{doc.GetType().Name}#{doc.Id} {tab.GetType().Name}") ?? GlobalTools.TranslitToSystemName(tab.Name), // tab_tree_item.SystemName,
                 Forms = [.. tab.JoinsForms.Select(FormConvert)],
             };
         }
 
-
         return new DocumentFitModel()
         {
-            SystemName = document_tree_item.SystemName ?? GlobalTools.TranslitToSystemName(doc.Name),
+            SystemName = systemNamesManufacture.GetSystemName(doc.Id, doc.GetType().Name) ?? GlobalTools.TranslitToSystemName(doc.Name),
             Name = doc.Name,
             Description = doc.Description,
             Tabs = [.. doc.Tabs!.Select(TabConvert)]
@@ -239,8 +219,8 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
         StructureProjectModel struct_project = new()
         {
-            Enums = [.. CurrentProject.Directories.Select(EnumConvert)],
-            Documents = [.. CurrentProject.Documents.Select(DocumentConvert)],
+            Enums = [.. CurrentProject.Directories.Select(dir => EnumConvert(dir, ParentFormsPage.SystemNamesManufacture))],
+            Documents = [.. CurrentProject.Documents.Select(x => DocumentConvert(x, ParentFormsPage.SystemNamesManufacture))],
         };
 
         var _err = struct_project

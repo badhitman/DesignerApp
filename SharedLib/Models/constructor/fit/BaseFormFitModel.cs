@@ -2,15 +2,15 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-namespace CodegeneratorLib;
+namespace SharedLib;
 
 /// <summary>
-/// SortableFitModel
+/// Базовая модель
 /// </summary>
-public class SortableFitModel : BaseFitModel
+public abstract class BaseFormFitModel : SortableFitModel
 {
     /// <summary>
-    /// Индекс сортировки
+    /// CSS класс формы
     /// </summary>
-    public required int SortIndex { get; set; }
+    public string? Css { get; set; }
 }

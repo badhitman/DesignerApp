@@ -4,7 +4,7 @@
 
 using SharedLib;
 
-namespace CodegeneratorLib;
+namespace SharedLib;
 
 /// <summary>
 /// Поле формы

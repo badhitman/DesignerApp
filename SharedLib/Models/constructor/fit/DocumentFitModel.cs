@@ -2,15 +2,15 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-namespace CodegeneratorLib;
+namespace SharedLib;
 
 /// <summary>
-/// Таб/Вкладка документа
+/// Документ
 /// </summary>
-public class TabFitModel : SortableFitModel
+public class DocumentFitModel : BaseFitModel
 {
     /// <summary>
     /// Формы документа
     /// </summary>
-    public required FormFitModel[] Forms { get; set; }
+    public required TabFitModel[] Tabs { get; set; }
 }

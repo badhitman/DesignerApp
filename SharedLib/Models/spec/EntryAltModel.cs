@@ -4,7 +4,11 @@
 
 namespace SharedLib;
 
-/// <inheritdoc/>
+/// <summary>
+/// string Id
+/// <code>AND</code>
+/// string? Name
+/// </summary>
 public class EntryAltModel
 {
     /// <inheritdoc/>

@@ -9,10 +9,12 @@ namespace SharedLib;
 /// </summary>
 public partial interface IJournalUniversalService
 {
+
+
     /// <summary>
     /// Получить колонки документа по его имени
     /// </summary>
-    public Task<TResponseModel<EntryAltModel[]?>> GetColumnsForJournal(string document_name, int? projectId);
+    public Task<TResponseModel<EntryAltModel[]?>> GetColumnsForJournal(string document_name_or_id, int? projectId);
 
     /// <summary>
     /// Получить порцию документов

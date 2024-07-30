@@ -4,6 +4,7 @@
 
 using HtmlGenerator.bootstrap;
 using HtmlGenerator.mud;
+using SharedLib;
 
 namespace CodegeneratorLib;
 
