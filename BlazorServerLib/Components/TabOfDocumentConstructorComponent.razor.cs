@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using SharedLib;
 
 namespace BlazorWebLib.Components;
 
@@ -18,4 +19,20 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required int TabId { get; set; }
+
+
+    /// <summary>
+    /// Session values
+    /// </summary>
+    protected ValueDataForSessionOfDocumentModelDB[] SessionValues { get; private set; } = default!;
+
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusyProgress = true;
+        SessionValues = await JournalRepo.ReadSessionTabValues(TabId, DocumentKey);
+        IsBusyProgress = false;
+        await base.OnInitializedAsync();
+    }
 }

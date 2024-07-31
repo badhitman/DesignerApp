@@ -7,7 +7,7 @@
         <CascadingValue Value="this">
             @foreach (FormFitModel form in TabMetadata.Forms)
             {
-                <FormOfTabConstructorComponent DocumentMetadata="DocumentMetadata" FormMetadata="form" TabMetadata="TabMetadata" ID="@TabMetadata.SystemName" />
+                <FormOfTabConstructorComponent SessionValues="@SessionValues.Where(x => x.TabJoinDocumentScheme!.FormId == 0).ToArray()" DocumentMetadata="DocumentMetadata" FormMetadata="form" TabMetadata="TabMetadata" ID="@TabMetadata.SystemName" />
             }
         </CascadingValue>
     </div>

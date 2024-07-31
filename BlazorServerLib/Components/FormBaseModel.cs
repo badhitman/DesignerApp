@@ -10,7 +10,7 @@ namespace BlazorWebLib.Components;
 /// <summary>
 /// Form base
 /// </summary>
-public abstract partial class FormBaseModel : TTabOfDocumenBaseComponent
+public abstract partial class FormBaseModel : DocumenBodyBaseComponent
 {
     /// <summary>
     /// ID

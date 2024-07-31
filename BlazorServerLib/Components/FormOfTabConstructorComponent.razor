@@ -1,6 +1,6 @@
 ﻿@inherits FormBaseModel
 
-<div class="card">
+<div class="card mb-2">
     <div class="card-body">
         <div class="@FormMetadata.Css" title="@(string.IsNullOrWhiteSpace(FormMetadata.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(FormMetadata.Description)))">
             @foreach (BaseRequiredFormFitModel field in FormMetadata.AllFields)
@@ -11,6 +11,7 @@
                         switch (bf.TypeField)
                         {
                             case TypesFieldsFormsEnum.Bool:
+                            
                                 break;
                         }
                     }
@@ -22,19 +23,18 @@
                     {
 
                     }
+                    <p>@field.Name</p>
                 </div>
             }
         </div>
-        <div class="btn-group btn-group-lg" role="group" aria-label="Large button group">
-            @if (IsEdited)
-            {
-                <button @onclick="SaveForm" type="button" class="btn btn-outline-primary">Сохранить</button>
-                <button @onclick="ResetForm" type="button" class="btn btn-outline-primary">Отмена</button>
-            }
-            else
-            {
-                <button disabled type="button" class="btn btn-outline-secondary">Сохранить...</button>
-            }
-        </div>
+        @if (IsEdited)
+        {
+            <div class="btn-toolbar justify-content-end" role="toolbar">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button @onclick="SaveForm" type="button" class="btn btn-outline-primary">Сохранить...</button>
+                    <button @onclick="ResetForm" type="button" class="btn btn-outline-primary">Отмена</button>
+                </div>
+            </div>
+        }
     </div>
 </div>
