@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Documents;
+namespace BlazorWebLib.Components.Documents.Forms;
 
 /// <summary>
 /// Form of tab
