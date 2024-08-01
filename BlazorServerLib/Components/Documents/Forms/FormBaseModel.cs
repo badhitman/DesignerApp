@@ -26,6 +26,12 @@ public abstract partial class FormBaseModel : DocumenBodyBaseComponent
     public required FormFitModel FormMetadata { get; set; }
 
     /// <summary>
+    /// TabMetadata
+    /// </summary>
+    [CascadingParameter,EditorRequired]
+    public required TabFitModel TabMetadata { get; set; }
+
+    /// <summary>
     /// Формы в табе
     /// </summary>
     [CascadingParameter, EditorRequired]

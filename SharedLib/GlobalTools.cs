@@ -4,12 +4,14 @@
 
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using System.Xml.Serialization;
 
 namespace SharedLib;
@@ -34,6 +36,23 @@ public static partial class GlobalTools
             list[k] = list[n];
             list[n] = value;
         }
+    }
+
+    /// <summary>
+    /// Добавить параметр к запросу. если он существует, то происходит обновление этого параметра
+    /// </summary>
+    public static Uri AppendQueryParameter(this Uri uri, string name, string val)
+    {
+        UriBuilder uriBuilder = new(uri);
+        NameValueCollection query = HttpUtility.ParseQueryString(uriBuilder.Query);
+        if (query.AllKeys.Contains(name))
+            query[name] = val;
+        else
+            query.Add(name, val);
+
+        uriBuilder.Query = query.ToString();
+        uri = new(uriBuilder.ToString());
+        return uri;
     }
 
     /// <summary>

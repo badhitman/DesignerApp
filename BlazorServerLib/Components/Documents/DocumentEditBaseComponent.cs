@@ -5,6 +5,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
+using SharedLib;
+using System.Collections.Specialized;
+using System.Web;
 
 namespace BlazorWebLib;
 
@@ -37,7 +40,7 @@ public partial class DocumentEditBaseComponent : DocumenBodyBaseComponent
     [Parameter, SupplyParameterFromQuery]
     public string? TabName { get; set; }
 
-    
+
     /// <summary>
     /// Признак того что обработку бизнес логики следует принудительно отменить/пропустить
     /// </summary>
@@ -47,7 +50,7 @@ public partial class DocumentEditBaseComponent : DocumenBodyBaseComponent
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        Uri current_uri = new(NavigationRepo.Uri);
+
         IsBusyProgress = true;
         DocumentMetadata = await JournalRepo.GetDocumentMetadata(DocumentNameOrId);
         IsBusyProgress = false;
@@ -59,8 +62,14 @@ public partial class DocumentEditBaseComponent : DocumenBodyBaseComponent
         }
         if (!DocumentMetadata.Tabs.Any(x => x.SystemName == TabName))
         {
+            string first_tab_system_name = DocumentMetadata.Tabs.First().SystemName;
+            Uri uriBuilder = new(NavigationRepo.Uri);
+            uriBuilder = uriBuilder.AppendQueryParameter(nameof(TabName), first_tab_system_name);
+
+            var v = $"{uriBuilder}";
+
             IsCancel = true;
-            NavigationRepo.NavigateTo($"{current_uri.AbsolutePath}?{nameof(TabName)}={DocumentMetadata.Tabs.First().SystemName}", true);
+            NavigationRepo.NavigateTo($"{uriBuilder}", true);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using SharedLib;
 
 namespace BlazorLib.Components.Shared.tabs;
 
@@ -13,8 +14,8 @@ public partial class TabComponent : ComponentBase, ITab
 
 
     /// <inheritdoc/>
-    [CascadingParameter]
-    public TabSetComponent? ContainerTabSet { get; set; }
+    [CascadingParameter, EditorRequired]
+    public required TabSetComponent ContainerTabSet { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -41,7 +42,6 @@ public partial class TabComponent : ComponentBase, ITab
     public required RenderFragment ChildContent { get; set; }
 
 
-
     private string? TitleCssClass =>
         ContainerTabSet?.ActiveTab == this ? "active" : IsDisabled ? "disabled" : null;
 
@@ -62,8 +62,12 @@ public partial class TabComponent : ComponentBase, ITab
     /// <inheritdoc/>
     public void ActivateTab()
     {
-        ContainerTabSet?.SetActiveTab(this);
-        Uri _u = new(NavigationManager.Uri);
-        NavigationManager.NavigateTo($"{_u.AbsolutePath}?TabName={SystemName}");
+        ContainerTabSet.SetActiveTab(this);
+        if (!ContainerTabSet.IsSilent)
+        {
+            Uri _u = new(NavigationManager.Uri);
+            _u.AppendQueryParameter("TabName", SystemName);
+            NavigationManager.NavigateTo($"{_u}");
+        }
     }
 }

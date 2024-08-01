@@ -15,6 +15,14 @@ public partial class TabSetComponent : ComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// IsSilent
+    /// </summary>
+    /// <inheritdoc/>
+    [Parameter]
+    public bool IsSilent { get; set; }
+
+
     /// <inheritdoc/>
     public ITab? ActiveTab { get; private set; }
 

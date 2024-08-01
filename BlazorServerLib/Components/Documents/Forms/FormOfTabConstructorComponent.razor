@@ -20,16 +20,16 @@
                                 <DoubleMudFieldComponent Value="DoubleSimpleValue(bf)" ValueChanged="(e) => SetSimpleFieldDoubleValue(bf, e)" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
                                 break;
                             case TypesFieldsFormsEnum.DateTime:
-                                <DateMudComponent Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                <DateTimeMudComponent Value="DateTimeSimpleValue(bf)" ValueChanged="(e) => SetSimpleFieldDateTimeValue(bf, e)" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
                                 break;
                             case TypesFieldsFormsEnum.Date:
-                                <DateMudComponent Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                <DateMudComponent Value="DateOnlySimpleValue(bf)" ValueChanged="(e) => SetSimpleFieldDateOnlyValue(bf, e)" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
                                 break;
                             case TypesFieldsFormsEnum.Time:
-                                <TimeMudComponent Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                <TimeMudComponent Value="TimeOnlySimpleValue(bf)" ValueChanged="(e) => SetSimpleFieldTimeOnlyValue(bf, e)" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
                                 break;
                             case TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password:
-                                <TextMudComponent AsPassword="bf.TypeField == TypesFieldsFormsEnum.Password" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                <TextMudComponent Value="@StringSimpleValue(bf)" ValueChanged="(e) => SetSimpleFieldStringValue(bf, e)" AsPassword="bf.TypeField == TypesFieldsFormsEnum.Password" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
                                 break;
                             case TypesFieldsFormsEnum.ProgramCalculationDouble:
                                 <div class="alert alert-primary" role="alert">

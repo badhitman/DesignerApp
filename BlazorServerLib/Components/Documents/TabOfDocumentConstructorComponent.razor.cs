@@ -27,13 +27,13 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     /// <summary>
     /// PK строки БД
     /// </summary>
-    [CascadingParameter, EditorRequired]
-    public required SessionOfDocumentDataModelDB Session { get; set; }
+    [CascadingParameter]
+    public SessionOfDocumentDataModelDB? Session { get; set; }
 
     /// <summary>
     /// Данные/значения текущей сессии для выбранной вкладки
     /// </summary>
-    protected ValueDataForSessionOfDocumentModelDB[] SessionValues { get; private set; } = default!;
+    protected ValueDataForSessionOfDocumentModelDB[]? SessionValues { get; private set; }
 
     /// <summary>
     /// Формы вкладки (сортированые)
@@ -46,6 +46,9 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        if (Session is null)
+            return;
+
         IsBusyProgress = true;
         SessionValues = await JournalRepo.ReadSessionTabValues(TabOfDocumentSchemeConstructor.Id, Session.Id);
         IsBusyProgress = false;

@@ -27,39 +27,93 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     /// <inheritdoc/>
     public override bool IsEdited => SessionValues.Any(x => _selfSessionValues!.Any(y => x == y)) || _selfSessionValues.Any(x => !SessionValues.Any(y => x == y));
 
+    #region bool
     bool BoolSimpleValue(FieldFitModel field)
     {
-        return false;
+        return default;
     }
 
     void SetSimpleFieldBoolValue(FieldFitModel field, bool value)
     {
-        
-    }
 
+    }
+    #endregion
+
+    #region int
     int IntSimpleValue(FieldFitModel field)
     {
-        return 0;
+        return default;
     }
 
     void SetSimpleFieldIntValue(FieldFitModel field, int value)
     {
 
     }
+    #endregion
 
+    #region double
     double DoubleSimpleValue(FieldFitModel field)
     {
-        return 0;
+        return default;
     }
 
     void SetSimpleFieldDoubleValue(FieldFitModel field, double value)
     {
 
     }
+    #endregion
+
+    #region DateTime
+    DateTime DateTimeSimpleValue(FieldFitModel field)
+    {
+        return default;
+    }
+
+    void SetSimpleFieldDateTimeValue(FieldFitModel field, DateTime? value)
+    {
+
+    }
+    #endregion
+
+    #region DateOnly
+    DateOnly DateOnlySimpleValue(FieldFitModel field)
+    {
+        return default;
+    }
+
+    void SetSimpleFieldDateOnlyValue(FieldFitModel field, DateOnly? value)
+    {
+
+    }
+    #endregion
+
+    #region TimeOnly
+    TimeOnly TimeOnlySimpleValue(FieldFitModel field)
+    {
+        return default;
+    }
+
+    void SetSimpleFieldTimeOnlyValue(FieldFitModel field, TimeOnly? value)
+    {
+
+    }
+    #endregion
+
+    #region string
+    string StringSimpleValue(FieldFitModel field)
+    {
+        return default!;
+    }
+
+    void SetSimpleFieldStringValue(FieldFitModel field, string? value)
+    {
+
+    }
+    #endregion
 
     string GetFieldDomId(BaseRequiredFormFitModel bf)
     {
-        return "";
+        return $"";
     }
 
     /// <inheritdoc/>
