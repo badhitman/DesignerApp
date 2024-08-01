@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 
-namespace BlazorWebLib.Components;
+namespace BlazorWebLib;
 
 /// <summary>
 /// DocumenBodyBaseComponent

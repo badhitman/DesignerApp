@@ -1,0 +1,27 @@
+﻿@using MudBlazor
+
+@inherits TTabOfDocumenBaseComponent
+
+<div class="card">
+    <div class="card-body">
+        <CascadingValue Value="this">
+            @{
+                int i = -1;
+            }
+            @foreach (FormFitModel form in TabMetadata.Forms)
+            {
+                i++;
+                FormConstructorModelDB form_c = TabDB.JoinsForms![i].Form!;
+                ValueDataForSessionOfDocumentModelDB[] _sv = [..SessionValues.Where(x => x.TabJoinDocumentSchemeId == TabDB.Id && x.TabJoinDocumentScheme!.FormId == form_c.Id)];
+                if (form.IsTable)
+                {
+                    <TableFormOfTabConstructorComponent SessionValues="@_sv" />
+                }
+                else
+                {
+                    <FormOfTabConstructorComponent SessionValues="@_sv" DocumentMetadata="DocumentMetadata" FormMetadata="form" TabMetadata="TabMetadata" ID="@TabMetadata.SystemName" />
+                }
+            }
+        </CascadingValue>
+    </div>
+</div>

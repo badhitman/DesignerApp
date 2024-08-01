@@ -2,7 +2,7 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-namespace BlazorWebLib.Components;
+namespace BlazorWebLib;
 
 /// <summary>
 /// TabOfDocumentComponent

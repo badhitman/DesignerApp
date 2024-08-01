@@ -12,5 +12,5 @@ public class DocumentFitModel : BaseFitModel
     /// <summary>
     /// Формы документа
     /// </summary>
-    public required TabFitModel[] Tabs { get; set; }
+    public required List<TabFitModel> Tabs { get; set; }
 }

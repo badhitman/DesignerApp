@@ -13,7 +13,7 @@ namespace SharedLib;
 public class DocumentSchemeConstructorModelDB : EntryConstructedModel
 {
     /// <summary>
-    /// Страницы
+    /// Вкладки/Табы
     /// </summary>
     public List<TabOfDocumentSchemeConstructorModelDB>? Tabs { get; set; }
 

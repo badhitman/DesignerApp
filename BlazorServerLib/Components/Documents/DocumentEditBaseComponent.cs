@@ -5,10 +5,9 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using MudBlazor;
 using Microsoft.Extensions.Logging;
 
-namespace BlazorWebLib.Components;
+namespace BlazorWebLib;
 
 /// <summary>
 /// Document edit
@@ -60,7 +59,7 @@ public partial class DocumentEditBaseComponent : BlazorBusyComponentBaseModel
         DocumentMetadata = await JournalRepo.GetDocumentMetadata(DocumentNameOrId);
         IsBusyProgress = false;
 
-        if (DocumentMetadata.Tabs.Length == 0)
+        if (DocumentMetadata.Tabs.Count == 0)
         {
             _is_return = true;
             return;

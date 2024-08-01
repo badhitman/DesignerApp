@@ -60,6 +60,52 @@ public class TabJoinDocumentSchemeConstructorModelDB
     /// Форма
     /// </summary>
     public FormConstructorModelDB? Form { get; set; }
+    
+    /// <inheritdoc/>
+    public static bool operator ==(TabJoinDocumentSchemeConstructorModelDB tj1, TabJoinDocumentSchemeConstructorModelDB tj2)
+    {
+        return
+            tj1.Id == tj2.Id &&
+            tj1.Description == tj2.Description &&
+            tj1.Name == tj2.Name &&
+            tj1.SortIndex == tj2.SortIndex &&
+            tj1.ShowTitle == tj2.ShowTitle &&
+            tj1.FormId == tj2.FormId &&
+            tj1.TabId == tj2.TabId &&
+            tj1.IsTable == tj2.IsTable;
+    }
+
+    /// <inheritdoc/>
+    public static bool operator !=(TabJoinDocumentSchemeConstructorModelDB tj1, TabJoinDocumentSchemeConstructorModelDB tj2)
+    {
+        return
+            tj1.Id != tj2.Id ||
+            tj1.Description != tj2.Description ||
+            tj1.Name != tj2.Name ||
+            tj1.SortIndex != tj2.SortIndex ||
+            tj1.ShowTitle != tj2.ShowTitle ||
+            tj1.FormId != tj2.FormId ||
+            tj1.TabId != tj2.TabId ||
+            tj1.IsTable != tj2.IsTable;
+    }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj is null)
+            return false;
+
+        if (obj is TabJoinDocumentSchemeConstructorModelDB tj)
+            return this == tj;
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return $"{Id}{Description}{Name}{SortIndex}{ShowTitle}{FormId}{TabId}{IsTable}".GetHashCode();
+    }
 
     /// <summary>
     /// Связь формы со страницей опроса/анкеты

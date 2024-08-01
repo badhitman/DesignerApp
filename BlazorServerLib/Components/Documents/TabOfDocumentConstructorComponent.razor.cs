@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
-namespace BlazorWebLib.Components;
+namespace BlazorWebLib.Components.Documents;
 
 /// <summary>
 /// TabOfDocumentConstructorComponent
@@ -18,7 +18,7 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required int TabId { get; set; }
+    public required TabOfDocumentSchemeConstructorModelDB TabDB { get; set; }
 
 
     /// <summary>
@@ -26,13 +26,20 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     /// </summary>
     protected ValueDataForSessionOfDocumentModelDB[] SessionValues { get; private set; } = default!;
 
+    /// <summary>
+    /// Tab joins
+    /// </summary>
+    protected TabJoinDocumentSchemeConstructorModelDB[] TabJoins => SessionValues
+        .Select(x => x.TabJoinDocumentScheme)
+        .Distinct()
+        .OrderBy(x => x!.SortIndex)
+        .ToArray()!;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        SessionValues = await JournalRepo.ReadSessionTabValues(TabId, DocumentKey);
+        SessionValues = await JournalRepo.ReadSessionTabValues(TabDB.Id, DocumentKey);
         IsBusyProgress = false;
-        await base.OnInitializedAsync();
     }
 }

@@ -31,7 +31,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         [
             $"Перечислений: {dump.Enums.Length} (элементов всего: {dump.Enums.Sum(x => x.EnumItems.Length)})",
             $"Документов: {dump.Documents.Length} шт.",
-            $"{base_dom_root.TabString}вкладок (всего): {dump.Documents.Sum(x => x.Tabs?.Length)}",
+            $"{base_dom_root.TabString}вкладок (всего): {dump.Documents.Sum(x => x.Tabs?.Count)}",
             $"{base_dom_root.TabString}форм (всего): {dump.Documents.SelectMany(x => x.Tabs).Sum(x => x.Forms?.Length)}",
             $"{base_dom_root.TabString}полей (всего): {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.SimpleFields?.Length)} [simple field`s] + {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.FieldsAtDirectories?.Length)} [enumerations field`s]",
             $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",

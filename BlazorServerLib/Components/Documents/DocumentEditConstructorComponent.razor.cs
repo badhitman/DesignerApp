@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
-namespace BlazorWebLib.Components;
+namespace BlazorWebLib.Components.Documents;
 
 /// <summary>
 /// Document edit

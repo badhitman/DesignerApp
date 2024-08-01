@@ -2,10 +2,11 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using BlazorWebLib.Components.Documents;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
-namespace BlazorWebLib.Components;
+namespace BlazorWebLib;
 
 /// <summary>
 /// Form base
