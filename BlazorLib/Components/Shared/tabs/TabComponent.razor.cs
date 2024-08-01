@@ -62,12 +62,12 @@ public partial class TabComponent : ComponentBase, ITab
     /// <inheritdoc/>
     public void ActivateTab()
     {
-        ContainerTabSet.SetActiveTab(this);
+        ContainerTabSet.SetActiveTab(this, true);
         if (!ContainerTabSet.IsSilent)
         {
             Uri _u = new(NavigationManager.Uri);
-            _u.AppendQueryParameter("TabName", SystemName);
-            NavigationManager.NavigateTo($"{_u}");
+            _u = new(_u.AppendQueryParameter(ExtBlazor.ActiveTabName, SystemName));
+            NavigationManager.NavigateTo($"{_u}", true);
         }
     }
 }

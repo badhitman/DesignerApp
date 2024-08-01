@@ -159,7 +159,10 @@ public class PasswordGenerator
     }
 }
 
-internal static class Extensions
+/// <summary>
+/// ext
+/// </summary>
+public static class Extensions
 {
     private static readonly Lazy<RandomSecureVersion> RandomSecure =
         new(() => new RandomSecureVersion());

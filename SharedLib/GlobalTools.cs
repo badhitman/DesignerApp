@@ -41,7 +41,7 @@ public static partial class GlobalTools
     /// <summary>
     /// Добавить параметр к запросу. если он существует, то происходит обновление этого параметра
     /// </summary>
-    public static Uri AppendQueryParameter(this Uri uri, string name, string val)
+    public static string AppendQueryParameter(this Uri uri, string name, string val)
     {
         UriBuilder uriBuilder = new(uri);
         NameValueCollection query = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -51,8 +51,8 @@ public static partial class GlobalTools
             query.Add(name, val);
 
         uriBuilder.Query = query.ToString();
-        uri = new(uriBuilder.ToString());
-        return uri;
+
+        return uriBuilder.ToString();
     }
 
     /// <summary>

@@ -13,22 +13,22 @@ namespace BlazorWebLib.Components.Documents;
 public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseComponent
 {
     /// <summary>
-    /// Parent tab
-    /// </summary>
-    [CascadingParameter, EditorRequired]
-    public required TabOfDocumentConstructorComponent ParentTab { get; set; }
-
-    /// <summary>
     /// Таб/Вкладка документа конструктора
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required TabOfDocumentSchemeConstructorModelDB TabOfDocumentSchemeConstructor { get; set; }
+    public required TabOfDocumentSchemeConstructorModelDB TabOfDocument { get; set; }
 
     /// <summary>
     /// PK строки БД
     /// </summary>
     [CascadingParameter]
     public SessionOfDocumentDataModelDB? Session { get; set; }
+
+    /// <summary>
+    /// Tab Metadata
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required TabFitModel TabMetadata { get; set; }
 
     /// <summary>
     /// Данные/значения текущей сессии для выбранной вкладки
@@ -38,7 +38,7 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     /// <summary>
     /// Формы вкладки (сортированые)
     /// </summary>
-    protected TabJoinDocumentSchemeConstructorModelDB[] FJoins => TabOfDocumentSchemeConstructor.JoinsForms!
+    protected TabJoinDocumentSchemeConstructorModelDB[] FJoins => TabOfDocument.JoinsForms!
         .Distinct()
         .OrderBy(x => x!.SortIndex)
         .ToArray()!;
@@ -49,8 +49,11 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
         if (Session is null)
             return;
 
+        if (TabOfDocument.JoinsForms?.Count != TabMetadata.Forms.Length)
+            throw new Exception();
+
         IsBusyProgress = true;
-        SessionValues = await JournalRepo.ReadSessionTabValues(TabOfDocumentSchemeConstructor.Id, Session.Id);
+        SessionValues = await JournalRepo.ReadSessionTabValues(TabOfDocument.Id, Session.Id);
         IsBusyProgress = false;
     }
 }

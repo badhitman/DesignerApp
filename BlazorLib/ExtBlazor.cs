@@ -6,22 +6,22 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace BlazorLib;
 
 /// <summary>
-/// Extensions
+/// ExtBlazor
 /// </summary>
-public static class Extensions
+public static class ExtBlazor
 {
     /// <summary>
     /// Название параметра в URL
     /// </summary>
-    public const string ActiveTabName = "tab";
+    public const string ActiveTabName = "TabName";
 
     /// <summary>
     /// Получит имя вкладки
     /// </summary>
     public static string? GetTabNameFromUrl(this NavigationManager nav)
     {
-        var uri = new Uri(nav.Uri);
-        var queryParameters = QueryHelpers.ParseQuery(uri.Query);
+        Uri uri = new Uri(nav.Uri);
+        Dictionary<string, Microsoft.Extensions.Primitives.StringValues> queryParameters = QueryHelpers.ParseQuery(uri.Query);
 
         return queryParameters.TryGetValue(ActiveTabName, out var tabName)
             ? tabName.ToString()

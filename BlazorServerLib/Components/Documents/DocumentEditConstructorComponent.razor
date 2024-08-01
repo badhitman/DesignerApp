@@ -52,18 +52,19 @@ else
     DocumentMetadata.Tabs.ForEach(x => x.Forms = x.Forms.OrderBy(x => x.SortIndex).ToArray());
 
     <TabSetComponent>
-        @for (int i = 0; i < DocumentMetadata.Tabs.Count; i++)
+        @foreach (TabFitModel _tab in DocumentMetadata.Tabs)
         {
-            TabFitModel tab = DocumentMetadata.Tabs[i];
-            TabOfDocumentSchemeConstructorModelDB tdb = scheme_obj.Tabs![i];
-            <TabComponent @key="@($"{scheme_obj.Id}-{tab.SystemName}-{tdb.Id}")" Title="@tab.Name" SystemName='@tab.SystemName'>
-                <CascadingValue Value="tdb">
+            TabOfDocumentSchemeConstructorModelDB tod = scheme_obj.Tabs!.First(x => x.SortIndex == _tab.SortIndex);
+            <TabComponent @key="@($"{scheme_obj.Id}-{_tab.SystemName}")" Title="@_tab.Name" SystemName='@_tab.SystemName'>
+                <CascadingValue Value="scheme_obj.Tabs!.First(x => x.SortIndex == _tab.SortIndex)">
                     <CascadingValue Value="scheme_obj">
                         <CascadingValue Value="DocumentMetadata">
-                            <CascadingValue Value="tab">
-                                <CascadingValue Value="DocumentKey">
-                                    <CascadingValue Value="session">
-                                        <TabOfDocumentConstructorComponent />
+                            <CascadingValue Value="DocumentKey">
+                                <CascadingValue Value="session">
+                                    <CascadingValue Value="_tab">
+                                        <CascadingValue Value="tod">
+                                            <TabOfDocumentConstructorComponent />
+                                        </CascadingValue>
                                     </CascadingValue>
                                 </CascadingValue>
                             </CascadingValue>

@@ -24,7 +24,7 @@ public partial class TabSetComponent : ComponentBase
 
 
     /// <inheritdoc/>
-    public ITab? ActiveTab { get; private set; }
+    public ITab ActiveTab { get; private set; } = default!;
 
     /// <inheritdoc/>
     public List<ITab> Tabs { get; private set; } = [];
@@ -36,7 +36,7 @@ public partial class TabSetComponent : ComponentBase
     {
         _selectedTabName = NavigationManager.GetTabNameFromUrl();
         if (!string.IsNullOrWhiteSpace(_selectedTabName) && Tabs.Any(x => x.SystemName.Equals(_selectedTabName, StringComparison.OrdinalIgnoreCase)))
-            SetActiveTab(Tabs.First(x => x.SystemName.Equals(_selectedTabName, StringComparison.OrdinalIgnoreCase)));
+            SetActiveTab(Tabs.First(x => x.SystemName.Equals(_selectedTabName, StringComparison.OrdinalIgnoreCase)), true);
         base.OnInitialized();
     }
 
@@ -47,16 +47,27 @@ public partial class TabSetComponent : ComponentBase
             Tabs.Add(tab);
 
         if (ActiveTab is null || (tab.SystemName.Equals(_selectedTabName, StringComparison.OrdinalIgnoreCase) && !ActiveTab.SystemName.Equals(tab.SystemName, StringComparison.OrdinalIgnoreCase)))
-            SetActiveTab(tab);
+            SetActiveTab(tab, true);
     }
 
     /// <inheritdoc/>
-    public void SetActiveTab(ITab tab)
+    public void SetActiveTab(ITab tab, bool isSilent)
     {
         if (!Tabs.Any(x => x.SystemName.Equals(tab.SystemName, StringComparison.OrdinalIgnoreCase)))
             Tabs.Add(tab);
 
-        ActiveTab = tab;
-        StateHasChanged();
+        if (ActiveTab.SystemName != tab.SystemName)
+        {
+            if (isSilent)
+            {
+                ActiveTab = tab;
+                StateHasChanged();
+            }
+            else
+            {
+                _selectedTabName = NavigationManager.GetTabNameFromUrl();
+            }
+        }
+
     }
 }

@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
-using System.Collections.Specialized;
-using System.Web;
 
 namespace BlazorWebLib;
 
@@ -64,9 +62,7 @@ public partial class DocumentEditBaseComponent : DocumenBodyBaseComponent
         {
             string first_tab_system_name = DocumentMetadata.Tabs.First().SystemName;
             Uri uriBuilder = new(NavigationRepo.Uri);
-            uriBuilder = uriBuilder.AppendQueryParameter(nameof(TabName), first_tab_system_name);
-
-            var v = $"{uriBuilder}";
+            uriBuilder = new(uriBuilder.AppendQueryParameter(nameof(TabName), first_tab_system_name));
 
             IsCancel = true;
             NavigationRepo.NavigateTo($"{uriBuilder}", true);
