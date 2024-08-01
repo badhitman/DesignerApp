@@ -1,7 +1,21 @@
 ﻿@inherits FieldBaseComponentModel
 
-<h3>TimeMudComponent</h3>
+<MudTextField @bind-Value="TimeOnlyValue" HelperText="@Hint" Label="@Label" Required="@Required" InputType="InputType.Time" />
 
 @code {
+    [Parameter]
+    public TimeOnly? Value { get; set; }
 
+    [Parameter]
+    public EventCallback<TimeOnly?> ValueChanged { get; set; }
+
+    public TimeOnly? TimeOnlyValue
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
 }

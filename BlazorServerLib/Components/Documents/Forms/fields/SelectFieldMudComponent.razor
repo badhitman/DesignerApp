@@ -1,7 +1,10 @@
 ﻿@inherits FieldBaseComponentModel
 
-<h3>DirectoryFieldComponent</h3>
+<MudSelect T="string" Label="@Label" HelperText="@Hint" MultiSelection="true" @bind-Value="value" @bind-SelectedValues="options">
+
+</MudSelect>
 
 @code {
-
+    private string value { get; set; } = "Nothing selected";
+    private IEnumerable<string> options { get; set; } = new HashSet<string>() { "Alaska" };
 }

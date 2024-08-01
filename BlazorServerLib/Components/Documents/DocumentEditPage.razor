@@ -21,7 +21,9 @@
 }
 else
 {
-    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" DocumentKey="Math.Max(DocumentKey.GetValueOrDefault(0), 0)" ProjectId="ProjectId" />
+    <CascadingValue Value="DocumentKey">
+        <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" />
+    </CascadingValue>
 }
 
 @code {

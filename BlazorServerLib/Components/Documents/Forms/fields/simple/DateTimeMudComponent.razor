@@ -1,7 +1,21 @@
 ﻿@inherits FieldBaseComponentModel
 
-<h3>DateTimeMudComponent</h3>
+<MudTextField @bind-Value="DateTimeValue" HelperText="@Hint" Format="s" Label="@Label" Required="@Required" InputType="InputType.DateTimeLocal" />
 
 @code {
+    [Parameter]
+    public DateTime? Value { get; set; }
 
+    [Parameter]
+    public EventCallback<DateTime?> ValueChanged { get; set; }
+
+    public DateTime? DateTimeValue
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
 }

@@ -1,7 +1,21 @@
 ﻿@inherits FieldBaseComponentModel
 
-<h3>DateMudComponent</h3>
+<MudTextField @bind-Value="DateOnlyValue" HelperText="@Hint" Format="yyyy-MM-dd" Label="@Label" Required="@Required" InputType="InputType.Date" />
 
 @code {
+    [Parameter]
+    public DateOnly? Value { get; set; }
 
+    [Parameter]
+    public EventCallback<DateOnly?> ValueChanged { get; set; }
+
+    public DateOnly? DateOnlyValue
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
 }

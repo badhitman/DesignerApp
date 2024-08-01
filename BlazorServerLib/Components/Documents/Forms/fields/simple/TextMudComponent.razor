@@ -1,6 +1,6 @@
 ﻿@inherits FieldBaseComponentModel
 
-<h3>TextMudComponent</h3>
+<MudTextField @bind-Value="StringValue" HelperText="@Hint" Label="@Label" Required="@Required" Variant="Variant.Text"></MudTextField>
 
 @code {
     /// <summary>
@@ -8,4 +8,20 @@
     /// </summary>
     [Parameter]
     public bool AsPassword { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    public string? StringValue
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
 }
