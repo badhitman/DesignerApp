@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using SharedLib;
 
 namespace BlazorLib.Components.Shared.tabs;
 
@@ -8,7 +9,7 @@ namespace BlazorLib.Components.Shared.tabs;
 public partial class TabSetComponent : ComponentBase
 {
     [Inject]
-    NavigationManager NavigationManager { get; set; } = default!;
+    NavigationManager NavigationRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -24,7 +25,7 @@ public partial class TabSetComponent : ComponentBase
 
 
     /// <inheritdoc/>
-    public ITab ActiveTab { get; private set; } = default!;
+    public ITab? ActiveTab { get; private set; }
 
     /// <inheritdoc/>
     public List<ITab> Tabs { get; private set; } = [];
@@ -34,7 +35,7 @@ public partial class TabSetComponent : ComponentBase
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        _selectedTabName = NavigationManager.GetTabNameFromUrl();
+        _selectedTabName = NavigationRepo.GetTabNameFromUrl();
         if (!string.IsNullOrWhiteSpace(_selectedTabName) && Tabs.Any(x => x.SystemName.Equals(_selectedTabName, StringComparison.OrdinalIgnoreCase)))
             SetActiveTab(Tabs.First(x => x.SystemName.Equals(_selectedTabName, StringComparison.OrdinalIgnoreCase)), true);
         base.OnInitialized();
@@ -56,7 +57,7 @@ public partial class TabSetComponent : ComponentBase
         if (!Tabs.Any(x => x.SystemName.Equals(tab.SystemName, StringComparison.OrdinalIgnoreCase)))
             Tabs.Add(tab);
 
-        if (ActiveTab.SystemName != tab.SystemName)
+        if (ActiveTab?.SystemName != tab.SystemName)
         {
             if (isSilent)
             {
@@ -65,7 +66,12 @@ public partial class TabSetComponent : ComponentBase
             }
             else
             {
-                _selectedTabName = NavigationManager.GetTabNameFromUrl();
+                _selectedTabName = NavigationRepo.GetTabNameFromUrl() ?? throw new Exception();
+
+                Uri uriBuilder = new(NavigationRepo.Uri);
+                uriBuilder = new(uriBuilder.AppendQueryParameter("TabName", _selectedTabName));
+
+                NavigationRepo.NavigateTo($"{uriBuilder}", true);
             }
         }
 

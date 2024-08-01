@@ -166,6 +166,9 @@ public static class Extensions
 {
     private static readonly Lazy<RandomSecureVersion> RandomSecure =
         new(() => new RandomSecureVersion());
+    /// <summary>
+    /// ShuffleSecure
+    /// </summary>
     public static IEnumerable<T> ShuffleSecure<T>(this IEnumerable<T> source)
     {
         T[] sourceArray = source.ToArray();
