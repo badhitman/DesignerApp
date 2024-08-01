@@ -1,6 +1,8 @@
-﻿@inherits FieldBaseComponentModel
+﻿@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-<MudTextField @bind-Value="StringValue" HelperText="@Hint" Label="@Label" Required="@Required" Variant="Variant.Text"></MudTextField>
+@inherits FieldBaseComponentModel
+
+<MudTextField @bind-Value="StringValue" HelperText="@Hint" Label="@Label" Required="@Required" Variant="Variant.Text" InputId="@Id"></MudTextField>
 
 @code {
     /// <summary>

@@ -15,21 +15,25 @@
                 if (TabOfDocument.JoinsForms?.Count != TabMetadata.Forms.Length)
                     throw new Exception();
 
-                FormConstructorModelDB form_c = TabOfDocument.JoinsForms![i].Form!;
+                TabJoinDocumentSchemeConstructorModelDB join = TabOfDocument.JoinsForms![i];
+
+                FormConstructorModelDB form_c = join.Form!;
                 List<ValueDataForSessionOfDocumentModelDB> _sv = SessionValues is null ? [] : [.. SessionValues.Where(x => x.TabJoinDocumentSchemeId == TabOfDocument.Id && x.TabJoinDocumentScheme!.FormId == form_c.Id)];
-                <CascadingValue Value="TabMetadata">
-                    <CascadingValue Value="FormsStack">
-                        <CascadingValue Value="form">
-                            <CascadingValue Value="form_c">
-                                <CascadingValue Value="_sv">
-                                    @if (form.IsTable)
-                                    {
-                                        <TableFormOfTabConstructorComponent />
-                                    }
-                                    else
-                                    {
-                                        <FormOfTabConstructorComponent ID="@($"{TabMetadata.SystemName}-{form.SystemName}")" />
-                                    }
+                <CascadingValue Value="join">
+                    <CascadingValue Value="TabMetadata">
+                        <CascadingValue Value="FormsStack">
+                            <CascadingValue Value="form">
+                                <CascadingValue Value="form_c">
+                                    <CascadingValue Value="_sv">
+                                        @if (form.IsTable)
+                                        {
+                                            <TableFormOfTabConstructorComponent />
+                                        }
+                                        else
+                                        {
+                                            <FormOfTabConstructorComponent ID="@($"{TabMetadata.SystemName}-{form.SystemName}")" />
+                                        }
+                                    </CascadingValue>
                                 </CascadingValue>
                             </CascadingValue>
                         </CascadingValue>

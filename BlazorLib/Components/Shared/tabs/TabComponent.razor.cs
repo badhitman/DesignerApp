@@ -67,7 +67,7 @@ public partial class TabComponent : ComponentBase, ITab
         {
             Uri _u = new(NavigationManager.Uri);
             _u = new(_u.AppendQueryParameter(ExtBlazor.ActiveTabName, SystemName));
-            NavigationManager.NavigateTo($"{_u}", true);
+            NavigationManager.NavigateTo(_u.ToString());
         }
     }
 }

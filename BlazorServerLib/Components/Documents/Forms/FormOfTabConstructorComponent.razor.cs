@@ -18,11 +18,23 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     List<ValueDataForSessionOfDocumentModelDB> _selfSessionValues = [];
 
     /// <summary>
+    /// Tab
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required TabOfDocumentSchemeConstructorModelDB Tab { get; set; }
+
+    /// <summary>
+    /// Join
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required TabJoinDocumentSchemeConstructorModelDB Join { get; set; }
+
+
+    /// <summary>
     /// Form
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
-
 
     /// <inheritdoc/>
     public override bool IsEdited => SessionValues.Any(x => _selfSessionValues!.Any(y => x == y)) || _selfSessionValues.Any(x => !SessionValues.Any(y => x == y));
@@ -111,9 +123,33 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     }
     #endregion
 
+    #region EntryModel
+    EntryModel DictValue(FieldAkaDirectoryFitModel field)
+    {
+        return default!;
+    }
+
+    void SetDictFieldValue(FieldAkaDirectoryFitModel field, EntryModel? value)
+    {
+
+    }
+    #endregion
+
+    #region EntryModel[]
+    EntryModel[] DictsValue(FieldAkaDirectoryFitModel field)
+    {
+        return default!;
+    }
+
+    void SetDictsFieldValue(FieldAkaDirectoryFitModel field, EntryModel[]? value)
+    {
+
+    }
+    #endregion
+
     string GetFieldDomId(BaseRequiredFormFitModel bf)
     {
-        return $"";
+        return $"{Join.Id}-{bf?.SystemName}";
     }
 
     /// <inheritdoc/>

@@ -1,6 +1,6 @@
 ﻿@inherits FieldBaseComponentModel
 
-<MudSelect T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="false" @bind-Value="EntryValue" ToStringFunc="@converter">
+<MudSelect T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="true" @bind-SelectedValues="EntriesValues" ToStringFunc="converter">
     @if (Entries?.Any() == true)
     {
         @foreach (EntryModel d in Entries)
@@ -15,21 +15,23 @@
     public IEnumerable<EntryModel>? Entries { get; set; }
 
     [Parameter]
-    public EntryModel? Value { get; set; }
+    public EntryModel[]? Value { get; set; }
 
     [Parameter]
-    public EventCallback<EntryModel?> ValueChanged { get; set; }
+    public EventCallback<EntryModel[]?> ValueChanged { get; set; }
 
 
     Func<EntryModel?, string> converter = p => p?.Name ?? "";
 
-    public EntryModel? EntryValue
+    public IEnumerable<EntryModel>? EntriesValues
     {
         get => Value;
         set
         {
             if (value is not null)
-                Value?.Update(value);
+                Value = [.. value];
+            else
+                Value = null;
 
             ValueChanged.InvokeAsync(Value);
         }

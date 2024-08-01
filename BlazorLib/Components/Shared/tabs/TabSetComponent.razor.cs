@@ -71,7 +71,7 @@ public partial class TabSetComponent : ComponentBase
                 Uri uriBuilder = new(NavigationRepo.Uri);
                 uriBuilder = new(uriBuilder.AppendQueryParameter("TabName", _selectedTabName));
 
-                NavigationRepo.NavigateTo($"{uriBuilder}", true);
+                NavigationRepo.NavigateTo(uriBuilder.ToString());
             }
         }
 

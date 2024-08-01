@@ -38,6 +38,7 @@ public class EntryModel
     public void Update(EntryModel elementObjectEdit)
     {
         Name = elementObjectEdit.Name;
+        Id = elementObjectEdit.Id;
     }
 
     /// <inheritdoc/>

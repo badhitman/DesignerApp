@@ -181,6 +181,9 @@ public static class Extensions
         }
     }
 
+    /// <summary>
+    /// ShuffleTextSecure
+    /// </summary>
     public static string ShuffleTextSecure(this string source)
     {
         char[] shuffeldChars = source.ShuffleSecure().ToArray();
