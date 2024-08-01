@@ -34,7 +34,6 @@ else if (schemes.Length > 1)
 else
 {
     DocumentSchemeConstructorModelDB scheme_obj = schemes[0];
-
     scheme_obj.Tabs = scheme_obj.Tabs?.OrderBy(x => x.SortIndex).ToList();
     scheme_obj.Tabs?.ForEach(x => x.JoinsForms = x.JoinsForms?.OrderBy(y => y.SortIndex).ToList());
 
@@ -47,7 +46,17 @@ else
             TabFitModel tab = DocumentMetadata.Tabs[i];
             TabOfDocumentSchemeConstructorModelDB tdb = scheme_obj.Tabs![i];
             <TabComponent @key="@($"{scheme_obj.Id}-{tab.SystemName}-{tdb.Id}")" Title="@tab.Name" SystemName='@tab.SystemName'>
-                <TabOfDocumentConstructorComponent DocumentMetadata="DocumentMetadata" TabMetadata="tab" DocumentKey="DocumentKey" TabDB="@tdb" />
+                <CascadingValue Value="scheme_obj">
+                    <CascadingValue Value="DocumentMetadata">
+                        <CascadingValue Value="tab">
+                            <CascadingValue Value="DocumentKey">
+                                <CascadingValue Value="session">
+                                    <TabOfDocumentConstructorComponent />
+                                </CascadingValue>
+                            </CascadingValue>
+                        </CascadingValue>
+                    </CascadingValue>
+                </CascadingValue>
             </TabComponent>
         }
     </TabSetComponent>

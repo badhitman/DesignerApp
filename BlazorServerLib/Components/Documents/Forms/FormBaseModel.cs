@@ -22,14 +22,14 @@ public abstract partial class FormBaseModel : DocumenBodyBaseComponent
     /// <summary>
     /// Form Metadata
     /// </summary>
-    [Parameter, EditorRequired]
+    [CascadingParameter, EditorRequired]
     public required FormFitModel FormMetadata { get; set; }
 
     /// <summary>
-    /// Parent tab
+    /// Формы в табе
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required TabOfDocumentConstructorComponent ParentTab { get; set; }
+    public required List<FormBaseModel> FormsStack { get; set; }
 
     /// <summary>
     /// Форма изменена
@@ -44,13 +44,13 @@ public abstract partial class FormBaseModel : DocumenBodyBaseComponent
     /// <summary>
     /// Отмена редактирования формы (обработчик команды)
     /// </summary>
-    public abstract Task ResetForm();
+    public abstract void ResetForm();
 
     /// <inheritdoc/>
     protected override Task OnInitializedAsync()
     {
-        if (!ParentTab.FormsStack.Any(x => x.ID == ID))
-            ParentTab.FormsStack.Add(this);
+        if (!FormsStack.Any(x => x.ID == ID))
+            FormsStack.Add(this);
 
         return base.OnInitializedAsync();
     }

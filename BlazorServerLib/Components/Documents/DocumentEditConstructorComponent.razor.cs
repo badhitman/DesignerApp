@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
@@ -12,24 +13,41 @@ namespace BlazorWebLib.Components.Documents;
 /// </summary>
 public partial class DocumentEditConstructorComponent : DocumentEditBaseComponent
 {
+    [Inject]
+    IConstructorService ConstructorRepo { get; set; } = default!;
+
+
     /// <summary>
     /// Project Id
     /// </summary>
     [Parameter]
     public int? ProjectId { get; set; }
 
+
     DocumentSchemeConstructorModelDB[]? schemes;
+    SessionOfDocumentDataModelDB? session;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        if (_is_return)
+        if (IsCancel)
             return;
 
         IsBusyProgress = true;
         TResponseModel<DocumentSchemeConstructorModelDB[]?> ds = await JournalRepo.FindDocumentSchemes(DocumentNameOrId, ProjectId);
-        schemes = ds.Response;
+        SnackbarRepo.ShowMessagesResponse(ds.Messages);
         IsBusyProgress = false;
+        schemes = ds.Response;
+
+        if (schemes?.Length == 1)
+        {
+            if (DocumentKey < 1)
+                return;
+
+            TResponseModel<SessionOfDocumentDataModelDB> session_data = await ConstructorRepo.GetSessionDocument(DocumentKey);
+            SnackbarRepo.ShowMessagesResponse(session_data.Messages);
+            session = session_data.Response;
+        }
     }
 }

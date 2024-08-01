@@ -11,7 +11,7 @@
                         switch (bf.TypeField)
                         {
                             case TypesFieldsFormsEnum.Bool:
-                            
+                                <MudCheckBoxComponent IsCheckedChanged="(e) => SetSimpleFieldValue(bf, e)" />
                                 break;
                         }
                     }

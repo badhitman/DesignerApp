@@ -3,24 +3,23 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using BlazorLib;
-using SharedLib;
 using Microsoft.Extensions.Logging;
+using MudBlazor;
 
 namespace BlazorWebLib;
 
 /// <summary>
 /// Document edit
 /// </summary>
-public partial class DocumentEditBaseComponent : BlazorBusyComponentBaseModel
+public partial class DocumentEditBaseComponent : DocumenBodyBaseComponent
 {
     /// <inheritdoc/>
     [Inject]
-    protected IJournalUniversalService JournalRepo { get; set; } = default!;
+    protected NavigationManager NavigationRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Inject]
-    protected NavigationManager NavigationRepo { get; set; } = default!;
+    protected ISnackbar SnackbarRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Inject]
@@ -36,7 +35,7 @@ public partial class DocumentEditBaseComponent : BlazorBusyComponentBaseModel
     /// Document Key - идентификатор документа из БД. если меньше 1, то создание нового
     /// </summary>
     [Parameter, EditorRequired]
-    public required int DocumentKey { get; set; }
+    public new required int DocumentKey { get; set; }
 
     /// <summary>
     /// Tab name
@@ -44,12 +43,12 @@ public partial class DocumentEditBaseComponent : BlazorBusyComponentBaseModel
     [Parameter, SupplyParameterFromQuery]
     public string? TabName { get; set; }
 
-
-    /// <inheritdoc/>
-    protected DocumentFitModel DocumentMetadata { get; set; } = default!;
-
-    /// <inheritdoc/>
-    protected bool _is_return;
+    
+    /// <summary>
+    /// Признак того что обработку бизнес логики следует принудительно отменить/пропустить
+    /// </summary>
+    /// <remarks>в наследниках после вызова текущей реализации должен проверить этот признак и отказаться от дальнейшего выполнения</remarks>
+    protected bool IsCancel;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -61,12 +60,12 @@ public partial class DocumentEditBaseComponent : BlazorBusyComponentBaseModel
 
         if (DocumentMetadata.Tabs.Count == 0)
         {
-            _is_return = true;
+            IsCancel = true;
             return;
         }
         if (!DocumentMetadata.Tabs.Any(x => x.SystemName == TabName))
         {
-            _is_return = true;
+            IsCancel = true;
             NavigationRepo.NavigateTo($"{current_uri.AbsolutePath}?{nameof(TabName)}={DocumentMetadata.Tabs.First().SystemName}", true);
         }
     }

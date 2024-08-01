@@ -14,6 +14,25 @@ namespace BlazorWebLib.Components.Documents.Forms;
 public partial class TableFormOfTabConstructorComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
-    [Parameter, EditorRequired]
-    public required IEnumerable<ValueDataForSessionOfDocumentModelDB> SessionValues { get; set; }
+    [CascadingParameter, EditorRequired]
+    public required List<ValueDataForSessionOfDocumentModelDB> SessionValues { get; set; }
+
+    /// <summary>
+    /// Form
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormConstructorModelDB Form {  get; set; }
+
+
+    /// <summary>
+    /// DocumentMetadata
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required DocumentFitModel DocumentMetadata { get; set; }
+
+    /// <summary>
+    /// FormMetadata
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormFitModel FormMetadata { get; set; }
 }

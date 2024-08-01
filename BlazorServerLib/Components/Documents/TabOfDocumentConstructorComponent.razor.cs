@@ -12,25 +12,33 @@ namespace BlazorWebLib.Components.Documents;
 /// </summary>
 public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseComponent
 {
-    /// <inheritdoc/>
-    [Parameter, EditorRequired]
-    public required int DocumentKey { get; set; }
-
-    /// <inheritdoc/>
-    [Parameter, EditorRequired]
-    public required TabOfDocumentSchemeConstructorModelDB TabDB { get; set; }
-
+    /// <summary>
+    /// Parent tab
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required TabOfDocumentConstructorComponent ParentTab { get; set; }
 
     /// <summary>
-    /// Session values
+    /// Таб/Вкладка документа конструктора
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required TabOfDocumentSchemeConstructorModelDB TabOfDocumentSchemeConstructor { get; set; }
+
+    /// <summary>
+    /// PK строки БД
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required SessionOfDocumentDataModelDB Session { get; set; }
+
+    /// <summary>
+    /// Данные/значения текущей сессии для выбранной вкладки
     /// </summary>
     protected ValueDataForSessionOfDocumentModelDB[] SessionValues { get; private set; } = default!;
 
     /// <summary>
-    /// Tab joins
+    /// Формы вкладки (сортированые)
     /// </summary>
-    protected TabJoinDocumentSchemeConstructorModelDB[] TabJoins => SessionValues
-        .Select(x => x.TabJoinDocumentScheme)
+    protected TabJoinDocumentSchemeConstructorModelDB[] FJoins => TabOfDocumentSchemeConstructor.JoinsForms!
         .Distinct()
         .OrderBy(x => x!.SortIndex)
         .ToArray()!;
@@ -39,7 +47,7 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        SessionValues = await JournalRepo.ReadSessionTabValues(TabDB.Id, DocumentKey);
+        SessionValues = await JournalRepo.ReadSessionTabValues(TabOfDocumentSchemeConstructor.Id, Session.Id);
         IsBusyProgress = false;
     }
 }

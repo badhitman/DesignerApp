@@ -2,7 +2,8 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using BlazorWebLib.Components.Documents.Forms;
+using Microsoft.AspNetCore.Components;
+using SharedLib;
 
 namespace BlazorWebLib;
 
@@ -11,6 +12,13 @@ namespace BlazorWebLib;
 /// </summary>
 public abstract class TTabOfDocumenBaseComponent : DocumenBodyBaseComponent
 {
+    /// <summary>
+    /// Tab Metadata
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required TabFitModel TabMetadata { get; set; }
+
+
     /// <summary>
     /// Формы в табе
     /// </summary>

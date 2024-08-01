@@ -13,34 +13,47 @@ namespace BlazorWebLib.Components.Documents.Forms;
 public partial class FormOfTabConstructorComponent : FormBaseModel
 {
     /// <inheritdoc/>
-    [Parameter, EditorRequired]
-    public required IEnumerable<ValueDataForSessionOfDocumentModelDB> SessionValues { get; set; }
+    [CascadingParameter, EditorRequired]
+    public required List<ValueDataForSessionOfDocumentModelDB> SessionValues { get; set; }
+    List<ValueDataForSessionOfDocumentModelDB> _selfSessionValues = [];
 
-    ValueDataForSessionOfDocumentModelDB[] _selfSessionValues = [];
+    /// <summary>
+    /// Form
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required FormConstructorModelDB Form { get; set; }
+
 
     /// <inheritdoc/>
     public override bool IsEdited => SessionValues.Any(x => _selfSessionValues!.Any(y => x == y)) || _selfSessionValues.Any(x => !SessionValues.Any(y => x == y));
 
-    /// <inheritdoc/>
-    public override Task SaveForm()
+    
+    void SetSimpleFieldValue(FieldFitModel field, bool value)
     {
-        throw new NotImplementedException();
+        
     }
 
     /// <inheritdoc/>
-    public override Task ResetForm()
+    public override Task SaveForm()
     {
-        throw new NotImplementedException();
+        SessionValues.Clear();
+        SessionValues.AddRange(_selfSessionValues);
+
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public override void ResetForm()
+    {
+        _selfSessionValues.Clear();
+        _selfSessionValues.AddRange(SessionValues);
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        SessionValues.ToList().CopyTo(_selfSessionValues);
+        _selfSessionValues.AddRange(SessionValues);
 
-        //IsBusyProgress = false;
-        //var res = await JournalRepo.
-        //IsBusyProgress = false;
         await base.OnInitializedAsync();
     }
 }

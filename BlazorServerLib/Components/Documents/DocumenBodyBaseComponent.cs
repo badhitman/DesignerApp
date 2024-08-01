@@ -19,14 +19,14 @@ public abstract class DocumenBodyBaseComponent : BlazorBusyComponentBaseModel
 
 
     /// <summary>
-    /// Tab Metadata
-    /// </summary>
-    [Parameter, EditorRequired]
-    public required TabFitModel TabMetadata { get; set; }
-
-    /// <summary>
     /// Document Metadata
     /// </summary>
-    [Parameter, EditorRequired]
+    [CascadingParameter, EditorRequired]
     public required DocumentFitModel DocumentMetadata { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [CascadingParameter]
+    public int? DocumentKey { get; set; }
 }
