@@ -318,7 +318,7 @@ public interface IConstructorService
     /// <summary>
     /// Получить сессию
     /// </summary>
-    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocument(int id_session, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocument(int id_session, bool skip_include = false, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить (или создать) сессию опроса/анкеты

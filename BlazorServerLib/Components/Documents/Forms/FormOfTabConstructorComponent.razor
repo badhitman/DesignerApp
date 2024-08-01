@@ -11,17 +11,52 @@
                         switch (bf.TypeField)
                         {
                             case TypesFieldsFormsEnum.Bool:
-                                <MudCheckBoxComponent IsCheckedChanged="(e) => SetSimpleFieldValue(bf, e)" />
+                                <CheckBoxComponent IsChecked="BoolSimpleValue(bf)" IsCheckedChanged="(e) => SetSimpleFieldBoolValue(bf, e)" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                break;
+                            case TypesFieldsFormsEnum.Int:
+                                <IntMudFieldComponent Value="IntSimpleValue(bf)" ValueChanged="(e) => SetSimpleFieldIntValue(bf, e)" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                break;
+                            case TypesFieldsFormsEnum.Double:
+                                <DoubleMudFieldComponent Value="DoubleSimpleValue(bf)" ValueChanged="(e) => SetSimpleFieldDoubleValue(bf, e)" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                break;
+                            case TypesFieldsFormsEnum.DateTime:
+                                <DateMudComponent Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                break;
+                            case TypesFieldsFormsEnum.Date:
+                                <DateMudComponent Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                break;
+                            case TypesFieldsFormsEnum.Time:
+                                <TimeMudComponent Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                break;
+                            case TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password:
+                                <TextMudComponent AsPassword="bf.TypeField == TypesFieldsFormsEnum.Password" Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(bf)" Required="@field.Required" />
+                                break;
+                            case TypesFieldsFormsEnum.ProgramCalculationDouble:
+                                <div class="alert alert-primary" role="alert">
+                                    TypesFieldsFormsEnum.ProgramCalculationDouble
+                                </div>
+                                break;
+                            case TypesFieldsFormsEnum.Generator:
+                                <div class="alert alert-primary" role="alert">
+                                    TypesFieldsFormsEnum.Generator
+                                </div>
+                                break;
+                            default:
+                                <div class="alert alert-danger" role="alert">
+                                    Не известный вид поля: @bf.TypeField
+                                </div>
                                 break;
                         }
                     }
                     else if (field is FieldAkaDirectoryFitModel df)
                     {
-
+                        <SelectFieldMudComponent Label="@field.Name" Hint="@field.Description" Id="@GetFieldDomId(df)" Required="@field.Required" />
                     }
                     else
                     {
-
+                        <div class="alert alert-danger" role="alert">
+                            Не известный тип поля: @field.GetType().FullName
+                        </div>
                     }
                     <p>@field.Name</p>
                 </div>

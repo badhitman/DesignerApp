@@ -25,8 +25,11 @@ public abstract class DocumenBodyBaseComponent : BlazorBusyComponentBaseModel
     public required DocumentFitModel DocumentMetadata { get; set; }
 
     /// <summary>
-    /// 
+    /// PK строки БД.
     /// </summary>
+    /// <remarks>
+    /// Если null, то demo решим. Если HasValue и меньше 1, тогда создание нового объекта
+    /// </remarks>
     [CascadingParameter]
     public int? DocumentKey { get; set; }
 }

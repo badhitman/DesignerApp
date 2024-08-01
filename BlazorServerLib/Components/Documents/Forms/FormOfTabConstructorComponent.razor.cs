@@ -27,10 +27,39 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     /// <inheritdoc/>
     public override bool IsEdited => SessionValues.Any(x => _selfSessionValues!.Any(y => x == y)) || _selfSessionValues.Any(x => !SessionValues.Any(y => x == y));
 
-    
-    void SetSimpleFieldValue(FieldFitModel field, bool value)
+    bool BoolSimpleValue(FieldFitModel field)
+    {
+        return false;
+    }
+
+    void SetSimpleFieldBoolValue(FieldFitModel field, bool value)
     {
         
+    }
+
+    int IntSimpleValue(FieldFitModel field)
+    {
+        return 0;
+    }
+
+    void SetSimpleFieldIntValue(FieldFitModel field, int value)
+    {
+
+    }
+
+    double DoubleSimpleValue(FieldFitModel field)
+    {
+        return 0;
+    }
+
+    void SetSimpleFieldDoubleValue(FieldFitModel field, double value)
+    {
+
+    }
+
+    string GetFieldDomId(BaseRequiredFormFitModel bf)
+    {
+        return "";
     }
 
     /// <inheritdoc/>

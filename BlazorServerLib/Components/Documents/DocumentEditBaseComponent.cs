@@ -32,12 +32,6 @@ public partial class DocumentEditBaseComponent : DocumenBodyBaseComponent
     public required string DocumentNameOrId { get; set; }
 
     /// <summary>
-    /// Document Key - идентификатор документа из БД. если меньше 1, то создание нового
-    /// </summary>
-    [Parameter, EditorRequired]
-    public new required int DocumentKey { get; set; }
-
-    /// <summary>
     /// Tab name
     /// </summary>
     [Parameter, SupplyParameterFromQuery]

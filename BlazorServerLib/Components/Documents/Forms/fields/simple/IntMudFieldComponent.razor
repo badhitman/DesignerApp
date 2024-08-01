@@ -1,0 +1,20 @@
+﻿@inherits FieldBaseComponentModel
+<MudNumericField Label="@Label" HelperText="@Hint" @bind-Value="_value" />
+
+@code {
+    [Parameter]
+    public int Value { get; set; }
+
+    public int _value
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    [Parameter]
+    public required EventCallback<int> ValueChanged { get; set; }
+}

@@ -117,7 +117,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseModel<SessionOfDocumentDataModelDB>> SetValueFieldSessionDocumentData(SetValueFieldDocumentDataModel req, CancellationToken cancellationToken = default)
     {
-        TResponseModel<SessionOfDocumentDataModelDB> session = await GetSessionDocument(req.SessionId, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> session = await GetSessionDocument(req.SessionId, false, cancellationToken);
         if (!session.Success())
             return session;
 
@@ -162,7 +162,7 @@ public partial class ConstructorService(
         if (existing_value is null)
         {
             if (req.FieldValue is null)
-                return await GetSessionDocument(req.SessionId, cancellationToken);
+                return await GetSessionDocument(req.SessionId, false, cancellationToken);
 
             existing_value = ValueDataForSessionOfDocumentModelDB.Build(req, form_join, session_Document);
 
@@ -182,13 +182,13 @@ public partial class ConstructorService(
 
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        return await GetSessionDocument(req.SessionId, cancellationToken);
+        return await GetSessionDocument(req.SessionId, false, cancellationToken);
     }
 
     /// <inheritdoc/>
     public async Task<TResponseStrictModel<int>> AddRowToTable(FieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default)
     {
-        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionDocument(req.SessionId, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionDocument(req.SessionId, false, cancellationToken);
         if (!get_s.Success())
             return new TResponseStrictModel<int>() { Messages = get_s.Messages, Response = 0 };
         TResponseStrictModel<int> res = new() { Response = 0 };
@@ -231,7 +231,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(ValueFieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default)
     {
-        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionDocument(req.SessionId, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionDocument(req.SessionId, false, cancellationToken);
         if (!get_s.Success())
             return get_s;
 
@@ -263,7 +263,7 @@ public partial class ConstructorService(
             await context_forms.SaveChangesAsync(cancellationToken);
             res.AddSuccess($"Строка №{req.GroupByRowNum} удалена ({values_for_delete.Length} значений ячеек)");
 
-            get_s = await GetSessionDocument(req.SessionId, cancellationToken);
+            get_s = await GetSessionDocument(req.SessionId, false, cancellationToken);
             uint i = 0;
             List<ValueDataForSessionOfDocumentModelDB> values_re_sort = [];
             session.DataSessionValues
@@ -2878,13 +2878,15 @@ public partial class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocument(int id_session, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocument(int id_session, bool skip_include = false, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        TResponseModel<SessionOfDocumentDataModelDB> res = new()
-        {
-            Response = await context_forms
+        IQueryable<SessionOfDocumentDataModelDB> q = context_forms
             .Sessions
+            .Where(x => x.Id == id_session)
+            .AsQueryable();
+
+        IIncludableQueryable<SessionOfDocumentDataModelDB, List<FieldFormAkaDirectoryConstructorModelDB>?> inc = q
             .Include(x => x.Project)
             .Include(x => x.DataSessionValues)
 
@@ -2898,10 +2900,13 @@ public partial class ConstructorService(
             .ThenInclude(x => x!.Tabs!) // страницы опроса/анкеты
             .ThenInclude(x => x.JoinsForms!) // формы для страницы опроса/анкеты
             .ThenInclude(x => x.Form) // форма
-            .ThenInclude(x => x!.FieldsDirectoriesLinks) // поля
+            .ThenInclude(x => x!.FieldsDirectoriesLinks);
 
-            .AsSingleQuery()
-            .FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken)
+        TResponseModel<SessionOfDocumentDataModelDB> res = new()
+        {
+            Response = skip_include
+            ? await q.FirstOrDefaultAsync(cancellationToken: cancellationToken)
+            : await inc.FirstOrDefaultAsync(cancellationToken: cancellationToken)
         };
         string msg;
         if (res.Response is null)
@@ -3031,7 +3036,7 @@ public partial class ConstructorService(
             logger.LogInformation(msg);
             await context_forms.SaveChangesAsync(cancellationToken);
         }
-        TResponseModel<SessionOfDocumentDataModelDB> sr = await GetSessionDocument(session_json.Id, cancellationToken);
+        TResponseModel<SessionOfDocumentDataModelDB> sr = await GetSessionDocument(session_json.Id, false, cancellationToken);
         if (res.Messages.Count != 0)
             sr.AddRangeMessages(res.Messages);
         return sr;

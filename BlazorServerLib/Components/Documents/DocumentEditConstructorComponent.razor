@@ -31,6 +31,17 @@ else if (schemes.Length > 1)
 
     </figure>
 }
+else if (DocumentKey > 1 && session is null)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Сессия не найдена.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Токен доступа не действителен.
+        </figcaption>
+    </figure>
+}
 else
 {
     DocumentSchemeConstructorModelDB scheme_obj = schemes[0];

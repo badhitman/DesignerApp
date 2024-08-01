@@ -40,12 +40,9 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
         IsBusyProgress = false;
         schemes = ds.Response;
 
-        if (schemes?.Length == 1)
+        if (schemes?.Length == 1 && DocumentKey.HasValue && DocumentKey.Value > 0)
         {
-            if (DocumentKey < 1)
-                return;
-
-            TResponseModel<SessionOfDocumentDataModelDB> session_data = await ConstructorRepo.GetSessionDocument(DocumentKey);
+            TResponseModel<SessionOfDocumentDataModelDB> session_data = await ConstructorRepo.GetSessionDocument(DocumentKey.Value);
             SnackbarRepo.ShowMessagesResponse(session_data.Messages);
             session = session_data.Response;
         }

@@ -1,4 +1,6 @@
-﻿<label class="form-label">@Label</label>
+﻿@inherits FieldBaseComponentModel
+
+<label class="form-label">@Label</label>
 <InputCheckbox Value="CheckBoxValue" class="form-control" />
 <div class="form-text">
     @Hint
@@ -7,13 +9,6 @@
 @code {
     [Parameter]
     public bool IsChecked { get; set; }
-
-    [Parameter]
-    public string? Label { get; set; }
-
-    [Parameter]
-    public string? Hint { get; set; }
-
 
     [Parameter]
     public EventCallback<bool> IsCheckedChanged { get; set; }
