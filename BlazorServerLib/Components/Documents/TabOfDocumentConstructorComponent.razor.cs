@@ -12,11 +12,11 @@ namespace BlazorWebLib.Components.Documents;
 /// </summary>
 public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseComponent
 {
+    TabOfDocumentSchemeConstructorModelDB? _tabOfDocument;
     /// <summary>
-    /// Таб/Вкладка документа конструктора
+    /// TabOfDocument
     /// </summary>
-    [CascadingParameter, EditorRequired]
-    public required TabOfDocumentSchemeConstructorModelDB TabOfDocument { get; set; }
+    public TabOfDocumentSchemeConstructorModelDB TabOfDocument => Document.Tabs!.First(x => x.SortIndex == TabMetadata.SortIndex);
 
     /// <summary>
     /// PK строки БД
@@ -24,26 +24,22 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     [CascadingParameter]
     public SessionOfDocumentDataModelDB? Session { get; set; }
 
+    /// <summary>
+    /// Document
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required DocumentSchemeConstructorModelDB Document { get; set; }
 
     /// <summary>
     /// Данные/значения текущей сессии для выбранной вкладки
     /// </summary>
     protected ValueDataForSessionOfDocumentModelDB[]? SessionValues { get; private set; }
 
-    /// <summary>
-    /// Формы вкладки (сортированые)
-    /// </summary>
-    protected TabJoinDocumentSchemeConstructorModelDB[] FJoins => TabOfDocument.JoinsForms!
-        .Distinct()
-        .OrderBy(x => x!.SortIndex)
-        .ToArray()!;
-
-
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        if (Session is null)
+        if (Session is null || TabOfDocument.JoinsForms?.Count != TabMetadata.Forms.Length)
             return;
 
         IsBusyProgress = true;

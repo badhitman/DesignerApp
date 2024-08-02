@@ -13,10 +13,13 @@ namespace BlazorWebLib.Components.Documents.Forms;
 /// </summary>
 public partial class FormOfTabConstructorComponent : FormBaseModel
 {
+    [Inject]
+    IConstructorService ConstructorRepo { get; set; } = default!;
+
+
     /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required List<ValueDataForSessionOfDocumentModelDB> SessionValues { get; set; }
-    List<ValueDataForSessionOfDocumentModelDB> _selfSessionValues = [];
+    public List<ValueDataForSessionOfDocumentModelDB>? SessionValues => Session?.DataSessionValues;
+    List<ValueDataForSessionOfDocumentModelDB>? _selfSessionValues;
 
     /// <summary>
     /// PK строки БД
@@ -45,8 +48,8 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     void SetSimpleFieldValue(FieldFitModel field, string? value, FieldFormConstructorModelDB e)
     {
-        if (Session is null)
-            throw new ArgumentNullException(nameof(Session));
+        if (Session is null || SessionValues is null)
+            throw new Exception();
 
         ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
@@ -72,7 +75,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     bool BoolSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues?
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
         return _value_field?.Value?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
@@ -80,7 +83,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     int IntSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues?
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
         if (_value_field is not null && int.TryParse(_value_field.Value, out int _d))
@@ -91,7 +94,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     double DoubleSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues?
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
         if (_value_field is not null && double.TryParse(_value_field.Value, out double _d))
@@ -102,7 +105,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     DateTime? DateTimeSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues?
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
         if (_value_field is not null && DateTime.TryParse(_value_field.Value, out DateTime _d))
@@ -113,7 +116,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     DateOnly? DateOnlySimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues?
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
         if (_value_field is not null && DateOnly.TryParse(_value_field.Value, out DateOnly _d))
@@ -124,7 +127,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     TimeOnly? TimeOnlySimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues?
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
         if (_value_field is not null && TimeOnly.TryParse(_value_field.Value, out TimeOnly _d))
@@ -135,7 +138,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     string? StringSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues?
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
         return _value_field?.Value;
@@ -146,7 +149,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     #region single
     int DictValue(FieldAkaDirectoryFitModel field, FieldFormAkaDirectoryConstructorModelDB e)
     {
-        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues?
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
         if (_value_field is not null && int.TryParse(_value_field.Value, out int _d))
@@ -157,7 +160,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     void SetDirectoryFieldValue(FieldAkaDirectoryFitModel field, int? value, FieldFormAkaDirectoryConstructorModelDB e)
     {
-        if (Session is null)
+        if (Session is null || SessionValues is null)
             throw new Exception();
 
         ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
@@ -171,7 +174,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
                 Value = value.ToString(),
                 RowNum = 0,
                 OwnerId = Session.Id,
-                TabJoinDocumentSchemeId = Join.Id
+                TabJoinDocumentSchemeId = Join.Tab!.Id
             };
             SessionValues.Add(_value_field);
         }
@@ -185,7 +188,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     #region multiselect
     int[] DictsValue(FieldAkaDirectoryFitModel field, FieldFormAkaDirectoryConstructorModelDB e)
     {
-        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues?
             .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
         if (!string.IsNullOrWhiteSpace(_value_field?.Value) && _value_field.Value.Trim().StartsWith('[') && _value_field.Value.Trim().EndsWith(']'))
@@ -205,7 +208,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
     void SetSimpleFieldValue(FieldAkaDirectoryFitModel field, int[]? value, FieldFormAkaDirectoryConstructorModelDB e)
     {
-        if (Session is null)
+        if (Session is null || SessionValues is null)
             throw new Exception();
 
         ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
@@ -238,25 +241,43 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     }
 
     /// <inheritdoc/>
-    public override Task SaveForm()
+    public override async Task SaveForm()
     {
-        SessionValues.Clear();
-        SessionValues.AddRange(_selfSessionValues);
+        if (DocumentKey is null || SessionValues is null)
+            throw new Exception();
 
-        return Task.CompletedTask;
+        await ConstructorRepo.SaveSessionForm(DocumentKey.Value, Join.Tab!.Id, SessionValues);
+
+        SessionValues.Clear();
+        if (_selfSessionValues?.Count > 0)
+            SessionValues.AddRange(_selfSessionValues);
+
+        foreach (FieldBaseComponentModel fb in FieldsComponents)
+        {
+            fb.CommitChange();
+            fb.StateHasChangedCall();
+        }
     }
 
     /// <inheritdoc/>
     public override void ResetForm()
     {
-        _selfSessionValues.Clear();
-        _selfSessionValues.AddRange(SessionValues);
+        _selfSessionValues?.Clear();
+        _selfSessionValues ??= [];
+        if (SessionValues?.Count > 0)
+            _selfSessionValues.AddRange(SessionValues);
+
+        base.ResetForm();
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        _selfSessionValues.AddRange(SessionValues);
+        if (SessionValues is not null)
+        {
+            _selfSessionValues ??= [];
+            _selfSessionValues.AddRange(SessionValues);
+        }
 
         await base.OnInitializedAsync();
     }

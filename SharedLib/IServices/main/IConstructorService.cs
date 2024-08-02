@@ -9,7 +9,8 @@ namespace SharedLib;
 /// </summary>
 public interface IConstructorService
 {
-    #region public
+    #region public   
+
     /// <summary>
     /// Получить сессию
     /// </summary>
@@ -310,6 +311,11 @@ public interface IConstructorService
     // Каждая ссылка это всего лишь уникальный GUID к которому привязываются все данные, которые вводят конечные пользователи
     // Пользователи видят ваш документ, но сам документ данные не хранит. Хранение данных происходит в сессиях, которые вы сами выпускаете для любого вашего документа
     #region сессии опросов/анкет
+    /// <summary>
+    /// Сохранить данные формы документа из сессии
+    /// </summary>
+    public Task<ResponseBaseModel> SaveSessionForm(int sessionId, int join, List<ValueDataForSessionOfDocumentModelDB> sessionValues);
+
     /// <summary>
     /// Установить статус сессии (от менеджера)
     /// </summary>

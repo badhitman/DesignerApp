@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using BlazorLib;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorWebLib;
@@ -9,7 +10,7 @@ namespace BlazorWebLib;
 /// <summary>
 /// FieldBaseComponent
 /// </summary>
-public abstract class FieldBaseComponentModel : ComponentBase
+public abstract class FieldBaseComponentModel : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Parameter]
@@ -35,6 +36,18 @@ public abstract class FieldBaseComponentModel : ComponentBase
     /// Поле изменило своё значение от исходного
     /// </summary>
     public abstract bool IsEdited { get; }
+
+
+    /// <summary>
+    /// сбросить состояние поля в исходное
+    /// </summary>
+    public abstract void Reset();
+
+    /// <summary>
+    /// применить состояние поля в конечное
+    /// </summary>
+    public abstract void CommitChange();
+
 
     /// <inheritdoc/>
     protected override void OnInitialized()

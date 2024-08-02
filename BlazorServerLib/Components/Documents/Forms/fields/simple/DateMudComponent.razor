@@ -22,9 +22,19 @@
         }
     }
 
+    public override void Reset()
+    {
+        DateOnlyValue = _value;
+    }
+
+    public override void CommitChange()
+    {
+        _value = Value;
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _value = Value;
+        CommitChange();
     }
 }

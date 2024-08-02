@@ -47,7 +47,14 @@ public abstract partial class FormBaseModel : FormBaseCore
     /// <summary>
     /// Отмена редактирования формы (обработчик команды)
     /// </summary>
-    public abstract void ResetForm();
+    public virtual void ResetForm()
+    {
+        foreach (FieldBaseComponentModel fb in FieldsComponents)
+        {
+            fb.Reset();
+            fb.StateHasChangedCall();
+        }
+    }
 
 
     /// <inheritdoc/>

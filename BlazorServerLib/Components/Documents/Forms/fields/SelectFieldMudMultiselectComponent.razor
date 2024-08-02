@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+
 @inherits FieldBaseComponentModel
 
 <MudSelect T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="true" @bind-SelectedValues="EntriesValues" ToStringFunc="converter">
@@ -55,9 +56,19 @@
         }
     }
 
-    protected override void OnInitialized()
+    public override void Reset()
+    {
+        EntriesValues = Entries.Where(x => _value?.Contains(x.Id) == true);
+    }
+
+    public override void CommitChange()
     {
         _value = GlobalTools.CreateDeepCopy(Value);
+    }
+
+    protected override void OnInitialized()
+    {
+        CommitChange();
         base.OnInitialized();
     }
 }

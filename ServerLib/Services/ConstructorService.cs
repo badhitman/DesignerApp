@@ -29,7 +29,8 @@ public partial class ConstructorService(
 {
     static readonly Random r = new();
 
-    #region public
+    #region public    
+
     /// <inheritdoc/>
     public async Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocumentData(string guid_session, CancellationToken cancellationToken = default)
     {
@@ -2845,6 +2846,57 @@ public partial class ConstructorService(
     // Каждая ссылка это всего лишь уникальный GUID к которому привязываются все данные, которые вводят конечные пользователи
     // Пользователи видят ваш документ, но сам документ данные не хранит. Хранение данных происходит в сессиях, которые вы сами выпускаете для любого вашего документа
     #region сессии документов (данные заполнения документов).
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> SaveSessionForm(int sessionId, int join, List<ValueDataForSessionOfDocumentModelDB> sessionValues)
+    {
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        SessionOfDocumentDataModelDB? sq = await context_forms
+            .Sessions
+            .Include(x => x.DataSessionValues!)
+            .ThenInclude(x => x.TabJoinDocumentScheme)
+            .FirstOrDefaultAsync(x => x.Id == sessionId);
+
+        if (sq is null)
+            return ResponseBaseModel.CreateError("Объект документа удалён");
+
+        ValueDataForSessionOfDocumentModelDB[] _session_data = sq
+            .DataSessionValues!
+            .Where(x => x.TabJoinDocumentSchemeId == join)
+            .ToArray();
+
+        int[] _ids_del = sessionValues
+            .Where(x => x.Id > 0 && string.IsNullOrWhiteSpace(x.Value))
+            .Select(x => x.Id)
+            .ToArray();
+
+        if (_ids_del.Length != 0)
+        {
+            context_forms.RemoveRange(context_forms.Sessions.Where(x => _ids_del.Contains(x.Id)));
+            await context_forms.SaveChangesAsync();
+        }
+
+        ValueDataForSessionOfDocumentModelDB[] values_upd = _session_data
+            .Where(x => sessionValues.Any(y => y.Id == x.Id && x.Value != y.Value))
+            .Where(x => !string.IsNullOrWhiteSpace(x.Value))
+            .Select(x => { x.Value = sessionValues.First(y => y.Id == x.Id).Value; return x; })
+            .ToArray();
+
+        if (values_upd.Length != 0)
+        {
+            context_forms.UpdateRange(values_upd);
+            await context_forms.SaveChangesAsync();
+        }
+
+        values_upd = sessionValues.Where(x => x.Id == 0).ToArray();
+        if (values_upd.Length != 0)
+        {
+            await context_forms.AddRangeAsync(values_upd);
+            await context_forms.SaveChangesAsync();
+        }
+
+        return ResponseBaseModel.CreateSuccess("Форма документа сохранена");
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetStatusSessionDocument(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default)
     {

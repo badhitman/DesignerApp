@@ -4,6 +4,7 @@
 
 <div class="card">
     <div class="card-body">
+
         <CascadingValue Value="this">
             @{
                 int i = -1;
@@ -19,7 +20,7 @@
 
                 FormConstructorModelDB form_c = join.Form!;
                 List<ValueDataForSessionOfDocumentModelDB> _sv = SessionValues is null ? [] : [.. SessionValues.Where(x => x.TabJoinDocumentSchemeId == TabOfDocument.Id && x.TabJoinDocumentScheme!.FormId == form_c.Id)];
-
+                
                 <CascadingValue Value="join">
                     <CascadingValue Value="TabMetadata">
                         <CascadingValue Value="FormsStack">
@@ -27,14 +28,16 @@
                                 <CascadingValue Value="form_c">
                                     <CascadingValue Value="_sv">
                                         <CascadingValue Value="FormChangeEvent">
-                                            @if (form.IsTable)
-                                            {
-                                                <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" />
-                                            }
-                                            else
-                                            {
-                                                <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{TabMetadata.SystemName}-{form.SystemName}")" />
-                                            }
+                                            <CascadingValue Value="TabOfDocument">
+                                                @if (form.IsTable)
+                                                {
+                                                    <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" />
+                                                }
+                                                else
+                                                {
+                                                    <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{TabMetadata.SystemName}-{form.SystemName}")" />
+                                                }
+                                            </CascadingValue>
                                         </CascadingValue>
                                     </CascadingValue>
                                 </CascadingValue>

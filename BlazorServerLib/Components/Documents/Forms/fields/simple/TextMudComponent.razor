@@ -2,7 +2,7 @@
 
 @inherits FieldBaseComponentModel
 
-<MudTextField @bind-Value="StringValue" HelperText="@Hint" Label="@Label" Required="@Required" Variant="Variant.Text" InputId="@Id"></MudTextField>
+<MudTextField @bind-Value="StringValue" HelperText="@Hint" Label="@Label" Required="@Required" Variant="Variant.Text" InputType="@(AsPassword?InputType.Password: InputType.Text )" InputId="@Id"></MudTextField>
 
 @code {
     /// <summary>
@@ -31,9 +31,19 @@
         }
     }
 
+    public override void Reset()
+    {
+        StringValue = _value;
+    }
+
+    public override void CommitChange()
+    {
+        _value = Value;
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _value = Value;
+        CommitChange();
     }
 }

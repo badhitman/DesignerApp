@@ -54,25 +54,22 @@ else
     <TabSetComponent>
         @foreach (TabFitModel _tab in DocumentMetadata.Tabs)
         {
-            TabOfDocumentSchemeConstructorModelDB tod = scheme_obj.Tabs!.First(x => x.SortIndex == _tab.SortIndex);
-            <TabComponent @key="@($"{scheme_obj.Id}-{_tab.SystemName}")" Title="@_tab.Name" SystemName='@_tab.SystemName'>
-                <CascadingValue Value="scheme_obj.Tabs!.First(x => x.SortIndex == _tab.SortIndex)">
-                    <CascadingValue Value="scheme_obj">
-                        <CascadingValue Value="DocumentMetadata">
-                            <CascadingValue Value="session">
-                                <CascadingValue Value="_tab">
-                                    <CascadingValue Value="tod">
-                                        <CascadingValue Value="TabChangeEvent">
-                                            <CascadingValue Value="this">
-                                                <TabOfDocumentConstructorComponent DocumentKey="@DocumentKey" TabChangeHandle="TabChangeEvent" />
-                                            </CascadingValue>
-                                        </CascadingValue>
+            <TabComponent Title="@_tab.Name" SystemName='@_tab.SystemName'>
+
+                <CascadingValue Value="scheme_obj">
+                    <CascadingValue Value="DocumentMetadata">
+                        <CascadingValue Value="session">
+                            <CascadingValue Value="_tab">
+                                <CascadingValue Value="TabChangeEvent">
+                                    <CascadingValue Value="this">
+                                        <TabOfDocumentConstructorComponent DocumentKey="@DocumentKey" TabChangeHandle="TabChangeEvent" />
                                     </CascadingValue>
                                 </CascadingValue>
                             </CascadingValue>
                         </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
+
             </TabComponent>
         }
     </TabSetComponent>
