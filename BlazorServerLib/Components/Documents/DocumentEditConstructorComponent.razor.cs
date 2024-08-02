@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Documents;
@@ -46,5 +46,13 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
             SnackbarRepo.ShowMessagesResponse(session_data.Messages);
             session = session_data.Response;
         }
+    }
+
+    /// <inheritdoc/>
+    public override Task TabChangeEvent(TTabOfDocumenBaseComponent tab_sender)
+    {
+        TabOfDocumentConstructorComponent ct = (TabOfDocumentConstructorComponent)tab_sender;
+
+        return Task.CompletedTask;
     }
 }

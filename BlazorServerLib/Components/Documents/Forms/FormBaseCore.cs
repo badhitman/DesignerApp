@@ -5,20 +5,22 @@
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Documents.Forms;
+namespace BlazorWebLib;
 
 /// <summary>
-/// TableFormOfTabConstructorComponent
+/// FormBaseCore
 /// </summary>
-public partial class TableFormOfTabConstructorComponent : FormBaseCore
+public abstract partial class FormBaseCore : DocumenBodyBaseComponent
 {
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required List<ValueDataForSessionOfDocumentModelDB> SessionValues { get; set; }
-
     /// <summary>
-    /// Form
+    /// Form Metadata
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required FormConstructorModelDB Form {  get; set; }
+    public required FormFitModel FormMetadata { get; set; }
+
+    /// <summary>
+    /// TabMetadata
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required TabFitModel TabMetadata { get; set; }
 }

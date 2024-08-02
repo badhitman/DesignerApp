@@ -24,11 +24,6 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     [CascadingParameter]
     public SessionOfDocumentDataModelDB? Session { get; set; }
 
-    /// <summary>
-    /// Tab Metadata
-    /// </summary>
-    [CascadingParameter, EditorRequired]
-    public required TabFitModel TabMetadata { get; set; }
 
     /// <summary>
     /// Данные/значения текущей сессии для выбранной вкладки
@@ -42,6 +37,7 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
         .Distinct()
         .OrderBy(x => x!.SortIndex)
         .ToArray()!;
+
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

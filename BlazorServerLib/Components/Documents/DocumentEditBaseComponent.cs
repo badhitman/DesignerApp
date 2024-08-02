@@ -12,7 +12,7 @@ namespace BlazorWebLib;
 /// <summary>
 /// Document edit
 /// </summary>
-public partial class DocumentEditBaseComponent : DocumenBodyBaseComponent
+public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
 {
     /// <inheritdoc/>
     [Inject]
@@ -44,6 +44,11 @@ public partial class DocumentEditBaseComponent : DocumenBodyBaseComponent
     /// </summary>
     /// <remarks>в наследниках после вызова текущей реализации должен проверить этот признак и отказаться от дальнейшего выполнения</remarks>
     protected bool IsCancel;
+
+    /// <summary>
+    /// Tab change event
+    /// </summary>
+    public abstract Task TabChangeEvent(TTabOfDocumenBaseComponent tab_sender);
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

@@ -2,16 +2,14 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
-using BlazorWebLib.Components.Documents;
 using Microsoft.AspNetCore.Components;
-using SharedLib;
 
 namespace BlazorWebLib;
 
 /// <summary>
 /// Form base
 /// </summary>
-public abstract partial class FormBaseModel : DocumenBodyBaseComponent
+public abstract partial class FormBaseModel : FormBaseCore
 {
     /// <summary>
     /// ID
@@ -20,22 +18,17 @@ public abstract partial class FormBaseModel : DocumenBodyBaseComponent
     public required string ID { get; set; }
 
     /// <summary>
-    /// Form Metadata
-    /// </summary>
-    [CascadingParameter, EditorRequired]
-    public required FormFitModel FormMetadata { get; set; }
-
-    /// <summary>
-    /// TabMetadata
-    /// </summary>
-    [CascadingParameter,EditorRequired]
-    public required TabFitModel TabMetadata { get; set; }
-
-    /// <summary>
     /// Формы в табе
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required List<FormBaseModel> FormsStack { get; set; }
+
+    /// <summary>
+    /// FormChangeAction
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required Action<FormBaseModel> FormChangeAction { get; set; }
+
 
     /// <summary>
     /// Форма изменена
@@ -51,6 +44,7 @@ public abstract partial class FormBaseModel : DocumenBodyBaseComponent
     /// Отмена редактирования формы (обработчик команды)
     /// </summary>
     public abstract void ResetForm();
+
 
     /// <inheritdoc/>
     protected override Task OnInitializedAsync()
