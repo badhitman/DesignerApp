@@ -31,7 +31,7 @@ else if (schemes.Length > 1)
 
     </figure>
 }
-else if (DocumentKey > 1 && session is null)
+else if (DocumentKey > 0 && session is null)
 {
     <figure>
         <blockquote class="blockquote">
@@ -59,14 +59,12 @@ else
                 <CascadingValue Value="scheme_obj.Tabs!.First(x => x.SortIndex == _tab.SortIndex)">
                     <CascadingValue Value="scheme_obj">
                         <CascadingValue Value="DocumentMetadata">
-                            <CascadingValue Value="DocumentKey">
-                                <CascadingValue Value="session">
-                                    <CascadingValue Value="_tab">
-                                        <CascadingValue Value="tod">
-                                            <CascadingValue Value="TabChangeEvent">
-                                                <CascadingValue Value="this">
-                                                    <TabOfDocumentConstructorComponent />
-                                                </CascadingValue>
+                            <CascadingValue Value="session">
+                                <CascadingValue Value="_tab">
+                                    <CascadingValue Value="tod">
+                                        <CascadingValue Value="TabChangeEvent">
+                                            <CascadingValue Value="this">
+                                                <TabOfDocumentConstructorComponent DocumentKey="@DocumentKey" TabChangeHandle="TabChangeEvent" />
                                             </CascadingValue>
                                         </CascadingValue>
                                     </CascadingValue>

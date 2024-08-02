@@ -29,11 +29,11 @@
                                         <CascadingValue Value="FormChangeEvent">
                                             @if (form.IsTable)
                                             {
-                                                <TableFormOfTabConstructorComponent />
+                                                <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" />
                                             }
                                             else
                                             {
-                                                <FormOfTabConstructorComponent ID="@($"{TabMetadata.SystemName}-{form.SystemName}")" />
+                                                <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{TabMetadata.SystemName}-{form.SystemName}")" />
                                             }
                                         </CascadingValue>
                                     </CascadingValue>

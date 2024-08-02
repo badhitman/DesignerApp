@@ -1,10 +1,10 @@
 ﻿@page "/journal-{DocumentNameOrId}/document"
 @page "/journal-{DocumentNameOrId}/document/"
-@page "/journal-{DocumentNameOrId}/document/{DocumentKey:int?}"
+@page "/journal-{DocumentNameOrId}/document/{DocumentKey}"
 
 @page "/journal-{DocumentNameOrId}/project-{ProjectId}/document"
 @page "/journal-{DocumentNameOrId}/project-{ProjectId}/document/"
-@page "/journal-{DocumentNameOrId}/project-{ProjectId}/document/{DocumentKey:int?}"
+@page "/journal-{DocumentNameOrId}/project-{ProjectId}/document/{DocumentKey}"
 
 <h3>DocumentEditPage</h3>
 
@@ -19,11 +19,13 @@
         </figcaption>
     </figure>
 }
+else if (int.TryParse(DocumentKey, out int _i))
+{
+    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="_i" />
+}
 else
 {
-    <CascadingValue Value="DocumentKey">
-        <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" />
-    </CascadingValue>
+    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="null" />
 }
 
 @code {
@@ -37,11 +39,16 @@ else
     /// ProjectId
     /// </summary>
     [Parameter]
-    public int? DocumentKey { get; set; }
+    public string? DocumentKey { get; set; }
 
     /// <summary>
     /// Project Id
     /// </summary>
     [Parameter]
     public int? ProjectId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 }

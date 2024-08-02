@@ -27,7 +27,7 @@ public abstract class TTabOfDocumenBaseComponent : DocumenBodyBaseComponent
     /// <summary>
     /// TabChangeHandle
     /// </summary>
-    [CascadingParameter, EditorRequired]
+    [Parameter, EditorRequired]
     public required Action<TTabOfDocumenBaseComponent> TabChangeHandle { get; set; }
 
 

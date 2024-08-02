@@ -15,7 +15,7 @@
         else
         {
             <TabSetComponent @ref="tab_set_ref" IsSilent="true" >
-                <TabComponent Tooltip="Параметры" Title="Параметры" SystemName="@Form.Id.ToString()">
+                <TabComponent Tooltip="Параметры" Title="Параметры" SystemName="@($"form-main-{Form.Id}")">
                     <form class="row g-3">
                         <div class="col-md-4">
                             <label for="inputName4" class="form-label">Название</label>
@@ -56,7 +56,7 @@
                         }
                     </form>
                 </TabComponent>
-                <TabComponent Tooltip="Поля формы" Title="Поля формы" IsDisabled="@(Form.Id < 1)" SystemName="@Form.Id.ToString()">
+                <TabComponent Tooltip="Поля формы" Title="Поля формы" IsDisabled="@(Form.Id < 1)" SystemName="@($"form-fields-{Form.Id}")">
                     @if (Form.FieldsDirectoriesLinks is null || Form.Fields is null)
                     {
                         <blockquote class="blockquote">

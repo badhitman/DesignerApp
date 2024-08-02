@@ -10,8 +10,7 @@
     [Parameter]
     public EventCallback<DateOnly?> ValueChanged { get; set; }
 
-    bool _isEdited;
-    public override bool IsEdited => _isEdited;
+    public override bool IsEdited => Value != _value && !((Value is null || Value == default) && (_value is null || _value == default));
 
     DateOnly? DateOnlyValue
     {
@@ -19,7 +18,6 @@
         set
         {
             Value = value;
-            _isEdited = Value != _value;
             ValueChanged.InvokeAsync(Value);
         }
     }

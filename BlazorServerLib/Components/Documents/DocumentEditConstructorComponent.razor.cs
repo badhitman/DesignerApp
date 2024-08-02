@@ -27,6 +27,7 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
     DocumentSchemeConstructorModelDB[]? schemes;
     SessionOfDocumentDataModelDB? session;
 
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -40,7 +41,7 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
         IsBusyProgress = false;
         schemes = ds.Response;
 
-        if (schemes?.Length == 1 && DocumentKey.HasValue && DocumentKey.Value > 0)
+        if (schemes?.Length == 1 && DocumentKey > 0)
         {
             TResponseModel<SessionOfDocumentDataModelDB> session_data = await ConstructorRepo.GetSessionDocument(DocumentKey.Value);
             SnackbarRepo.ShowMessagesResponse(session_data.Messages);
@@ -49,10 +50,10 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
     }
 
     /// <inheritdoc/>
-    public override Task TabChangeEvent(TTabOfDocumenBaseComponent tab_sender)
+    public override void TabChangeEvent(TTabOfDocumenBaseComponent tab_sender)
     {
         TabOfDocumentConstructorComponent ct = (TabOfDocumentConstructorComponent)tab_sender;
 
-        return Task.CompletedTask;
+        //return Task.CompletedTask;
     }
 }

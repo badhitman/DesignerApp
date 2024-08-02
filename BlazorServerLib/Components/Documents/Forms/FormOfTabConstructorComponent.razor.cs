@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Documents.Forms;
@@ -16,6 +17,12 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     [CascadingParameter, EditorRequired]
     public required List<ValueDataForSessionOfDocumentModelDB> SessionValues { get; set; }
     List<ValueDataForSessionOfDocumentModelDB> _selfSessionValues = [];
+
+    /// <summary>
+    /// PK строки БД
+    /// </summary>
+    [CascadingParameter]
+    public SessionOfDocumentDataModelDB? Session { get; set; }
 
     /// <summary>
     /// Tab
@@ -35,133 +42,194 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
 
-    
-    #region bool
+
+    void SetSimpleFieldValue(FieldFitModel field, string? value, FieldFormConstructorModelDB e)
+    {
+        if (Session is null)
+            throw new ArgumentNullException(nameof(Session));
+
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        if (_value_field is null)
+        {
+            _value_field = new()
+            {
+                Name = e.Name,
+                Value = value,
+                RowNum = 0,
+                OwnerId = Session.Id,
+                TabJoinDocumentSchemeId = Join.Id
+            };
+            SessionValues.Add(_value_field);
+        }
+        else
+            _value_field.Value = value;
+
+        FormChangeAction(this);
+    }
+
+
     bool BoolSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        //var v = SessionValues.Where(x=>x.TabJoinDocumentSchemeId == )
-        return default;
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        return _value_field?.Value?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
     }
 
-    void SetSimpleFieldBoolValue(FieldFitModel field, bool value, FieldFormConstructorModelDB e)
-    {
-        // SessionValues
-        FormChangeAction(this);
-    }
-    #endregion
-
-    #region int
     int IntSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        // SessionValues
-        return default;
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        if (_value_field is not null && int.TryParse(_value_field.Value, out int _d))
+            return _d;
+
+        return 0;
     }
 
-    void SetSimpleFieldIntValue(FieldFitModel field, int value, FieldFormConstructorModelDB e)
-    {
-        // SessionValues
-        FormChangeAction(this);
-    }
-    #endregion
-
-    #region double
     double DoubleSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        // SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        if (_value_field is not null && double.TryParse(_value_field.Value, out double _d))
+            return _d;
+
+        return 0;
+    }
+
+    DateTime? DateTimeSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
+    {
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        if (_value_field is not null && DateTime.TryParse(_value_field.Value, out DateTime _d))
+            return _d;
+
         return default;
     }
 
-    void SetSimpleFieldDoubleValue(FieldFitModel field, double value, FieldFormConstructorModelDB e)
+    DateOnly? DateOnlySimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        // SessionValues
-        FormChangeAction(this);
-    }
-    #endregion
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
-    #region DateTime
-    DateTime DateTimeSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
-    {
-        // SessionValues
+        if (_value_field is not null && DateOnly.TryParse(_value_field.Value, out DateOnly _d))
+            return _d;
+
         return default;
     }
 
-    void SetSimpleFieldDateTimeValue(FieldFitModel field, DateTime? value, FieldFormConstructorModelDB e)
+    TimeOnly? TimeOnlySimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        // SessionValues
-        FormChangeAction(this);
-    }
-    #endregion
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
 
-    #region DateOnly
-    DateOnly DateOnlySimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
-    {
-        // SessionValues
+        if (_value_field is not null && TimeOnly.TryParse(_value_field.Value, out TimeOnly _d))
+            return _d;
+
         return default;
     }
 
-    void SetSimpleFieldDateOnlyValue(FieldFitModel field, DateOnly? value, FieldFormConstructorModelDB e)
+    string? StringSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {
-        // SessionValues
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        return _value_field?.Value;
+    }
+
+
+    #region directory
+    #region single
+    int DictValue(FieldAkaDirectoryFitModel field, FieldFormAkaDirectoryConstructorModelDB e)
+    {
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        if (_value_field is not null && int.TryParse(_value_field.Value, out int _d))
+            return _d;
+
+        return -1;
+    }
+
+    void SetDirectoryFieldValue(FieldAkaDirectoryFitModel field, int? value, FieldFormAkaDirectoryConstructorModelDB e)
+    {
+        if (Session is null)
+            throw new Exception();
+
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        if (_value_field is null)
+        {
+            _value_field = new()
+            {
+                Name = e.Name,
+                Value = value.ToString(),
+                RowNum = 0,
+                OwnerId = Session.Id,
+                TabJoinDocumentSchemeId = Join.Id
+            };
+            SessionValues.Add(_value_field);
+        }
+        else
+            _value_field.Value = value.ToString();
+
         FormChangeAction(this);
     }
     #endregion
 
-    #region TimeOnly
-    TimeOnly TimeOnlySimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
+    #region multiselect
+    int[] DictsValue(FieldAkaDirectoryFitModel field, FieldFormAkaDirectoryConstructorModelDB e)
     {
-        // SessionValues
-        return default;
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        if (!string.IsNullOrWhiteSpace(_value_field?.Value) && _value_field.Value.Trim().StartsWith('[') && _value_field.Value.Trim().EndsWith(']'))
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<int[]>(_value_field.Value) ?? throw new Exception();
+            }
+            catch
+            {
+                return [];
+            }
+        }
+
+        return [];
     }
 
-    void SetSimpleFieldTimeOnlyValue(FieldFitModel field, TimeOnly? value, FieldFormConstructorModelDB e)
+    void SetSimpleFieldValue(FieldAkaDirectoryFitModel field, int[]? value, FieldFormAkaDirectoryConstructorModelDB e)
     {
-        // SessionValues
+        if (Session is null)
+            throw new Exception();
+
+        ValueDataForSessionOfDocumentModelDB? _value_field = SessionValues
+            .FirstOrDefault(s => s.RowNum == 0 && s.Name == e.Name);
+
+        if (_value_field is null)
+        {
+            _value_field = new()
+            {
+                Name = e.Name,
+                Value = value?.Length < 1 ? null : JsonConvert.SerializeObject(value),
+                RowNum = 0,
+                OwnerId = Session.Id,
+                TabJoinDocumentSchemeId = Join.Id
+            };
+            SessionValues.Add(_value_field);
+        }
+        else
+            _value_field.Value = value?.Length < 1 ? null : JsonConvert.SerializeObject(value);
+
         FormChangeAction(this);
     }
     #endregion
-
-    #region string
-    string StringSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
-    {
-        // SessionValues
-        return default!;
-    }
-
-    void SetSimpleFieldStringValue(FieldFitModel field, string? value, FieldFormConstructorModelDB e)
-    {
-        // SessionValues
-        FormChangeAction(this);
-    }
     #endregion
-
-    #region EntryModel
-    EntryModel DictValue(FieldAkaDirectoryFitModel field, FieldFormAkaDirectoryConstructorModelDB e)
-    {
-        // SessionValues
-        return default!;
-    }
-
-    void SetDictFieldValue(FieldAkaDirectoryFitModel field, EntryModel? value, FieldFormAkaDirectoryConstructorModelDB e)
-    {
-        // SessionValues
-        FormChangeAction(this);
-    }
-    #endregion
-
-    #region EntryModel[]
-    EntryModel[] DictsValue(FieldAkaDirectoryFitModel field, FieldFormAkaDirectoryConstructorModelDB e)
-    {
-        // SessionValues
-        return default!;
-    }
-
-    void SetDictsFieldValue(FieldAkaDirectoryFitModel field, EntryModel[]? value, FieldFormAkaDirectoryConstructorModelDB e)
-    {
-        // SessionValues
-        FormChangeAction(this);
-    }
-    #endregion
-
 
 
     string GetFieldDomId(BaseRequiredFormFitModel bf)

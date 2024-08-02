@@ -11,7 +11,7 @@
     public EventCallback<TimeOnly?> ValueChanged { get; set; }
 
 
-    public override bool IsEdited => Value != _value;
+    public override bool IsEdited => Value != _value && !((Value is null || Value == default) && (_value is null || _value == default));
 
     TimeOnly? TimeOnlyValue
     {

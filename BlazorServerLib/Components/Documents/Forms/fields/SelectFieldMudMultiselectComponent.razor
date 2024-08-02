@@ -1,4 +1,5 @@
-﻿@inherits FieldBaseComponentModel
+﻿@using Newtonsoft.Json
+@inherits FieldBaseComponentModel
 
 <MudSelect T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="true" @bind-SelectedValues="EntriesValues" ToStringFunc="converter">
     @if (Entries?.Any() == true)
@@ -11,15 +12,15 @@
 </MudSelect>
 
 @code {
-    [Parameter]
-    public IEnumerable<EntryModel>? Entries { get; set; }
+    [Parameter, EditorRequired]
+    public required IEnumerable<EntryModel> Entries { get; set; }
 
     [Parameter]
-    public EntryModel[]? Value { get; set; }
-    EntryModel[]? _value;
+    public int[]? Value { get; set; }
+    int[]? _value;
 
     [Parameter]
-    public EventCallback<EntryModel[]?> ValueChanged { get; set; }
+    public EventCallback<int[]?> ValueChanged { get; set; }
 
 
     Func<EntryModel?, string> converter = p => p?.Name ?? "";
@@ -32,18 +33,21 @@
                 return false;
             else
                 return
-                Value?.Any(x => _value?.Any(y => y.Id == x.Id) != true) == true ||
-                _value?.Any(x => Value?.Any(y => y.Id == x.Id) != true) == true;
+                Value?.Any(x => _value?.Any(y => y == x) != true) == true ||
+                _value?.Any(x => Value?.Any(y => y == x) != true) == true;
         }
     }
 
+
+    IEnumerable<EntryModel>? _entriesValues;
     IEnumerable<EntryModel>? EntriesValues
     {
-        get => Value;
+        get => _entriesValues ?? Entries?.Where(x => Value?.Contains(x.Id) == true);
         set
         {
+            _entriesValues = value;
             if (value is not null)
-                Value = [.. value];
+                Value = [.. value.Select(x => x.Id)];
             else
                 Value = null;
 
@@ -54,5 +58,6 @@
     protected override void OnInitialized()
     {
         _value = GlobalTools.CreateDeepCopy(Value);
+        base.OnInitialized();
     }
 }

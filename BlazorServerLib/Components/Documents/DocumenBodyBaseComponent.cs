@@ -30,8 +30,8 @@ public abstract class DocumenBodyBaseComponent : BlazorBusyComponentBaseModel
     /// <remarks>
     /// Если null, то demo решим. Если HasValue и меньше 1, тогда создание нового объекта
     /// </remarks>
-    [CascadingParameter]
-    public int? DocumentKey { get; set; }
+    [Parameter, EditorRequired]
+    public required int? DocumentKey { get; set; }
 
     /// <summary>
     /// IsEdited

@@ -18,8 +18,8 @@
     [Parameter]
     public EventCallback<string?> ValueChanged { get; set; }
 
-    
-    public override bool IsEdited => Value != _value;
+
+    public override bool IsEdited => Value != _value && !(string.IsNullOrWhiteSpace(Value) && string.IsNullOrWhiteSpace(_value));
 
     string? StringValue
     {

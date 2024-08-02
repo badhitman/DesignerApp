@@ -11,28 +11,28 @@
 </MudSelect>
 
 @code {
-    [Parameter]
-    public IEnumerable<EntryModel>? Entries { get; set; }
+    [Parameter, EditorRequired]
+    public required IEnumerable<EntryModel> Entries { get; set; }
 
     [Parameter]
-    public EntryModel? Value { get; set; }
-    EntryModel? _value;
+    public int? Value { get; set; }
+    int? _value;
 
     [Parameter]
-    public EventCallback<EntryModel?> ValueChanged { get; set; }
+    public EventCallback<int?> ValueChanged { get; set; }
 
 
     Func<EntryModel?, string> converter = p => p?.Name ?? "";
 
-    public override bool IsEdited => Value?.Id != _value?.Id;
+    public override bool IsEdited => Value != _value;
 
     EntryModel? EntryValue
     {
-        get => Value;
+        get => Value < 1 ? null : Entries?.First(x => x.Id == Value);
         set
         {
             if (value is not null)
-                Value?.Update(value);
+                Value = value.Id;
 
             ValueChanged.InvokeAsync(Value);
         }
@@ -41,5 +41,6 @@
     protected override void OnInitialized()
     {
         _value = GlobalTools.CreateDeepCopy(Value);
+        base.OnInitialized();
     }
 }
