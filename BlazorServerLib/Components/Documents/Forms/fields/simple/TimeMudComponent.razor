@@ -5,11 +5,15 @@
 @code {
     [Parameter]
     public TimeOnly? Value { get; set; }
+    TimeOnly? _value;
 
     [Parameter]
     public EventCallback<TimeOnly?> ValueChanged { get; set; }
 
-    public TimeOnly? TimeOnlyValue
+
+    public override bool IsEdited => Value != _value;
+
+    TimeOnly? TimeOnlyValue
     {
         get => Value;
         set
@@ -17,5 +21,11 @@
             Value = value;
             ValueChanged.InvokeAsync(Value);
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _value = Value;
     }
 }

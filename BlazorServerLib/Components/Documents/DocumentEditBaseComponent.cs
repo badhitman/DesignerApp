@@ -26,6 +26,7 @@ public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
     [Inject]
     protected ILogger<DocumentEditBaseComponent> LoggerRepo { get; set; } = default!;
 
+
     /// <summary>
     /// Тип документа
     /// </summary>
@@ -38,6 +39,13 @@ public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
     [Parameter, SupplyParameterFromQuery]
     public string? TabName { get; set; }
 
+    /// <summary>
+    /// TabsComponents
+    /// </summary>
+    public List<TTabOfDocumenBaseComponent> TabsComponents { get; set; } = [];
+
+    /// <inheritdoc/>
+    public override bool IsEdited => TabsComponents.Any(x => x.IsEdited);
 
     /// <summary>
     /// Признак того что обработку бизнес логики следует принудительно отменить/пропустить
@@ -53,7 +61,6 @@ public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-
         IsBusyProgress = true;
         DocumentMetadata = await JournalRepo.GetDocumentMetadata(DocumentNameOrId);
         IsBusyProgress = false;

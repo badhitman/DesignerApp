@@ -85,7 +85,7 @@
             <button disabled="@Manufacture.Equals(manufactureEdit)" @onclick="UpdateManufacture" class="btn btn-@(Manufacture.Equals(manufactureEdit) ? "outline-secondary" : "primary")" type="button">Сохранить</button>
             @if (!Manufacture.Equals(manufactureEdit))
             {
-                <button title="Сбросить изменения и вернуть исходные значения настроек" @onclick="() => { manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture); }" class="btn btn-outline-info" type="button">Отмена</button>
+                <button title="Сбросить изменения и вернуть исходные значения настроек" @onclick="() => { manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture) ?? throw new Exception(); }" class="btn btn-outline-info" type="button">Отмена</button>
             }
         </div>
     </div>
@@ -121,6 +121,6 @@
 
     protected override void OnInitialized()
     {
-        manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture);
+        manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture) ?? throw new Exception();
     }
 }

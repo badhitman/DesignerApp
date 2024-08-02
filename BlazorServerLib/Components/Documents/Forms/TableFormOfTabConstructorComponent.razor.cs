@@ -20,5 +20,10 @@ public partial class TableFormOfTabConstructorComponent : FormBaseCore
     /// Form
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required FormConstructorModelDB Form {  get; set; }
+    public required FormConstructorModelDB Form { get; set; }
+
+    /// <summary>
+    /// Таблица редактируется через свои собственные посадочные стрраницы формы
+    /// </summary>
+    public override bool IsEdited => false;
 }

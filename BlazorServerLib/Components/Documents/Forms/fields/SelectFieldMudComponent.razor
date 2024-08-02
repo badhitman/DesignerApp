@@ -16,6 +16,7 @@
 
     [Parameter]
     public EntryModel? Value { get; set; }
+    EntryModel? _value;
 
     [Parameter]
     public EventCallback<EntryModel?> ValueChanged { get; set; }
@@ -23,7 +24,9 @@
 
     Func<EntryModel?, string> converter = p => p?.Name ?? "";
 
-    public EntryModel? EntryValue
+    public override bool IsEdited => Value?.Id != _value?.Id;
+
+    EntryModel? EntryValue
     {
         get => Value;
         set
@@ -33,5 +36,10 @@
 
             ValueChanged.InvokeAsync(Value);
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        _value = GlobalTools.CreateDeepCopy(Value);
     }
 }

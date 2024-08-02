@@ -42,11 +42,9 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         if (Session is null)
             return;
-
-        if (TabOfDocument.JoinsForms?.Count != TabMetadata.Forms.Length)
-            throw new Exception();
 
         IsBusyProgress = true;
         SessionValues = await JournalRepo.ReadSessionTabValues(TabOfDocument.Id, Session.Id);

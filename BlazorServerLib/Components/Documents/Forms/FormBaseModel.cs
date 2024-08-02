@@ -29,11 +29,15 @@ public abstract partial class FormBaseModel : FormBaseCore
     [CascadingParameter, EditorRequired]
     public required Action<FormBaseModel> FormChangeAction { get; set; }
 
+    /// <summary>
+    /// Поля формы для отслеживания их состояния
+    /// </summary>
+    public List<FieldBaseComponentModel> FieldsComponents { get; set; } = [];
 
     /// <summary>
     /// Форма изменена
     /// </summary>
-    public abstract bool IsEdited { get; }
+    public override bool IsEdited => FieldsComponents.Any(x => x.IsEdited);
 
     /// <summary>
     /// Сохранить форму (обработчик команды)

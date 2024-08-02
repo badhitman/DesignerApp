@@ -172,8 +172,11 @@ public static partial class GlobalTools
     /// <summary>
     /// Клон объекта (через сереализацию)
     /// </summary>
-    public static T CreateDeepCopy<T>(T obj)
+    public static T? CreateDeepCopy<T>(T? obj)
     {
+        if (obj is null)
+            return default;
+
         using MemoryStream ms = new();
         XmlSerializer serializer = new(obj!.GetType());
         serializer.Serialize(ms, obj);

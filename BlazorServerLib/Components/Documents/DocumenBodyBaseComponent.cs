@@ -32,4 +32,9 @@ public abstract class DocumenBodyBaseComponent : BlazorBusyComponentBaseModel
     /// </remarks>
     [CascadingParameter]
     public int? DocumentKey { get; set; }
+
+    /// <summary>
+    /// IsEdited
+    /// </summary>
+    public abstract bool IsEdited { get; }
 }

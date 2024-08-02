@@ -5,11 +5,15 @@
 @code {
     [Parameter]
     public DateTime? Value { get; set; }
+    DateTime? _value;
 
     [Parameter]
     public EventCallback<DateTime?> ValueChanged { get; set; }
 
-    public DateTime? DateTimeValue
+    
+    public override bool IsEdited => Value != _value;
+
+    DateTime? DateTimeValue
     {
         get => Value;
         set
@@ -17,5 +21,11 @@
             Value = value;
             ValueChanged.InvokeAsync(Value);
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _value = Value;
     }
 }

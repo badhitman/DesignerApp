@@ -35,10 +35,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
 
-
-    /// <inheritdoc/>
-    public override bool IsEdited => SessionValues.Any(x => _selfSessionValues!.Any(y => x == y)) || _selfSessionValues.Any(x => !SessionValues.Any(y => x == y));
-
+    
     #region bool
     bool BoolSimpleValue(FieldFitModel field, FieldFormConstructorModelDB e)
     {

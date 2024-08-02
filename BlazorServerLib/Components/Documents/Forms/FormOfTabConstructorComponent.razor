@@ -2,79 +2,81 @@
 
 <div class="card mb-2">
     <div class="card-body">
-        <div class="@FormMetadata.Css" title="@(string.IsNullOrWhiteSpace(FormMetadata.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(FormMetadata.Description)))">
-            @{
-                int i = -1;
-            }
-            @foreach (BaseRequiredFormFitModel field in FormMetadata.AllFields)
-            {
-                i++;
-                FieldFormBaseLowConstructorModel _field_c = Form.AllFields[i];
-                <div class="@field.Css" title="@(string.IsNullOrWhiteSpace(field.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(field.Description)))">
-                    @if (field is FieldFitModel bf)
-                    {
-                        FieldFormConstructorModelDB _field_b = (FieldFormConstructorModelDB)_field_c;
-                        switch (bf.TypeField)
+        <CascadingValue Value="this">
+            <div class="@FormMetadata.Css" title="@(string.IsNullOrWhiteSpace(FormMetadata.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(FormMetadata.Description)))">
+                @{
+                    int i = -1;
+                }
+                @foreach (BaseRequiredFormFitModel field in FormMetadata.AllFields)
+                {
+                    i++;
+                    FieldFormBaseLowConstructorModel _field_c = Form.AllFields[i];
+                    <div class="@field.Css" title="@(string.IsNullOrWhiteSpace(field.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(field.Description)))">
+                        @if (field is FieldFitModel bf)
                         {
-                            case TypesFieldsFormsEnum.Bool:
-                                <CheckBoxComponent IsChecked="BoolSimpleValue(bf, _field_b)" IsCheckedChanged="(e) => SetSimpleFieldBoolValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
-                                break;
-                            case TypesFieldsFormsEnum.Int:
-                                <IntMudFieldComponent Value="IntSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldIntValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
-                                break;
-                            case TypesFieldsFormsEnum.Double:
-                                <DoubleMudFieldComponent Value="DoubleSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldDoubleValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
-                                break;
-                            case TypesFieldsFormsEnum.DateTime:
-                                <DateTimeMudComponent Value="DateTimeSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldDateTimeValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
-                                break;
-                            case TypesFieldsFormsEnum.Date:
-                                <DateMudComponent Value="DateOnlySimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldDateOnlyValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
-                                break;
-                            case TypesFieldsFormsEnum.Time:
-                                <TimeMudComponent Value="TimeOnlySimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldTimeOnlyValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
-                                break;
-                            case TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password:
-                                <TextMudComponent Value="@StringSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldStringValue(bf, e, _field_b)" AsPassword="bf.TypeField == TypesFieldsFormsEnum.Password" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
-                                break;
-                            case TypesFieldsFormsEnum.ProgramCalculationDouble:
-                                <div class="alert alert-primary" role="alert">
-                                    TypesFieldsFormsEnum.ProgramCalculationDouble
-                                </div>
-                                break;
-                            case TypesFieldsFormsEnum.Generator:
-                                <div class="alert alert-primary" role="alert">
-                                    TypesFieldsFormsEnum.Generator
-                                </div>
-                                break;
-                            default:
-                                <div class="alert alert-danger" role="alert">
-                                    Не известный вид поля: @bf.TypeField
-                                </div>
-                                break;
+                            FieldFormConstructorModelDB _field_b = (FieldFormConstructorModelDB)_field_c;
+                            switch (bf.TypeField)
+                            {
+                                case TypesFieldsFormsEnum.Bool:
+                                    <CheckBoxComponent Value="BoolSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldBoolValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Int:
+                                    <IntMudFieldComponent Value="IntSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldIntValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Double:
+                                    <DoubleMudFieldComponent Value="DoubleSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldDoubleValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.DateTime:
+                                    <DateTimeMudComponent Value="DateTimeSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldDateTimeValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Date:
+                                    <DateMudComponent Value="DateOnlySimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldDateOnlyValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Time:
+                                    <TimeMudComponent Value="TimeOnlySimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldTimeOnlyValue(bf, e, _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password:
+                                    <TextMudComponent Value="@StringSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldStringValue(bf, e, _field_b)" AsPassword="bf.TypeField == TypesFieldsFormsEnum.Password" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.ProgramCalculationDouble:
+                                    <div class="alert alert-primary" role="alert">
+                                        TypesFieldsFormsEnum.ProgramCalculationDouble
+                                    </div>
+                                    break;
+                                case TypesFieldsFormsEnum.Generator:
+                                    <div class="alert alert-primary" role="alert">
+                                        TypesFieldsFormsEnum.Generator
+                                    </div>
+                                    break;
+                                default:
+                                    <div class="alert alert-danger" role="alert">
+                                        Не известный вид поля: @bf.TypeField
+                                    </div>
+                                    break;
+                            }
                         }
-                    }
-                    else if (field is FieldAkaDirectoryFitModel df)
-                    {
-                        FieldFormAkaDirectoryConstructorModelDB _field_p = (FieldFormAkaDirectoryConstructorModelDB)_field_c;
-                        if (df.IsMultiSelect)
+                        else if (field is FieldAkaDirectoryFitModel df)
                         {
-                            <SelectFieldMudMultiselectComponent Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictsValue(df, _field_p)" ValueChanged="(e) => SetDictsFieldValue(df, e, _field_p)" />
+                            FieldFormAkaDirectoryConstructorModelDB _field_p = (FieldFormAkaDirectoryConstructorModelDB)_field_c;
+                            if (df.IsMultiSelect)
+                            {
+                                <SelectFieldMudMultiselectComponent Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictsValue(df, _field_p)" ValueChanged="(e) => SetDictsFieldValue(df, e, _field_p)" />
+                            }
+                            else
+                            {
+                                <SelectFieldMudComponent Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictValue(df, _field_p)" ValueChanged="(e) => SetDictFieldValue(df, e, _field_p)" />
+                            }
                         }
                         else
                         {
-                            <SelectFieldMudComponent Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictValue(df, _field_p)" ValueChanged="(e) => SetDictFieldValue(df, e, _field_p)" />
+                            <div class="alert alert-danger" role="alert">
+                                Не известный тип поля: @field.GetType().FullName
+                            </div>
                         }
-                    }
-                    else
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            Не известный тип поля: @field.GetType().FullName
-                        </div>
-                    }
-                </div>
-            }
-        </div>
+                    </div>
+                }
+            </div>
+        </CascadingValue>
         @if (IsEdited)
         {
             <div class="btn-toolbar justify-content-end" role="toolbar">

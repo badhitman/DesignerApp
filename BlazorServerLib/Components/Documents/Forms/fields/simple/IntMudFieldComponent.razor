@@ -1,12 +1,19 @@
 ﻿@inherits FieldBaseComponentModel
 
-<MudNumericField Label="@Label" HelperText="@Hint" @bind-Value="_value" InputId="@Id" />
+<MudNumericField Label="@Label" HelperText="@Hint" @bind-Value="IntValue" InputId="@Id" />
 
 @code {
     [Parameter]
     public int Value { get; set; }
+    int _value;
 
-    public int _value
+    [Parameter]
+    public required EventCallback<int> ValueChanged { get; set; }
+
+
+    public override bool IsEdited => Value != _value;
+
+    int IntValue
     {
         get => Value;
         set
@@ -16,6 +23,9 @@
         }
     }
 
-    [Parameter]
-    public required EventCallback<int> ValueChanged { get; set; }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _value = Value;
+    }
 }

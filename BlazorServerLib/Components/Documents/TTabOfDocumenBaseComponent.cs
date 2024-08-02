@@ -19,6 +19,12 @@ public abstract class TTabOfDocumenBaseComponent : DocumenBodyBaseComponent
     public required TabFitModel TabMetadata { get; set; }
 
     /// <summary>
+    /// ParentDocument
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required DocumentEditBaseComponent ParentDocument { get; set; }
+
+    /// <summary>
     /// TabChangeHandle
     /// </summary>
     [CascadingParameter, EditorRequired]
@@ -30,6 +36,15 @@ public abstract class TTabOfDocumenBaseComponent : DocumenBodyBaseComponent
     /// </summary>
     public List<FormBaseModel> FormsStack { get; set; } = [];
 
+    /// <inheritdoc/>
+    public override bool IsEdited => FormsStack.Any(x => x.IsEdited);
+
+    /// <inheritdoc/>
+    protected override Task OnInitializedAsync()
+    {
+        ParentDocument.TabsComponents.Add(this);
+        return base.OnInitializedAsync();
+    }
 
     /// <summary>
     /// FormChangeEvent
