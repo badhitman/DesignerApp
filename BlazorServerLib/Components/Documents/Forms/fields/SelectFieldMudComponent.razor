@@ -1,6 +1,6 @@
 ﻿@inherits FieldBaseComponentModel
 
-<MudSelect T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="false" @bind-Value="EntryValue" ToStringFunc="@converter">
+<MudSelect ReadOnly="Readonly" T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="false" @bind-Value="EntryValue" ToStringFunc="@converter">
     @if (Entries?.Any() == true)
     {
         @foreach (EntryModel d in Entries)
@@ -24,7 +24,16 @@
 
     Func<EntryModel?, string> converter = p => p?.Name ?? "";
 
-    public override bool IsEdited => Value != _value;
+    public override bool IsEdited
+    {
+        get
+        {
+            if ((Value is null || Value == 0 || Value == default) && (_value is null || _value == 0 || _value == default))
+                return false;
+
+            return Value != _value;
+        }
+    }
 
     EntryModel? _entryValue;
     EntryModel? EntryValue

@@ -55,21 +55,19 @@ else
         @foreach (TabFitModel _tab in DocumentMetadata.Tabs)
         {
             <TabComponent Title="@_tab.Name" SystemName='@_tab.SystemName'>
-
                 <CascadingValue Value="scheme_obj">
                     <CascadingValue Value="DocumentMetadata">
                         <CascadingValue Value="session">
                             <CascadingValue Value="_tab">
                                 <CascadingValue Value="TabChangeEvent">
                                     <CascadingValue Value="this">
-                                        <TabOfDocumentConstructorComponent DocumentKey="@DocumentKey" TabChangeHandle="TabChangeEvent" />
+                                        <TabOfDocumentConstructorComponent DocumentKey="@DocumentKey" TabChangeHandle="TabChangeEvent" ID="@($"{(DocumentKey.HasValue ? $"{DocumentKey.Value}>" : "")}{_tab.SystemName}")" />
                                     </CascadingValue>
                                 </CascadingValue>
                             </CascadingValue>
                         </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
-
             </TabComponent>
         }
     </TabSetComponent>

@@ -2,7 +2,7 @@
 
 @inherits FieldBaseComponentModel
 
-<MudSelect T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="true" @bind-SelectedValues="EntriesValues" ToStringFunc="converter">
+<MudSelect ReadOnly="Readonly" T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="true" @bind-SelectedValues="EntriesValues" ToStringFunc="converter">
     @if (Entries?.Any() == true)
     {
         @foreach (EntryModel d in Entries)

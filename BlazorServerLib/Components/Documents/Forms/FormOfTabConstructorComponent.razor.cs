@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 using SharedLib;
@@ -62,7 +63,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
                 Value = value,
                 RowNum = 0,
                 OwnerId = Session.Id,
-                TabJoinDocumentSchemeId = Join.Id
+                TabJoinDocumentSchemeId = Join.Tab!.Id
             };
             SessionValues.Add(_value_field);
         }
@@ -155,7 +156,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
         if (_value_field is not null && int.TryParse(_value_field.Value, out int _d))
             return _d;
 
-        return -1;
+        return 0;
     }
 
     void SetDirectoryFieldValue(FieldAkaDirectoryFitModel field, int? value, FieldFormAkaDirectoryConstructorModelDB e)
@@ -246,11 +247,19 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
         if (DocumentKey is null || SessionValues is null)
             throw new Exception();
 
-        await ConstructorRepo.SaveSessionForm(DocumentKey.Value, Join.Tab!.Id, SessionValues);
+        IsBusyProgress = true;
+        TResponseModel<ValueDataForSessionOfDocumentModelDB[]> res = await ConstructorRepo.SaveSessionForm(DocumentKey.Value, Join.Tab!.Id, SessionValues);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        IsBusyProgress = false;
 
         SessionValues.Clear();
-        if (_selfSessionValues?.Count > 0)
-            SessionValues.AddRange(_selfSessionValues);
+        if (res.Response?.Length > 0)
+        {
+            SessionValues.AddRange(res.Response);
+
+            _selfSessionValues ??= [];
+            _selfSessionValues.AddRange(SessionValues);
+        }
 
         foreach (FieldBaseComponentModel fb in FieldsComponents)
         {

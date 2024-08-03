@@ -6,7 +6,7 @@
 @page "/journal-{DocumentNameOrId}/project-{ProjectId}/document/"
 @page "/journal-{DocumentNameOrId}/project-{ProjectId}/document/{DocumentKey}"
 
-<h3>DocumentEditPage</h3>
+<h3>Документ (@(_dpk != int.MinValue ? _dpk > 0 ? "редактирование" : "создание нового" : "DEMO"))</h3>
 
 @if (string.IsNullOrWhiteSpace(DocumentNameOrId))
 {
@@ -19,13 +19,13 @@
         </figcaption>
     </figure>
 }
-else if (int.TryParse(DocumentKey, out int _i))
+else if (_dpk != int.MinValue)
 {
-    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="_i" />
+    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="_dpk" ID="@($"doc:{DocumentKey}")" />
 }
 else
 {
-    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="null" />
+    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="null" ID="@($"doc-demo:{DocumentKey}")" />
 }
 
 @code {
@@ -40,6 +40,7 @@ else
     /// </summary>
     [Parameter]
     public string? DocumentKey { get; set; }
+    int _dpk = int.MinValue;
 
     /// <summary>
     /// Project Id
@@ -49,6 +50,9 @@ else
 
     protected override void OnInitialized()
     {
+        if (int.TryParse(DocumentKey, out int _i))
+            _dpk = _i;
+
         base.OnInitialized();
     }
 }

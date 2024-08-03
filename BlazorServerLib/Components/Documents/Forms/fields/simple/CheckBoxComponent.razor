@@ -22,6 +22,9 @@
         get => Value;
         set
         {
+            if (Readonly)
+                return;
+
             Value = value;
             _isEdited = Value != _value;
             ValueChanged.InvokeAsync(Value);
@@ -36,6 +39,7 @@
     public override void CommitChange()
     {
         _value = Value;
+        _isEdited = false;
     }
 
     protected override void OnInitialized()

@@ -39,10 +39,7 @@ public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
     [Parameter, SupplyParameterFromQuery]
     public string? TabName { get; set; }
 
-
-    // TTabOfDocumenBaseComponent
-
-
+        
     /// <summary>
     /// TabsComponents
     /// </summary>

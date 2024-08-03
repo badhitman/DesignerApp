@@ -12,7 +12,6 @@ namespace BlazorWebLib.Components.Documents;
 /// </summary>
 public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseComponent
 {
-    TabOfDocumentSchemeConstructorModelDB? _tabOfDocument;
     /// <summary>
     /// TabOfDocument
     /// </summary>

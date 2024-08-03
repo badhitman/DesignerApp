@@ -12,12 +12,6 @@ namespace BlazorWebLib;
 public abstract partial class FormBaseModel : FormBaseCore
 {
     /// <summary>
-    /// ID
-    /// </summary>
-    [Parameter, EditorRequired]
-    public required string ID { get; set; }
-
-    /// <summary>
     /// Формы в табе
     /// </summary>
     [CascadingParameter, EditorRequired]

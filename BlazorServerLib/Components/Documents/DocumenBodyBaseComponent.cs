@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
+using MudBlazor;
 
 namespace BlazorWebLib;
 
@@ -17,6 +18,16 @@ public abstract class DocumenBodyBaseComponent : BlazorBusyComponentBaseModel
     [Inject]
     public IJournalUniversalService JournalRepo { get; set; } = default!;
 
+    /// <inheritdoc/>
+    [Inject]
+    public ISnackbar SnackbarRepo { get; set; } = default!;
+
+
+    /// <summary>
+    /// ID
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string ID { get; set; }
 
     /// <summary>
     /// Document Metadata
@@ -33,8 +44,9 @@ public abstract class DocumenBodyBaseComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required int? DocumentKey { get; set; }
 
+
     /// <summary>
     /// IsEdited
     /// </summary>
-    public abstract bool IsEdited { get; }
+    public abstract bool IsEdited { get; }    
 }

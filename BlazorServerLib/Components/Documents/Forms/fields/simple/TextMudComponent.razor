@@ -2,7 +2,7 @@
 
 @inherits FieldBaseComponentModel
 
-<MudTextField @bind-Value="StringValue" HelperText="@Hint" Label="@Label" Required="@Required" Variant="Variant.Text" InputType="@(AsPassword?InputType.Password: InputType.Text )" InputId="@Id"></MudTextField>
+<MudTextField UserAttributes="@(new Dictionary<string, object>(){{"autocomplete","off"}})" @bind-Value="StringValue" HelperText="@Hint" Label="@Label" ReadOnly="Readonly" Required="@Required" Variant="Variant.Text" InputType="@(AsPassword?InputType.Password: InputType.Text )" InputId="@Id"></MudTextField>
 
 @code {
     /// <summary>
@@ -19,7 +19,16 @@
     public EventCallback<string?> ValueChanged { get; set; }
 
 
-    public override bool IsEdited => Value != _value && !(string.IsNullOrWhiteSpace(Value) && string.IsNullOrWhiteSpace(_value));
+    public override bool IsEdited
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(Value) && string.IsNullOrWhiteSpace(_value))
+                return false;
+
+            return Value != _value;
+        }
+    }
 
     string? StringValue
     {

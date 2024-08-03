@@ -3,13 +3,12 @@
 @inherits TTabOfDocumenBaseComponent
 
 <div class="card">
-    <div class="card-body">
-
+    <div class="card-body" id="tab:@ID">
         <CascadingValue Value="this">
             @{
                 int i = -1;
             }
-            @foreach (FormFitModel form in TabMetadata.Forms)
+            @foreach (FormFitModel form_metadata in TabMetadata.Forms)
             {
                 i++;
 
@@ -20,22 +19,22 @@
 
                 FormConstructorModelDB form_c = join.Form!;
                 List<ValueDataForSessionOfDocumentModelDB> _sv = SessionValues is null ? [] : [.. SessionValues.Where(x => x.TabJoinDocumentSchemeId == TabOfDocument.Id && x.TabJoinDocumentScheme!.FormId == form_c.Id)];
-                
+
                 <CascadingValue Value="join">
                     <CascadingValue Value="TabMetadata">
                         <CascadingValue Value="FormsStack">
-                            <CascadingValue Value="form">
+                            <CascadingValue Value="form_metadata">
                                 <CascadingValue Value="form_c">
                                     <CascadingValue Value="_sv">
                                         <CascadingValue Value="FormChangeEvent">
                                             <CascadingValue Value="TabOfDocument">
-                                                @if (form.IsTable)
+                                                @if (form_metadata.IsTable)
                                                 {
-                                                    <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" />
+                                                    <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"[teble]{ID}>{form_metadata.SystemName}")" />
                                                 }
                                                 else
                                                 {
-                                                    <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{TabMetadata.SystemName}-{form.SystemName}")" />
+                                                    <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{ID}>{form_metadata.SystemName}")" />
                                                 }
                                             </CascadingValue>
                                         </CascadingValue>

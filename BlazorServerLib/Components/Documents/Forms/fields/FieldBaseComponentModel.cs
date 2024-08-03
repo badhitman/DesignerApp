@@ -29,8 +29,13 @@ public abstract class FieldBaseComponentModel : BlazorBusyComponentBaseModel
     public bool Required { get; set; }
 
     /// <inheritdoc/>
+    [Parameter]
+    public bool Readonly { get; set; }
+
+    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required FormBaseModel ParentForm { get; set; }
+
 
     /// <summary>
     /// Поле изменило своё значение от исходного

@@ -2847,8 +2847,10 @@ public partial class ConstructorService(
     // Пользователи видят ваш документ, но сам документ данные не хранит. Хранение данных происходит в сессиях, которые вы сами выпускаете для любого вашего документа
     #region сессии документов (данные заполнения документов).
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SaveSessionForm(int sessionId, int join, List<ValueDataForSessionOfDocumentModelDB> sessionValues)
+    public async Task<TResponseModel<ValueDataForSessionOfDocumentModelDB[]>> SaveSessionForm(int sessionId, int join, List<ValueDataForSessionOfDocumentModelDB> sessionValues)
     {
+        sessionValues = [.. sessionValues.SkipWhile(x => x.Id < 1 && string.IsNullOrWhiteSpace(x.Value))];
+
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         SessionOfDocumentDataModelDB? sq = await context_forms
             .Sessions
@@ -2856,8 +2858,13 @@ public partial class ConstructorService(
             .ThenInclude(x => x.TabJoinDocumentScheme)
             .FirstOrDefaultAsync(x => x.Id == sessionId);
 
+        TResponseModel<ValueDataForSessionOfDocumentModelDB[]> res = new();
+
         if (sq is null)
-            return ResponseBaseModel.CreateError("Объект документа удалён");
+        {
+            res.AddError("Объект документа удалён");
+            return res;
+        }
 
         ValueDataForSessionOfDocumentModelDB[] _session_data = sq
             .DataSessionValues!
@@ -2894,7 +2901,25 @@ public partial class ConstructorService(
             await context_forms.SaveChangesAsync();
         }
 
-        return ResponseBaseModel.CreateSuccess("Форма документа сохранена");
+        res.AddSuccess("Форма документа сохранена");
+        res.Response = await context_forms
+            .ValuesSessions
+            .Where(x => x.OwnerId == sessionId && x.TabJoinDocumentSchemeId == join)
+            .ToArrayAsync();
+
+        if (res.Response.Any(x => string.IsNullOrWhiteSpace(x.Value)))
+        {
+            _ids_del = res
+                .Response
+                .Where(x => string.IsNullOrWhiteSpace(x.Value))
+                .Select(x => x.Id)
+                .ToArray();
+
+            context_forms.RemoveRange(context_forms.Sessions.Where(x => _ids_del.Contains(x.Id)));
+            await context_forms.SaveChangesAsync();
+        }
+
+        return res;
     }
 
     /// <inheritdoc/>

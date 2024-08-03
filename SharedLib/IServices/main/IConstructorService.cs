@@ -314,7 +314,7 @@ public interface IConstructorService
     /// <summary>
     /// Сохранить данные формы документа из сессии
     /// </summary>
-    public Task<ResponseBaseModel> SaveSessionForm(int sessionId, int join, List<ValueDataForSessionOfDocumentModelDB> sessionValues);
+    public Task<TResponseModel<ValueDataForSessionOfDocumentModelDB[]>> SaveSessionForm(int sessionId, int join, List<ValueDataForSessionOfDocumentModelDB> sessionValues);
 
     /// <summary>
     /// Установить статус сессии (от менеджера)
