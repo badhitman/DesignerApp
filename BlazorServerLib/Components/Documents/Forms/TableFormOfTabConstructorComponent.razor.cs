@@ -18,10 +18,10 @@ public partial class TableFormOfTabConstructorComponent : FormBaseCore
     public required List<ValueDataForSessionOfDocumentModelDB> SessionValues { get; set; }
 
     /// <summary>
-    /// Form
+    /// Вкладка/таб
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required FormConstructorModelDB Form { get; set; }
+    public required TabJoinDocumentSchemeConstructorModelDB Join { get; set; }
 
     /// <summary>
     /// Таблица редактируется через свои собственные посадочные стрраницы формы
@@ -31,7 +31,7 @@ public partial class TableFormOfTabConstructorComponent : FormBaseCore
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server, with a token for canceling this request
     /// </summary>
-    private async Task<TableData<Dictionary<int, Dictionary<string,object>>>> ServerReload(TableState state, CancellationToken token)
+    private Task<TableData<KeyValuePair<int, Dictionary<string, object>>>> ServerReload(TableState state, CancellationToken token)
     {
         // Forward the provided token to methods which support it
         //var data = await httpClient.GetFromJsonAsync<List<Dictionary<int, Dictionary<string,object>>>>("webapi/periodictable", token);
@@ -42,6 +42,6 @@ public partial class TableFormOfTabConstructorComponent : FormBaseCore
         // Get the paged data
         //var pagedData = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
         // Return the data
-        return new TableData<Dictionary<int, Dictionary<string, object>>>() { TotalItems = 0, Items = [] };
+        return Task.FromResult(new TableData<KeyValuePair<int, Dictionary<string, object>>>() { TotalItems = 0, Items = [] });
     }
 }

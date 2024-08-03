@@ -19,7 +19,8 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
 
 
     /// <inheritdoc/>
-    public List<ValueDataForSessionOfDocumentModelDB>? SessionValues => Session?.DataSessionValues;
+    [CascadingParameter]
+    public List<ValueDataForSessionOfDocumentModelDB>? SessionValues { get; set; }
     List<ValueDataForSessionOfDocumentModelDB>? _selfSessionValues;
 
     /// <summary>
@@ -39,12 +40,6 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required TabJoinDocumentSchemeConstructorModelDB Join { get; set; }
-
-    /// <summary>
-    /// Form
-    /// </summary>
-    [CascadingParameter, EditorRequired]
-    public required FormConstructorModelDB Form { get; set; }
 
 
     void SetSimpleFieldValue(FieldFitModel field, string? value, FieldFormConstructorModelDB e)

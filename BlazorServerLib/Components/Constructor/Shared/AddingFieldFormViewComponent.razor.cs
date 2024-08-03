@@ -26,14 +26,7 @@ public partial class AddingFieldFormViewComponent : ComponentBase
     [CascadingParameter, EditorRequired]
     public required FormConstructorModelDB Form { get; set; }
 
-
-    /*
-     /// <inheritdoc/>
-    [CascadingParameter]
-    public Action<FieldFormBaseLowConstructorModel, Type> StateHasChangedHandler { get; set; } = default!;
-     */
-
-
+        
     FieldFormAkaDirectoryConstructorModelDB FieldObjectForDirectory
     {
         get

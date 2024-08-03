@@ -38,15 +38,16 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
         IsBusyProgress = true;
         TResponseModel<DocumentSchemeConstructorModelDB[]?> ds = await JournalRepo.FindDocumentSchemes(DocumentNameOrId, ProjectId);
         SnackbarRepo.ShowMessagesResponse(ds.Messages);
-        IsBusyProgress = false;
+
         schemes = ds.Response;
 
         if (schemes?.Length == 1 && DocumentKey > 0)
         {
-            TResponseModel<SessionOfDocumentDataModelDB> session_data = await ConstructorRepo.GetSessionDocument(DocumentKey.Value);
+            TResponseModel<SessionOfDocumentDataModelDB> session_data = await ConstructorRepo.GetSessionDocument(DocumentKey.Value, true);
             SnackbarRepo.ShowMessagesResponse(session_data.Messages);
             session = session_data.Response;
         }
+        IsBusyProgress = false;
     }
 
     /// <inheritdoc/>

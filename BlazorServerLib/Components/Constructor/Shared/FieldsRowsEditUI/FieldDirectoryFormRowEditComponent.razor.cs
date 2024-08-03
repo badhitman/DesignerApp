@@ -24,9 +24,6 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     [Inject]
     protected IConstructorService ConstructorRepo { get; set; } = default!;
 
-    ///// <inheritdoc/>
-    //[CascadingParameter, EditorRequired]
-    //public FormConstructorModelDB Form { get; set; } = default!;
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]

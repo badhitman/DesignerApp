@@ -10,7 +10,7 @@
                 @foreach (BaseRequiredFormFitModel field in FormMetadata.AllFields)
                 {
                     i++;
-                    FieldFormBaseLowConstructorModel _field_c = Form.AllFields[i];
+                    FieldFormBaseLowConstructorModel _field_c = Join.Form!.AllFields[i];
                     <div class="@field.Css" title="@(string.IsNullOrWhiteSpace(field.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(field.Description)))">
                         @if (field is FieldFitModel bf)
                         {

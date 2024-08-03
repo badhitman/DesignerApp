@@ -32,17 +32,30 @@ public partial class TabOfDocumentConstructorComponent : TTabOfDocumenBaseCompon
     /// <summary>
     /// Данные/значения текущей сессии для выбранной вкладки
     /// </summary>
-    protected ValueDataForSessionOfDocumentModelDB[]? SessionValues { get; private set; }
+    protected List<ValueDataForSessionOfDocumentModelDB>? SessionValues { get; private set; }
 
+    int _readed_tab_id;
+    
     /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnInitializedAsync();
-        if (Session is null || TabOfDocument.JoinsForms?.Count != TabMetadata.Forms.Length)
-            return;
+        if (firstRender)
+        {
 
-        IsBusyProgress = true;
-        SessionValues = await JournalRepo.ReadSessionTabValues(TabOfDocument.Id, Session.Id);
-        IsBusyProgress = false;
+        }
+        else
+        {
+            if (Session is null || TabOfDocument.JoinsForms?.Count != TabMetadata.Forms.Length)
+                return;
+
+            if (_readed_tab_id != TabOfDocument.Id)
+            {
+                _readed_tab_id = TabOfDocument.Id;
+
+                IsBusyProgress = true;
+                SessionValues = [..await JournalRepo.ReadSessionTabValues(TabOfDocument.Id, Session.Id)];
+                IsBusyProgress = false;
+            }
+        }
     }
 }

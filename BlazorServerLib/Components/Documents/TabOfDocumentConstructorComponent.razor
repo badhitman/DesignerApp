@@ -12,33 +12,23 @@
             {
                 i++;
 
-                if (TabOfDocument.JoinsForms?.Count != TabMetadata.Forms.Length)
-                    throw new Exception();
-
-                TabJoinDocumentSchemeConstructorModelDB join = TabOfDocument.JoinsForms![i];
-
-                FormConstructorModelDB form_c = join.Form!;
-                List<ValueDataForSessionOfDocumentModelDB> _sv = SessionValues is null ? [] : [.. SessionValues.Where(x => x.TabJoinDocumentSchemeId == TabOfDocument.Id && x.TabJoinDocumentScheme!.FormId == form_c.Id)];
-
-                <CascadingValue Value="join">
+                <CascadingValue Value="TabOfDocument.JoinsForms![i]">
                     <CascadingValue Value="TabMetadata">
                         <CascadingValue Value="FormsStack">
                             <CascadingValue Value="form_metadata">
-                                <CascadingValue Value="form_c">
-                                    <CascadingValue Value="_sv">
-                                        <CascadingValue Value="FormChangeEvent">
-                                            <CascadingValue Value="TabOfDocument">
-                                                <MudPaper>
-                                                    @if (form_metadata.IsTable)
-                                                    {
-                                                        <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"[teble]{ID}>{form_metadata.SystemName}")" />
-                                                    }
-                                                    else
-                                                    {
-                                                        <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{ID}>{form_metadata.SystemName}")" />
-                                                    }
-                                                </MudPaper>
-                                            </CascadingValue>
+                                <CascadingValue Value="SessionValues?.Where(x => x.TabJoinDocumentScheme!.Form!.Id == TabOfDocument.JoinsForms![i].Form!.Id)">
+                                    <CascadingValue Value="FormChangeEvent">
+                                        <CascadingValue Value="TabOfDocument">
+                                            <MudPaper>
+                                                @if (form_metadata.IsTable)
+                                                {
+                                                    <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"[teble]{ID}>{form_metadata.SystemName}")" />
+                                                }
+                                                else
+                                                {
+                                                    <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{ID}>{form_metadata.SystemName}")" />
+                                                }
+                                            </MudPaper>
                                         </CascadingValue>
                                     </CascadingValue>
                                 </CascadingValue>

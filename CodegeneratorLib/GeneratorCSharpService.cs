@@ -68,7 +68,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         await GenServicesDI();
         await WriteResources();
 
-        string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented);
+        string json_raw = JsonConvert.SerializeObject(dump, Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
         await GenerateJsonDump(json_raw);
 
         archive.Dispose();
