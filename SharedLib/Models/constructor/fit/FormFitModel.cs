@@ -20,6 +20,11 @@ public class FormFitModel : BaseFormFitModel
     public bool IsTable { get; set; }
 
     /// <summary>
+    /// Заголовок формы
+    /// </summary>
+    public string? Title { get; set; }
+
+    /// <summary>
     /// Простые поля
     /// </summary>
     public FieldFitModel[]? SimpleFields { get; set; }

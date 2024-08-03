@@ -2914,7 +2914,7 @@ public partial class ConstructorService(
                 .Where(x => string.IsNullOrWhiteSpace(x.Value))
                 .Select(x => x.Id)];
 
-            context_forms.RemoveRange(context_forms.Sessions.Where(x => _ids_del.Contains(x.Id)));
+            context_forms.RemoveRange(context_forms.ValuesSessions.Where(x => _ids_del.Contains(x.Id)));
             await context_forms.SaveChangesAsync();
             res.Response = [.. res.Response.SkipWhile(x => string.IsNullOrWhiteSpace(x.Value))];
         }

@@ -20,10 +20,6 @@ public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
 
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected ILogger<DocumentEditBaseComponent> LoggerRepo { get; set; } = default!;
 
 
@@ -71,14 +67,5 @@ public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
             IsCancel = true;
             return;
         }
-        //if (!DocumentMetadata.Tabs.Any(x => x.SystemName == TabName))
-        //{
-        //    string first_tab_system_name = DocumentMetadata.Tabs.First().SystemName;
-        //    Uri uriBuilder = new(NavigationRepo.Uri);
-        //    uriBuilder = new(uriBuilder.AppendQueryParameter(nameof(TabName), first_tab_system_name));
-
-        //    IsCancel = true;
-        //    NavigationRepo.NavigateTo($"{uriBuilder}", true);
-        //}
     }
 }

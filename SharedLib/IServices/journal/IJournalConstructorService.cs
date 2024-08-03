@@ -82,7 +82,7 @@ public partial interface IJournalUniversalService
                     SortIndex = joinForm.SortIndex,
                     SystemName = systemNamesManufacture.GetSystemName(joinForm.Form.Id, $"{doc.GetType().Name}#{doc.Id} {tab.GetType().Name}#{tab.Id} {joinForm.Form.GetType().Name}") ?? GlobalTools.TranslitToSystemName(joinForm.Form.Name), // form_tree_item.SystemName,
                     IsTable = joinForm.IsTable,
-
+                    Title = !joinForm.ShowTitle ? null : string.IsNullOrWhiteSpace(joinForm.Name) ? joinForm.Form.Name : joinForm.Name,
                     SimpleFields = joinForm.Form.Fields is null ? null : [.. joinForm.Form.Fields.Select(FieldConvert)],
                     FieldsAtDirectories = joinForm.Form.FieldsDirectoriesLinks is null ? null : [.. joinForm.Form.FieldsDirectoriesLinks.Select(FieldAkaDirectoryConvert)],
 
