@@ -2909,14 +2909,14 @@ public partial class ConstructorService(
 
         if (res.Response.Any(x => string.IsNullOrWhiteSpace(x.Value)))
         {
-            _ids_del = res
+            _ids_del = [..res
                 .Response
                 .Where(x => string.IsNullOrWhiteSpace(x.Value))
-                .Select(x => x.Id)
-                .ToArray();
+                .Select(x => x.Id)];
 
             context_forms.RemoveRange(context_forms.Sessions.Where(x => _ids_del.Contains(x.Id)));
             await context_forms.SaveChangesAsync();
+            res.Response = [.. res.Response.SkipWhile(x => string.IsNullOrWhiteSpace(x.Value))];
         }
 
         return res;

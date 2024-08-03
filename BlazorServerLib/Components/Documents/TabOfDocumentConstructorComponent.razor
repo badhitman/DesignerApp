@@ -2,8 +2,8 @@
 
 @inherits TTabOfDocumenBaseComponent
 
-<div class="card">
-    <div class="card-body" id="tab:@ID">
+<MudCard>
+    <MudCardContent id="@($"tab:{ID}")">
         <CascadingValue Value="this">
             @{
                 int i = -1;
@@ -28,14 +28,16 @@
                                     <CascadingValue Value="_sv">
                                         <CascadingValue Value="FormChangeEvent">
                                             <CascadingValue Value="TabOfDocument">
-                                                @if (form_metadata.IsTable)
-                                                {
-                                                    <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"[teble]{ID}>{form_metadata.SystemName}")" />
-                                                }
-                                                else
-                                                {
-                                                    <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{ID}>{form_metadata.SystemName}")" />
-                                                }
+                                                <MudPaper>
+                                                    @if (form_metadata.IsTable)
+                                                    {
+                                                        <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"[teble]{ID}>{form_metadata.SystemName}")" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{ID}>{form_metadata.SystemName}")" />
+                                                    }
+                                                </MudPaper>
                                             </CascadingValue>
                                         </CascadingValue>
                                     </CascadingValue>
@@ -46,5 +48,5 @@
                 </CascadingValue>
             }
         </CascadingValue>
-    </div>
-</div>
+    </MudCardContent>
+</MudCard>

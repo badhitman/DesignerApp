@@ -39,6 +39,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required SessionOfDocumentDataModelDB Session { get; set; }
 
+
     string UrlSession => $"{NavManagerRepo.BaseUri}{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{Session.SessionToken}";
 
     /// <inheritdoc/>
@@ -95,7 +96,10 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
 
     void ResetForm()
     {
-        session_origin.Reload(Session);
+        if (session_origin is null)
+            session_origin = (SessionOfDocumentDataModelDB)Session.Clone();
+        else
+            session_origin.Reload(Session);
 
         _currentTemplateInputRichText?.SetValue(session_origin.Description);
 

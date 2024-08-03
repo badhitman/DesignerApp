@@ -8,25 +8,29 @@
 
 <h3>Документ (@(_dpk != int.MinValue ? _dpk > 0 ? "редактирование" : "создание нового" : "DEMO"))</h3>
 
-@if (string.IsNullOrWhiteSpace(DocumentNameOrId))
-{
-    <figure>
-        <blockquote class="blockquote">
-            <p>Не указано имя журнала.</p>
-        </blockquote>
-        <figcaption class="blockquote-footer">
-            Требуется указать <cite title="Имя типа данных документа">имя журнала/документа</cite>
-        </figcaption>
-    </figure>
-}
-else if (_dpk != int.MinValue)
-{
-    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="_dpk" ID="@($"doc:{DocumentKey}")" />
-}
-else
-{
-    <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="null" ID="@($"doc-demo:{DocumentKey}")" />
-}
+<MudCard>
+    <MudCardContent>
+        @if (string.IsNullOrWhiteSpace(DocumentNameOrId))
+        {
+            <figure>
+                <blockquote class="blockquote">
+                    <p>Не указано имя журнала.</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    Требуется указать <cite title="Имя типа данных документа">имя журнала/документа</cite>
+                </figcaption>
+            </figure>
+        }
+        else if (_dpk != int.MinValue)
+        {
+            <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="_dpk" ID="@($"doc:{DocumentKey}")" />
+        }
+        else
+        {
+            <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="null" ID="@($"doc-demo:{DocumentKey}")" />
+        }
+    </MudCardContent>
+</MudCard>
 
 @code {
     /// <summary>

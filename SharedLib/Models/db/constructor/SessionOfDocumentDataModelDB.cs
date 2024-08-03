@@ -12,7 +12,7 @@ namespace SharedLib;
 /// </summary>
 [Index(nameof(AuthorUser)), Index(nameof(SessionToken)), Index(nameof(SessionStatus)), Index(nameof(CreatedAt)), Index(nameof(LastDocumentUpdateActivity)), Index(nameof(DeadlineDate))]
 [Index(nameof(OwnerId), nameof(ProjectId), nameof(NormalizeUpperName), IsUnique = true)]
-public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
+public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneable
 {
     /// <summary>
     /// Нормализованное имя: UPPERCASE
@@ -165,5 +165,31 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel
 
         if (other.Owner is not null && Owner is not null)
             Owner.Reload(other.Owner);
+    }
+
+    /// <inheritdoc/>
+    public object Clone()
+    {
+        return new SessionOfDocumentDataModelDB()
+        {
+            AuthorUser = AuthorUser,
+            Name = Name,
+            NormalizeUpperName = NormalizeUpperName,
+            ProjectId = ProjectId,
+            CreatedAt = CreatedAt,
+            DataSessionValues = DataSessionValues,
+            DeadlineDate = DeadlineDate,
+            Description = Description,
+            Editors = Editors,
+            EmailsNotifications = EmailsNotifications,
+            Id = Id,
+            LastDocumentUpdateActivity = LastDocumentUpdateActivity,
+            Owner = Owner,
+            OwnerId = OwnerId,
+            Project = Project,
+            SessionStatus = SessionStatus,
+            SessionToken = SessionToken,
+            ShowDescriptionAsStartPage = ShowDescriptionAsStartPage,
+        };
     }
 }

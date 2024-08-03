@@ -1,7 +1,7 @@
 ﻿@inherits FormBaseModel
 
-<div class="card mb-2" id="ref-form:@ID">
-    <div class="card-body">
+<MudCard Class="mb-4">
+    <MudCardContent id="@($"ref-form:{ID}")">
         <CascadingValue Value="this">
             <div class="@FormMetadata.Css" title="@(string.IsNullOrWhiteSpace(FormMetadata.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(FormMetadata.Description)))">
                 @{
@@ -77,14 +77,12 @@
                 }
             </div>
         </CascadingValue>
-        @if (IsEdited)
-        {
-            <div class="btn-toolbar justify-content-end my-3" role="toolbar">
-                <div class="btn-group btn-group-sm" role="group">
-                    <button @onclick="SaveForm" type="button" class="btn btn-outline-primary">Сохранить...</button>
-                    <button @onclick="ResetForm" type="button" class="btn btn-outline-primary">Отмена</button>
-                </div>
-            </div>
-        }
-    </div>
-</div>
+    </MudCardContent>
+    @if (IsEdited)
+    {
+        <MudCardActions>
+            <MudButton OnClick="SaveForm" Variant="Variant.Text" Color="Color.Success">Сохранить...</MudButton>
+            <MudButton OnClick="ResetForm" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
+        </MudCardActions>
+    }
+</MudCard>
