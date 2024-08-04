@@ -145,7 +145,7 @@ public partial class ConstructorService(
 
         session_Document.LastDocumentUpdateActivity = DateTime.Now;
 
-        TabJoinDocumentSchemeConstructorModelDB? form_join = session_Document.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        FormToTabJoinConstructorModelDB? form_join = session_Document.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена. ошибка 2494D4D2-24E1-48D4-BC9C-C27D327D98B8");
@@ -159,7 +159,7 @@ public partial class ConstructorService(
             return res;
         }
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        ValueDataForSessionOfDocumentModelDB? existing_value = session_Document.DataSessionValues.FirstOrDefault(x => x.RowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == form_join.Id);
+        ValueDataForSessionOfDocumentModelDB? existing_value = session_Document.DataSessionValues.FirstOrDefault(x => x.RowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.JoinFormToTabId == form_join.Id);
         if (existing_value is null)
         {
             if (req.FieldValue is null)
@@ -168,7 +168,7 @@ public partial class ConstructorService(
             existing_value = ValueDataForSessionOfDocumentModelDB.Build(req, form_join, session_Document);
 
             existing_value.Owner = null;
-            existing_value.TabJoinDocumentScheme = null;
+            existing_value.JoinFormToTab = null;
 
             await context_forms.AddAsync(existing_value, cancellationToken);
         }
@@ -204,13 +204,13 @@ public partial class ConstructorService(
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
             return (TResponseStrictModel<int>)ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (в статусе {session.SessionStatus}).");
 
-        TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        FormToTabJoinConstructorModelDB? form_join = session.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null || !form_join.IsTable)
         {
             res.AddError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 6342356D-0491-45BC-A33D-B95F5D7DCB5F");
             return res;
         }
-        IQueryable<ValueDataForSessionOfDocumentModelDB> q = session.DataSessionValues.Where(x => x.TabJoinDocumentSchemeId == form_join.Id && x.RowNum > 0).AsQueryable();
+        IQueryable<ValueDataForSessionOfDocumentModelDB> q = session.DataSessionValues.Where(x => x.JoinFormToTabId == form_join.Id && x.RowNum > 0).AsQueryable();
         res.Response = (int)(q.Any() ? (q.Max(x => x.RowNum) + 1) : 1);
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         ValueDataForSessionOfDocumentModelDB[] rows_add = form_join.Form.AllFields.Where(ScalarOnly).Select(x => new ValueDataForSessionOfDocumentModelDB()
@@ -218,7 +218,7 @@ public partial class ConstructorService(
             RowNum = (uint)res.Response,
             Name = x.Name,
             OwnerId = session.Id,
-            TabJoinDocumentSchemeId = form_join.Id
+            JoinFormToTabId = form_join.Id
         }).ToArray();
         await context_forms.AddRangeAsync(rows_add, cancellationToken);
         session.LastDocumentUpdateActivity = DateTime.Now;
@@ -243,11 +243,11 @@ public partial class ConstructorService(
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
             return ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (статус {session.SessionStatus}).");
 
-        TabJoinDocumentSchemeConstructorModelDB? form_join = session.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
+        FormToTabJoinConstructorModelDB? form_join = session.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null || !form_join.IsTable)
             return ResponseBaseModel.CreateError($"Связь формы со страницей опроса/анкеты #{req.JoinFormId} не найдена или повреждена. ошибка 66A38A11-CD9B-4F9E-8B5C-49E60109442D");
 
-        ValueDataForSessionOfDocumentModelDB[] values_for_delete = session.DataSessionValues.Where(x => x.RowNum == req.GroupByRowNum && x.TabJoinDocumentSchemeId == form_join.Id).ToArray();
+        ValueDataForSessionOfDocumentModelDB[] values_for_delete = session.DataSessionValues.Where(x => x.RowNum == req.GroupByRowNum && x.JoinFormToTabId == form_join.Id).ToArray();
 
         ResponseBaseModel res = new();
         if (req.IsSelf && values_for_delete.Any(x => !string.IsNullOrWhiteSpace(x.Value)))
@@ -2034,7 +2034,7 @@ public partial class ConstructorService(
             return check_project;
 
         IQueryable<ValueDataForSessionOfDocumentModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
-                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.TabJoinDocumentSchemeId equals _jf.Id
+                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.JoinFormToTabId equals _jf.Id
                                                                   select _v;
 
         if (await values.AnyAsync(cancellationToken: cancellationToken))
@@ -2071,7 +2071,7 @@ public partial class ConstructorService(
         context_forms.Remove(field_db);
 
         IQueryable<ValueDataForSessionOfDocumentModelDB> values = from _v in context_forms.ValuesSessions.Where(x => x.Name == field_db.Name)
-                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.TabJoinDocumentSchemeId equals _jf.Id
+                                                                  join _jf in context_forms.TabsJoinsForms.Where(x => x.FormId == field_db.OwnerId) on _v.JoinFormToTabId equals _jf.Id
                                                                   select _v;
 
         if (await values.AnyAsync(cancellationToken: cancellationToken))
@@ -2587,10 +2587,10 @@ public partial class ConstructorService(
     #endregion
     #region структура/схема табов/вкладок схем документов: формы, порядок и настройки поведения    
     /// <inheritdoc/>
-    public async Task<TResponseModel<TabJoinDocumentSchemeConstructorModelDB>> GetTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<FormToTabJoinConstructorModelDB>> GetTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        TResponseModel<TabJoinDocumentSchemeConstructorModelDB> res = new()
+        TResponseModel<FormToTabJoinConstructorModelDB> res = new()
         {
             Response = await context_forms
             .TabsJoinsForms
@@ -2614,7 +2614,7 @@ public partial class ConstructorService(
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> res = new();
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_join_db = await context_forms
+        FormToTabJoinConstructorModelDB? questionnaire_page_join_db = await context_forms
             .TabsJoinsForms
             .Include(x => x.Tab)
             .ThenInclude(x => x!.JoinsForms)
@@ -2640,7 +2640,7 @@ public partial class ConstructorService(
             return res;
         }
 
-        TabJoinDocumentSchemeConstructorModelDB? _fns = questionnaire_page_join_db.Tab.GetOutermostJoinForm(direct, questionnaire_page_join_db.SortIndex);
+        FormToTabJoinConstructorModelDB? _fns = questionnaire_page_join_db.Tab.GetOutermostJoinForm(direct, questionnaire_page_join_db.SortIndex);
 
         if (_fns is null)
             res.AddError("Не удалось выполнить перемещение. ошибка ED601887-8BB3-4FB7-96C7-1563FD9B1FCD");
@@ -2677,7 +2677,7 @@ public partial class ConstructorService(
 
         int i = 0;
         bool is_upd = false;
-        foreach (TabJoinDocumentSchemeConstructorModelDB p in res.Response.JoinsForms!)
+        foreach (FormToTabJoinConstructorModelDB p in res.Response.JoinsForms!)
         {
             i++;
             is_upd = is_upd || p.SortIndex != i;
@@ -2700,7 +2700,7 @@ public partial class ConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TabJoinDocumentSchemeConstructorModelDB tab_document_scheme_form, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(FormToTabJoinConstructorModelDB tab_document_scheme_form, CancellationToken cancellationToken = default)
     {
         tab_document_scheme_form.Name = tab_document_scheme_form.Name is null
             ? null
@@ -2738,7 +2738,7 @@ public partial class ConstructorService(
         if (!check_project.Success())
             return check_project;
 
-        TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_join_db;
+        FormToTabJoinConstructorModelDB? questionnaire_page_join_db;
         if (tab_document_scheme_form.Id < 1)
         {
             int _sort_index = tab_of_document_db.JoinsForms.Count != 0 ? tab_of_document_db.JoinsForms.Max(x => x.SortIndex) : 0;
@@ -2811,7 +2811,7 @@ public partial class ConstructorService(
     public async Task<ResponseBaseModel> DeleteTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, CancellationToken cancellationToken = default)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        TabJoinDocumentSchemeConstructorModelDB? questionnaire_page_db = await context_forms
+        FormToTabJoinConstructorModelDB? questionnaire_page_db = await context_forms
             .TabsJoinsForms
             .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_join_form_id, cancellationToken: cancellationToken);
 
@@ -2847,7 +2847,7 @@ public partial class ConstructorService(
     // Пользователи видят ваш документ, но сам документ данные не хранит. Хранение данных происходит в сессиях, которые вы сами выпускаете для любого вашего документа
     #region сессии документов (данные заполнения документов).
     /// <inheritdoc/>
-    public async Task<TResponseModel<ValueDataForSessionOfDocumentModelDB[]>> SaveSessionForm(int sessionId, int join, List<ValueDataForSessionOfDocumentModelDB> sessionValues)
+    public async Task<TResponseModel<ValueDataForSessionOfDocumentModelDB[]>> SaveSessionForm(int sessionId, int join_form_to_tab, IEnumerable<ValueDataForSessionOfDocumentModelDB> sessionValues)
     {
         sessionValues = [.. sessionValues.SkipWhile(x => x.Id < 1 && string.IsNullOrWhiteSpace(x.Value))];
 
@@ -2855,7 +2855,7 @@ public partial class ConstructorService(
         SessionOfDocumentDataModelDB? sq = await context_forms
             .Sessions
             .Include(x => x.DataSessionValues!)
-            .ThenInclude(x => x.TabJoinDocumentScheme)
+            .ThenInclude(x => x.JoinFormToTab)
             .FirstOrDefaultAsync(x => x.Id == sessionId);
 
         TResponseModel<ValueDataForSessionOfDocumentModelDB[]> res = new();
@@ -2868,7 +2868,7 @@ public partial class ConstructorService(
 
         ValueDataForSessionOfDocumentModelDB[] _session_data = sq
             .DataSessionValues!
-            .Where(x => x.TabJoinDocumentSchemeId == join)
+            .Where(x => x.JoinFormToTabId == join_form_to_tab)
             .ToArray();
 
         int[] _ids_del = sessionValues
@@ -2904,7 +2904,7 @@ public partial class ConstructorService(
         res.AddSuccess("Форма документа сохранена");
         res.Response = await context_forms
             .ValuesSessions
-            .Where(x => x.OwnerId == sessionId && x.TabJoinDocumentSchemeId == join)
+            .Where(x => x.OwnerId == sessionId && x.JoinFormToTabId == join_form_to_tab)
             .ToArrayAsync();
 
         if (res.Response.Any(x => string.IsNullOrWhiteSpace(x.Value)))
@@ -3180,7 +3180,7 @@ public partial class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         var q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
                 join _s in context_forms.Sessions on _vs.OwnerId equals _s.Id
-                join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.TabJoinDocumentSchemeId equals _pjf.Id
+                join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.JoinFormToTabId equals _pjf.Id
                 join _qp in context_forms.TabsOfDocumentsSchemes on _pjf.TabId equals _qp.Id
                 select new { Value = _vs, Session = _s, DocumentPageJoinForm = _pjf, DocumentPage = _qp };
 
@@ -3229,7 +3229,7 @@ public partial class ConstructorService(
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         IQueryable<ValueDataForSessionOfDocumentModelDB> q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
                                                              join _s in context_forms.Sessions.Where(x => !req.SessionId.HasValue || x.Id == req.SessionId.Value) on _vs.OwnerId equals _s.Id
-                                                             join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.TabJoinDocumentSchemeId equals _pjf.Id
+                                                             join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.JoinFormToTabId equals _pjf.Id
                                                              select _vs;
         int _i = await q.CountAsync();
         if (_i == 0)

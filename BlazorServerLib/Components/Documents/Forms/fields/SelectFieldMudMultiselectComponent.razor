@@ -14,7 +14,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public required IEnumerable<EntryModel> Entries { get; set; }
+    public required List<EntryModel> Entries { get; set; }
 
     [Parameter]
     public int[]? Value { get; set; }

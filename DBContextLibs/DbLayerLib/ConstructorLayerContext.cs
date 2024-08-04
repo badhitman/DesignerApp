@@ -9,6 +9,47 @@ namespace DbLayerLib;
 public partial class LayerContext
 {
     /// <summary>
+    /// Снапшоты, которые формируются при каждом удачном скачивании/генерации кода к проекту
+    /// </summary>
+    public DbSet<ProjectSnapshotModelDB> SnapshotsProjects { get; set; }
+
+    /// <summary>
+    /// Перечисления
+    /// </summary>
+    public DbSet<DirectoryEnumSnapshotModelDB> DirectoriesSnapshots { get; set; }
+
+    /// <summary>
+    /// Элементы перечислений
+    /// </summary>
+    public DbSet<DirectoryEnumElementSnapshotModelDB> ElementsOfDirectoriesSnapshots { get; set; }
+
+    /// <summary>
+    /// Документы
+    /// </summary>
+    public DbSet<DocumentSnapshotModelDB> DocumentsSnapshots { get; set; }
+
+    /// <summary>
+    /// Tabs snapshots
+    /// </summary>
+    public DbSet<TabSnapshotModelDB> TabsSnapshots { get; set; }
+
+    /// <summary>
+    /// Forms snapshots
+    /// </summary>
+    public DbSet<FormSnapshotModelDB> FormsSnapshots { get; set; }
+
+    /// <summary>
+    /// Directories fields documents snapshots
+    /// </summary>
+    public DbSet<FieldAkaDirectorySnapshotModelDB> FieldsAkaDirectoriesSnapshots { get; set; }
+
+    /// <summary>
+    /// Fields documents snapshots
+    /// </summary>
+    public DbSet<FieldSnapshotModelDB> FieldsSimplesSnapshots { get; set; }
+
+
+    /// <summary>
     /// Projects
     /// </summary>
     public DbSet<ProjectConstructorModelDB> Projects { get; set; }
@@ -65,7 +106,7 @@ public partial class LayerContext
     /// <summary>
     /// Связи форм с табами/вкладками документов
     /// </summary>
-    public DbSet<TabJoinDocumentSchemeConstructorModelDB> TabsJoinsForms { get; set; }
+    public DbSet<FormToTabJoinConstructorModelDB> TabsJoinsForms { get; set; }
 
 
     /// <summary>

@@ -39,7 +39,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
     /// Join
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required TabJoinDocumentSchemeConstructorModelDB Join { get; set; }
+    public required FormToTabJoinConstructorModelDB Join { get; set; }
 
 
     void SetSimpleFieldValue(FieldFitModel field, string? value, FieldFormConstructorModelDB e)
@@ -58,7 +58,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
                 Value = value,
                 RowNum = 0,
                 OwnerId = Session.Id,
-                TabJoinDocumentSchemeId = Join.Tab!.Id
+                JoinFormToTabId = Join.Id
             };
             SessionValues.Add(_value_field);
         }
@@ -170,7 +170,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
                 Value = value.ToString(),
                 RowNum = 0,
                 OwnerId = Session.Id,
-                TabJoinDocumentSchemeId = Join.Tab!.Id
+                JoinFormToTabId = Join.Id
             };
             SessionValues.Add(_value_field);
         }
@@ -218,7 +218,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
                 Value = value?.Length < 1 ? null : JsonConvert.SerializeObject(value),
                 RowNum = 0,
                 OwnerId = Session.Id,
-                TabJoinDocumentSchemeId = Join.Id
+                JoinFormToTabId = Join.Id
             };
             SessionValues.Add(_value_field);
         }
@@ -243,7 +243,7 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
             throw new Exception();
 
         IsBusyProgress = true;
-        TResponseModel<ValueDataForSessionOfDocumentModelDB[]> res = await ConstructorRepo.SaveSessionForm(DocumentKey.Value, Join.Tab!.Id, SessionValues);
+        TResponseModel<ValueDataForSessionOfDocumentModelDB[]> res = await ConstructorRepo.SaveSessionForm(DocumentKey.Value, Join.Id, SessionValues);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;
 

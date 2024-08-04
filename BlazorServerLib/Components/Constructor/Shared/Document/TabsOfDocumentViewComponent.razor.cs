@@ -75,7 +75,7 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Форму можно сдвинуть выше?
     /// </summary>
-    protected bool CanUpJoinForm(TabJoinDocumentSchemeConstructorModelDB pjf)
+    protected bool CanUpJoinForm(FormToTabJoinConstructorModelDB pjf)
     {
         int min_index = TabOfDocumentScheme.JoinsForms?.Any(x => x.Id != pjf.Id) == true
         ? TabOfDocumentScheme.JoinsForms.Where(x => x.Id != pjf.Id).Min(x => x.SortIndex)
@@ -86,7 +86,7 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Форму можно сдвинуть ниже?
     /// </summary>
-    protected bool CanDownJoinForm(TabJoinDocumentSchemeConstructorModelDB pjf)
+    protected bool CanDownJoinForm(FormToTabJoinConstructorModelDB pjf)
     {
         int max_index = TabOfDocumentScheme.JoinsForms?.Any(x => x.Id != pjf.Id) == true
         ? TabOfDocumentScheme.JoinsForms.Where(x => x.Id != pjf.Id).Max(x => x.SortIndex)

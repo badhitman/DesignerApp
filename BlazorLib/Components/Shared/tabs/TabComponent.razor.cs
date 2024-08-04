@@ -35,12 +35,16 @@ public partial class TabComponent : ComponentBase, ITab
 
     /// <inheritdoc/>
     [Parameter]
-    public Action? OnClickHandle { get; set; }
+    public Action<TabComponent>? OnClickHandle { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required RenderFragment ChildContent { get; set; }
 
+    /// <summary>
+    /// HoldTab
+    /// </summary>
+    public bool HoldTab { get; set; }
 
     private string? TitleCssClass =>
         ContainerTabSet?.ActiveTab == this ? "active" : IsDisabled ? "disabled" : null;
@@ -53,10 +57,12 @@ public partial class TabComponent : ComponentBase, ITab
 
     void ActivateTabHandler(MouseEventArgs args)
     {
+        HoldTab = false;
         if (OnClickHandle is not null)
-            OnClickHandle();
+            OnClickHandle(this);
 
-        ActivateTab();
+        if (!HoldTab)
+            ActivateTab();
     }
 
     /// <inheritdoc/>

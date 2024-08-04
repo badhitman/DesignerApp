@@ -12,7 +12,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public required IEnumerable<EntryModel> Entries { get; set; }
+    public required List<EntryModel> Entries { get; set; }
 
     [Parameter]
     public int? Value { get; set; }
@@ -38,7 +38,16 @@
     EntryModel? _entryValue;
     EntryModel? EntryValue
     {
-        get => _entryValue ?? (Value < 1 ? null : Entries?.First(x => x.Id == Value));
+        get 
+        {
+            if (!Value.HasValue || Value < 1)
+                return null;
+
+            if (_entryValue is not null)
+                return _entryValue;
+
+            return Entries?.First(x => x.Id == Value);
+        }
         set
         {
             _entryValue = value;

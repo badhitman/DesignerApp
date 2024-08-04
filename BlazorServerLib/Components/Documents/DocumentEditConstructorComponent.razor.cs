@@ -27,7 +27,6 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
     DocumentSchemeConstructorModelDB[]? schemes;
     SessionOfDocumentDataModelDB? session;
 
-
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -53,8 +52,10 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
     /// <inheritdoc/>
     public override void TabChangeEvent(TTabOfDocumenBaseComponent tab_sender)
     {
-        TabOfDocumentConstructorComponent ct = (TabOfDocumentConstructorComponent)tab_sender;
+        //TabOfDocumentConstructorComponent ct = (TabOfDocumentConstructorComponent)tab_sender;
 
         //return Task.CompletedTask;
     }
+
+
 }

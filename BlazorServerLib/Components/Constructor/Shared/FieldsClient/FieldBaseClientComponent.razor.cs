@@ -161,7 +161,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{DocumentPage?.Id}-{Field.Id}";
 
     /// <inheritdoc/>
-    public string? FieldValue => SessionDocument?.DataSessionValues?.FirstOrDefault(x => x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.RowNum == GroupByRowNum)?.Value;
+    public string? FieldValue => SessionDocument?.DataSessionValues?.FirstOrDefault(x => x.JoinFormToTabId == PageJoinForm?.Id && x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.RowNum == GroupByRowNum)?.Value;
 
     /// <inheritdoc/>
     protected override void OnInitialized()

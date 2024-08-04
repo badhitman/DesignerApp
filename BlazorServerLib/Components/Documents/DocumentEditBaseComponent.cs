@@ -2,10 +2,10 @@
 // © https://github.com/badhitman - @fakegov 
 ////////////////////////////////////////////////
 
+using BlazorLib.Components.Shared.tabs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
-using SharedLib;
 
 namespace BlazorWebLib;
 
@@ -35,7 +35,11 @@ public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
     [Parameter, SupplyParameterFromQuery]
     public string? TabName { get; set; }
 
-        
+    /// <summary>
+    /// CurrentTab
+    /// </summary>
+    public TabComponent? CurrentTab { get; private set; }
+
     /// <summary>
     /// TabsComponents
     /// </summary>
@@ -67,5 +71,17 @@ public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
             IsCancel = true;
             return;
         }
+    }
+
+    /// <inheritdoc/>
+    public void TabTryChange(TabComponent sender)
+    {
+        if (DocumentKey.HasValue && DocumentKey.Value > 0 && IsEdited)
+        {
+            sender.HoldTab = true;
+            SnackbarRepo.Add("Существуют не сохранённые изменения. Сохраните форму!", Severity.Info);
+            return;
+        }
+        CurrentTab = sender;
     }
 }

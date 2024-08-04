@@ -52,7 +52,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
     /// Связь формы со страницей опроса/анкеты. В режиме DEMO тут NULL
     /// </summary>
     [CascadingParameter]
-    public TabJoinDocumentSchemeConstructorModelDB? PageJoinForm { get; set; }
+    public FormToTabJoinConstructorModelDB? PageJoinForm { get; set; }
 
 
     /// <summary>

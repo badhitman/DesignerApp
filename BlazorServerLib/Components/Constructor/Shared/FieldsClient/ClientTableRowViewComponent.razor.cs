@@ -35,7 +35,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; }
+    public required FormToTabJoinConstructorModelDB PageJoinForm { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -84,7 +84,7 @@ public partial class ClientTableRowViewComponent : ComponentBase, IDomBaseCompon
 
         ValueDataForSessionOfDocumentModelDB? _sv = SessionDocument
         .DataSessionValues?
-        .FirstOrDefault(x => x.TabJoinDocumentSchemeId == PageJoinForm.Id && x.RowNum == RowNum && x.Name.Equals(_fbl.Name, StringComparison.OrdinalIgnoreCase));
+        .FirstOrDefault(x => x.JoinFormToTabId == PageJoinForm.Id && x.RowNum == RowNum && x.Name.Equals(_fbl.Name, StringComparison.OrdinalIgnoreCase));
 
         return (MarkupString)(_sv?.Value ?? "&nbsp;");
     }

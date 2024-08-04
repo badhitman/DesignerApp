@@ -60,11 +60,11 @@
                             FieldFormAkaDirectoryConstructorModelDB _field_p = (FieldFormAkaDirectoryConstructorModelDB)_field_c;
                             if (df.IsMultiSelect)
                             {
-                                <SelectFieldMudMultiselectComponent Readonly="IsBusyProgress" Entries="@df.Items" Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictsValue(df, _field_p)" ValueChanged="(e) => SetSimpleFieldValue(df, e, _field_p)" />
+                                <SelectFieldMudMultiselectComponent Readonly="IsBusyProgress" Entries="@df.Items.ToList()" Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictsValue(df, _field_p)" ValueChanged="(e) => SetSimpleFieldValue(df, e, _field_p)" />
                             }
                             else
                             {
-                                <SelectFieldMudComponent Readonly="IsBusyProgress" Entries="@df.Items" Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictValue(df, _field_p)" ValueChanged="(e) => SetDirectoryFieldValue(df, e, _field_p)" />
+                                <SelectFieldMudComponent Readonly="IsBusyProgress" Entries="@df.Items.ToList()" Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictValue(df, _field_p)" ValueChanged="(e) => SetDirectoryFieldValue(df, e, _field_p)" />
                             }
                         }
                         else

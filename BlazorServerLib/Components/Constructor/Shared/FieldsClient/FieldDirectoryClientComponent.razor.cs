@@ -52,7 +52,7 @@ public partial class FieldDirectoryClientComponent : FieldComponentBaseModel
 
     Func<EntryModel?, string> converter = p => p?.Name ?? "";
 
-    string? FieldValue => SessionDocument?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.TabJoinDocumentSchemeId == PageJoinForm?.Id && x.RowNum == GroupByRowNum)?.Value;
+    string? FieldValue => SessionDocument?.DataSessionValues?.FirstOrDefault(x => x.Name.Equals(Field.Name, StringComparison.OrdinalIgnoreCase) && x.JoinFormToTabId == PageJoinForm?.Id && x.RowNum == GroupByRowNum)?.Value;
 
     /// <inheritdoc/>
     public override string DomID => $"form-{Form.Id}_{Field.GetType().FullName}-{DocumentPage?.Id}-{Field.Id}";

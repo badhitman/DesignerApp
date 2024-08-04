@@ -26,7 +26,7 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; }
+    public required FormToTabJoinConstructorModelDB PageJoinForm { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]

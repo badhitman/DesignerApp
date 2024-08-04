@@ -106,7 +106,7 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneab
     public IQueryable<ValueDataForSessionOfDocumentModelDB>? QueryCurrentTablePageFormValues(int page_join_id)
     {
         return DataSessionValues?
-               .Where(x => x.RowNum > 0 && x.TabJoinDocumentSchemeId == page_join_id)
+               .Where(x => x.RowNum > 0 && x.JoinFormToTabId == page_join_id)
                .AsQueryable();
     }
 

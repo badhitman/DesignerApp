@@ -153,7 +153,7 @@ public partial class JournalConstructorService(IDbContextFactory<MainDbAppContex
                     return new KeyValuePair<int, Dictionary<string, object>>(_session.Id, new() { { _tab.Name, AboutTab(_tab) } });
                 else if (_tab.JoinsForms.Count == 1)
                 {
-                    TabJoinDocumentSchemeConstructorModelDB _join = _tab.JoinsForms[0];
+                    FormToTabJoinConstructorModelDB _join = _tab.JoinsForms[0];
                     FormConstructorModelDB _form = _join.Form ?? throw new Exception();
                     FieldFormBaseLowConstructorModel[] _fields = _form.AllFields;
                     if (_fields.Length == 0)
@@ -171,7 +171,7 @@ public partial class JournalConstructorService(IDbContextFactory<MainDbAppContex
 
                         ValueDataForSessionOfDocumentModelDB[] data = _session
                             .DataSessionValues
-                            .Where(x => x.TabJoinDocumentSchemeId == _join.TabId)
+                            .Where(x => x.JoinFormToTabId == _join.Id)
                             .ToArray();
 
                         foreach (FieldFormBaseLowConstructorModel f in _fields)
@@ -296,14 +296,11 @@ public partial class JournalConstructorService(IDbContextFactory<MainDbAppContex
     public async Task<ValueDataForSessionOfDocumentModelDB[]> ReadSessionTabValues(int tabId, int sessionId)
     {
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
-        //var v = context_forms.ValuesSessions.Where(x=>x.TabJoinDocumentScheme)
-
 
         IQueryable<ValueDataForSessionOfDocumentModelDB> q = from val in context_forms.ValuesSessions.Where(x => x.OwnerId == sessionId)
-                join tj in context_forms.TabsJoinsForms.Where(x => x.TabId == tabId) on val.TabJoinDocumentSchemeId equals tj.Id
+                join tj in context_forms.TabsJoinsForms.Where(x => x.TabId == tabId) on val.JoinFormToTabId equals tj.Id
                 select val;
 
-
-        return await q.Include(x => x.TabJoinDocumentScheme).ToArrayAsync();
+        return await q.Include(x => x.JoinFormToTab).ToArrayAsync();
     }
 }

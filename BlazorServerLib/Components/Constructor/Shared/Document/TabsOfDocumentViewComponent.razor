@@ -47,7 +47,7 @@ else
             }
             else
             {
-                foreach (TabJoinDocumentSchemeConstructorModelDB pjf in TabOfDocumentScheme.JoinsForms.OrderBy(x => x.SortIndex))
+                foreach (FormToTabJoinConstructorModelDB pjf in TabOfDocumentScheme.JoinsForms.OrderBy(x => x.SortIndex))
                 {
                     pjf.Tab ??= TabOfDocumentScheme;
                     <CascadingValue Value="pjf">

@@ -1,34 +1,43 @@
-﻿@using MudBlazor
+﻿@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using MudBlazor
 
 @inherits TTabOfDocumenBaseComponent
 
-<MudCard>
-    <MudCardContent id="@($"tab:{ID}")">
-        <CascadingValue Value="this">
-            @{
-                int i = -1;
-            }
-            @foreach (FormFitModel form_metadata in TabMetadata.Forms)
-            {
-                i++;
+@if (IsBusyProgress || _readed_tab_id != TabOfDocument.Id)
+{
+    <span>Загрузка...</span>
+}
+else
+{
+    <MudCard>
+        <MudCardContent id="@($"tab:{ID}")">
+            <CascadingValue Value="this">
+                @{
+                    int i = -1;
+                }
+                @foreach (FormFitModel form_metadata in TabMetadata.Forms)
+                {
+                    i++;
+                    FormToTabJoinConstructorModelDB _join_form = TabOfDocument.JoinsForms![i];
+                    List<ValueDataForSessionOfDocumentModelDB>? _sv = SessionValues?.Where(x => x.JoinFormToTab!.FormId == _join_form.FormId).ToList();
+                    _join_form = TabOfDocument.JoinsForms![i];
 
-                <CascadingValue Value="TabOfDocument.JoinsForms![i]">
-                    <CascadingValue Value="TabMetadata">
-                        <CascadingValue Value="FormsStack">
-                            <CascadingValue Value="form_metadata">
-                                <CascadingValue Value="SessionValues?.Where(x => x.TabJoinDocumentScheme!.Form!.Id == TabOfDocument.JoinsForms![i].Form!.Id)">
-                                    <CascadingValue Value="FormChangeEvent">
-                                        <CascadingValue Value="TabOfDocument">
-                                            <MudPaper>
+                    <CascadingValue Value="_join_form">
+                        <CascadingValue Value="TabMetadata">
+                            <CascadingValue Value="FormsStack">
+                                <CascadingValue Value="form_metadata">
+                                    <CascadingValue Value="_sv">
+                                        <CascadingValue Value="FormChangeEvent">
+                                            <CascadingValue Value="TabOfDocument">
                                                 @if (form_metadata.IsTable)
-                                                {
-                                                    <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"[teble]{ID}>{form_metadata.SystemName}")" />
-                                                }
-                                                else
-                                                {
-                                                    <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{ID}>{form_metadata.SystemName}")" />
-                                                }
-                                            </MudPaper>
+                                            {
+                                                <TableFormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"[teble]{ID}>{form_metadata.SystemName}")" />
+                                            }
+                                            else
+                                            {
+                                                <FormOfTabConstructorComponent DocumentKey="DocumentKey" ID="@($"{ID}>{form_metadata.SystemName}")" />
+                                            }
                                         </CascadingValue>
                                     </CascadingValue>
                                 </CascadingValue>
@@ -36,7 +45,8 @@
                         </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
-            }
-        </CascadingValue>
-    </MudCardContent>
-</MudCard>
+                }
+            </CascadingValue>
+        </MudCardContent>
+    </MudCard>
+}

@@ -24,7 +24,7 @@ public abstract class DocumenBodyBaseComponent : BlazorBusyComponentBaseModel
 
 
     /// <summary>
-    /// ID
+    /// ID (html dom)
     /// </summary>
     [Parameter, EditorRequired]
     public required string ID { get; set; }
@@ -41,8 +41,8 @@ public abstract class DocumenBodyBaseComponent : BlazorBusyComponentBaseModel
     /// <remarks>
     /// Если null, то demo решим. Если HasValue и меньше 1, тогда создание нового объекта
     /// </remarks>
-    [Parameter, EditorRequired]
-    public required int? DocumentKey { get; set; }
+    [Parameter]
+    public int? DocumentKey { get; set; }
 
 
     /// <summary>

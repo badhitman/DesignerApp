@@ -51,6 +51,8 @@ public abstract class TTabOfDocumenBaseComponent : DocumenBodyBaseComponent
     /// </summary>
     public void FormChangeEvent(FormBaseModel sender)
     {
+        int _i = FormsStack.FindIndex(x=>x.ID == sender.ID && x.DocumentKey == sender.DocumentKey);
+        FormsStack[_i] = sender;
         TabChangeHandle(this);
     }
 }

@@ -20,11 +20,11 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// [FK] Связь со схемой документа
     /// </summary>
-    public int TabJoinDocumentSchemeId { get; set; }
+    public int JoinFormToTabId { get; set; }
     /// <summary>
     /// Связь формы с вкладкой/табом и далее со схемой документа
     /// </summary>
-    public TabJoinDocumentSchemeConstructorModelDB? TabJoinDocumentScheme { get; set; }
+    public FormToTabJoinConstructorModelDB? JoinFormToTab { get; set; }
 
     /// <summary>
     /// Значение поля
@@ -47,7 +47,7 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
                 val1.Name == val2.Name &&
                 val1.Value == val2.Value &&
                 val1.RowNum == val2.RowNum &&
-                val1.TabJoinDocumentSchemeId == val2.TabJoinDocumentSchemeId &&
+                val1.JoinFormToTabId == val2.JoinFormToTabId &&
                 val1.Description == val2.Description &&
                 val1.OwnerId == val2.OwnerId &&
                 val1.Id == val2.Id;
@@ -61,7 +61,7 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
             val1.Name != val2.Name ||
             val1.Value != val2.Value ||
             val1.RowNum != val2.RowNum ||
-            val1.TabJoinDocumentSchemeId != val2.TabJoinDocumentSchemeId ||
+            val1.JoinFormToTabId != val2.JoinFormToTabId ||
             val1.Description != val2.Description ||
             val1.OwnerId == val2.OwnerId;
     }
@@ -77,7 +77,7 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
                 val.Name == Name &&
                 val.Value == Value &&
                 val.RowNum == RowNum &&
-                val.TabJoinDocumentSchemeId == TabJoinDocumentSchemeId &&
+                val.JoinFormToTabId == JoinFormToTabId &&
                 val.Description == Description &&
                 val.OwnerId == OwnerId &&
                 val.Id == Id;
@@ -88,20 +88,20 @@ public class ValueDataForSessionOfDocumentModelDB : EntryDescriptionOwnedModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{Id}{Name}{Value}{RowNum}{TabJoinDocumentSchemeId}{Description}{OwnerId}".GetHashCode();
+        return $"{Id}{Name}{Value}{RowNum}{JoinFormToTabId}{Description}{OwnerId}".GetHashCode();
     }
 
     /// <summary>
     /// Значение поля из формы опроса/анкеты
     /// </summary>
-    public static ValueDataForSessionOfDocumentModelDB Build(SetValueFieldDocumentDataModel req, TabJoinDocumentSchemeConstructorModelDB questionnaire_page_join, SessionOfDocumentDataModelDB session)
+    public static ValueDataForSessionOfDocumentModelDB Build(SetValueFieldDocumentDataModel req, FormToTabJoinConstructorModelDB questionnaire_page_join, SessionOfDocumentDataModelDB session)
         => new()
         {
             Name = req.NameField,
             Value = req.FieldValue,
             Description = req.Description,
-            TabJoinDocumentSchemeId = questionnaire_page_join.Id,
-            TabJoinDocumentScheme = questionnaire_page_join,
+            JoinFormToTabId = questionnaire_page_join.Id,
+            JoinFormToTab = questionnaire_page_join,
             Owner = session,
             OwnerId = session.OwnerId,
             RowNum = req.GroupByRowNum,

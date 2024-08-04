@@ -26,12 +26,12 @@ public class TabOfDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Связанные формы
     /// </summary>
-    public List<TabJoinDocumentSchemeConstructorModelDB>? JoinsForms { get; set; }
+    public List<FormToTabJoinConstructorModelDB>? JoinsForms { get; set; }
 
     /// <summary>
     /// Получить крайний элемент в границах restriction_sort_index
     /// </summary>
-    public TabJoinDocumentSchemeConstructorModelDB? GetOutermostJoinForm(VerticalDirectionsEnum direct, int restriction_sort_index)
+    public FormToTabJoinConstructorModelDB? GetOutermostJoinForm(VerticalDirectionsEnum direct, int restriction_sort_index)
     {
         if (JoinsForms is null || JoinsForms.Count == 0)
             return null;
@@ -79,15 +79,15 @@ public class TabOfDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
 
         foreach (ValueDataForSessionOfDocumentModelDB val in session.DataSessionValues)
         {
-            if (string.IsNullOrWhiteSpace(val.TabJoinDocumentScheme?.Tab?.Name))
+            if (string.IsNullOrWhiteSpace(val.JoinFormToTab?.Tab?.Name))
                 continue;
 
-            if (!res.ContainsKey(val.TabJoinDocumentScheme.Tab.Name))
-                res.Add(val.TabJoinDocumentScheme.Tab.Name, []);
-            if (!res[val.TabJoinDocumentScheme.Tab.Name].ContainsKey(val.RowNum))
-                res[val.TabJoinDocumentScheme.Tab.Name].Add(val.RowNum, []);
+            if (!res.ContainsKey(val.JoinFormToTab.Tab.Name))
+                res.Add(val.JoinFormToTab.Tab.Name, []);
+            if (!res[val.JoinFormToTab.Tab.Name].ContainsKey(val.RowNum))
+                res[val.JoinFormToTab.Tab.Name].Add(val.RowNum, []);
 
-            res[val.TabJoinDocumentScheme.Tab.Name][val.RowNum].Add(val);
+            res[val.JoinFormToTab.Tab.Name][val.RowNum].Add(val);
         }
         return res;
     }

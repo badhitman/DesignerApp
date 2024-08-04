@@ -11,7 +11,7 @@ namespace SharedLib;
 /// Связь формы со страницей опроса/анкеты
 /// </summary>
 [Index(nameof(SortIndex)), Index(nameof(IsTable))]
-public class TabJoinDocumentSchemeConstructorModelDB
+public class FormToTabJoinConstructorModelDB
 {
     /// <summary>
     /// Идентификатор/Key
@@ -62,7 +62,7 @@ public class TabJoinDocumentSchemeConstructorModelDB
     public FormConstructorModelDB? Form { get; set; }
     
     /// <inheritdoc/>
-    public static bool operator ==(TabJoinDocumentSchemeConstructorModelDB tj1, TabJoinDocumentSchemeConstructorModelDB tj2)
+    public static bool operator ==(FormToTabJoinConstructorModelDB tj1, FormToTabJoinConstructorModelDB tj2)
     {
         return
             tj1.Id == tj2.Id &&
@@ -76,7 +76,7 @@ public class TabJoinDocumentSchemeConstructorModelDB
     }
 
     /// <inheritdoc/>
-    public static bool operator !=(TabJoinDocumentSchemeConstructorModelDB tj1, TabJoinDocumentSchemeConstructorModelDB tj2)
+    public static bool operator !=(FormToTabJoinConstructorModelDB tj1, FormToTabJoinConstructorModelDB tj2)
     {
         return
             tj1.Id != tj2.Id ||
@@ -95,7 +95,7 @@ public class TabJoinDocumentSchemeConstructorModelDB
         if (obj is null)
             return false;
 
-        if (obj is TabJoinDocumentSchemeConstructorModelDB tj)
+        if (obj is FormToTabJoinConstructorModelDB tj)
             return this == tj;
 
         return base.Equals(obj);
@@ -110,7 +110,7 @@ public class TabJoinDocumentSchemeConstructorModelDB
     /// <summary>
     /// Связь формы со страницей опроса/анкеты
     /// </summary>
-    public static TabJoinDocumentSchemeConstructorModelDB Build(EntryDescriptionOwnedModel page_join_form)
+    public static FormToTabJoinConstructorModelDB Build(EntryDescriptionOwnedModel page_join_form)
         => new()
         {
             FormId = page_join_form.OwnerId,

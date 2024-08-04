@@ -36,7 +36,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; }
+    public required FormToTabJoinConstructorModelDB PageJoinForm { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -153,7 +153,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
             throw new Exception("CurrentUser is null");
 
         IsBusyProgress = true;
-        TabJoinDocumentSchemeConstructorModelDB req = new()
+        FormToTabJoinConstructorModelDB req = new()
         {
             Description = PageJoinForm.Description,
             FormId = PageJoinForm.FormId,

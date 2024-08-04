@@ -288,12 +288,12 @@ public interface IConstructorService
     /// <summary>
     /// Получить связь [таба/вкладки схемы документа] с [формой]
     /// </summary>
-    public Task<TResponseModel<TabJoinDocumentSchemeConstructorModelDB>> GetTabDocumentSchemeJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormToTabJoinConstructorModelDB>> GetTabDocumentSchemeJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/создать связь [таба/вкладки схемы документа] с [формой]
     /// </summary>
-    public Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TabJoinDocumentSchemeConstructorModelDB page_join_form, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(FormToTabJoinConstructorModelDB page_join_form, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сдвинуть связь [таба/вкладки схемы документа] с [формой] (изменение сортировки/последовательности)
@@ -314,7 +314,7 @@ public interface IConstructorService
     /// <summary>
     /// Сохранить данные формы документа из сессии
     /// </summary>
-    public Task<TResponseModel<ValueDataForSessionOfDocumentModelDB[]>> SaveSessionForm(int sessionId, int join, List<ValueDataForSessionOfDocumentModelDB> sessionValues);
+    public Task<TResponseModel<ValueDataForSessionOfDocumentModelDB[]>> SaveSessionForm(int sessionId, int join_form_to_tab, IEnumerable<ValueDataForSessionOfDocumentModelDB> sessionValues);
 
     /// <summary>
     /// Установить статус сессии (от менеджера)

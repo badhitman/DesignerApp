@@ -221,7 +221,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             throw new Exception("CurrentUser is null");
 
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new TabJoinDocumentSchemeConstructorModelDB()
+        ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new FormToTabJoinConstructorModelDB()
         {
             FormId = SelectedFormForAdding,
             TabId = DocumentPage.Id,

@@ -37,7 +37,7 @@ public partial interface IJournalUniversalService
         TabFitModel TabConvert(TabOfDocumentSchemeConstructorModelDB tab)
         {
             ArgumentNullException.ThrowIfNull(tab.JoinsForms);
-            FormFitModel FormConvert(TabJoinDocumentSchemeConstructorModelDB joinForm)
+            FormFitModel FormConvert(FormToTabJoinConstructorModelDB joinForm)
             {
                 ArgumentNullException.ThrowIfNull(joinForm.Form);
                 FieldFitModel FieldConvert(FieldFormConstructorModelDB field)

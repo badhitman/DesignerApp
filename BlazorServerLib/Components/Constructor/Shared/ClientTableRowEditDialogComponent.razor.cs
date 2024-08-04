@@ -32,7 +32,7 @@ public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBase
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public TabJoinDocumentSchemeConstructorModelDB PageJoinForm { get; set; } = default!;
+    public FormToTabJoinConstructorModelDB PageJoinForm { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
