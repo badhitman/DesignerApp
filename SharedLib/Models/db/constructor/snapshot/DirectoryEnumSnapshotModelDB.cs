@@ -17,10 +17,10 @@ public class DirectoryEnumSnapshotModelDB : SystemEntryDescriptionOwnedModel
     /// <summary>
     /// Elements
     /// </summary>
-    public required ICollection<DirectoryEnumElementSnapshotModelDB> Elements { get; set; }
+    public required List<DirectoryEnumElementSnapshotModelDB> Elements { get; set; }
 
     /// <summary>
     /// Fields
     /// </summary>
-    public ICollection<FieldAkaDirectorySnapshotModelDB>? Fields { get; set; }
+    public List<FieldAkaDirectorySnapshotModelDB>? Fields { get; set; }
 }

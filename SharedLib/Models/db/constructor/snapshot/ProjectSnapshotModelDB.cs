@@ -23,10 +23,10 @@ public class ProjectSnapshotModelDB : EntryConstructedModel
     /// <summary>
     /// Directories
     /// </summary>
-    public required ICollection<DirectoryEnumSnapshotModelDB> Directories { get; set; }
+    public required List<DirectoryEnumSnapshotModelDB> Directories { get; set; }
 
     /// <summary>
     /// Documents
     /// </summary>
-    public required ICollection<DocumentSnapshotModelDB> Documents { get; set; }
+    public required List<DocumentSnapshotModelDB> Documents { get; set; }
 }

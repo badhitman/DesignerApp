@@ -2,11 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
+
 namespace SharedLib;
 
 /// <summary>
 /// System entry
 /// </summary>
+[Index(nameof(ProjectId))]
 public class EntryConstructedModel : EntryDescriptionModel
 {
     /// <summary>

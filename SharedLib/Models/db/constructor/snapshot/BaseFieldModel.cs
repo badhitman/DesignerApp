@@ -10,7 +10,7 @@ namespace SharedLib;
 /// BaseFieldModel
 /// </summary>
 [Index(nameof(OwnerId), nameof(SortIndex), IsUnique = true)]
-public class BaseFieldModel : SortableSystemSnapshotModelDB
+public abstract class BaseFieldModel : SortableSystemSnapshotModelDB
 {
     /// <inheritdoc/>
     public FormSnapshotModelDB? Owner { get; set; }

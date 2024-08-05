@@ -39,14 +39,9 @@ public partial class LayerContext
     public DbSet<FormSnapshotModelDB> FormsSnapshots { get; set; }
 
     /// <summary>
-    /// Directories fields documents snapshots
+    /// FieldsSnapshots
     /// </summary>
-    public DbSet<FieldAkaDirectorySnapshotModelDB> FieldsAkaDirectoriesSnapshots { get; set; }
-
-    /// <summary>
-    /// Fields documents snapshots
-    /// </summary>
-    public DbSet<FieldSnapshotModelDB> FieldsSimplesSnapshots { get; set; }
+    public DbSet<BaseFieldModel> FieldsSnapshots { get; set; }
 
 
     /// <summary>

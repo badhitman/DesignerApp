@@ -37,16 +37,16 @@ public class ProjectConstructorModelDB : EntryDescriptionSwitchableModel
     /// </summary>
     public List<DocumentSchemeConstructorModelDB>? Documents { get; set; }
 
+    /// <summary>
+    /// SnapShots
+    /// </summary>
+    public List<ProjectSnapshotModelDB>? SnapShots { get; set; }
+
 
     /// <summary>
     /// Scheme: Last updated DateTime
     /// </summary>
     public DateTime SchemeLastUpdated { get; set; } = DateTime.Now;
-
-    /// <summary>
-    /// Snapshots
-    /// </summary>
-    public ProjectSnapshotModelDB? Snapshots { get; set; }
 
     /// <summary>
     /// Проверка прав/возможности пользователю редактировать данные в рамках проекта

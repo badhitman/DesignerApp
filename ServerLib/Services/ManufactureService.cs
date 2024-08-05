@@ -61,10 +61,10 @@ public class ManufactureService(
                 };
 
                 return _df;
-            }).ToArray();
+            }).ToList();
 
             return _d;
-        }).ToArray();
+        }).ToList();
 
         await context_forms.AddAsync(_project_snapshot);
         await context_forms.SaveChangesAsync();
@@ -117,7 +117,7 @@ public class ManufactureService(
                             Owner = _form,
                             Directory = _project_snapshot.Directories.First(w => w.SystemName == r.DirectorySystemName),
                         };
-                    }).ToArray();
+                    }).ToList();
                     _form.SimpleFields = _form_fit.SimpleFields is null ? [] : _form_fit.SimpleFields.Select(e =>
                     {
                         return new FieldSnapshotModelDB()
@@ -130,13 +130,13 @@ public class ManufactureService(
                             Description = e.Description,
                             Owner = _form,
                         };
-                    }).ToArray();
+                    }).ToList();
                     return _form;
-                }).ToArray();
+                }).ToList();
                 return _tab;
-            }).ToArray();
+            }).ToList();
             return _doc;
-        }).ToArray();
+        }).ToList();
 
         await context_forms.AddRangeAsync(_project_snapshot.Documents);
         await context_forms.SaveChangesAsync();
