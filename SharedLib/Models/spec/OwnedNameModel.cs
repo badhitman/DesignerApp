@@ -5,12 +5,16 @@
 namespace SharedLib;
 
 /// <summary>
-/// EntryDescriptionOwnedModel
+/// OwnedNamed
 /// </summary>
-public class EntryDescriptionOwnedModel : EntryDescriptionModel
+public class OwnedNameModel : SimpleNameModel
 {
     /// <summary>
-    /// владелец
+    /// Владелец
     /// </summary>
     public int OwnerId { get; set; }
+
+    /// <inheritdoc/>
+    public static OwnedNameModel BuildEmpty(int ownerId)
+        => new() { Name = "", OwnerId = ownerId };
 }

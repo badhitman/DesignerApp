@@ -1,10 +1,14 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 namespace SharedLib;
 
-/// <inheritdoc/>
+/// <summary>
+/// string Id
+/// <code>AND</code>
+/// string? Name
+/// </summary>
 public class EntryAltModel
 {
     /// <inheritdoc/>

@@ -159,10 +159,16 @@ public class PasswordGenerator
     }
 }
 
-internal static class Extensions
+/// <summary>
+/// ext
+/// </summary>
+public static class Extensions
 {
     private static readonly Lazy<RandomSecureVersion> RandomSecure =
         new(() => new RandomSecureVersion());
+    /// <summary>
+    /// ShuffleSecure
+    /// </summary>
     public static IEnumerable<T> ShuffleSecure<T>(this IEnumerable<T> source)
     {
         T[] sourceArray = source.ToArray();
@@ -175,6 +181,9 @@ internal static class Extensions
         }
     }
 
+    /// <summary>
+    /// ShuffleTextSecure
+    /// </summary>
     public static string ShuffleTextSecure(this string source)
     {
         char[] shuffeldChars = source.ShuffleSecure().ToArray();

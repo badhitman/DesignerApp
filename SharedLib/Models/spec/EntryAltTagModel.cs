@@ -2,17 +2,15 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using SharedLib;
-
-namespace IdentityLib;
+namespace SharedLib;
 
 /// <summary>
-/// ApplicationUser response
+/// EntryAltTagModel
 /// </summary>
-public class ApplicationUserResponseModel : ResponseBaseModel
+public class EntryAltTagModel: EntryAltModel
 {
     /// <summary>
-    /// ApplicationUser
+    /// Tag
     /// </summary>
-    public ApplicationUser? ApplicationUser { get; set; }
+    public string? Tag { get; set; }
 }

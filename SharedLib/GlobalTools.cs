@@ -1,14 +1,17 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using HtmlAgilityPack;
 using Newtonsoft.Json;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using System.Xml.Serialization;
 
 namespace SharedLib;
@@ -33,6 +36,42 @@ public static partial class GlobalTools
             list[k] = list[n];
             list[n] = value;
         }
+    }
+
+    /// <summary>
+    /// Добавить параметр к запросу. если он существует, то происходит обновление этого параметра
+    /// </summary>
+    public static string AppendQueryParameter(this Uri uri, string name, string val)
+    {
+        UriBuilder uriBuilder = new(uri);
+        NameValueCollection query = HttpUtility.ParseQueryString(uriBuilder.Query);
+        if (query.AllKeys.Contains(name))
+            query[name] = val;
+        else
+            query.Add(name, val);
+
+        uriBuilder.Query = query.ToString();
+
+        return uriBuilder.ToString();
+    }
+
+    /// <summary>
+    /// HTML строку в обычную/нормальную (без тегов).
+    /// например: для добавления в remarks
+    /// </summary>
+    public static string[] DescriptionHtmlToLinesRemark(string html_description)
+    {
+        if (string.IsNullOrWhiteSpace(html_description))
+            return [];
+
+        HtmlDocument doc = new();
+        doc.LoadHtml(html_description
+            .Replace("&nbsp;", " ")
+            .Replace("  ", " ")
+            .Replace("</p><p>", $"</p>{Environment.NewLine}<p>")
+            .Replace("</br>", $"</br>{Environment.NewLine}")
+            );
+        return doc.DocumentNode.InnerText.Split(new string[] { Environment.NewLine }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 
     /// <summary>
@@ -133,8 +172,11 @@ public static partial class GlobalTools
     /// <summary>
     /// Клон объекта (через сереализацию)
     /// </summary>
-    public static T CreateDeepCopy<T>(T obj)
+    public static T? CreateDeepCopy<T>(T? obj)
     {
+        if (obj is null)
+            return default;
+
         using MemoryStream ms = new();
         XmlSerializer serializer = new(obj!.GetType());
         serializer.Serialize(ms, obj);
