@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 namespace SharedLib;
@@ -31,4 +31,9 @@ public interface IManufactureService
     /// Получить системные имена для генератора кода
     /// </summary>
     public Task<List<SystemNameEntryModel>> GetSystemNames(int manufactureId);
+
+    /// <summary>
+    /// Create snapshot
+    /// </summary>
+    public Task CreateSnapshot(StructureProjectModel dump, int projectId, string name);
 }

@@ -1,10 +1,8 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using SharedLib;
-
-namespace CodegeneratorLib;
+namespace SharedLib;
 
 /// <summary>
 /// Структура/Состав проекта
@@ -14,7 +12,7 @@ public class StructureProjectModel
     /// <summary>
     /// Перечисления проекта
     /// </summary>
-    public required EnumFitModel[] Enums { get; set; }
+    public required EnumFitModel[] Enumerations { get; set; }
 
     /// <summary>
     /// Документы проекта

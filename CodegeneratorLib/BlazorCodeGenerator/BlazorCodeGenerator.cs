@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov
+// © https://github.com/badhitman - @FakeGov
 ////////////////////////////////////////////////
 
 using HtmlGenerator.html5;
@@ -65,7 +65,7 @@ public partial class BlazorCodeGenerator
             // using Microsoft.AspNetCore.Components;
             return
                 $"////////////////////////////////////////////////{Environment.NewLine}" +
-                $"// © https://github.com/badhitman - @fakegov{Environment.NewLine}" +
+                $"// © https://github.com/badhitman - @FakeGov{Environment.NewLine}" +
                 $"////////////////////////////////////////////////{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
                 $"using Microsoft.AspNetCore.Components;{Environment.NewLine}" +

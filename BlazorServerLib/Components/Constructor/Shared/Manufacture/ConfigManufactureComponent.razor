@@ -1,4 +1,4 @@
-﻿@* Project: {project.Name} - by  © https://github.com/badhitman - @fakegov *@
+﻿@* Project: {project.Name} - by  © https://github.com/badhitman - @FakeGov *@
 
 @inherits BlazorBusyComponentBaseModel
 
@@ -121,6 +121,6 @@
 
     protected override void OnInitialized()
     {
-        manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture) ?? throw new Exception();
+        manufactureEdit = (ManageManufactureModelDB)Manufacture.Clone();
     }
 }

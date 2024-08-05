@@ -5,7 +5,7 @@ namespace SharedLib;
 /// <summary>
 /// ManageManufacture
 /// </summary>
-public class ManageManufactureModelDB : CodeGeneratorConfigModel
+public class ManageManufactureModelDB : CodeGeneratorConfigModel, ICloneable
 {
     /// <summary>
     /// Идентификатор/Key
@@ -29,6 +29,25 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel
     /// System names
     /// </summary>
     public List<ManufactureSystemNameModelDB>? SystemNames { get; set; }
+
+    /// <inheritdoc/>
+    public object Clone()
+    {
+        return new ManageManufactureModelDB()
+        {
+            Namespace = Namespace,
+            Project = Project,
+            SystemNames = SystemNames is null ? [] : [.. SystemNames.Select(x => x.Clone()).Cast<ManufactureSystemNameModelDB>()],
+            UserId = UserId,
+            Id = Id,
+            AccessDataDirectoryPath = AccessDataDirectoryPath,
+            BlazorDirectoryPath = BlazorDirectoryPath,
+            BlazorSplitFiles = BlazorSplitFiles,
+            DocumentsMastersDbDirectoryPath = DocumentsMastersDbDirectoryPath,
+            EnumDirectoryPath = EnumDirectoryPath,
+            ProjectId = ProjectId,
+        };
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)

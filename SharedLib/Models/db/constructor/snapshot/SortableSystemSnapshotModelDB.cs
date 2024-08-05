@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 namespace SharedLib;
@@ -10,5 +10,5 @@ namespace SharedLib;
 public class SortableSystemSnapshotModelDB : SystemEntryDescriptionOwnedModel
 {
     /// <inheritdoc/>
-    public required uint SortIndex { get; set; }
+    public required int SortIndex { get; set; }
 }

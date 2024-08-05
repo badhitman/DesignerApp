@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 namespace SharedLib;
@@ -17,10 +17,10 @@ public class DirectoryEnumSnapshotModelDB : SystemEntryDescriptionOwnedModel
     /// <summary>
     /// Elements
     /// </summary>
-    public required DirectoryEnumElementSnapshotModelDB[] Elements { get; set; }
+    public required ICollection<DirectoryEnumElementSnapshotModelDB> Elements { get; set; }
 
     /// <summary>
     /// Fields
     /// </summary>
-    public FieldAkaDirectorySnapshotModelDB[]? Fields { get; set; }
+    public ICollection<FieldAkaDirectorySnapshotModelDB>? Fields { get; set; }
 }

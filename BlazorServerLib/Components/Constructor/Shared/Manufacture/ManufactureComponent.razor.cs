@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 using BlazorWebLib.Components.Constructor.Pages;
@@ -118,12 +118,12 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
         StructureProjectModel struct_project = new()
         {
-            Enums = [.. CurrentProject.Directories.Select(dir => IJournalUniversalService.EnumConvert(dir, ParentFormsPage.SystemNamesManufacture))],
+            Enumerations = [.. CurrentProject.Directories.Select(dir => IJournalUniversalService.EnumConvert(dir, ParentFormsPage.SystemNamesManufacture))],
             Documents = [.. CurrentProject.Documents.Select(x => IJournalUniversalService.DocumentConvert(x, ParentFormsPage.SystemNamesManufacture))],
         };
 
         var _err = struct_project
-            .Enums
+            .Enumerations
             .GroupBy(e => e.SystemName)
             .Select(x => new { SystemName = x.Key, Count = x.Count() })
             .Where(x => x.Count > 1)
@@ -147,6 +147,8 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
             SnackbarRepo.Add($"Существуют конфликты имён документов: {string.Join(";", _err.Select(x => $"{x.SystemName} - {x.Count}"))};", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
             return;
         }
+
+        await ManufactureRepo.CreateSnapshot(struct_project, ParentFormsPage.MainProject.Id, Guid.NewGuid().ToString());
 
         downloadSource = await gen.GetZipArchive(struct_project);
         if (!downloadSource.Success())

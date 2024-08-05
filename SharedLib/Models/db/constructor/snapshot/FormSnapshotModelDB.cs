@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 namespace SharedLib;
@@ -15,17 +15,17 @@ public class FormSnapshotModelDB : SortableSystemSnapshotModelDB
     public TabSnapshotModelDB? Owner { get; set; }
 
     /// <inheritdoc/>
-    public required FieldSnapshotModelDB[] SimpleFields { get; set; }
+    public required IEnumerable<FieldSnapshotModelDB> SimpleFields { get; set; }
 
     /// <inheritdoc/>
-    public required FieldAkaDirectorySnapshotModelDB[] DirectoryFields { get; set; }
+    public required IEnumerable<FieldAkaDirectorySnapshotModelDB> DirectoryFields { get; set; }
 
     /// <inheritdoc/>
-    public Dictionary<uint, BaseFieldModel> AllFields
+    public Dictionary<int, BaseFieldModel> AllFields
     {
         get
         {
-            Dictionary<uint, BaseFieldModel> res = [];
+            Dictionary<int, BaseFieldModel> res = [];
 
             SimpleFields
                 .Cast<BaseFieldModel>()

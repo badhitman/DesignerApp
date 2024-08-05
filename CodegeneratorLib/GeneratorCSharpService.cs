@@ -1,10 +1,9 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov
+// © https://github.com/badhitman - @FakeGov
 ////////////////////////////////////////////////
 
 using System.IO.Compression;
 using System.Reflection;
-using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLib;
@@ -29,7 +28,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         _result = new();
         List<string> stat =
         [
-            $"Перечислений: {dump.Enums.Length} (элементов всего: {dump.Enums.Sum(x => x.EnumItems.Length)})",
+            $"Перечислений: {dump.Enumerations.Length} (элементов всего: {dump.Enumerations.Sum(x => x.EnumItems.Length)})",
             $"Документов: {dump.Documents.Length} шт.",
             $"{base_dom_root.TabString}вкладок (всего): {dump.Documents.Sum(x => x.Tabs?.Count)}",
             $"{base_dom_root.TabString}форм (всего): {dump.Documents.SelectMany(x => x.Tabs).Sum(x => x.Forms?.Length)}",
@@ -55,7 +54,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         archive = new(ms, ZipArchiveMode.Create);
 
         await ReadmeGen(stat);
-        await EnumerationsGeneration(dump.Enums);
+        await EnumerationsGeneration(dump.Enumerations);
 
         Dictionary<EntryDocumentTypeModel, List<EntrySchemaTypeModel>> schema = await DocumentsGeneration(dump.Documents);
         if (!_result.Success())
@@ -118,7 +117,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         string app_version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
         ZipArchiveEntry readmeEntry = archive.CreateEntry("Readme.txt");
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
-        await writer.WriteLineAsync($"Генератор C# комплекта - ver: {app_version} (by © https://github.com/badhitman - @fakegov)");
+        await writer.WriteLineAsync($"Генератор C# комплекта - ver: {app_version} (by © https://github.com/badhitman - @FakeGov)");
         await writer.WriteLineAsync($"'{project.Name}' `{conf.Namespace}`");
         await writer.WriteLineAsync($"============ {DateTime.Now} ============");
         await writer.WriteLineAsync();
@@ -752,7 +751,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
     public virtual async Task WriteHeadClass(StreamWriter writer, IEnumerable<string>? summary_text = null, string? description = null, IEnumerable<string>? using_ns = null)
     {
         await writer.WriteLineAsync("////////////////////////////////////////////////");
-        await writer.WriteLineAsync($"// Project: '{project.Name}' by  © https://github.com/badhitman - @fakegov");
+        await writer.WriteLineAsync($"// Project: '{project.Name}' by  © https://github.com/badhitman - @FakeGov");
         await writer.WriteLineAsync("////////////////////////////////////////////////");
         await writer.WriteLineAsync();
 

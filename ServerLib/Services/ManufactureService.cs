@@ -1,8 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @FakeGov 
+////////////////////////////////////////////////
+
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using SharedLib;
 using DbcLib;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ServerLib;
 
@@ -11,6 +16,133 @@ public class ManufactureService(
     IDbContextFactory<MainDbAppContext> mainDbFactory,
     IUsersProfilesService usersProfilesRepo) : IManufactureService
 {
+    /// <inheritdoc/>
+    public async Task CreateSnapshot(StructureProjectModel dump, int projectId, string name)
+    {
+        TResponseModel<UserInfoModel?> user = await usersProfilesRepo.FindByIdAsync();
+
+        if (!user.Success() || user.Response is null)
+            throw new Exception();
+
+        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using IDbContextTransaction transaction = context_forms.Database.BeginTransaction();
+
+        ProjectSnapshotModelDB _project_snapshot = new()
+        {
+            UserId = user.Response.UserId,
+            ProjectId = projectId,
+            Name = name,
+            Directories = [],
+            Documents = []
+        };
+
+        _project_snapshot.Directories = dump.Enumerations.Select(_enum_fit =>
+        {
+            DirectoryEnumSnapshotModelDB _d = new()
+            {
+                Elements = [],
+                Name = _enum_fit.Name,
+                SystemName = _enum_fit.SystemName,
+                Description = _enum_fit.Description,
+                TokenUniqueRoute = $"enum > `{_enum_fit.SystemName}` /{_project_snapshot.Token}",
+                Owner = _project_snapshot,
+            };
+
+            _d.Elements = _enum_fit.EnumItems.Select(_enum_element_of_directory =>
+            {
+                DirectoryEnumElementSnapshotModelDB _df = new()
+                {
+                    Name = _enum_element_of_directory.Name,
+                    SystemName = _enum_element_of_directory.SystemName,
+                    SortIndex = _enum_element_of_directory.SortIndex,
+                    Description = _enum_element_of_directory.Description,
+                    TokenUniqueRoute = $"enum: `{_enum_fit.SystemName}`.[{_enum_element_of_directory.SortIndex}] /{_project_snapshot.Token}",
+                    Owner = _d,
+                };
+
+                return _df;
+            }).ToArray();
+
+            return _d;
+        }).ToArray();
+
+        await context_forms.AddAsync(_project_snapshot);
+        await context_forms.SaveChangesAsync();
+
+        _project_snapshot.Documents = dump.Documents.Select(_doc_fit =>
+        {
+            DocumentSnapshotModelDB _doc = new()
+            {
+                Name = _doc_fit.Name,
+                SystemName = _doc_fit.SystemName,
+                Tabs = [],
+                TokenUniqueRoute = $"doc > `{_doc_fit.SystemName}` /{_project_snapshot.Token}",
+                Description = _doc_fit.Description,
+                Owner = _project_snapshot,
+            };
+            _doc.Tabs = _doc_fit.Tabs.Select(_tab_fit =>
+            {
+                TabSnapshotModelDB _tab = new()
+                {
+                    Name = _tab_fit.Name,
+                    SystemName = _tab_fit.SystemName,
+                    TokenUniqueRoute = $"tab > `{_doc.SystemName}`.[{_tab_fit.SortIndex}] /{_project_snapshot.Token}",
+                    Description = _tab_fit.Description,
+                    Owner = _doc,
+                    Forms = [],
+                    SortIndex = _tab_fit.SortIndex,
+                };
+                _tab.Forms = _tab_fit.Forms.Select(_form_fit =>
+                {
+                    FormSnapshotModelDB _form = new()
+                    {
+                        SimpleFields = [],
+                        DirectoryFields = [],
+                        SortIndex = _form_fit.SortIndex,
+                        SystemName = _form_fit.SystemName,
+                        TokenUniqueRoute = $"form `{_doc_fit.SystemName}`.[{_tab_fit.SortIndex}].[{_form_fit.SortIndex}] /{_project_snapshot.Token}",
+                        Name = _form_fit.Name,
+                        Description = _form_fit.Description,
+                        Owner = _tab,
+                    };
+                    _form.DirectoryFields = _form_fit.FieldsAtDirectories is null ? [] : _form_fit.FieldsAtDirectories.Select(r =>
+                    {
+                        return new FieldAkaDirectorySnapshotModelDB()
+                        {
+                            Name = r.Name,
+                            SortIndex = r.SortIndex,
+                            SystemName = r.SystemName,
+                            TokenUniqueRoute = $"fd `{_doc_fit.SystemName}`.[{_tab_fit.SortIndex}].[{_form_fit.SortIndex}].[i:{r.SortIndex}] /{_project_snapshot.Token}",
+                            Description = r.Description,
+                            Owner = _form,
+                            Directory = _project_snapshot.Directories.First(w => w.SystemName == r.DirectorySystemName),
+                        };
+                    }).ToArray();
+                    _form.SimpleFields = _form_fit.SimpleFields is null ? [] : _form_fit.SimpleFields.Select(e =>
+                    {
+                        return new FieldSnapshotModelDB()
+                        {
+                            Name = e.Name,
+                            SortIndex = e.SortIndex,
+                            SystemName = e.SystemName,
+                            TokenUniqueRoute = $"fs `{_doc_fit.SystemName}`.[{_tab_fit.SortIndex}].[{_form_fit.SortIndex}].[i:{e.SortIndex}] /{_project_snapshot.Token}",
+                            TypeField = e.TypeField,
+                            Description = e.Description,
+                            Owner = _form,
+                        };
+                    }).ToArray();
+                    return _form;
+                }).ToArray();
+                return _tab;
+            }).ToArray();
+            return _doc;
+        }).ToArray();
+
+        await context_forms.AddRangeAsync(_project_snapshot.Documents);
+        await context_forms.SaveChangesAsync();
+        await transaction.CommitAsync();
+    }
+
     /// <inheritdoc/>
     public async Task<List<SystemNameEntryModel>> GetSystemNames(int manufactureId)
     {

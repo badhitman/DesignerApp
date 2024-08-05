@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 namespace SharedLib;
@@ -10,7 +10,7 @@ namespace SharedLib;
 public class EntryDescriptionOwnedModel : EntryDescriptionModel
 {
     /// <summary>
-    /// Форма
+    /// владелец
     /// </summary>
     public int OwnerId { get; set; }
 }

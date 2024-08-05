@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +43,10 @@ public class ProjectConstructorModelDB : EntryDescriptionSwitchableModel
     /// </summary>
     public DateTime SchemeLastUpdated { get; set; } = DateTime.Now;
 
+    /// <summary>
+    /// Snapshots
+    /// </summary>
+    public ProjectSnapshotModelDB? Snapshots { get; set; }
 
     /// <summary>
     /// Проверка прав/возможности пользователю редактировать данные в рамках проекта

@@ -7,7 +7,7 @@ namespace SharedLib;
 /// ManufactureSystemName
 /// </summary>
 [Index(nameof(TypeDataName), nameof(ManufactureId), nameof(SystemName), nameof(TypeDataId), IsUnique = true)]
-public class ManufactureSystemNameModelDB : UpdateSystemNameModel
+public class ManufactureSystemNameModelDB : UpdateSystemNameModel, ICloneable
 {
     /// <summary>
     /// Идентификатор/Key
@@ -30,6 +30,21 @@ public class ManufactureSystemNameModelDB : UpdateSystemNameModel
             TypeDataName = request.TypeDataName,
             TypeDataId = request.TypeDataId,
             Qualification = request.Qualification,
+        };
+    }
+
+    /// <inheritdoc/>
+    public object Clone()
+    {
+        return new ManufactureSystemNameModelDB()
+        {
+            ManufactureId = ManufactureId,
+            TypeDataId = TypeDataId,
+            TypeDataName = TypeDataName,
+            Qualification = Qualification,
+            Id = Id,
+            Manufacture = Manufacture,
+            SystemName = SystemName
         };
     }
 }

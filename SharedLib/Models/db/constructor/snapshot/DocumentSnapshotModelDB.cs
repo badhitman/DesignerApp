@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 namespace SharedLib;
@@ -17,5 +17,5 @@ public class DocumentSnapshotModelDB : SystemEntryDescriptionOwnedModel
     /// <summary>
     /// Tabs
     /// </summary>
-    public required TabSnapshotModelDB[] Tabs { get; set; }
+    public required IEnumerable<TabSnapshotModelDB> Tabs { get; set; }
 }

@@ -1,5 +1,5 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @fakegov 
+// © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 namespace SharedLib;
@@ -7,11 +7,11 @@ namespace SharedLib;
 /// <summary>
 /// Tab of document - snapshot
 /// </summary>
-public class TabSnapshotModelDB : SystemEntryDescriptionOwnedModel
+public class TabSnapshotModelDB : SortableSystemSnapshotModelDB
 {
     /// <inheritdoc/>
     public DocumentSnapshotModelDB? Owner { get; set; }
 
     /// <inheritdoc/>
-    public FormSnapshotModelDB[]? Forms { get; set; }
+    public IEnumerable<FormSnapshotModelDB>? Forms { get; set; }
 }
