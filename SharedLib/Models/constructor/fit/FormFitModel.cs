@@ -27,12 +27,12 @@ public class FormFitModel : BaseFormFitModel
     /// <summary>
     /// Простые поля
     /// </summary>
-    public FieldFitModel[]? SimpleFields { get; set; }
+    public List<FieldFitModel>? SimpleFields { get; set; }
 
     /// <summary>
     /// Поля типа: справочник/список/перечисление
     /// </summary>
-    public FieldAkaDirectoryFitModel[]? FieldsAtDirectories { get; set; }
+    public List<FieldAkaDirectoryFitModel>? FieldsAtDirectories { get; set; }
 
     /// <summary>
     /// Все поля формы (отсортированные)
@@ -43,10 +43,10 @@ public class FormFitModel : BaseFormFitModel
         {
             List<BaseRequiredFormFitModel> res = [];
 
-            if (SimpleFields is not null && SimpleFields.Length != 0)
+            if (SimpleFields is not null && SimpleFields.Count != 0)
                 res.AddRange(SimpleFields);
 
-            if (FieldsAtDirectories is not null && FieldsAtDirectories.Length != 0)
+            if (FieldsAtDirectories is not null && FieldsAtDirectories.Count != 0)
                 res.AddRange(FieldsAtDirectories);
 
             return [.. res.OrderBy(x => x.SortIndex)];

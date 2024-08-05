@@ -32,7 +32,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
             $"Документов: {dump.Documents.Length} шт.",
             $"{base_dom_root.TabString}вкладок (всего): {dump.Documents.Sum(x => x.Tabs?.Count)}",
             $"{base_dom_root.TabString}форм (всего): {dump.Documents.SelectMany(x => x.Tabs).Sum(x => x.Forms?.Length)}",
-            $"{base_dom_root.TabString}полей (всего): {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.SimpleFields?.Length)} [simple field`s] + {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.FieldsAtDirectories?.Length)} [enumerations field`s]",
+            $"{base_dom_root.TabString}полей (всего): {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.SimpleFields?.Count)} [simple field`s] + {dump.Documents.SelectMany(x => x.Tabs).SelectMany(x => x.Forms).Sum(x => x.FieldsAtDirectories?.Count)} [enumerations field`s]",
             $"- ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ - ~ -",
             $"{conf.BlazorDirectoryPath}        - папка Blazor UI",
             $"{conf.EnumDirectoryPath}          - папка перечислений",
@@ -330,11 +330,11 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
                     await writer.WriteLineAsync($"{Tab}{Tab}/// </summary>");
                     await writer.WriteLineAsync($"{Tab}{Tab}public {doc_entry.TypeName}? Document {{ get; set; }}");
 
-                    if (form_obj.SimpleFields?.Length > 0)
+                    if (form_obj.SimpleFields?.Count > 0)
                         foreach (FieldFitModel _f in form_obj.SimpleFields)
                             await WriteField(_f, writer);
 
-                    if (form_obj.FieldsAtDirectories?.Length > 0)
+                    if (form_obj.FieldsAtDirectories?.Count > 0)
                     {
                         foreach (FieldAkaDirectoryFitModel _f in form_obj.FieldsAtDirectories)
                             await WriteField(_f, form_type_entry, writer);

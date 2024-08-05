@@ -39,9 +39,34 @@ public partial class LayerContext
     public DbSet<FormSnapshotModelDB> FormsSnapshots { get; set; }
 
     /// <summary>
+    /// Fields simple snapshots
+    /// </summary>
+    public DbSet<FieldSnapshotModelDB> FieldsSimpleSnapshots { get; set; }
+
+    /// <summary>
+    /// Fields directory snapshots
+    /// </summary>
+    public DbSet<FieldAkaDirectorySnapshotModelDB> FieldsDirectorySnapshots { get; set; }
+
+    /// <summary>
     /// FieldsSnapshots
     /// </summary>
     public DbSet<BaseFieldModel> FieldsSnapshots { get; set; }
+
+    /// <summary>
+    /// Внешние связи форм с другими проектами
+    /// </summary>
+    public DbSet<FormOuterLinkModelDB> FormsOuterJoins { get; set; }
+
+    /// <summary>
+    /// Внешние связи перечислений с другими проектами
+    /// </summary>
+    public DbSet<DirectoryOuterLinkModelDB> DirectoriesOuterJoins { get; set; }
+
+    /// <summary>
+    /// Внешние связи документов с другими проектами
+    /// </summary>
+    public DbSet<DocumentOuterLinkModelDB> DocumentsOuterJoins { get; set; }
 
 
     /// <summary>

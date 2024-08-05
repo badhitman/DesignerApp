@@ -13,7 +13,6 @@ namespace SharedLib;
 [Index(nameof(Name), nameof(ProjectId), IsUnique = true)]
 public class FormConstructorModelDB : FormBaseConstructorModel
 {   
-
     /// <summary>
     /// Поля формы
     /// </summary>

@@ -22,6 +22,11 @@ public class EntryConstructedModel : EntryDescriptionModel
     /// </summary>
     public required int ProjectId { get; set; }
 
+    /// <summary>
+    /// Is Shared
+    /// </summary>
+    public bool IsShared { get; set; }
+
     /// <inheritdoc/>
     public static EntryConstructedModel Build(EntryModel sender, int projectId, string? description = null)
     {
