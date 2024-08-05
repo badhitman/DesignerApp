@@ -180,6 +180,22 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             roles_names = roles_names.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
             res.Roles = roles_names.Select(x => x!).ToArray();
         }
+
+        res.Claims = await identityContext
+            .UserClaims
+            .Where(x => x.UserId == res.UserId && x.ClaimType != null)
+            .Select(x => new EntryAltModel() { Id = x.ClaimType!, Name = x.ClaimValue })
+            .ToArrayAsync();
+
+        if (res.Claims.Length != 0)
+        {
+            res.Claims = await identityContext
+                .UserClaims
+                .Where(x => x.UserId == res.UserId && x.ClaimType != null)
+                .Select(x => new EntryAltModel() { Id = x.ClaimType!, Name = x.ClaimValue })
+                .ToArrayAsync(); ;
+        }
+
         return new() { Response = res };
     }
 
@@ -268,6 +284,8 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         if (user is null)
             return null;
 
+        IList<System.Security.Claims.Claim> claims = await userManager.GetClaimsAsync(user);
+
         return new()
         {
             UserId = user.Id,
@@ -279,7 +297,8 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             LockoutEnd = user.LockoutEnd,
             PhoneNumber = user.PhoneNumber,
             TelegramId = user.TelegramId,
-            Roles = [.. (await userManager.GetRolesAsync(user))]
+            Roles = [.. (await userManager.GetRolesAsync(user))],
+            Claims = claims.Select(x => new EntryAltModel() { Id = x.Type, Name = x.Value }).ToArray(),
         };
     }
 
@@ -793,9 +812,13 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
                   join role in identityContext.Roles on link.RoleId equals role.Id
                   select new { RoleName = role.Name, link.UserId }).ToArrayAsync();
 
+        var claims =
+           await (from claim in identityContext.UserClaims.Where(x => users_ids.Contains(x.UserId))
+                  select new { claim.ClaimValue, claim.ClaimType, claim.UserId }).ToArrayAsync();
+
         return new()
         {
-            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.TelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray())).ToList(),
+            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.TelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, roles: roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray(), claims: claims.Where(o => o.UserId == x.Id).Select(q => new EntryAltModel() { Id = q.ClaimType, Name = q.ClaimValue }).ToArray())).ToList(),
             TotalRowsCount = total,
             PageNum = req.PageNum,
             PageSize = req.PageSize,

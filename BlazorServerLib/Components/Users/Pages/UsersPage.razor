@@ -67,6 +67,9 @@
             <TemplateColumn Title="Роли" Align="Align.Right">
                 @context.RolesAsString(";")
             </TemplateColumn>
+            <TemplateColumn Title="Claims" Align="Align.Right">
+                @context.ClaimsAsString(";")
+            </TemplateColumn>
         </QuickGrid>
         <Paginator State="@pagination" />
     </div>

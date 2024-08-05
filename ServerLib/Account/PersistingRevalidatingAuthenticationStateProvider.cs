@@ -80,6 +80,7 @@ public sealed class PersistingRevalidatingAuthenticationStateProvider(ILoggerFac
             string? userName = principal.FindFirst(ClaimTypes.Name)?.Value;
             string? email = principal.FindFirst(ClaimTypes.Email)?.Value;
             string[] roles = principal.FindAll(ClaimTypes.Role).Select(x => x.Value).ToArray();
+            EntryAltModel[] claims = principal.FindAll((c) => c.ValueType != ClaimTypes.Role).Select(x => new EntryAltModel() { Id = x.ValueType, Name = x.Value }).ToArray();
 
             if (userId != null && email != null)
             {
@@ -88,7 +89,8 @@ public sealed class PersistingRevalidatingAuthenticationStateProvider(ILoggerFac
                     UserId = userId,
                     UserName = userName,
                     Email = email,
-                    Roles = roles
+                    Roles = roles,
+                    Claims = claims
                 });
             }
         }

@@ -47,7 +47,7 @@ public class UserInfoModel : UserInfoMainModel
     public bool IsAdmin => Roles?.Any(x => x.Equals("admin", StringComparison.OrdinalIgnoreCase)) == true;
 
     /// <inheritdoc/>
-    public static UserInfoModel Build(string userId, string? userName, string? email, string? phoneNumber, long? telegramId, bool emailConfirmed, DateTimeOffset? lockoutEnd, bool lockoutEnabled, int accessFailedCount, string[]? roles = null)
+    public static UserInfoModel Build(string userId, string? userName, string? email, string? phoneNumber, long? telegramId, bool emailConfirmed, DateTimeOffset? lockoutEnd, bool lockoutEnabled, int accessFailedCount, string[]? roles = null, EntryAltModel[]? claims = null)
         => new()
         {
             UserId = userId,
@@ -59,6 +59,7 @@ public class UserInfoModel : UserInfoMainModel
             LockoutEnd = lockoutEnd,
             LockoutEnabled = lockoutEnabled,
             AccessFailedCount = accessFailedCount,
-            Roles = roles
+            Roles = roles,
+            Claims = claims
         };
 }
