@@ -115,7 +115,7 @@ public class ManufactureService(
                             TokenUniqueRoute = $"fd `{_doc_fit.SystemName}`.[{_tab_fit.SortIndex}].[{_form_fit.SortIndex}].[i:{r.SortIndex}] /{_project_snapshot.Token}",
                             Description = r.Description,
                             Owner = _form,
-                            Directory = _project_snapshot.Directories.First(w => w.SystemName == r.DirectorySystemName),
+                            Directory = _project_snapshot.Directories.FirstOrDefault(w => w.SystemName == r.DirectorySystemName) ?? _project_snapshot.Directories.First(w => w.Name == GlobalTools.TranslitToSystemName(r.DirectorySystemName)),
                         };
                     }).ToList();
                     _form.SimpleFields = _form_fit.SimpleFields is null ? [] : _form_fit.SimpleFields.Select(e =>

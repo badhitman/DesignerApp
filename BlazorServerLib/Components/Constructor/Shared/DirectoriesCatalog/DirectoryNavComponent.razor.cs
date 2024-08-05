@@ -75,9 +75,9 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     EntryModel directoryObject = default!;
     string? Description { get; set; }
 
-    static readonly DirectoryNavStatesEnum[] ModesForHideSelector = 
+    static readonly DirectoryNavStatesEnum[] ModesForHideSelector =
         [
-        DirectoryNavStatesEnum.Create, 
+        DirectoryNavStatesEnum.Create,
         DirectoryNavStatesEnum.Rename,
         DirectoryNavStatesEnum.Delete
         ];
