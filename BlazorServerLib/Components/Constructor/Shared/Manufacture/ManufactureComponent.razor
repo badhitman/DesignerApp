@@ -2,19 +2,22 @@
 
 <div class="vstack gap-3">
     <div class="p-2"><h3>Генерация кода C#</h3></div>
-
     <CascadingValue Value="this">
-        <div class="p-2">
-            <ConfigManufactureComponent @ref="_conf" />
-        </div>
-        <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture">
-            <div class="p-2">
-                <EnumerationsManufactureComponent @ref="enumerations_ref" />
-            </div>
-            <div class="p-2">
-                <DocumentsManufactureComponent @ref="documents_ref" />
-            </div>
-        </CascadingValue>
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Config">
+                <ConfigManufactureComponent @ref="_conf" />
+            </MudTabPanel>
+            <MudTabPanel Text="Struct">
+                <CascadingValue Value="@ParentFormsPage.SystemNamesManufacture">
+                    <div class="p-2">
+                        <EnumerationsManufactureComponent @ref="enumerations_ref" />
+                    </div>
+                    <div class="p-2">
+                        <DocumentsManufactureComponent @ref="documents_ref" />
+                    </div>
+                </CascadingValue>
+            </MudTabPanel>
+        </MudTabs>
     </CascadingValue>
 
     <div class="d-grid gap-2">
