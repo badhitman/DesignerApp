@@ -23,6 +23,10 @@ public partial class TabSetComponent : ComponentBase
     [Parameter]
     public bool IsSilent { get; set; }
 
+    /// <inheritdoc/>
+    [Parameter]
+    public bool AsPills { get; set; }
+
 
     /// <inheritdoc/>
     public ITab? ActiveTab { get; private set; }

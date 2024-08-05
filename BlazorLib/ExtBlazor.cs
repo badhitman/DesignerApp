@@ -20,7 +20,7 @@ public static class ExtBlazor
     /// </summary>
     public static string? GetTabNameFromUrl(this NavigationManager nav)
     {
-        Uri uri = new Uri(nav.Uri);
+        Uri uri = new(nav.Uri);
         Dictionary<string, Microsoft.Extensions.Primitives.StringValues> queryParameters = QueryHelpers.ParseQuery(uri.Query);
 
         return queryParameters.TryGetValue(ActiveTabName, out var tabName)
