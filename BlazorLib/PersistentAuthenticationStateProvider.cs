@@ -42,8 +42,11 @@ public class PersistentAuthenticationStateProvider : AuthenticationStateProvider
             new Claim(ClaimTypes.Email, userInfo.Email ?? "")
             ];
 
-        if (userInfo.Roles?.Any() == true)
+        if (userInfo.Roles is not null && userInfo.Roles.Length != 0)
             claims.AddRange(userInfo.Roles.Select(x => new Claim(ClaimTypes.Role, x)));
+
+        if (userInfo.Claims is not null && userInfo.Claims.Length != 0)
+            claims.AddRange(userInfo.Claims.Where(x => !string.IsNullOrWhiteSpace(x.Name)).Select(x => new Claim(x.Id, x.Name!)));
 
         authenticationStateTask = Task.FromResult(
             new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
