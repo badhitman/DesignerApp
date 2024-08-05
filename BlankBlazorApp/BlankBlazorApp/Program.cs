@@ -14,7 +14,6 @@ using ServerLib;
 using SharedLib;
 using System.Globalization;
 using Transmission.Receives.web;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
