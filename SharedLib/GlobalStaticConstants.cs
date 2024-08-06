@@ -88,6 +88,20 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string SetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.EDIT_ACTION_NAME);
         #endregion
+
+        #region Helpdesk
+        /// <inheritdoc/>
+        public readonly static string CreateIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ISSUE_CONTROLLER_NAME, Routes.CREATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string CreateIssuesThemeHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.THEME_CONTROLLER_NAME}", Routes.CREATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string GetIssuesForUserHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string GetThemesIssuesHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.THEME_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
+        #endregion
     }
 
     /// <summary>
@@ -124,6 +138,21 @@ public static partial class GlobalStaticConstants
         /// Telegram check-user
         /// </summary>
         public const string TELEGRAM_CONTROLLER_NAME = "telegram";
+
+        /// <summary>
+        /// Helpdesk
+        /// </summary>
+        public const string HELPDESK_CONTROLLER_NAME = "telegram";
+
+        /// <summary>
+        /// Issue
+        /// </summary>
+        public const string ISSUE_CONTROLLER_NAME = "issue";
+
+        /// <summary>
+        /// Theme
+        /// </summary>
+        public const string THEME_CONTROLLER_NAME = "theme";
 
         /// <summary>
         /// Web
@@ -167,6 +196,11 @@ public static partial class GlobalStaticConstants
 
 
 
+
+        /// <summary>
+        /// Text
+        /// </summary>
+        public const string CREATE_ACTION_NAME = "create";
 
         /// <summary>
         /// Подключить/присоединить

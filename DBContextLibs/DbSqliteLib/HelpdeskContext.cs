@@ -2,20 +2,19 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbLayerLib;
 using Microsoft.EntityFrameworkCore;
 
 namespace DbcLib;
 
 /// <summary>
-/// Контекст доступа к SQLite БД
+/// Промежуточный/общий слой контекста базы данных
 /// </summary>
-public class MainDbAppContext : LayerContext
+public partial class HelpdeskContext : HelpdeskLayerContext
 {
     /// <summary>
     /// Контекст доступа к SQLite БД
     /// </summary>
-    public MainDbAppContext(DbContextOptions<MainDbAppContext> options) : base(options)
+    public HelpdeskContext(DbContextOptions<HelpdeskContext> options) : base(options)
     {
         Database.Migrate();
     }

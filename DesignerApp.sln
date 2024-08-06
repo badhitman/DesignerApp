@@ -75,6 +75,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "secrets", "secrets", "{AC94
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemoteCallLib", "RemoteCallLib\RemoteCallLib.csproj", "{AD9A4093-D7DA-4223-977B-EDDCB47C2903}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpdeskService", "HelpdeskService\HelpdeskService.csproj", "{22770E54-F249-469A-BCD1-2A5C61120FCD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +135,10 @@ Global
 		{AD9A4093-D7DA-4223-977B-EDDCB47C2903}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD9A4093-D7DA-4223-977B-EDDCB47C2903}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD9A4093-D7DA-4223-977B-EDDCB47C2903}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22770E54-F249-469A-BCD1-2A5C61120FCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22770E54-F249-469A-BCD1-2A5C61120FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22770E54-F249-469A-BCD1-2A5C61120FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22770E54-F249-469A-BCD1-2A5C61120FCD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

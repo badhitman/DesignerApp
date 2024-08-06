@@ -139,6 +139,7 @@ builder.Services.AddScoped<ITelegramWebService, TelegramWebService>();
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 builder.Services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
+builder.Services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
 //
 builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserModel?>();
 builder.Services.RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();

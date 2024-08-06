@@ -1,13 +1,11 @@
-using Microsoft.AspNetCore.Hosting;
+using DbcLib;
+using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using RemoteCallLib;
-using ServerLib;
 using SharedLib;
-using Telegram.Bot;
-using Telegram.Bot.Services;
-using Transmission.Receives.telegram;
+using Transmission.Receives.helpdesk;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -55,41 +53,24 @@ builder.ConfigureServices((context, services) =>
 {
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
-    .Configure<BotConfiguration>(context.Configuration.GetSection(BotConfiguration.Configuration))
     ;
 
     services.AddSingleton<WebConfigModel>();
     services.AddOptions();
 
-    // Register named HttpClient to benefits from IHttpClientFactory
-    // and consume it with ITelegramBotClient typed client.
-    // More read:
-    //  https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-5.0#typed-clients
-    //  https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
-    services.AddHttpClient("telegram_bot_client")
-            .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
-            {
-                BotConfiguration? botConfig = sp.GetConfiguration<BotConfiguration>();
-                TelegramBotClientOptions options = new(botConfig.BotToken);
-                return new TelegramBotClient(options, httpClient);
-            });
-
-    services.AddScoped<UpdateHandler>();
-    services.AddScoped<ReceiverService>();
-    services.AddHostedService<PollingService>();
-
-    #region Telegram dialog - handlers answer to incoming messages
-    services.AddScoped<ITelegramDialogService, DefaultTelegramDialogHandle>();
-    #endregion
+    string connectionIdentityString = context.Configuration.GetConnectionString("HelpdeskConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
+    services.AddDbContextFactory<HelpdeskContext>(opt =>
+    opt.UseSqlite(connectionIdentityString));
 
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
-    services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
-    //
-    services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>();
-    services.RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>();
-    services.RegisterMqListener<GetBotUsernameReceive, object?, string?>();
+    services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
+    ////
+    services.RegisterMqListener<GetThemesIssuesReceive, object?, IssueThemeModelDB[]?>();
+    services.RegisterMqListener<CreateIssueThemeReceive, IssueThemeModelDB?, int?>();
+    services.RegisterMqListener<GetIssuesForUserReceive, (long? telegramId, string? identityId)?, IssueModelDB[]?>();
+    services.RegisterMqListener<CreateIssueReceive, IssueModelDB?, int?>();
     #endregion
 });
 
@@ -105,17 +86,3 @@ using (IServiceScope ss = app.Services.CreateScope())
 }
 
 await app.RunAsync();
-
-#pragma warning disable CA1050 // Declare types in namespaces
-/// <summary>
-/// BotConfiguration
-/// </summary>
-public class BotConfiguration
-#pragma warning restore CA1050 // Declare types in namespaces
-{
-    /// <inheritdoc/>
-    public static readonly string Configuration = "BotConfiguration";
-
-    /// <inheritdoc/>
-    public string BotToken { get; set; } = "";
-}

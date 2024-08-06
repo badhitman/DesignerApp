@@ -296,7 +296,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             LockoutEnabled = user.LockoutEnabled,
             LockoutEnd = user.LockoutEnd,
             PhoneNumber = user.PhoneNumber,
-            TelegramId = user.TelegramId,
+            TelegramId = user.ChatTelegramId,
             Roles = [.. (await userManager.GetRolesAsync(user))],
             Claims = claims.Select(x => new EntryAltModel() { Id = x.Type, Name = x.Value }).ToArray(),
         };
@@ -799,7 +799,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
                 x.UserName,
                 x.Email,
                 x.PhoneNumber,
-                x.TelegramId,
+                x.ChatTelegramId,
                 x.EmailConfirmed,
                 x.LockoutEnd,
                 x.LockoutEnabled,
@@ -818,7 +818,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
 
         return new()
         {
-            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.TelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, roles: roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray(), claims: claims.Where(o => o.UserId == x.Id).Select(q => new EntryAltModel() { Id = q.ClaimType, Name = q.ClaimValue }).ToArray())).ToList(),
+            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.ChatTelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, roles: roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray(), claims: claims.Where(o => o.UserId == x.Id).Select(q => new EntryAltModel() { Id = q.ClaimType, Name = q.ClaimValue }).ToArray())).ToList(),
             TotalRowsCount = total,
             PageNum = req.PageNum,
             PageSize = req.PageSize,
@@ -941,4 +941,4 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         return ResponseBaseModel.CreateSuccess("Claim успешно удалён");
     }
 }
-internal record IdentityUserRecord(string? Email, bool EmailConfirmed, string? PhoneNumber, bool PhoneNumberConfirmed, bool TwoFactorEnabled, DateTimeOffset? LockoutEnd, bool LockoutEnabled, int AccessFailedCount);
+internal record IdentityUserRecord(string? Email, bool EmailConfirmed, string? PhoneNumber, bool PhoneNumberConfirmed, bool TwoFactorEnabled, DateTimeOffset? LockoutEnd, bool LockoutEnabled, int AccessFailedCount, long? ChatId);
