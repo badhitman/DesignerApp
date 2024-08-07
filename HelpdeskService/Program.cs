@@ -71,6 +71,10 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<CreateIssueThemeReceive, IssueThemeHelpdeskModelDB?, int?>();
     services.RegisterMqListener<GetIssuesForUserReceive, UserCrossIdsModel?, IssueHelpdeskModelDB[]?>();
     services.RegisterMqListener<CreateIssueReceive, IssueHelpdeskModelDB?, int?>();
+    services.RegisterMqListener<SetMessageIssueAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
+    services.RegisterMqListener<AddNewMessageIntoIssueReceive, IssueMessageHelpdeskBaseModel?, int?>();
+    services.RegisterMqListener<UpdateMessageOfIssueReceive, UpdateMessageRequestModel?, bool?>();
+    //
     #endregion
 });
 

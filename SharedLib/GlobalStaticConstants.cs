@@ -94,15 +94,24 @@ public static partial class GlobalStaticConstants
         public readonly static string CreateIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ISSUE_CONTROLLER_NAME, Routes.CREATE_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string AddNewMessageIntoIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.ADD_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string UpdateMessageOfIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string CreateIssuesThemeHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.THEME_CONTROLLER_NAME}", Routes.CREATE_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string GetIssuesForUserHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string SetMessageAsResponseIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME, Routes.MARK_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string GetThemesIssuesHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.THEME_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
         #endregion
-    }
+    }//SetMessageAsResponseIssueRequestModel
 
     /// <summary>
     /// имена контроллеров и действий
@@ -198,9 +207,19 @@ public static partial class GlobalStaticConstants
 
 
         /// <summary>
-        /// Text
+        /// create
         /// </summary>
         public const string CREATE_ACTION_NAME = "create";
+
+        /// <summary>
+        /// add
+        /// </summary>
+        public const string ADD_ACTION_NAME = "add";
+
+        /// <summary>
+        /// update
+        /// </summary>
+        public const string UPDATE_ACTION_NAME = "update";
 
         /// <summary>
         /// Подключить/присоединить
@@ -211,6 +230,16 @@ public static partial class GlobalStaticConstants
         /// Отправить
         /// </summary>
         public const string SEND_ACTION_NAME = "send";
+
+        /// <summary>
+        /// SET
+        /// </summary>
+        public const string SET_ACTION_NAME = "set";
+
+        /// <summary>
+        /// Mark
+        /// </summary>
+        public const string MARK_ACTION_NAME = "mark";
 
         /// <summary>
         /// Подтвердить

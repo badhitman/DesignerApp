@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -12,6 +13,8 @@ namespace SharedLib;
 /// <remarks>
 /// Используется для доступа из Telegram WebApp
 /// </remarks>
+[Index(nameof(TokenAccess), IsUnique = true)]
+[Index(nameof(CreatedAt))]
 public class AnonymTelegramAccessHelpdeskModelDB
 {
     /// <summary>
@@ -26,13 +29,11 @@ public class AnonymTelegramAccessHelpdeskModelDB
     [Required]
     public required string TokenAccess { get; set; }
 
-
     /// <summary>
     /// Телеграм пользователь, который создал токен
     /// </summary>
     [Required]
     public required long TelegramUserId { get; set; }
-
 
     /// <summary>
     /// CreatedAt

@@ -10,17 +10,7 @@ namespace DbcLib;
 /// <summary>
 /// Контекст доступа к Postgres
 /// </summary>
-public class MainDbAppContext : LayerContext
+public class MainDbAppContext(DbContextOptions<MainDbAppContext> options) : LayerContext(options)
 {
-    /// <summary>
-    /// Контекст доступа к Postgres
-    /// </summary>
-    public MainDbAppContext(DbContextOptions<MainDbAppContext> options) : base(options)
-    {
-#if DEBUG
-        Database.Migrate();
-#else
-        Database.EnsureCreated();
-#endif
-    }
+
 }

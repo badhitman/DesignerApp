@@ -9,6 +9,10 @@ namespace RemoteCallLib;
 public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdeskRemoteTransmissionService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<int>> AddNewMessageIntoIssue(IssueMessageHelpdeskBaseModel req)
+        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.AddNewMessageIntoIssueHelpdeskReceive, req);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<int>> CreateIssue(IssueHelpdeskModelDB issue)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CreateIssueHelpdeskReceive, issue);
 
@@ -23,4 +27,11 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     /// <inheritdoc/>
     public async Task<TResponseModel<IssueThemeHelpdeskModelDB[]?>> GetThemesIssues()
         => await rabbitClient.MqRemoteCall<IssueThemeHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> SetMessageIssueAsResponse(SetMessageAsResponseIssueRequestModel req)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.SetMessageAsResponseIssueHelpdeskReceive, req);
+
+    public async Task<TResponseModel<bool>> UpdateMessageIssue(UpdateMessageRequestModel req)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.UpdateMessageOfIssueHelpdeskReceive, req);
 }

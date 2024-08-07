@@ -10,18 +10,7 @@ namespace DbcLib;
 /// <summary>
 /// Контекст доступа к SQLite БД
 /// </summary>
-public class MainDbAppContext : LayerContext
+public class MainDbAppContext(DbContextOptions<MainDbAppContext> options) : LayerContext(options)
 {
-    /// <summary>
-    /// Контекст доступа к SQLite БД
-    /// </summary>
-    public MainDbAppContext(DbContextOptions<MainDbAppContext> options) : base(options)
-    {
-#if DEBUG
 
-#else
-        Database.Migrate();
-#endif
-
-    }
 }

@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -9,7 +10,9 @@ namespace SharedLib;
 /// <summary>
 /// MarkAsResponseModelDB
 /// </summary>
-public class MarkAsResponseHelpdeskModelDB
+[Index(nameof(TelegramId))]
+[Index(nameof(IdentityUserId))]
+public class MarkAsResponseHelpdeskModelDB : UserCrossIdsModel
 {
     /// <summary>
     /// Идентификатор/Key

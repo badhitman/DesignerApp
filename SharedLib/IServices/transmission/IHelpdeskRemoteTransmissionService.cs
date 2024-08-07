@@ -28,4 +28,19 @@ public interface IHelpdeskRemoteTransmissionService
     /// Создать обращение
     /// </summary>
     public Task<TResponseModel<int>> CreateIssue(IssueHelpdeskModelDB issue);
+
+    /// <summary>
+    /// Сообщение из обращения помечается как ответ (либо этот признак снимается: в зависимости от запроса)
+    /// </summary>
+    public Task<TResponseModel<bool>> SetMessageIssueAsResponse(SetMessageAsResponseIssueRequestModel req);
+
+    /// <summary>
+    /// Добавить сообщение к обращению
+    /// </summary>
+    public Task<TResponseModel<int>> AddNewMessageIntoIssue(IssueMessageHelpdeskBaseModel req);
+
+    /// <summary>
+    /// UpdateMessageIssue
+    /// </summary>
+    public Task<TResponseModel<bool>> UpdateMessageIssue(UpdateMessageRequestModel req);
 }
