@@ -2,14 +2,16 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
 /// <summary>
-/// MarkAsResponseModelDB
+/// IssueReadMarkerModelDB
 /// </summary>
-public class MarkAsResponseModelDB
+[Index(nameof(LastReadAt), nameof(UserIdentityId), IsUnique = true)]
+public class IssueReadMarkerHelpdeskModelDB
 {
     /// <summary>
     /// Идентификатор/Key
@@ -18,21 +20,12 @@ public class MarkAsResponseModelDB
     public int Id { get; set; }
 
     /// <summary>
-    /// ParentMessage
+    /// LastReadAt
     /// </summary>
-    public IssueMessageModelDB? Message { get; set; }
-    /// <summary>
-    /// ParentMessage
-    /// </summary>
-    public int MessageId { get; set; }
+    public required DateTime LastReadAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
-    /// Issue
+    /// User Id (Identity)
     /// </summary>
-    public IssueModelDB? Issue { get; set; }
-
-    /// <summary>
-    /// Issue
-    /// </summary>
-    public int IssueId { get; set; }
+    public required string UserIdentityId { get; set; }
 }

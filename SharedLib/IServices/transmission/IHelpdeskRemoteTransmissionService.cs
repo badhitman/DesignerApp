@@ -12,20 +12,20 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<IssueThemeModelDB[]?>> GetThemesIssues();
+    public Task<TResponseModel<IssueThemeHelpdeskModelDB[]?>> GetThemesIssues();
 
     /// <summary>
     /// Создать тему для обращений
     /// </summary>
-    public Task<TResponseModel<int>> CreateIssuesTheme(IssueThemeModelDB issueTheme);
+    public Task<TResponseModel<int>> CreateIssuesTheme(IssueThemeHelpdeskModelDB issueTheme);
 
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
-    public Task<TResponseModel<IssueModelDB[]?>> GetIssuesForUser(TPaginationRequestModel<(long? telegramId, string? identityId)> user);
+    public Task<TResponseModel<IssueHelpdeskModelDB[]?>> GetIssuesForUser(TPaginationRequestModel<UserCrossIdsModel> user);
 
     /// <summary>
     /// Создать обращение
     /// </summary>
-    public Task<TResponseModel<int>> CreateIssue(IssueModelDB issue);
+    public Task<TResponseModel<int>> CreateIssue(IssueHelpdeskModelDB issue);
 }

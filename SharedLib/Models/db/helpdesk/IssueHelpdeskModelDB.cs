@@ -10,8 +10,13 @@ namespace SharedLib;
 /// IssueTelegramModelDB
 /// </summary>
 [Index(nameof(AuthorTelegramUserId), nameof(AuthorIdentityUserId), nameof(ExecutorIdentityUserId), nameof(LastUpdateAt))]
-public class IssueModelDB : EntryDescriptionModel
+public class IssueHelpdeskModelDB : EntryDescriptionModel
 {
+    /// <summary>
+    /// Шаг/статус обращения: "Создан", "В работе", "На проверке" и "Готово"
+    /// </summary>
+    public HelpdeskIssueStepsEnum StepIssue { get; set; }
+
     /// <summary>
     /// TelegramUserId
     /// </summary>
@@ -35,7 +40,12 @@ public class IssueModelDB : EntryDescriptionModel
     /// <summary>
     /// IssueTheme
     /// </summary>
-    public IssueThemeModelDB? IssueTheme { get; set; }
+    public IssueThemeHelpdeskModelDB? IssueTheme { get; set; }
+
+    /// <summary>
+    /// CreatedAt
+    /// </summary>
+    public required DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// LastUpdateAt
@@ -43,12 +53,22 @@ public class IssueModelDB : EntryDescriptionModel
     public required DateTime LastUpdateAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
+    /// AnonymAccess
+    /// </summary>
+    public AnonymTelegramAccessHelpdeskModelDB? AnonymAccess { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public int? TokenAccessId { get; set; }
+
+    /// <summary>
     /// Subscribers
     /// </summary>
-    public List<SubscriberIssueModelDB>? Subscribers { get; set; }
+    public List<SubscriberIssueHelpdeskModelDB>? Subscribers { get; set; }
 
     /// <summary>
     /// Messages
     /// </summary>
-    public List<IssueMessageModelDB>? Messages { get; set; }
+    public List<IssueMessageHelpdeskModelDB>? Messages { get; set; }
 }

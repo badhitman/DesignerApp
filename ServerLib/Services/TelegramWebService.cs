@@ -96,7 +96,7 @@ public class TelegramWebService(
         if (!user.Success() || user.ApplicationUser is null)
             return new TResponseModel<TelegramJoinAccountModelDb>() { Messages = user.Messages };
 
-        DateTime lifeTime = DateTime.Now.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
+        DateTime lifeTime = DateTime.UtcNow.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
         TelegramJoinAccountModelDb? act = await mainContext.TelegramJoinActions
             .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.UserIdentityId == user.ApplicationUser.Id);
@@ -112,7 +112,7 @@ public class TelegramWebService(
                 TResponseModel<string?> bot_username_res = await tgRemoteRepo.GetBotUsername();
                 string? bot_username = bot_username_res.Response;
 
-                msg = $"Существует ссылка привязки Telegram аккаунта к учётной записи сайта действительная до {act.CreatedAt.AddMinutes(webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes)} ({DateTime.Now - lifeTime}).<br/>";
+                msg = $"Существует ссылка привязки Telegram аккаунта к учётной записи сайта действительная до {act.CreatedAt.AddMinutes(webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes)} ({DateTime.UtcNow - lifeTime}).<br/>";
                 msg += $"Нужно подтвердить операцию через Telegram бота. Для этого нужно в TelegramBot @{bot_username} отправить токен:<br/><u><b>{act.GuidToken}</b></u><br/>Или ссылкой: <a href='https://t.me/{bot_username}?start={act.GuidToken}'>https://t.me/{bot_username}?start={act.GuidToken}</a><br/>";
                 await mailRepo.SendEmailAsync(user.ApplicationUser.Email, "Статус привязки Telegram к у/з", msg);
 
@@ -191,7 +191,7 @@ public class TelegramWebService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> TelegramJoinAccountConfirmTokenFromTelegram(TelegramJoinAccountConfirmModel req)
     {
-        DateTime lifeTime = DateTime.Now.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
+        DateTime lifeTime = DateTime.UtcNow.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
         TelegramJoinAccountModelDb? act = await mainContext.TelegramJoinActions
            .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.GuidToken == req.Token);

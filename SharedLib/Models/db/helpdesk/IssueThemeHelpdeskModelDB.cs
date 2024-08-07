@@ -7,10 +7,10 @@ namespace SharedLib;
 /// <summary>
 /// IssueThemeModelDB
 /// </summary>
-public class IssueThemeModelDB : EntryDescriptionModel
+public class IssueThemeHelpdeskModelDB : EntryDescriptionModel
 {
     /// <summary>
     /// Issues
     /// </summary>
-    public List<IssueModelDB>? Issues { get; set; }
+    public List<IssueHelpdeskModelDB>? Issues { get; set; }
 }

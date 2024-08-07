@@ -10,7 +10,7 @@ namespace SharedLib;
 /// SubscriberIssueModelDB
 /// </summary>
 [Index(nameof(AuthorIdentityUserId), nameof(IssueId), IsUnique = true)]
-public class SubscriberIssueModelDB : EntryModel
+public class SubscriberIssueHelpdeskModelDB : EntryModel
 {
     /// <summary>
     /// Issue
@@ -19,7 +19,7 @@ public class SubscriberIssueModelDB : EntryModel
     /// <summary>
     /// Issue
     /// </summary>
-    public IssueModelDB? Issue { get; set; }
+    public IssueHelpdeskModelDB? Issue { get; set; }
 
     /// <summary>
     /// IdentityUserId

@@ -17,6 +17,11 @@ public class MainDbAppContext : LayerContext
     /// </summary>
     public MainDbAppContext(DbContextOptions<MainDbAppContext> options) : base(options)
     {
+#if DEBUG
+
+#else
         Database.Migrate();
+#endif
+
     }
 }

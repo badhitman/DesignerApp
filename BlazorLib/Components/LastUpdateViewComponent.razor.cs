@@ -20,5 +20,5 @@ public partial class LastUpdateViewComponent : ComponentBase
     public bool Reverse { get; set; }
 
     /// <inheritdoc/>
-    protected TimeSpan? Delta => Reverse ? LastUpdateDate - DateTime.Now : DateTime.Now - LastUpdateDate;
+    protected TimeSpan? Delta => Reverse ? LastUpdateDate - DateTime.UtcNow : DateTime.UtcNow - LastUpdateDate;
 }

@@ -9,18 +9,18 @@ namespace RemoteCallLib;
 public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdeskRemoteTransmissionService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> CreateIssue(IssueModelDB issue)
+    public async Task<TResponseModel<int>> CreateIssue(IssueHelpdeskModelDB issue)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CreateIssueHelpdeskReceive, issue);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> CreateIssuesTheme(IssueThemeModelDB issueTheme)
+    public async Task<TResponseModel<int>> CreateIssuesTheme(IssueThemeHelpdeskModelDB issueTheme)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CreateIssuesThemeHelpdeskReceive, issueTheme);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<IssueModelDB[]?>> GetIssuesForUser(TPaginationRequestModel<(long? telegramId, string? identityId)> user)
-        => await rabbitClient.MqRemoteCall<IssueModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive, user);
+    public async Task<TResponseModel<IssueHelpdeskModelDB[]?>> GetIssuesForUser(TPaginationRequestModel<UserCrossIdsModel> user)
+        => await rabbitClient.MqRemoteCall<IssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive, user);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<IssueThemeModelDB[]?>> GetThemesIssues()
-        => await rabbitClient.MqRemoteCall<IssueThemeModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive);
+    public async Task<TResponseModel<IssueThemeHelpdeskModelDB[]?>> GetThemesIssues()
+        => await rabbitClient.MqRemoteCall<IssueThemeHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive);
 }

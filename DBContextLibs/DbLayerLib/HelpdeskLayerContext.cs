@@ -23,30 +23,35 @@ public partial class HelpdeskLayerContext(DbContextOptions options) : DbContext(
     /// <summary>
     /// IssuesThemes
     /// </summary>
-    public DbSet<IssueThemeModelDB> IssuesThemes { get; set; }
+    public DbSet<IssueThemeHelpdeskModelDB> ThemesForIssues { get; set; }
 
     /// <summary>
     /// IssuesThemes
     /// </summary>
-    public DbSet<IssueModelDB> Issues { get; set; }
+    public DbSet<IssueHelpdeskModelDB> Issues { get; set; }
 
     /// <summary>
     /// Подписчики
     /// </summary>
-    public DbSet<SubscriberIssueModelDB> SubscribersOfIssues { get; set; }
+    public DbSet<SubscriberIssueHelpdeskModelDB> SubscribersOfIssues { get; set; }
 
     /// <summary>
     /// IssueReadMarkers
     /// </summary>
-    public DbSet<IssueReadMarkerModelDB> IssueReadMarkers { get; set; }
+    public DbSet<IssueReadMarkerHelpdeskModelDB> IssueReadMarkers { get; set; }
 
     /// <summary>
     /// IssuesMessages
     /// </summary>
-    public DbSet<IssueMessageModelDB> IssuesMessages { get; set; }
+    public DbSet<IssueMessageHelpdeskModelDB> IssuesMessages { get; set; }
 
     /// <summary>
     /// MarkAsResponses
     /// </summary>
-    public DbSet<MarkAsResponseModelDB> MarkAsResponses { get; set; }
+    public DbSet<MarkAsResponseHelpdeskModelDB> MarkAsResponses { get; set; }
+
+    /// <summary>
+    /// AccessTokens
+    /// </summary>
+    public DbSet<AnonymTelegramAccessHelpdeskModelDB> AccessTokens { get; set; }
 }

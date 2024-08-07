@@ -14,7 +14,7 @@ namespace SharedLib;
 [Index(nameof(LastUpdateAt))]
 [Index(nameof(UserIdentityId))]
 [Index(nameof(CreatedAt), nameof(LastUpdateAt), nameof(UserIdentityId))]
-public class IssueMessageModelDB
+public class IssueMessageHelpdeskModelDB
 {
     /// <summary>
     /// Идентификатор/Key
@@ -25,7 +25,7 @@ public class IssueMessageModelDB
     /// <summary>
     /// Issue
     /// </summary>
-    public IssueModelDB? Issue { get; set; }
+    public IssueHelpdeskModelDB? Issue { get; set; }
 
     /// <summary>
     /// Issue
@@ -60,5 +60,5 @@ public class IssueMessageModelDB
     /// <summary>
     /// Отметки как ответ
     /// </summary>
-    public List<MarkAsResponseModelDB>? MarksAsResponse { get; set; }
+    public List<MarkAsResponseHelpdeskModelDB>? MarksAsResponse { get; set; }
 }

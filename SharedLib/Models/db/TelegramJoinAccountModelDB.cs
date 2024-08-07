@@ -32,5 +32,5 @@ public class TelegramJoinAccountModelDb
     /// <summary>
     /// Дата/время последнего действия с токеном
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
