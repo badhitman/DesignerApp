@@ -1,0 +1,27 @@
+﻿@page "/help-desk/main-page"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using BlazorWebLib.Components.Helpdesk
+@using MudBlazor
+
+@attribute [Authorize]
+
+<h4>Help desk</h4>
+<MudTabs Outlined="true">
+    <MudTabPanel ToolTip="Ваши личные обращения в службу техподдержки" Text="Мои обращения" Icon="@Icons.Material.Filled.AllInbox">
+        <MyHelpdeskComponent />
+    </MudTabPanel>
+    <AuthorizeView Roles="HelpDeskTelegramBotUnit">
+        <Authorized>
+            <MudTabPanel ToolTip="Обслуживание входящих обращений" Text="Обращения клиентов" Icon="@Icons.Material.Filled.BugReport">
+                <HelpdeskJobComponent />
+            </MudTabPanel>
+        </Authorized>
+    </AuthorizeView>
+    <AuthorizeView Roles="HelpDeskTelegramBotManager">
+        <Authorized>
+            <MudTabPanel ToolTip="Управление настройками" Text="Конфигурация" Icon="@Icons.Material.Filled.Build">
+                <HelpdeskManageComponent />
+            </MudTabPanel>
+        </Authorized>
+    </AuthorizeView>
+</MudTabs>

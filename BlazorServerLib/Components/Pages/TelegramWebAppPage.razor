@@ -1,7 +1,9 @@
 ﻿@page "/web-app-tg/{TokenAccess}"
+@layout WithoutMenuLayout
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [AllowAnonymous]
 
-<h3>TelegramWebAppPage</h3>
+<h3>Telegram WebApp page</h3>
 
 @code {
     /// <summary>
