@@ -12,12 +12,12 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<IssueThemeHelpdeskModelDB[]?>> GetThemesIssues();
+    public Task<TResponseModel<RubricIssueHelpdeskModelDB[]?>> GetThemesIssues();
 
     /// <summary>
     /// Создать тему для обращений
     /// </summary>
-    public Task<TResponseModel<int>> CreateOrUpdateIssuesTheme(IssueThemeHelpdeskModelDB issueTheme);
+    public Task<TResponseModel<int>> CreateOrUpdateIssuesTheme(RubricIssueHelpdeskModelDB issueTheme);
 
 
 

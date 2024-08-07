@@ -11,12 +11,12 @@ namespace Transmission.Receives.helpdesk;
 /// CreateIssueTheme
 /// </summary>
 public class CreateIssueThemeReceive
-    : IResponseReceive<IssueThemeHelpdeskModelDB?, int?>
+    : IResponseReceive<RubricIssueHelpdeskModelDB?, int?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CreateIssuesThemeHelpdeskReceive;
 
-    public Task<TResponseModel<int?>> ResponseHandleAction(IssueThemeHelpdeskModelDB? payload)
+    public Task<TResponseModel<int?>> ResponseHandleAction(RubricIssueHelpdeskModelDB? payload)
     {
         TResponseModel<int?> res = new();
 

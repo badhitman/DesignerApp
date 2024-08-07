@@ -35,9 +35,9 @@ public partial class HelpdeskLayerContext : DbContext
     }
 
     /// <summary>
-    /// Themes for issues
+    /// Rubric for issues
     /// </summary>
-    public DbSet<IssueThemeHelpdeskModelDB> ThemesForIssues { get; set; }
+    public DbSet<RubricIssueHelpdeskModelDB> ThemesForIssues { get; set; }
 
     /// <summary>
     /// Issues

@@ -11,14 +11,14 @@ namespace Transmission.Receives.helpdesk;
 /// GetThemesIssues
 /// </summary>
 public class GetThemesIssuesReceive
-    : IResponseReceive<object?, IssueThemeHelpdeskModelDB[]?>
+    : IResponseReceive<object?, RubricIssueHelpdeskModelDB[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetThemesIssuesHelpdeskReceive;
 
-    public Task<TResponseModel<IssueThemeHelpdeskModelDB[]?>> ResponseHandleAction(object? payload)
+    public Task<TResponseModel<RubricIssueHelpdeskModelDB[]?>> ResponseHandleAction(object? payload)
     {
-        TResponseModel<IssueThemeHelpdeskModelDB[]?> res = new();
+        TResponseModel<RubricIssueHelpdeskModelDB[]?> res = new();
 
         return Task.FromResult(res);
     }

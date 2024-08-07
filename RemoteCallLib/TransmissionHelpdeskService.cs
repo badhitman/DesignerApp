@@ -17,7 +17,7 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CreateIssueHelpdeskReceive, issue);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> CreateOrUpdateIssuesTheme(IssueThemeHelpdeskModelDB issueTheme)
+    public async Task<TResponseModel<int>> CreateOrUpdateIssuesTheme(RubricIssueHelpdeskModelDB issueTheme)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CreateIssuesThemeHelpdeskReceive, issueTheme);
 
     /// <inheritdoc/>
@@ -25,8 +25,8 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<IssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive, user);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<IssueThemeHelpdeskModelDB[]?>> GetThemesIssues()
-        => await rabbitClient.MqRemoteCall<IssueThemeHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive);
+    public async Task<TResponseModel<RubricIssueHelpdeskModelDB[]?>> GetThemesIssues()
+        => await rabbitClient.MqRemoteCall<RubricIssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> SetMessageIssueAsResponse(SetMessageAsResponseIssueRequestModel req)

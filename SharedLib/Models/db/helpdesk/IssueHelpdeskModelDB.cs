@@ -40,7 +40,7 @@ public class IssueHelpdeskModelDB : EntryDescriptionModel
     /// <summary>
     /// IssueTheme
     /// </summary>
-    public IssueThemeHelpdeskModelDB? IssueTheme { get; set; }
+    public RubricIssueHelpdeskModelDB? IssueTheme { get; set; }
 
     /// <summary>
     /// CreatedAt
