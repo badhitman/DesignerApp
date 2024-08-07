@@ -55,7 +55,7 @@ public class IssueHelpdeskModelDB : EntryDescriptionModel
     /// <summary>
     /// AnonymAccess
     /// </summary>
-    public AnonymTelegramAccessHelpdeskModelDB? AnonymAccess { get; set; }
+    public List<AnonymTelegramAccessHelpdeskModelDB>? AnonymAccess { get; set; }
 
     /// <summary>
     /// 
