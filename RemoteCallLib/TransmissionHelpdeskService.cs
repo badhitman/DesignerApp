@@ -13,11 +13,11 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.AddNewMessageIntoIssueHelpdeskReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> CreateIssue(IssueHelpdeskModelDB issue)
+    public async Task<TResponseModel<int>> CreateOrUpdateIssue(IssueHelpdeskModelDB issue)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CreateIssueHelpdeskReceive, issue);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> CreateIssuesTheme(IssueThemeHelpdeskModelDB issueTheme)
+    public async Task<TResponseModel<int>> CreateOrUpdateIssuesTheme(IssueThemeHelpdeskModelDB issueTheme)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CreateIssuesThemeHelpdeskReceive, issueTheme);
 
     /// <inheritdoc/>

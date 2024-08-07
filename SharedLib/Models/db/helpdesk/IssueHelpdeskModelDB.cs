@@ -58,11 +58,6 @@ public class IssueHelpdeskModelDB : EntryDescriptionModel
     public List<AnonymTelegramAccessHelpdeskModelDB>? AnonymAccess { get; set; }
 
     /// <summary>
-    /// 
-    /// </summary>
-    public int? TokenAccessId { get; set; }
-
-    /// <summary>
     /// Subscribers
     /// </summary>
     public List<SubscriberIssueHelpdeskModelDB>? Subscribers { get; set; }

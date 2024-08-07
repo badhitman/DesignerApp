@@ -17,7 +17,9 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Создать тему для обращений
     /// </summary>
-    public Task<TResponseModel<int>> CreateIssuesTheme(IssueThemeHelpdeskModelDB issueTheme);
+    public Task<TResponseModel<int>> CreateOrUpdateIssuesTheme(IssueThemeHelpdeskModelDB issueTheme);
+
+
 
     /// <summary>
     /// Получить обращения для пользователя
@@ -27,7 +29,9 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Создать обращение
     /// </summary>
-    public Task<TResponseModel<int>> CreateIssue(IssueHelpdeskModelDB issue);
+    public Task<TResponseModel<int>> CreateOrUpdateIssue(IssueHelpdeskModelDB issue);
+
+
 
     /// <summary>
     /// Сообщение из обращения помечается как ответ (либо этот признак снимается: в зависимости от запроса)
