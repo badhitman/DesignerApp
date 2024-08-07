@@ -17,16 +17,16 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CreateIssueHelpdeskReceive, issue);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> CreateOrUpdateIssuesTheme(RubricIssueHelpdeskModelDB issueTheme)
+    public async Task<TResponseModel<int>> CreateOrUpdateRubricIssues(RubricIssueHelpdeskModelDB issueTheme)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CreateIssuesThemeHelpdeskReceive, issueTheme);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<IssueHelpdeskModelDB[]?>> GetIssuesForUser(TPaginationRequestModel<UserCrossIdsModel> user)
-        => await rabbitClient.MqRemoteCall<IssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive, user);
+    public async Task<TResponseModel<IssueHelpdeskModelDB[]?>> GetIssuesForUser(GetIssuesForUserRequestModel req)
+        => await rabbitClient.MqRemoteCall<IssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<RubricIssueHelpdeskModelDB[]?>> GetThemesIssues()
-        => await rabbitClient.MqRemoteCall<RubricIssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive);
+    public async Task<TResponseModel<RubricIssueHelpdeskModelDB[]?>> GetRubricsIssues(ProjectOwnedRequestModel req)
+        => await rabbitClient.MqRemoteCall<RubricIssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetRubricsIssuesHelpdeskReceive);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> SetMessageIssueAsResponse(SetMessageAsResponseIssueRequestModel req)

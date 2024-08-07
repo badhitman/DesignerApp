@@ -67,9 +67,9 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
     ////
-    services.RegisterMqListener<GetThemesIssuesReceive, object?, RubricIssueHelpdeskModelDB[]?>();
+    services.RegisterMqListener<GetRubricsIssuesReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskModelDB[]?>();
     services.RegisterMqListener<CreateIssueThemeReceive, RubricIssueHelpdeskModelDB?, int?>();
-    services.RegisterMqListener<GetIssuesForUserReceive, UserCrossIdsModel?, IssueHelpdeskModelDB[]?>();
+    services.RegisterMqListener<GetIssuesForUserReceive, GetIssuesForUserRequestModel?, IssueHelpdeskModelDB[]?>();
     services.RegisterMqListener<CreateIssueReceive, IssueHelpdeskModelDB?, int?>();
     services.RegisterMqListener<SetMessageIssueAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
     services.RegisterMqListener<AddNewMessageIntoIssueReceive, IssueMessageHelpdeskBaseModel?, int?>();

@@ -5,32 +5,37 @@
 namespace SharedLib;
 
 /// <summary>
-/// IssueThemeModelDB
+/// Рубрики для обращений
 /// </summary>
 public class RubricIssueHelpdeskModelDB : EntryDescriptionModel
 {
     /// <summary>
-    /// Issues
+    /// Обращения в рубрике
     /// </summary>
     public List<IssueHelpdeskModelDB>? Issues { get; set; }
 
     /// <summary>
-    /// SortIndex
+    /// Сортировка
     /// </summary>
     public uint SortIndex { get; set; }
 
     /// <summary>
-    /// ParentRubric
+    /// Владелец (вышестоящая рубрика)
     /// </summary>
     public RubricIssueHelpdeskModelDB? ParentRubric { get; set; }
 
     /// <summary>
-    /// ParentRubric
+    /// Владелец (вышестоящая рубрика)
     /// </summary>
     public int? ParentRubricId { get; set; }
 
     /// <summary>
-    /// 
+    /// Вложенные рубрики
     /// </summary>
-    public List<RubricIssueHelpdeskModelDB>? SubRubrics { get; set; }
+    public List<RubricIssueHelpdeskModelDB>? NestedRubrics { get; set; }
+
+    /// <summary>
+    /// ProjectId
+    /// </summary>
+    public int ProjectId { get; set; }
 }

@@ -109,7 +109,7 @@ public static partial class GlobalStaticConstants
         public readonly static string SetMessageAsResponseIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME, Routes.MARK_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string GetThemesIssuesHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.THEME_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
+        public readonly static string GetRubricsIssuesHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.THEME_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
         #endregion
     }//SetMessageAsResponseIssueRequestModel
 

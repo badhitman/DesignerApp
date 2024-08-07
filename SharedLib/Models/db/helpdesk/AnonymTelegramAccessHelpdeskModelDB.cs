@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// Токен анонимного доступа к обращению
+/// Токен анонимного доступа к обращению (или для создания его)
 /// </summary>
 /// <remarks>
 /// Используется для доступа из Telegram WebApp
@@ -49,5 +49,5 @@ public class AnonymTelegramAccessHelpdeskModelDB
     /// <summary>
     /// Issue
     /// </summary>
-    public int IssueId { get; set; }
+    public int? IssueId { get; set; }
 }

@@ -1,0 +1,12 @@
+﻿@page "/web-app-tg/{TokenAccess}"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<h3>TelegramWebAppPage</h3>
+
+@code {
+    /// <summary>
+    /// 
+    /// </summary>
+    [Parameter]
+    public string? TokenAccess { get; set; }
+}
