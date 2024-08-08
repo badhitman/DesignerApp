@@ -41,6 +41,7 @@ public class EntryModel
         Id = elementObjectEdit.Id;
     }
 
+
     /// <inheritdoc/>
     public static bool operator ==(EntryModel? e1, EntryModel? e2)
         => (e1 is null && e2 is null) || (e1?.Id == e2?.Id && e1?.Name == e2?.Name);

@@ -10,14 +10,14 @@
     <MudTabPanel ToolTip="Ваши личные обращения в службу техподдержки" Text="Мои обращения" Icon="@Icons.Material.Filled.AllInbox">
         <MyHelpdeskComponent />
     </MudTabPanel>
-    <AuthorizeView Roles="HelpDeskTelegramBotUnit">
+    <AuthorizeView Roles="HelpDeskTelegramBotUnit,admin">
         <Authorized>
             <MudTabPanel ToolTip="Обслуживание входящих обращений" Text="Обращения клиентов" Icon="@Icons.Material.Filled.BugReport">
                 <HelpdeskJobComponent />
             </MudTabPanel>
         </Authorized>
     </AuthorizeView>
-    <AuthorizeView Roles="HelpDeskTelegramBotManager">
+    <AuthorizeView Roles="HelpDeskTelegramBotManager,admin">
         <Authorized>
             <MudTabPanel ToolTip="Управление настройками" Text="Конфигурация" Icon="@Icons.Material.Filled.Build">
                 <HelpdeskManageComponent />

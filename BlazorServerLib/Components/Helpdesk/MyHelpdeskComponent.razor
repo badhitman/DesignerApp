@@ -1,5 +1,19 @@
-﻿<h3>MyHelpdeskComponent</h3>
+﻿<br />
+<TabSetComponent IsSilent="true" AsPills="true">
+    <CascadingValue Value="Request">
+        <TabComponent SystemName="actual" Title="В работе">
+            <HelpdeskJournalComponent JournalMode="HelpdeskJournalModesEnum.ActualOnly" />
+        </TabComponent>
+        <TabComponent SystemName="archive" Title="Завершённые">
+            <HelpdeskJournalComponent JournalMode="HelpdeskJournalModesEnum.ArchiveOnly" />
+        </TabComponent>
+        <TabComponent SystemName="all" Title="Все">
+            <HelpdeskJournalComponent JournalMode="HelpdeskJournalModesEnum.All" />
+        </TabComponent>
+    </CascadingValue>
+</TabSetComponent>
 
 @code {
-
+    [Parameter]
+    public required GetIssuesForUserRequestModel Request { get; set; }
 }

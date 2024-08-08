@@ -5,17 +5,22 @@
 namespace SharedLib;
 
 /// <summary>
-/// Project Owned Request
+/// Helpdesk journal modes
 /// </summary>
-public class ProjectOwnedRequestModel
+public enum HelpdeskJournalModesEnum
 {
     /// <summary>
-    /// Project id
+    /// All
     /// </summary>
-    public int ProjectId { get; set; }
+    All,
 
     /// <summary>
-    /// Owner id
+    /// Actual only
     /// </summary>
-    public int OwnerId { get; set; }
+    ActualOnly,
+
+    /// <summary>
+    /// Archive only
+    /// </summary>
+    ArchiveOnly,
 }

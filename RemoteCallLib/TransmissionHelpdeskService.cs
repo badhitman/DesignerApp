@@ -26,7 +26,7 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
 
     /// <inheritdoc/>
     public async Task<TResponseModel<RubricIssueHelpdeskModelDB[]?>> GetRubricsIssues(ProjectOwnedRequestModel req)
-        => await rabbitClient.MqRemoteCall<RubricIssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetRubricsIssuesHelpdeskReceive);
+        => await rabbitClient.MqRemoteCall<RubricIssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.GetRubricsIssuesHelpdeskReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> SetMessageIssueAsResponse(SetMessageAsResponseIssueRequestModel req)

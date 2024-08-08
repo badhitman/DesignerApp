@@ -1,0 +1,15 @@
+﻿<h3>HelpdeskJournalComponent</h3>
+
+@code {
+    /// <summary>
+    /// Request
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required GetIssuesForUserRequestModel Request { get; set; }
+
+    /// <summary>
+    ///Journal mode
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required HelpdeskJournalModesEnum JournalMode { get; set; }
+}

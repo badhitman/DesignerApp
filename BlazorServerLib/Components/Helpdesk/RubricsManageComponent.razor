@@ -1,7 +1,15 @@
-﻿<h3>RubricsManageComponent</h3>
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-@code {
-
-}
+<MudTreeView ServerData="@LoadServerData" Items="@InitialTreeItems">
+    <ItemTemplate Context="item">
+        <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" LoadingIconColor="Color.Info" CanExpand="@item.Expandable">
+            <BodyContent>
+                <RubricNodeComponent Item="item" />
+            </BodyContent>
+        </MudTreeViewItem>
+    </ItemTemplate>
+</MudTreeView>
