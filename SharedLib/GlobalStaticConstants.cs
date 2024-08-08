@@ -91,25 +91,24 @@ public static partial class GlobalStaticConstants
 
         #region Helpdesk
         /// <inheritdoc/>
-        public readonly static string CreateIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ISSUE_CONTROLLER_NAME, Routes.CREATE_ACTION_NAME);
+        public readonly static string RubricForIssuesUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.RUBRIC_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string AddNewMessageIntoIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.ADD_ACTION_NAME);
+        public readonly static string RubricsForIssuesListHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRIC_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.LIST_ACTION_NAME);
+
 
         /// <inheritdoc/>
-        public readonly static string UpdateMessageOfIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
+        public readonly static string IssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ISSUE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string CreateIssuesThemeHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.THEME_CONTROLLER_NAME}", Routes.CREATE_ACTION_NAME);
+        public readonly static string IssuesSelectHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.SELECT_ACTION_NAME);
+
 
         /// <inheritdoc/>
-        public readonly static string GetIssuesForUserHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
+        public readonly static string MessageOfIssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string SetMessageAsResponseIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME, Routes.MARK_ACTION_NAME);
-
-        /// <inheritdoc/>
-        public readonly static string GetRubricsIssuesHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.THEME_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
+        public readonly static string MessageOfIssueSetAsResponseHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME, Routes.MARK_ACTION_NAME);
         #endregion
     }//SetMessageAsResponseIssueRequestModel
 
@@ -162,6 +161,11 @@ public static partial class GlobalStaticConstants
         /// Theme
         /// </summary>
         public const string THEME_CONTROLLER_NAME = "theme";
+
+        /// <summary>
+        /// Rubric
+        /// </summary>
+        public const string RUBRIC_CONTROLLER_NAME = "rubric";
 
         /// <summary>
         /// Web
@@ -270,6 +274,11 @@ public static partial class GlobalStaticConstants
         /// Список
         /// </summary>
         public const string LIST_ACTION_NAME = "list";
+
+        /// <summary>
+        /// Выборка
+        /// </summary>
+        public const string SELECT_ACTION_NAME = "select";
 
         /// <summary>
         /// Профиль

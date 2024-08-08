@@ -10,11 +10,11 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// CreateIssue
 /// </summary>
-public class CreateIssueReceive
+public class IssueCreateOrUpdateReceive
     : IResponseReceive<IssueHelpdeskModelDB?, int?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.CreateIssueHelpdeskReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssueUpdateHelpdeskReceive;
 
     public Task<TResponseModel<int?>> ResponseHandleAction(IssueHelpdeskModelDB? payload)
     {

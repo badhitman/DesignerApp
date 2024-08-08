@@ -10,11 +10,11 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// GetIssuesForUser
 /// </summary>
-public class GetIssuesForUserReceive
+public class IssuesForUserSelectReceive
     : IResponseReceive<GetIssuesForUserRequestModel?, IssueHelpdeskModelDB[]?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetIssuesForUserHelpdeskReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive;
 
     public Task<TResponseModel<IssueHelpdeskModelDB[]?>> ResponseHandleAction(GetIssuesForUserRequestModel? req)
     {

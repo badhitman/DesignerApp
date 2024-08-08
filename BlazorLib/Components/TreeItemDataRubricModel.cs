@@ -10,7 +10,7 @@ namespace BlazorLib;
 /// <summary>
 /// Tree Item Data Rubric
 /// </summary>
-public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskBaseModelDB>
+public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskBaseModelDB?>
 {
     /// <summary>
     /// Tree Item Data Rubric
@@ -19,8 +19,8 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskBaseModel
     {
         Text = entry.Name;
         Icon = icon;
+        Expandable = entry.Id > 0;
     }
-
 
     /// <inheritdoc/>
     public static bool operator ==(TreeItemDataRubricModel? e1, TreeItemDataRubricModel? e2)
@@ -44,5 +44,5 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskBaseModel
 
     /// <inheritdoc/>
     public override int GetHashCode()
-        => $"{Value}".GetHashCode();
+        => Value!.GetHashCode();
 }

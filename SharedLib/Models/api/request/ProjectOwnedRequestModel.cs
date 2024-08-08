@@ -17,5 +17,5 @@ public class ProjectOwnedRequestModel
     /// <summary>
     /// Owner id
     /// </summary>
-    public int OwnerId { get; set; }
+    public int? OwnerId { get; set; }
 }

@@ -19,11 +19,6 @@ public class RubricIssueHelpdeskModelDB : RubricIssueHelpdeskBaseModelDB
     /// </summary>
     public RubricIssueHelpdeskModelDB? ParentRubric { get; set; }
 
-    /// <summary>
-    /// ProjectId
-    /// </summary>
-    public int ProjectId { get; set; }
-
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)

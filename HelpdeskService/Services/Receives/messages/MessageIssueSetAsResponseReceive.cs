@@ -8,15 +8,15 @@ using SharedLib;
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// Update Message Of Issue
+/// GetThemesIssues
 /// </summary>
-public class UpdateMessageOfIssueReceive
-    : IResponseReceive<UpdateMessageRequestModel?, bool?>
+public class MessageIssueSetAsResponseReceive
+    : IResponseReceive<SetMessageAsResponseIssueRequestModel?, bool?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateMessageOfIssueHelpdeskReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessageOfIssueSetAsResponseHelpdeskReceive;
 
-    public Task<TResponseModel<bool?>> ResponseHandleAction(UpdateMessageRequestModel? payload)
+    public Task<TResponseModel<bool?>> ResponseHandleAction(SetMessageAsResponseIssueRequestModel? payload)
     {
         TResponseModel<bool?> res = new();
 

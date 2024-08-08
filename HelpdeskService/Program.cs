@@ -67,13 +67,12 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
     ////
-    services.RegisterMqListener<GetRubricsIssuesReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskModelDB[]?>();
-    services.RegisterMqListener<CreateIssueThemeReceive, RubricIssueHelpdeskModelDB?, int?>();
-    services.RegisterMqListener<GetIssuesForUserReceive, GetIssuesForUserRequestModel?, IssueHelpdeskModelDB[]?>();
-    services.RegisterMqListener<CreateIssueReceive, IssueHelpdeskModelDB?, int?>();
-    services.RegisterMqListener<SetMessageIssueAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
-    services.RegisterMqListener<AddNewMessageIntoIssueReceive, IssueMessageHelpdeskBaseModel?, int?>();
-    services.RegisterMqListener<UpdateMessageOfIssueReceive, UpdateMessageRequestModel?, bool?>();
+    services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskModelDB[]?>();
+    services.RegisterMqListener<RubricForIssueCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
+    services.RegisterMqListener<IssuesForUserSelectReceive, GetIssuesForUserRequestModel?, IssueHelpdeskModelDB[]?>();
+    services.RegisterMqListener<IssueCreateOrUpdateReceive, IssueHelpdeskModelDB?, int?>();
+    services.RegisterMqListener<MessageIssueSetAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
+    services.RegisterMqListener<MessageForIssueUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();
     //
     #endregion
 });

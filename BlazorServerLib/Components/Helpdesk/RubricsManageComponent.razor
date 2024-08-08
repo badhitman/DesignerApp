@@ -4,11 +4,20 @@
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-<MudTreeView ServerData="@LoadServerData" Items="@InitialTreeItems">
+<MudTreeView Style="width: 100%" ServerData="@LoadServerData" Items="@InitialTreeItems">
     <ItemTemplate Context="item">
-        <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" LoadingIconColor="Color.Info" CanExpand="@item.Expandable">
+        <MudTreeViewItem Text="@item.Text" Icon="@item.Icon" Value="item.Value" Items="item.Children" CanExpand="item.Expandable">
             <BodyContent>
-                <RubricNodeComponent Item="item" />
+                <CascadingValue Value="ReloadNodeAction">
+                @if (item.Value!.Id > 0)
+                {
+                        <RubricNodeEditComponent @key="@($"rubric-{item.GetHashCode()}")" Item="item" />
+                }
+                else
+                {
+                        <RubricNodeCreatingNewComponent @key="@($"rubric-{item.GetHashCode()}")" ParentRubricId="item.Value.Id" />
+                }
+                </CascadingValue>
             </BodyContent>
         </MudTreeViewItem>
     </ItemTemplate>

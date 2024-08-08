@@ -1,0 +1,34 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+<div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%" class="@(ItemModel?.IsDisabled == true ? "text-decoration-line-through opacity-25": "")">
+    <MudStack Row="true">
+        <span class="font-monospace">Создать новую рубрику</span>
+    </MudStack>
+    <div style="justify-self: end;">
+        @if (ItemModel?.IsDisabled == true)
+        {
+            <p class="lead">
+                Деактивирован.
+            </p>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-auto">
+                    <input autocomplete="off" title="" @bind-value="rubricName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(rubricName) ? " border border-warning-subtle" : "")" placeholder="имя новой категории">
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                        <button @onclick="RubricCreateNew" disabled="@(!IsEdit)" type="button" class="btn btn-@(IsEdit ? "primary" : "outline-secondary") btn-sm">Добавить</button>
+                        @if (IsEdit)
+                        {
+                            <button @onclick="() => rubricName = string.Empty" title="Отменить изменение системного имени" type="button" class="btn btn-outline-info btn-sm">Отмена</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
