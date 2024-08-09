@@ -1,4 +1,6 @@
-﻿@using MudBlazor
+﻿@inherits BlazorBusyComponentBaseModel
+
+@using MudBlazor
 
 @if (!IsEditMode)
 {
@@ -16,6 +18,7 @@ else
             </CardHeaderActions>
         </MudCardHeader>
         <MudCardContent>
+            <InputRichTextComponent @bind-Value="Description" ReadOnly="IsBusyProgress" />
             <MudText>This day everything happened.</MudText>
             <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
         </MudCardContent>
@@ -26,10 +29,11 @@ else
     </MudCard>
 }
 
-
 @code {
     [CascadingParameter, EditorRequired]
     public required Action<HelpdeskJournalModesEnum> ReloadIssueJournal { get; set; }
+
+    string? Description;
 
     bool IsEditMode { get; set; } = false;
 }
