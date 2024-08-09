@@ -91,11 +91,10 @@ builder.Services.AddDbContextFactory<IdentityAppDbContext>(opt =>
 
 string connectionMainString = builder.Configuration.GetConnectionString("MainConnection") ?? throw new InvalidOperationException("Connection string 'MainConnection' not found.");
 builder.Services.AddDbContextFactory<MainDbAppContext>(opt =>
-    opt.UseSqlite(connectionMainString));
-    opt
-    .UseSqlite(connectionMainString)
+    opt.UseSqlite(connectionMainString)
+.UseSqlite(connectionMainString)
 #if DEBUG
-    .EnableSensitiveDataLogging()
+.EnableSensitiveDataLogging()
 #endif
     );
 
