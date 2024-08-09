@@ -54,16 +54,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
             throw new ArgumentNullException(nameof(itemSystemName));
 
         ItemModel.Name = itemSystemName;
-        //RubricIssueHelpdeskModelDB _upd = new()
-        //{
-        //    Name = ItemModel.Name,
-        //    Id = ItemModel.Id,
-        //    Description = ItemModel.Description,
-        //    ParentRubricId = ItemModel.ParentRubricId,
-        //    SortIndex = ItemModel.SortIndex,
-        //    ProjectId = ItemModel.ProjectId
-        //};
-
+        
         IsBusyProgress = true;
         TResponseModel<int?> res = await HelpdeskRepo.RubricForIssuesCreateOrUpdate((RubricIssueHelpdeskModelDB)ItemModel);
         IsBusyProgress = false;
