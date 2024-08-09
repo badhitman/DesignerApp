@@ -29,27 +29,6 @@ public static class ExtBlazor
     }
 
     /// <inheritdoc/>
-    public static void ShowMessagesResponse(this ISnackbar SnackbarRepo, IEnumerable<ResultMessage> messages)
-    {
-        if (!messages.Any())
-            return;
-
-        Severity _style;
-        foreach (ResultMessage m in messages)
-        {
-            _style = m.TypeMessage switch
-            {
-                ResultTypesEnum.Success => Severity.Success,
-                ResultTypesEnum.Info => Severity.Info,
-                ResultTypesEnum.Warning => Severity.Warning,
-                ResultTypesEnum.Error => Severity.Error,
-                _ => Severity.Normal
-            };
-            SnackbarRepo.Add(m.Text, _style, opt => opt.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-        }
-    }
-
-    /// <inheritdoc/>
     public static void Error(this ISnackbar SnackbarRepo, string message)
         => SnackbarRepo.Add(message, Severity.Error, opt => opt.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 

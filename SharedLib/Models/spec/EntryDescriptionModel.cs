@@ -26,6 +26,14 @@ public class EntryDescriptionModel : EntryModel
     }
 
     /// <inheritdoc/>
+    public static bool operator ==(EntryDescriptionModel? e1, EntryDescriptionModel? e2)
+        => (e1 is null && e2 is null) || (e1?.Id == e2?.Id && e1?.Name == e2?.Name && e1?.Description == e2?.Description);
+
+    /// <inheritdoc/>
+    public static bool operator !=(EntryDescriptionModel? e1, EntryDescriptionModel? e2)
+        => (e1 is null && e2 is not null) || (e1 is not null && e2 is null) || e1?.Id != e2?.Id || e1?.Name != e2?.Name || e1?.Description != e2?.Description;
+
+    /// <inheritdoc/>
     public override int GetHashCode()
     => $"{Name} {Id} {Description}".GetHashCode();
 

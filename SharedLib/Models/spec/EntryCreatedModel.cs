@@ -18,5 +18,5 @@ public class EntryCreatedModel : EntrySwitchableModel
     /// <summary>
     /// Дата/время создания
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

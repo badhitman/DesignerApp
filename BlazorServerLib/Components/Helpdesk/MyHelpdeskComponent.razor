@@ -1,0 +1,28 @@
+﻿@using MudBlazor
+<br />
+<CascadingValue Value="ReloadPage">
+    <TabSetComponent IsSilent="true" AsPills="true">
+        <CascadingValue Value="Request">
+            <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ActualOnly))" Title="В работе">
+                <HelpdeskJournalComponent JournalMode="HelpdeskJournalModesEnum.ActualOnly" />
+            </TabComponent>
+            <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ArchiveOnly))" Title="Завершённые">
+                <HelpdeskJournalComponent JournalMode="HelpdeskJournalModesEnum.ArchiveOnly" />
+            </TabComponent>
+            <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.All))" Title="Все">
+                <HelpdeskJournalComponent JournalMode="HelpdeskJournalModesEnum.All" />
+            </TabComponent>
+        </CascadingValue>
+    </TabSetComponent>
+    <CreateIssueComponent />
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public required GetIssuesForUserRequestModel Request { get; set; }
+
+    void ReloadPage(HelpdeskJournalModesEnum page)
+    {
+
+    }
+}

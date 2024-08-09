@@ -1,0 +1,35 @@
+﻿@using MudBlazor
+
+@if (!IsEditMode)
+{
+    <MudButton OnClick="() => { IsEditMode = true; }" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Создать новое обращение</MudButton>
+}
+else
+{
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">The Story Book</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudIconButton OnClick="() => { IsEditMode = false; }" Icon="@Icons.Material.Filled.Close" Color="Color.Default" />
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText>This day everything happened.</MudText>
+            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Создать</MudButton>
+            <MudButton OnClick="() => { IsEditMode = false; }" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
+        </MudCardActions>
+    </MudCard>
+}
+
+
+@code {
+    [CascadingParameter, EditorRequired]
+    public required Action<HelpdeskJournalModesEnum> ReloadIssueJournal { get; set; }
+
+    bool IsEditMode { get; set; } = false;
+}

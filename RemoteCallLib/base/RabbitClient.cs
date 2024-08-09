@@ -111,7 +111,7 @@ public class RabbitClient : IRabbitClient
                       autoDelete: false,
                       arguments: null);
 
-        byte[] body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request));
+        byte[] body = request is null ? [] : Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request));
         _channel!.BasicPublish(exchange: "",
                        routingKey: queue,
                        basicProperties: properties,

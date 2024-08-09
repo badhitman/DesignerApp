@@ -5,7 +5,6 @@ using NLog.Web;
 using RemoteCallLib;
 using ServerLib;
 using SharedLib;
-using Telegram;
 using Telegram.Bot;
 using Telegram.Bot.Services;
 using Transmission.Receives.telegram;
@@ -86,6 +85,7 @@ builder.ConfigureServices((context, services) =>
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
+    services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
     //
     services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>();
     services.RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>();

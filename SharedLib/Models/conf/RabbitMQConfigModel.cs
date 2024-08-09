@@ -30,7 +30,7 @@ public class RabbitMQConfigModel
     /// <summary>
     /// Таймаут ожидания ответа на удалённый вызов
     /// </summary>
-    public int RemoteCallTimeoutMs { get; set; } = 10000;
+    public int RemoteCallTimeoutMs { get; set; } = 1000000;
 
     /// <summary>
     /// Префикс имён очередей для ответов на удалённые команды

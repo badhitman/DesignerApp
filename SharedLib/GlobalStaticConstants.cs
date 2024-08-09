@@ -88,7 +88,29 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string SetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.EDIT_ACTION_NAME);
         #endregion
-    }
+
+        #region Helpdesk
+        /// <inheritdoc/>
+        public readonly static string RubricForIssuesUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.RUBRIC_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string RubricsForIssuesListHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRIC_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.LIST_ACTION_NAME);
+
+
+        /// <inheritdoc/>
+        public readonly static string IssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ISSUE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string IssuesSelectHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.SELECT_ACTION_NAME);
+
+
+        /// <inheritdoc/>
+        public readonly static string MessageOfIssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string MessageOfIssueSetAsResponseHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME, Routes.MARK_ACTION_NAME);
+        #endregion
+    }//SetMessageAsResponseIssueRequestModel
 
     /// <summary>
     /// имена контроллеров и действий
@@ -124,6 +146,26 @@ public static partial class GlobalStaticConstants
         /// Telegram check-user
         /// </summary>
         public const string TELEGRAM_CONTROLLER_NAME = "telegram";
+
+        /// <summary>
+        /// Helpdesk
+        /// </summary>
+        public const string HELPDESK_CONTROLLER_NAME = "telegram";
+
+        /// <summary>
+        /// Issue
+        /// </summary>
+        public const string ISSUE_CONTROLLER_NAME = "issue";
+
+        /// <summary>
+        /// Theme
+        /// </summary>
+        public const string THEME_CONTROLLER_NAME = "theme";
+
+        /// <summary>
+        /// Rubric
+        /// </summary>
+        public const string RUBRIC_CONTROLLER_NAME = "rubric";
 
         /// <summary>
         /// Web
@@ -169,6 +211,21 @@ public static partial class GlobalStaticConstants
 
 
         /// <summary>
+        /// create
+        /// </summary>
+        public const string CREATE_ACTION_NAME = "create";
+
+        /// <summary>
+        /// add
+        /// </summary>
+        public const string ADD_ACTION_NAME = "add";
+
+        /// <summary>
+        /// update
+        /// </summary>
+        public const string UPDATE_ACTION_NAME = "update";
+
+        /// <summary>
         /// Подключить/присоединить
         /// </summary>
         public const string JOIN_ACTION_NAME = "join";
@@ -177,6 +234,16 @@ public static partial class GlobalStaticConstants
         /// Отправить
         /// </summary>
         public const string SEND_ACTION_NAME = "send";
+
+        /// <summary>
+        /// SET
+        /// </summary>
+        public const string SET_ACTION_NAME = "set";
+
+        /// <summary>
+        /// Mark
+        /// </summary>
+        public const string MARK_ACTION_NAME = "mark";
 
         /// <summary>
         /// Подтвердить
@@ -207,6 +274,11 @@ public static partial class GlobalStaticConstants
         /// Список
         /// </summary>
         public const string LIST_ACTION_NAME = "list";
+
+        /// <summary>
+        /// Выборка
+        /// </summary>
+        public const string SELECT_ACTION_NAME = "select";
 
         /// <summary>
         /// Профиль

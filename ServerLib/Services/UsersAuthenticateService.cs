@@ -35,7 +35,7 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
             userName: au.UserName,
             email: au.Email,
             phoneNumber: au.PhoneNumber,
-            telegramId: au.TelegramId,
+            telegramId: au.ChatTelegramId,
             emailConfirmed: au.EmailConfirmed,
             lockoutEnd: au.LockoutEnd,
             lockoutEnabled: au.LockoutEnabled,

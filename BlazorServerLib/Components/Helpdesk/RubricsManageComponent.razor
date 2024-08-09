@@ -1,0 +1,26 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<MudTreeView Style="width: 100%" ServerData="@LoadServerData" Items="@InitialTreeItems">
+    <ItemTemplate Context="item">
+        <MudTreeViewItem Text="@item.Text" Icon="@item.Icon" Value="item.Value" Items="item.Children" CanExpand="item.Expandable">
+            <BodyContent>
+                <CascadingValue Value="ReloadNodeAction">
+                    <CascadingValue Value="item">
+                        @if (item.Value!.Id > 0)
+                        {
+                            <RubricNodeEditComponent @key="@($"rubric-{item.GetHashCode()}")" />
+                        }
+                        else
+                        {
+                            <RubricNodeCreatingNewComponent @key="@($"rubric-{item.GetHashCode()}")" />
+                        }
+                    </CascadingValue>
+                </CascadingValue>
+            </BodyContent>
+        </MudTreeViewItem>
+    </ItemTemplate>
+</MudTreeView>

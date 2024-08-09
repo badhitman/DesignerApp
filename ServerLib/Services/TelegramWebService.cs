@@ -40,16 +40,27 @@ public class TelegramWebService(
         {
             res.Response = CheckTelegramUserModel.Build(user);
             tgUserDb = TelegramUserModelDb.Build(user);
-            mainContext.Add(tgUserDb);
-            mainContext.SaveChanges();
+            await mainContext.AddAsync(tgUserDb);
+            await mainContext.SaveChangesAsync();
+        }
+        else
+        {
+            tgUserDb!.FirstName = user.FirstName;
+            tgUserDb.NormalizedFirstName = user.FirstName.ToUpper();
+            tgUserDb.LastName = user.LastName;
+            tgUserDb.NormalizedLastName = user.LastName?.ToUpper();
+            tgUserDb.TelegramId = user.TelegramUserId;
+            tgUserDb.IsBot = user.IsBot;
+            tgUserDb.Name = user.Username ?? "";
+            tgUserDb.NormalizedName = user.Username?.ToUpper();
+            mainContext.Update(tgUserDb);
+            await mainContext.SaveChangesAsync();
         }
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        IdentityUserRecord? userIdentityDb = null;
 
-        try
-        {
-            userIdentityDb = await identityContext.Users
-                        .Where(x => x.TelegramId == user.TelegramUserId)
+        IdentityUserRecord? userIdentityDb = null;
+        userIdentityDb = await identityContext.Users
+                        .Where(x => x.ChatTelegramId == user.TelegramUserId)
                         .Select(x => new IdentityUserRecord(
                             x.Email,
                             x.EmailConfirmed,
@@ -58,15 +69,10 @@ public class TelegramWebService(
                             x.TwoFactorEnabled,
                             x.LockoutEnd,
                             x.LockoutEnabled,
-                            x.AccessFailedCount
+                            x.AccessFailedCount,
+                            x.ChatTelegramId
                         ))
-                        .SingleOrDefaultAsync();
-        }
-        catch (Exception ex)
-        {
-            res.Messages.InjectException(ex);
-            return res;
-        }
+                        .FirstOrDefaultAsync();
 
         if (userIdentityDb is not null)
         {
@@ -77,6 +83,7 @@ public class TelegramWebService(
             res.Response.AccessFailedCount = userIdentityDb.AccessFailedCount;
             res.Response.LockoutEnd = userIdentityDb.LockoutEnd;
             res.Response.LockoutEnabled = userIdentityDb.LockoutEnabled;
+            res.Response.TelegramId = userIdentityDb.ChatId ?? -1;
         }
 
         return res;
@@ -89,7 +96,7 @@ public class TelegramWebService(
         if (!user.Success() || user.ApplicationUser is null)
             return new TResponseModel<TelegramJoinAccountModelDb>() { Messages = user.Messages };
 
-        DateTime lifeTime = DateTime.Now.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
+        DateTime lifeTime = DateTime.UtcNow.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
         TelegramJoinAccountModelDb? act = await mainContext.TelegramJoinActions
             .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.UserIdentityId == user.ApplicationUser.Id);
@@ -105,7 +112,7 @@ public class TelegramWebService(
                 TResponseModel<string?> bot_username_res = await tgRemoteRepo.GetBotUsername();
                 string? bot_username = bot_username_res.Response;
 
-                msg = $"Существует ссылка привязки Telegram аккаунта к учётной записи сайта действительная до {act.CreatedAt.AddMinutes(webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes)} ({DateTime.Now - lifeTime}).<br/>";
+                msg = $"Существует ссылка привязки Telegram аккаунта к учётной записи сайта действительная до {act.CreatedAt.AddMinutes(webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes)} ({DateTime.UtcNow - lifeTime}).<br/>";
                 msg += $"Нужно подтвердить операцию через Telegram бота. Для этого нужно в TelegramBot @{bot_username} отправить токен:<br/><u><b>{act.GuidToken}</b></u><br/>Или ссылкой: <a href='https://t.me/{bot_username}?start={act.GuidToken}'>https://t.me/{bot_username}?start={act.GuidToken}</a><br/>";
                 await mailRepo.SendEmailAsync(user.ApplicationUser.Email, "Статус привязки Telegram к у/з", msg);
 
@@ -184,7 +191,7 @@ public class TelegramWebService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> TelegramJoinAccountConfirmTokenFromTelegram(TelegramJoinAccountConfirmModel req)
     {
-        DateTime lifeTime = DateTime.Now.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
+        DateTime lifeTime = DateTime.UtcNow.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
         TelegramJoinAccountModelDb? act = await mainContext.TelegramJoinActions
            .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.GuidToken == req.Token);
@@ -201,14 +208,14 @@ public class TelegramWebService(
         mainContext.Remove(act);
         await mainContext.SaveChangesAsync();
         //
-        userIdentityDb.TelegramId = req.TelegramUser.TelegramId;
+        userIdentityDb.ChatTelegramId = req.TelegramUser.TelegramId;
         identityContext.Update(userIdentityDb);
         await identityContext.SaveChangesAsync();
 
         string msg;
 
         List<ApplicationUser> other_joins = await identityContext.Users
-            .Where(x => x.TelegramId == req.TelegramUser.TelegramId && x.Id != userIdentityDb.Id)
+            .Where(x => x.ChatTelegramId == req.TelegramUser.TelegramId && x.Id != userIdentityDb.Id)
             .ToListAsync();
 
         if (MailAddress.TryCreate(userIdentityDb.Email, out _))
@@ -225,7 +232,7 @@ public class TelegramWebService(
         msg = "Токен успешно проверен, запрос на привязку вашего Telegram к учётной записи сформирован. Клиенту отправлено Email оповещение с информацией.";
         if (other_joins.Count != 0)
         {
-            other_joins.ForEach(x => x.TelegramId = null);
+            other_joins.ForEach(x => x.ChatTelegramId = null);
             identityContext.UpdateRange(other_joins);
             await identityContext.SaveChangesAsync();
         }
@@ -257,11 +264,11 @@ public class TelegramWebService(
     public async Task<ResponseBaseModel> TelegramAccountRemoveJoin(long telegramId)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        ApplicationUser? userIdentityDb = await identityContext.Users.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
+        ApplicationUser? userIdentityDb = await identityContext.Users.FirstOrDefaultAsync(x => x.ChatTelegramId == telegramId);
         if (userIdentityDb is null)
             return ResponseBaseModel.CreateError($"Пользователь с таким TelegramId ({telegramId}) не найден в БД");
 
-        userIdentityDb.TelegramId = null;
+        userIdentityDb.ChatTelegramId = null;
         identityContext.Update(userIdentityDb);
         await identityContext.SaveChangesAsync();
 
@@ -291,12 +298,12 @@ public class TelegramWebService(
         if (!user.Success() || user.ApplicationUser is null)
             return ResponseBaseModel.Create(user.Messages);
 
-        if (user.ApplicationUser.TelegramId is null)
+        if (user.ApplicationUser.ChatTelegramId is null)
             return ResponseBaseModel.CreateInfo("Пользователю не назначен TelegramId");
 
-        long telegram_id = user.ApplicationUser.TelegramId!.Value;
+        long telegram_id = user.ApplicationUser.ChatTelegramId!.Value;
         TResponseModel<TelegramUserBaseModelDb?> tg_user_dump = await GetTelegramUserCachedInfo(telegram_id);
-        user.ApplicationUser.TelegramId = null;
+        user.ApplicationUser.ChatTelegramId = null;
 
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         identityContext.Update(user.ApplicationUser);
@@ -343,13 +350,13 @@ public class TelegramWebService(
 
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         var users_identity_data = await identityContext.Users
-            .Where(x => x.TelegramId.HasValue && tg_users_ids.Contains(x.TelegramId.Value))
-            .Select(x => new { x.Id, x.Email, x.TelegramId })
+            .Where(x => x.ChatTelegramId.HasValue && tg_users_ids.Contains(x.ChatTelegramId.Value))
+            .Select(x => new { x.Id, x.Email, x.ChatTelegramId })
             .ToArrayAsync();
 
         TelegramUserViewModel identity_get(TelegramUserModelDb ctx)
         {
-            var id_data = users_identity_data.FirstOrDefault(x => x.TelegramId == ctx.TelegramId);
+            var id_data = users_identity_data.FirstOrDefault(x => x.ChatTelegramId == ctx.TelegramId);
             return TelegramUserViewModel.Build(ctx, id_data?.Id, id_data?.Email);
         }
 
