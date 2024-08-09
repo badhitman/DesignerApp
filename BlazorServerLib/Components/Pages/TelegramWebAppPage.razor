@@ -1,9 +1,24 @@
 ﻿@page "/web-app-tg/{TokenAccess}"
+
+@using BlazorWebLib.Components.Helpdesk
+@using MudBlazor
+
 @layout WithoutMenuLayout
+
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @attribute [AllowAnonymous]
 
 <h3>Telegram WebApp page</h3>
+
+<AuthorizeView>
+    <Authorized>
+        <MyHelpdeskComponent />
+    </Authorized>
+    <NotAuthorized>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     /// <summary>
