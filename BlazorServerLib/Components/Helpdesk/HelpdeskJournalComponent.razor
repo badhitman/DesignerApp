@@ -1,4 +1,31 @@
-﻿<h3>HelpdeskJournalComponent</h3>
+﻿@inherits BlazorBusyComponentBaseModel
+
+@using MudBlazor
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" Loading="IsBusyProgress">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Ваши диалоги со службой обратной связи</MudText>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="CreatedAt" T="EntryCreatedModel">CreatedAt</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="Name" T="EntryCreatedModel">Name</MudTableSortLabel></MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="CreatedAt">@context.CreatedAt</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd></MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Ни одной записи не найдено</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка данных...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
 
 @code {
     /// <summary>
@@ -13,8 +40,25 @@
     [Parameter, EditorRequired]
     public required HelpdeskJournalModesEnum JournalMode { get; set; }
 
-     [CascadingParameter, EditorRequired]
+    [CascadingParameter, EditorRequired]
     public required Action<HelpdeskJournalModesEnum> ReloadIssueJournal { get; set; }
 
-
+    /// <summary>
+    /// Here we simulate getting the paged, filtered and ordered data from the server, with a token for canceling this request
+    /// </summary>
+    private async Task<TableData<EntryCreatedModel>> ServerReload(TableState state, CancellationToken token)
+    {
+        IsBusyProgress = true;
+        // Forward the provided token to methods which support it
+        EntryCreatedModel[] data = [];
+        // Simulate a long-running operation
+        await Task.Delay(300, token);
+        // Get the total count
+        var totalItems = data.Count();
+        // Get the paged data
+        var pagedData = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
+        IsBusyProgress = false;
+        // Return the data
+        return new TableData<EntryCreatedModel>() { TotalItems = totalItems, Items = pagedData };
+    }
 }
