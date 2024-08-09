@@ -11,7 +11,7 @@
                     <input @bind-value="itemSystemName" @bind-value:event="oninput" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(itemSystemName) ? " border border-warning-subtle" : "")" autocomplete="off" placeholder="Имя">
                 </div>
                 <div class="col-auto">
-                    <button disabled="@(!IsEditedName)" type="button" class="btn btn-outline-info btn-sm">Сохранить</button>
+                    <button @onclick="SaveRubric" disabled="@(!IsEditedName)" type="button" class="btn btn-outline-info btn-sm">Сохранить</button>
                 </div>
                 <div class="col-auto">
                     <button @onclick="() => { itemSystemName = ItemModel?.Name; IsRenameMode = false; }" type="button" class="btn btn-outline-info btn-sm">Отмена</button>
@@ -38,7 +38,7 @@
                 <div class="col-auto">
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <button @onclick="() => IsRenameMode = true" type="button" class="btn btn-outline-info btn-sm">Переименовать</button>
-                        <button disabled="@IsEditedName" @onclick="ToggleDisabled" type="button" class="btn btn-outline-info btn-sm">@(ItemModel?.IsDisabled == true ? "Активировать" : "Деактивировать")</button>
+                        <button disabled="@IsEditedName" @onclick="async () => { ItemModel!.IsDisabled = !ItemModel.IsDisabled; await SaveRubric(); }" type="button" class="btn btn-outline-info btn-sm">@(ItemModel?.IsDisabled == true ? "Активировать" : "Деактивировать")</button>
                     </div>
                 </div>
             }

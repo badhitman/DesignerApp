@@ -29,7 +29,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         if (parent_id > 0)
         {
             TreeItemDataRubricModel findNode = FindNode(parent_id, InitialTreeItems) ?? throw new Exception();
-            findNode.Children = [.. rubrics.Select(x => new TreeItemDataRubricModel(x, Icons.Material.Filled.CropFree))];
+            findNode.Children = [.. rubrics.Select(x => new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.CropFree))];
         }
         else
         {
@@ -89,8 +89,11 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     {
         ArgumentNullException.ThrowIfNull(parentValue);
 
-        List<RubricIssueHelpdeskModelDB> res = await RequestRubrics(parentValue?.Id ?? 0);
-        return [.. res.Select(x => new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight))];
+        List<RubricIssueHelpdeskModelDB> res = await RequestRubrics(parentValue.Id);
+        TreeItemDataRubricModel findNode = FindNode(parentValue.Id, InitialTreeItems) ?? throw new Exception();
+
+        findNode.Children = [.. res.Select(x => new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight))];
+        return findNode.Children;
     }
 
     async Task<List<RubricIssueHelpdeskModelDB>> RequestRubrics(int? parent_id = null)

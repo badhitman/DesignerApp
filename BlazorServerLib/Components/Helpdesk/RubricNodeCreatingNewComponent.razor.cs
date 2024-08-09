@@ -22,10 +22,6 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
 
 
     /// <inheritdoc/>
-    [Parameter, EditorRequired]
-    public required int ParentRubricId { get; set; }
-
-    /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required RubricsManageComponent HelpdeskParentView { get; set; }
 
@@ -33,13 +29,17 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
     [CascadingParameter, EditorRequired]
     public required Action<int> ReloadNodeHandle { get; set; }
 
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required TreeItemData<RubricIssueHelpdeskBaseModelDB> Item { get; set; }
+
 
     RubricIssueHelpdeskBaseModelDB ItemModel = default!;
 
     string? rubricName;
 
     /// <inheritdoc/>
-    protected string DomID => $"rubric-create-for-{ParentRubricId}";
+    protected string DomID => $"rubric-create-for-{Item.Value?.ParentRubricId}";
 
     bool IsEdit => !string.IsNullOrWhiteSpace(rubricName);
 
@@ -49,16 +49,16 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
             throw new Exception();
 
         IsBusyProgress = true;
-        TResponseModel<int?> rest = await HelpdeskRepo.RubricForIssuesCreateOrUpdate(new() { Name = rubricName, ParentRubricId = ItemModel.Id > 0 ? ItemModel.Id : null });
+        TResponseModel<int?> rest = await HelpdeskRepo.RubricForIssuesCreateOrUpdate(new() { Name = rubricName, ParentRubricId = ItemModel.ParentRubricId > 0 ? ItemModel.ParentRubricId : null });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        
-        ReloadNodeHandle(0);
+
+        ReloadNodeHandle(Item.Value?.ParentRubricId ?? 0);
     }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        ItemModel = new RubricIssueHelpdeskBaseModelDB() { Name = "", ParentRubricId = ParentRubricId };
+        ItemModel = new RubricIssueHelpdeskBaseModelDB() { Name = "", ParentRubricId = Item.Value?.ParentRubricId };
     }
 }

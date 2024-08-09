@@ -37,20 +37,20 @@ public class RubricIssueHelpdeskBaseModelDB : EntryDescriptionSwitchableModel
         if (obj == null) return false;
 
         if (obj is RubricIssueHelpdeskBaseModelDB e)
-            return Name == e.Name && Description == e.Description && Id == e.Id && e.SortIndex == SortIndex && e.ParentRubricId == ParentRubricId && e.ProjectId == ProjectId;
+            return Name == e.Name && Description == e.Description && Id == e.Id && e.SortIndex == SortIndex && e.ParentRubricId == ParentRubricId && e.ProjectId == ProjectId && e.IsDisabled == IsDisabled;
 
         return false;
     }
 
     /// <inheritdoc/>
     public static bool operator ==(RubricIssueHelpdeskBaseModelDB? e1, RubricIssueHelpdeskBaseModelDB? e2)
-        => (e1 is null && e2 is null) || (e1?.Id == e2?.Id && e1?.Name == e2?.Name && e1?.Description == e2?.Description && e1?.SortIndex == e2?.SortIndex && e1?.ParentRubricId == e2?.ParentRubricId && e1?.ProjectId == e2?.ProjectId);
+        => (e1 is null && e2 is null) || (e1?.Id == e2?.Id && e1?.Name == e2?.Name && e1?.Description == e2?.Description && e1?.SortIndex == e2?.SortIndex && e1?.ParentRubricId == e2?.ParentRubricId && e1?.ProjectId == e2?.ProjectId && e1?.IsDisabled == e2?.IsDisabled);
 
     /// <inheritdoc/>
     public static bool operator !=(RubricIssueHelpdeskBaseModelDB? e1, RubricIssueHelpdeskBaseModelDB? e2)
-        => (e1 is null && e2 is not null) || (e1 is not null && e2 is null) || e1?.Id != e2?.Id || e1?.Name != e2?.Name || e1?.Description != e2?.Description || e1?.SortIndex != e2?.SortIndex || e1?.ParentRubricId != e2?.ParentRubricId || e1?.ProjectId != e2?.ProjectId;
+        => (e1 is null && e2 is not null) || (e1 is not null && e2 is null) || e1?.Id != e2?.Id || e1?.Name != e2?.Name || e1?.Description != e2?.Description || e1?.SortIndex != e2?.SortIndex || e1?.ParentRubricId != e2?.ParentRubricId || e1?.ProjectId != e2?.ProjectId || e1?.IsDisabled != e2?.IsDisabled;
 
     /// <inheritdoc/>
     public override int GetHashCode()
-        => $"{ProjectId}|{ParentRubricId} {SortIndex} {Name} {Id} {Description}".GetHashCode();
+        => $"{ProjectId}|{ParentRubricId} {Id}/{SortIndex}/{IsDisabled} {Name} {Description}".GetHashCode();
 }

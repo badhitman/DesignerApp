@@ -22,7 +22,11 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
 
     /// <inheritdoc/>
-    [Parameter, EditorRequired]
+    [CascadingParameter, EditorRequired]
+    public required Action<int> ReloadNodeHandle { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
     public required TreeItemData<RubricIssueHelpdeskBaseModelDB> Item { get; set; }
 
     /// <inheritdoc/>
@@ -41,27 +45,30 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     bool IsEditedName => itemSystemName != ItemModel?.Name;
 
-    async Task ToggleDisabled()
+    async Task SaveRubric()
     {
         if (ItemModel is null)
             throw new ArgumentNullException(nameof(ItemModel));
 
-        RubricIssueHelpdeskModelDB _upd = new()
-        {
-            Name = ItemModel.Name,
-            Id = ItemModel.Id,
-            Description = ItemModel.Description,
-            IsDisabled = !ItemModel.IsDisabled,
-            ParentRubricId = ItemModel.ParentRubricId,
-            SortIndex = ItemModel.SortIndex,
-            ProjectId = ItemModel.ProjectId
-        };
+        if(string.IsNullOrWhiteSpace(itemSystemName))
+            throw new ArgumentNullException(nameof(itemSystemName));
 
-
+        ItemModel.Name = itemSystemName;
+        //RubricIssueHelpdeskModelDB _upd = new()
+        //{
+        //    Name = ItemModel.Name,
+        //    Id = ItemModel.Id,
+        //    Description = ItemModel.Description,
+        //    ParentRubricId = ItemModel.ParentRubricId,
+        //    SortIndex = ItemModel.SortIndex,
+        //    ProjectId = ItemModel.ProjectId
+        //};
 
         IsBusyProgress = true;
-        var res = await HelpdeskRepo.RubricForIssuesCreateOrUpdate(_upd);
+        TResponseModel<int?> res = await HelpdeskRepo.RubricForIssuesCreateOrUpdate((RubricIssueHelpdeskModelDB)ItemModel);
         IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);
     }
 
     /// <inheritdoc/>
@@ -69,5 +76,14 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
     {
         ItemModel = Item.Value;
         itemSystemName = ItemModel?.Name;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnAfterRender(bool firstRender)
+    {
+        bool need_refresh = ItemModel != Item.Value;
+        ItemModel = Item.Value;
+        if (need_refresh)
+            StateHasChanged();
     }
 }

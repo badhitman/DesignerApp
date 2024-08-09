@@ -29,16 +29,28 @@ public class RubricForIssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskConte
             return res;
         }
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-        if (await context.RubricsForIssues.AnyAsync(x => x.ParentRubricId == rubric.ParentRubricId && x.Name == rubric.Name))
+
+        if (await context.RubricsForIssues.AnyAsync(x => x.Id != rubric.Id && x.ParentRubricId == rubric.ParentRubricId && x.Name == rubric.Name))
         {
             res.AddError("Рубрика с таким именем уже существует");
             return res;
         }
-        await context.AddAsync(rubric);
+
+        if (rubric.Id < 1)
+        {
+            await context.AddAsync(rubric);
+            res.AddSuccess("Рубрика успешна создана");
+        }
+        else
+        {
+            context.Update(rubric);
+            res.AddSuccess("Рубрика успешна обновлена");
+        }
+
         await context.SaveChangesAsync();
 
         res.Response = rubric.Id;
-        res.AddSuccess("Рубрика успешна создана");
+
         return res;
     }
 }
