@@ -7,3 +7,8 @@ Update-Database -Context MainDbAppContext -Project DbSqliteLib -StartupProject B
 Add-Migration MainHelpdeskContext001 -Context HelpdeskContext -Project DbSqliteLib -StartupProject HelpdeskService
 Update-Database -Context HelpdeskContext -Project DbSqliteLib -StartupProject HelpdeskService
 ```
+
+```
+Add-Migration MainStorageContext001 -Context CloudParametersContext -Project DbSqliteLib -StartupProject RemoteCallLib
+Update-Database -Context CloudParametersContext -Project DbSqliteLib -StartupProject RemoteCallLib
+```

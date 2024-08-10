@@ -10,17 +10,16 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Read parameter
 /// </summary>
-public class ReadParameterReceive
+public class ReadParameterReceive(ISerializeStorage serializeStorageRepo)
     : IResponseReceive<StorageCloudParameterReadModel?, StorageCloudParameterPayloadModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadCloudParameterReceive;
 
     /// <inheritdoc/>
-    public Task<TResponseModel<StorageCloudParameterPayloadModel?>> ResponseHandleAction(StorageCloudParameterReadModel? payload)
+    public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ResponseHandleAction(StorageCloudParameterReadModel? request)
     {
-        TResponseModel<StorageCloudParameterPayloadModel?> res = new();
-
-        return Task.FromResult(res);
+        ArgumentNullException.ThrowIfNull(request);
+        return await serializeStorageRepo.ReadParameter(request);
     }
 }

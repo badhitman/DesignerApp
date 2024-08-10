@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using RemoteCallLib;
 using SharedLib;
+using Transmission.Receives.helpdesk;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -60,21 +62,20 @@ builder.ConfigureServices((context, services) =>
     services.AddDbContextFactory<CloudParametersContext>(opt =>
     opt.UseSqlite(connectionIdentityString));
 
-    /*
+
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
+
+    services.AddScoped<ISerializeStorage, SerializeStorageService>();
     ////
-    services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskModelDB[]?>();
-    services.RegisterMqListener<RubricForIssueCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
-    services.RegisterMqListener<IssuesForUserSelectReceive, GetIssuesForUserRequestModel?, IssueHelpdeskModelDB[]?>();
-    services.RegisterMqListener<IssueCreateOrUpdateReceive, IssueHelpdeskModelDB?, int?>();
-    services.RegisterMqListener<MessageIssueSetAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
-    services.RegisterMqListener<MessageForIssueUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();
+    services.RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>();
+    services.RegisterMqListener<ReadParameterReceive, StorageCloudParameterReadModel?, StorageCloudParameterPayloadModel?>();
+    services.RegisterMqListener<FindParametersReceive, RequestStorageCloudParameterModel?, FoundParameterModel[]?>();
     //
     #endregion
-    */
+
 });
 
 IHost app = builder.Build();

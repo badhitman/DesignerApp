@@ -54,6 +54,16 @@ public static partial class GlobalStaticConstants
     public const string TransmissionQueueNamePrefix = "Transmission.Receives";
 
     /// <summary>
+    /// Cloud storage metadata
+    /// </summary>
+    public static class CloudStorageMetadata
+    {
+        // <inheritdoc/>
+        //public readonly static string HelpdeskAppName = Path.Combine(Routes.HELPDESK_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+    }
+
+    /// <summary>
     /// Transmission MQ queues
     /// </summary>
     public static class TransmissionQueues
@@ -114,10 +124,10 @@ public static partial class GlobalStaticConstants
         #region storage cloud parameters
         /// <inheritdoc/>
         public readonly static string SaveCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.SET_ACTION_NAME);
-        
+
         /// <inheritdoc/>
         public readonly static string ReadCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
-        
+
         /// <inheritdoc/>
         public readonly static string FindCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
         #endregion
@@ -161,7 +171,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Helpdesk
         /// </summary>
-        public const string HELPDESK_CONTROLLER_NAME = "telegram";
+        public const string HELPDESK_CONTROLLER_NAME = "helpdesk";
 
         /// <summary>
         /// Cloud
@@ -172,6 +182,11 @@ public static partial class GlobalStaticConstants
         /// Property
         /// </summary>
         public const string PROPERTY_CONTROLLER_NAME = "property";
+
+        /// <summary>
+        /// Form
+        /// </summary>
+        public const string FORM_CONTROLLER_NAME = "form";
 
         /// <summary>
         /// Issue

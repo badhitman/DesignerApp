@@ -13,14 +13,16 @@ namespace RemoteCallLib;
 public class SerializeStorageService(IDbContextFactory<CloudParametersContext> cloudParametersDbFactory, ILogger<SerializeStorageService> loggerRepo) : ISerializeStorage
 {
     /// <inheritdoc/>
-    public async Task<StorageCloudParameterModelDB[]> Find<T>(RequestStorageCloudParameterModel req)
+    public async Task<T?[]> Find<T>(RequestStorageCloudParameterModel req)
     {
         CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         string _tn = typeof(T).FullName ?? throw new Exception();
-        return await context
+        StorageCloudParameterModelDB[] _dbd = await context
             .CloudProperties
             .Where(x => x.TypeName == _tn && x.ApplicationName == req.ApplicationName && x.Name == req.Name)
             .ToArrayAsync();
+
+        return _dbd.Select(x => JsonConvert.DeserializeObject<T>(x.SerializedDataJson)).ToArray();
     }
 
     /// <inheritdoc/>
@@ -54,19 +56,24 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
     {
         if (obj is null)
             throw new ArgumentNullException(nameof(obj));
-        string _tn = typeof(T).FullName ?? throw new Exception();
-
-        CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
 
         StorageCloudParameterModelDB _set = new()
         {
             ApplicationName = set.ApplicationName,
             Name = set.Name,
-            TypeName = _tn,
+            TypeName = typeof(T).FullName ?? throw new Exception(),
             SerializedDataJson = JsonConvert.SerializeObject(obj),
             OwnerPrimaryKey = set.OwnerPrimaryKey,
             PrefixPropertyName = set.PrefixPropertyName,
         };
+        ResponseBaseModel res = await FlushParameter(_set);
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> FlushParameter(StorageCloudParameterModelDB _set)
+    {
+        CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        TResponseModel<int?> res = new();
         await context.AddAsync(_set);
         bool success;
         Random rnd = new();
@@ -77,9 +84,12 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
             {
                 await context.SaveChangesAsync();
                 success = true;
+                res.AddSuccess($"Данные успешно сохранены на попытке [{i}]");
+                res.Response = _set.Id;
             }
-            finally
+            catch (Exception ex)
             {
+                res.AddInfo($"Попытка записи [{i}]: {ex.Message}");
                 _set.CreatedAt = DateTime.UtcNow;
                 await Task.Delay(TimeSpan.FromMilliseconds(rnd.Next(400, 700)));
             }
@@ -90,7 +100,7 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
 
         IQueryable<StorageCloudParameterModelDB> qf = context
                  .CloudProperties
-                 .Where(x => x.TypeName == _tn && x.ApplicationName == set.ApplicationName && x.Name == set.Name && x.OwnerPrimaryKey == set.OwnerPrimaryKey && x.PrefixPropertyName == set.PrefixPropertyName)
+                 .Where(x => x.TypeName == _set.TypeName && x.ApplicationName == _set.ApplicationName && x.Name == _set.Name && x.OwnerPrimaryKey == _set.OwnerPrimaryKey && x.PrefixPropertyName == _set.PrefixPropertyName)
                  .AsQueryable();
 
         int history_count = await qf.CountAsync();
@@ -105,11 +115,12 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
                         .OrderBy(x => x.CreatedAt)
                         .Take(50)
                         .ExecuteDeleteAsync();
-
+                    res.AddSuccess($"Ротация успешно выполнена на попытке [{i}]");
                     success = true;
                 }
-                finally
+                catch (Exception ex)
                 {
+                    res.AddInfo($"Попытка записи [{i}]: {ex.Message}");
                     await Task.Delay(TimeSpan.FromMilliseconds(rnd.Next(400, 700)));
                 }
 
@@ -117,5 +128,57 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
                     break;
             }
         }
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageCloudParameterReadModel req)
+    {
+        CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        TResponseModel<StorageCloudParameterPayloadModel?> res = new();
+        StorageCloudParameterModelDB? parameter_db = await context
+            .CloudProperties
+            .FirstOrDefaultAsync(x =>
+            x.OwnerPrimaryKey == req.OwnerPrimaryKey &&
+            x.Name == req.Name &&
+            x.ApplicationName == req.ApplicationName &&
+            x.PrefixPropertyName == req.PrefixPropertyName &&
+            x.TypeName == req.TypeName);
+
+        res.Response = new StorageCloudParameterPayloadModel()
+        {
+            ApplicationName = req.ApplicationName,
+            Name = req.Name,
+            OwnerPrimaryKey = req.OwnerPrimaryKey,
+            PrefixPropertyName = req.PrefixPropertyName,
+            TypeName = req.TypeName,
+            SerializedDataJson = parameter_db is null ? string.Empty : JsonConvert.SerializeObject(parameter_db) ?? string.Empty,
+        };
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<FoundParameterModel[]?>> Find(RequestStorageCloudParameterModel req)
+    {
+        TResponseModel<FoundParameterModel[]?> res = new();
+        CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        StorageCloudParameterModelDB[] prop_db = await context
+            .CloudProperties
+            .Where(x => req.Name == x.Name && req.ApplicationName == x.ApplicationName)
+            .ToArrayAsync();
+
+        res.Response = prop_db
+            .Select(x => new FoundParameterModel()
+            {
+                SerializedDataJson = JsonConvert.SerializeObject(x),
+                CreatedAt = DateTime.UtcNow,
+                OwnerPrimaryKey = x.OwnerPrimaryKey,
+                PrefixPropertyName = x.PrefixPropertyName,
+            })
+            .ToArray();
+
+        return res;
     }
 }
