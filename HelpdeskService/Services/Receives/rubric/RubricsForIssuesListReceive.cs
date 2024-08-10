@@ -18,6 +18,7 @@ public class RubricsForIssuesListReceive(IDbContextFactory<HelpdeskContext> help
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive;
 
+    /// <inheritdoc/>
     public async Task<TResponseModel<RubricIssueHelpdeskModelDB[]?>> ResponseHandleAction(ProjectOwnedRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);

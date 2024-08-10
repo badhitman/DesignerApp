@@ -110,7 +110,18 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string MessageOfIssueSetAsResponseHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME, Routes.MARK_ACTION_NAME);
         #endregion
-    }//SetMessageAsResponseIssueRequestModel
+
+        #region storage cloud parameters
+        /// <inheritdoc/>
+        public readonly static string SaveCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.SET_ACTION_NAME);
+        
+        /// <inheritdoc/>
+        public readonly static string ReadCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+        
+        /// <inheritdoc/>
+        public readonly static string FindCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
+        #endregion
+    }
 
     /// <summary>
     /// имена контроллеров и действий
@@ -151,6 +162,16 @@ public static partial class GlobalStaticConstants
         /// Helpdesk
         /// </summary>
         public const string HELPDESK_CONTROLLER_NAME = "telegram";
+
+        /// <summary>
+        /// Cloud
+        /// </summary>
+        public const string CLOUD_CONTROLLER_NAME = "cloud";
+
+        /// <summary>
+        /// Property
+        /// </summary>
+        public const string PROPERTY_CONTROLLER_NAME = "property";
 
         /// <summary>
         /// Issue
@@ -259,6 +280,11 @@ public static partial class GlobalStaticConstants
         /// Прочитать
         /// </summary>
         public const string READ_ACTION_NAME = "read";
+
+        /// <summary>
+        /// Найти
+        /// </summary>
+        public const string FIND_ACTION_NAME = "find";
 
         /// <summary>
         /// Редактировать

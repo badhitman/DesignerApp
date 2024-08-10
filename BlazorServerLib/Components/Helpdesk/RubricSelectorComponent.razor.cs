@@ -2,15 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-namespace SharedLib;
+using BlazorLib;
+
+namespace BlazorWebLib.Components.Helpdesk;
 
 /// <summary>
-/// EntryAltTagModel
+/// Rubric selector
 /// </summary>
-public class EntryAltTagModel : EntryAltModel
+public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
 {
-    /// <summary>
-    /// Tag
-    /// </summary>
-    public string? Tag { get; set; }
+
 }

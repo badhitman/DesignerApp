@@ -4,13 +4,11 @@
 
 namespace SharedLib;
 
-/// <summary>
-/// EntryAltTagModel
-/// </summary>
-public class EntryAltTagModel : EntryAltModel
+/// <inheritdoc/>
+public class StorageCloudParameterReadModel : StorageCloudParameterModel
 {
     /// <summary>
-    /// Tag
+    /// Тип сериализуемого параметра
     /// </summary>
-    public string? Tag { get; set; }
+    public required string TypeName { get; set; }
 }

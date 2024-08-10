@@ -16,6 +16,7 @@ public class MessageIssueSetAsResponseReceive
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessageOfIssueSetAsResponseHelpdeskReceive;
 
+    /// <inheritdoc/>
     public Task<TResponseModel<bool?>> ResponseHandleAction(SetMessageAsResponseIssueRequestModel? payload)
     {
         TResponseModel<bool?> res = new();

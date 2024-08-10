@@ -6,6 +6,7 @@ using SharedLib;
 
 namespace RemoteCallLib;
 
+/// <inheritdoc/>
 public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdeskRemoteTransmissionService
 {
     /// <inheritdoc/>

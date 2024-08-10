@@ -1,4 +1,4 @@
-namespace HelpdeskService;
+namespace RemoteCallLib;
 
 /// <inheritdoc/>
 public class Worker(ILogger<Worker> logger) : BackgroundService

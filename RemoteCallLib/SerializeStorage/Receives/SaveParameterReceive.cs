@@ -8,16 +8,16 @@ using SharedLib;
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// CreateIssue
+/// Save parameter
 /// </summary>
-public class IssueCreateOrUpdateReceive
-    : IResponseReceive<IssueHelpdeskModelDB?, int?>
+public class SaveParameterReceive
+    : IResponseReceive<StorageCloudParameterPayloadModel?, int?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssueUpdateHelpdeskReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.SaveCloudParameterReceive;
 
     /// <inheritdoc/>
-    public Task<TResponseModel<int?>> ResponseHandleAction(IssueHelpdeskModelDB? payload)
+    public Task<TResponseModel<int?>> ResponseHandleAction(StorageCloudParameterPayloadModel? payload)
     {
         TResponseModel<int?> res = new();
 

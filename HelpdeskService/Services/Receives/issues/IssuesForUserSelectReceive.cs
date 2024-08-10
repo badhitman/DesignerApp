@@ -16,6 +16,7 @@ public class IssuesForUserSelectReceive
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive;
 
+    /// <inheritdoc/>
     public Task<TResponseModel<IssueHelpdeskModelDB[]?>> ResponseHandleAction(GetIssuesForUserRequestModel? req)
     {
         TResponseModel<IssueHelpdeskModelDB[]?> res = new();
