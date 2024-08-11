@@ -13,7 +13,9 @@
     <AuthorizeView Roles="HelpDeskTelegramBotUnit,HelpDeskTelegramBotManager,admin">
         <Authorized>
             <MudTabPanel ToolTip="Обслуживание входящих обращений" Text="Обращения клиентов" Icon="@Icons.Material.Filled.BugReport">
-                <HelpdeskJobComponent />
+                <MudPaper Class="ma-2" Elevation="3">
+                    <HelpdeskJobComponent />
+                </MudPaper>
             </MudTabPanel>
         </Authorized>
     </AuthorizeView>
