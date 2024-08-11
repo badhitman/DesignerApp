@@ -2,11 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
+
 namespace SharedLib;
 
 /// <summary>
 /// Рубрики для обращений
 /// </summary>
+[Index(nameof(SortIndex), nameof(ParentRubricId), IsUnique = true)]
 public class RubricIssueHelpdeskLowModel : EntryDescriptionSwitchableModel
 {
     /// <inheritdoc/>
@@ -50,13 +53,4 @@ public class RubricIssueHelpdeskLowModel : EntryDescriptionSwitchableModel
     /// <inheritdoc/>
     public override int GetHashCode()
         => $"{ProjectId}|{ParentRubricId} {Id}/{SortIndex}/{IsDisabled} {Name} {Description}".GetHashCode();
-}
-
-/// <summary>
-/// Рубрики для обращений
-/// </summary>
-public class RubricIssueHelpdeskBaseModelDB : RubricIssueHelpdeskLowModel
-{
-    /// <inheritdoc/>
-    public List<RubricIssueHelpdeskModelDB>? NestedRubrics { get; set; }
 }

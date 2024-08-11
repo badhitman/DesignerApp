@@ -22,6 +22,14 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskLowModel?
         Expandable = entry.Id > 0;
     }
 
+    /// <summary>
+    /// Признак того является ли элемент крайним в перечне
+    /// </summary>
+    /// <remarks>
+    /// Для определения доступности кнопок перемещения элементов вверх/вниз
+    /// </remarks>
+    public VerticalDirectionsEnum? MostHavePosition { get; set; }
+
     /// <inheritdoc/>
     public static bool operator ==(TreeItemDataRubricModel? e1, TreeItemDataRubricModel? e2)
         => (e1 is null && e2 is null) || e1?.Value == e2?.Value;

@@ -74,6 +74,7 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<IssueCreateOrUpdateReceive, IssueHelpdeskModelDB?, int?>();
     services.RegisterMqListener<MessageIssueSetAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
     services.RegisterMqListener<MessageForIssueUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();
+    services.RegisterMqListener<RubricForIssuesMoveReceive, RowMoveModel?, bool?>();
     //
     #endregion
 });

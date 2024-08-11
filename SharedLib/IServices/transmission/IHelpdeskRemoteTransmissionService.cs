@@ -19,6 +19,11 @@ public interface IHelpdeskRemoteTransmissionService
     /// </summary>
     public Task<TResponseModel<int?>> RubricForIssuesCreateOrUpdate(RubricIssueHelpdeskModelDB issueTheme);
 
+    /// <summary>
+    /// Сдвинуть рубрику
+    /// </summary>
+    public Task<TResponseModel<bool?>> RubricForIssuesMove(RowMoveModel req);
+
 
     /// <summary>
     /// Получить обращения для пользователя

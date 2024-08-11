@@ -36,9 +36,13 @@
             @if (!IsRenameMode)
             {
                 <div class="col-auto">
-                    <div class="btn-group" role="group" aria-label="Basic example">
-                        <button @onclick="() => IsRenameMode = true" type="button" class="btn btn-outline-info btn-sm">Переименовать</button>
-                        <button disabled="@IsEditedName" @onclick="async () => { ItemModel!.IsDisabled = !ItemModel.IsDisabled; await SaveRubric(); }" type="button" class="btn btn-outline-info btn-sm">@(ItemModel?.IsDisabled == true ? "Активировать" : "Деактивировать")</button>
+                    <div class="hstack">
+                        <MudIconButton OnClick="() => MoveRow( VerticalDirectionsEnum.Up, Item)" Disabled="Item.MostHavePosition == VerticalDirectionsEnum.Up" Icon="@Icons.Material.Filled.ArrowDropUp"></MudIconButton>
+                        <MudIconButton OnClick="() => MoveRow( VerticalDirectionsEnum.Down, Item)" Disabled="Item.MostHavePosition == VerticalDirectionsEnum.Down" Icon="@Icons.Material.Filled.ArrowDropDown"></MudIconButton>
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button @onclick="() => IsRenameMode = true" type="button" class="btn btn-outline-info btn-sm">Переименовать</button>
+                            <button disabled="@IsEditedName" @onclick="async () => { ItemModel!.IsDisabled = !ItemModel.IsDisabled; await SaveRubric(); }" type="button" class="btn btn-outline-info btn-sm">@(ItemModel?.IsDisabled == true ? "Активировать" : "Деактивировать")</button>
+                        </div>
                     </div>
                 </div>
             }

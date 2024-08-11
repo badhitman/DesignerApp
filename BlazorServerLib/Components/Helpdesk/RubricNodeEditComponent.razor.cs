@@ -27,7 +27,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required TreeItemData<RubricIssueHelpdeskLowModel> Item { get; set; }
+    public required TreeItemDataRubricModel Item { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -45,18 +45,39 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     bool IsEditedName => itemSystemName != ItemModel?.Name;
 
+    async Task MoveRow(VerticalDirectionsEnum dir, TreeItemDataRubricModel rubric)
+    {
+        if (ItemModel is null)
+            throw new ArgumentNullException(nameof(ItemModel));
+
+        IsBusyProgress = true;
+        TResponseModel<bool?> res = await HelpdeskRepo.RubricForIssuesMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id });
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);
+    }
+
     async Task SaveRubric()
     {
         if (ItemModel is null)
             throw new ArgumentNullException(nameof(ItemModel));
 
-        if(string.IsNullOrWhiteSpace(itemSystemName))
+        if (string.IsNullOrWhiteSpace(itemSystemName))
             throw new ArgumentNullException(nameof(itemSystemName));
 
         ItemModel.Name = itemSystemName;
-        
+
         IsBusyProgress = true;
-        TResponseModel<int?> res = await HelpdeskRepo.RubricForIssuesCreateOrUpdate((RubricIssueHelpdeskModelDB)ItemModel);
+        TResponseModel<int?> res = await HelpdeskRepo.RubricForIssuesCreateOrUpdate(new RubricIssueHelpdeskModelDB()
+        {
+            Name = ItemModel.Name,
+            Description = ItemModel.Description,
+            Id = ItemModel.Id,
+            ParentRubricId = ItemModel.ParentRubricId,
+            ProjectId = ItemModel.ProjectId,
+            SortIndex = ItemModel.SortIndex,
+            IsDisabled = ItemModel.IsDisabled,
+        });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);

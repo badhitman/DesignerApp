@@ -34,4 +34,8 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> MessageOfIssueSetAsResponse(SetMessageAsResponseIssueRequestModel req)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.MessageOfIssueSetAsResponseHelpdeskReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> RubricForIssuesMove(RowMoveModel req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.RubricForIssuesMoveHelpdeskReceive, req);
 }

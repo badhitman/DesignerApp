@@ -116,6 +116,9 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string RubricsForIssuesListHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRIC_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.LIST_ACTION_NAME);
 
+        /// <inheritdoc/>
+        public readonly static string RubricForIssuesMoveHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRIC_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.MOVE_ACTION_NAME);
+
 
         /// <inheritdoc/>
         public readonly static string IssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ISSUE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
@@ -340,6 +343,11 @@ public static partial class GlobalStaticConstants
         /// Список
         /// </summary>
         public const string LIST_ACTION_NAME = "list";
+
+        /// <summary>
+        /// Move
+        /// </summary>
+        public const string MOVE_ACTION_NAME = "move";
 
         /// <summary>
         /// Выборка
