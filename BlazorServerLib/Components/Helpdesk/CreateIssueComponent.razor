@@ -39,7 +39,10 @@ else
                             <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" ParentRubric="0" />
                         </CascadingValue>
                     </CascadingValue>
-
+                    <div>
+                        <label for="inputName" class="form-label">Название обращения</label>
+                        <input @bind-value="Name" @bind-value:event="oninput" type="text" id="inputName" class="form-control" placeholder="Заголовок">
+                    </div>
                     <InputRichTextComponent @bind-Value="Description" ReadOnly="IsBusyProgress" />
                 </MudStack>
             </MudCardContent>

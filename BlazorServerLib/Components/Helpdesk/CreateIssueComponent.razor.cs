@@ -30,6 +30,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
 
 
     bool CanCreate =>
+        !string.IsNullOrWhiteSpace(Name) &&
         !string.IsNullOrWhiteSpace(Description) &&
         GlobalTools.DescriptionHtmlToLinesRemark(Description).Any(x => !string.IsNullOrWhiteSpace(x)) &&
         (ModeSelectingRubrics == ModesSelectRubricsEnum.AllowWithoutRubric || (SelectedRubric is not null && SelectedRubric.Id > 0))
