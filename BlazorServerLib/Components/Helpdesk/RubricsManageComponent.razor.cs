@@ -26,7 +26,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics(parent_id);
 
-        (uint min, uint max) = rubrics.Count(x => x.SortIndex != uint.MaxValue) != 0
+        (uint min, uint max) = rubrics.Any(x => x.SortIndex != uint.MaxValue)
             ? (rubrics.Min(x => x.SortIndex), rubrics.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
             : (0, 0);
 
@@ -105,7 +105,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     {
         List<RubricIssueHelpdeskLowModel> res = await RequestRubrics();
 
-        (uint min, uint max) = res.Count(x => x.SortIndex != uint.MaxValue) != 0
+        (uint min, uint max) = res.Any(x => x.SortIndex != uint.MaxValue)
             ? (res.Min(x => x.SortIndex), res.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
             : (0, 0);
 
@@ -129,7 +129,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         List<RubricIssueHelpdeskLowModel> res = await RequestRubrics(parentValue.Id);
         TreeItemDataRubricModel findNode = FindNode(parentValue.Id, InitialTreeItems) ?? throw new Exception();
 
-        (uint min, uint max) = res.Count(x => x.SortIndex != uint.MaxValue) != 0
+        (uint min, uint max) = res.Any(x => x.SortIndex != uint.MaxValue)
             ? (res.Min(x => x.SortIndex), res.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
             : (0, 0);
 
