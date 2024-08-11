@@ -48,7 +48,7 @@ public interface ISerializeStorage
     /// Возвращается самое актуальное значение (последнее установленное). Хранится история значений - если значение будет часто меняться будет ротация стека накопленных значений с усечением от 150 до 100.
     /// Проверка переполнения происходит при каждой команде сохранения.
     /// </remarks>
-    public Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageCloudParameterReadModel req);
+    public Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageCloudParameterModel req);
 
     /// <summary>
     /// Поиск значений параметров

@@ -24,7 +24,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     async void ReloadNodeAction(int parent_id)
     {
         IsBusyProgress = true;
-        List<RubricIssueHelpdeskModelDB> rubrics = await RequestRubrics(parent_id);
+        List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics(parent_id);
         IsBusyProgress = false;
         if (parent_id > 0)
         {
@@ -45,13 +45,13 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         if (res is not null)
             return res;
 
-        TreeItemDataRubricModel? FindChildNode(List<TreeItemData<RubricIssueHelpdeskBaseModelDB?>> children)
+        TreeItemDataRubricModel? FindChildNode(List<TreeItemData<RubricIssueHelpdeskLowModel?>> children)
         {
-            TreeItemData<RubricIssueHelpdeskBaseModelDB?>? res_child = children.FirstOrDefault(x => x.Value?.Id == parent_id);
+            TreeItemData<RubricIssueHelpdeskLowModel?>? res_child = children.FirstOrDefault(x => x.Value?.Id == parent_id);
             if (res_child is not null)
                 return (TreeItemDataRubricModel?)res_child;
 
-            foreach (TreeItemData<RubricIssueHelpdeskBaseModelDB?> c in children)
+            foreach (TreeItemData<RubricIssueHelpdeskLowModel?> c in children)
             {
                 if (c.Children is not null)
                 {
@@ -80,26 +80,26 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async void OnInitialized()
     {
-        List<RubricIssueHelpdeskModelDB> res = await RequestRubrics();
+        List<RubricIssueHelpdeskLowModel> res = await RequestRubrics();
         InitialTreeItems = [.. (res.Select(x => new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight)))];
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyCollection<TreeItemData<RubricIssueHelpdeskBaseModelDB?>>> LoadServerData(RubricIssueHelpdeskBaseModelDB? parentValue)
+    public async Task<IReadOnlyCollection<TreeItemData<RubricIssueHelpdeskLowModel?>>> LoadServerData(RubricIssueHelpdeskLowModel? parentValue)
     {
         ArgumentNullException.ThrowIfNull(parentValue);
 
-        List<RubricIssueHelpdeskModelDB> res = await RequestRubrics(parentValue.Id);
+        List<RubricIssueHelpdeskLowModel> res = await RequestRubrics(parentValue.Id);
         TreeItemDataRubricModel findNode = FindNode(parentValue.Id, InitialTreeItems) ?? throw new Exception();
 
         findNode.Children = [.. res.Select(x => new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight))];
         return findNode.Children;
     }
 
-    async Task<List<RubricIssueHelpdeskModelDB>> RequestRubrics(int? parent_id = null)
+    async Task<List<RubricIssueHelpdeskLowModel>> RequestRubrics(int? parent_id = null)
     {
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> rest = await HelpdeskRepo.RubricsForIssuesList(new ProjectOwnedRequestModel() { OwnerId = parent_id });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsForIssuesList(new ProjectOwnedRequestModel() { OwnerId = parent_id });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null)

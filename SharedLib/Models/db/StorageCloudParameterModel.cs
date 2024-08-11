@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
+
 namespace SharedLib;
 
 /// <summary>
@@ -11,6 +13,7 @@ namespace SharedLib;
 /// Приложения могут хранить любые параметры в общем микро-сервисе.
 /// Они могут сохранять и извлекать (запрашивать) любые сериализуемые данные
 /// </remarks>
+[Index(nameof(PrefixPropertyName), nameof(OwnerPrimaryKey))]
 public class StorageCloudParameterModel : RequestStorageCloudParameterModel
 {
     /// <summary>

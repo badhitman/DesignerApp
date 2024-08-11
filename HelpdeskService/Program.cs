@@ -68,7 +68,7 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
     services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     ////
-    services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskModelDB[]?>();
+    services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskLowModel[]?>();
     services.RegisterMqListener<RubricForIssueCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
     services.RegisterMqListener<IssuesForUserSelectReceive, GetIssuesForUserRequestModel?, IssueHelpdeskModelDB[]?>();
     services.RegisterMqListener<IssueCreateOrUpdateReceive, IssueHelpdeskModelDB?, int?>();

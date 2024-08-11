@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -15,6 +15,10 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
+    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+
+
+    [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
@@ -24,34 +28,76 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required Action<HelpdeskJournalModesEnum> ReloadIssueJournal { get; set; }
 
+
+    bool CanCreate =>
+        !string.IsNullOrWhiteSpace(Description) &&
+        GlobalTools.DescriptionHtmlToLinesRemark(Description).Any(x => !string.IsNullOrWhiteSpace(x)) &&
+        (ModeSelectingRubrics == ModesSelectRubricsEnum.AllowWithoutRubric || (SelectedRubric is not null && SelectedRubric.Id > 0))
+        ;
+
+    string? Name;
     string? Description;
 
     bool IsEditMode { get; set; } = false;
 
-    bool RequiredRubric;
+    ModesSelectRubricsEnum ModeSelectingRubrics;
+    bool ShowDisabledRubrics;
+    RubricIssueHelpdeskLowModel? SelectedRubric;
+
+
+    async Task CreateIssue()
+    {
+        IsBusyProgress = true;
+        TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new IssueHelpdeskModelDB()
+        {
+            AuthorIdentityUserId = "",
+            RubricIssueId = SelectedRubric?.Id,
+            LastUpdateAt = DateTime.Now,
+            Name = "",
+            Description = Description,
+            ExecutorIdentityUserId = "",
+            StepIssue = HelpdeskIssueStepsEnum.Created,
+
+        });
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+    }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        StorageCloudParameterReadModel par = new()
-        {
-            ApplicationName = GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME,
-            Name = Path.Combine(GlobalStaticConstants.Routes.RUBRIC_CONTROLLER_NAME, GlobalStaticConstants.Routes.CONFIGURATION_CONTROLLER_NAME),
-            TypeName = Path.Combine(GlobalStaticConstants.Routes.RUBRIC_CONTROLLER_NAME, GlobalStaticConstants.Routes.FORM_CONTROLLER_NAME),
-        };
         IsBusyProgress = true;
-        TResponseModel<bool?> res = await SerializeStorageRepo.ReadParameter<bool?>(par);
+        TResponseModel<bool?> res = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics);
+        TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        RequiredRubric = res.Response == true;
+        SnackbarRepo.ShowMessagesResponse(res_ModeSelectingRubrics.Messages);
+        if (res_ModeSelectingRubrics.Response is null || (int)res_ModeSelectingRubrics.Response == default)
+            res_ModeSelectingRubrics.Response = ModesSelectRubricsEnum.AllowWithoutRubric;
+
+        ShowDisabledRubrics = res.Response == true;
+        ModeSelectingRubrics = res_ModeSelectingRubrics.Response.Value;
     }
+
+    void RubricSelectAction(RubricIssueHelpdeskLowModel selectedRubric)
+    {
+        SelectedRubric = selectedRubric;
+        StateHasChanged();
+    }
+
+#if DEBUG
+    static bool IsDebug => true;
+#else
+    static bool IsDebug => false;
+#endif
 
     void ToggleMode()
     {
         IsEditMode = !IsEditMode;
         if (!IsEditMode)
+        {
+            Description = null;
             return;
-
-
+        }
     }
 }

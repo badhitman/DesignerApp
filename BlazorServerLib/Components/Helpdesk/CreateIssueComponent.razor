@@ -2,30 +2,51 @@
 
 @using MudBlazor
 
-@if (!IsEditMode)
+<br />
+@if (IsBusyProgress)
 {
-    <MudButton OnClick="ToggleMode" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Создать новое обращение</MudButton>
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
 }
 else
 {
-    <MudCard>
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h6">Создание нового диалога</MudText>
-            </CardHeaderContent>
-            <CardHeaderActions>
-                <MudIconButton Disabled="IsBusyProgress" OnClick="ToggleMode" Icon="@Icons.Material.Filled.Close" Color="Color.Default" />
-            </CardHeaderActions>
-        </MudCardHeader>
-        <MudCardContent>
-            <MudStack>
-                <RubricSelectorComponent />
-                <InputRichTextComponent @bind-Value="Description" ReadOnly="IsBusyProgress" />
-            </MudStack>
-        </MudCardContent>
-        <MudCardActions>
-            <MudButton Disabled="IsBusyProgress" Variant="Variant.Text" Color="Color.Success">Создать</MudButton>
-            <MudButton Disabled="IsBusyProgress" OnClick="ToggleMode" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
-        </MudCardActions>
-    </MudCard>
+    if (!IsEditMode)
+    {
+        <MudButton OnClick="ToggleMode" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Создать новое обращение</MudButton>
+    }
+    else
+    {
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Создание нового диалога</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Disabled="IsBusyProgress" OnClick="ToggleMode" Icon="@Icons.Material.Filled.Close" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack>
+                    <CascadingValue Value="RubricSelectAction">
+                        <CascadingValue Value="SelectedRubric">
+                            @if (IsDebug && SelectedRubric is not null)
+                            {
+                                <span>@SelectedRubric.Name</span>
+                            }
+                            <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" ParentRubric="0" />
+                        </CascadingValue>
+                    </CascadingValue>
+
+                    <InputRichTextComponent @bind-Value="Description" ReadOnly="IsBusyProgress" />
+                </MudStack>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Disabled="(IsBusyProgress || !CanCreate)" OnClick="CreateIssue" Variant="Variant.Text" Color="Color.Success">Создать</MudButton>
+                <MudButton Disabled="IsBusyProgress" OnClick="ToggleMode" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
 }

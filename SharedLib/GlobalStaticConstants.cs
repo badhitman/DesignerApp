@@ -58,9 +58,19 @@ public static partial class GlobalStaticConstants
     /// </summary>
     public static class CloudStorageMetadata
     {
-        // <inheritdoc/>
-        //public readonly static string HelpdeskAppName = Path.Combine(Routes.HELPDESK_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+        /// <inheritdoc/>
+        public static StorageCloudParameterModel ParameterShowDisabledRubrics => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.SHOW_ACTION_NAME}-{Routes.DISABLED_CONTROLLER_NAME}"),
+        };
 
+        /// <inheritdoc/>
+        public static StorageCloudParameterModel ModeSelectingRubrics => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"),
+        };
     }
 
     /// <summary>
@@ -189,6 +199,11 @@ public static partial class GlobalStaticConstants
         public const string FORM_CONTROLLER_NAME = "form";
 
         /// <summary>
+        /// Disabled
+        /// </summary>
+        public const string DISABLED_CONTROLLER_NAME = "disabled";
+
+        /// <summary>
         /// Issue
         /// </summary>
         public const string ISSUE_CONTROLLER_NAME = "issue";
@@ -265,6 +280,16 @@ public static partial class GlobalStaticConstants
         /// Подключить/присоединить
         /// </summary>
         public const string JOIN_ACTION_NAME = "join";
+
+        /// <summary>
+        /// Show
+        /// </summary>
+        public const string SHOW_ACTION_NAME = "show";
+
+        /// <summary>
+        /// Mode
+        /// </summary>
+        public const string MODE_ACTION_NAME = "mode";
 
         /// <summary>
         /// Отправить

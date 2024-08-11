@@ -84,7 +84,7 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
             {
                 await context.SaveChangesAsync();
                 success = true;
-                res.AddSuccess($"Данные успешно сохранены на попытке [{i}]");
+                res.AddSuccess($"Данные успешно сохранены{(i > 0 ? $" (на попытке [{i}])" : "")}: {_set.Name}");
                 res.Response = _set.Id;
             }
             catch (Exception ex)
@@ -133,28 +133,31 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageCloudParameterReadModel req)
+    public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageCloudParameterModel req)
     {
         CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         TResponseModel<StorageCloudParameterPayloadModel?> res = new();
         StorageCloudParameterModelDB? parameter_db = await context
             .CloudProperties
+            .OrderByDescending(x => x.CreatedAt)
             .FirstOrDefaultAsync(x =>
             x.OwnerPrimaryKey == req.OwnerPrimaryKey &&
             x.Name == req.Name &&
             x.ApplicationName == req.ApplicationName &&
-            x.PrefixPropertyName == req.PrefixPropertyName &&
-            x.TypeName == req.TypeName);
+            x.PrefixPropertyName == req.PrefixPropertyName);
 
-        res.Response = new StorageCloudParameterPayloadModel()
-        {
-            ApplicationName = req.ApplicationName,
-            Name = req.Name,
-            OwnerPrimaryKey = req.OwnerPrimaryKey,
-            PrefixPropertyName = req.PrefixPropertyName,
-            TypeName = req.TypeName,
-            SerializedDataJson = parameter_db is null ? string.Empty : JsonConvert.SerializeObject(parameter_db) ?? string.Empty,
-        };
+        if (parameter_db is not null)
+            res.Response = new StorageCloudParameterPayloadModel()
+            {
+                ApplicationName = parameter_db.ApplicationName,
+                Name = parameter_db.Name,
+                OwnerPrimaryKey = parameter_db.OwnerPrimaryKey,
+                PrefixPropertyName = parameter_db.PrefixPropertyName,
+                TypeName = parameter_db.TypeName,
+                SerializedDataJson = parameter_db.SerializedDataJson,
+            };
+        else
+            res.AddWarning($"Параметр не найден");
 
         return res;
     }

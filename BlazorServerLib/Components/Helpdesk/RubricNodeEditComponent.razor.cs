@@ -27,7 +27,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required TreeItemData<RubricIssueHelpdeskBaseModelDB> Item { get; set; }
+    public required TreeItemData<RubricIssueHelpdeskLowModel> Item { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -36,7 +36,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     bool IsRenameMode;
 
-    RubricIssueHelpdeskBaseModelDB? ItemModel;
+    RubricIssueHelpdeskLowModel? ItemModel;
 
     string? itemSystemName;
 

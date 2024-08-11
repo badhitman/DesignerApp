@@ -2,11 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
+
 namespace SharedLib;
 
 /// <summary>
 /// RequestStorageCloudParameterModel
 /// </summary>
+[Index(nameof(ApplicationName), nameof(Name))]
 public class RequestStorageCloudParameterModel
 {
 /// <summary>

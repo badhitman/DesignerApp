@@ -2,4 +2,42 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-<MudText>Рубрика/категория обращения:</MudText>
+@if (ParentRubric == 0)
+{
+    <MudText>Рубрика/категория обращения:</MudText>
+}
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else
+{
+    if (CurrentRubrics is null || CurrentRubrics.Count == 0)
+    {
+        if (ParentRubric == 0)
+        {
+            <p>Без категорий.</p>
+        }
+    }
+    else
+    {
+        <select @bind="SelectedRubricId" class="form-select">
+            @if (SelectedRubricId < 1 || ModeSelectingRubrics == ModesSelectRubricsEnum.AllowWithoutRubric)
+            {
+                <option value="0" selected>Выбор категории</option>
+            }
+            @foreach (RubricIssueHelpdeskLowModel rubric in CurrentRubrics!.Where(x => ShowDisabledRubrics || !x.IsDisabled))
+            {
+                <option disabled="@rubric.IsDisabled" value="@rubric.Id">@($"{rubric.Name}{(IsDebug ? $" [{rubric.Id}]" : "")}")</option>
+            }
+        </select>
+    }
+    @if (SelectedRubricId != 0)
+    {
+        <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" @ref="childSelector" ParentRubric="SelectedRubricId" />
+    }
+}

@@ -10,12 +10,12 @@ namespace BlazorLib;
 /// <summary>
 /// Tree Item Data Rubric
 /// </summary>
-public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskBaseModelDB?>
+public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskLowModel?>
 {
     /// <summary>
     /// Tree Item Data Rubric
     /// </summary>
-    public TreeItemDataRubricModel(RubricIssueHelpdeskBaseModelDB entry, string icon) : base(entry)
+    public TreeItemDataRubricModel(RubricIssueHelpdeskLowModel entry, string icon) : base(entry)
     {
         Text = entry.Name;
         Icon = icon;

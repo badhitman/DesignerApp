@@ -25,7 +25,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
 
         if (response_payload.Response is null)
         {
-            res.AddError("Получен пустой ответ");
+            //res.AddError("Получен пустой ответ");
             return res;
         }
 
@@ -46,7 +46,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
 
         if (response_payload.Response is null)
         {
-            res.AddError("Получен пустой ответ");
+            //res.AddError("Получен пустой ответ");
             return res;
         }
 
@@ -74,6 +74,6 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
             PrefixPropertyName = store.PrefixPropertyName,
         };
 
-        return await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.SaveCloudParameterReceive, JsonConvert.SerializeObject(set_req));
+        return await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.SaveCloudParameterReceive, set_req);
     }
 }

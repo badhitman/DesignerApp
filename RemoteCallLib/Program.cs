@@ -71,7 +71,7 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<ISerializeStorage, SerializeStorageService>();
     ////
     services.RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>();
-    services.RegisterMqListener<ReadParameterReceive, StorageCloudParameterReadModel?, StorageCloudParameterPayloadModel?>();
+    services.RegisterMqListener<ReadParameterReceive, StorageCloudParameterModel?, StorageCloudParameterPayloadModel?>();
     services.RegisterMqListener<FindParametersReceive, RequestStorageCloudParameterModel?, FoundParameterModel[]?>();
     //
     #endregion
