@@ -1,6 +1,6 @@
 ﻿@using MudBlazor
 <br />
-<CascadingValue Value="ReloadPage">
+<CascadingValue Value="SetTab">
     <TabSetComponent IsSilent="true" AsPills="true">
         <CascadingValue Value="Request">
             <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ActualOnly))" Title="В работе">
@@ -14,15 +14,22 @@
             </TabComponent>
         </CascadingValue>
     </TabSetComponent>
-    <CreateIssueComponent />
 </CascadingValue>
+<CreateIssueComponent Update="Update" />
 
 @code {
     [Parameter]
     public required GetIssuesForUserRequestModel Request { get; set; }
 
-    void ReloadPage(HelpdeskJournalModesEnum page)
-    {
+    HelpdeskJournalComponent? _tab;
 
+    void Update()
+    {
+        _tab?.TableRef.ReloadServerData();
+    }
+
+    void SetTab(HelpdeskJournalComponent page)
+    {
+        _tab = page;
     }
 }

@@ -23,7 +23,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
-    public Task<TResponseModel<IssueHelpdeskModelDB[]?>> IssuesSelect(GetIssuesForUserRequestModel req);
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModelDB>?>> IssuesSelect(GetIssuesForUserRequestModel req);
 
     /// <summary>
     /// Создать обращение

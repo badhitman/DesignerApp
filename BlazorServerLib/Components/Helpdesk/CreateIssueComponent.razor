@@ -32,10 +32,6 @@ else
                 <MudStack>
                     <CascadingValue Value="RubricSelectAction">
                         <CascadingValue Value="SelectedRubric">
-                            @if (IsDebug && SelectedRubric is not null)
-                            {
-                                <span>@SelectedRubric.Name</span>
-                            }
                             <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" ParentRubric="0" />
                         </CascadingValue>
                     </CascadingValue>

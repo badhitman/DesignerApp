@@ -17,12 +17,18 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
+    [Inject]
+    IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
+
+    /// <inheritdoc/>
+    [Parameter,EditorRequired]
+    public required Action Update {  get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -49,19 +55,28 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     async Task CreateIssue()
     {
         IsBusyProgress = true;
+        TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync();
+        if (!_current_user.Success() || _current_user.Response is null)
+        {
+            IsBusyProgress = false;
+            SnackbarRepo.ShowMessagesResponse(_current_user.Messages);
+            return;
+        }
+
         TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new IssueHelpdeskModelDB()
         {
-            AuthorIdentityUserId = "",
+            AuthorIdentityUserId = _current_user.Response.UserId,
             RubricIssueId = SelectedRubric?.Id,
-            LastUpdateAt = DateTime.Now,
-            Name = "",
+            Name = Name!,
             Description = Description,
-            ExecutorIdentityUserId = "",
             StepIssue = HelpdeskIssueStepsEnum.Created,
 
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (res.Success())
+            ToggleMode();
+        Update();
     }
 
     /// <inheritdoc/>
@@ -98,6 +113,8 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
         if (!IsEditMode)
         {
             Description = null;
+            Name = null;
+            SelectedRubric = null;
             return;
         }
     }
