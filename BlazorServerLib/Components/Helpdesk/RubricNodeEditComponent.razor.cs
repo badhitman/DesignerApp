@@ -69,7 +69,8 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
         if (string.IsNullOrWhiteSpace(itemSystemName))
             throw new ArgumentNullException(nameof(itemSystemName));
-
+        
+        IsRenameMode = false;
         ItemModel.Name = itemSystemName;
 
         IsBusyProgress = true;
@@ -85,7 +86,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);
+        //ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);
     }
 
     /// <inheritdoc/>

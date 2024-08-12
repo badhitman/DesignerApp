@@ -6,7 +6,6 @@ using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
-using System.Linq;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -46,10 +45,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 
     async void ReloadNodeAction(int parent_id)
     {
-        IsBusyProgress = true;
         List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics(parent_id);
-        IsBusyProgress = false;
-
         if (parent_id > 0)
         {
             TreeItemDataRubricModel findNode = FindNode(parent_id, InitialTreeItems) ?? throw new Exception();

@@ -38,6 +38,25 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskLowModel?
     public static bool operator !=(TreeItemDataRubricModel? e1, TreeItemDataRubricModel? e2)
         => e1?.Value != e2?.Value;
 
+
+    /// <inheritdoc/>
+    public static bool operator ==(TreeItemDataRubricModel? e1, TreeItemData<RubricIssueHelpdeskLowModel?> e2)
+        => (e1 is null && e2 is null) || e1?.Value == e2?.Value;
+
+    /// <inheritdoc/>
+    public static bool operator !=(TreeItemDataRubricModel? e1, TreeItemData<RubricIssueHelpdeskLowModel?> e2)
+        => e1?.Value != e2?.Value;
+
+
+    /// <inheritdoc/>
+    public static bool operator ==(TreeItemData<RubricIssueHelpdeskLowModel?> e1, TreeItemDataRubricModel? e2)
+        => (e1 is null && e2 is null) || e1?.Value == e2?.Value;
+
+    /// <inheritdoc/>
+    public static bool operator !=(TreeItemData<RubricIssueHelpdeskLowModel?> e2, TreeItemDataRubricModel? e1)
+        => e1?.Value != e2?.Value;
+
+
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
@@ -46,6 +65,8 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskLowModel?
 
         if (obj is TreeItemDataRubricModel _e)
             return Value == _e.Value;
+        else if (obj is TreeItemData<RubricIssueHelpdeskLowModel?> _v)
+            return Value == _v.Value;
 
         return base.Equals(obj);
     }

@@ -6,17 +6,17 @@
 
 <MudTreeView Style="width: 100%" ServerData="@LoadServerData" Items="@InitialTreeItems">
     <ItemTemplate Context="item">
-        <MudTreeViewItem Text="@item.Text" Icon="@item.Icon" Value="item.Value" Items="item.Children" CanExpand="item.Expandable">
+        <MudTreeViewItem @key="@($"node-rubric-{item.Value?.Id}")" Text="@item.Text" Icon="@item.Icon" Value="item.Value" Items="item.Children" CanExpand="item.Expandable">
             <BodyContent>
                 <CascadingValue Value="ReloadNodeAction">
                     <CascadingValue Value="(TreeItemDataRubricModel)item">
                         @if (item.Value!.Id > 0)
                         {
-                            <RubricNodeEditComponent @key="@($"rubric-{item.GetHashCode()}")" />
+                            <RubricNodeEditComponent />
                         }
                         else
                         {
-                            <RubricNodeCreatingNewComponent @key="@($"rubric-{item.GetHashCode()}")" />
+                            <RubricNodeCreatingNewComponent />
                         }
                     </CascadingValue>
                 </CascadingValue>
