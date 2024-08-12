@@ -2,13 +2,16 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.Pages;
 
+/// <summary>
+/// IssueCardPage
+/// </summary>
 public partial class IssueCardPage : BlazorBusyComponentBaseModel
 {
     [Inject]
@@ -32,8 +35,12 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
 
 
     /// <inheritdoc/>
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
+        IsBusyProgress = true;
+        TResponseModel<UserInfoModel?> user = await UsersProfilesRepo.FindByIdAsync();
+        IsBusyProgress = false;
+
+        
     }
 }
