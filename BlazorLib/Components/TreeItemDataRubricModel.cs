@@ -10,17 +10,25 @@ namespace BlazorLib;
 /// <summary>
 /// Tree Item Data Rubric
 /// </summary>
-public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskBaseModelDB?>
+public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskLowModel?>
 {
     /// <summary>
     /// Tree Item Data Rubric
     /// </summary>
-    public TreeItemDataRubricModel(RubricIssueHelpdeskBaseModelDB entry, string icon) : base(entry)
+    public TreeItemDataRubricModel(RubricIssueHelpdeskLowModel entry, string icon) : base(entry)
     {
         Text = entry.Name;
         Icon = icon;
         Expandable = entry.Id > 0;
     }
+
+    /// <summary>
+    /// Состояние элемента касательно возможности его сдвинуть (выше/ниже)
+    /// </summary>
+    /// <remarks>
+    /// Для организации перемещения/сдвига строк в таблицах/списках
+    /// </remarks>
+    public MoveRowStatesEnum MoveRowState { get; set; }
 
     /// <inheritdoc/>
     public static bool operator ==(TreeItemDataRubricModel? e1, TreeItemDataRubricModel? e2)
@@ -30,6 +38,25 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskBaseModel
     public static bool operator !=(TreeItemDataRubricModel? e1, TreeItemDataRubricModel? e2)
         => e1?.Value != e2?.Value;
 
+
+    /// <inheritdoc/>
+    public static bool operator ==(TreeItemDataRubricModel? e1, TreeItemData<RubricIssueHelpdeskLowModel?> e2)
+        => (e1 is null && e2 is null) || e1?.Value == e2?.Value;
+
+    /// <inheritdoc/>
+    public static bool operator !=(TreeItemDataRubricModel? e1, TreeItemData<RubricIssueHelpdeskLowModel?> e2)
+        => e1?.Value != e2?.Value;
+
+
+    /// <inheritdoc/>
+    public static bool operator ==(TreeItemData<RubricIssueHelpdeskLowModel?> e1, TreeItemDataRubricModel? e2)
+        => (e1 is null && e2 is null) || e1?.Value == e2?.Value;
+
+    /// <inheritdoc/>
+    public static bool operator !=(TreeItemData<RubricIssueHelpdeskLowModel?> e2, TreeItemDataRubricModel? e1)
+        => e1?.Value != e2?.Value;
+
+
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
@@ -38,6 +65,8 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskBaseModel
 
         if (obj is TreeItemDataRubricModel _e)
             return Value == _e.Value;
+        else if (obj is TreeItemData<RubricIssueHelpdeskLowModel?> _v)
+            return Value == _v.Value;
 
         return base.Equals(obj);
     }

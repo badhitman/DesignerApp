@@ -18,6 +18,7 @@ public class RubricForIssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskConte
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricForIssuesUpdateHelpdeskReceive;
 
+    /// <inheritdoc/>
     public async Task<TResponseModel<int?>> ResponseHandleAction(RubricIssueHelpdeskModelDB? rubric)
     {
         ArgumentNullException.ThrowIfNull(rubric);
@@ -38,12 +39,30 @@ public class RubricForIssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskConte
 
         if (rubric.Id < 1)
         {
+            uint[] six = await context
+                            .RubricsForIssues
+                            .Where(x => x.ParentRubricId == rubric.ParentRubricId)
+                            .Select(x => x.SortIndex)
+                            .ToArrayAsync();
+
+            rubric.SortIndex = six.Length == 0 ? 1 : six.Max() + 1;
+
             await context.AddAsync(rubric);
             res.AddSuccess("Рубрика успешна создана");
         }
         else
         {
-            context.Update(rubric);
+            RubricIssueHelpdeskModelDB rubric_db = await context
+                            .RubricsForIssues
+                            .FirstAsync(x => x.Id == rubric.Id);
+
+            rubric_db.ParentRubricId = rubric.ParentRubricId;
+            rubric_db.ProjectId = rubric.ProjectId;
+            rubric_db.Description = rubric.Description;
+            rubric_db.Name = rubric.Name;
+            rubric_db.IsDisabled = rubric.IsDisabled;
+
+            context.Update(rubric_db);
             res.AddSuccess("Рубрика успешна обновлена");
         }
 

@@ -54,6 +54,26 @@ public static partial class GlobalStaticConstants
     public const string TransmissionQueueNamePrefix = "Transmission.Receives";
 
     /// <summary>
+    /// Cloud storage metadata
+    /// </summary>
+    public static class CloudStorageMetadata
+    {
+        /// <inheritdoc/>
+        public static StorageCloudParameterModel ParameterShowDisabledRubrics => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.SHOW_ACTION_NAME}-{Routes.DISABLED_CONTROLLER_NAME}"),
+        };
+
+        /// <inheritdoc/>
+        public static StorageCloudParameterModel ModeSelectingRubrics => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"),
+        };
+    }
+
+    /// <summary>
     /// Transmission MQ queues
     /// </summary>
     public static class TransmissionQueues
@@ -96,6 +116,9 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string RubricsForIssuesListHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRIC_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.LIST_ACTION_NAME);
 
+        /// <inheritdoc/>
+        public readonly static string RubricForIssuesMoveHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRIC_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.MOVE_ACTION_NAME);
+
 
         /// <inheritdoc/>
         public readonly static string IssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ISSUE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
@@ -110,7 +133,18 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string MessageOfIssueSetAsResponseHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME, Routes.MARK_ACTION_NAME);
         #endregion
-    }//SetMessageAsResponseIssueRequestModel
+
+        #region storage cloud parameters
+        /// <inheritdoc/>
+        public readonly static string SaveCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.SET_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string ReadCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string FindCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
+        #endregion
+    }
 
     /// <summary>
     /// имена контроллеров и действий
@@ -150,7 +184,27 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Helpdesk
         /// </summary>
-        public const string HELPDESK_CONTROLLER_NAME = "telegram";
+        public const string HELPDESK_CONTROLLER_NAME = "helpdesk";
+
+        /// <summary>
+        /// Cloud
+        /// </summary>
+        public const string CLOUD_CONTROLLER_NAME = "cloud";
+
+        /// <summary>
+        /// Property
+        /// </summary>
+        public const string PROPERTY_CONTROLLER_NAME = "property";
+
+        /// <summary>
+        /// Form
+        /// </summary>
+        public const string FORM_CONTROLLER_NAME = "form";
+
+        /// <summary>
+        /// Disabled
+        /// </summary>
+        public const string DISABLED_CONTROLLER_NAME = "disabled";
 
         /// <summary>
         /// Issue
@@ -231,6 +285,16 @@ public static partial class GlobalStaticConstants
         public const string JOIN_ACTION_NAME = "join";
 
         /// <summary>
+        /// Show
+        /// </summary>
+        public const string SHOW_ACTION_NAME = "show";
+
+        /// <summary>
+        /// Mode
+        /// </summary>
+        public const string MODE_ACTION_NAME = "mode";
+
+        /// <summary>
         /// Отправить
         /// </summary>
         public const string SEND_ACTION_NAME = "send";
@@ -261,6 +325,11 @@ public static partial class GlobalStaticConstants
         public const string READ_ACTION_NAME = "read";
 
         /// <summary>
+        /// Найти
+        /// </summary>
+        public const string FIND_ACTION_NAME = "find";
+
+        /// <summary>
         /// Редактировать
         /// </summary>
         public const string EDIT_ACTION_NAME = "edit";
@@ -274,6 +343,11 @@ public static partial class GlobalStaticConstants
         /// Список
         /// </summary>
         public const string LIST_ACTION_NAME = "list";
+
+        /// <summary>
+        /// Move
+        /// </summary>
+        public const string MOVE_ACTION_NAME = "move";
 
         /// <summary>
         /// Выборка

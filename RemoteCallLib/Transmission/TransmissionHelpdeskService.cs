@@ -6,6 +6,7 @@ using SharedLib;
 
 namespace RemoteCallLib;
 
+/// <inheritdoc/>
 public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdeskRemoteTransmissionService
 {
     /// <inheritdoc/>
@@ -13,8 +14,8 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.RubricForIssuesUpdateHelpdeskReceive, issueTheme);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricsForIssuesList(ProjectOwnedRequestModel req)
-        => await rabbitClient.MqRemoteCall<List<RubricIssueHelpdeskModelDB>>(GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive, req);
+    public async Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsForIssuesList(ProjectOwnedRequestModel req)
+        => await rabbitClient.MqRemoteCall<List<RubricIssueHelpdeskLowModel>>(GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive, req);
 
 
     /// <inheritdoc/>
@@ -22,8 +23,8 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.IssueUpdateHelpdeskReceive, issue);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<IssueHelpdeskModelDB[]?>> IssuesSelect(GetIssuesForUserRequestModel req)
-        => await rabbitClient.MqRemoteCall<IssueHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive, req);
+    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModelDB>?>> IssuesSelect(GetIssuesForUserRequestModel req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<IssueHelpdeskModelDB>>(GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive, req);
 
 
     /// <inheritdoc/>
@@ -33,4 +34,8 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> MessageOfIssueSetAsResponse(SetMessageAsResponseIssueRequestModel req)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.MessageOfIssueSetAsResponseHelpdeskReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> RubricForIssuesMove(RowMoveModel req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.RubricForIssuesMoveHelpdeskReceive, req);
 }

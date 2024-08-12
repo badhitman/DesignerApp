@@ -42,4 +42,9 @@ public partial class LayerContext : DbContext
     /// Действия, связанные с подключения Telegram аккаунта к учётной записи сайта
     /// </summary>
     public DbSet<TelegramJoinAccountModelDb> TelegramJoinActions { get; set; }
+
+    /// <summary>
+    /// Блокировщики
+    /// </summary>
+    public DbSet<LockUniqueTokenModelDB> Lockers { get; set; }
 }

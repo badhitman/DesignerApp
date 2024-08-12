@@ -1,7 +1,10 @@
-﻿<h3>ParametersComponent</h3>
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-@code {
-
-}
+<div class="container-fluid">
+    <div class="row">
+        <RubricsParametersComponent />
+    </div>
+</div>

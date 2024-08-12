@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using DbcLib;
+using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 
@@ -10,16 +12,72 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// GetIssuesForUser
 /// </summary>
-public class IssuesForUserSelectReceive
-    : IResponseReceive<GetIssuesForUserRequestModel?, IssueHelpdeskModelDB[]?>
+public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+    : IResponseReceive<GetIssuesForUserRequestModel?, TPaginationResponseModel<IssueHelpdeskModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive;
 
-    public Task<TResponseModel<IssueHelpdeskModelDB[]?>> ResponseHandleAction(GetIssuesForUserRequestModel? req)
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModelDB>?>> ResponseHandleAction(GetIssuesForUserRequestModel? req)
     {
-        TResponseModel<IssueHelpdeskModelDB[]?> res = new();
+        ArgumentNullException.ThrowIfNull(req);
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModelDB>?> res = new()
+        {
+            Response = new()
+        };
 
-        return Task.FromResult(res);
+        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+
+        IQueryable<IssueHelpdeskModelDB> q = context
+            .Issues
+            .Where(x => x.ProjectId == req.ProjectId)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.SearchQuery))
+        {
+            req.SearchQuery = req.SearchQuery.ToUpper();
+            q = q.Where(x => x.NormalizeNameUpper!.Contains(req.SearchQuery));
+        }
+
+        switch (req.JournalMode)
+        {
+            case HelpdeskJournalModesEnum.ActualOnly:
+                q = q.Where(x => x.StepIssue <= HelpdeskIssueStepsEnum.Progress);
+                break;
+            case HelpdeskJournalModesEnum.ArchiveOnly:
+                q = q.Where(x => x.StepIssue > HelpdeskIssueStepsEnum.Progress);
+                break;
+            default:
+                break;
+        }
+
+        switch (req.UserArea)
+        {
+            case UsersAreasHelpdeskEnum.Author:
+                q = q.Where(x => x.AuthorIdentityUserId == req.Request.IdentityUserId);
+                break;
+            case UsersAreasHelpdeskEnum.Subscriber:
+                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.AuthorIdentityUserId == req.Request.IdentityUserId));
+                break;
+            case UsersAreasHelpdeskEnum.Executor:
+                q = q.Where(x => x.ExecutorIdentityUserId == req.Request.IdentityUserId);
+                break;
+            case UsersAreasHelpdeskEnum.Main:
+                q = q.Where(x => x.ExecutorIdentityUserId == req.Request.IdentityUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.AuthorIdentityUserId == req.Request.IdentityUserId));
+                break;
+        }
+        res.Response.TotalRowsCount = await q.CountAsync();
+        res.Response.Response = await q
+            .Include(x => x.RubricIssue)
+            .Include(x => x.Subscribers)
+            .Include(x => x.Messages!)
+            .ThenInclude(x => x.MarksAsResponse)
+            .OrderBy(x => x.CreatedAt)
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize)
+            .ToListAsync();
+
+        return res;
     }
 }

@@ -31,10 +31,10 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required TreeItemData<RubricIssueHelpdeskBaseModelDB> Item { get; set; }
+    public required TreeItemData<RubricIssueHelpdeskLowModel> Item { get; set; }
 
 
-    RubricIssueHelpdeskBaseModelDB ItemModel = default!;
+    RubricIssueHelpdeskLowModel ItemModel = default!;
 
     string? rubricName;
 

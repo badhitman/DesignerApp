@@ -60,19 +60,27 @@ builder.ConfigureServices((context, services) =>
 
     string connectionIdentityString = context.Configuration.GetConnectionString("HelpdeskConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
     services.AddDbContextFactory<HelpdeskContext>(opt =>
-    opt.UseSqlite(connectionIdentityString));
+    {
+        opt.UseSqlite(connectionIdentityString);
+
+#if DEBUG
+        opt.EnableSensitiveDataLogging(true);
+#endif
+    });
 
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
+    services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     ////
-    services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskModelDB[]?>();
+    services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskLowModel[]?>();
     services.RegisterMqListener<RubricForIssueCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
-    services.RegisterMqListener<IssuesForUserSelectReceive, GetIssuesForUserRequestModel?, IssueHelpdeskModelDB[]?>();
+    services.RegisterMqListener<IssuesForUserSelectReceive, GetIssuesForUserRequestModel?, TPaginationResponseModel<IssueHelpdeskModelDB>?>();
     services.RegisterMqListener<IssueCreateOrUpdateReceive, IssueHelpdeskModelDB?, int?>();
     services.RegisterMqListener<MessageIssueSetAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
     services.RegisterMqListener<MessageForIssueUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();
+    services.RegisterMqListener<RubricForIssuesMoveReceive, RowMoveModel?, bool?>();
     //
     #endregion
 });

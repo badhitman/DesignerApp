@@ -21,19 +21,39 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 
     List<TreeItemDataRubricModel> InitialTreeItems { get; set; } = [];
 
+    List<TreeItemData<RubricIssueHelpdeskLowModel?>> ConvertRubrics(IEnumerable<RubricIssueHelpdeskLowModel> rubrics)
+    {
+        (uint min, uint max) = rubrics.Any(x => x.SortIndex != uint.MaxValue)
+            ? (rubrics.Min(x => x.SortIndex), rubrics.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
+            : (0, 0);
+
+        return [.. rubrics.Select(x => {
+                MoveRowStatesEnum mhp;
+            if(x.SortIndex == min && x.SortIndex == max)
+                mhp = MoveRowStatesEnum.Singleton;
+            else if(x.SortIndex == min)
+                mhp = MoveRowStatesEnum.Start;
+            else if(x.SortIndex == max)
+                mhp = MoveRowStatesEnum.End;
+            else
+                mhp = MoveRowStatesEnum.Between;
+
+                return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.CropFree){ MoveRowState = mhp };
+            })];
+    }
+
+
     async void ReloadNodeAction(int parent_id)
     {
-        IsBusyProgress = true;
-        List<RubricIssueHelpdeskModelDB> rubrics = await RequestRubrics(parent_id);
-        IsBusyProgress = false;
+        List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics(parent_id);
         if (parent_id > 0)
         {
             TreeItemDataRubricModel findNode = FindNode(parent_id, InitialTreeItems) ?? throw new Exception();
-            findNode.Children = [.. rubrics.Select(x => new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.CropFree))];
+            findNode.Children = ConvertRubrics(rubrics);
         }
         else
         {
-            InitialTreeItems = [.. (rubrics.Select(x => new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight)))];
+            InitialTreeItems = [.. ConvertRubrics(rubrics).Cast<TreeItemDataRubricModel>()];
         }
 
         StateHasChanged();
@@ -45,13 +65,13 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         if (res is not null)
             return res;
 
-        TreeItemDataRubricModel? FindChildNode(List<TreeItemData<RubricIssueHelpdeskBaseModelDB?>> children)
+        TreeItemDataRubricModel? FindChildNode(List<TreeItemData<RubricIssueHelpdeskLowModel?>> children)
         {
-            TreeItemData<RubricIssueHelpdeskBaseModelDB?>? res_child = children.FirstOrDefault(x => x.Value?.Id == parent_id);
+            TreeItemData<RubricIssueHelpdeskLowModel?>? res_child = children.FirstOrDefault(x => x.Value?.Id == parent_id);
             if (res_child is not null)
                 return (TreeItemDataRubricModel?)res_child;
 
-            foreach (TreeItemData<RubricIssueHelpdeskBaseModelDB?> c in children)
+            foreach (TreeItemData<RubricIssueHelpdeskLowModel?> c in children)
             {
                 if (c.Children is not null)
                 {
@@ -80,32 +100,34 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async void OnInitialized()
     {
-        List<RubricIssueHelpdeskModelDB> res = await RequestRubrics();
-        InitialTreeItems = [.. (res.Select(x => new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight)))];
+        List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics();
+        InitialTreeItems = [.. ConvertRubrics(rubrics).Cast<TreeItemDataRubricModel>()];
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyCollection<TreeItemData<RubricIssueHelpdeskBaseModelDB?>>> LoadServerData(RubricIssueHelpdeskBaseModelDB? parentValue)
+    public async Task<IReadOnlyCollection<TreeItemData<RubricIssueHelpdeskLowModel?>>> LoadServerData(RubricIssueHelpdeskLowModel? parentValue)
     {
         ArgumentNullException.ThrowIfNull(parentValue);
 
-        List<RubricIssueHelpdeskModelDB> res = await RequestRubrics(parentValue.Id);
+        List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics(parentValue.Id);
         TreeItemDataRubricModel findNode = FindNode(parentValue.Id, InitialTreeItems) ?? throw new Exception();
 
-        findNode.Children = [.. res.Select(x => new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight))];
+        findNode.Children = ConvertRubrics(rubrics);
         return findNode.Children;
     }
 
-    async Task<List<RubricIssueHelpdeskModelDB>> RequestRubrics(int? parent_id = null)
+    async Task<List<RubricIssueHelpdeskLowModel>> RequestRubrics(int? parent_id = null)
     {
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> rest = await HelpdeskRepo.RubricsForIssuesList(new ProjectOwnedRequestModel() { OwnerId = parent_id });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsForIssuesList(new ProjectOwnedRequestModel() { OwnerId = parent_id });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null)
             throw new Exception();
 
-        rest.Response.Add(new RubricIssueHelpdeskModelDB() { Name = "", SortIndex = uint.MaxValue, ParentRubricId = parent_id });
+        rest.Response = [.. rest.Response.OrderBy(x => x.SortIndex)];
+
+        rest.Response.Add(new RubricIssueHelpdeskLowModel() { Name = "", SortIndex = uint.MaxValue, ParentRubricId = parent_id });
         return rest.Response;
     }
 }

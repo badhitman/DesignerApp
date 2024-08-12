@@ -2,38 +2,50 @@
 
 @using MudBlazor
 
-@if (!IsEditMode)
+<br />
+@if (IsBusyProgress)
 {
-    <MudButton OnClick="() => { IsEditMode = true; }" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Создать новое обращение</MudButton>
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
 }
 else
 {
-    <MudCard>
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h6">The Story Book</MudText>
-            </CardHeaderContent>
-            <CardHeaderActions>
-                <MudIconButton OnClick="() => { IsEditMode = false; }" Icon="@Icons.Material.Filled.Close" Color="Color.Default" />
-            </CardHeaderActions>
-        </MudCardHeader>
-        <MudCardContent>
-            <InputRichTextComponent @bind-Value="Description" ReadOnly="IsBusyProgress" />
-            <MudText>This day everything happened.</MudText>
-            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
-        </MudCardContent>
-        <MudCardActions>
-            <MudButton Variant="Variant.Text" Color="Color.Primary">Создать</MudButton>
-            <MudButton OnClick="() => { IsEditMode = false; }" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
-        </MudCardActions>
-    </MudCard>
-}
-
-@code {
-    [CascadingParameter, EditorRequired]
-    public required Action<HelpdeskJournalModesEnum> ReloadIssueJournal { get; set; }
-
-    string? Description;
-
-    bool IsEditMode { get; set; } = false;
+    if (!IsEditMode)
+    {
+        <MudButton OnClick="ToggleMode" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Создать новое обращение</MudButton>
+    }
+    else
+    {
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Создание нового диалога</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Disabled="IsBusyProgress" OnClick="ToggleMode" Icon="@Icons.Material.Filled.Close" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack>
+                    <CascadingValue Value="RubricSelectAction">
+                        <CascadingValue Value="SelectedRubric">
+                            <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" ParentRubric="0" />
+                        </CascadingValue>
+                    </CascadingValue>
+                    <div>
+                        <label for="inputName" class="form-label">Название обращения</label>
+                        <input @bind-value="Name" @bind-value:event="oninput" type="text" id="inputName" class="form-control" placeholder="Заголовок">
+                    </div>
+                    <InputRichTextComponent @bind-Value="Description" ReadOnly="IsBusyProgress" />
+                </MudStack>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Disabled="(IsBusyProgress || !CanCreate)" OnClick="CreateIssue" Variant="Variant.Text" Color="Color.Success">Создать</MudButton>
+                <MudButton Disabled="IsBusyProgress" OnClick="ToggleMode" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
 }

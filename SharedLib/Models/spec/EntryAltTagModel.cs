@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// EntryAltTagModel
 /// </summary>
-public class EntryAltTagModel: EntryAltModel
+public class EntryAltTagModel : EntryAltModel
 {
     /// <summary>
     /// Tag

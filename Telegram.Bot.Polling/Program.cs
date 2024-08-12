@@ -86,6 +86,7 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IRabbitClient, RabbitClient>();
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
+    services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     //
     services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>();
     services.RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>();

@@ -12,18 +12,23 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricsForIssuesList(ProjectOwnedRequestModel req);
+    public Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsForIssuesList(ProjectOwnedRequestModel req);
 
     /// <summary>
     /// Создать тему для обращений
     /// </summary>
     public Task<TResponseModel<int?>> RubricForIssuesCreateOrUpdate(RubricIssueHelpdeskModelDB issueTheme);
 
+    /// <summary>
+    /// Сдвинуть рубрику
+    /// </summary>
+    public Task<TResponseModel<bool?>> RubricForIssuesMove(RowMoveModel req);
+
 
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
-    public Task<TResponseModel<IssueHelpdeskModelDB[]?>> IssuesSelect(GetIssuesForUserRequestModel req);
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModelDB>?>> IssuesSelect(GetIssuesForUserRequestModel req);
 
     /// <summary>
     /// Создать обращение

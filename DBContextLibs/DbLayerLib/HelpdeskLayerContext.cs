@@ -74,4 +74,9 @@ public partial class HelpdeskLayerContext : DbContext
     /// По такой ссылке доступ только в HelpDesk.
     /// </remarks>
     public DbSet<AnonymTelegramAccessHelpdeskModelDB> AccessTokens { get; set; }
+
+    /// <summary>
+    /// Блокировщики
+    /// </summary>
+    public DbSet<LockUniqueTokenModelDB> Lockers { get; set; }
 }

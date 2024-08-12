@@ -153,6 +153,7 @@ builder.Services.AddScoped<IJournalUniversalService, JournalConstructorService>(
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 builder.Services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
 builder.Services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
+builder.Services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
 //
 builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserModel?>();
 builder.Services.RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();

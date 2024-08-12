@@ -24,7 +24,7 @@ public class PaginationRequestModel
     /// <summary>
     /// Размер страницы (количество элементов на странице)
     /// </summary>
-    public int PageSize { get; set; }
+    public int PageSize { get; set; } = 10;
 
     /// <summary>
     /// Номер текущей страницы

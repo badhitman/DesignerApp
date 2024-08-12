@@ -9,18 +9,18 @@ namespace SharedLib;
 /// <summary>
 /// IssueTelegramModelDB
 /// </summary>
-[Index(nameof(AuthorTelegramUserId), nameof(AuthorIdentityUserId), nameof(ExecutorIdentityUserId), nameof(LastUpdateAt))]
+[Index(nameof(AuthorIdentityUserId), nameof(ExecutorIdentityUserId), nameof(LastUpdateAt))]
 public class IssueHelpdeskModelDB : EntryDescriptionModel
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    public string? NormalizeNameUpper { get; set; }
+
     /// <summary>
     /// Шаг/статус обращения: "Создан", "В работе", "На проверке" и "Готово"
     /// </summary>
     public HelpdeskIssueStepsEnum StepIssue { get; set; }
-
-    /// <summary>
-    /// TelegramUserId
-    /// </summary>
-    public required long? AuthorTelegramUserId { get; set; }
 
     /// <summary>
     /// IdentityUserId
@@ -33,24 +33,29 @@ public class IssueHelpdeskModelDB : EntryDescriptionModel
     public string? ExecutorIdentityUserId { get; set; }
 
     /// <summary>
-    /// IssueTheme
+    /// ProjectId
     /// </summary>
-    public required int IssueThemeId { get; set; }
+    public int ProjectId { get; set; }
 
     /// <summary>
-    /// IssueTheme
+    /// Rubric Issue
     /// </summary>
-    public RubricIssueHelpdeskModelDB? IssueTheme { get; set; }
+    public required int? RubricIssueId { get; set; }
+
+    /// <summary>
+    /// Rubric Issue
+    /// </summary>
+    public RubricIssueHelpdeskModelDB? RubricIssue { get; set; }
 
     /// <summary>
     /// CreatedAt
     /// </summary>
-    public required DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// LastUpdateAt
     /// </summary>
-    public required DateTime LastUpdateAt { get; set; } = DateTime.UtcNow;
+    public DateTime LastUpdateAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// AnonymAccess

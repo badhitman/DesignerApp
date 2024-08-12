@@ -1,4 +1,4 @@
-﻿## RabbitMQ транспорт
+﻿## RabbitMQ транспорт (+ общие/разделяемые параметры)
 
 Транспорт устроен просто. Сначала нужно определить тип параметра для вызова команды (объект будет отправлен серверу как *payload* запроса), а так же тип возвращаемого ответа. Далее нужно реализовать единственный метод интерфейса [IResponseReceive](https://github.com/badhitman/DesignerApp/blob/main/RemoteCallLib/base/IResponseReceive.cs) с указанием этих самых типов запроса/ответа. Как пример вот как это выглядит в базовых реализациях:
 
@@ -181,6 +181,12 @@ string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}
 Вот на эту временную очередь отправитель ожидает ответ. Пример:
 ```
 response.transit-Transmission.Receives\web\configuration\read_c68fbf43-0229-4df7-9d48-6bdc8a9384ef
+```
+
+#### Общие/разделяемые параметры
+На базе этого же решения RabbitMQ транспорта была развёрнута система общих/разделяемых параметров. Благодаря ей можно хранить и читать параметры разным сервисам обращаясь к обще службе, которая автономно хранит все данные в своей БД. Хранить можно любые `сериализуемые` данные.
+```c#
+builder.Services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
 ```
 
 [^1]: С примерами реализаций можно ознакомиться на командах, которые были реализованы в рамках данного решения. Несколько команд есть для [Telegram бота](./Receives/telegram) и некоторое количество сделано для [BlazorWebApp](./Receives/web) службы
