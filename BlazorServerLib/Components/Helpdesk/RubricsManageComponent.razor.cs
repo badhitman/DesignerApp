@@ -42,6 +42,12 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
             })];
     }
 
+    void ItemUpdAction(RubricIssueHelpdeskLowModel sender)
+    {
+        TreeItemDataRubricModel findNode = FindNode(sender.Id, InitialTreeItems) ?? throw new Exception();
+        findNode.Text = sender.Name;
+        findNode.Value?.Update(sender);
+    }
 
     async void ReloadNodeAction(int parent_id)
     {

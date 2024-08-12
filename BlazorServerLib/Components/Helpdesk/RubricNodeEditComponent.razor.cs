@@ -27,6 +27,10 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
+    public required Action<RubricIssueHelpdeskLowModel> ItemUpdateHandle { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
     public required TreeItemDataRubricModel Item { get; set; }
 
     /// <inheritdoc/>
@@ -86,6 +90,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
+        ItemUpdateHandle(ItemModel);
         //ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);
     }
 

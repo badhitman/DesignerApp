@@ -53,4 +53,16 @@ public class RubricIssueHelpdeskLowModel : EntryDescriptionSwitchableModel
     /// <inheritdoc/>
     public override int GetHashCode()
         => $"{ProjectId}|{ParentRubricId} {Id}/{SortIndex}/{IsDisabled} {Name} {Description}".GetHashCode();
+
+    /// <inheritdoc/>
+    public void Update(RubricIssueHelpdeskLowModel sender)
+    {
+        ProjectId = sender.ProjectId;
+        Name = sender.Name;
+        Description = sender.Description;
+        SortIndex = sender.SortIndex;
+        ParentRubricId = sender.ParentRubricId;
+        IsDisabled = sender.IsDisabled;
+        Id = sender.Id;
+    }
 }
