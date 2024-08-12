@@ -4,6 +4,7 @@
 
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using RemoteCallLib;
 using SharedLib;
 
@@ -25,9 +26,26 @@ public class RubricForIssuesMoveReceive(IDbContextFactory<HelpdeskContext> helpd
         TResponseModel<bool?> res = new();
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-        RubricIssueHelpdeskModelDB data = await context
-            .RubricsForIssues
-            .FirstAsync(x => x.Id == req.ObjectId);
+
+        var data = await context
+        .RubricsForIssues
+        .Where(x => x.Id == req.ObjectId)
+        .Select(x => new { x.Id, x.ParentRubricId, x.Name })
+        .FirstAsync(x => x.Id == req.ObjectId);
+
+        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        LockUniqueTokenModelDB locker = new() { Token = $"rubric-sort-upd-{data.ParentRubricId}" };
+        try
+        {
+            await context.AddAsync(locker);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            res.AddError($"Не удалось выполнить команду: {ex.Message}");
+            return res;
+        }
 
         List<RubricIssueHelpdeskModelDB> all = await context
             .RubricsForIssues
@@ -45,10 +63,22 @@ public class RubricForIssuesMoveReceive(IDbContextFactory<HelpdeskContext> helpd
             }
             else
             {
-                all[i - 1].SortIndex++;
-                all[i].SortIndex--;
-                context.UpdateRange(all[i - 1], all[i]);
+                RubricIssueHelpdeskModelDB r1 = all[i - 1], r2 = all[i];
+                uint val1 = r1.SortIndex, val2 = r2.SortIndex;
+                r1.SortIndex = uint.MaxValue;
+                context.Update(r1);
                 await context.SaveChangesAsync();
+                r2.SortIndex = val1;
+                context.Update(r2);
+                await context.SaveChangesAsync();
+                r1.SortIndex = val2;
+                context.Update(r1);
+                await context.SaveChangesAsync();
+                //r1.SortIndex++;
+                //r2.SortIndex--;
+                //context.UpdateRange(all);
+                //await context.SaveChangesAsync();
+
                 res.Response = true;
                 res.AddSuccess($"Рубрика '{data.Name}' сдвинута выше");
             }
@@ -62,10 +92,22 @@ public class RubricForIssuesMoveReceive(IDbContextFactory<HelpdeskContext> helpd
             }
             else
             {
-                all[i + 1].SortIndex--;
-                all[i].SortIndex++;
-                context.UpdateRange(all[i + 1], all[i]);
+                RubricIssueHelpdeskModelDB r1 = all[i + 1], r2 = all[i];
+                uint val1 = r1.SortIndex, val2 = r2.SortIndex;
+                r1.SortIndex = uint.MaxValue;
+                context.Update(r1);
                 await context.SaveChangesAsync();
+                r2.SortIndex = val1;
+                context.Update(r2);
+                await context.SaveChangesAsync();
+                r1.SortIndex = val2;
+                context.Update(r1);
+                await context.SaveChangesAsync();
+                //r1.SortIndex--;
+                //r2.SortIndex++;
+                //context.UpdateRange(all);
+                //await context.SaveChangesAsync();
+
                 res.Response = true;
                 res.AddSuccess($"Рубрика '{data.Name}' сдвинута ниже");
             }
@@ -85,9 +127,10 @@ public class RubricForIssuesMoveReceive(IDbContextFactory<HelpdeskContext> helpd
         if (nu)
         {
             context.UpdateRange(all);
-            await context.SaveChangesAsync();
         }
-
+        context.Remove(locker);
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
         return res;
     }
 }

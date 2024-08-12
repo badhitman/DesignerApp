@@ -60,7 +60,13 @@ builder.ConfigureServices((context, services) =>
 
     string connectionIdentityString = context.Configuration.GetConnectionString("HelpdeskConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
     services.AddDbContextFactory<HelpdeskContext>(opt =>
-    opt.UseSqlite(connectionIdentityString));
+    {
+        opt.UseSqlite(connectionIdentityString);
+
+#if DEBUG
+        opt.EnableSensitiveDataLogging(true);
+#endif
+    });
 
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
