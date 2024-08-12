@@ -45,6 +45,11 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     bool IsEditedName => itemSystemName != ItemModel?.Name;
 
+    //Item.MoveRowState
+    static MoveRowStatesEnum[] CantUpMove => [MoveRowStatesEnum.Start, MoveRowStatesEnum.Singleton];
+
+    static MoveRowStatesEnum[] CantDownMove => [MoveRowStatesEnum.End, MoveRowStatesEnum.Singleton];
+
     async Task MoveRow(VerticalDirectionsEnum dir, TreeItemDataRubricModel rubric)
     {
         if (ItemModel is null)

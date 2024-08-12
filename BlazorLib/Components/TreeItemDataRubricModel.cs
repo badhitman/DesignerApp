@@ -23,12 +23,12 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskLowModel?
     }
 
     /// <summary>
-    /// Признак того является ли элемент крайним в перечне
+    /// Состояние элемента касательно возможности его сдвинуть (выше/ниже)
     /// </summary>
     /// <remarks>
-    /// Для определения доступности кнопок перемещения элементов вверх/вниз
+    /// Для организации перемещения/сдвига строк в таблицах/списках
     /// </remarks>
-    public VerticalDirectionsEnum? MostHavePosition { get; set; }
+    public MoveRowStatesEnum MoveRowState { get; set; }
 
     /// <inheritdoc/>
     public static bool operator ==(TreeItemDataRubricModel? e1, TreeItemDataRubricModel? e2)

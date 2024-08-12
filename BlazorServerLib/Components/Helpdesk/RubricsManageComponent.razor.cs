@@ -6,6 +6,7 @@ using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
+using System.Linq;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -21,42 +22,42 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 
     List<TreeItemDataRubricModel> InitialTreeItems { get; set; } = [];
 
-    async void ReloadNodeAction(int parent_id)
+    List<TreeItemData<RubricIssueHelpdeskLowModel?>> ConvertRubrics(IEnumerable<RubricIssueHelpdeskLowModel> rubrics)
     {
-        IsBusyProgress = true;
-        List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics(parent_id);
-
         (uint min, uint max) = rubrics.Any(x => x.SortIndex != uint.MaxValue)
             ? (rubrics.Min(x => x.SortIndex), rubrics.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
             : (0, 0);
 
+        return [.. rubrics.Select(x => {
+                MoveRowStatesEnum mhp;
+            if(x.SortIndex == min && x.SortIndex == max)
+                mhp = MoveRowStatesEnum.Singleton;
+            else if(x.SortIndex == min)
+                mhp = MoveRowStatesEnum.Start;
+            else if(x.SortIndex == max)
+                mhp = MoveRowStatesEnum.End;
+            else
+                mhp = MoveRowStatesEnum.Between;
+
+                return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.CropFree){ MoveRowState = mhp };
+            })];
+    }
+
+
+    async void ReloadNodeAction(int parent_id)
+    {
+        IsBusyProgress = true;
+        List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics(parent_id);
         IsBusyProgress = false;
+
         if (parent_id > 0)
         {
             TreeItemDataRubricModel findNode = FindNode(parent_id, InitialTreeItems) ?? throw new Exception();
-            findNode.Children = [.. rubrics.Select(x => {
-                VerticalDirectionsEnum? mhp = null;
-
-                if(x.SortIndex == min)
-                    mhp = VerticalDirectionsEnum.Up;
-                else if(x.SortIndex == max)
-                    mhp = VerticalDirectionsEnum.Down;
-
-                return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.CropFree){ MostHavePosition = mhp };
-            })];
+            findNode.Children = ConvertRubrics(rubrics);
         }
         else
         {
-            InitialTreeItems = [.. (rubrics.Select(x => {
-                VerticalDirectionsEnum? mhp = null;
-
-                if(x.SortIndex == min)
-                    mhp = VerticalDirectionsEnum.Up;
-                else if(x.SortIndex == max)
-                    mhp = VerticalDirectionsEnum.Down;
-
-                return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight){ MostHavePosition = mhp };
-            }))];
+            InitialTreeItems = [.. ConvertRubrics(rubrics).Cast<TreeItemDataRubricModel>()];
         }
 
         StateHasChanged();
@@ -103,22 +104,8 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async void OnInitialized()
     {
-        List<RubricIssueHelpdeskLowModel> res = await RequestRubrics();
-
-        (uint min, uint max) = res.Any(x => x.SortIndex != uint.MaxValue)
-            ? (res.Min(x => x.SortIndex), res.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
-            : (0, 0);
-
-        InitialTreeItems = [.. (res.Select(x => {
-            VerticalDirectionsEnum? mhp = null;
-
-            if(x.SortIndex == min)
-                mhp = VerticalDirectionsEnum.Up;
-            else if(x.SortIndex == max)
-                mhp = VerticalDirectionsEnum.Down;
-
-            return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight){ MostHavePosition = mhp };
-        }))];
+        List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics();
+        InitialTreeItems = [.. ConvertRubrics(rubrics).Cast<TreeItemDataRubricModel>()];
     }
 
     /// <inheritdoc/>
@@ -126,24 +113,10 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     {
         ArgumentNullException.ThrowIfNull(parentValue);
 
-        List<RubricIssueHelpdeskLowModel> res = await RequestRubrics(parentValue.Id);
+        List<RubricIssueHelpdeskLowModel> rubrics = await RequestRubrics(parentValue.Id);
         TreeItemDataRubricModel findNode = FindNode(parentValue.Id, InitialTreeItems) ?? throw new Exception();
 
-        (uint min, uint max) = res.Any(x => x.SortIndex != uint.MaxValue)
-            ? (res.Min(x => x.SortIndex), res.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
-            : (0, 0);
-
-        findNode.Children = [.. res.Select(x =>
-        {
-            VerticalDirectionsEnum? mhp = null;
-
-            if(x.SortIndex == min)
-                mhp = VerticalDirectionsEnum.Up;
-            else if(x.SortIndex == max)
-                mhp = VerticalDirectionsEnum.Down;
-
-            return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.TurnRight){ MostHavePosition = mhp };
-        })];
+        findNode.Children = ConvertRubrics(rubrics);
         return findNode.Children;
     }
 
