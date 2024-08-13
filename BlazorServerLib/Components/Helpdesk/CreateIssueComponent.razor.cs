@@ -95,7 +95,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
         ModeSelectingRubrics = res_ModeSelectingRubrics.Response.Value;
     }
 
-    void RubricSelectAction(RubricIssueHelpdeskLowModel selectedRubric)
+    void RubricSelectAction(RubricIssueHelpdeskLowModel? selectedRubric)
     {
         SelectedRubric = selectedRubric;
         StateHasChanged();

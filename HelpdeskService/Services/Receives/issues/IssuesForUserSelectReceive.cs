@@ -37,13 +37,13 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
         if (!string.IsNullOrWhiteSpace(req.SearchQuery))
         {
             req.SearchQuery = req.SearchQuery.ToUpper();
-            
+
             q = from issue_element in q
                 join rubric_element in context.RubricsForIssues on issue_element.RubricIssueId equals rubric_element.Id
-                into grp_rubrics from c in grp_rubrics.DefaultIfEmpty()
-                where issue_element.NormalizeNameUpper!.Contains(req.SearchQuery) || c.Name.Contains(req.SearchQuery)
+                into grp_rubrics
+                from c in grp_rubrics.DefaultIfEmpty()
+                where issue_element.NormalizeNameUpper!.Contains(req.SearchQuery) || c.NormalizedNameToUpper!.Contains(req.SearchQuery)
                 select issue_element;
-
         }
 
         switch (req.JournalMode)

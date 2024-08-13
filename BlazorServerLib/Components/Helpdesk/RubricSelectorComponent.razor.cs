@@ -23,7 +23,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required Action<RubricIssueHelpdeskLowModel> SelectedRubricsHandle { get; set; }
+    public required Action<RubricIssueHelpdeskLowModel?> SelectedRubricsHandle { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -51,7 +51,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
             if (childSelector is not null)
                 InvokeAsync(async () => await childSelector.Reset(_selectedRubricId));
 
-            SelectedRubricsHandle(CurrentRubrics!.First(x => x.Id == _selectedRubricId));
+            SelectedRubricsHandle(_selectedRubricId > 0 ? CurrentRubrics!.First(x => x.Id == _selectedRubricId) : null);
         }
     }
 

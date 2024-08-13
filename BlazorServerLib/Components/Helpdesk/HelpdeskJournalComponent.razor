@@ -6,19 +6,19 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Ваши диалоги</MudText>
         <MudSpacer />
-        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" title="Без учёта регистра" Placeholder="Поиск по теме обращения и имени рубрики" Adornment="Adornment.Start"
+        <MudTextField T="string" Clearable="true" ValueChanged="@(s => OnSearch(s))" title="Без учёта регистра" Placeholder="Поиск по теме обращения и имени рубрики" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortLabel="CreatedAt" T="IssueHelpdeskModelDB">Дата время</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="Name" T="IssueHelpdeskModelDB">Тема</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortLabel="Rubric" T="IssueHelpdeskModelDB">Рубрика</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="Name" T="IssueHelpdeskModelDB">Имя</MudTableSortLabel></MudTh>
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="CreatedAt"><a href="@($"/issue-card/{context.Id}")">@context.CreatedAt</a></MudTd>
-        <MudTd DataLabel="Name">@context.RubricIssue?.Name</MudTd>
         <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Name">@context.RubricIssue?.Name</MudTd>
         <MudTd></MudTd>
     </RowTemplate>
     <NoRecordsContent>
