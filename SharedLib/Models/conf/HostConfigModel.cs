@@ -46,7 +46,7 @@ public class HostConfigModel
                 url += $":{Port}";
             }
             url += "/";
-            return new Uri(url);
+            return new(url);
         }
     }
 

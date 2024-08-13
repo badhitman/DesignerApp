@@ -15,6 +15,6 @@ public class TResponseStrictModel<T> : ResponseBaseModel
     /// <inheritdoc/>
     public static TResponseModel<T> Build(ResponseBaseModel sender)
     {
-        return new TResponseModel<T>() { Messages = sender.Messages };
+        return new() { Messages = sender.Messages };
     }
 }

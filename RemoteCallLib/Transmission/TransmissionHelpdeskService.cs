@@ -17,6 +17,11 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     public async Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsForIssuesList(ProjectOwnedRequestModel req)
         => await rabbitClient.MqRemoteCall<List<RubricIssueHelpdeskLowModel>>(GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive, req);
 
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> RubricForIssuesMove(RowMoveModel req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.RubricForIssuesMoveHelpdeskReceive, req);
+
+
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> IssueCreateOrUpdate(IssueHelpdeskModelDB issue)
@@ -26,6 +31,11 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> IssuesSelect(GetIssuesForUserRequestModel req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<IssueHelpdeskModel>>(GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive, req);
 
+    /// <inheritdoc/>
+    public async Task<TResponseModel<IssueHelpdeskModelDB?>> IssueRead(IssueReadRequestModel req)
+        => await rabbitClient.MqRemoteCall<IssueHelpdeskModelDB>(GlobalStaticConstants.TransmissionQueues.IssueGetHelpdeskReceive, req);
+
+
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> MessageForIssueCreateOrUpdate(IssueMessageHelpdeskBaseModel req)
@@ -34,8 +44,4 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> MessageOfIssueSetAsResponse(SetMessageAsResponseIssueRequestModel req)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.MessageOfIssueSetAsResponseHelpdeskReceive, req);
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> RubricForIssuesMove(RowMoveModel req)
-        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.RubricForIssuesMoveHelpdeskReceive, req);
 }

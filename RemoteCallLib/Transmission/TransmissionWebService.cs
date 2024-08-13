@@ -12,6 +12,15 @@ namespace RemoteCallLib;
 public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTransmissionService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<WebConfigModel?>> GetWebConfig()
+        => await rabbitClient.MqRemoteCall<WebConfigModel?>(GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] req)
+        => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.FindUsersOfIdentityReceive, req);
+
+    #region tg
+    /// <inheritdoc/>
     public async Task<TResponseModel<object?>> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req)
         => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive, req);
 
@@ -24,14 +33,11 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
         => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteReceive, telegramId);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WebConfigModel?>> GetWebConfig()
-        => await rabbitClient.MqRemoteCall<WebConfigModel?>(GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive);
-
-    /// <inheritdoc/>
     public async Task<TResponseModel<object?>> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage)
         => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive, setMainMessage);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TelegramUserBaseModelDb?>> GetTelegramUser(long telegramUserId)
         => await rabbitClient.MqRemoteCall<TelegramUserBaseModelDb?>(GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive, telegramUserId);
+    #endregion
 }

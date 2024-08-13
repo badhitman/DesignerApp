@@ -25,6 +25,7 @@ public interface IHelpdeskRemoteTransmissionService
     public Task<TResponseModel<bool?>> RubricForIssuesMove(RowMoveModel req);
 
 
+
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
@@ -34,6 +35,12 @@ public interface IHelpdeskRemoteTransmissionService
     /// Создать обращение
     /// </summary>
     public Task<TResponseModel<int>> IssueCreateOrUpdate(IssueHelpdeskModelDB issue);
+
+    /// <summary>
+    /// Прочитать данные обращения
+    /// </summary>
+    public Task<TResponseModel<IssueHelpdeskModelDB?>> IssueRead(IssueReadRequestModel req);
+
 
 
     /// <summary>

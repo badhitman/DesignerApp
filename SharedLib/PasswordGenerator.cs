@@ -187,7 +187,7 @@ public static class Extensions
     public static string ShuffleTextSecure(this string source)
     {
         char[] shuffeldChars = source.ShuffleSecure().ToArray();
-        return new string(shuffeldChars);
+        return new(shuffeldChars);
     }
 }
 

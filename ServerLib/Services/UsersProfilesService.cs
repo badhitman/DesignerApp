@@ -18,7 +18,16 @@ namespace ServerLib;
 /// <summary>
 /// Сервис работы с профилями пользователей
 /// </summary>
-public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDbContextFactory<IdentityAppDbContext> identityDbFactory, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IUserStore<ApplicationUser> userStore, IHttpContextAccessor httpContextAccessor, ILogger<UsersProfilesService> LoggerRepo) : GetUserServiceAbstract(httpContextAccessor, identityDbFactory), IUsersProfilesService
+public class UsersProfilesService(
+    IEmailSender<ApplicationUser> emailSender,
+    IDbContextFactory<IdentityAppDbContext> identityDbFactory,
+    RoleManager<ApplicationRole> roleManager,
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    IUserStore<ApplicationUser> userStore,
+    IHttpContextAccessor httpContextAccessor,
+    IWebRemoteTransmissionService webTransmissionRepo,
+    ILogger<UsersProfilesService> LoggerRepo) : GetUserServiceAbstract(httpContextAccessor, userManager), IUsersProfilesService
 {
 #pragma warning restore CS9107
     /// <inheritdoc/>
@@ -26,18 +35,13 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-        {
-            return new ResponseBaseModel()
-            {
-                Messages = user.Messages
-            };
-        }
+            return new() { Messages = user.Messages };
 
         IdentityResult addPasswordResult = await userManager.AddPasswordAsync(user.ApplicationUser, password);
 
         if (!addPasswordResult.Succeeded)
         {
-            return new ResponseBaseModel()
+            return new()
             {
                 Messages = addPasswordResult.Errors.Select(e => new ResultMessage()
                 {
@@ -79,21 +83,14 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         string msg;
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-        {
-            return new ResponseBaseModel()
-            {
-                Messages = user.Messages
-            };
-        }
+            return new() { Messages = user.Messages };
 
         IdentityResult changePasswordResult = await userManager.ChangePasswordAsync(user.ApplicationUser, currentPassword, newPassword);
         if (!changePasswordResult.Succeeded)
-        {
             return new()
             {
-                Messages = changePasswordResult.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList(),
+                Messages = [.. changePasswordResult.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" })],
             };
-        }
 
         await signInManager.RefreshSignInAsync(user.ApplicationUser);
         msg = $"Пользователю [`{user.ApplicationUser.Id}`/`{user.ApplicationUser.Email}`] успешно изменён пароль.";
@@ -106,15 +103,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-        {
-            return new UserBooleanResponseModel()
-            {
-                Messages = user.Messages,
-                UserInfo = user.ApplicationUser is null
-                ? null
-                : (UserInfoModel)user.ApplicationUser
-            };
-        }
+            return new() { Messages = user.Messages };
 
         string msg;
         if (!await userManager.CheckPasswordAsync(user.ApplicationUser, password))
@@ -124,7 +113,11 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             return (UserBooleanResponseModel)ResponseBaseModel.CreateError(msg);
         }
 
-        return (UserBooleanResponseModel)ResponseBaseModel.CreateSuccess("Пароль проверку прошёл!");
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([user.ApplicationUser.Id]);
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+            return new() { Messages = rest.Messages };
+
+        return new() { UserInfo = rest.Response[0], Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Success, Text = "Пароль проверку прошёл!" }] };
     }
 
     /// <inheritdoc/>
@@ -132,16 +125,11 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-        {
-            return new ResponseBaseModel()
-            {
-                Messages = user.Messages
-            };
-        }
+            return new() { Messages = user.Messages };
 
-        UserBooleanResponseModel user_has_pass = await UserHasPasswordAsync(user.ApplicationUser.Id);
+        bool user_has_pass = await userManager.HasPasswordAsync(user.ApplicationUser);
 
-        if (!user_has_pass.Success() || user_has_pass.Response != true || !await userManager.CheckPasswordAsync(user.ApplicationUser, password))
+        if (!user_has_pass || !await userManager.CheckPasswordAsync(user.ApplicationUser, password))
             return ResponseBaseModel.CreateError("Ошибка изменения пароля. error {F268D35F-9697-4667-A4BA-6E57220A90EC}");
 
         IdentityResult result = await userManager.DeleteAsync(user.ApplicationUser);
@@ -154,49 +142,22 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     /// <inheritdoc/>
     public async Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string? userId = null)
     {
-        ApplicationUserResponseModel user = await GetUser(userId);
+        TResponseModel<UserInfoModel[]?> rest;
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            rest = await webTransmissionRepo.FindUsersIdentity([userId]);
+            return new() { Response = rest.Response?.FirstOrDefault(), Messages = rest.Messages };
+        }
+
+        ApplicationUserResponseModel user = await GetUser();
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<UserInfoModel?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
-        UserInfoModel res = (UserInfoModel)user.ApplicationUser;
+        rest = await webTransmissionRepo.FindUsersIdentity([user.ApplicationUser.Id]);
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+            return new() { Messages = rest.Messages };
 
-        IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-
-        res.Roles = await identityContext
-            .UserRoles
-            .Where(x => x.UserId == res.UserId)
-            .Select(x => x.RoleId)
-            .Distinct()
-            .ToArrayAsync();
-
-        if (res.Roles.Length != 0)
-        {
-            string?[] roles_names = await identityContext
-                .Roles
-                .Where(x => res.Roles.Contains(x.Id))
-                .Select(x => x.Name)
-                .ToArrayAsync();
-
-            roles_names = roles_names.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-            res.Roles = roles_names.Select(x => x!).ToArray();
-        }
-
-        res.Claims = await identityContext
-            .UserClaims
-            .Where(x => x.UserId == res.UserId && x.ClaimType != null)
-            .Select(x => new EntryAltModel() { Id = x.ClaimType!, Name = x.ClaimValue })
-            .ToArrayAsync();
-
-        if (res.Claims.Length != 0)
-        {
-            res.Claims = await identityContext
-                .UserClaims
-                .Where(x => x.UserId == res.UserId && x.ClaimType != null)
-                .Select(x => new EntryAltModel() { Id = x.ClaimType!, Name = x.ClaimValue })
-                .ToArrayAsync(); ;
-        }
-
-        return new() { Response = res };
+        return new() { Response = rest.Response[0] };
     }
 
     /// <inheritdoc/>
@@ -204,18 +165,15 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
+            return new UserBooleanResponseModel() { Messages = user.Messages };
+
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([user.ApplicationUser.Id]);
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+            return new() { Messages = rest.Messages };
+
+        return new()
         {
-            return new UserBooleanResponseModel()
-            {
-                Messages = user.Messages,
-                UserInfo = user.ApplicationUser is null
-                ? null
-                : (UserInfoModel)user.ApplicationUser
-            };
-        }
-        return new UserBooleanResponseModel()
-        {
-            UserInfo = (UserInfoModel)user.ApplicationUser,
+            UserInfo = rest.Response[0],
             Response = await userManager.HasPasswordAsync(user.ApplicationUser)
         };
     }
@@ -225,12 +183,9 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<bool?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
-        return new()
-        {
-            Response = await userManager.GetTwoFactorEnabledAsync(user.ApplicationUser)
-        };
+        return new() { Response = await userManager.GetTwoFactorEnabledAsync(user.ApplicationUser) };
     }
 
     /// <inheritdoc/>
@@ -238,13 +193,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-        {
-
-            return new ResponseBaseModel()
-            {
-                Messages = user.Messages
-            };
-        }
+            return new() { Messages = user.Messages };
 
         string msg;
         IdentityResult set2faResult = await userManager.SetTwoFactorEnabledAsync(user.ApplicationUser, enabled_set);
@@ -262,18 +211,16 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-        {
+            return new() { Messages = user.Messages };
 
-            return new UserBooleanResponseModel()
-            {
-                Messages = user.Messages
-            };
-        }
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([user.ApplicationUser.Id]);
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+            return new() { Messages = rest.Messages };
 
         return new()
         {
-            Response = await userManager.IsEmailConfirmedAsync(user.ApplicationUser),
-            UserInfo = (UserInfoModel)user.ApplicationUser
+            Response = rest.Response[0].EmailConfirmed,
+            UserInfo = rest.Response[0]
         };
     }
 
@@ -307,17 +254,11 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-        {
+            return new() { Messages = user.Messages };
 
-            return new ResponseBaseModel()
-            {
-                Messages = user.Messages
-            };
-        }
-        user.ApplicationUser = await userManager.FindByIdAsync(userId) ?? throw new Exception();
         IdentityResult result = await userManager.ResetPasswordAsync(user.ApplicationUser, token, newPassword);
         if (!result.Succeeded)
-            return new ResponseBaseModel()
+            return new()
             {
                 Messages = result.Errors.Select(x => new ResultMessage()
                 {
@@ -353,9 +294,9 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
 
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<string?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
-        userId = await userManager.GetUserIdAsync(user.ApplicationUser);
+        //userId = await userManager.GetUserIdAsync(user.ApplicationUser);
         string code = await userManager.GenerateChangeEmailTokenAsync(user.ApplicationUser, newEmail);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         string callbackUrl = $"{baseAddress}?userId={userId}&email={newEmail}&code={code}";
@@ -369,7 +310,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new ResponseBaseModel() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         await userManager.ResetAuthenticatorKeyAsync(user.ApplicationUser);
         string msg = $"Пользователь с идентификатором '{userId}' сбросил ключ приложения для аутентификации.";
@@ -383,8 +324,8 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new ResponseBaseModel() { Messages = user.Messages };
-
+            return new() { Messages = user.Messages };
+        // TODO: XXX
         throw new NotImplementedException();
     }
 
@@ -393,9 +334,9 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<string?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
-        return new TResponseModel<string?>() { Response = await userManager.GetUserNameAsync(user.ApplicationUser) };
+        return new() { Response = user.ApplicationUser.UserName };
     }
 
     /// <inheritdoc/>
@@ -403,9 +344,9 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<string?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
-        return new TResponseModel<string?>() { Response = await userManager.GetPhoneNumberAsync(user.ApplicationUser) };
+        return new() { Response = user.ApplicationUser.PhoneNumber };
     }
 
     /// <inheritdoc/>
@@ -413,7 +354,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new ResponseBaseModel() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         await signInManager.RefreshSignInAsync(user.ApplicationUser);
 
@@ -425,10 +366,10 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<IEnumerable<UserLoginInfoModel>?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         IList<UserLoginInfo> data_logins = await userManager.GetLoginsAsync(user.ApplicationUser);
-        return new TResponseModel<IEnumerable<UserLoginInfoModel>?>()
+        return new()
         {
             Response = data_logins.Select(x => new UserLoginInfoModel(x.LoginProvider, x.ProviderKey, x.ProviderDisplayName))
         };
@@ -439,13 +380,13 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<string?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         string? passwordHash = null;
         if (userStore is IUserPasswordStore<ApplicationUser> userPasswordStore && httpContextAccessor.HttpContext is not null)
             passwordHash = await userPasswordStore.GetPasswordHashAsync(user.ApplicationUser, httpContextAccessor.HttpContext.RequestAborted);
 
-        return new TResponseModel<string?>() { Response = passwordHash };
+        return new() { Response = passwordHash };
     }
 
     /// <inheritdoc/>
@@ -453,7 +394,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new ResponseBaseModel() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync(user.ApplicationUser.Id);
         if (info is null)
@@ -471,7 +412,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new ResponseBaseModel() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         IdentityResult result = await userManager.RemoveLoginAsync(user.ApplicationUser, loginProvider, providerKey);
         if (!result.Succeeded)
@@ -486,7 +427,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<bool?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         bool is2faTokenValid = await userManager.VerifyTwoFactorTokenAsync(
            user.ApplicationUser, userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
@@ -502,9 +443,9 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<int?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
-        return new TResponseModel<int?>() { Response = await userManager.CountRecoveryCodesAsync(user.ApplicationUser) };
+        return new() { Response = await userManager.CountRecoveryCodesAsync(user.ApplicationUser) };
     }
 
     /// <inheritdoc/>
@@ -512,7 +453,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<IEnumerable<string>?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         return new() { Response = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user.ApplicationUser, 10) };
     }
@@ -522,7 +463,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<string?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         string? unformattedKey = await userManager.GetAuthenticatorKeyAsync(user.ApplicationUser);
         if (string.IsNullOrEmpty(unformattedKey))
@@ -531,7 +472,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             unformattedKey = await userManager.GetAuthenticatorKeyAsync(user.ApplicationUser);
         }
 
-        return new TResponseModel<string?>()
+        return new()
         {
             Response = unformattedKey
         };
@@ -542,9 +483,9 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<string?>() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
-        return new TResponseModel<string?>()
+        return new()
         {
             Response = await userManager.GeneratePasswordResetTokenAsync(user.ApplicationUser)
         };
@@ -558,7 +499,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
 
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new ResponseBaseModel() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         string code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(pass_reset_token));
         string callbackUrl = $"{baseAddress}?code={code}";
@@ -579,7 +520,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
 
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new ResponseBaseModel() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         string[] roles_for_add_normalized = addRoles.Select(r => userManager.NormalizeName(r)).ToArray();
 
@@ -642,7 +583,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         if (ir.Succeeded)
             return ResponseBaseModel.CreateSuccess($"Пользователю '{user_email}' добавлена роль '{role_name}'");
 
-        return new ResponseBaseModel()
+        return new()
         {
             Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
         };
@@ -667,7 +608,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         if (ir.Succeeded)
             return ResponseBaseModel.CreateSuccess($"Пользователь '{user_email}' исключён из роли '{role_name}'");
 
-        return new ResponseBaseModel()
+        return new()
         {
             Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
         };
@@ -694,7 +635,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         if (ir.Succeeded)
             ResponseBaseModel.CreateSuccess($"Роль '{role_db.Name}' успешно удалена!");
 
-        return new ResponseBaseModel()
+        return new()
         {
             Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
         };
@@ -716,7 +657,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
         if (ir.Succeeded)
             return ResponseBaseModel.CreateSuccess($"Роль '{role_name}' успешно создана");
 
-        return new ResponseBaseModel()
+        return new()
         {
             Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
         };
@@ -747,7 +688,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
             })
             .ToArrayAsync();
 
-        return new TPaginationStrictResponseModel<RoleInfoModel>()
+        return new()
         {
             Response = roles.Select(x => new RoleInfoModel() { Id = x.Id, Name = x.Name, Title = x.Title, UsersCount = x.UsersCount }).ToList(),
             TotalRowsCount = total,
@@ -832,7 +773,7 @@ public class UsersProfilesService(IEmailSender<ApplicationUser> emailSender, IDb
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new ResponseBaseModel() { Messages = user.Messages };
+            return new() { Messages = user.Messages };
 
         await userManager.SetLockoutEndDateAsync(user.ApplicationUser, locketSet ? DateTimeOffset.MaxValue : null);
         return ResponseBaseModel.CreateSuccess($"Пользователь успешно [{user.ApplicationUser.Email}] {(locketSet ? "заблокирован" : "разблокирован")}");

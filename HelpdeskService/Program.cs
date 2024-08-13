@@ -73,7 +73,7 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
     services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
-    ////
+    // 
     services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskLowModel[]?>();
     services.RegisterMqListener<RubricForIssueCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
     services.RegisterMqListener<IssuesForUserSelectReceive, GetIssuesForUserRequestModel?, TPaginationResponseModel<IssueHelpdeskModel>?>();
@@ -81,6 +81,7 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<MessageIssueSetAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
     services.RegisterMqListener<MessageForIssueUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();
     services.RegisterMqListener<RubricForIssuesMoveReceive, RowMoveModel?, bool?>();
+    services.RegisterMqListener<IssueReadReceive, IssueReadRequestModel?, IssueHelpdeskModelDB?>();
     //
     #endregion
 });

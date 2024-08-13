@@ -60,13 +60,13 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
         {
             msg = $"Пользователь с идентификатором '{userId}' вошел в систему с кодом восстановления.";
             loggerRepo.LogInformation(msg);
-            return new IdentityResultResponseModel() { };
+            return new() { };
         }
         else if (result.IsLockedOut)
         {
             msg = $"Учетная запись пользователя #'{userId}' заблокирована.";
             loggerRepo.LogError(msg);
-            return new IdentityResultResponseModel()
+            return new()
             {
                 IsLockedOut = result.IsLockedOut,
                 Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = msg }],
@@ -163,7 +163,7 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
     public async Task<RegistrationNewUserResponseModel> RegisterNewUserAsync(string userEmail, string password, string baseAddress)
     {
         if (!UserConfMan.UserRegistrationIsAllowed(userEmail))
-            return new RegistrationNewUserResponseModel() { Messages = [new() { Text = $"Ошибка регистрации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
+            return new() { Messages = [new() { Text = $"Ошибка регистрации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
         ApplicationUser user = CreateUser();
 
@@ -173,7 +173,7 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
         IdentityResult result = await userManager.CreateAsync(user, password);
 
         if (!result.Succeeded)
-            return new RegistrationNewUserResponseModel() { Messages = result.Errors.Select(x => new ResultMessage() { Text = $"[{x.Code}: {x.Description}]", TypeMessage = ResultTypesEnum.Error }).ToList() };
+            return new() { Messages = result.Errors.Select(x => new ResultMessage() { Text = $"[{x.Code}: {x.Description}]", TypeMessage = ResultTypesEnum.Error }).ToList() };
 
         string userId = await userManager.GetUserIdAsync(user);
         loggerRepo.LogInformation($"User #{userId} [{userEmail}] created a new account with password.");
@@ -213,7 +213,7 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
     public async Task<IdentityResultResponseModel> UserLoginAsync(string userEmail, string password, bool isPersistent)
     {
         if (!UserConfMan.UserAuthorizationIsAllowed(userEmail))
-            return new IdentityResultResponseModel() { Messages = [new() { Text = $"Ошибка авторизации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
+            return new() { Messages = [new() { Text = $"Ошибка авторизации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
         SignInResult sr = await signInManager.PasswordSignInAsync(userEmail, password, isPersistent, lockoutOnFailure: true);
         IdentityResultResponseModel res = new();

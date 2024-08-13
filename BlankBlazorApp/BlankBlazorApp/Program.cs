@@ -90,7 +90,7 @@ builder.Services.AddDbContextFactory<IdentityAppDbContext>(opt =>
 string connectionMainString = builder.Configuration.GetConnectionString("MainConnection") ?? throw new InvalidOperationException("Connection string 'MainConnection' not found.");
 builder.Services.AddDbContextFactory<MainDbAppContext>(opt =>
     opt.UseSqlite(connectionMainString));
-
+builder.Services.AddMemoryCache();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -137,9 +137,11 @@ builder.Services.AddScoped<IWebAppService, WebAppService>();
 
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
+//
 builder.Services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
 builder.Services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
 builder.Services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
+builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
 //
 builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserModel?>();
 builder.Services.RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();
@@ -147,6 +149,7 @@ builder.Services.RegisterMqListener<TelegramJoinAccountDeleteReceive, long, obje
 builder.Services.RegisterMqListener<GetWebConfigReceive, object?, WebConfigModel>();
 builder.Services.RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>();
 builder.Services.RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModelDb>();
+builder.Services.RegisterMqListener<FindUserIdentityReceive, string[], UserInfoModel[]>();
 #endregion
 
 WebApplication app = builder.Build();

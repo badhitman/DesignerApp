@@ -71,7 +71,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
         // Forward the provided token to methods which support it
         List<IssueHelpdeskModel> data = rest.Response!.Response!;
         // Return the data
-        return new TableData<IssueHelpdeskModel>() { TotalItems = rest.Response.TotalRowsCount, Items = data };
+        return new () { TotalItems = rest.Response.TotalRowsCount, Items = data };
     }
 
     private void OnSearch(string text)

@@ -49,7 +49,7 @@ public class IssueHelpdeskModel : EntryDescriptionModel
     /// </summary>
     public static IssueHelpdeskModel Build(IssueHelpdeskModelDB sender)
     {
-        return new IssueHelpdeskModel()
+        return new()
         {
             AuthorIdentityUserId = sender.AuthorIdentityUserId,
             ExecutorIdentityUserId = sender.ExecutorIdentityUserId,

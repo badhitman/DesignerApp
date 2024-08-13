@@ -10,6 +10,7 @@ using System.Net.Mail;
 using IdentityLib;
 using SharedLib;
 using DbcLib;
+using Microsoft.AspNetCore.Identity;
 
 namespace ServerLib;
 
@@ -18,15 +19,16 @@ namespace ServerLib;
 /// </summary>
 public class WebAppService(
     ITelegramRemoteTransmissionService tgRemoteRepo,
-    //UserManager<ApplicationUser> userManager,
+    UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IDbContextFactory<MainDbAppContext> mainContextFactory,
     IHttpContextAccessor httpContextAccessor,
     IMailProviderService mailRepo,
     IOptions<WebConfigModel> webConfig,
+    IWebRemoteTransmissionService webTransmissionRepo,
     ILogger<WebAppService> LoggerRepo)
 #pragma warning disable CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
-    : GetUserServiceAbstract(httpContextAccessor, identityDbFactory), IWebAppService
+    : GetUserServiceAbstract(httpContextAccessor, userManager), IWebAppService
 #pragma warning restore CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
 {
     #region Telegram
@@ -90,24 +92,50 @@ public class WebAppService(
         return res;
     }
 
+    async Task<(string id, string email, long? tg)> GetEmailAndIdForUser(string? userId = null)
+    {
+        string user_id, user_email;
+        long? telegram_id;
+
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([userId]);
+            if (!rest.Success() || rest.Response is null || rest.Response.Length != 1 || string.IsNullOrWhiteSpace(rest.Response[0].Email))
+                throw new Exception();
+
+            user_id = rest.Response[0].UserId;
+            user_email = rest.Response[0].Email!;
+            telegram_id = rest.Response[0].TelegramId;
+        }
+        else
+        {
+            ApplicationUserResponseModel user = await GetUser(userId);
+            if (!user.Success() || user.ApplicationUser is null || string.IsNullOrWhiteSpace(user.ApplicationUser.Email))
+                throw new Exception();
+
+            user_id = user.ApplicationUser.Id;
+            user_email = user.ApplicationUser.Email;
+            telegram_id = user.ApplicationUser.ChatTelegramId;
+        }
+        return (user_id, user_email, telegram_id);
+    }
+
     /// <inheritdoc/>
     public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(bool email_notify = false, string? userId = null)
     {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<TelegramJoinAccountModelDb>() { Messages = user.Messages };
-
         DateTime lifeTime = DateTime.UtcNow.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
+        (string id, string email, long? tg) usr = await GetEmailAndIdForUser(userId);
+
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
         TelegramJoinAccountModelDb? act = await mainContext.TelegramJoinActions
-            .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.UserIdentityId == user.ApplicationUser.Id);
+            .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.UserIdentityId == usr.id);
 
         if (act is null)
             return TResponseModel<TelegramJoinAccountModelDb>.Build(ResponseBaseModel.CreateWarning("Токена нет"));
 
         if (email_notify)
         {
-            if (MailAddress.TryCreate(user.ApplicationUser.Email, out _))
+            if (MailAddress.TryCreate(usr.email, out _))
             {
                 string msg;
                 TResponseModel<string?> bot_username_res = await tgRemoteRepo.GetBotUsername();
@@ -115,12 +143,12 @@ public class WebAppService(
 
                 msg = $"Существует ссылка привязки Telegram аккаунта к учётной записи сайта действительная до {act.CreatedAt.AddMinutes(webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes)} ({DateTime.UtcNow - lifeTime}).<br/>";
                 msg += $"Нужно подтвердить операцию через Telegram бота. Для этого нужно в TelegramBot @{bot_username} отправить токен:<br/><u><b>{act.GuidToken}</b></u><br/>Или ссылкой: <a href='https://t.me/{bot_username}?start={act.GuidToken}'>https://t.me/{bot_username}?start={act.GuidToken}</a><br/>";
-                await mailRepo.SendEmailAsync(user.ApplicationUser.Email, "Статус привязки Telegram к у/з", msg);
+                await mailRepo.SendEmailAsync(usr.email, "Статус привязки Telegram к у/з", msg);
 
-                await mailRepo.SendEmailAsync(user.ApplicationUser.Email, "Статус привязки Telegram к у/з", msg);
+                await mailRepo.SendEmailAsync(usr.email, "Статус привязки Telegram к у/з", msg);
             }
             else
-                LoggerRepo.LogError($"Ошибка уведомления на Email: {user.ApplicationUser.Email} - email не валидный. error {{BB9E05A4-37A3-4FBB-800B-9AED947A2B3B}}");
+                LoggerRepo.LogError($"Ошибка уведомления на Email: {usr.email} - email не валидный. error {{BB9E05A4-37A3-4FBB-800B-9AED947A2B3B}}");
         }
 
         TResponseModel<TelegramJoinAccountModelDb> res = new() { Response = act };
@@ -133,13 +161,11 @@ public class WebAppService(
     /// <inheritdoc/>
     public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountCreate(string? userId = null)
     {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new TResponseModel<TelegramJoinAccountModelDb>() { Messages = user.Messages };
+        (string id, string email, long? tg) usr = await GetEmailAndIdForUser(userId);
 
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
         IQueryable<TelegramJoinAccountModelDb> actions_del = mainContext.TelegramJoinActions
-            .Where(x => x.UserIdentityId == user.ApplicationUser.Id);
+            .Where(x => x.UserIdentityId == usr.id);
 
         if (await actions_del.AnyAsync())
             mainContext.RemoveRange(actions_del);
@@ -147,33 +173,31 @@ public class WebAppService(
         TelegramJoinAccountModelDb act = new()
         {
             GuidToken = Guid.NewGuid().ToString(),
-            UserIdentityId = user.ApplicationUser.Id
+            UserIdentityId = usr.id,
         };
         await mainContext.AddAsync(act);
         await mainContext.SaveChangesAsync();
-        if (MailAddress.TryCreate(user.ApplicationUser.Email, out _))
+        if (MailAddress.TryCreate(usr.email, out _))
         {
             TResponseModel<string?> bot_username_res = await tgRemoteRepo.GetBotUsername();
             string? bot_username = bot_username_res.Response;
             //
             string msg = $"Создана ссылка привязки Telegram аккаунта к учётной записи сайта.<br/>";
             msg += $"Нужно подтвердить операцию через Telegram бота. Для этого нужно в TelegramBot @{bot_username} отправить токен:<br/><u><b>{act.GuidToken}</b></u><br/>Или ссылкой: <a href='https://t.me/{bot_username}?start={act.GuidToken}'>https://t.me/{bot_username}?start={act.GuidToken}</a><br/>";
-            await mailRepo.SendEmailAsync(user.ApplicationUser.Email, "Статус привязки Telegram к у/з", msg);
+            await mailRepo.SendEmailAsync(usr.email, "Статус привязки Telegram к у/з", msg);
         }
 
-        return new TResponseModel<TelegramJoinAccountModelDb>() { Response = act, Messages = [new() { TypeMessage = ResultTypesEnum.Success, Text = "Токен сформирован" }] };
+        return new() { Response = act, Messages = [new() { TypeMessage = ResultTypesEnum.Success, Text = "Токен сформирован" }] };
     }
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> TelegramJoinAccountDeleteAction(string? userId = null)
     {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return ResponseBaseModel.Create(user.Messages);
+        (string id, string email, long? tg) usr = await GetEmailAndIdForUser(userId);
 
         using MainDbAppContext mainContext = mainContextFactory.CreateDbContext();
         TelegramJoinAccountModelDb[] act = await mainContext.TelegramJoinActions
-            .Where(x => x.UserIdentityId == user.ApplicationUser.Id)
+            .Where(x => x.UserIdentityId == usr.id)
             .ToArrayAsync();
         if (act.Length == 0)
             return ResponseBaseModel.CreateInfo("Токена нет");
@@ -182,8 +206,8 @@ public class WebAppService(
             mainContext.RemoveRange(act);
             int i = await mainContext.SaveChangesAsync();
 
-            if (MailAddress.TryCreate(user.ApplicationUser.Email, out _))
-                await mailRepo.SendEmailAsync(user.ApplicationUser.Email, "Удалён токен привязки Telegram к у/з", "Токен привязки аккаунта Telegram к учётной записи на сайте: удалён.");
+            if (MailAddress.TryCreate(usr.email, out _))
+                await mailRepo.SendEmailAsync(usr.email, "Удалён токен привязки Telegram к у/з", "Токен привязки аккаунта Telegram к учётной записи на сайте: удалён.");
 
             return ResponseBaseModel.CreateSuccess($"Токен удалён");
         }
@@ -295,33 +319,27 @@ public class WebAppService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> TelegramAccountRemoveJoin(string userId)
     {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return ResponseBaseModel.Create(user.Messages);
-
-        if (user.ApplicationUser.ChatTelegramId is null)
-            return ResponseBaseModel.CreateInfo("Пользователю не назначен TelegramId");
-
-        long telegram_id = user.ApplicationUser.ChatTelegramId!.Value;
-        TResponseModel<TelegramUserBaseModelDb?> tg_user_dump = await GetTelegramUserCachedInfo(telegram_id);
-        user.ApplicationUser.ChatTelegramId = null;
-
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        identityContext.Update(user.ApplicationUser);
+        ApplicationUser user = identityContext.Users.First(x => x.Id == userId);
+        long? tg_user_dump = user.ChatTelegramId;
+        user.ChatTelegramId = null;
+        identityContext.Update(user);
 
-        if (MailAddress.TryCreate(user.ApplicationUser.Email, out _))
-            await mailRepo.SendEmailAsync(user.ApplicationUser.Email, "Удаление привязки Telegram к учётной записи", $"Аккаунт Telegram {tg_user_dump} отключён от вашей учётной записи на сайте");
+        if (MailAddress.TryCreate(user.Email, out _))
+            await mailRepo.SendEmailAsync(user.Email, "Удаление привязки Telegram к учётной записи", $"Аккаунт Telegram {tg_user_dump} отключён от вашей учётной записи на сайте");
+
+        MainDbAppContext mainContext = await mainContextFactory.CreateDbContextAsync();
 
         TResponseModel<int?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
         {
-            Message = $"Ваш Telegram аккаунт отключён от учётной записи {user.ApplicationUser.Email} с сайта {webConfig.Value.ClearBaseUri}",
-            UserTelegram = tg_user_dump.Response!,
+            Message = $"Ваш Telegram аккаунт отключён от учётной записи {user.Email} с сайта {webConfig.Value.ClearBaseUri}",
+            UserTelegram = await mainContext.TelegramUsers.FirstAsync(x => x.TelegramId == tg_user_dump),
             From = "уведомление",
         });
         if (!tgCall.Success())
             LoggerRepo.LogError(tgCall.Message());
 
-        return ResponseBaseModel.CreateSuccess($"Пользователю {user.ApplicationUser.Email} удалена связь с TelegramId");
+        return ResponseBaseModel.CreateSuccess($"Пользователю {user.Email} удалена связь с TelegramId");
     }
 
     /// <inheritdoc/>
@@ -345,7 +363,7 @@ public class WebAppService(
 
         TelegramUserModelDb[] users_tg = await query.ToArrayAsync();
         if (users_tg.Length == 0)
-            return new TPaginationStrictResponseModel<TelegramUserViewModel>() { Response = [] };
+            return new() { Response = [] };
 
         List<long> tg_users_ids = users_tg.Select(y => y.TelegramId).ToList();
 
@@ -361,7 +379,7 @@ public class WebAppService(
             return TelegramUserViewModel.Build(ctx, id_data?.Id, id_data?.Email);
         }
 
-        return new TPaginationStrictResponseModel<TelegramUserViewModel>()
+        return new()
         {
             Response = users_tg.Select(x => identity_get(x)).ToList(),
             TotalRowsCount = total,
