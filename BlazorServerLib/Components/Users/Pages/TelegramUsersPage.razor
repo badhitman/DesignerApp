@@ -4,7 +4,7 @@
 @attribute [Authorize(Roles = "admin")]
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@inject ITelegramWebService TelegramRepo
+@inject IWebAppService TelegramRepo
 
 <PageTitle>Telegram пользователи</PageTitle>
 <StatusMessage Messages="@Messages" />

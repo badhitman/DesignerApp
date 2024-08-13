@@ -16,7 +16,7 @@ namespace ServerLib;
 /// <summary>
 /// Telegram
 /// </summary>
-public class TelegramWebService(
+public class WebAppService(
     ITelegramRemoteTransmissionService tgRemoteRepo,
     //UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
@@ -24,11 +24,12 @@ public class TelegramWebService(
     IHttpContextAccessor httpContextAccessor,
     IMailProviderService mailRepo,
     IOptions<WebConfigModel> webConfig,
-    ILogger<TelegramWebService> LoggerRepo)
+    ILogger<WebAppService> LoggerRepo)
 #pragma warning disable CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
-    : GetUserServiceAbstract(httpContextAccessor, identityDbFactory), ITelegramWebService
+    : GetUserServiceAbstract(httpContextAccessor, identityDbFactory), IWebAppService
 #pragma warning restore CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
 {
+    #region Telegram
     /// <inheritdoc/>
     public async Task<TResponseModel<CheckTelegramUserModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user)
     {
@@ -387,4 +388,5 @@ public class TelegramWebService(
 
         return ResponseBaseModel.CreateSuccess($"Успешно. Пользователю {user_db} установлен/обновлён идентификатор `{nameof(user_db.MainTelegramMessageId)}` set:{setMainUserMessage.MessageId}");
     }
+    #endregion
 }

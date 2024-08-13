@@ -13,16 +13,16 @@ namespace Transmission.Receives.helpdesk;
 /// GetIssuesForUser
 /// </summary>
 public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<GetIssuesForUserRequestModel?, TPaginationResponseModel<IssueHelpdeskModelDB>?>
+    : IResponseReceive<GetIssuesForUserRequestModel?, TPaginationResponseModel<IssueHelpdeskModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModelDB>?>> ResponseHandleAction(GetIssuesForUserRequestModel? req)
+    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ResponseHandleAction(GetIssuesForUserRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<TPaginationResponseModel<IssueHelpdeskModelDB>?> res = new()
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> res = new()
         {
             Response = new()
         };
@@ -74,15 +74,15 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
                 break;
         }
         res.Response.TotalRowsCount = await q.CountAsync();
-        res.Response.Response = await q
+        
+        List<IssueHelpdeskModelDB> data = await q
             .Include(x => x.RubricIssue)
-            .Include(x => x.Subscribers)
-            .Include(x => x.Messages!)
-            .ThenInclude(x => x.MarksAsResponse)
             .OrderBy(x => x.CreatedAt)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
             .ToListAsync();
+
+        res.Response.Response = data.Select(x => IssueHelpdeskModel.Build(x)).ToList();
 
         return res;
     }

@@ -11,7 +11,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// Update Telegram main user message
 /// </summary>
-public class UpdateTelegramMainUserMessageReceive(ITelegramWebService tgWebRepo, ILogger<UpdateTelegramMainUserMessageReceive> _logger)
+public class UpdateTelegramMainUserMessageReceive(IWebAppService tgWebRepo, ILogger<UpdateTelegramMainUserMessageReceive> _logger)
     : IResponseReceive<MainUserMessageModel?, object?>
 {
     /// <inheritdoc/>

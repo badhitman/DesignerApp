@@ -11,7 +11,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// Удаление связи Telegram аккаунта с учётной записью сайта
 /// </summary>
-public class TelegramJoinAccountDeleteReceive(ITelegramWebService tgWebRepo, ILogger<TelegramJoinAccountDeleteReceive> _logger) 
+public class TelegramJoinAccountDeleteReceive(IWebAppService tgWebRepo, ILogger<TelegramJoinAccountDeleteReceive> _logger) 
     : IResponseReceive<long, object?>
 {
     /// <inheritdoc/>

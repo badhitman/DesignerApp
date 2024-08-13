@@ -133,7 +133,7 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender
 // Scoped
 builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>();
 builder.Services.AddScoped<IUsersProfilesService, UsersProfilesService>();
-builder.Services.AddScoped<ITelegramWebService, TelegramWebService>();
+builder.Services.AddScoped<IWebAppService, WebAppService>();
 
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();

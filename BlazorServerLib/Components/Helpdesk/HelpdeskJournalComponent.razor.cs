@@ -39,7 +39,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     private string? searchString = null;
 
     /// <inheritdoc/>
-    public MudTable<IssueHelpdeskModelDB> TableRef = default!;
+    public MudTable<IssueHelpdeskModel> TableRef = default!;
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -50,7 +50,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server, with a token for canceling this request
     /// </summary>
-    private async Task<TableData<IssueHelpdeskModelDB>> ServerReload(TableState state, CancellationToken token)
+    private async Task<TableData<IssueHelpdeskModel>> ServerReload(TableState state, CancellationToken token)
     {
         IsBusyProgress = true;
 
@@ -62,16 +62,16 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
             throw new Exception();
         }
 
-        TResponseModel<TPaginationResponseModel<IssueHelpdeskModelDB>?> rest = await HelpdeskRepo
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> rest = await HelpdeskRepo
             .IssuesSelect(new GetIssuesForUserRequestModel() { JournalMode = JournalMode, Request = new UserCrossIdsModel() { IdentityUserId = _current_user.Response.UserId }, SearchQuery = searchString });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         // Forward the provided token to methods which support it
-        List<IssueHelpdeskModelDB> data = rest.Response!.Response!;
+        List<IssueHelpdeskModel> data = rest.Response!.Response!;
         // Return the data
-        return new TableData<IssueHelpdeskModelDB>() { TotalItems = rest.Response.TotalRowsCount, Items = data };
+        return new TableData<IssueHelpdeskModel>() { TotalItems = rest.Response.TotalRowsCount, Items = data };
     }
 
     private void OnSearch(string text)

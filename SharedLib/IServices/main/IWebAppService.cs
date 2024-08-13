@@ -5,10 +5,11 @@
 namespace SharedLib;
 
 /// <summary>
-/// Telegram (web side service)
+/// web side service
 /// </summary>
-public interface ITelegramWebService
+public interface IWebAppService
 {
+    #region Telegram
     /// <summary>
     /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
     /// </summary>
@@ -62,4 +63,5 @@ public interface ITelegramWebService
     /// Бот может отвечать новым сообщением или редактировать своё ранее отправленное в зависимости от ситуации.
     /// </summary>
     public Task<ResponseBaseModel> UpdateTelegramMainUserMessage(MainUserMessageModel setMainUserMessage);
+    #endregion
 }

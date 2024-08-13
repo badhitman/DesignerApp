@@ -76,7 +76,7 @@ builder.ConfigureServices((context, services) =>
     ////
     services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskLowModel[]?>();
     services.RegisterMqListener<RubricForIssueCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
-    services.RegisterMqListener<IssuesForUserSelectReceive, GetIssuesForUserRequestModel?, TPaginationResponseModel<IssueHelpdeskModelDB>?>();
+    services.RegisterMqListener<IssuesForUserSelectReceive, GetIssuesForUserRequestModel?, TPaginationResponseModel<IssueHelpdeskModel>?>();
     services.RegisterMqListener<IssueCreateOrUpdateReceive, IssueHelpdeskModelDB?, int?>();
     services.RegisterMqListener<MessageIssueSetAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
     services.RegisterMqListener<MessageForIssueUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();

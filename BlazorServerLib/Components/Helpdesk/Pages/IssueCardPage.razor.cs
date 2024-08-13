@@ -23,9 +23,6 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
-    [Inject]
-    ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Id
@@ -34,13 +31,15 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     public int Id { get; set; }
 
 
+    UserInfoModel CurrentUser { get; set; } = default!;
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
         TResponseModel<UserInfoModel?> user = await UsersProfilesRepo.FindByIdAsync();
         IsBusyProgress = false;
-
-        
+        SnackbarRepo.ShowMessagesResponse(user.Messages);
+        CurrentUser = user.Response ?? throw new Exception();
     }
 }

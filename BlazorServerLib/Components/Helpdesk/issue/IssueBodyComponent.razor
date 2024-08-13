@@ -1,5 +1,6 @@
 ﻿@using MudBlazor
 
+@attribute [Authorize]
 @inherits BlazorBusyComponentBaseModel
 
 <MudCard>
@@ -12,7 +13,6 @@
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>
-        <MudText>This day everything happened.</MudText>
-        <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+
     </MudCardContent>
 </MudCard>

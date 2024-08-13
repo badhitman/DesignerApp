@@ -11,7 +11,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// TelegramJoinAccountConfirm receive
 /// </summary>
-public class TelegramJoinAccountConfirmReceive(ITelegramWebService tgWebRepo, ILogger<TelegramJoinAccountConfirmReceive> _logger)
+public class TelegramJoinAccountConfirmReceive(IWebAppService tgWebRepo, ILogger<TelegramJoinAccountConfirmReceive> _logger)
     : IResponseReceive<TelegramJoinAccountConfirmModel?, object?>
 {
     /// <inheritdoc/>

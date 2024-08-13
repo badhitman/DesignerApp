@@ -1,9 +1,9 @@
 ﻿@using Microsoft.Extensions.Options
-
+@attribute [Authorize]
 @inherits BlazorBusyComponentBaseModel
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-@inject ITelegramWebService tgWebRepo
+@inject IWebAppService tgWebRepo
 @inject ITelegramRemoteTransmissionService tgRepo
 @inject IUsersProfilesService UsersManageRepo
 @inject IOptions<WebConfigModel> conf
