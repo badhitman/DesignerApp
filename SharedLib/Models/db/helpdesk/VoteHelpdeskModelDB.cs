@@ -8,11 +8,11 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// MarkAsResponseModelDB
+/// Маркировка сообщения как `ответ на вопрос`
 /// </summary>
 [Index(nameof(TelegramId))]
 [Index(nameof(IdentityUserId))]
-public class MarkAsResponseHelpdeskModelDB : UserCrossIdsModel
+public class VoteHelpdeskModelDB : UserCrossIdsModel
 {
     /// <summary>
     /// Идентификатор/Key

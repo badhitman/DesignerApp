@@ -38,5 +38,5 @@ public class IssueMessageHelpdeskModelDB : IssueMessageHelpdeskBaseModel
     /// <summary>
     /// Отметки как ответ
     /// </summary>
-    public List<MarkAsResponseHelpdeskModelDB>? MarksAsResponse { get; set; }
+    public List<VoteHelpdeskModelDB>? MarksAsResponse { get; set; }
 }

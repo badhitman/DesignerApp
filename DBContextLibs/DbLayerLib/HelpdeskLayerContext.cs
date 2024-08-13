@@ -65,7 +65,7 @@ public partial class HelpdeskLayerContext : DbContext
     /// <remarks>
     /// Наличие такого признака (или даже нескольких внутри одного обращения) даёт основание полагать, что обращение можно закрывать (отправить в готовое).
     /// </remarks>
-    public DbSet<MarkAsResponseHelpdeskModelDB> MarkAsResponses { get; set; }
+    public DbSet<VoteHelpdeskModelDB> Votes { get; set; }
 
     /// <summary>
     /// Токены доступа к системе. Благодаря этой связи формируется уникальный персональный URL по которому все действия определяются как авторства этого Telegram аккаунта для запуска WebApp
