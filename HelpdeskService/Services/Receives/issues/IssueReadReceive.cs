@@ -52,7 +52,6 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 
-
         string[] job = [GlobalStaticConstants.Roles.HelpDeskTelegramBotManager, GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit, GlobalStaticConstants.Roles.Admin];
         if (rest.Response[0].Roles?.Any(x => job.Contains(x)) != true)
         {

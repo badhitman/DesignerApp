@@ -3,6 +3,7 @@
 @using BlazorWebLib.Components.Helpdesk.issue
 @using MudBlazor
 
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize]
 @inherits BlazorBusyComponentBaseModel
 
@@ -23,7 +24,7 @@
             else
             {
                 <CascadingValue Value="IssueSource">
-                    <div class="col-sm-9 d-flex">
+                    <div class="col-sm-9">
                         <div class="vstack gap-3">
                             <div><IssueBodyComponent /></div>
                             <div><IssueMessagesComponent /></div>

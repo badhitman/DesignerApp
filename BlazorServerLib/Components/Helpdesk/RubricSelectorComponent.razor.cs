@@ -37,6 +37,17 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required ModesSelectRubricsEnum ModeSelectingRubrics { get; set; }
 
+    /// <summary>
+    /// Owner issue
+    /// </summary>
+    [CascadingParameter]
+    public IssueHelpdeskModelDB? IssueSource { get; set; }
+
+
+    RubricSelectorComponent? childSelector;
+
+    List<RubricIssueHelpdeskLowModel>? CurrentRubrics;
+
 
     int _selectedRubricId;
     /// <summary>
@@ -49,7 +60,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         {
             _selectedRubricId = value;
             if (childSelector is not null)
-                InvokeAsync(async () => await childSelector.Reset(_selectedRubricId));
+                InvokeAsync(async () => await childSelector.InitSelectorForIssue(_selectedRubricId));
 
             SelectedRubricsHandle(_selectedRubricId > 0 ? CurrentRubrics!.First(x => x.Id == _selectedRubricId) : null);
         }
@@ -58,29 +69,19 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Сброс состояния селектора.
     /// </summary>
-    public async Task Reset(int parentSet)
+    public async Task InitSelectorForIssue(int ownerRubricId)
     {
         _selectedRubricId = 0;
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsForIssuesList(new ProjectOwnedRequestModel() { OwnerId = parentSet });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new ProjectOwnedRequestModel() { OwnerId = ownerRubricId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         CurrentRubrics = rest.Response;
     }
 
-#if DEBUG
-    static bool IsDebug => true;
-#else
-    static bool IsDebug => false;
-#endif
-
-    RubricSelectorComponent? childSelector;
-
-    List<RubricIssueHelpdeskLowModel>? CurrentRubrics;
-
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await Reset(ParentRubric);
+        await InitSelectorForIssue(ParentRubric);
     }
 }

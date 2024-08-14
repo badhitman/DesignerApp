@@ -27,8 +27,8 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
 
     /// <inheritdoc/>
-    [Parameter,EditorRequired]
-    public required Action Update {  get; set; }
+    [Parameter, EditorRequired]
+    public required Action Update { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -63,13 +63,12 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new IssueHelpdeskModelDB()
+        TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new IssueUpdateRequest()
         {
-            AuthorIdentityUserId = _current_user.Response.UserId,
+            ActionUserId = _current_user.Response.UserId,
             RubricIssueId = SelectedRubric?.Id,
             Name = Name!,
-            Description = Description,
-            StepIssue = HelpdeskIssueStepsEnum.Created,
+            Description = Description
 
         });
         IsBusyProgress = false;

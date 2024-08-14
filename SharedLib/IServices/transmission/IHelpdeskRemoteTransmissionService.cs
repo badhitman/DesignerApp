@@ -12,17 +12,17 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsForIssuesList(ProjectOwnedRequestModel req);
+    public Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsList(ProjectOwnedRequestModel req);
 
     /// <summary>
     /// Создать тему для обращений
     /// </summary>
-    public Task<TResponseModel<int?>> RubricForIssuesCreateOrUpdate(RubricIssueHelpdeskModelDB issueTheme);
+    public Task<TResponseModel<int?>> RubricCreateOrUpdate(RubricIssueHelpdeskModelDB issueTheme);
 
     /// <summary>
     /// Сдвинуть рубрику
     /// </summary>
-    public Task<TResponseModel<bool?>> RubricForIssuesMove(RowMoveModel req);
+    public Task<TResponseModel<bool?>> RubricMove(RowMoveModel req);
 
 
 
@@ -34,7 +34,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Создать обращение
     /// </summary>
-    public Task<TResponseModel<int>> IssueCreateOrUpdate(IssueHelpdeskModelDB issue);
+    public Task<TResponseModel<int>> IssueCreateOrUpdate(IssueUpdateRequest issue);
 
     /// <summary>
     /// Прочитать данные обращения
@@ -46,10 +46,10 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Сообщение из обращения помечается как ответ (либо этот признак снимается: в зависимости от запроса)
     /// </summary>
-    public Task<TResponseModel<bool>> MessageOfIssueSetAsResponse(VoteIssueRequestModel req);
+    public Task<TResponseModel<bool>> MessageVote(VoteIssueRequestModel req);
 
     /// <summary>
     /// Добавить сообщение к обращению
     /// </summary>
-    public Task<TResponseModel<int>> MessageForIssueCreateOrUpdate(IssueMessageHelpdeskBaseModel req);
+    public Task<TResponseModel<int>> MessageCreateOrUpdate(IssueMessageHelpdeskBaseModel req);
 }
