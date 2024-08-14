@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace Transmission.Receives.helpdesk;
 

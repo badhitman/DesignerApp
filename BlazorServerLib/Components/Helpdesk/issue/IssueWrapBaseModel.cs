@@ -14,6 +14,12 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
 {
     /// <summary>
+    /// CurrentUser
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required UserInfoModel CurrentUser { get; set; }
+
+    /// <summary>
     /// Issue
     /// </summary>
     [CascadingParameter, EditorRequired]

@@ -25,13 +25,15 @@
             {
                 <CascadingValue Value="IssueSource">
                     <CascadingValue Value="usersIdentityDump">
-                        <div class="col-sm-9">
-                            <div class="vstack gap-3">
-                                <div><IssueBodyComponent /></div>
-                                <div><IssueMessagesComponent /></div>
+                        <CascadingValue Value="CurrentUser">
+                            <div class="col-sm-9">
+                                <div class="vstack gap-3">
+                                    <div><IssueBodyComponent /></div>
+                                    <div><IssueMessagesComponent /></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-sm-3"><IssuePanelComponent /></div>
+                            <div class="col-sm-3"><IssuePanelComponent /></div>
+                        </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
             }

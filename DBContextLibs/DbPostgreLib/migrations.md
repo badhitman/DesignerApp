@@ -4,7 +4,7 @@ Update-Database -Context MainDbAppContext -Project DbPostgreLib -StartupProject 
 ```
 
 ```
-Add-Migration HelpdeskPostgreContext001 -Context HelpdeskContext -Project DbPostgreLib -StartupProject HelpdeskService
+Add-Migration MainHelpdeskPostgreContext001 -Context HelpdeskContext -Project DbPostgreLib -StartupProject HelpdeskService
 Update-Database -Context HelpdeskContext -Project DbPostgreLib -StartupProject HelpdeskService
 ```
 

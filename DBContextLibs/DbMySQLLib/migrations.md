@@ -4,7 +4,7 @@ Update-Database -Context MainDbAppContext -Project DbMySQLLib -StartupProject Bl
 ```
 
 ```
-Add-Migration HelpdeskMySQLContext001 -Context HelpdeskContext -Project DbMySQLLib -StartupProject HelpdeskService
+Add-Migration MainHelpdeskMySQLContext001 -Context HelpdeskContext -Project DbMySQLLib -StartupProject HelpdeskService
 Update-Database -Context HelpdeskContext -Project DbMySQLLib -StartupProject HelpdeskService
 ```
 
