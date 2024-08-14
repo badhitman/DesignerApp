@@ -29,10 +29,13 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
 
     string? NameIssueEdit { get; set; }
     string? DescriptionIssueEdit { get; set; }
-    
+
     int? RubricIssueEdit { get; set; }
 
-    bool IsEdited => NameIssueEdit != Issue.Name || DescriptionIssueEdit != Issue.Description || RubricIssueEdit != Issue.RubricIssueId;
+    bool IsEdited =>
+        NameIssueEdit != Issue.Name ||
+        DescriptionIssueEdit != Issue.Description ||
+        RubricIssueEdit != Issue.RubricIssueId;
 
     MarkupString DescriptionHtml => (MarkupString)(Issue.Description ?? "");
 
@@ -44,6 +47,7 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
     void RubricSelectAction(RubricIssueHelpdeskLowModel? selectedRubric)
     {
         SelectedRubric = selectedRubric;
+        RubricIssueEdit = SelectedRubric?.Id;
         StateHasChanged();
     }
 
@@ -58,6 +62,9 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
 
     async Task SaveIssue()
     {
+        if (string.IsNullOrWhiteSpace(NameIssueEdit))
+            throw new ArgumentNullException(nameof(NameIssueEdit));
+
         IsBusyProgress = true;
         TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync();
         if (!_current_user.Success() || _current_user.Response is null)
@@ -66,8 +73,24 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
             return;
         }
 
-        //var res = await HelpdeskRepo.IssueCreateOrUpdate(new () { AuthorIdentityUserId });
+        TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new()
+        {
+            ActionUserId = _current_user.Response.UserId,
+            Name = NameIssueEdit,
+            Description = DescriptionIssueEdit,
+            RubricIssueId = RubricIssueEdit,
+            Id = Issue.Id,
+        });
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;
+        if (!res.Success())
+            return;
+
+        Issue.Name = NameIssueEdit;
+        Issue.Description = DescriptionIssueEdit;
+        Issue.RubricIssueId = RubricIssueEdit;
+
+        IsEditMode = false;
     }
 
     void EditToggle()

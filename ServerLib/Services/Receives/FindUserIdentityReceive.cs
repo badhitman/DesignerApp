@@ -33,8 +33,8 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
             return res;
         }
 
-        string mem_token = string.Join(",", users_ids);
-        if (cache.TryGetValue(mem_token, out UserInfoModel[]? users_cache) && users_cache is not null)
+        string mem_token = $"{QueueName}-{string.Join(",", users_ids)}";
+        if (cache.TryGetValue(mem_token, out UserInfoModel[]? users_cache))
         {
             res.Response = users_cache;
             return res;

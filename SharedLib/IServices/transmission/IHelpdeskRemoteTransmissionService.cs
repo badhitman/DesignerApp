@@ -9,10 +9,11 @@ namespace SharedLib;
 /// </summary>
 public interface IHelpdeskRemoteTransmissionService
 {
+    #region rubric
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsList(ProjectOwnedRequestModel req);
+    public Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsList(TProjectedRequestModel<int> req);
 
     /// <summary>
     /// Создать тему для обращений
@@ -24,8 +25,13 @@ public interface IHelpdeskRemoteTransmissionService
     /// </summary>
     public Task<TResponseModel<bool?>> RubricMove(RowMoveModel req);
 
+    /// <summary>
+    /// Прочитать данные рубрики (вместе со всеми вышестоящими родлителями)
+    /// </summary>
+    public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricRead(int rubricId);
+    #endregion
 
-
+    #region issue
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
@@ -40,9 +46,9 @@ public interface IHelpdeskRemoteTransmissionService
     /// Прочитать данные обращения
     /// </summary>
     public Task<TResponseModel<IssueHelpdeskModelDB?>> IssueRead(TAuthRequestModel<int> req);
+    #endregion
 
-
-
+    #region message
     /// <summary>
     /// Сообщение из обращения помечается как ответ (либо этот признак снимается: в зависимости от запроса)
     /// </summary>
@@ -52,4 +58,5 @@ public interface IHelpdeskRemoteTransmissionService
     /// Добавить сообщение к обращению
     /// </summary>
     public Task<TResponseModel<int>> MessageCreateOrUpdate(IssueMessageHelpdeskBaseModel req);
+    #endregion
 }

@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// Project Owned Request
+/// Projected Request
 /// </summary>
-public class ProjectOwnedRequestModel
+public class TProjectedRequestModel<T>
 {
     /// <summary>
     /// Project id
@@ -15,7 +15,7 @@ public class ProjectOwnedRequestModel
     public int ProjectId { get; set; }
 
     /// <summary>
-    /// Owner id
+    /// T - Request
     /// </summary>
-    public int? OwnerId { get; set; }
+    public required T Request { get; set; }
 }

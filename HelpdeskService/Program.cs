@@ -68,13 +68,15 @@ builder.ConfigureServices((context, services) =>
 #endif
     });
 
+    services.AddMemoryCache();
+
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
     services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     // 
-    services.RegisterMqListener<RubricsListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskLowModel[]?>();
+    services.RegisterMqListener<RubricsListReceive, TProjectedRequestModel<int>?, RubricIssueHelpdeskLowModel[]?>();
     services.RegisterMqListener<RubricCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
     services.RegisterMqListener<IssuesForUserSelectReceive, TPaginationRequestModel<GetIssuesForUserRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>();
     services.RegisterMqListener<IssueCreateOrUpdateReceive, IssueUpdateRequest?, int?>();
@@ -82,6 +84,7 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<MessageUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();
     services.RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>();
     services.RegisterMqListener<IssueReadReceive, TAuthRequestModel<int>?, IssueHelpdeskModelDB?>();
+    services.RegisterMqListener<RubricReadReceive, int?, List<RubricIssueHelpdeskModelDB>?>();
     //
     #endregion
 });

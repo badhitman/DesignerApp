@@ -38,6 +38,8 @@ else
     }
     @if (SelectedRubricId != 0)
     {
-        <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" @ref="childSelector" ParentRubric="SelectedRubricId" />
+        <CascadingValue Value="@(RubricMetadataShadow?.Take(RubricMetadataShadow.Count - 1).ToList())">
+            <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" @ref="childSelector" ParentRubric="SelectedRubricId" />
+        </CascadingValue>
     }
 }

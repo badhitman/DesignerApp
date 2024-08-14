@@ -2,44 +2,59 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// Прочитать рубрику
+/// Прочитать рубрику (со всеми вышестоящими владельцами)
 /// </summary>
-public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<ProjectOwnedRequestModel?, RubricIssueHelpdeskModelDB?>
+public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IMemoryCache cache)
+    : IResponseReceive<int?, List<RubricIssueHelpdeskModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricForIssuesReadHelpdeskReceive;
 
+    static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
+
     /// <summary>
-    /// Прочитать рубрику
+    /// Прочитать рубрику (со всеми вышестоящими владельцами)
     /// </summary>
-    public async Task<TResponseModel<RubricIssueHelpdeskModelDB?>> ResponseHandleAction(ProjectOwnedRequestModel? req)
+    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> ResponseHandleAction(int? rubricId)
     {
-        ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<RubricIssueHelpdeskModelDB?> res = new();
+        ArgumentNullException.ThrowIfNull(rubricId);
+        TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = new();
+        string mem_key = $"{QueueName}-{rubricId}";
+        if (cache.TryGetValue(mem_key, out List<RubricIssueHelpdeskModelDB>? rubric))
+        {
+            res.Response = rubric;
+            return res;
+        }
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        //IQueryable<RubricIssueHelpdeskLowModel> q = context
-        //    .RubricsForIssues
-        //    .Where(x => x.ProjectId == req.ProjectId)
-        //    .Select(x => new RubricIssueHelpdeskLowModel() { Name = x.Name, Description = x.Description, Id = x.Id, IsDisabled = x.IsDisabled, ParentRubricId = x.ParentRubricId, ProjectId = x.ProjectId, SortIndex = x.SortIndex })
-        //    .AsQueryable();
+        List<RubricIssueHelpdeskModelDB> ctrl = [await context
+            .RubricsForIssues
+            .Include(x => x.ParentRubric)
+            .FirstAsync(x => x.Id == rubricId)];
 
-        //if (req.OwnerId is null || req.OwnerId < 1)
-        //    q = q.Where(x => x.ParentRubricId == null || x.ParentRubricId < 1);
-        //else
-        //    q = q.Where(x => x.ParentRubricId == req.OwnerId);
+        RubricIssueHelpdeskModelDB? lpi = ctrl.Last();
+        while (lpi.ParentRubric is not null)
+        {
+            ctrl.Add(await context
+            .RubricsForIssues
+            .Include(x => x.ParentRubric)
+            .ThenInclude(x => x!.NestedRubrics)
+            .FirstAsync(x => x.Id == lpi.ParentRubric.Id));
+            lpi = ctrl.Last();
+        }
 
-        //res.Response = await q.ToArrayAsync();
+        res.Response = ctrl;
+        cache.Set(mem_key, res.Response, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
         return res;
     }
 }

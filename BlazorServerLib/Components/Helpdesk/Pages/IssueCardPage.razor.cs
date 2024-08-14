@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using System.Collections.Generic;
 
 namespace BlazorWebLib.Components.Helpdesk.Pages;
 
@@ -16,6 +17,9 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
 {
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+
+    [Inject]
+    IWebRemoteTransmissionService WebRemoteRepo { get; set; } = default!;
 
     [Inject]
     IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
@@ -34,6 +38,8 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     UserInfoModel CurrentUser { get; set; } = default!;
     IssueHelpdeskModelDB? IssueSource { get; set; }
 
+    UserInfoModel[]? usersIdentityDump = null;
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -44,6 +50,25 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
         TResponseModel<IssueHelpdeskModelDB?> issue_res = await HelpdeskRepo.IssueRead(new TAuthRequestModel<int>() { Request = Id, UserIdentityId = CurrentUser.UserId });
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
         IssueSource = issue_res.Response;
+
+        if (issue_res.Success() && IssueSource is not null)
+        {
+            List<string> users_ids = [IssueSource.AuthorIdentityUserId!];
+            if (!string.IsNullOrWhiteSpace(IssueSource.ExecutorIdentityUserId))
+                users_ids.Add(IssueSource.ExecutorIdentityUserId);
+
+            if (IssueSource.Subscribers is not null && IssueSource.Subscribers.Count != 0)
+                users_ids.AddRange(IssueSource.Subscribers.Select(x => x.AuthorIdentityUserId));
+
+            if (users_ids.Count != 0)
+            {
+                users_ids = users_ids.Distinct().ToList();
+                TResponseModel<UserInfoModel[]?> users_data_identity = await WebRemoteRepo.FindUsersIdentity([.. users_ids]);
+                SnackbarRepo.ShowMessagesResponse(users_data_identity.Messages);
+                usersIdentityDump = users_data_identity.Response;
+            }
+        }
+
         IsBusyProgress = false;
     }
 }
