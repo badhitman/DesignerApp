@@ -10,9 +10,8 @@ namespace SharedLib;
 /// <summary>
 /// Маркировка сообщения как `ответ на вопрос`
 /// </summary>
-[Index(nameof(TelegramId))]
 [Index(nameof(IdentityUserId))]
-public class VoteHelpdeskModelDB : UserCrossIdsModel
+public class VoteHelpdeskModelDB
 {
     /// <summary>
     /// Идентификатор/Key
@@ -38,4 +37,10 @@ public class VoteHelpdeskModelDB : UserCrossIdsModel
     /// Issue
     /// </summary>
     public int IssueId { get; set; }
+
+    /// <summary>
+    /// IdentityUserId
+    /// </summary>
+    [Required]
+    public required string IdentityUserId { get; set; }
 }

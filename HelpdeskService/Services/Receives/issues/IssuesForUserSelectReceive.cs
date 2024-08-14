@@ -13,13 +13,13 @@ namespace Transmission.Receives.helpdesk;
 /// GetIssuesForUser
 /// </summary>
 public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<GetIssuesForUserRequestModel?, TPaginationResponseModel<IssueHelpdeskModel>?>
+    : IResponseReceive<TPaginationRequestModel<GetIssuesForUserRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ResponseHandleAction(GetIssuesForUserRequestModel? req)
+    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ResponseHandleAction(TPaginationRequestModel<GetIssuesForUserRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> res = new()
@@ -31,22 +31,22 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
 
         IQueryable<IssueHelpdeskModelDB> q = context
             .Issues
-            .Where(x => x.ProjectId == req.ProjectId)
+            .Where(x => x.ProjectId == req.Request.ProjectId)
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(req.SearchQuery))
+        if (!string.IsNullOrWhiteSpace(req.Request.SearchQuery))
         {
-            req.SearchQuery = req.SearchQuery.ToUpper();
+            req.Request.SearchQuery = req.Request.SearchQuery.ToUpper();
 
             q = from issue_element in q
                 join rubric_element in context.RubricsForIssues on issue_element.RubricIssueId equals rubric_element.Id
                 into grp_rubrics
                 from c in grp_rubrics.DefaultIfEmpty()
-                where issue_element.NormalizeNameUpper!.Contains(req.SearchQuery) || c.NormalizedNameToUpper!.Contains(req.SearchQuery)
+                where issue_element.NormalizeNameUpper!.Contains(req.Request.SearchQuery) || c.NormalizedNameToUpper!.Contains(req.Request.SearchQuery)
                 select issue_element;
         }
 
-        switch (req.JournalMode)
+        switch (req.Request.JournalMode)
         {
             case HelpdeskJournalModesEnum.ActualOnly:
                 q = q.Where(x => x.StepIssue <= HelpdeskIssueStepsEnum.Progress);
@@ -58,7 +58,7 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
                 break;
         }
 
-        switch (req.UserArea)
+        switch (req.Request.UserArea)
         {
             case UsersAreasHelpdeskEnum.Author:
                 q = q.Where(x => x.AuthorIdentityUserId == req.Request.IdentityUserId);
@@ -74,7 +74,7 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
                 break;
         }
         res.Response.TotalRowsCount = await q.CountAsync();
-        
+
         List<IssueHelpdeskModelDB> data = await q
             .Include(x => x.RubricIssue)
             .OrderBy(x => x.CreatedAt)

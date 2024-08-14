@@ -2,13 +2,21 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
 /// Сообщение из обращения помечается как ответ
 /// </summary>
-public class SetMessageAsResponseIssueRequestModel : UserCrossIdsModel
+public class VoteIssueRequestModel
 {
+    /// <summary>
+    /// IdentityUserId
+    /// </summary>
+    [Required]
+    public required string IdentityUserId { get; set; }
+
     /// <summary>
     /// MessageId
     /// </summary>

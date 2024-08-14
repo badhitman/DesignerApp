@@ -10,7 +10,7 @@ using SharedLib;
 namespace BlazorWebLib.Components.Helpdesk;
 
 /// <summary>
-/// 
+/// HelpdeskJournalComponent
 /// </summary>
 public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
 {
@@ -31,10 +31,17 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     public required HelpdeskJournalModesEnum JournalMode { get; set; }
 
     /// <summary>
+    /// UserArea
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required UsersAreasHelpdeskEnum UserArea { get; set; }
+
+    /// <summary>
     /// SetTab
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required Action<HelpdeskJournalComponent> SetTab { get; set; }
+
 
     private string? searchString = null;
 
@@ -62,16 +69,27 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
             throw new Exception();
         }
 
-        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> rest = await HelpdeskRepo
-            .IssuesSelect(new GetIssuesForUserRequestModel() { JournalMode = JournalMode, Request = new UserCrossIdsModel() { IdentityUserId = _current_user.Response.UserId }, SearchQuery = searchString });
-        IsBusyProgress = false;
+        TPaginationRequestModel<GetIssuesForUserRequestModel> req = new()
+        {
+            Request = new()
+            {
+                IdentityUserId = _current_user.Response.UserId,
+                JournalMode = JournalMode,
+                SearchQuery = searchString,
+                UserArea = UserArea
+            }
+        };
 
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> rest = await HelpdeskRepo
+            .IssuesSelect(req);
+
+        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         // Forward the provided token to methods which support it
         List<IssueHelpdeskModel> data = rest.Response!.Response!;
         // Return the data
-        return new () { TotalItems = rest.Response.TotalRowsCount, Items = data };
+        return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
     }
 
     private void OnSearch(string text)

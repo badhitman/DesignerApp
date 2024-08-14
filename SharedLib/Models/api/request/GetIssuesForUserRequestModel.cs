@@ -2,13 +2,21 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
 /// GetIssuesForUserRequestModel
 /// </summary>
-public class GetIssuesForUserRequestModel : TPaginationRequestModel<UserCrossIdsModel>
+public class GetIssuesForUserRequestModel
 {
+    /// <summary>
+    /// IdentityUserId
+    /// </summary>
+    [Required] 
+    public required string IdentityUserId { get; set; }
+
     /// <summary>
     /// ProjectId
     /// </summary>
@@ -20,9 +28,9 @@ public class GetIssuesForUserRequestModel : TPaginationRequestModel<UserCrossIds
     public string? SearchQuery { get; set; }
 
     /// <summary>
-    /// Автор, Исполнитель, Подписчик
+    /// Автор, Исполнитель, Подписчик или Исполнитель||Подписчик
     /// </summary>
-    public UsersAreasHelpdeskEnum UserArea {  get; set; }
+    public required UsersAreasHelpdeskEnum UserArea {  get; set; }
 
     /// <summary>
     /// JournalMode

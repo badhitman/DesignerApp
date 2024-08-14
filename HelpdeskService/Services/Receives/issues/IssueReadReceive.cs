@@ -26,10 +26,11 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        //IQueryable<IssueHelpdeskModelDB> q = context
-        //    .Issues
-        //    .Where(x => x.Id == req.IssueId)
-        //    .AsQueryable();
+        IssueHelpdeskModelDB issue_db = await context
+            .Issues
+            .Include(x => x.RubricIssue)
+            .Include(x => x.Messages)
+            .FirstAsync(x => x.Id == req.IssueId);
 
         return res;
     }

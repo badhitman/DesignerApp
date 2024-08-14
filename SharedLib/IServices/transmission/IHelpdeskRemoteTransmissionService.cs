@@ -29,7 +29,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> IssuesSelect(GetIssuesForUserRequestModel req);
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> IssuesSelect(TPaginationRequestModel<GetIssuesForUserRequestModel> req);
 
     /// <summary>
     /// Создать обращение
@@ -46,7 +46,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Сообщение из обращения помечается как ответ (либо этот признак снимается: в зависимости от запроса)
     /// </summary>
-    public Task<TResponseModel<bool>> MessageOfIssueSetAsResponse(SetMessageAsResponseIssueRequestModel req);
+    public Task<TResponseModel<bool>> MessageOfIssueSetAsResponse(VoteIssueRequestModel req);
 
     /// <summary>
     /// Добавить сообщение к обращению
