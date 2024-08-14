@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// Issue read request
+/// Авторизованный запрос (от имени пользователя)
 /// </summary>
-public class IssueReadRequestModel
+public class TAuthRequestModel<T>
 {
     /// <summary>
     /// User id (Identity)
@@ -15,7 +15,7 @@ public class IssueReadRequestModel
     public required string UserIdentityId { get; set; }
 
     /// <summary>
-    /// IssueId
+    /// Request
     /// </summary>
-    public required int IssueId { get; set; }
+    public required T Request { get; set; }
 }

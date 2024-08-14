@@ -74,14 +74,14 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
     services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     // 
-    services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskLowModel[]?>();
-    services.RegisterMqListener<RubricForIssueCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
+    services.RegisterMqListener<RubricsListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskLowModel[]?>();
+    services.RegisterMqListener<RubricCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
     services.RegisterMqListener<IssuesForUserSelectReceive, TPaginationRequestModel<GetIssuesForUserRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>();
     services.RegisterMqListener<IssueCreateOrUpdateReceive, IssueUpdateRequest?, int?>();
-    services.RegisterMqListener<MessageIssueSetAsResponseReceive, VoteIssueRequestModel?, bool?>();
-    services.RegisterMqListener<MessageForIssueUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();
-    services.RegisterMqListener<RubricForIssuesMoveReceive, RowMoveModel?, bool?>();
-    services.RegisterMqListener<IssueReadReceive, IssueReadRequestModel?, IssueHelpdeskModelDB?>();
+    services.RegisterMqListener<MessageVoteReceive, VoteIssueRequestModel?, bool?>();
+    services.RegisterMqListener<MessageUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();
+    services.RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>();
+    services.RegisterMqListener<IssueReadReceive, TAuthRequestModel<int>?, IssueHelpdeskModelDB?>();
     //
     #endregion
 });

@@ -13,7 +13,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Сдвинуть рубрику
 /// </summary>
-public class RubricForIssuesMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
     : IResponseReceive<RowMoveModel?, bool?>
 {
     /// <inheritdoc/>

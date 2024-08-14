@@ -51,7 +51,6 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     bool ShowDisabledRubrics;
     RubricIssueHelpdeskLowModel? SelectedRubric;
 
-
     async Task CreateIssue()
     {
         IsBusyProgress = true;
@@ -68,8 +67,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
             ActionUserId = _current_user.Response.UserId,
             RubricIssueId = SelectedRubric?.Id,
             Name = Name!,
-            Description = Description
-
+            Description = Description,
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -99,12 +97,6 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
         SelectedRubric = selectedRubric;
         StateHasChanged();
     }
-
-#if DEBUG
-    static bool IsDebug => true;
-#else
-    static bool IsDebug => false;
-#endif
 
     void ToggleMode()
     {

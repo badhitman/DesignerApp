@@ -13,13 +13,13 @@ namespace Transmission.Receives.helpdesk;
 /// Read issue - of context user
 /// </summary>
 public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IWebRemoteTransmissionService webTransmissionRepo)
-    : IResponseReceive<IssueReadRequestModel?, IssueHelpdeskModelDB?>
+    : IResponseReceive<TAuthRequestModel<int>?, IssueHelpdeskModelDB?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssueGetHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<IssueHelpdeskModelDB?>> ResponseHandleAction(IssueReadRequestModel? req)
+    public async Task<TResponseModel<IssueHelpdeskModelDB?>> ResponseHandleAction(TAuthRequestModel<int>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
@@ -30,7 +30,7 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
             .Include(x => x.RubricIssue)
             .Include(x => x.Messages)
             .Include(x => x.Subscribers)
-            .FirstOrDefaultAsync(x => x.Id == req.IssueId);
+            .FirstOrDefaultAsync(x => x.Id == req.Request);
 
         if (issue_db is null)
         {

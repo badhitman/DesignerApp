@@ -12,7 +12,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// CreateIssueTheme
 /// </summary>
-public class RubricForIssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
     : IResponseReceive<RubricIssueHelpdeskModelDB?, int?>
 {
     /// <inheritdoc/>

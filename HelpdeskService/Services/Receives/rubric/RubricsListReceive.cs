@@ -10,15 +10,19 @@ using SharedLib;
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// GetThemesIssues
+/// Получить рубрики, вложенные в рубрику (если не указано, то root перечень)
 /// </summary>
-public class RubricsForIssuesListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
     : IResponseReceive<ProjectOwnedRequestModel?, RubricIssueHelpdeskLowModel[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получить рубрики, вложенные в рубрику <paramref name="req"/>.OwnerId (если не указано, то root перечень)
+    /// </summary>
+    /// <param name="req">OwnerId: вышестоящая рубрика.</param>
+    /// <returns>Рубрики, подчинённые <c>OwnerId</c></returns>
     public async Task<TResponseModel<RubricIssueHelpdeskLowModel[]?>> ResponseHandleAction(ProjectOwnedRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);

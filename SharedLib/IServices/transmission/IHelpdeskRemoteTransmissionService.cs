@@ -39,7 +39,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Прочитать данные обращения
     /// </summary>
-    public Task<TResponseModel<IssueHelpdeskModelDB?>> IssueRead(IssueReadRequestModel req);
+    public Task<TResponseModel<IssueHelpdeskModelDB?>> IssueRead(TAuthRequestModel<int> req);
 
 
 

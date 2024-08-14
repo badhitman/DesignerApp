@@ -10,18 +10,18 @@ using SharedLib;
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// AddNewMessageIntoIssue
+/// GetThemesIssues
 /// </summary>
-public class MessageForIssueUpdateOrCreateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<IssueMessageHelpdeskBaseModel?, int?>
+public class MessageVoteReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+    : IResponseReceive<VoteIssueRequestModel?, bool?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessageOfIssueUpdateHelpdeskReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessageOfIssueSetAsResponseHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(IssueMessageHelpdeskBaseModel? payload)
+    public async Task<TResponseModel<bool?>> ResponseHandleAction(VoteIssueRequestModel? payload)
     {
-        TResponseModel<int?> res = new();
+        TResponseModel<bool?> res = new();
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         return res;

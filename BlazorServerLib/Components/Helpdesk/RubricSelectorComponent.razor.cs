@@ -60,8 +60,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         {
             _selectedRubricId = value;
             if (childSelector is not null)
-                InvokeAsync(async () => await childSelector.InitSelectorForIssue(_selectedRubricId));
-
+                InvokeAsync(async () => await childSelector.OwnerRubricSet(_selectedRubricId));
             SelectedRubricsHandle(_selectedRubricId > 0 ? CurrentRubrics!.First(x => x.Id == _selectedRubricId) : null);
         }
     }
@@ -69,9 +68,8 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Сброс состояния селектора.
     /// </summary>
-    public async Task InitSelectorForIssue(int ownerRubricId)
+    public async Task OwnerRubricSet(int ownerRubricId)
     {
-        _selectedRubricId = 0;
         IsBusyProgress = true;
         TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new ProjectOwnedRequestModel() { OwnerId = ownerRubricId });
         IsBusyProgress = false;
@@ -82,6 +80,6 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await InitSelectorForIssue(ParentRubric);
+        await OwnerRubricSet(ParentRubric);
     }
 }
