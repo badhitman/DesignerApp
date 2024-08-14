@@ -18,7 +18,7 @@
     <RowTemplate>
         <MudTd DataLabel="CreatedAt"><a href="@($"/issue-card/{context.Id}")">@context.CreatedAt</a></MudTd>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Name">@context.RubricIssue?.Name</MudTd>
+        <MudTd DataLabel="Rubric">@context.RubricIssue?.Name</MudTd>
         <MudTd></MudTd>
     </RowTemplate>
     <NoRecordsContent>
