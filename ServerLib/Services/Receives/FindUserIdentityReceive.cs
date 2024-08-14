@@ -103,6 +103,10 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
         res.Response = users.Select(convert_user).ToArray();
         cache.Set(mem_token, res.Response, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
 
+        users_ids = [.. users_ids.Where(x => !res.Response.Any(y => y.UserId == x))];
+        if (users_ids.Length != 0)
+            res.AddWarning($"Некоторые пользователи не найдены: {string.Join(",", users_ids)}");
+
         return res;
     }
 }

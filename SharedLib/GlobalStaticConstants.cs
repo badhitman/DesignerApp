@@ -80,10 +80,10 @@ public static partial class GlobalStaticConstants
     {
         #region Web
         /// <inheritdoc/>
-        public readonly static string FindUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.USER_CONTROLLER_NAME}-{Routes.IDENTITY_CONTROLLER_NAME}", Routes.FIND_ACTION_NAME);
+        public readonly static string FindUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string GetTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+        public readonly static string GetTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string GetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
@@ -274,7 +274,6 @@ public static partial class GlobalStaticConstants
 
 
 
-
         /// <summary>
         /// create
         /// </summary>
@@ -389,6 +388,27 @@ public static partial class GlobalStaticConstants
         /// Регистрация
         /// </summary>
         public const string REGISTRATION_ACTION_NAME = "registration";
+    }
+
+    /// <summary>
+    /// Roles
+    /// </summary>
+    public static class Roles
+    {
+        /// <summary>
+        /// admin
+        /// </summary>
+        public const string Admin = "admin";
+
+        /// <summary>
+        /// HelpDeskTelegramBotManager
+        /// </summary>
+        public const string HelpDeskTelegramBotManager = "HelpDeskTelegramBotManager";
+
+        /// <summary>
+        /// HelpDeskTelegramBotUnit
+        /// </summary>
+        public const string HelpDeskTelegramBotUnit = "HelpDeskTelegramBotUnit";
     }
 
     /// <summary>

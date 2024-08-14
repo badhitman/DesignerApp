@@ -1,5 +1,5 @@
 ﻿@page "/Users/Roles"
-@attribute [Authorize(Roles = "admin")]
+@attribute [Authorize(Roles = GlobalStaticConstants.Roles.Admin)]
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inject IUsersProfilesService UsersManageRepo
