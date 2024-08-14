@@ -9,13 +9,29 @@
 <CascadingValue Value="CurrentUser">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-9 d-flex">
-                <div class="vstack gap-3">
-                    <div><IssueBodyComponent /></div>
-                    <div><IssueMessagesComponent /></div>
-                </div>
-            </div>
-            <div class="col-sm-3"><IssuePanelComponent /></div>
+            @if (IssueSource is null)
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Обращение не найдено.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Либо недостаточно прав на просмотр этого документа
+                    </figcaption>
+                </figure>
+            }
+            else
+            {
+                <CascadingValue Value="IssueSource">
+                    <div class="col-sm-9 d-flex">
+                        <div class="vstack gap-3">
+                            <div><IssueBodyComponent /></div>
+                            <div><IssueMessagesComponent /></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3"><IssuePanelComponent /></div>
+                </CascadingValue>
+            }
         </div>
     </div>
 </CascadingValue>

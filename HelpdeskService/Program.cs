@@ -95,6 +95,38 @@ using (IServiceScope ss = app.Services.CreateScope())
     TResponseModel<WebConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
     if (wc_remote.Response is not null && wc_remote.Success())
         wc_main.Update(wc_remote.Response);
+
+#if DEMO
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory = ss.ServiceProvider.GetRequiredService<IDbContextFactory<HelpdeskContext>>();
+    HelpdeskContext context_seed = await helpdeskDbFactory.CreateDbContextAsync();
+    if (!await context_seed.RubricsForIssues.AnyAsync())
+    {
+        List<RubricIssueHelpdeskModelDB> demo_rubrics = [
+            new ()
+            {
+                Name = "Секретарь",
+                NormalizedNameToUpper = "СЕКРЕТАРЬ",
+                SortIndex = 1,
+            },
+            new ()
+            {
+                Name = "Техническая поддержка",
+                NormalizedNameToUpper = "ТЕХНИЧЕСКАЯ ПОДДЕРЖКА",
+                SortIndex = 2,
+            },
+            new ()
+            {
+                Name = "Другое",
+                NormalizedNameToUpper = "ДРУГОЕ",
+                SortIndex = 3,
+            }];
+        demo_rubrics[0].NestedRubrics = [new() { Name = "Справки", NormalizedNameToUpper = "СПРАВКИ", ParentRubric = demo_rubrics[0], SortIndex = 1 }, new() { Name = "Жалобы", NormalizedNameToUpper = "ЖАЛОБЫ", ParentRubric = demo_rubrics[0], SortIndex = 2 }];
+        demo_rubrics[1].NestedRubrics = [new() { Name = "Линия 1", NormalizedNameToUpper = "ЛИНИЯ 1", ParentRubric = demo_rubrics[1], SortIndex = 1 }, new() { Name = "Линия 2", NormalizedNameToUpper = "ЛИНИЯ 2", ParentRubric = demo_rubrics[1], SortIndex = 2 }];
+        await context_seed.AddRangeAsync(demo_rubrics);
+        await context_seed.SaveChangesAsync();
+    }
+#endif
+
 }
 
 await app.RunAsync();

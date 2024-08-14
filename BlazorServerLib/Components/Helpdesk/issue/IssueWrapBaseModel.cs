@@ -2,16 +2,20 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.issue;
 
 /// <summary>
-/// IssueBodyComponent
+/// IssueWrapBaseModel
 /// </summary>
-public partial class IssueBodyComponent : IssueWrapBaseModel
+public class IssueWrapBaseModel : BlazorBusyComponentBaseModel
 {
-    
+    /// <summary>
+    /// Issue
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required IssueHelpdeskModelDB Issue { get; set; }
 }
