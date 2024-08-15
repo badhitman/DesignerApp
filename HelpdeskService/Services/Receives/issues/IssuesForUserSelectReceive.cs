@@ -64,13 +64,13 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
                 q = q.Where(x => x.AuthorIdentityUserId == req.Request.IdentityUserId);
                 break;
             case UsersAreasHelpdeskEnum.Subscriber:
-                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.AuthorIdentityUserId == req.Request.IdentityUserId));
+                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Request.IdentityUserId));
                 break;
             case UsersAreasHelpdeskEnum.Executor:
                 q = q.Where(x => x.ExecutorIdentityUserId == req.Request.IdentityUserId);
                 break;
             case UsersAreasHelpdeskEnum.Main:
-                q = q.Where(x => x.ExecutorIdentityUserId == req.Request.IdentityUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.AuthorIdentityUserId == req.Request.IdentityUserId));
+                q = q.Where(x => x.ExecutorIdentityUserId == req.Request.IdentityUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Request.IdentityUserId));
                 break;
         }
         res.Response.TotalRowsCount = await q.CountAsync();

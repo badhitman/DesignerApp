@@ -6,7 +6,7 @@
     <div class="card-body p-3">
         <div class="hstack">
             <h6 class="card-title mb-2 text-body-secondary">
-                Подписчики 
+                Подписчики
             </h6>
             <MudSpacer />
             @if (CanSubscribe)
@@ -28,7 +28,7 @@
             {
                 foreach (SubscriberIssueHelpdeskModelDB p in Issue.Subscribers)
                 {
-                    <li class="list-group-item p-1 m-0">@p.Name</li>
+                    <li class="list-group-item p-1 m-0">@(UsersIdentityDump?.FirstOrDefault(x => x.UserId == p.UserId)?.UserName ?? p.UserId)</li>
                 }
             }
         </ul>

@@ -72,6 +72,9 @@ builder.ConfigureServices((context, services) =>
 
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
+    //
+    services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
+    //
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
     services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
@@ -85,6 +88,7 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>();
     services.RegisterMqListener<IssueReadReceive, TAuthRequestModel<int>?, IssueHelpdeskModelDB?>();
     services.RegisterMqListener<RubricReadReceive, int?, List<RubricIssueHelpdeskModelDB>?>();
+    services.RegisterMqListener<SubscribeUpdateReceive, TAuthRequestModel<SubscribeUpdateRequestModel>?, bool?>();
     //
     #endregion
 });

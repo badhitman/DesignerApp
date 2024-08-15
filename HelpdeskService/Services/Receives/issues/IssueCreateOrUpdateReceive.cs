@@ -64,7 +64,7 @@ public class IssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpd
 
             if (issue_db.AuthorIdentityUserId == issue_upd.SenderActionUserId ||
                 issue_db.ExecutorIdentityUserId == issue_upd.SenderActionUserId ||
-                issue_db.Subscribers?.Any(x => x.AuthorIdentityUserId == issue_upd.SenderActionUserId) == true ||
+                issue_db.Subscribers?.Any(x => x.UserId == issue_upd.SenderActionUserId) == true ||
                 actor.Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.HelpDeskTelegramBotManager) || x.Equals(GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit)) == true ||
                 actor.IsAdmin)
             {

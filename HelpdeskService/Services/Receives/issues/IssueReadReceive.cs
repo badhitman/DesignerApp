@@ -40,7 +40,7 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
             };
         }
 
-        if (issue_db.ExecutorIdentityUserId == req.SenderActionUserId || issue_db.AuthorIdentityUserId == req.SenderActionUserId || issue_db.Subscribers!.Any(x => x.AuthorIdentityUserId == req.SenderActionUserId))
+        if (issue_db.ExecutorIdentityUserId == req.SenderActionUserId || issue_db.AuthorIdentityUserId == req.SenderActionUserId || issue_db.Subscribers!.Any(x => x.UserId == req.SenderActionUserId))
         {
             return new()
             {

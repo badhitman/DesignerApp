@@ -58,7 +58,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
                 users_ids.Add(IssueSource.ExecutorIdentityUserId);
 
             if (IssueSource.Subscribers is not null && IssueSource.Subscribers.Count != 0)
-                users_ids.AddRange(IssueSource.Subscribers.Select(x => x.AuthorIdentityUserId));
+                users_ids.AddRange(IssueSource.Subscribers.Select(x => x.UserId));
 
             if (users_ids.Count != 0)
             {

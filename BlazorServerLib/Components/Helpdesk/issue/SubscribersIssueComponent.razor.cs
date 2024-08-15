@@ -9,5 +9,5 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 /// </summary>
 public partial class SubscribersIssueComponent : IssueWrapBaseModel
 {
-    bool CanSubscribe=> Issue.Subscribers?.Any(x => x.AuthorIdentityUserId == CurrentUser.UserId) != true;
+    bool CanSubscribe => Issue.Subscribers?.Any(x => x.UserId == CurrentUser.UserId) != true;
 }

@@ -3,15 +3,22 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
 /// <summary>
 /// SubscriberIssueModelDB
 /// </summary>
-[Index(nameof(AuthorIdentityUserId), nameof(IssueId), IsUnique = true)]
-public class SubscriberIssueHelpdeskModelDB : EntryModel
+[Index(nameof(UserId), nameof(IssueId), IsUnique = true)]
+public class SubscriberIssueHelpdeskModelDB
 {
+    /// <summary>
+    /// Идентификатор/Key
+    /// </summary>
+    [Key]
+    public int Id { get; set; }
+
     /// <summary>
     /// Issue
     /// </summary>
@@ -22,9 +29,9 @@ public class SubscriberIssueHelpdeskModelDB : EntryModel
     public IssueHelpdeskModelDB? Issue { get; set; }
 
     /// <summary>
-    /// IdentityUserId
+    /// UserId (of Identity)
     /// </summary>
-    public required string AuthorIdentityUserId { get; set; }
+    public required string UserId { get; set; }
 
     /// <summary>
     /// отключение отправки уведомлений
