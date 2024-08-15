@@ -40,7 +40,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Создать обращение
     /// </summary>
-    public Task<TResponseModel<int>> IssueCreateOrUpdate(IssueUpdateRequest issue);
+    public Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<IssueUpdateRequest> issue);
 
     /// <summary>
     /// Прочитать данные обращения

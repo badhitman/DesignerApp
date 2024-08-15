@@ -75,11 +75,14 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
 
         TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new()
         {
-            ActionUserId = _current_user.Response.UserId,
-            Name = NameIssueEdit,
-            Description = DescriptionIssueEdit,
-            RubricIssueId = RubricIssueEdit,
-            Id = Issue.Id,
+            SenderActionUserId = _current_user.Response.UserId,
+            Payload = new()
+            {
+                Name = NameIssueEdit,
+                Description = DescriptionIssueEdit,
+                RubricIssueId = RubricIssueEdit,
+                Id = Issue.Id,
+            }
         });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;

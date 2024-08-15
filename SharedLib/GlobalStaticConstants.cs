@@ -135,6 +135,9 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string IssueGetHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
 
+        /// <inheritdoc/>
+        public readonly static string SubscribeIssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.SUBSCRIBE_CONTROLLER_NAME}-{Routes.ISSUE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
+
 
         /// <inheritdoc/>
         public readonly static string MessageOfIssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
@@ -219,6 +222,11 @@ public static partial class GlobalStaticConstants
         /// Issue
         /// </summary>
         public const string ISSUE_CONTROLLER_NAME = "issue";
+
+        /// <summary>
+        /// Subscribe
+        /// </summary>
+        public const string SUBSCRIBE_CONTROLLER_NAME = "subscribe";
 
         /// <summary>
         /// Theme

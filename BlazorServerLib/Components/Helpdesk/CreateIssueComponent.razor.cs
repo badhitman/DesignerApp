@@ -62,12 +62,15 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new IssueUpdateRequest()
+        TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new()
         {
-            ActionUserId = _current_user.Response.UserId,
-            RubricIssueId = SelectedRubric?.Id,
-            Name = Name!,
-            Description = Description,
+            SenderActionUserId = _current_user.Response.UserId,
+            Payload = new()
+            {
+                RubricIssueId = SelectedRubric?.Id,
+                Name = Name!,
+                Description = Description,
+            }
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

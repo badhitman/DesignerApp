@@ -29,7 +29,7 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
 
     #region issue
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> IssueCreateOrUpdate(IssueUpdateRequest issue)
+    public async Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<IssueUpdateRequest> issue)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.IssueUpdateHelpdeskReceive, issue);
 
     /// <inheritdoc/>

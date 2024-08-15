@@ -10,13 +10,13 @@ using DbcLib;
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// Read issue - of context user
+///Subscribe update - of context user
 /// </summary>
-public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IWebRemoteTransmissionService webTransmissionRepo)
+public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IWebRemoteTransmissionService webTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<int>?, IssueHelpdeskModelDB?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssueGetHelpdeskReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.SubscribeIssueUpdateHelpdeskReceive;
 
     /// <inheritdoc/>
     public async Task<TResponseModel<IssueHelpdeskModelDB?>> ResponseHandleAction(TAuthRequestModel<int>? req)

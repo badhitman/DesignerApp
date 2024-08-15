@@ -10,12 +10,12 @@ namespace SharedLib;
 public class TAuthRequestModel<T>
 {
     /// <summary>
-    /// User id (Identity)
+    /// Пользователь, который отправил запрос (id Identity)
     /// </summary>
-    public required string UserIdentityId { get; set; }
+    public required string SenderActionUserId { get; set; }
 
     /// <summary>
     /// Request
     /// </summary>
-    public required T Request { get; set; }
+    public required T Payload { get; set; }
 }
