@@ -26,4 +26,9 @@ public class SubscribeUpdateRequestModel
     /// Subscribe set
     /// </summary>
     public required bool SubscribeSet { get; set; }
+
+    /// <summary>
+    /// отключение отправки уведомлений
+    /// </summary>
+    public bool IsSilent { get; set; }
 }

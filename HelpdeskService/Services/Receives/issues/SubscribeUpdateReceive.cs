@@ -24,18 +24,25 @@ public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskD
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<bool?> res = new();
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([req.SenderActionUserId, req.Payload.UserId]);
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 2)
+        string[] users_ids = [req.SenderActionUserId, req.Payload.UserId];
+        users_ids = [.. users_ids.Distinct()];
+
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity(users_ids);
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != users_ids.Length)
             return new() { Messages = rest.Messages };
 
         UserInfoModel
             actor = rest.Response.First(x => x.UserId == req.SenderActionUserId),
             requested_user = rest.Response.First(x => x.UserId == req.Payload.UserId);
 
-        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<int>()
+        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
         {
-            SenderActionUserId = req.SenderActionUserId,
-            Payload = req.Payload.IssueId,
+            SenderActionUserId = actor.UserId,
+            Payload = new IssueReadRequestModel()
+            {
+                IssueId = req.Payload.IssueId,
+                WithoutExternalData = true,
+            },
         });
 
         if (!issue_data.Success() || issue_data.Response is null)
@@ -51,31 +58,44 @@ public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskD
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        int? sdb = await context
+        var sdb = await context
              .SubscribersOfIssues
              .Where(x => x.IssueId == issue_data.Response.Id && x.UserId == requested_user.UserId)
-             .Select(x => x.Id)
+             .Select(x => new { x.Id, x.IsSilent })
              .FirstOrDefaultAsync();
 
         if (req.Payload.SubscribeSet)
         {
-            if (!sdb.HasValue || sdb.Value == default)
+            if (sdb is null)
             {
-                await context.SubscribersOfIssues.AddAsync(new() { UserId = requested_user.UserId, IssueId = issue_data.Response.Id, });
+                await context.SubscribersOfIssues.AddAsync(new() { UserId = requested_user.UserId, IssueId = issue_data.Response.Id, IsSilent = req.Payload.IsSilent });
                 await context.SaveChangesAsync();
                 res.AddSuccess("Подписка успешно добавлена");
             }
             else
-                res.AddInfo("Подписка уже существует");
+            {
+                if (req.Payload.IsSilent == sdb.IsSilent)
+                    res.AddInfo("Подписка уже существует");
+                else
+                {
+                    await context
+                        .SubscribersOfIssues
+                        .Where(x => x.Id == sdb.Id)
+                        .ExecuteUpdateAsync(setters => setters
+                        .SetProperty(b => b.IsSilent, req.Payload.IsSilent));
+
+                    res.AddSuccess($"Уведомления успешно {(req.Payload.IsSilent ? "отключены" : "включены")} для: {requested_user.UserName}");
+                }
+            }
         }
         else
         {
             if (sdb is null)
-                res.AddInfo("Подписка уже существует");
+                res.AddInfo("Подписки нет");
             else
             {
                 await context.SubscribersOfIssues
-                    .Where(x => x.Id == sdb.Value)
+                    .Where(x => x.Id == sdb.Id)
                     .ExecuteDeleteAsync();
 
                 res.AddSuccess("Подписка успешно удалена");

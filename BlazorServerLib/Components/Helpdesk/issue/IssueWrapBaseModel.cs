@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
+using MudBlazor;
 
 namespace BlazorWebLib.Components.Helpdesk.issue;
 
@@ -13,6 +14,12 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 /// </summary>
 public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    internal ISnackbar SnackbarRepo { get; set; } = default!;
+
+    [Inject]
+    internal IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+
     /// <summary>
     /// CurrentUser
     /// </summary>

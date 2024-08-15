@@ -1,7 +1,7 @@
 ﻿@inherits IssueWrapBaseModel
 
 <div class="input-group mb-3">
-    <input value="@(Executor?.Email ?? "")" readonly type="text" class="form-control">
+    <input value="@(Executor?.Email ?? base.Issue.ExecutorIdentityUserId)" readonly type="text" class="form-control">
     <button title="Назначить меня" class="btn btn-outline-secondary bi bi-person-raised-hand" type="button"></button>
     <button title="Установить" class="btn btn-outline-secondary bi bi-pencil" type="button"></button>
 </div>

@@ -15,16 +15,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class IssueBodyComponent : IssueWrapBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
-
-    [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
-
-    [Inject]
-    IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
 
 
     string? NameIssueEdit { get; set; }
@@ -66,16 +57,10 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
             throw new ArgumentNullException(nameof(NameIssueEdit));
 
         IsBusyProgress = true;
-        TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync();
-        if (!_current_user.Success() || _current_user.Response is null)
-        {
-            SnackbarRepo.ShowMessagesResponse(_current_user.Messages);
-            return;
-        }
-
+        
         TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new()
         {
-            SenderActionUserId = _current_user.Response.UserId,
+            SenderActionUserId = CurrentUser.UserId,
             Payload = new()
             {
                 Name = NameIssueEdit,

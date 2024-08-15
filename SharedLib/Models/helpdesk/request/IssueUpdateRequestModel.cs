@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// IssueUpdateRequest
+/// Issue Update Request
 /// </summary>
-public class IssueUpdateRequest : EntryDescriptionModel
+public class IssueUpdateRequestModel : EntryDescriptionModel
 {
     /// <summary>
     /// Rubric Issue

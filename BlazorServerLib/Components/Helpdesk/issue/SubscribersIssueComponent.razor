@@ -6,31 +6,43 @@
     <div class="card-body p-3">
         <div class="hstack">
             <h6 class="card-title mb-2 text-body-secondary">
-                Подписчики
+                Наблюдатели
             </h6>
             <MudSpacer />
             @if (CanSubscribe)
             {
-                <i title="Подписаться на события в данном диалоге" style="cursor:pointer;" class="bi bi-envelope-plus-fill"> Подписаться</i>
+                <i @onclick="SubscribeMeToggle" title="Подписаться на события в данном диалоге" style="cursor:pointer;" class="bi bi-envelope-plus-fill text-success-emphasis"> Следить</i>
             }
             else
             {
-                <i title="Отписаться от уведомлений в этом диалоге" style="cursor:pointer;" class="bi bi-envelope-x-fill"> Подписаться</i>
+                <i @onclick="SubscribeMeToggle" title="Перестать следить за диалогом" style="cursor:pointer;" class="bi bi-envelope-x-fill text-warning-emphasis"> Отписаться</i>
             }
         </div>
 
         <ul class="list-group list-group-flush">
             @if (Issue.Subscribers is null || Issue.Subscribers.Count == 0)
             {
-                <li class="list-group-item p-1 m-0">ни кто не наблюдает</li>
+                <li class="list-group-item p-1 m-0">ни одного подписчика</li>
             }
             else
             {
                 foreach (SubscriberIssueHelpdeskModelDB p in Issue.Subscribers)
                 {
-                    <li class="list-group-item p-1 m-0">@(UsersIdentityDump?.FirstOrDefault(x => x.UserId == p.UserId)?.UserName ?? p.UserId)</li>
+                    <li class="list-group-item p-1 m-0">
+                        @(UsersIdentityDump?.FirstOrDefault(x => x.UserId == p.UserId)?.UserName ?? p.UserId)
+                        @if (p.UserId == CurrentUser.UserId)
+                        {
+                            <sup class="text-primary-emphasis"> Вы</sup>
+                        }
+                    </li>
                 }
             }
         </ul>
+        @if (Issue.Subscribers?.Any(x => x.UserId == CurrentUser.UserId) != true && (Issue.AuthorIdentityUserId == CurrentUser.UserId || Issue.ExecutorIdentityUserId == CurrentUser.UserId))
+        {
+            <div title="У вас нет явной подписки, но вы непосредственный участник" class="card-footer">
+                Вы участник
+            </div>
+        }
     </div>
 </div>

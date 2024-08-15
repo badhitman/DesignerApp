@@ -13,13 +13,13 @@ namespace Transmission.Receives.helpdesk;
 /// Create (or update) Issue: Рубрика, тема и описание
 /// </summary>
 public class IssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IWebRemoteTransmissionService webTransmissionRepo)
-    : IResponseReceive<TAuthRequestModel<IssueUpdateRequest>?, int?>
+    : IResponseReceive<TAuthRequestModel<IssueUpdateRequestModel>?, int?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssueUpdateHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(TAuthRequestModel<IssueUpdateRequest>? issue_upd)
+    public async Task<TResponseModel<int?>> ResponseHandleAction(TAuthRequestModel<IssueUpdateRequestModel>? issue_upd)
     {
         ArgumentNullException.ThrowIfNull(issue_upd);
         TResponseModel<int?> res = new();

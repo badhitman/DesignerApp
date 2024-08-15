@@ -40,17 +40,22 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Создать обращение
     /// </summary>
-    public Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<IssueUpdateRequest> issue);
+    public Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<IssueUpdateRequestModel> issue);
 
     /// <summary>
     /// Прочитать данные обращения
     /// </summary>
-    public Task<TResponseModel<IssueHelpdeskModelDB?>> IssueRead(TAuthRequestModel<int> req);
+    public Task<TResponseModel<IssueHelpdeskModelDB?>> IssueRead(TAuthRequestModel<IssueReadRequestModel> req);
 
     /// <summary>
     /// Подписка на события в обращении (или отписка от событий)
     /// </summary>
     public Task<TResponseModel<bool?>> SubscribeUpdate(TAuthRequestModel<SubscribeUpdateRequestModel> req);
+
+    /// <summary>
+    /// Запрос подписчиков на обращение
+    /// </summary>
+    public Task<TResponseModel<SubscriberIssueHelpdeskModelDB[]?>> SubscribesList(TAuthRequestModel<int> req);
     #endregion
 
     #region message
