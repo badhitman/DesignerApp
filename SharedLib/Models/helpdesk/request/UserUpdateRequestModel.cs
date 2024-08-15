@@ -2,20 +2,23 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
 ///  Subscribe Update Request
 /// </summary>
-public class SubscribeUpdateRequestModel: UserUpdateRequestModel
+public class UserUpdateRequestModel
 {
     /// <summary>
-    /// отключение отправки уведомлений
+    /// UserId
     /// </summary>
-    public bool IsSilent { get; set; }
+    [Required]
+    public required string UserId { get; set; }
 
     /// <summary>
-    /// Value for set
+    /// Issue Id
     /// </summary>
-    public required bool SetValue { get; set; }
+    public required int IssueId { get; set; }
 }

@@ -64,7 +64,7 @@ public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskD
              .Select(x => new { x.Id, x.IsSilent })
              .FirstOrDefaultAsync();
 
-        if (req.Payload.SubscribeSet)
+        if (req.Payload.SetValue)
         {
             if (sdb is null)
             {

@@ -90,6 +90,7 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<RubricReadReceive, int?, List<RubricIssueHelpdeskModelDB>?>();
     services.RegisterMqListener<SubscribeUpdateReceive, TAuthRequestModel<SubscribeUpdateRequestModel>?, bool?>();
     services.RegisterMqListener<SubscribesListReceive, TAuthRequestModel<int>?, SubscriberIssueHelpdeskModelDB[]?>();
+    services.RegisterMqListener<ExecuterUpdateReceive, TAuthRequestModel<UserUpdateRequestModel>?, bool>();
     //
     #endregion
 });

@@ -56,6 +56,11 @@ public interface IHelpdeskRemoteTransmissionService
     /// Запрос подписчиков на обращение
     /// </summary>
     public Task<TResponseModel<SubscriberIssueHelpdeskModelDB[]?>> SubscribesList(TAuthRequestModel<int> req);
+
+    /// <summary>
+    /// Исполнитель обращения
+    /// </summary>
+    public Task<TResponseModel<bool>> ExecuterUpdate(TAuthRequestModel<UserUpdateRequestModel> req);
     #endregion
 
     #region message

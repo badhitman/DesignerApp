@@ -47,6 +47,10 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     /// <inheritdoc/>
     public async Task<TResponseModel<SubscriberIssueHelpdeskModelDB[]?>> SubscribesList(TAuthRequestModel<int> req)
         => await rabbitClient.MqRemoteCall<SubscriberIssueHelpdeskModelDB[]?>(GlobalStaticConstants.TransmissionQueues.SubscribesIssueListHelpdeskReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> ExecuterUpdate(TAuthRequestModel<UserUpdateRequestModel> req)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.ExecuterIssueUpdateHelpdeskReceive, req);
     #endregion
 
     #region message
@@ -56,6 +60,6 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> MessageVote(VoteIssueRequestModel req)
-        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.MessageOfIssueSetAsResponseHelpdeskReceive, req);    
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.MessageOfIssueSetAsResponseHelpdeskReceive, req);
     #endregion
 }

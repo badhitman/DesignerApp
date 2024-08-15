@@ -29,10 +29,6 @@ public static class ExtBlazor
     }
 
     /// <inheritdoc/>
-    public static void Error(this ISnackbar SnackbarRepo, string message)
-        => SnackbarRepo.Add(message, Severity.Error, opt => opt.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-
-    /// <inheritdoc/>
     public static VerticalDirectionsEnum GetVerticalDirection(this SortDirection sort_direction)
     {
         return sort_direction switch
