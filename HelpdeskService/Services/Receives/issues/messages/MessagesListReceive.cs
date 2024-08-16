@@ -38,19 +38,25 @@ public class MessagesListReceive(
         TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
-            Payload = new() { IssueId = req.Payload, WithoutExternalData = true },
+            Payload = new() { IssueId = req.Payload, IncludeSubscribersOnly = true },
         });
 
         if (!issue_data.Success() || issue_data.Response is null)
             return new() { Messages = issue_data.Messages };
 
-        if (!actor.IsAdmin && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
+        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
         {
             res.AddError("У вас не достаточно прав");
             return res;
         }
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+
+        res.Response = await context
+            .IssuesMessages
+            .Include(x => x.Votes)
+            .Where(x => x.IssueId == issue_data.Response.Id)
+            .ToArrayAsync();
 
         return res;
     }

@@ -20,6 +20,16 @@ public class IssueReadMarkerHelpdeskModelDB
     public int Id { get; set; }
 
     /// <summary>
+    /// Issue
+    /// </summary>
+    public int IssueId { get; set; }
+
+    /// <summary>
+    /// Issue
+    /// </summary>
+    public IssueHelpdeskModelDB? Issue { get; set; }
+
+    /// <summary>
     /// LastReadAt
     /// </summary>
     public required DateTime LastReadAt { get; set; } = DateTime.UtcNow;

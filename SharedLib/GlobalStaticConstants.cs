@@ -433,6 +433,11 @@ public static partial class GlobalStaticConstants
         /// </summary>
         public const string Admin = "admin";
 
+        /// <summary>
+        /// system
+        /// </summary>
+        public const string System = "system";
+
         #region HelpDesk
         static string[]? _allHelpDeskRoles = null;
         /// <summary>

@@ -27,7 +27,7 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<IssueHelpdeskModelDB?> res = new();
-        string mem_key = $"{QueueName}-{req.Payload.IssueId}/{req.Payload.WithoutExternalData}";
+        string mem_key = $"{QueueName}-{req.Payload.IssueId}/{req.Payload.IncludeSubscribersOnly}";
         if (cache.TryGetValue(mem_key, out IssueHelpdeskModelDB? hd))
         {
             res.Response = hd;
@@ -36,7 +36,7 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IIncludableQueryable<IssueHelpdeskModelDB, List<SubscriberIssueHelpdeskModelDB>?> q = context.Issues.Include(x => x.Subscribers);
-        IssueHelpdeskModelDB? issue_db = req.Payload.WithoutExternalData
+        IssueHelpdeskModelDB? issue_db = req.Payload.IncludeSubscribersOnly
             ? await q.FirstOrDefaultAsync(x => x.Id == req.Payload.IssueId)
             : await q.Include(x => x.RubricIssue).Include(x => x.Messages).FirstOrDefaultAsync(x => x.Id == req.Payload.IssueId);
 
@@ -46,7 +46,7 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
                 Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Обращение не найдено или у вас нет к нему доступа" }]
             };
 
-        if (issue_db.ExecutorIdentityUserId == req.SenderActionUserId || issue_db.AuthorIdentityUserId == req.SenderActionUserId || issue_db.Subscribers!.Any(x => x.UserId == req.SenderActionUserId))
+        if (req.SenderActionUserId == GlobalStaticConstants.Roles.System || issue_db.ExecutorIdentityUserId == req.SenderActionUserId || issue_db.AuthorIdentityUserId == req.SenderActionUserId || issue_db.Subscribers!.Any(x => x.UserId == req.SenderActionUserId))
             return new() { Response = issue_db };
 
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([req.SenderActionUserId]);

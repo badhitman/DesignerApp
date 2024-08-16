@@ -62,4 +62,17 @@ public class UserInfoModel : UserInfoMainModel
             Roles = roles,
             Claims = claims
         };
+
+    /// <inheritdoc/>
+    public static UserInfoModel BuildSystem()
+    {
+        return new()
+        {
+            UserId = GlobalStaticConstants.Roles.System,
+            Email = GlobalStaticConstants.Roles.System,
+            EmailConfirmed = true,
+            Roles = [GlobalStaticConstants.Roles.System],
+            UserName = "Система",
+        };
+    }
 }

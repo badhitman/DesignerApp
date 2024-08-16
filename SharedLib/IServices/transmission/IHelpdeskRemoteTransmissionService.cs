@@ -67,11 +67,17 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Сообщение из обращения помечается как ответ (либо этот признак снимается: в зависимости от запроса)
     /// </summary>
-    public Task<TResponseModel<bool>> MessageVote(VoteIssueRequestModel req);
+    public Task<TResponseModel<bool>> MessageVote(TAuthRequestModel<VoteIssueRequestModel> req);
 
     /// <summary>
     /// Добавить сообщение к обращению
     /// </summary>
-    public Task<TResponseModel<int>> MessageCreateOrUpdate(IssueMessageHelpdeskBaseModel req);
+    public Task<TResponseModel<int>> MessageCreateOrUpdate(TAuthRequestModel<IssueMessageHelpdeskBaseModel> req);
+
+    /// <summary>
+    /// Сообщения из обращения
+    /// </summary>
+    public Task<TResponseModel<IssueMessageHelpdeskModelDB[]?>> MessagesList(TAuthRequestModel<int> req);
+
     #endregion
 }

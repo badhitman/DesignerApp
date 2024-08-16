@@ -29,4 +29,9 @@ public class IssueHelpdeskModelDB : IssueHelpdeskModel
     /// Messages
     /// </summary>
     public List<IssueMessageHelpdeskModelDB>? Messages { get; set; }
+
+    /// <summary>
+    /// ReadMarkers
+    /// </summary>
+    public List<IssueReadMarkerHelpdeskModelDB>? ReadMarkers { get; set; }
 }

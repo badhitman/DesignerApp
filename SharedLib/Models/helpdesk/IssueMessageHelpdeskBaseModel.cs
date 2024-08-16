@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SharedLib;
 
@@ -12,21 +13,16 @@ namespace SharedLib;
 public class IssueMessageHelpdeskBaseModel
 {
     /// <summary>
-    /// IdentityUserId
-    /// </summary>
-    [Required] 
-    public required string IdentityUserId { get; set; }
-
-    /// <summary>
     /// MessageText
     /// </summary>
     [Required]
     public required string MessageText { get; set; }
 
     /// <summary>
-    /// MessageId
+    /// Message Id
     /// </summary>
-    public int MessageId { get; set; }
+    [Key]
+    public int Id { get; set; }
 
     /// <summary>
     /// Issue

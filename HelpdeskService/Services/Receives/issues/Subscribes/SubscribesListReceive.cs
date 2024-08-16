@@ -34,7 +34,7 @@ public class SubscribesListReceive(
         TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
-            Payload = new() { IssueId = req.Payload, WithoutExternalData = true },
+            Payload = new() { IssueId = req.Payload, IncludeSubscribersOnly = true },
         });
 
         if (!issue_data.Success() || issue_data.Response is null)

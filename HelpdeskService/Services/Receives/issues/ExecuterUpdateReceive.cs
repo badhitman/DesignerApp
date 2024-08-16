@@ -30,7 +30,7 @@ public class ExecuterUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
             Payload = new IssueReadRequestModel()
             {
                 IssueId = req.Payload.IssueId,
-                WithoutExternalData = true,
+                IncludeSubscribersOnly = true,
             },
         });
 

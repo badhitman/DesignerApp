@@ -12,7 +12,10 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Create (or update) Issue: Рубрика, тема и описание
 /// </summary>
-public class IssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IWebRemoteTransmissionService webTransmissionRepo)
+public class IssueCreateOrUpdateReceive(
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
+    IHelpdeskRemoteTransmissionService HelpdeskRemoteRepo,
+    IWebRemoteTransmissionService webTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<IssueUpdateRequestModel>?, int?>
 {
     /// <inheritdoc/>
@@ -34,6 +37,7 @@ public class IssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpd
         issue_upd.Payload.Name = issue_upd.Payload.Name.Trim();
         string normalizeNameUpper = issue_upd.Payload.Name.ToUpper();
         IssueHelpdeskModelDB issue;
+        DateTime dtn = DateTime.UtcNow;
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         if (issue_upd.Payload.Id < 1)
@@ -47,13 +51,31 @@ public class IssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpd
                 NormalizeNameUpper = normalizeNameUpper,
                 StepIssue = HelpdeskIssueStepsEnum.Created,
                 ProjectId = issue_upd.Payload.ProjectId,
+                CreatedAt = dtn,
+                LastUpdateAt = dtn,
             };
+
+            IssueReadMarkerHelpdeskModelDB my_mark = new() { Issue = issue, LastReadAt = dtn, UserIdentityId = issue_upd.SenderActionUserId };
+            issue.ReadMarkers = [my_mark];
+
+            SubscriberIssueHelpdeskModelDB my_subscr = new() { Issue = issue, UserId = issue_upd.SenderActionUserId };
+            issue.Subscribers = [my_subscr];
 
             await context.AddAsync(issue);
             await context.SaveChangesAsync();
-            issue_upd.Payload.Id = issue.Id;
+            //issue_upd.Payload.Id = issue.Id;
             res.AddSuccess("Обращение успешно создано");
-            res.Response = issue_upd.Payload.Id;
+            res.Response = issue.Id;
+
+            await HelpdeskRemoteRepo.MessageCreateOrUpdate(new()
+            {
+                SenderActionUserId = GlobalStaticConstants.Roles.System,
+                Payload = new()
+                {
+                    MessageText = $"Пользователь `{actor.UserName}` создал новый запрос: {issue_upd.Payload.Name}",
+                    IssueId = issue.Id
+                }
+            });
         }
         else
         {
@@ -81,7 +103,6 @@ public class IssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpd
             else
                 res.AddError($"У вас не достаточно прав для редактирования этого обращения #{issue_upd.Payload.Id} '{issue_db.Name}'");
         }
-
 
         return res;
     }

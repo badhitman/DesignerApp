@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
@@ -36,10 +37,24 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
 
     async Task SaveMessage()
     {
+        if (string.IsNullOrWhiteSpace(textMessage))
+            throw new ArgumentNullException(nameof(textMessage));
+
         IsBusyProgress = true;
+        TResponseModel<int> rest = await HelpdeskRepo
+            .MessageCreateOrUpdate(new()
+            {
+                SenderActionUserId = CurrentUser.UserId,
+                Payload = new()
+                {
+                    MessageText = textMessage,
+                    IssueId = Issue.Id,
+                }
+            });
         IsBusyProgress = false;
-        await Task.Delay(1000);
-        throw new NotImplementedException();
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        ParentListIssues.AddingNewMessage = false;
+        await ParentListIssues.ReloadMessages();
     }
 
     void Cancel()
@@ -48,6 +63,10 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
         {
             ParentListIssues.AddingNewMessage = false;
             ParentListIssues.StateHasChangedCall();
+        }
+        else
+        {
+            IsEditMode = false;
         }
     }
 
@@ -58,5 +77,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
     {
         if (Message is null || Message.Id < 1)
             IsEditMode = true;
+
+        textMessage = Message?.MessageText;
     }
 }

@@ -41,7 +41,7 @@ public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskD
             Payload = new IssueReadRequestModel()
             {
                 IssueId = req.Payload.IssueId,
-                WithoutExternalData = true,
+                IncludeSubscribersOnly = true,
             },
         });
 
