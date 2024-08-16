@@ -9,10 +9,30 @@
             <MudText Typo="Typo.h6">Сообщения</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
-            <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" Color="Color.Info" />
+            <MudFab OnClick="()=>{ AddingNewMessage = true; }" Disabled="AddingNewMessage" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" Color="@(AddingNewMessage ? Color.Default : Color.Info)" />
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>
-        <MudText>Сообщений нет.</MudText>
+        <CascadingValue Value="this">
+            @if (AddingNewMessage)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <MessageOfIssueComponent />
+                    </div>
+                </div>
+            }
+            @if (Issue.Messages is null || Issue.Messages.Count == 0)
+            {
+                <MudText>Сообщений нет.</MudText>
+            }
+            else
+            {
+                @foreach (IssueMessageHelpdeskModelDB m in Issue.Messages)
+                {
+                    <MessageOfIssueComponent Message="m" />
+                }
+            }
+        </CascadingValue>
     </MudCardContent>
 </MudCard>

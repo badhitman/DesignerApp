@@ -45,8 +45,8 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
                 SnackbarRepo.Error($"Пользователь с таким email не найден: {editExecutorEmail}");
                 return;
             }
-            string[] hd_roles = [GlobalStaticConstants.Roles.HelpDeskTelegramBotManager, GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit];
-            if (user_by_email.Roles?.Any(x => hd_roles.Contains(x)) != true && !user_by_email.IsAdmin)
+            
+            if (user_by_email.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true && !user_by_email.IsAdmin)
             {
                 SnackbarRepo.Error($"Пользователь {editExecutorEmail} не может быть установлен исполнителем: не является сотрудником");
                 return;

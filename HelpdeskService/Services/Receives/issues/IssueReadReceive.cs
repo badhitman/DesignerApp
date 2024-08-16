@@ -53,8 +53,8 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 
-        string[] job = [GlobalStaticConstants.Roles.HelpDeskTelegramBotManager, GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit, GlobalStaticConstants.Roles.Admin];
-        if (rest.Response[0].Roles?.Any(x => job.Contains(x)) != true)
+        
+        if (!rest.Response[0].IsAdmin && rest.Response[0].Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true)
             return new()
             {
                 Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Обращение не найдено или у вас нет к нему доступа" }]

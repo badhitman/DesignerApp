@@ -10,7 +10,7 @@ else
 {
     <div class="input-group mb-3">
         <input placeholder="@(IsEditMode ? "Email исполнителя" : "")" @bind-value="editExecutorEmail" @bind-value:event="oninput" readonly="@(!IsEditMode)" type="text" class="form-control">
-        <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.HelpDeskTelegramBotManager},{GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit}")">
+        <AuthorizeView Roles="@($"{string.Join(",",GlobalStaticConstants.Roles.AllHelpDeskRoles)},{GlobalStaticConstants.Roles.Admin}")">
             <Authorized>
                 @if (IsEditMode)
                 {

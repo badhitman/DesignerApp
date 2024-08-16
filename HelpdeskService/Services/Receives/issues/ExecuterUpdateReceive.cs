@@ -47,9 +47,7 @@ public class ExecuterUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
         UserInfoModel actor = users_rest.Response.First(x => x.UserId == req.SenderActionUserId);
         UserInfoModel? requested_user = users_rest.Response.FirstOrDefault(x => x.UserId == req.Payload.UserId);
 
-        string[] hd_roles = [GlobalStaticConstants.Roles.HelpDeskTelegramBotManager, GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit];
-
-        if (actor.Roles?.Any(x => hd_roles.Any(y => y == x)) != true && req.SenderActionUserId != issue_data.Response.AuthorIdentityUserId)
+        if (!actor.IsAdmin && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && req.SenderActionUserId != issue_data.Response.AuthorIdentityUserId)
         {
             res.AddError("У вас не достаточно прав для выполнения этой операции");
             res.Response = false;

@@ -13,14 +13,15 @@ namespace Transmission.Receives.helpdesk;
 /// GetThemesIssues
 /// </summary>
 public class MessageVoteReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<VoteIssueRequestModel?, bool?>
+    : IResponseReceive<TAuthRequestModel<VoteIssueRequestModel>?, bool?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessageOfIssueSetAsResponseHelpdeskReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessageOfIssueVoteHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> ResponseHandleAction(VoteIssueRequestModel? payload)
+    public async Task<TResponseModel<bool?>> ResponseHandleAction(TAuthRequestModel<VoteIssueRequestModel>? req)
     {
+        ArgumentNullException.ThrowIfNull(req);
         TResponseModel<bool?> res = new();
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 

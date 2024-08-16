@@ -2,31 +2,33 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// Subscribes list - of context user
+/// Получить сообщения для инцидента
 /// </summary>
-public class SubscribesListReceive(
+public class MessagesListReceive(
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
-    : IResponseReceive<TAuthRequestModel<int>?, SubscriberIssueHelpdeskModelDB[]?>
+    : IResponseReceive<TAuthRequestModel<int>?, IssueMessageHelpdeskModelDB[]?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.SubscribesIssueListHelpdeskReceive;
-
-    static readonly string[] hd_roles = [GlobalStaticConstants.Roles.HelpDeskTelegramBotManager, GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit];
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessagesOfIssueListHelpdeskReceive;
 
     /// <summary>
-    /// Подписчики на события в обращении/инциденте
+    /// Получить сообщения для инцидента
     /// </summary>
-    public async Task<TResponseModel<SubscriberIssueHelpdeskModelDB[]?>> ResponseHandleAction(TAuthRequestModel<int>? req)
+    public async Task<TResponseModel<IssueMessageHelpdeskModelDB[]?>> ResponseHandleAction(TAuthRequestModel<int>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<SubscriberIssueHelpdeskModelDB[]?> res = new();
+        TResponseModel<IssueMessageHelpdeskModelDB[]?> res = new();
+
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([req.SenderActionUserId]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
@@ -42,12 +44,14 @@ public class SubscribesListReceive(
         if (!issue_data.Success() || issue_data.Response is null)
             return new() { Messages = issue_data.Messages };
 
-        if (actor.Roles?.Any(x => hd_roles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
+        if (!actor.IsAdmin && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
         {
             res.AddError("У вас не достаточно прав");
             return res;
         }
-        res.Response = [.. issue_data.Response.Subscribers];
+
+        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+
         return res;
     }
 }

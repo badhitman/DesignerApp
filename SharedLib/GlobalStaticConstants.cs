@@ -149,7 +149,13 @@ public static partial class GlobalStaticConstants
         public readonly static string MessageOfIssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string MessageOfIssueSetAsResponseHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME, Routes.MARK_ACTION_NAME);
+        public readonly static string MessageOfIssueVoteHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.VOTE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string MessagesOfIssueListHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.LIST_ACTION_NAME);
+
+
+
         #endregion
 
         #region storage cloud parameters
@@ -342,6 +348,11 @@ public static partial class GlobalStaticConstants
         public const string MARK_ACTION_NAME = "mark";
 
         /// <summary>
+        /// Vote
+        /// </summary>
+        public const string VOTE_ACTION_NAME = "vote";
+
+        /// <summary>
         /// Подтвердить
         /// </summary>
         public const string CONFIRM_ACTION_NAME = "confirm";
@@ -422,6 +433,20 @@ public static partial class GlobalStaticConstants
         /// </summary>
         public const string Admin = "admin";
 
+        #region HelpDesk
+        static string[]? _allHelpDeskRoles = null;
+        /// <summary>
+        /// Все роли HelpDesk
+        /// </summary>
+        public static string[] AllHelpDeskRoles
+        {
+            get
+            {
+                _allHelpDeskRoles ??= [HelpDeskTelegramBotManager, HelpDeskTelegramBotUnit];
+                return _allHelpDeskRoles;
+            }
+        }
+
         /// <summary>
         /// HelpDeskTelegramBotManager
         /// </summary>
@@ -431,6 +456,9 @@ public static partial class GlobalStaticConstants
         /// HelpDeskTelegramBotUnit
         /// </summary>
         public const string HelpDeskTelegramBotUnit = "HelpDeskTelegramBotUnit";
+        #endregion
+
+
     }
 
     /// <summary>

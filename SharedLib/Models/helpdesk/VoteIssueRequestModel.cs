@@ -2,8 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using System.ComponentModel.DataAnnotations;
-
 namespace SharedLib;
 
 /// <summary>
@@ -11,12 +9,6 @@ namespace SharedLib;
 /// </summary>
 public class VoteIssueRequestModel
 {
-    /// <summary>
-    /// IdentityUserId
-    /// </summary>
-    [Required]
-    public required string IdentityUserId { get; set; }
-
     /// <summary>
     /// MessageId
     /// </summary>

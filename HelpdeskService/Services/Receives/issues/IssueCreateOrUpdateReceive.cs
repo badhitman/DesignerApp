@@ -65,7 +65,7 @@ public class IssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpd
             if (issue_db.AuthorIdentityUserId == issue_upd.SenderActionUserId ||
                 issue_db.ExecutorIdentityUserId == issue_upd.SenderActionUserId ||
                 issue_db.Subscribers?.Any(x => x.UserId == issue_upd.SenderActionUserId) == true ||
-                actor.Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.HelpDeskTelegramBotManager) || x.Equals(GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit)) == true ||
+                actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) == true ||
                 actor.IsAdmin)
             {
                 res.Response = await context.Issues.Where(x => x.Id == issue_upd.Payload.Id)
@@ -81,7 +81,7 @@ public class IssueCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpd
             else
                 res.AddError($"У вас не достаточно прав для редактирования этого обращения #{issue_upd.Payload.Id} '{issue_db.Name}'");
         }
-        
+
 
         return res;
     }

@@ -1,0 +1,22 @@
+﻿@inherits IssueWrapBaseModel
+
+@if (IsCreatingNewMessage)
+{
+    <p class="lead">
+        Новое сообщение.
+    </p>
+}
+
+@if (IsEditMode)
+{
+    <span @onclick="Cancel" title="Отмена" class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-warning bi bi-x-circle-fill p-1" style="font-size: large;cursor:pointer;"><span class="visually-hidden">unread messages</span></span>
+    <InputRichTextComponent @bind-Value="textMessage" ReadOnly="IsBusyProgress" />
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+        <button @onclick="SaveMessage" disabled="@(!canSave || IsBusyProgress)" class="btn btn-@(!canSave ? "outline-secondary" : "success") me-md-2 btn-sm" type="button">@(IsCreatingNewMessage ? "Отправить" : "Сохранить")</button>
+        <button @onclick="Cancel" disabled="IsBusyProgress" class="btn btn-primary btn-sm" type="button">Отмена</button>
+    </div>
+}
+else
+{
+    @DescriptionHtml
+}

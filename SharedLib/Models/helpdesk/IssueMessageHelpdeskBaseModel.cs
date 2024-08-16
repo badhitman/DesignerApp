@@ -24,6 +24,11 @@ public class IssueMessageHelpdeskBaseModel
     public required string MessageText { get; set; }
 
     /// <summary>
+    /// MessageId
+    /// </summary>
+    public int MessageId { get; set; }
+
+    /// <summary>
     /// Issue
     /// </summary>
     public int IssueId { get; set; }
