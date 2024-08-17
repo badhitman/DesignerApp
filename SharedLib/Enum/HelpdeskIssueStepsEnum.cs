@@ -24,20 +24,32 @@ public enum HelpdeskIssueStepsEnum
     Reopen = 20,
 
     /// <summary>
+    /// Возвращён в работу
+    /// </summary>
+    [Description("Пауза")]
+    Pause = 30,
+
+    /// <summary>
     /// В работе
     /// </summary>
     [Description("В работе")]
-    Progress = 30,
+    Progress = 40,
 
     /// <summary>
     /// На проверке
     /// </summary>
-    [Description(" На проверке")]
-    Check = 40,
+    [Description("На проверке")]
+    Check = 50,
 
     /// <summary>
     /// Готово
     /// </summary>
     [Description("Готово")]
-    Done = 50,
+    Done = 60,
+
+    /// <summary>
+    /// Отменён
+    /// </summary>
+    [Description("Отменён")]
+    Canceled = 70
 }

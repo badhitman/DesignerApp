@@ -1,0 +1,35 @@
+﻿@using MudBlazor
+@inherits IssueWrapBaseModel
+@attribute [Authorize]
+
+@if (IsBusyProgress)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else
+{
+    <MudSelect @bind-Value="issueStep" T="HelpdeskIssueStepsEnum" Label="Статус" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+        @foreach (HelpdeskIssueStepsEnum step in Steps())
+        {
+            <MudSelectItem Class="@(step == Issue.StepIssue ? "text-success fw-bold" : "")" T="HelpdeskIssueStepsEnum" Value="@step">
+                @step.DescriptionInfo()
+            </MudSelectItem>
+        }
+    </MudSelect>
+
+    @if (issueStep != Issue.StepIssue)
+    {
+        <figure class="text-center">
+            <blockquote class="blockquote">
+                <p>Изменение статуса.</p>
+            </blockquote>
+            <figcaption class="blockquote-footer">
+                Подтверждаете <cite>смену состояния?</cite>
+            </figcaption>
+        </figure>
+        <div class="d-grid gap-2">
+            <button class="btn btn-outline-primary" type="button">Подтвердить</button>
+            <button @onclick="() => issueStep = Issue.StepIssue" class="btn btn-outline-info" type="button">Отмена</button>
+        </div>
+    }
+}
