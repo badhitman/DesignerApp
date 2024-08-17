@@ -23,7 +23,7 @@
             }
             else
             {
-                <MudIconButton title="Редактировать" OnClick="EditToggle" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" />
+                <MudIconButton Disabled="@(!CanEdit)" title="Редактировать" OnClick="EditToggle" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" />
             }
         </CardHeaderActions>
     </MudCardHeader>

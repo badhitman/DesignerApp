@@ -11,8 +11,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 /// </summary>
 public partial class StatusIssueComponent : IssueWrapBaseModel
 {
-
-    HelpdeskIssueStepsEnum issueStep { get; set; }
+    HelpdeskIssueStepsEnum IssueStep { get; set; }
 
     List<HelpdeskIssueStepsEnum> Steps()
     {
@@ -39,40 +38,11 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
         return res;
     }
 
-    string ChangeAbout()
-    {
-        switch (Issue.StepIssue)
-        {
-            case HelpdeskIssueStepsEnum.Created:
-
-                break;
-            case HelpdeskIssueStepsEnum.Reopen:
-
-                break;
-            case HelpdeskIssueStepsEnum.Pause:
-
-                break;
-            case HelpdeskIssueStepsEnum.Progress:
-
-                break;
-            case HelpdeskIssueStepsEnum.Check:
-
-                break;
-            case HelpdeskIssueStepsEnum.Done:
-
-                break;
-            case HelpdeskIssueStepsEnum.Canceled:
-
-                break;
-        }
-
-        return "";
-    }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        issueStep = Issue.StepIssue;
+        IssueStep = Issue.StepIssue;
         base.OnInitialized();
     }
 }

@@ -40,11 +40,6 @@ public class SubscribesListReceive(
         if (!issue_data.Success() || issue_data.Response is null)
             return new() { Messages = issue_data.Messages };
 
-        if (!actor.IsAdmin && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
-        {
-            res.AddError("У вас не достаточно прав");
-            return res;
-        }
         res.Response = [.. issue_data.Response.Subscribers];
         return res;
     }

@@ -20,6 +20,7 @@ public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
     [Inject]
     internal IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
+
     /// <summary>
     /// CurrentUser
     /// </summary>
@@ -31,6 +32,12 @@ public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required IssueHelpdeskModelDB Issue { get; set; }
+
+    /// <summary>
+    /// can edit: is admin || executor || author || admin || helpdesk-manager
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required bool CanEdit { get; set; }
 
     /// <summary>
     /// UsersIdentityDump

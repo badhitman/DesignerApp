@@ -35,6 +35,14 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     public int Id { get; set; }
 
 
+
+    bool CanEdit =>
+        CurrentUser.IsAdmin ||
+        CurrentUser.Roles?.Contains(GlobalStaticConstants.Roles.HelpDeskTelegramBotManager) == true ||
+        CurrentUser.UserId == IssueSource?.ExecutorIdentityUserId ||
+        CurrentUser.UserId == IssueSource?.AuthorIdentityUserId;
+
+
     UserInfoModel CurrentUser { get; set; } = default!;
     IssueHelpdeskModelDB? IssueSource { get; set; }
 

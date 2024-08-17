@@ -8,7 +8,7 @@
 }
 else
 {
-    <MudSelect @bind-Value="issueStep" T="HelpdeskIssueStepsEnum" Label="Статус" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    <MudSelect ReadOnly="@(!CanEdit)" @bind-Value="IssueStep" T="HelpdeskIssueStepsEnum" Label="Статус" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
         @foreach (HelpdeskIssueStepsEnum step in Steps())
         {
             <MudSelectItem Class="@(step == Issue.StepIssue ? "text-success fw-bold" : "")" T="HelpdeskIssueStepsEnum" Value="@step">
@@ -17,7 +17,7 @@ else
         }
     </MudSelect>
 
-    @if (issueStep != Issue.StepIssue)
+    @if (IssueStep != Issue.StepIssue)
     {
         <figure class="text-center">
             <blockquote class="blockquote">
@@ -29,7 +29,7 @@ else
         </figure>
         <div class="d-grid gap-2">
             <button class="btn btn-outline-primary" type="button">Подтвердить</button>
-            <button @onclick="() => issueStep = Issue.StepIssue" class="btn btn-outline-info" type="button">Отмена</button>
+            <button @onclick="() => IssueStep = Issue.StepIssue" class="btn btn-outline-info" type="button">Отмена</button>
         </div>
     }
 }

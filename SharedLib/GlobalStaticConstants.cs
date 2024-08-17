@@ -133,6 +133,9 @@ public static partial class GlobalStaticConstants
         public readonly static string IssuesSelectHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string StatusChangeIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.STATUS_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.CHANGE_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string IssueGetHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -234,6 +237,11 @@ public static partial class GlobalStaticConstants
         /// Issue
         /// </summary>
         public const string ISSUE_CONTROLLER_NAME = "issue";
+
+        /// <summary>
+        /// Status
+        /// </summary>
+        public const string STATUS_CONTROLLER_NAME = "status";
 
         /// <summary>
         /// Subscribe
@@ -396,6 +404,11 @@ public static partial class GlobalStaticConstants
         /// Выборка
         /// </summary>
         public const string SELECT_ACTION_NAME = "select";
+
+        /// <summary>
+        /// Изменение
+        /// </summary>
+        public const string CHANGE_ACTION_NAME = "change";
 
         /// <summary>
         /// Профиль

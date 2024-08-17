@@ -47,13 +47,6 @@ public class ExecuterUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
         UserInfoModel actor = users_rest.Response.First(x => x.UserId == req.SenderActionUserId);
         UserInfoModel? requested_user = users_rest.Response.FirstOrDefault(x => x.UserId == req.Payload.UserId);
 
-        if (!actor.IsAdmin && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && req.SenderActionUserId != issue_data.Response.AuthorIdentityUserId)
-        {
-            res.AddError("У вас не достаточно прав для выполнения этой операции");
-            res.Response = false;
-            return res;
-        }
-
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         if (string.IsNullOrWhiteSpace(req.Payload.UserId))
