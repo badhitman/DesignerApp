@@ -10,7 +10,9 @@
 <div class="card position-relative mt-1">
     @if (Message is not null && Message.Id > 0)
     {
-        <div class="position-absolute top-0 start-0 m-2 bi bi-send-fill font-monospace">&nbsp;@(Message.AuthorUserId == GlobalStaticConstants.Roles.System ? "Система" : (this.UsersIdentityDump?.FirstOrDefault(x => x.UserId == Message.AuthorUserId)?.UserName ?? Message.AuthorUserId))@(Message.AuthorUserId == CurrentUser.UserId ? " - Вы" : "")</div>
+        <div class="position-absolute top-0 start-0 m-2 bi bi-send-fill font-monospace text-@_currentType.DescriptionInfo()">
+            &nbsp;@(Message.AuthorUserId == GlobalStaticConstants.Roles.System ? "Система" : (this.UsersIdentityDump?.FirstOrDefault(x => x.UserId == Message.AuthorUserId)?.UserName ?? Message.AuthorUserId))@(Message.AuthorUserId == CurrentUser.UserId ? " - Вы" : "")
+        </div>
         @if (!IsEditMode && Message.AuthorUserId == CurrentUser.UserId)
         {
             <div @onclick="() => IsEditMode = true" style="cursor:pointer;" class="position-absolute top-0 end-0 m-2"><i class="bi bi-pencil-square"></i></div>
@@ -25,6 +27,16 @@
             }
             <InputRichTextComponent @bind-Value="textMessage" ReadOnly="IsBusyProgress" />
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+                @if (Message is not null && Message.Id > 0)
+                {
+                    if (IsInitDelete)
+                    {
+                        <button @onclick="()=>IsInitDelete = false" disabled="@IsBusyProgress" class="btn btn-outline-info btn-sm" type="button">Не удалять</button>
+                    }
+
+                    <button @onclick="TryDelete" disabled="@IsBusyProgress" class="btn btn@(IsInitDelete ? "" : "-outline")-danger btn-sm" type="button">@(IsInitDelete ? "Подтвердить удаление" : "Удалить сообщение")</button>
+                }
+
                 <button @onclick="SaveMessage" disabled="@(!canSave || IsBusyProgress)" class="btn btn-@(!canSave ? "outline-secondary" : "success") me-md-2 btn-sm" type="button">@(IsCreatingNewMessage ? "Отправить" : "Сохранить")</button>
                 <button @onclick="Cancel" disabled="@IsBusyProgress" class="btn btn-primary btn-sm" type="button">Отмена</button>
             </div>

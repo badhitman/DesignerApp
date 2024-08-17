@@ -11,6 +11,11 @@
 ## Диалог внутри обращения
 ![issue card body edit](img/issue-card-edit-body.png)
 
+### Сообщения
+![messages - issue card](img/issue-card-messages.png)
+![messages (edit) - issue card](img/issue-card-messages-edit.png)
+
+
 ## Настройки
 ![настройки](img/configs.png)
 Параметры системы

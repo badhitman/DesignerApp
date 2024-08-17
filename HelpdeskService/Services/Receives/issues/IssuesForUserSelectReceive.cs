@@ -60,9 +60,6 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
 
         switch (req.Request.UserArea)
         {
-            case UsersAreasHelpdeskEnum.Author:
-                q = q.Where(x => x.AuthorIdentityUserId == req.Request.IdentityUserId);
-                break;
             case UsersAreasHelpdeskEnum.Subscriber:
                 q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Request.IdentityUserId));
                 break;
@@ -71,6 +68,9 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
                 break;
             case UsersAreasHelpdeskEnum.Main:
                 q = q.Where(x => x.ExecutorIdentityUserId == req.Request.IdentityUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Request.IdentityUserId));
+                break;
+            default:
+                q = q.Where(x => x.AuthorIdentityUserId == req.Request.IdentityUserId);
                 break;
         }
         res.Response.TotalRowsCount = await q.CountAsync();

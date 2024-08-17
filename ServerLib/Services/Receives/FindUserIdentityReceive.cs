@@ -25,15 +25,16 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
     public async Task<TResponseModel<UserInfoModel[]?>> ResponseHandleAction(string[]? users_ids = null)
     {
         ArgumentNullException.ThrowIfNull(users_ids);
-        users_ids = [.. users_ids.Where(x => x != null).Order()];
+        users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x))];
         TResponseModel<UserInfoModel[]?> res = new();
         if (users_ids.Length == 0)
         {
             res.AddError("Пустой запрос");
             return res;
         }
+        string[] find_users_ids = [.. users_ids.Where(x => x != GlobalStaticConstants.Roles.System)];
 
-        string mem_token = $"{QueueName}-{string.Join(",", users_ids)}";
+        string mem_token = $"{QueueName}-{string.Join(",", find_users_ids)}";
         if (cache.TryGetValue(mem_token, out UserInfoModel[]? users_cache))
         {
             res.Response = users_cache;
@@ -43,7 +44,7 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
         ApplicationUser[] users = await identityContext
             .Users
-            .Where(x => users_ids.Contains(x.Id))
+            .Where(x => find_users_ids.Contains(x.Id))
             .ToArrayAsync();
 
         if (users.Length == 0)
@@ -55,7 +56,7 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
 
         var users_roles = await identityContext
            .UserRoles
-           .Where(x => users_ids.Contains(x.UserId))
+           .Where(x => find_users_ids.Contains(x.UserId))
            .Select(x => new { x.RoleId, x.UserId })
            .ToArrayAsync();
 
@@ -69,7 +70,7 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
 
         EntryAltTagModel[] claims = await identityContext
              .UserClaims
-             .Where(x => users_ids.Contains(x.UserId) && x.ClaimType != null && x.ClaimType != "")
+             .Where(x => find_users_ids.Contains(x.UserId) && x.ClaimType != null && x.ClaimType != "")
              .Select(x => new EntryAltTagModel() { Id = x.UserId, Name = x.ClaimType, Tag = x.ClaimValue })
              .ToArrayAsync();
 
@@ -101,11 +102,15 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
         }
 
         res.Response = users.Select(convert_user).ToArray();
+
         cache.Set(mem_token, res.Response, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
 
-        users_ids = [.. users_ids.Where(x => !res.Response.Any(y => y.UserId == x))];
-        if (users_ids.Length != 0)
-            res.AddWarning($"Некоторые пользователи не найдены: {string.Join(",", users_ids)}");
+        if (users_ids.Any(x => x == GlobalStaticConstants.Roles.System))
+            res.Response = [.. res.Response.Union([UserInfoModel.BuildSystem()])];
+
+        find_users_ids = [.. find_users_ids.Where(x => !res.Response.Any(y => y.UserId == x))];
+        if (find_users_ids.Length != 0)
+            res.AddWarning($"Некоторые пользователи не найдены: {string.Join(",", find_users_ids)}");
 
         return res;
     }

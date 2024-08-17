@@ -38,7 +38,10 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     UserInfoModel CurrentUser { get; set; } = default!;
     IssueHelpdeskModelDB? IssueSource { get; set; }
 
-    UserInfoModel[]? usersIdentityDump = null;
+    /// <summary>
+    /// UsersIdentityDump
+    /// </summary>
+    public List<UserInfoModel> UsersIdentityDump = [];
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -60,12 +63,18 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
             if (IssueSource.Subscribers is not null && IssueSource.Subscribers.Count != 0)
                 users_ids.AddRange(IssueSource.Subscribers.Select(x => x.UserId));
 
+            if (IssueSource.Messages is not null && IssueSource.Messages.Count != 0)
+            {
+                users_ids.AddRange(IssueSource.Messages.Select(x => x.AuthorUserId));
+            }
+
             if (users_ids.Count != 0)
             {
                 users_ids = users_ids.Distinct().ToList();
                 TResponseModel<UserInfoModel[]?> users_data_identity = await WebRemoteRepo.FindUsersIdentity([.. users_ids]);
                 SnackbarRepo.ShowMessagesResponse(users_data_identity.Messages);
-                usersIdentityDump = users_data_identity.Response;
+                if (users_data_identity.Response is not null && users_data_identity.Response.Length != 0)
+                    UsersIdentityDump.AddRange(users_data_identity.Response);
             }
         }
 

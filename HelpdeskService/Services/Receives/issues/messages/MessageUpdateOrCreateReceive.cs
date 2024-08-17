@@ -78,7 +78,7 @@ public class MessageUpdateOrCreateReceive(
             await context.AddAsync(msg_db);
             await context.SaveChangesAsync();
             res.AddSuccess("Сообщение успешно создано");
-
+            res.Response = msg_db.Id;
             if (actor.UserId != GlobalStaticConstants.Roles.System)
             {
                 my_marker = await context.IssueReadMarkers.FirstOrDefaultAsync(x => x.IssueId == req.Payload.IssueId && x.UserIdentityId == actor.UserId);
@@ -113,6 +113,7 @@ public class MessageUpdateOrCreateReceive(
         }
         else
         {
+            res.Response = 0;
             msg_db = await context.IssuesMessages.FirstAsync(x => x.Id == req.Payload.Id);
 
             if (msg_db.MessageText == req.Payload.MessageText)
@@ -123,7 +124,7 @@ public class MessageUpdateOrCreateReceive(
             }
             else
             {
-                await context
+                res.Response = await context
                     .IssuesMessages
                     .Where(x => x.Id == msg_db.Id)
                     .ExecuteUpdateAsync(set => set

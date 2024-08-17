@@ -36,5 +36,5 @@ public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
     /// UsersIdentityDump
     /// </summary>
     [CascadingParameter]
-    public UserInfoModel[]? UsersIdentityDump { get; set; }
+    public List<UserInfoModel> UsersIdentityDump { get; set; } = [];
 }
