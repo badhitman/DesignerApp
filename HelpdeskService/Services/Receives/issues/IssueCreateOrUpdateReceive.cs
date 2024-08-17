@@ -14,7 +14,7 @@ namespace Transmission.Receives.helpdesk;
 /// </summary>
 public class IssueCreateOrUpdateReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
-    IHelpdeskRemoteTransmissionService HelpdeskRemoteRepo,
+    IHelpdeskRemoteTransmissionService helpdeskRemoteRepo,
     IWebRemoteTransmissionService webTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<IssueUpdateRequestModel>?, int?>
 {
@@ -38,7 +38,7 @@ public class IssueCreateOrUpdateReceive(
         string normalizeNameUpper = issue_upd.Payload.Name.ToUpper();
         IssueHelpdeskModelDB issue;
         DateTime dtn = DateTime.UtcNow;
-
+        string msg;
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         if (issue_upd.Payload.Id < 1)
         {
@@ -63,11 +63,23 @@ public class IssueCreateOrUpdateReceive(
 
             await context.AddAsync(issue);
             await context.SaveChangesAsync();
-            //issue_upd.Payload.Id = issue.Id;
-            res.AddSuccess("Обращение успешно создано");
+            msg = "Обращение успешно создано";
+            res.AddSuccess(msg);
             res.Response = issue.Id;
 
-            await HelpdeskRemoteRepo.MessageCreateOrUpdate(new()
+            await helpdeskRemoteRepo.PulsePush(new()
+            {
+                SenderActionUserId = issue_upd.SenderActionUserId,
+                Payload = new()
+                {
+                    IssueId = issue.Id,
+                    PulseType = PulseIssuesTypesEnum.Status,
+                    Tag = issue.StepIssue.DescriptionInfo(),
+                    Description = msg,
+                }
+            });
+
+            await helpdeskRemoteRepo.MessageCreateOrUpdate(new()
             {
                 SenderActionUserId = GlobalStaticConstants.Roles.System,
                 Payload = new()
@@ -79,14 +91,14 @@ public class IssueCreateOrUpdateReceive(
         }
         else
         {
-            IssueHelpdeskModelDB issue_db = await context
+            issue = await context
                 .Issues
                 .Include(x => x.Subscribers)
                 .FirstAsync(x => x.Id == issue_upd.Payload.Id);
 
-            if (issue_db.AuthorIdentityUserId == issue_upd.SenderActionUserId ||
-                issue_db.ExecutorIdentityUserId == issue_upd.SenderActionUserId ||
-                issue_db.Subscribers?.Any(x => x.UserId == issue_upd.SenderActionUserId) == true ||
+            if (issue.AuthorIdentityUserId == issue_upd.SenderActionUserId ||
+                issue.ExecutorIdentityUserId == issue_upd.SenderActionUserId ||
+                issue.Subscribers?.Any(x => x.UserId == issue_upd.SenderActionUserId) == true ||
                 actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) == true ||
                 actor.IsAdmin)
             {
@@ -98,10 +110,22 @@ public class IssueCreateOrUpdateReceive(
                                 .SetProperty(b => b.Name, issue_upd.Payload.Name)
                                 .SetProperty(b => b.LastUpdateAt, DateTime.UtcNow));
 
-                res.AddSuccess("Обращение успешно обновлено");
+                msg = "Обращение успешно обновлено";
+                res.AddSuccess(msg);
+                await helpdeskRemoteRepo.PulsePush(new()
+                {
+                    SenderActionUserId = issue_upd.SenderActionUserId,
+                    Payload = new()
+                    {
+                        IssueId = issue.Id,
+                        PulseType = PulseIssuesTypesEnum.Main,
+                        Tag = GlobalStaticConstants.Routes.UPDATE_ACTION_NAME,
+                        Description = msg,
+                    }
+                });
             }
             else
-                res.AddError($"У вас не достаточно прав для редактирования этого обращения #{issue_upd.Payload.Id} '{issue_db.Name}'");
+                res.AddError($"У вас не достаточно прав для редактирования этого обращения #{issue_upd.Payload.Id} '{issue.Name}'");
         }
 
         return res;

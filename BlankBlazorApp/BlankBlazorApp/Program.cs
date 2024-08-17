@@ -150,6 +150,7 @@ builder.Services.RegisterMqListener<GetWebConfigReceive, object?, WebConfigModel
 builder.Services.RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>();
 builder.Services.RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModelDb>();
 builder.Services.RegisterMqListener<FindUserIdentityReceive, string[], UserInfoModel[]>();
+builder.Services.RegisterMqListener<SendEmailReceive, SendEmailRequestModel, bool>();
 #endregion
 
 WebApplication app = builder.Build();

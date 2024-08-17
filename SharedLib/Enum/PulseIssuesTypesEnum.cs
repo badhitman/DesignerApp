@@ -15,7 +15,7 @@ public enum PulseIssuesTypesEnum
     /// <remarks>
     /// При создании обращения это первое событие для установки начального статуса: Создан
     /// </remarks>
-    Step,
+    Status,
 
     /// <summary>
     /// Изменение в области темы, рубрики, описания
@@ -31,6 +31,11 @@ public enum PulseIssuesTypesEnum
     /// Изменения исполнителя
     /// </summary>
     Executor,
+
+    /// <summary>
+    /// Голосование
+    /// </summary>
+    Vote,
 
     /// <summary>
     /// Изменения в подписчиках

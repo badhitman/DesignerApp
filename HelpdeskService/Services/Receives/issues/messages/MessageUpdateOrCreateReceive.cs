@@ -36,6 +36,12 @@ public class MessageUpdateOrCreateReceive(
         }
         req.Payload.MessageText = req.Payload.MessageText.Trim();
 
+        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        {
+            SenderActionUserId = req.SenderActionUserId,
+            Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },
+        });
+
         TResponseModel<UserInfoModel[]?> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
             ? new() { Response = [UserInfoModel.BuildSystem()] }
             : await webTransmissionRepo.FindUsersIdentity([req.SenderActionUserId]);
@@ -44,12 +50,6 @@ public class MessageUpdateOrCreateReceive(
             return new() { Messages = rest.Messages };
 
         UserInfoModel actor = rest.Response[0];
-
-        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
-        {
-            SenderActionUserId = actor.UserId,
-            Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },
-        });
 
         if (!issue_data.Success() || issue_data.Response is null)
             return new() { Messages = issue_data.Messages };
@@ -64,7 +64,7 @@ public class MessageUpdateOrCreateReceive(
         IssueMessageHelpdeskModelDB msg_db;
         IssueReadMarkerHelpdeskModelDB? my_marker;
         DateTime dtn = DateTime.UtcNow;
-
+        string msg;
         if (req.Payload.Id < 1)
         {
             msg_db = new()
@@ -75,12 +75,26 @@ public class MessageUpdateOrCreateReceive(
                 MessageText = req.Payload.MessageText,
                 IssueId = req.Payload.IssueId,
             };
+            msg = "Сообщение успешно отправлено";
             await context.AddAsync(msg_db);
             await context.SaveChangesAsync();
-            res.AddSuccess("Сообщение успешно создано");
+            res.AddSuccess(msg);
+
             res.Response = msg_db.Id;
             if (actor.UserId != GlobalStaticConstants.Roles.System)
             {
+                await helpdeskTransmissionRepo.PulsePush(new()
+                {
+                    SenderActionUserId = req.SenderActionUserId,
+                    Payload = new()
+                    {
+                        IssueId = issue_data.Response.Id,
+                        PulseType = PulseIssuesTypesEnum.Messages,
+                        Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
+                        Description = $"Пользователь `{actor.UserName}` добавил комментарий в обращение #{issue_data.Response.Id} '{issue_data.Response.Name}'",
+                    }
+                });
+
                 my_marker = await context.IssueReadMarkers.FirstOrDefaultAsync(x => x.IssueId == req.Payload.IssueId && x.UserIdentityId == actor.UserId);
                 if (my_marker is null)
                 {
@@ -124,6 +138,18 @@ public class MessageUpdateOrCreateReceive(
             }
             else
             {
+                await helpdeskTransmissionRepo.PulsePush(new()
+                {
+                    SenderActionUserId = req.SenderActionUserId,
+                    Payload = new()
+                    {
+                        IssueId = issue_data.Response.Id,
+                        PulseType = PulseIssuesTypesEnum.Messages,
+                        Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
+                        Description = $"Пользователь `{actor.UserName}` изменил комментарий.",
+                    }
+                });
+
                 res.Response = await context
                     .IssuesMessages
                     .Where(x => x.Id == msg_db.Id)
@@ -131,7 +157,8 @@ public class MessageUpdateOrCreateReceive(
                     .SetProperty(p => p.MessageText, req.Payload.MessageText)
                     .SetProperty(p => p.LastUpdateAt, dtn));
 
-                res.AddSuccess("Сообщение успешно обновлено");
+                msg = "Сообщение успешно обновлено";
+                res.AddSuccess(msg);
             }
         }
 

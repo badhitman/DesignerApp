@@ -66,6 +66,11 @@ public interface IHelpdeskRemoteTransmissionService
     /// Изменить статус обращения
     /// </summary>
     public Task<TResponseModel<bool>> StatusChange(TAuthRequestModel<StatusChangeRequestModel> req);
+
+    /// <summary>
+    /// PulsePush
+    /// </summary>
+    public Task<TResponseModel<bool>> PulsePush(TAuthRequestModel<PulseIssueBaseModel> req);
     #endregion
 
     #region message

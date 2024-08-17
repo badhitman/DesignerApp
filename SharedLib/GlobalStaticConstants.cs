@@ -83,6 +83,9 @@ public static partial class GlobalStaticConstants
         public readonly static string FindUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string SendEmailReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.EMAIL_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string GetTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -136,6 +139,9 @@ public static partial class GlobalStaticConstants
         public readonly static string StatusChangeIssueHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.STATUS_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.CHANGE_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string PulseIssuePushHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ISSUE_CONTROLLER_NAME, Routes.PULSE_CONTROLLER_NAME, Routes.PUSH_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string IssueGetHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -156,9 +162,6 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string MessagesOfIssueListHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.LIST_ACTION_NAME);
-
-
-
         #endregion
 
         #region storage cloud parameters
@@ -239,6 +242,11 @@ public static partial class GlobalStaticConstants
         public const string ISSUE_CONTROLLER_NAME = "issue";
 
         /// <summary>
+        /// Pulse
+        /// </summary>
+        public const string PULSE_CONTROLLER_NAME = "pulse";
+
+        /// <summary>
         /// Status
         /// </summary>
         public const string STATUS_CONTROLLER_NAME = "status";
@@ -292,6 +300,11 @@ public static partial class GlobalStaticConstants
         /// Identity
         /// </summary>
         public const string IDENTITY_CONTROLLER_NAME = "identity";
+
+        /// <summary>
+        /// E-Mail
+        /// </summary>
+        public const string EMAIL_CONTROLLER_NAME = "email";
 
         /// <summary>
         /// Name
@@ -409,6 +422,11 @@ public static partial class GlobalStaticConstants
         /// Изменение
         /// </summary>
         public const string CHANGE_ACTION_NAME = "change";
+
+        /// <summary>
+        /// Push
+        /// </summary>
+        public const string PUSH_ACTION_NAME = "push";
 
         /// <summary>
         /// Профиль

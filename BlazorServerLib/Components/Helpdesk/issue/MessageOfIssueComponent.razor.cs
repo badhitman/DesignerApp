@@ -34,13 +34,14 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
 
     bool IsInitDelete;
 
-    async Task TryDelete()
+     Task TryDelete()
     {
         if(!IsInitDelete)
         {
             IsInitDelete = true;
-            return;
+            //return;
         }
+        return Task.CompletedTask;
     }
 
     string? textMessage { get; set; }

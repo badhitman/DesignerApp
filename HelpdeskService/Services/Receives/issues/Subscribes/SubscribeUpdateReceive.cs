@@ -12,7 +12,10 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Subscribe update - of context user
 /// </summary>
-public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IWebRemoteTransmissionService webTransmissionRepo, IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
+public class SubscribeUpdateReceive(
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
+    IWebRemoteTransmissionService webTransmissionRepo,
+    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<SubscribeUpdateRequestModel>?, bool?>
 {
     /// <inheritdoc/>
@@ -62,13 +65,27 @@ public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskD
              .Select(x => new { x.Id, x.IsSilent })
              .FirstOrDefaultAsync();
 
+        string msg;
         if (req.Payload.SetValue)
         {
             if (sdb is null)
             {
+                msg = "Подписка успешно добавлена";
                 await context.SubscribersOfIssues.AddAsync(new() { UserId = requested_user.UserId, IssueId = issue_data.Response.Id, IsSilent = req.Payload.IsSilent });
                 await context.SaveChangesAsync();
-                res.AddSuccess("Подписка успешно добавлена");
+                res.AddSuccess(msg);
+
+                await helpdeskTransmissionRepo.PulsePush(new()
+                {
+                    SenderActionUserId = req.SenderActionUserId,
+                    Payload = new()
+                    {
+                        IssueId = issue_data.Response.Id,
+                        PulseType = PulseIssuesTypesEnum.Subscribes,
+                        Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
+                        Description = msg,
+                    }
+                });
             }
             else
             {
@@ -81,8 +98,20 @@ public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskD
                         .Where(x => x.Id == sdb.Id)
                         .ExecuteUpdateAsync(setters => setters
                         .SetProperty(b => b.IsSilent, req.Payload.IsSilent));
+                    msg = $"Уведомления успешно {(req.Payload.IsSilent ? "отключены" : "включены")} для: {requested_user.UserName}";
+                    res.AddSuccess(msg);
 
-                    res.AddSuccess($"Уведомления успешно {(req.Payload.IsSilent ? "отключены" : "включены")} для: {requested_user.UserName}");
+                    await helpdeskTransmissionRepo.PulsePush(new()
+                    {
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Response.Id,
+                            PulseType = PulseIssuesTypesEnum.Subscribes,
+                            Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
+                            Description = msg,
+                        }
+                    });
                 }
             }
         }
@@ -95,8 +124,20 @@ public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskD
                 await context.SubscribersOfIssues
                     .Where(x => x.Id == sdb.Id)
                     .ExecuteDeleteAsync();
+                msg = "Подписка успешно удалена";
+                res.AddSuccess(msg);
 
-                res.AddSuccess("Подписка успешно удалена");
+                await helpdeskTransmissionRepo.PulsePush(new()
+                {
+                    SenderActionUserId = req.SenderActionUserId,
+                    Payload = new()
+                    {
+                        IssueId = issue_data.Response.Id,
+                        PulseType = PulseIssuesTypesEnum.Subscribes,
+                        Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                        Description = msg,
+                    }
+                });
             }
         }
         res.Response = true;

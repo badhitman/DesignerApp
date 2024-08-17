@@ -19,6 +19,11 @@ public interface IWebRemoteTransmissionService
     /// </summary>
     public Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] req);
 
+    /// <summary>
+    /// Отправка Email
+    /// </summary>
+    public Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req);
+
     #region tg
     /// <summary>
     /// Проверка Telegram пользователя

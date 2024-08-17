@@ -59,7 +59,7 @@ public class MessageVoteReceive(
             .Where(x => x.MessageId == msg_db.Id && x.IdentityUserId == req.SenderActionUserId)
             .Select(x => x.Id)
             .FirstOrDefaultAsync();
-
+        string msg;
         if (req.Payload.SetStatus)
         {
             if (!vote_db_key.HasValue)
@@ -67,7 +67,19 @@ public class MessageVoteReceive(
                 VoteHelpdeskModelDB vote_db = new() { IdentityUserId = actor.UserId, IssueId = issue_data.Response.Id, MessageId = msg_db.Id };
                 await context.AddAsync(vote_db);
                 await context.SaveChangesAsync();
+                msg = "Ваш голос учтён";
                 res.AddSuccess("Ваш голос учтён");
+                await helpdeskTransmissionRepo.PulsePush(new()
+                {
+                    SenderActionUserId = req.SenderActionUserId,
+                    Payload = new()
+                    {
+                        IssueId = issue_data.Response.Id,
+                        PulseType = PulseIssuesTypesEnum.Vote,
+                        Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
+                        Description = msg,
+                    }
+                });
             }
             else
                 res.AddInfo("Вы уже проголосовали");
@@ -82,8 +94,19 @@ public class MessageVoteReceive(
                     .Votes
                     .Where(x => x.Id == vote_db_key.Value)
                     .ExecuteDeleteAsync();
-
-                res.AddInfo("Ваш голос удалён");
+                msg = "Ваш голос удалён";
+                res.AddInfo(msg);
+                await helpdeskTransmissionRepo.PulsePush(new()
+                {
+                    SenderActionUserId = req.SenderActionUserId,
+                    Payload = new()
+                    {
+                        IssueId = issue_data.Response.Id,
+                        PulseType = PulseIssuesTypesEnum.Vote,
+                        Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                        Description = msg,
+                    }
+                });
             }
         }
 

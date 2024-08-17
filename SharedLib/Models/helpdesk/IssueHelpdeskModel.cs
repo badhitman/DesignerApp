@@ -17,7 +17,7 @@ public class IssueHelpdeskModel : EntryDescriptionModel
     /// <summary>
     /// IdentityUserId
     /// </summary>
-    public required string? AuthorIdentityUserId { get; set; }
+    public required string AuthorIdentityUserId { get; set; }
 
     /// <summary>
     /// Исполнитель

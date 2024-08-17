@@ -19,6 +19,10 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
     public async Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] req)
         => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.FindUsersOfIdentityReceive, req);
 
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.SendEmailReceive, req);
+
     #region tg
     /// <inheritdoc/>
     public async Task<TResponseModel<object?>> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req)

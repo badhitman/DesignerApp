@@ -2,9 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MailKit.Net.Smtp;
 using MimeKit;
 using MimeKit.Text;
 using SharedLib;

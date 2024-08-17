@@ -61,13 +61,26 @@ public class StatusChangeReceive(
             res.AddInfo("Статус уже установлен");
         else
         {
+            string msg = $"Статус успешно изменён с `{issue_data.Response.StepIssue}` на `{req.Payload.Step}`";
+
             await context
                 .Issues
                 .Where(x => x.Id == issue_data.Response.Id)
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.StepIssue, req.Payload.Step));
-
-            res.AddSuccess("Статус успешно изменён");
+            
+            res.AddSuccess(msg);
             res.Response = true;
+            await helpdeskTransmissionRepo.PulsePush(new()
+            {
+                SenderActionUserId = req.SenderActionUserId,
+                Payload = new()
+                {
+                    IssueId = issue_data.Response.Id,
+                    PulseType = PulseIssuesTypesEnum.Status,
+                    Tag = req.Payload.Step.DescriptionInfo(),
+                    Description = msg,
+                }
+            });
         }
 
         return res;

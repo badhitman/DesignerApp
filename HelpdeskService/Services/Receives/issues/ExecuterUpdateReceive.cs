@@ -12,7 +12,10 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Subscribe update - of context user
 /// </summary>
-public class ExecuterUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IWebRemoteTransmissionService webTransmissionRepo, IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
+public class ExecuterUpdateReceive(
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
+    IWebRemoteTransmissionService webTransmissionRepo,
+    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<UserUpdateRequestModel>?, bool>
 {
     /// <inheritdoc/>
@@ -48,19 +51,32 @@ public class ExecuterUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
         UserInfoModel? requested_user = users_rest.Response.FirstOrDefault(x => x.UserId == req.Payload.UserId);
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-
+        string msg;
         if (string.IsNullOrWhiteSpace(req.Payload.UserId))
         {
             if (string.IsNullOrWhiteSpace(issue_data.Response.ExecutorIdentityUserId))
                 res.AddInfo("Исполнитель уже отсутствует");
             else
             {
-                res.AddSuccess($"Исполнитель `{users_rest.Response.First(x => x.UserId == issue_data.Response.ExecutorIdentityUserId)}` успешно откреплён от обращения");
+                msg = $"Исполнитель `{users_rest.Response.First(x => x.UserId == issue_data.Response.ExecutorIdentityUserId)}` успешно откреплён от обращения";
+                res.AddSuccess(msg);
 
                 await context
                     .Issues
                     .Where(x => x.Id == req.Payload.IssueId)
                     .ExecuteUpdateAsync(set => set.SetProperty(b => b.ExecutorIdentityUserId, req.Payload.UserId));
+
+                await helpdeskTransmissionRepo.PulsePush(new()
+                {
+                    SenderActionUserId = req.SenderActionUserId,
+                    Payload = new()
+                    {
+                        IssueId = issue_data.Response.Id,
+                        PulseType = PulseIssuesTypesEnum.Executor,
+                        Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                        Description = msg,
+                    }
+                });
             }
         }
         else
@@ -69,12 +85,46 @@ public class ExecuterUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
                 res.AddInfo($"Исполнитель `{requested_user!.UserName}` уже установлен");
             else
             {
+                // msg = $"Исполнитель обращения успешно установлен: {requested_user!.UserName}";
+                msg = "Исполнитель обращения успешно";
+
+                if (string.IsNullOrWhiteSpace(issue_data.Response.ExecutorIdentityUserId))
+                {
+                    msg += $": установлен `{requested_user?.UserName}`";
+                    await helpdeskTransmissionRepo.PulsePush(new()
+                    {
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Response.Id,
+                            PulseType = PulseIssuesTypesEnum.Executor,
+                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                            Description = msg,
+                        }
+                    });
+                }
+                else
+                {
+                    msg += $": изменён `{users_rest.Response.FirstOrDefault(x => x.UserId == issue_data.Response.ExecutorIdentityUserId)}` в `{requested_user?.UserName}`";
+                    await helpdeskTransmissionRepo.PulsePush(new()
+                    {
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Response.Id,
+                            PulseType = PulseIssuesTypesEnum.Executor,
+                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                            Description = msg,
+                        }
+                    });
+                }
+
                 await context
                     .Issues
                     .Where(x => x.Id == req.Payload.IssueId)
                     .ExecuteUpdateAsync(set => set.SetProperty(b => b.ExecutorIdentityUserId, req.Payload.UserId));
 
-                res.AddSuccess($"Исполнитель обращения успешно установлен: {requested_user!.UserName}");
+                res.AddSuccess(msg);
             }
         }
 

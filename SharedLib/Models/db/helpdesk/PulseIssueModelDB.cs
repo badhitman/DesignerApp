@@ -13,18 +13,13 @@ namespace SharedLib;
 [Index(nameof(AuthorUserIdentityId))]
 [Index(nameof(CreatedAt))]
 [Index(nameof(PulseType))]
-public class PulseIssueModelDB
+public class PulseIssueModelDB : PulseIssueBaseModel
 {
     /// <summary>
     /// Идентификатор/Key
     /// </summary>
     [Key]
     public int Id { get; set; }
-
-    /// <summary>
-    /// Issue
-    /// </summary>
-    public int IssueId { get; set; }
 
     /// <summary>
     /// Issue
@@ -40,15 +35,4 @@ public class PulseIssueModelDB
     /// CreatedAt
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// Тип события
-    /// </summary>
-    public PulseIssuesTypesEnum PulseType { get; set; }
-
-    /// <summary>
-    /// Описание
-    /// </summary>
-    [Required]
-    public required string Description { get; set; }
 }
