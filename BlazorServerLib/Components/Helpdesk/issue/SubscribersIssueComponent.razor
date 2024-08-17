@@ -1,4 +1,5 @@
 ﻿@using MudBlazor
+@using System.Net.Mail
 @inherits IssueWrapBaseModel
 @attribute [Authorize]
 
@@ -42,7 +43,7 @@
                             }
                             else
                             {
-                                <sup title="Уведомления @(p.IsSilent ? "выключены" : "включены")" class="bi bi-bell-@(p.IsSilent ? "slash" : "fill")"></sup>
+                                <sup title="Уведомления @(p.IsSilent ? "выключены" : "включены")" class="bi bi-bell-@(p.IsSilent ? "slash" : "fill") ms-2"></sup>
                             }
                         </li>
                     }
@@ -54,6 +55,13 @@
                     Вы участник
                 </div>
             }
+            <div class="mt-2" title="добавление наблюдателей к обращению">
+                <label for="exampleFormControlInput1" class="form-label">Пригласить участника</label>
+                <div class="input-group">
+                    <input @bind-value="addingSubscriber" @bind-value:event="oninput" id="exampleFormControlInput1" class="form-control form-control-sm" placeholder="Email участника" type="email">
+                    <button @onclick="AddSubscriber" disabled="@(!MailAddress.TryCreate(addingSubscriber,out _))" title="добавить" class="btn btn-outline-secondary bi bi-person-plus-fill" type="button"></button>
+                </div>
+            </div>
         </div>
     }
 </div>

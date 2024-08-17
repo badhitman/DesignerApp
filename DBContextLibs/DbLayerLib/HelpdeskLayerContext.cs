@@ -79,4 +79,9 @@ public partial class HelpdeskLayerContext : DbContext
     /// Блокировщики
     /// </summary>
     public DbSet<LockUniqueTokenModelDB> Lockers { get; set; }
+
+    /// <summary>
+    /// События в обращениях
+    /// </summary>
+    public DbSet<PulseIssueModelDB> PulseEvents { get; set; }
 }

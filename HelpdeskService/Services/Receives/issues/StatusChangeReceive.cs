@@ -16,18 +16,18 @@ public class StatusChangeReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
-    : IResponseReceive<TAuthRequestModel<StatusChangeRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>
+    : IResponseReceive<TAuthRequestModel<StatusChangeRequestModel>?, bool>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.StatusChangeIssueHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ResponseHandleAction(TAuthRequestModel<StatusChangeRequestModel>? req)
+    public async Task<TResponseModel<bool>> ResponseHandleAction(TAuthRequestModel<StatusChangeRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> res = new()
+        TResponseModel<bool> res = new()
         {
-            Response = new()
+            Response = false,
         };
 
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([req.SenderActionUserId]);
@@ -57,7 +57,18 @@ public class StatusChangeReceive(
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
+        if (issue_data.Response.StepIssue == req.Payload.Step)
+            res.AddInfo("Статус уже установлен");
+        else
+        {
+            await context
+                .Issues
+                .Where(x => x.Id == issue_data.Response.Id)
+                .ExecuteUpdateAsync(set => set.SetProperty(p => p.StepIssue, req.Payload.Step));
 
+            res.AddSuccess("Статус успешно изменён");
+            res.Response = true;
+        }
 
         return res;
     }

@@ -34,4 +34,9 @@ public class IssueHelpdeskModelDB : IssueHelpdeskModel
     /// ReadMarkers
     /// </summary>
     public List<IssueReadMarkerHelpdeskModelDB>? ReadMarkers { get; set; }
+
+    /// <summary>
+    /// События
+    /// </summary>
+    public List<PulseIssueModelDB>? PulseEvents { get; set; }
 }

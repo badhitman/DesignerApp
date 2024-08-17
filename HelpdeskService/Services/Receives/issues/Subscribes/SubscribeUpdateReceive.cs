@@ -22,7 +22,7 @@ public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskD
     public async Task<TResponseModel<bool?>> ResponseHandleAction(TAuthRequestModel<SubscribeUpdateRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<bool?> res = new();
+        TResponseModel<bool?> res = new() { Response = false };
 
         string[] users_ids = [req.SenderActionUserId, req.Payload.UserId];
         users_ids = [.. users_ids.Distinct()];
@@ -99,6 +99,7 @@ public class SubscribeUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskD
                 res.AddSuccess("Подписка успешно удалена");
             }
         }
+        res.Response = true;
 
         return res;
     }

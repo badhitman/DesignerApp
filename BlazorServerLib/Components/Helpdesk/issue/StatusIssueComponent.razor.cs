@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.issue;
@@ -38,6 +39,26 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
         return res;
     }
 
+    async Task SaveChange()
+    {
+        IsBusyProgress = true;
+        TResponseModel<bool> res = await HelpdeskRepo
+            .StatusChange(new()
+            {
+                SenderActionUserId = CurrentUser.UserId,
+                Payload = new()
+                {
+                    IssueId = Issue.Id,
+                    Step = IssueStep
+                }
+            });
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (!res.Success())
+            return;
+
+        Issue.StepIssue = IssueStep;
+    }
 
     /// <inheritdoc/>
     protected override void OnInitialized()

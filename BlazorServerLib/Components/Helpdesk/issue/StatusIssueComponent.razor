@@ -28,7 +28,7 @@ else
             </figcaption>
         </figure>
         <div class="d-grid gap-2">
-            <button class="btn btn-outline-primary" type="button">Подтвердить</button>
+            <button @onclick="SaveChange" class="btn btn-outline-primary" type="button">Подтвердить</button>
             <button @onclick="() => IssueStep = Issue.StepIssue" class="btn btn-outline-info" type="button">Отмена</button>
         </div>
     }
