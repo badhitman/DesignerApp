@@ -12,14 +12,14 @@ namespace Telegram.Bot.Services;
 /// <summary>
 /// StoreTelegramService
 /// </summary>
-public class StoreTelegramService(IDbContextFactory<TelegramBotContext> helpdeskDbFactory)
+public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFactory)
 {
     /// <summary>
     /// Store Chat
     /// </summary>
     public async Task<ChatTelegramModelDB> StoreChat(Chat chat)
     {
-        using TelegramBotContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         ChatTelegramModelDB? chat_db = await context
             .Chats
             .FirstOrDefaultAsync(x => x.ChatId == chat.Id);
@@ -58,7 +58,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> helpdesk
     /// </summary>
     public async Task<UserTelegramModelDB> StoreUser(User user)
     {
-        using TelegramBotContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         UserTelegramModelDB? user_db = await context
             .Users
             .FirstOrDefaultAsync(x => x.TelegramId == user.Id);
@@ -94,40 +94,75 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> helpdesk
         await context.SaveChangesAsync();
         return user_db;
     }
+
+    /// <summary>
+    /// StoreMessage
+    /// </summary>
+    public async Task<MessageTelegramModelDB> StoreMessage(Message message)
+    {
+        ChatTelegramModelDB chat_db = await StoreChat(message.Chat);
+        ChatTelegramModelDB? sender_chat_db = message.SenderChat is null ? null : await StoreChat(message.SenderChat);
+        UserTelegramModelDB? from_db = message.From is null ? null : await StoreUser(message.From);
+        UserTelegramModelDB? forward_from_db = message.ForwardFrom is null ? null : await StoreUser(message.ForwardFrom);
+
+        MessageTelegramModelDB? replyToMessageDB = message.ReplyToMessage is null ? null : await StoreMessage(message.ReplyToMessage);
+
+        using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
+        MessageTelegramModelDB? messageDb = from_db is null
+            ? await context.Messages.FirstOrDefaultAsync(x => x.MessageId == message.MessageId && x.ChatId == chat_db.ChatId && x.FromId == null)
+            : await context.Messages.FirstOrDefaultAsync(x => x.MessageId == message.MessageId && x.ChatId == chat_db.ChatId && x.FromId == from_db.Id);
+
+        if (messageDb is null)
+        {
+            messageDb = new()
+            {
+                ChatId = chat_db.Id,
+                FromId = from_db?.Id,
+                EditDate = message.EditDate,
+                ForwardDate = message.ForwardDate,
+
+                ForwardFromChatId = message.ForwardFromMessageId,
+                ForwardFromMessageId = message.ForwardFromMessageId,
+                ForwardFromId = forward_from_db?.Id,
+                ForwardSenderName = message.ForwardSenderName,
+                ForwardSignature = message.ForwardSignature,
+
+                IsAutomaticForward = message.IsAutomaticForward,
+                MessageId = message.MessageId,
+                MessageThreadId = message.MessageThreadId,
+
+                ViaBotUserId = message.ViaBot?.Id,
+                IsTopicMessage = message.IsTopicMessage,
+                SenderChatId = sender_chat_db?.Id,
+                ReplyToMessageId = replyToMessageDB?.Id,
+            };
+            await context.AddAsync(messageDb);
+        }
+        else
+        {
+            messageDb.ChatId = chat_db.Id;
+            messageDb.FromId = from_db?.Id;
+            messageDb.EditDate = message.EditDate;
+            messageDb.ForwardDate = message.ForwardDate;
+
+            messageDb.ForwardFromChatId = message.ForwardFromMessageId;
+            messageDb.ForwardFromMessageId = message.ForwardFromMessageId;
+            messageDb.ForwardFromId = forward_from_db?.Id;
+            messageDb.ForwardSenderName = message.ForwardSenderName;
+            messageDb.ForwardSignature = message.ForwardSignature;
+
+            messageDb.IsAutomaticForward = message.IsAutomaticForward;
+            messageDb.MessageId = message.MessageId;
+            messageDb.MessageThreadId = message.MessageThreadId;
+
+            messageDb.ViaBotUserId = message.ViaBot?.Id;
+            messageDb.IsTopicMessage = message.IsTopicMessage;
+            messageDb.SenderChatId = sender_chat_db?.Id;
+            messageDb.ReplyToMessageId = replyToMessageDB?.Id;
+            context.Update(messageDb);
+        }
+
+        await context.SaveChangesAsync();
+        return messageDb;
+    }
 }
-
-//MessageTelegramModelDB? messageDb = await context
-//    .Messages
-//    .FirstOrDefaultAsync(x => x.MessageId == message.MessageId && x.ChatId == chat_db.ChatId && x.FromId == user_db.TelegramId, cancellationToken: cancellationToken);
-
-//if (messageDb is null)
-//{
-//    messageDb = new()
-//    {
-//        ChatId = chat_db.Id,
-//        FromId = user_db.Id,
-//        EditDate = message.EditDate,
-//        ForwardDate = message.ForwardDate,
-
-//        ForwardFromChatId = message.ForwardFromMessageId,
-//        ForwardFromMessageId = message.ForwardFromMessageId,
-//        ForwardFromId = message.ForwardFrom?.Id,
-//        ForwardSenderName = message.ForwardSenderName,
-//        ForwardSignature = message.ForwardSignature,
-
-//        IsAutomaticForward = message.IsAutomaticForward,
-//        MessageId = message.MessageId,
-//        MessageThreadId = message.MessageThreadId,
-
-//        ViaBotUserId = message.ViaBot?.Id,
-//        IsTopicMessage = message.IsTopicMessage,
-//        SenderChatId = message.SenderChat?.Id,
-//    };
-//    await context.AddAsync(messageDb, cancellationToken);
-//}
-//else
-//{
-
-//}
-
-//await context.SaveChangesAsync(cancellationToken);

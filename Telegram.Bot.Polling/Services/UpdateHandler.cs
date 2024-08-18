@@ -54,9 +54,7 @@ public class UpdateHandler(
 
         await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
 
-        /*
-         storeRepo
-         */
+        await storeRepo.StoreMessage(message);
 
         TResponseModel<CheckTelegramUserModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
         await Usage(uc, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);

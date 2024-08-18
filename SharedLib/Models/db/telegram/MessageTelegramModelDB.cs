@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
@@ -11,6 +12,7 @@ namespace SharedLib;
 /// <summary>
 /// MessageTelegramModelDB
 /// </summary>
+[Index(nameof(MessageId), IsUnique = true)]
 public class MessageTelegramModelDB
 {
     /// <summary>
@@ -53,19 +55,25 @@ public class MessageTelegramModelDB
     /// The supergroup itself for messages from anonymous group administrators. The linked channel for messages
     /// automatically forwarded to the discussion group
     /// </summary>
-    public int? ChatId { get; set; }
+    public int ChatId { get; set; }
 
     /// <summary>
     /// Optional. Sender of the message, sent on behalf of a chat. The channel itself for channel messages.
     /// The supergroup itself for messages from anonymous group administrators. The linked channel for messages
     /// automatically forwarded to the discussion group
     /// </summary>
-    public long? SenderChatId { get; set; }
+    public ChatTelegramModelDB? SenderChat { get; set; }
+    /// <summary>
+    /// Optional. Sender of the message, sent on behalf of a chat. The channel itself for channel messages.
+    /// The supergroup itself for messages from anonymous group administrators. The linked channel for messages
+    /// automatically forwarded to the discussion group
+    /// </summary>
+    public int? SenderChatId { get; set; }
 
     /// <summary>
     /// Optional. For forwarded messages, sender of the original message
     /// </summary>
-    public long? ForwardFromId { get; set; }
+    public int? ForwardFromId { get; set; }
 
     /// <summary>
     /// Optional. <see langword="true"/>, if the message is sent to a forum topic
@@ -121,4 +129,9 @@ public class MessageTelegramModelDB
     /// </summary>
     [JsonConverter(typeof(UnixDateTimeConverter))]
     public DateTime? EditDate { get; set; }
+
+    /// <summary>
+    /// CreatedAtUtc
+    /// </summary>
+    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }

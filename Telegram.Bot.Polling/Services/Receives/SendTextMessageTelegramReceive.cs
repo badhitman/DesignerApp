@@ -1,6 +1,9 @@
-﻿using RemoteCallLib;
+﻿using DbcLib;
+using Microsoft.EntityFrameworkCore;
+using RemoteCallLib;
 using SharedLib;
 using Telegram.Bot;
+using Telegram.Bot.Services;
 using Telegram.Bot.Types.Enums;
 
 namespace Transmission.Receives.telegram;
@@ -8,7 +11,7 @@ namespace Transmission.Receives.telegram;
 /// <summary>
 /// Отправить сообщение пользователю через TelegramBot
 /// </summary>
-public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IWebRemoteTransmissionService webRemoteCall, ILogger<SendTextMessageTelegramReceive> _logger) 
+public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbContextFactory<TelegramBotContext> tgDbFactory, IWebRemoteTransmissionService webRemoteCall, StoreTelegramService storeTgRepo, ILogger<SendTextMessageTelegramReceive> _logger)
     : IResponseReceive<SendTextMessageTelegramBotModel?, int?>
 {
     /// <inheritdoc/>
@@ -56,6 +59,8 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IWebR
                 text: msg_text,
                 parseMode: parse_mode,
                 replyToMessageId: message.ReplyToMessageId);
+
+            await storeTgRepo.StoreMessage(sender_msg);
 #if DEBUG
             await _botClient.EditMessageTextAsync(
                 chatId: message.UserTelegram.TelegramId,
@@ -67,6 +72,10 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IWebR
         }
         catch (Exception ex)
         {
+            TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
+            await context.AddAsync(new ErrorSendingTextMessageTelegramBotModelDB() { Name = ex.GetType().FullName ?? "err", ChatId = message.UserTelegram.TelegramId, Tag = ex.Message });
+            await context.SaveChangesAsync();
+
             msg = "Ошибка отправки Telegram сообщения. error FA51C4EC-6AC7-4F7D-9B64-A6D6436DFDDA";
             res.AddError(msg);
             _logger.LogError(ex, msg);
