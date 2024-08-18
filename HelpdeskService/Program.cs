@@ -90,9 +90,11 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<RubricReadReceive, int?, List<RubricIssueHelpdeskModelDB>?>();
     services.RegisterMqListener<SubscribeUpdateReceive, TAuthRequestModel<SubscribeUpdateRequestModel>?, bool?>();
     services.RegisterMqListener<SubscribesListReceive, TAuthRequestModel<int>?, SubscriberIssueHelpdeskModelDB[]?>();
-    services.RegisterMqListener<ExecuterUpdateReceive, TAuthRequestModel<UserUpdateRequestModel>?, bool>();
+    services.RegisterMqListener<ExecuterUpdateReceive, TAuthRequestModel<UserIssueModel>?, bool>();
     services.RegisterMqListener<MessagesListReceive, TAuthRequestModel<int>?, IssueMessageHelpdeskModelDB[]>();
     services.RegisterMqListener<StatusChangeReceive, TAuthRequestModel<StatusChangeRequestModel>?, bool>();
+    services.RegisterMqListener<PulseIssueReceive, TAuthRequestModel<PulseIssueBaseModel>?, bool>();
+    services.RegisterMqListener<PulseJournalReceive, TPaginationRequestModel<UserIssueModel>?, TPaginationResponseModel<PulseViewModel>>();
     //
     #endregion
 });

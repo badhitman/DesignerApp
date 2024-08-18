@@ -67,7 +67,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
             SenderActionUserId = _current_user.Response.UserId,
             Payload = new()
             {
-                RubricIssueId = SelectedRubric?.Id,
+                RubricId = SelectedRubric?.Id,
                 Name = Name!,
                 Description = Description,
             }

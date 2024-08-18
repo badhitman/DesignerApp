@@ -22,31 +22,41 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
     public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ResponseHandleAction(TPaginationRequestModel<GetIssuesForUserRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+
+        if (req.PageSize < 5)
+            req.PageSize = 5;
+
         TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> res = new()
         {
             Response = new()
+            {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+            }
         };
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         IQueryable<IssueHelpdeskModelDB> q = context
             .Issues
-            .Where(x => x.ProjectId == req.Request.ProjectId)
+            .Where(x => x.ProjectId == req.Payload.ProjectId)
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(req.Request.SearchQuery))
+        if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
         {
-            req.Request.SearchQuery = req.Request.SearchQuery.ToUpper();
+            req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
 
             q = from issue_element in q
                 join rubric_element in context.RubricsForIssues on issue_element.RubricIssueId equals rubric_element.Id
                 into grp_rubrics
                 from c in grp_rubrics.DefaultIfEmpty()
-                where issue_element.NormalizeNameUpper!.Contains(req.Request.SearchQuery) || c.NormalizedNameToUpper!.Contains(req.Request.SearchQuery)
+                where issue_element.NormalizeNameUpper!.Contains(req.Payload.SearchQuery) || c.NormalizedNameToUpper!.Contains(req.Payload.SearchQuery)
                 select issue_element;
         }
 
-        switch (req.Request.JournalMode)
+        switch (req.Payload.JournalMode)
         {
             case HelpdeskJournalModesEnum.ActualOnly:
                 q = q.Where(x => x.StepIssue <= HelpdeskIssueStepsEnum.Progress);
@@ -58,19 +68,19 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
                 break;
         }
 
-        switch (req.Request.UserArea)
+        switch (req.Payload.UserArea)
         {
             case UsersAreasHelpdeskEnum.Subscriber:
-                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Request.IdentityUserId));
+                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Payload.IdentityUserId));
                 break;
             case UsersAreasHelpdeskEnum.Executor:
-                q = q.Where(x => x.ExecutorIdentityUserId == req.Request.IdentityUserId);
+                q = q.Where(x => x.ExecutorIdentityUserId == req.Payload.IdentityUserId);
                 break;
             case UsersAreasHelpdeskEnum.Main:
-                q = q.Where(x => x.ExecutorIdentityUserId == req.Request.IdentityUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Request.IdentityUserId));
+                q = q.Where(x => x.ExecutorIdentityUserId == req.Payload.IdentityUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Payload.IdentityUserId));
                 break;
             default:
-                q = q.Where(x => x.AuthorIdentityUserId == req.Request.IdentityUserId);
+                q = q.Where(x => x.AuthorIdentityUserId == req.Payload.IdentityUserId);
                 break;
         }
         res.Response.TotalRowsCount = await q.CountAsync();

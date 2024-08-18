@@ -29,7 +29,16 @@
                             <CascadingValue Value="CurrentUser">
                                 <div class="col-sm-9">
                                     <div class="vstack gap-3">
-                                        <div><IssueBodyComponent /></div>
+                                        <div>
+                                            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                                                <MudTabPanel Text="Обращение">
+                                                    <IssueBodyComponent />
+                                                </MudTabPanel>
+                                                <MudTabPanel Text="Хроника">
+                                                    <PulseJournalComponent />
+                                                </MudTabPanel>
+                                            </MudTabs>
+                                        </div>
                                         <div><IssueMessagesComponent /></div>
                                     </div>
                                 </div>

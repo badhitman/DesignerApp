@@ -1,0 +1,32 @@
+﻿@using MudBlazor
+@inherits IssueWrapBaseModel
+
+<MudTable Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">История (события)</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="created_at" T="PulseViewModel">Создан</MudTableSortLabel></MudTh>
+        <MudTh>Автор</MudTh>
+        <MudTh>Тип</MudTh>
+        <MudTh>Признак</MudTh>
+        <MudTh>Инфо</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Создан">@context.CreatedAt</MudTd>
+        <MudTd DataLabel="Тип">@(UsersIdentityDump.FirstOrDefault(x => x.UserId == context.AuthorUserIdentityId)?.UserName ?? context.AuthorUserIdentityId)</MudTd>
+        <MudTd DataLabel="Тип">@context.PulseType</MudTd>
+        <MudTd DataLabel="Признак">@context.Tag</MudTd>
+        <MudTd DataLabel="Инфо">@context.Description</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Не найдено ни одной записи</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

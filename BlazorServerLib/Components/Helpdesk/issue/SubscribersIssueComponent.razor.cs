@@ -41,7 +41,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             UsersIdentityDump.Add(user_by_email);
 
         IsBusyProgress = true;
-        TResponseModel<bool?> add_subscriber_res = await HelpdeskRepo.SubscribeUpdate(new()
+        TResponseModel<bool> add_subscriber_res = await HelpdeskRepo.SubscribeUpdate(new()
         {
             SenderActionUserId = CurrentUser.UserId,
             Payload = new()
@@ -84,7 +84,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         };
 
         IsBusyProgress = true;
-        TResponseModel<bool?> rest = await HelpdeskRepo.SubscribeUpdate(req);
+        TResponseModel<bool> rest = await HelpdeskRepo.SubscribeUpdate(req);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
@@ -111,7 +111,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         };
 
         IsBusyProgress = true;
-        TResponseModel<bool?> rest = await HelpdeskRepo.SubscribeUpdate(req);
+        TResponseModel<bool> rest = await HelpdeskRepo.SubscribeUpdate(req);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())

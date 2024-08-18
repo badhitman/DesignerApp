@@ -146,7 +146,7 @@ public class MessageUpdateOrCreateReceive(
                         IssueId = issue_data.Response.Id,
                         PulseType = PulseIssuesTypesEnum.Messages,
                         Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
-                        Description = $"Пользователь `{actor.UserName}` изменил комментарий.",
+                        Description = $"Пользователь `{actor.UserName}` изменил комментарий #{msg_db.Id}.",
                     }
                 });
 

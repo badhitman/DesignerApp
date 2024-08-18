@@ -65,7 +65,7 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
             {
                 Name = NameIssueEdit,
                 Description = DescriptionIssueEdit,
-                RubricIssueId = RubricIssueEdit,
+                RubricId = RubricIssueEdit,
                 Id = Issue.Id,
             }
         });

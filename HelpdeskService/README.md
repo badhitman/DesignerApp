@@ -15,6 +15,10 @@
 ![messages - issue card](img/issue-card-messages.png)
 ![messages (edit) - issue card](img/issue-card-messages-edit.png)
 
+### События
+![хроника - issue card](img/issue-card-pulse-journal.png)
+История всех изменений
+
 
 ## Настройки
 ![настройки](img/configs.png)

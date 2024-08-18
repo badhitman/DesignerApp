@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 ///  Subscribe Update Request
 /// </summary>
-public class SubscribeUpdateRequestModel: UserUpdateRequestModel
+public class SubscribeUpdateRequestModel: UserIssueModel
 {
     /// <summary>
     /// отключение отправки уведомлений

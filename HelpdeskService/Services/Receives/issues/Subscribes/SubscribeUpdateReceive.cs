@@ -83,7 +83,7 @@ public class SubscribeUpdateReceive(
                         IssueId = issue_data.Response.Id,
                         PulseType = PulseIssuesTypesEnum.Subscribes,
                         Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
-                        Description = msg,
+                        Description = $"Пользователь `{requested_user.UserName}` добавлен в подписчики",
                     }
                 });
             }
@@ -135,7 +135,7 @@ public class SubscribeUpdateReceive(
                         IssueId = issue_data.Response.Id,
                         PulseType = PulseIssuesTypesEnum.Subscribes,
                         Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
-                        Description = msg,
+                        Description = $"Пользователь `{requested_user.UserName}` удалён из подписок",
                     }
                 });
             }

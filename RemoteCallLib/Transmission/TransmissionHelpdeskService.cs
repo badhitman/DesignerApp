@@ -41,15 +41,15 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<IssueHelpdeskModelDB>(GlobalStaticConstants.TransmissionQueues.IssueGetHelpdeskReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> SubscribeUpdate(TAuthRequestModel<SubscribeUpdateRequestModel> req)
-        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.SubscribeIssueUpdateHelpdeskReceive, req);
+    public async Task<TResponseModel<bool>> SubscribeUpdate(TAuthRequestModel<SubscribeUpdateRequestModel> req)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.SubscribeIssueUpdateHelpdeskReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<SubscriberIssueHelpdeskModelDB[]?>> SubscribesList(TAuthRequestModel<int> req)
         => await rabbitClient.MqRemoteCall<SubscriberIssueHelpdeskModelDB[]?>(GlobalStaticConstants.TransmissionQueues.SubscribesIssueListHelpdeskReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> ExecuterUpdate(TAuthRequestModel<UserUpdateRequestModel> req)
+    public async Task<TResponseModel<bool>> ExecuterUpdate(TAuthRequestModel<UserIssueModel> req)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.ExecuterIssueUpdateHelpdeskReceive, req);
 
     /// <inheritdoc/>
@@ -59,6 +59,10 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> PulsePush(TAuthRequestModel<PulseIssueBaseModel> req)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.PulseIssuePushHelpdeskReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<PulseViewModel>?>> PulseJournal(TPaginationRequestModel<UserIssueModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<PulseViewModel>>(GlobalStaticConstants.TransmissionQueues.PulseJournalHelpdeskReceive, req);
     #endregion
 
     #region message
@@ -72,6 +76,6 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
 
     /// <inheritdoc/>
     public async Task<TResponseModel<IssueMessageHelpdeskModelDB[]?>> MessagesList(TAuthRequestModel<int> req)
-        => await rabbitClient.MqRemoteCall<IssueMessageHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.MessagesOfIssueListHelpdeskReceive, req);
+        => await rabbitClient.MqRemoteCall<IssueMessageHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.MessagesOfIssueListHelpdeskReceive, req);    
     #endregion
 }

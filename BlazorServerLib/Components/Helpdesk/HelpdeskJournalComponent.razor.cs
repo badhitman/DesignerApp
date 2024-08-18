@@ -71,7 +71,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
 
         TPaginationRequestModel<GetIssuesForUserRequestModel> req = new()
         {
-            Request = new()
+            Payload = new()
             {
                 IdentityUserId = _current_user.Response.UserId,
                 JournalMode = JournalMode,

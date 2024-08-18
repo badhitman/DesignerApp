@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 ///  Subscribe Update Request
 /// </summary>
-public class UserUpdateRequestModel
+public class UserIssueModel
 {
     /// <summary>
     /// UserId

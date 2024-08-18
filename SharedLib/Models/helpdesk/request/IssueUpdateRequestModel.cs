@@ -12,7 +12,7 @@ public class IssueUpdateRequestModel : EntryDescriptionModel
     /// <summary>
     /// Rubric Issue
     /// </summary>
-    public required int? RubricIssueId { get; set; }
+    public required int? RubricId { get; set; }
 
     /// <summary>
     /// ProjectId

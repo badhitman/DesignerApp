@@ -10,8 +10,11 @@ using SharedLib;
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// PulseIssueReceive
+/// Регистрация события из обращения (логи).
 /// </summary>
+/// <remarks>
+/// Плюс рассылка уведомлений участникам события.
+/// </remarks>
 public class PulseIssueReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
@@ -47,6 +50,7 @@ public class PulseIssueReceive(
             CreatedAt = DateTime.UtcNow,
             IssueId = req.Payload.IssueId,
             PulseType = req.Payload.PulseType,
+            Tag = req.Payload.Tag,
         });
         await context.SaveChangesAsync();
         res.Response = true;
@@ -59,8 +63,8 @@ public class PulseIssueReceive(
         List<string> users_ids = [issue_data.Response.AuthorIdentityUserId];
         if (!string.IsNullOrWhiteSpace(issue_data.Response.ExecutorIdentityUserId))
             users_ids.Add(issue_data.Response.ExecutorIdentityUserId);
-        if (issue_data.Response.Subscribers?.Any() == true)
-            users_ids.AddRange(issue_data.Response.Subscribers.Select(x => x.UserId));
+        if (issue_data.Response.Subscribers is not null && issue_data.Response.Subscribers.Count != 0)
+            users_ids.AddRange(issue_data.Response.Subscribers.Where(x => !x.IsSilent).Select(x => x.UserId));
 
         users_ids = [.. users_ids.Distinct()];
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([.. users_ids]);

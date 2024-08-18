@@ -50,7 +50,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Подписка на события в обращении (или отписка от событий)
     /// </summary>
-    public Task<TResponseModel<bool?>> SubscribeUpdate(TAuthRequestModel<SubscribeUpdateRequestModel> req);
+    public Task<TResponseModel<bool>> SubscribeUpdate(TAuthRequestModel<SubscribeUpdateRequestModel> req);
 
     /// <summary>
     /// Запрос подписчиков на обращение
@@ -60,7 +60,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Исполнитель обращения
     /// </summary>
-    public Task<TResponseModel<bool>> ExecuterUpdate(TAuthRequestModel<UserUpdateRequestModel> req);
+    public Task<TResponseModel<bool>> ExecuterUpdate(TAuthRequestModel<UserIssueModel> req);
 
     /// <summary>
     /// Изменить статус обращения
@@ -68,9 +68,14 @@ public interface IHelpdeskRemoteTransmissionService
     public Task<TResponseModel<bool>> StatusChange(TAuthRequestModel<StatusChangeRequestModel> req);
 
     /// <summary>
-    /// PulsePush
+    /// Добавить событие в журнал
     /// </summary>
     public Task<TResponseModel<bool>> PulsePush(TAuthRequestModel<PulseIssueBaseModel> req);
+
+    /// <summary>
+    /// Журнал событий в обращении
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<PulseViewModel>?>> PulseJournal(TPaginationRequestModel<UserIssueModel> req);
     #endregion
 
     #region message

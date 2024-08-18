@@ -47,7 +47,7 @@ public class IssueCreateOrUpdateReceive(
                 AuthorIdentityUserId = issue_upd.SenderActionUserId,
                 Name = issue_upd.Payload.Name,
                 Description = issue_upd.Payload.Description,
-                RubricIssueId = issue_upd.Payload.RubricIssueId,
+                RubricIssueId = issue_upd.Payload.RubricId,
                 NormalizeNameUpper = normalizeNameUpper,
                 StepIssue = HelpdeskIssueStepsEnum.Created,
                 ProjectId = issue_upd.Payload.ProjectId,
@@ -106,7 +106,7 @@ public class IssueCreateOrUpdateReceive(
                                 .ExecuteUpdateAsync(setters => setters
                                 .SetProperty(b => b.Description, issue_upd.Payload.Description)
                                 .SetProperty(b => b.NormalizeNameUpper, normalizeNameUpper)
-                                .SetProperty(b => b.RubricIssueId, issue_upd.Payload.RubricIssueId)
+                                .SetProperty(b => b.RubricIssueId, issue_upd.Payload.RubricId)
                                 .SetProperty(b => b.Name, issue_upd.Payload.Name)
                                 .SetProperty(b => b.LastUpdateAt, DateTime.UtcNow));
 
