@@ -1,3 +1,5 @@
+using DbcLib;
+using Microsoft.EntityFrameworkCore;
 using ServerLib;
 using SharedLib;
 using Telegram.Bot.Exceptions;
@@ -14,6 +16,7 @@ namespace Telegram.Bot.Services;
 /// <para>See <see cref="DefaultUpdateHandler"/> for a simple implementation</para>
 /// </summary>
 public class UpdateHandler(
+    StoreTelegramService storeRepo,
     ITelegramBotClient botClient,
     ILogger<UpdateHandler> logger,
     IWebRemoteTransmissionService webRemoteRepo,
@@ -50,6 +53,11 @@ public class UpdateHandler(
             return;
 
         await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
+
+        /*
+         storeRepo
+         */
+
         TResponseModel<CheckTelegramUserModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
         await Usage(uc, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
     }

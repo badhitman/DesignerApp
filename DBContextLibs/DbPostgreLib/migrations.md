@@ -12,3 +12,8 @@ Update-Database -Context HelpdeskContext -Project DbPostgreLib -StartupProject H
 Add-Migration MainStorageContext001 -Context CloudParametersContext -Project DbPostgreLib -StartupProject RemoteCallLib
 Update-Database -Context CloudParametersContext -Project DbPostgreLib -StartupProject RemoteCallLib
 ```
+
+```
+Add-Migration MainTelegramBotContext001 -Context TelegramBotContext -Project DbPostgreLib -StartupProject Telegram.Bot.Polling
+Update-Database -Context TelegramBotContext -Project DbPostgreLib -StartupProject Telegram.Bot.Polling
+```

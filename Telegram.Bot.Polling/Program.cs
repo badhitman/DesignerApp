@@ -1,4 +1,6 @@
+using DbcLib;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
@@ -61,6 +63,18 @@ builder.ConfigureServices((context, services) =>
     services.AddSingleton<WebConfigModel>();
     services.AddOptions();
 
+
+    string connectionIdentityString = context.Configuration.GetConnectionString("TelegramBotConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
+    services.AddDbContextFactory<TelegramBotContext>(opt =>
+    {
+        opt.UseSqlite(connectionIdentityString);
+
+#if DEBUG
+        opt.EnableSensitiveDataLogging(true);
+#endif
+    });
+
+
     // Register named HttpClient to benefits from IHttpClientFactory
     // and consume it with ITelegramBotClient typed client.
     // More read:
@@ -74,6 +88,7 @@ builder.ConfigureServices((context, services) =>
                 return new TelegramBotClient(options, httpClient);
             });
 
+    services.AddScoped<StoreTelegramService>();
     services.AddScoped<UpdateHandler>();
     services.AddScoped<ReceiverService>();
     services.AddHostedService<PollingService>();
