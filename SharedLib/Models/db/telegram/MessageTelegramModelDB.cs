@@ -122,7 +122,7 @@ public class MessageTelegramModelDB
     /// <summary>
     /// Optional. Bot through which the message was sent <see cref="UserTelegramModelDB"/>
     /// </summary>
-    public long? ViaBotUserId { get; set; }
+    public long? ViaBotId { get; set; }
 
     /// <summary>
     /// Optional. Date the message was last edited
@@ -131,7 +131,71 @@ public class MessageTelegramModelDB
     public DateTime? EditDate { get; set; }
 
     /// <summary>
+    /// Optional. The unique identifier of a media message group this message belongs to
+    /// </summary>
+    public string? MediaGroupId { get; set; }
+
+    /// <summary>
+    /// Optional. Signature of the post author for messages in channels, or the custom title of an anonymous
+    /// group administrator
+    /// </summary>
+    public string? AuthorSignature { get; set; }
+
+    /// <summary>
+    /// Optional. For text messages, the actual text of the message, 0-4096 characters
+    /// </summary>
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string? Text { get; set; }
+
+    /// <summary>
     /// CreatedAtUtc
     /// </summary>
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Optional. Message is a photo, available sizes of the photo
+    /// </summary>
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public PhotoSizeTelegramModelDB[]? Photo { get; set; }
+
+    /// <summary>
+    /// Audio
+    /// </summary>
+    public int? AudioId { get; set; }
+    /// <summary>
+    /// Audio
+    /// </summary>
+    public AudioTelegramModelDB? Audio { get; set; }
+
+    /// <summary>
+    /// Video
+    /// </summary>
+    public VideoTelegramModelDB? Video { get; set; }
+    /// <summary>
+    /// Video
+    /// </summary>
+    public int? VideoId { get; set; }
+
+    /// <summary>
+    /// Document
+    /// </summary>
+    public DocumentTelegramModelDB? Document { get; set; }
+    /// <summary>
+    /// Document
+    /// </summary>
+    public int? DocumentId { get; set; }
+
+    /// <summary>
+    /// Voice
+    /// </summary>
+    public VoiceTelegramModelDB? Voice { get; set; }
+    /// <summary>
+    /// Voice
+    /// </summary>
+    public int? VoiceId { get; set; }
+
+    /// <summary>
+    /// Optional. Caption for the animation, audio, document, photo, video or voice, 0-1024 characters
+    /// </summary>
+    public string? Caption { get; set; }
 }

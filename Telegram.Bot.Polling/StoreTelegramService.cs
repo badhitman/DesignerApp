@@ -131,11 +131,29 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                 MessageId = message.MessageId,
                 MessageThreadId = message.MessageThreadId,
 
-                ViaBotUserId = message.ViaBot?.Id,
+                ViaBotId = message.ViaBot?.Id,
                 IsTopicMessage = message.IsTopicMessage,
                 SenderChatId = sender_chat_db?.Id,
                 ReplyToMessageId = replyToMessageDB?.Id,
+                //
+                Caption = message.Caption,
+                AuthorSignature = message.AuthorSignature,
+                MediaGroupId = message.MediaGroupId,
+                Text = message.Text,
             };
+            if (message.Photo is not null && message.Photo.Length != 0)
+            {
+                messageDb.Photo = [..message.Photo.Select(x => new PhotoSizeTelegramModelDB()
+                {
+                    FileId = x.FileId,
+                    FileUniqueId = x.FileUniqueId,
+                    FileSize = x.FileSize,
+                    Height = x.Height,
+                    Width = x.Width,
+                    MessageId = messageDb.Id,
+                })];
+            }
+
             await context.AddAsync(messageDb);
         }
         else
@@ -155,10 +173,15 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             messageDb.MessageId = message.MessageId;
             messageDb.MessageThreadId = message.MessageThreadId;
 
-            messageDb.ViaBotUserId = message.ViaBot?.Id;
+            messageDb.ViaBotId = message.ViaBot?.Id;
             messageDb.IsTopicMessage = message.IsTopicMessage;
             messageDb.SenderChatId = sender_chat_db?.Id;
             messageDb.ReplyToMessageId = replyToMessageDB?.Id;
+            //            
+            messageDb.Caption = message.Caption;
+            messageDb.AuthorSignature = message.AuthorSignature;
+            messageDb.MediaGroupId = message.MediaGroupId;
+            messageDb.Text = message.Text;
             context.Update(messageDb);
         }
 
