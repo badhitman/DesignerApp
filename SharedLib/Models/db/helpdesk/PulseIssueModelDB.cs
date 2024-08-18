@@ -12,7 +12,6 @@ namespace SharedLib;
 /// </summary>
 [Index(nameof(AuthorUserIdentityId))]
 [Index(nameof(CreatedAt))]
-[Index(nameof(PulseType))]
 public class PulseIssueModelDB : PulseIssueBaseModel
 {
     /// <summary>
@@ -27,12 +26,12 @@ public class PulseIssueModelDB : PulseIssueBaseModel
     public IssueHelpdeskModelDB? Issue { get; set; }
 
     /// <summary>
-    /// User Id (Identity)
-    /// </summary>
-    public required string AuthorUserIdentityId { get; set; }
-
-    /// <summary>
     /// CreatedAt
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// User Id (Identity)
+    /// </summary>
+    public required string AuthorUserIdentityId { get; set; }
 }

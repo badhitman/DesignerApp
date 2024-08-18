@@ -15,10 +15,9 @@
 ![messages - issue card](img/issue-card-messages.png)
 ![messages (edit) - issue card](img/issue-card-messages-edit.png)
 
-### События
+### События (SLA)
 ![хроника - issue card](img/issue-card-pulse-journal.png)
-История всех изменений
-
+История всех изменений в хронологическом порядке. В последствии эти записи теоретически позволят получать SLA аналитику
 
 ## Настройки
 ![настройки](img/configs.png)

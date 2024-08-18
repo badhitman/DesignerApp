@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -9,6 +10,8 @@ namespace SharedLib;
 /// <summary>
 /// Событие изменения в обращении
 /// </summary>
+[Index(nameof(PulseType))]
+[Index(nameof(Tag))]
 public class PulseIssueLowModel
 {
     /// <summary>

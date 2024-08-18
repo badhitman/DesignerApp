@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// PulseIssueBaseModel
 /// </summary>
-public class PulseIssueBaseModel: PulseIssueLowModel
+public class PulseIssueBaseModel : PulseIssueLowModel
 {
     /// <summary>
     /// Issue
