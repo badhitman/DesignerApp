@@ -12,6 +12,10 @@ namespace RemoteCallLib;
 public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegramRemoteTransmissionService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<ChatTelegramModelDB[]?>> ChatsReadTelegram(long[] chats_ids)
+        => await rabbitClient.MqRemoteCall<ChatTelegramModelDB[]?>(GlobalStaticConstants.TransmissionQueues.ChatsReadTelegramReceive);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<string?>> GetBotUsername()
         => await rabbitClient.MqRemoteCall<string?>(GlobalStaticConstants.TransmissionQueues.GetBotUsernameReceive);
 

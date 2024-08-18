@@ -1,4 +1,8 @@
-﻿using RemoteCallLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @FakeGov 
+////////////////////////////////////////////////
+
+using RemoteCallLib;
 using SharedLib;
 using Telegram.Bot;
 

@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,6 +11,8 @@ namespace SharedLib;
 /// <summary>
 /// UserTelegramModelDB
 /// </summary>
+[Index(nameof(UserTelegramId), IsUnique = true)]
+[Index(nameof(Username)), Index(nameof(FirstName)), Index(nameof(LastName)), Index(nameof(IsBot))]
 public class UserTelegramModelDB
 {
     /// <summary>
@@ -22,7 +25,7 @@ public class UserTelegramModelDB
     /// Unique identifier for this user or bot
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public long TelegramId { get; set; }
+    public long UserTelegramId { get; set; }
 
     /// <summary>
     /// <see langword="true"/>, if this user is a bot

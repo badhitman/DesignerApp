@@ -1,4 +1,8 @@
-﻿using DbcLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @FakeGov 
+////////////////////////////////////////////////
+
+using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
@@ -20,16 +24,9 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> ResponseHandleAction(SendTextMessageTelegramBotModel? message)
     {
+        ArgumentNullException.ThrowIfNull(message);
         TResponseModel<int?> res = new();
         string msg;
-        if (message is null)
-        {
-            msg = "remote call [message] is null: error {724BE352-F1C6-4903-B2F7-173C18975BB4}";
-            _logger.LogError(msg);
-            res.AddError(msg);
-            return res;
-        }
-
         if (string.IsNullOrWhiteSpace(message.Message))
         {
             res.AddError("Текст сообщения не может быть пустым");

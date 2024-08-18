@@ -41,4 +41,9 @@ public class ContactTelegramModelDB
     /// Optional. Additional data about the contact in the form of a vCard
     /// </summary>
     public string? Vcard { get; set; }
+
+    /// <summary>
+    /// Message
+    /// </summary>
+    public int? MessageId { get; set; }
 }

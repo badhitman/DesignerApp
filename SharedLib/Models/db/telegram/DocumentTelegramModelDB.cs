@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace SharedLib;
 
 /// <summary>
-/// This object represents a general file (as opposed to <see cref="PhotoSizeTelegramModelDB">photos</see>, <see cref="Voice">voice messages</see> and <see cref="AudioTelegramModelDB">audio files</see>).
+/// This object represents a general file (as opposed to <see cref="PhotoSizeTelegramModelDB">photos</see>, <see cref="VoiceTelegramModelDB">voice messages</see> and <see cref="AudioTelegramModelDB">audio files</see>).
 /// </summary>
 public class DocumentTelegramModelDB : FileBaseTelegramModel
 {

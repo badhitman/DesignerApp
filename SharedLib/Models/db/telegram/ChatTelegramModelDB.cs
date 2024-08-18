@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,6 +11,8 @@ namespace SharedLib;
 /// <summary>
 /// ChatTelegramModelDB
 /// </summary>
+[Index(nameof(ChatId), IsUnique = true)]
+[Index(nameof(Type)), Index(nameof(Title)), Index(nameof(Username)), Index(nameof(FirstName)), Index(nameof(LastName)), Index(nameof(IsForum))]
 public class ChatTelegramModelDB
 {
     /// <summary>
@@ -66,11 +69,11 @@ public class ChatTelegramModelDB
             return false;
 
         if (obj is ChatTelegramModelDB ct)
-            return 
-                ct.Title == Title && 
-                ct.LastName == LastName && 
-                ct.ChatId == ChatId && 
-                ct.FirstName == FirstName && 
+            return
+                ct.Title == Title &&
+                ct.LastName == LastName &&
+                ct.ChatId == ChatId &&
+                ct.FirstName == FirstName &&
                 ct.Id == Id &&
                 ct.Type == Type &&
                 ct.Username == Username;

@@ -112,6 +112,12 @@ public static partial class GlobalStaticConstants
         public readonly static string SendTextMessageTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.TEXT_CONTROLLER_NAME, Routes.MESSAGE_CONTROLLER_NAME, Routes.SEND_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string ChatsReadTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.CHATS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string MessagesChatsSelectTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME,Routes.MESSAGES_CONTROLLER_NAME,Routes.CHATS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string SetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.EDIT_ACTION_NAME);
         #endregion
 
@@ -325,9 +331,24 @@ public static partial class GlobalStaticConstants
         public const string TEXT_CONTROLLER_NAME = "text";
 
         /// <summary>
+        /// Chat
+        /// </summary>
+        public const string CHAT_CONTROLLER_NAME = "chat";
+
+        /// <summary>
+        /// Chats
+        /// </summary>
+        public const string CHATS_CONTROLLER_NAME = "chats";
+
+        /// <summary>
         /// Message
         /// </summary>
         public const string MESSAGE_CONTROLLER_NAME = "message";
+
+        /// <summary>
+        /// Messages
+        /// </summary>
+        public const string MESSAGES_CONTROLLER_NAME = "messages";
 
 
 

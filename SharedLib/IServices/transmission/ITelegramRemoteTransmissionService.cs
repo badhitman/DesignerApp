@@ -24,4 +24,10 @@ public interface ITelegramRemoteTransmissionService
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
     /// </summary>
     public Task<TResponseModel<object?>> SetWebConfig(WebConfigModel webConf);
+
+    /// <summary>
+    /// Прочитать данные по чатам
+    /// </summary>
+    /// <param name="chats_ids">Идентификаторы (Telegram) чатов</param>
+    public Task<TResponseModel<ChatTelegramModelDB[]?>> ChatsReadTelegram(long[] chats_ids);
 }
