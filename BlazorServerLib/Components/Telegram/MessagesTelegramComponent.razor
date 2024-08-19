@@ -1,3 +1,30 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
 
-<h3>MessagesTelegramComponent</h3>
+<MudTable Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Сообщения</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="created_at" T="MessageTelegramModelDB">Дата</MudTableSortLabel></MudTh>
+        <MudTh>Автор</MudTh>
+        <MudTh>Примечание</MudTh>
+        <MudTh>Текст</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Создан">@context.CreatedAtUtc</MudTd>
+        <MudTd DataLabel="Автор">@context.From!.Username</MudTd>
+        <MudTd DataLabel="Примечание">@context.Caption</MudTd>
+        <MudTd DataLabel="Текст">@context.Text</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Сообщения не найдены</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

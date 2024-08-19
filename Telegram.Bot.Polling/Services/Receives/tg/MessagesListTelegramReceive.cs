@@ -39,8 +39,8 @@ public class MessagesListTelegramReceive(IDbContextFactory<TelegramBotContext> t
             SortingDirection = req.SortingDirection,
             TotalRowsCount = await q.CountAsync(),
             Response = req.SortingDirection == VerticalDirectionsEnum.Up
-                  ? await q.OrderBy(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToListAsync()
-                  : await q.OrderByDescending(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToListAsync()
+                  ? await q.OrderBy(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize).Include(x=>x.From).ToListAsync()
+                  : await q.OrderByDescending(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize).Include(x => x.From).ToListAsync()
         };
 
         return res;

@@ -15,6 +15,10 @@
 ![messages - issue card](img/issue-card-messages.png)
 ![messages (edit) - issue card](img/issue-card-messages-edit.png)
 
+### TelegramBot
+![ss](img/issue-main.png)
+Все участники (у которых привязан Telegram) доступный в своей области. Можно сразу вести переписку с клиентом напрямую от имени бота
+
 ### События (SLA)
 ![хроника - issue card](img/issue-card-pulse-journal.png)
 История всех изменений в хронологическом порядке. В последствии эти записи теоретически позволят получать SLA аналитику. Кроме того в [службе регистрации событий](/HelpdeskService/Services/Receives/issues/pulse/PulseIssueReceive.cs) размещён механизм рассылки уведомлений подписчикам

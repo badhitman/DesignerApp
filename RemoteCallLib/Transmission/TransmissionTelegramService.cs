@@ -21,7 +21,7 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?>> MessagesListTelegram(TPaginationRequestModel<int> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<MessageTelegramModelDB>>(GlobalStaticConstants.TransmissionQueues.GetBotUsernameReceive, req);
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<MessageTelegramModelDB>>(GlobalStaticConstants.TransmissionQueues.MessagesChatsSelectTelegramReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram)
