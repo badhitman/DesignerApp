@@ -1,0 +1,13 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+@attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.HelpDeskTelegramBotManager},{GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit}")]
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Рубрики">
+        <RubricsParametersComponent />
+    </MudTabPanel>
+    <MudTabPanel Text="Telegram">
+        <TelegramConfigComponent />
+    </MudTabPanel>
+</MudTabs>

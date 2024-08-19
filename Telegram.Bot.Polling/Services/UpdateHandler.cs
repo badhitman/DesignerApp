@@ -19,6 +19,7 @@ public class UpdateHandler(
     StoreTelegramService storeRepo,
     ITelegramBotClient botClient,
     ILogger<UpdateHandler> logger,
+    ISerializeStorageRemoteTransmissionService serializeStorageRepo,
     IWebRemoteTransmissionService webRemoteRepo,
     IServiceProvider servicesProvider) : IUpdateHandler
 {
@@ -155,6 +156,11 @@ public class UpdateHandler(
                 return;
             }
         }
+
+        TResponseModel<bool?> res_IsCommandModeTelegramBot = await serializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterIsCommandModeTelegramBot);
+
+        if (res_IsCommandModeTelegramBot.Response == true && !messageText.StartsWith('/') && eventType != MessagesTypesEnum.CallbackQuery)
+            return;
 
         ITelegramDialogService? receiveService;
         using IServiceScope scope = servicesProvider.CreateScope();

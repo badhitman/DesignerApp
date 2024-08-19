@@ -9,7 +9,7 @@ namespace BlazorWebLib.Components.Helpdesk;
 /// <summary>
 /// Parameters
 /// </summary>
-public partial class ParametersComponent : BlazorBusyComponentBaseModel
+public partial class ParametersHelpdeskComponent : BlazorBusyComponentBaseModel
 {
     
 }

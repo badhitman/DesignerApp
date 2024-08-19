@@ -1,0 +1,22 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">TelegramBot</h5>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="hstack gap-3">
+                    <MudSwitch @bind-Value="IsCommandModeTelegramBot" ThumbIcon="@(IsCommandModeTelegramBot == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(IsCommandModeTelegramBot == true ? Color.Success : Color.Error)">Командный режим TelegramBot</MudSwitch>
+                    <span class="text-info">
+                        @(IsCommandModeTelegramBot == true ? "Включён командный режим - простые текстовые сообщения игнорируются" : "Автоответчик - бот будет отвечать на все сообщения")
+                    </span>
+                </div>
+                <div class="form-text">
+                    В командном режиме бот будет обрабатывать только типовые TelegramBot команды начинающиеся на / и InlineQuery запросы,
+                    а на простые текстовые сообщения отвечать не будет.
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

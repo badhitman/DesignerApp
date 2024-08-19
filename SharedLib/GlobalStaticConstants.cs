@@ -71,6 +71,13 @@ public static partial class GlobalStaticConstants
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"),
         };
+        
+        /// <inheritdoc/>
+        public static StorageCloudParameterModel ParameterIsCommandModeTelegramBot => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = Path.Combine(Routes.TELEGRAM_CONTROLLER_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.MODE_CONTROLLER_NAME),
+        };
     }
 
     /// <summary>
@@ -219,6 +226,16 @@ public static partial class GlobalStaticConstants
         /// Telegram check-user
         /// </summary>
         public const string TELEGRAM_CONTROLLER_NAME = "telegram";
+
+        /// <summary>
+        /// Mode
+        /// </summary>
+        public const string MODE_CONTROLLER_NAME = "mode";
+
+        /// <summary>
+        /// Command
+        /// </summary>
+        public const string COMMAND_CONTROLLER_NAME = "command";
 
         /// <summary>
         /// Helpdesk
