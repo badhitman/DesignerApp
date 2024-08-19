@@ -18,7 +18,7 @@
         <CardHeaderActions>
             @if (IsEditMode)
             {
-                <MudIconButton title="Сохранить" Disabled="@(!IsEdited || string.IsNullOrWhiteSpace(NameIssueEdit) || string.IsNullOrWhiteSpace(DescriptionIssueEdit))" OnClick="SaveIssue" Size="Size.Small" Icon="@Icons.Material.Filled.Save" Color="@(IsEdited ? Color.Primary : Color.Default)" />
+                <MudIconButton title="Сохранить" Disabled="@(!IsEdited || !CanSave)" OnClick="SaveIssue" Size="Size.Small" Icon="@Icons.Material.Filled.Save" Color="@(IsEdited ? Color.Primary : Color.Default)" />
                 <MudIconButton title="Отмена" OnClick="CancelEdit" Size="Size.Small" Icon="@Icons.Material.Filled.Cancel" />
             }
             else

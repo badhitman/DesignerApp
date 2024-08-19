@@ -14,18 +14,18 @@ public enum ModesSelectRubricsEnum
     /// <summary>
     /// Разрешить без рубрик
     /// </summary>
-    [Description("Разрешить без рубрик")]
+    [Description("Можно без рубрики")]
     AllowWithoutRubric = 10,
 
     /// <summary>
     /// Выбор корневого, а вложенные по желанию
     /// </summary>
-    [Description("Выбор корневого, а вложенные по желанию")]
-    SelectRootAndFree = 20,
+    [Description("Любая рубрика")]
+    SelectAny = 20,
 
     /// <summary>
     /// Строго заполнить всю иерархию
     /// </summary>
-    [Description("Строго заполнить всю иерархию")]
+    [Description("Строго выбрать всю иерархию")]
     Strict = 30
 }

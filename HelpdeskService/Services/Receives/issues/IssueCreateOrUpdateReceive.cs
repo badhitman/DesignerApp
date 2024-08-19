@@ -15,6 +15,7 @@ namespace Transmission.Receives.helpdesk;
 public class IssueCreateOrUpdateReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IHelpdeskRemoteTransmissionService helpdeskRemoteRepo,
+    ISerializeStorageRemoteTransmissionService SerializeStorageRepo,
     IWebRemoteTransmissionService webTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<IssueUpdateRequestModel>?, int?>
 {
@@ -40,6 +41,14 @@ public class IssueCreateOrUpdateReceive(
         DateTime dtn = DateTime.UtcNow;
         string msg;
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+
+        TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
+        ModesSelectRubricsEnum _current_mode_rubric = res_ModeSelectingRubrics.Response ?? ModesSelectRubricsEnum.AllowWithoutRubric;
+
+
+
+
+
         if (issue_upd.Payload.Id < 1)
         {
             issue = new()

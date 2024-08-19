@@ -15,10 +15,18 @@
                         <MudRadio Value="@mode">@mode.DescriptionInfo()</MudRadio>
                     }
                 </MudRadioGroup>
-                <span class="text-info">
-
-                </span>
-                <div class="form-text">При создании обращения выбор рубрик можно сделать обязательным, а можно установить требования разной строгоси.</div>
+                @switch (SelectedOption)
+                {
+                    case ModesSelectRubricsEnum.Strict:
+                        <div class="form-text">Строгий режим: требуется выбор всех подрубрик (если они существуют) до конца.</div>
+                        break;
+                    case ModesSelectRubricsEnum.SelectAny:
+                        <div class="form-text">Разрешён выбор любой рубрики, но выбрать нужно обязательно.</div>
+                        break;
+                    case ModesSelectRubricsEnum.AllowWithoutRubric:
+                        <div class="form-text">В этом режиме выбор рубрики не обязателен.</div>
+                        break;
+                }
             </li>
             <li class="list-group-item">
                 <div class="hstack gap-3">
@@ -27,7 +35,9 @@
                         @(ShowDisabledRubrics == true ? "Элементы будут отображаться, но не доступны (disable) для выбора" : "Элементы будут скрыты")
                     </span>
                 </div>
-                <div class="form-text">При создании обращения в процессе выбора рубрики неактивные категории/темы/рубрики можно скрыть, а можно отобразить без возможности их выбирать.</div>
+                <div class="form-text">
+                    При создании обращения в процессе выбора рубрики неактивные категории/темы/рубрики можно скрыть, а можно отобразить без возможности их выбирать.
+                </div>
             </li>
         </ul>
     </div>

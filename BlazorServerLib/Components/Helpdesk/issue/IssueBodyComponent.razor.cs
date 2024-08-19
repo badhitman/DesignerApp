@@ -18,6 +18,13 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
 
 
+    bool CanSave =>
+        !string.IsNullOrWhiteSpace(NameIssueEdit) &&
+        !string.IsNullOrWhiteSpace(DescriptionIssueEdit) &&
+        GlobalTools.DescriptionHtmlToLinesRemark(DescriptionIssueEdit).Any(x => !string.IsNullOrWhiteSpace(x)) &&
+        (ModeSelectingRubrics == ModesSelectRubricsEnum.AllowWithoutRubric || (SelectedRubric is not null && SelectedRubric.Id > 0))
+        ;
+
     string? NameIssueEdit { get; set; }
     string? DescriptionIssueEdit { get; set; }
 
@@ -104,5 +111,6 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
 
         ShowDisabledRubrics = res.Response == true;
         ModeSelectingRubrics = res_ModeSelectingRubrics.Response.Value;
+        SelectedRubric = Issue.RubricIssue;
     }
 }
