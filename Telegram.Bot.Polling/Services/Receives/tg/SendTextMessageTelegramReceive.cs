@@ -8,12 +8,13 @@ using RemoteCallLib;
 using SharedLib;
 using Telegram.Bot;
 using Telegram.Bot.Services;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace Transmission.Receives.telegram;
 
 /// <summary>
-/// Отправить сообщение пользователю через TelegramBot
+/// Отправить сообщение пользователю через TelegramBot SendTextMessageTelegramBotModel
 /// </summary>
 public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbContextFactory<TelegramBotContext> tgDbFactory, IWebRemoteTransmissionService webRemoteCall, StoreTelegramService storeTgRepo, ILogger<SendTextMessageTelegramReceive> _logger)
     : IResponseReceive<SendTextMessageTelegramBotModel?, int?>
@@ -51,26 +52,36 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
                 ? ""
                 : $"{message.Message}\n--- {message.From.Trim()}";
 
-            sender_msg = await _botClient.SendTextMessageAsync(
-                chatId: message.UserTelegram.TelegramId,
-                text: msg_text,
+            if (message.Data is not null)
+            {
+                sender_msg = await _botClient.SendDocumentAsync(
+                chatId: message.UserTelegramId,
+                document: InputFile.FromStream(new MemoryStream(message.Data)),
+                caption: msg_text,
                 parseMode: parse_mode,
                 replyToMessageId: message.ReplyToMessageId);
+            }
+            else
+                sender_msg = await _botClient.SendTextMessageAsync(
+                    chatId: message.UserTelegramId,
+                    text: msg_text,
+                    parseMode: parse_mode,
+                    replyToMessageId: message.ReplyToMessageId);
 
             await storeTgRepo.StoreMessage(sender_msg);
-#if DEBUG
-            await _botClient.EditMessageTextAsync(
-                chatId: message.UserTelegram.TelegramId,
-                messageId: sender_msg.MessageId,
-                text: $"#<b>{sender_msg.MessageId}</b>\n{msg_text}",
-                parseMode: ParseMode.Html
-                );
-#endif
+            //#if DEBUG
+            //            await _botClient.EditMessageTextAsync(
+            //                chatId: message.UserTelegramId,
+            //                messageId: sender_msg.MessageId,
+            //                text: $"#<b>{sender_msg.MessageId}</b>\n{msg_text}",
+            //                parseMode: ParseMode.Html
+            //                );
+            //#endif
         }
         catch (Exception ex)
         {
             TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
-            await context.AddAsync(new ErrorSendingTextMessageTelegramBotModelDB() { ChatId = message.UserTelegram.TelegramId, Message = ex.Message });
+            await context.AddAsync(new ErrorSendingTextMessageTelegramBotModelDB() { ChatId = message.UserTelegramId, Message = ex.Message });
             await context.SaveChangesAsync();
 
             msg = "Ошибка отправки Telegram сообщения. error FA51C4EC-6AC7-4F7D-9B64-A6D6436DFDDA";
@@ -80,14 +91,14 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
             return res;
         }
         res.Response = sender_msg.MessageId;
-        if (message.UserTelegram.MainTelegramMessageId.HasValue && message.UserTelegram.MainTelegramMessageId != 0)
+        if (message.MainTelegramMessageId.HasValue && message.MainTelegramMessageId != 0)
         {
             try
             {
-                await _botClient.DeleteMessageAsync(chatId: message.UserTelegram.TelegramId, message.UserTelegram.MainTelegramMessageId.Value);
+                await _botClient.DeleteMessageAsync(chatId: message.UserTelegramId, message.MainTelegramMessageId.Value);
             }
             finally { }
-            await webRemoteCall.UpdateTelegramMainUserMessage(new() { MessageId = 0, UserId = message.UserTelegram.TelegramId });
+            await webRemoteCall.UpdateTelegramMainUserMessage(new() { MessageId = 0, UserId = message.UserTelegramId });
         }
 
         return res;

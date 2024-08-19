@@ -78,7 +78,7 @@ else
         TResponseModel<int?> rest = await tgRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
             {
                 From = $"<a href='{conf.Value.BaseUri}'>{conf.Value.ClearBaseUri}</a> (от: {UserInfo?.UserName})",
-                UserTelegram = TelegramUser,
+                 UserTelegramId = TelegramUser.TelegramId,
                 Message = messageText!
             });
         IsBusyProgress = false;

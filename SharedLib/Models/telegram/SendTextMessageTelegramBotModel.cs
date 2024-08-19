@@ -12,7 +12,12 @@ public class SendTextMessageTelegramBotModel
     /// <summary>
     /// Получатель сообщения
     /// </summary>
-    public required TelegramUserBaseModelDb UserTelegram { get; set; }
+    public required long UserTelegramId { get; set; }
+
+    /// <summary>
+    /// MainTelegramMessageId
+    /// </summary>
+    public int? MainTelegramMessageId { get; set; }
 
     /// <summary>
     /// Текст сообщения
@@ -34,4 +39,9 @@ public class SendTextMessageTelegramBotModel
     /// Если сообщение является ответом, идентификатор исходного сообщения
     /// </summary>
     public int? ReplyToMessageId { get; set; }
+
+    /// <summary>
+    /// Data
+    /// </summary>
+    public byte[]? Data { get; set; }
 }

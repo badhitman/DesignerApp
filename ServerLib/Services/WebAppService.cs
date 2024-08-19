@@ -265,7 +265,7 @@ public class WebAppService(
         TResponseModel<int?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
         {
             Message = $"Ваш Telegram аккаунт привязан к учётной записи '{userIdentityDb.Email}' сайта {webConfig.Value.ClearBaseUri}",
-            UserTelegram = req.TelegramUser,
+             UserTelegramId = req.TelegramUser.TelegramId,
             From = "уведомление",
         });
         if (!tgCall.Success())
@@ -307,7 +307,7 @@ public class WebAppService(
         TResponseModel<int?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
         {
             Message = $"Ваш Telegram аккаунт отключён от учётной записи {userIdentityDb.Email} с сайта {webConfig.Value.ClearBaseUri}",
-            UserTelegram = tg_user_info,
+             UserTelegramId = tg_user_info.TelegramId,
             From = "уведомление",
         });
         if (!tgCall.Success())
@@ -333,7 +333,7 @@ public class WebAppService(
         TResponseModel<int?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
         {
             Message = $"Ваш Telegram аккаунт отключён от учётной записи {user.Email} с сайта {webConfig.Value.ClearBaseUri}",
-            UserTelegram = await mainContext.TelegramUsers.FirstAsync(x => x.TelegramId == tg_user_dump),
+             UserTelegramId = (await mainContext.TelegramUsers.FirstAsync(x => x.TelegramId == tg_user_dump)).TelegramId,
             From = "уведомление",
         });
         if (!tgCall.Success())

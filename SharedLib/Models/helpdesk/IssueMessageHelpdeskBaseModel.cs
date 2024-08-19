@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////
 
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SharedLib;
 
@@ -27,5 +26,5 @@ public class IssueMessageHelpdeskBaseModel
     /// <summary>
     /// Issue
     /// </summary>
-    public int IssueId { get; set; }
+    public required int IssueId { get; set; }
 }

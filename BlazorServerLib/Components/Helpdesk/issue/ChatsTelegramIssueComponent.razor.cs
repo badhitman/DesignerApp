@@ -18,6 +18,30 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
 
     ChatTelegramModelDB[]? chats = null;
 
+    async void SendMessageTelegramAction(SendTextMessageTelegramBotModel msg)
+    {
+        IsBusyProgress = true;
+        TResponseModel<bool> send_pulse = await HelpdeskRepo.PulsePush(new()
+        {
+            Payload = new()
+            {
+                Description = $"Отправил сообщение в Telegram: user-tg#{msg.UserTelegramId}",
+                IssueId = Issue.Id,
+                PulseType = PulseIssuesTypesEnum.Messages,
+                Tag = GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME,
+            },
+            SenderActionUserId = CurrentUser.UserId,
+        });
+        TResponseModel<int> add_msg_system = await HelpdeskRepo.MessageCreateOrUpdate(new()
+        {
+            SenderActionUserId = GlobalStaticConstants.Roles.System,
+            Payload = new() { MessageText = $"<b>Пользователь {CurrentUser.UserName} отправил сообщение Telegram пользователю user-tg#{msg.UserTelegramId}</b>: {msg.Message}", IssueId = Issue.Id }
+        });
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(send_pulse.Messages);
+        SnackbarRepo.ShowMessagesResponse(add_msg_system.Messages);
+    }
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {

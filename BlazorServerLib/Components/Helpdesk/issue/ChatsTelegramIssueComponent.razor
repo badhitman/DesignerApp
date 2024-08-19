@@ -20,14 +20,16 @@
         }
         else
         {
-            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-                @foreach (ChatTelegramModelDB chat in chats)
-                {
-                    <MudTabPanel Text="@(UsersIdentityDump.First(x => x.TelegramId == chat.ChatTelegramId).UserName)">
-                        <TelegramChatWrapComponent Chat="chat" />
-                    </MudTabPanel>
-                }
-            </MudTabs>
+            <CascadingValue Value="SendMessageTelegramAction">
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                    @foreach (ChatTelegramModelDB chat in chats)
+                    {
+                        <MudTabPanel Text="@(UsersIdentityDump.First(x => x.TelegramId == chat.ChatTelegramId).UserName)">
+                            <TelegramChatWrapComponent Chat="chat" />
+                        </MudTabPanel>
+                    }
+                </MudTabs>
+            </CascadingValue>
         }
     </div>
 </div>
