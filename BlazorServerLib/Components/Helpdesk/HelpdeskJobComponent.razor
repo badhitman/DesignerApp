@@ -1,5 +1,60 @@
-﻿<h3>HelpdeskJobComponent</h3>
+﻿@inherits BlazorBusyComponentBaseModel
+@using MudBlazor
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary mb-2">
+    <div class="container-fluid">
+        <span class="navbar-brand" href="#">Фильтр: </span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <MudRadioGroup Disabled="IsBusyProgress" @bind-Value="SelectedOption">
+                <MudRadio Value="@UsersAreasHelpdeskEnum.Executor">Я исполнитель</MudRadio>
+                <MudRadio Value="@UsersAreasHelpdeskEnum.Subscriber">Я подписчик</MudRadio>
+                <MudRadio Value="@UsersAreasHelpdeskEnum.Main">Все</MudRadio>
+            </MudRadioGroup>
+        </div>
+    </div>
+</nav>
+@if(IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+<div class="card">
+    <div class="card-body">
+        <CascadingValue Value="SetTab">
+            <TabSetComponent IsSilent="true" AsPills="true">
+                <TabComponent IsDisabled="IsBusyProgress" SystemName="@(nameof(HelpdeskJournalModesEnum.ActualOnly))" Title="Открытые">
+                    <HelpdeskJournalComponent UserArea="SelectedOption" JournalMode="HelpdeskJournalModesEnum.ActualOnly" />
+                </TabComponent>
+                <TabComponent IsDisabled="IsBusyProgress" SystemName="@(nameof(HelpdeskJournalModesEnum.ArchiveOnly))" Title="Завершённые">
+                    <HelpdeskJournalComponent UserArea="SelectedOption" JournalMode="HelpdeskJournalModesEnum.ArchiveOnly" />
+                </TabComponent>
+                <TabComponent IsDisabled="IsBusyProgress" SystemName="@(nameof(HelpdeskJournalModesEnum.All))" Title="Все">
+                    <HelpdeskJournalComponent UserArea="SelectedOption" JournalMode="HelpdeskJournalModesEnum.All" />
+                </TabComponent>
+            </TabSetComponent>
+        </CascadingValue>
+    </div>
+</div>
 
 @code {
+    HelpdeskJournalComponent _tab = default!;
 
+    UsersAreasHelpdeskEnum _selectedOption = UsersAreasHelpdeskEnum.Executor;
+    public UsersAreasHelpdeskEnum SelectedOption
+    {
+        get => _selectedOption;
+        set
+        {
+            _selectedOption = value;
+            _tab.SetArea(value);
+            IsBusyProgress = true;
+            InvokeAsync(async () => { await _tab.TableRef.ReloadServerData(); IsBusyProgress = false; _tab.StateHasChangedCall(); });
+        }
+    }
+    void SetTab(HelpdeskJournalComponent page)
+    {
+        _tab = page;
+    }
 }

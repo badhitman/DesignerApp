@@ -33,7 +33,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// UserArea
     /// </summary>
-    [CascadingParameter, EditorRequired]
+    [Parameter, EditorRequired]
     public required UsersAreasHelpdeskEnum UserArea { get; set; }
 
     /// <summary>
@@ -42,6 +42,13 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required Action<HelpdeskJournalComponent> SetTab { get; set; }
 
+    /// <summary>
+    /// SetArea
+    /// </summary>
+    public void SetArea(UsersAreasHelpdeskEnum set)
+    {
+        UserArea = set;
+    }
 
     private string? searchString = null;
 
