@@ -26,13 +26,15 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
     {
         ArgumentNullException.ThrowIfNull(users_ids);
         users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x))];
-        TResponseModel<UserInfoModel[]?> res = new();
+        TResponseModel<UserInfoModel[]?> res = new() { Response = [] };
         if (users_ids.Length == 0)
         {
             res.AddError("Пустой запрос");
             return res;
         }
         string[] find_users_ids = [.. users_ids.Where(x => x != GlobalStaticConstants.Roles.System)];
+        if (find_users_ids.Length == 0)
+            return res;
 
         string mem_token = $"{QueueName}-{string.Join(",", find_users_ids)}";
         if (cache.TryGetValue(mem_token, out UserInfoModel[]? users_cache))
@@ -42,12 +44,14 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
         }
 
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
-        ApplicationUser[] users = await identityContext
+        ApplicationUser[] users = find_users_ids.Length == 0
+            ?[]
+            : await identityContext
             .Users
             .Where(x => find_users_ids.Contains(x.Id))
             .ToArrayAsync();
 
-        if (users.Length == 0)
+        if (users.Length == 0 && find_users_ids.Length != users.Length)
         {
             cache.Set(mem_token, Array.Empty<ApplicationUser>(), new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
             res.AddWarning("Не найдено ни одного пользователя");
