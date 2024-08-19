@@ -11,7 +11,7 @@ namespace SharedLib;
 /// <summary>
 /// ChatTelegramModelDB
 /// </summary>
-[Index(nameof(ChatId), IsUnique = true)]
+[Index(nameof(ChatTelegramId), IsUnique = true)]
 [Index(nameof(Type)), Index(nameof(Title)), Index(nameof(Username)), Index(nameof(FirstName)), Index(nameof(LastName)), Index(nameof(IsForum))]
 public class ChatTelegramModelDB
 {
@@ -29,7 +29,7 @@ public class ChatTelegramModelDB
     /// or double-precision float type are safe for storing this identifier.
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public long ChatId { get; set; }
+    public long ChatTelegramId { get; set; }
 
     /// <summary>
     /// Type of chat, can be either “private”, “group”, “supergroup” or “channel”
@@ -72,7 +72,7 @@ public class ChatTelegramModelDB
             return
                 ct.Title == Title &&
                 ct.LastName == LastName &&
-                ct.ChatId == ChatId &&
+                ct.ChatTelegramId == ChatTelegramId &&
                 ct.FirstName == FirstName &&
                 ct.Id == Id &&
                 ct.Type == Type &&
@@ -84,6 +84,6 @@ public class ChatTelegramModelDB
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{Id}{ChatId}{Type}{Title}{Username}{FirstName}{LastName}{IsForum}".GetHashCode();
+        return $"{Id}{ChatTelegramId}{Type}{Title}{Username}{FirstName}{LastName}{IsForum}".GetHashCode();
     }
 }

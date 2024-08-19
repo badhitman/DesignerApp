@@ -26,7 +26,7 @@ public class ChatsReadTelegramReceive(IDbContextFactory<TelegramBotContext> tgDb
         TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         res.Response = await context
             .Chats
-            .Where(x => chats_ids.Contains(x.ChatId))
+            .Where(x => chats_ids.Contains(x.ChatTelegramId))
             .ToArrayAsync();
 
         return res;

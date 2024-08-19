@@ -30,4 +30,9 @@ public interface ITelegramRemoteTransmissionService
     /// </summary>
     /// <param name="chats_ids">Идентификаторы (Telegram) чатов</param>
     public Task<TResponseModel<ChatTelegramModelDB[]?>> ChatsReadTelegram(long[] chats_ids);
+
+    /// <summary>
+    /// Получить сообщения чата Telegram
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?>> MessagesListTelegram(TPaginationRequestModel<int> req);
 }

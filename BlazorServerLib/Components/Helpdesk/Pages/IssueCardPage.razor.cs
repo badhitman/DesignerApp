@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using System.Collections.Generic;
 
 namespace BlazorWebLib.Components.Helpdesk.Pages;
 
@@ -33,7 +32,6 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     /// </summary>
     [Parameter, EditorRequired]
     public int Id { get; set; }
-
 
 
     bool CanEdit =>

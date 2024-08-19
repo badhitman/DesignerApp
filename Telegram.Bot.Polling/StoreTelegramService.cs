@@ -22,13 +22,13 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         ChatTelegramModelDB? chat_db = await context
             .Chats
-            .FirstOrDefaultAsync(x => x.ChatId == chat.Id);
+            .FirstOrDefaultAsync(x => x.ChatTelegramId == chat.Id);
 
         if (chat_db is null)
         {
             chat_db = new ChatTelegramModelDB()
             {
-                ChatId = chat.Id,
+                ChatTelegramId = chat.Id,
                 FirstName = chat.FirstName,
                 IsForum = chat.IsForum,
                 LastName = chat.LastName,
@@ -40,7 +40,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
         }
         else
         {
-            chat_db.ChatId = chat.Id;
+            chat_db.ChatTelegramId = chat.Id;
             chat_db.FirstName = chat.FirstName;
             chat_db.IsForum = chat.IsForum;
             chat_db.LastName = chat.LastName;
@@ -109,8 +109,8 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
 
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         MessageTelegramModelDB? messageDb = from_db is null
-            ? await context.Messages.FirstOrDefaultAsync(x => x.MessageId == message.MessageId && x.ChatId == chat_db.ChatId && x.FromId == null)
-            : await context.Messages.FirstOrDefaultAsync(x => x.MessageId == message.MessageId && x.ChatId == chat_db.ChatId && x.FromId == from_db.Id);
+            ? await context.Messages.FirstOrDefaultAsync(x => x.MessageId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == null)
+            : await context.Messages.FirstOrDefaultAsync(x => x.MessageId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == from_db.Id);
 
         if (messageDb is null)
         {
