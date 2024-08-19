@@ -70,7 +70,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
         catch (Exception ex)
         {
             TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
-            await context.AddAsync(new ErrorSendingTextMessageTelegramBotModelDB() { Name = ex.GetType().FullName ?? "err", ChatId = message.UserTelegram.TelegramId, Tag = ex.Message });
+            await context.AddAsync(new ErrorSendingTextMessageTelegramBotModelDB() { ChatId = message.UserTelegram.TelegramId, Message = ex.Message });
             await context.SaveChangesAsync();
 
             msg = "Ошибка отправки Telegram сообщения. error FA51C4EC-6AC7-4F7D-9B64-A6D6436DFDDA";

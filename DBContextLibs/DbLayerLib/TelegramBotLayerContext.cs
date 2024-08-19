@@ -78,6 +78,7 @@ public partial class TelegramBotLayerContext : DbContext
     /// </summary>
     public DbSet<ContactTelegramModelDB> Contacts { get; set; }
 
+
     /// <summary>
     /// Ошибки отправки сообщений TelegramBot
     /// </summary>
