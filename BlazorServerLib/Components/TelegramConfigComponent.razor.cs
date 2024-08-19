@@ -9,6 +9,9 @@ using SharedLib;
 
 namespace BlazorWebLib.Components;
 
+/// <summary>
+/// TelegramConfigComponent
+/// </summary>
 public partial class TelegramConfigComponent : BlazorBusyComponentBaseModel
 {
     [Inject]

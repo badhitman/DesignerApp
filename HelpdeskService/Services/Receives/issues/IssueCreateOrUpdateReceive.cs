@@ -17,16 +17,16 @@ public class IssueCreateOrUpdateReceive(
     IHelpdeskRemoteTransmissionService helpdeskRemoteRepo,
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo,
     IWebRemoteTransmissionService webTransmissionRepo)
-    : IResponseReceive<TAuthRequestModel<IssueUpdateRequestModel>?, int?>
+    : IResponseReceive<TAuthRequestModel<IssueUpdateRequestModel>?, int>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssueUpdateHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(TAuthRequestModel<IssueUpdateRequestModel>? issue_upd)
+    public async Task<TResponseModel<int>> ResponseHandleAction(TAuthRequestModel<IssueUpdateRequestModel>? issue_upd)
     {
         ArgumentNullException.ThrowIfNull(issue_upd);
-        TResponseModel<int?> res = new();
+        TResponseModel<int> res = new() { Response = 0 };
 
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([issue_upd.SenderActionUserId]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
@@ -42,12 +42,20 @@ public class IssueCreateOrUpdateReceive(
         string msg;
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
+
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         ModesSelectRubricsEnum _current_mode_rubric = res_ModeSelectingRubrics.Response ?? ModesSelectRubricsEnum.AllowWithoutRubric;
+        string[] sub_rubrics = await context
+            .RubricsForIssues
+            .Where(x => x.ParentRubricId == issue_upd.Payload.RubricId)
+            .Select(x => x.Name)
+            .ToArrayAsync();
 
-
-
-
+        if (sub_rubrics.Length != 0)
+        {
+            res.AddError($"Требуется выбрать все подрубрики: {string.Join(",", sub_rubrics)};");
+            return res;
+        }
 
         if (issue_upd.Payload.Id < 1)
         {
