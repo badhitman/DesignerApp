@@ -32,6 +32,11 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
     public int ChatId { get; set; }
 
     /// <summary>
+    /// Table
+    /// </summary>
+    public MudTable<MessageTelegramModelDB> TableRef { get; set; } = default!;
+
+    /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
     private async Task<TableData<MessageTelegramModelDB>> ServerReload(TableState state, CancellationToken token)

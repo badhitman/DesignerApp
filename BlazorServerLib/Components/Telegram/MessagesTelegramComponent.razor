@@ -1,7 +1,7 @@
 ﻿@using MudBlazor
 @inherits BlazorBusyComponentBaseModel
 
-<MudTable Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true">
+<MudTable @ref="TableRef" Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Сообщения</MudText>
         <MudSpacer />

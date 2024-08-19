@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Telegram;
@@ -18,6 +18,10 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [Parameter, EditorRequired]
     public required ChatTelegramModelDB Chat { get; set; }
+
+    string? _textSendMessage;
+
+    MessagesTelegramComponent _messagesTelegramComponent = default!;
 
     bool NavbarToggle = true;
 
