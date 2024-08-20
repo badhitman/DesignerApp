@@ -32,7 +32,7 @@
 - Рендеринг: `InteractiveServerRenderMode(prerender: false)`
 - Авторизация типовая `Microsoft.AspNetCore.Identity`.
 - В Frontend добавлен базовый функционал для работы с Пользователями, Ролями, Claims и Telegram[^4]. 
-- Служба равно как и **Telegram.Bot.Polling** использует RabbitMQ для того что бы обслуживать команды, на которые она зарегистрировала свои обработчики[^1].
+- Служба равно как и **Telegram.Bot.Polling** использует RabbitMQ для того что бы обслуживать команды, на которые она зарегистрировала свои обработчики[^1]. Кроме того, Web служба обрабатывает запросы для Identity. У Identity свой автономный контекст БД, но он плотно интегрирован в Web службу.
 
 #### 3. Helpdesk
 [HelpdeskService](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) - сервис обратной связи со своим собственным контекстом: `HelpdeskContext`.
