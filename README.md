@@ -1,6 +1,6 @@
-## Blazor NET.8 + TelegramBot + HelpDesk
+## Blazor NET.8 TelegramBot HelpDesk
 
-###### + развитие решения в отдельной ветке [constructor](https://github.com/badhitman/DesignerApp/tree/constructor)
+###### + развитие решения конструктора в отдельной ветке [constructor](https://github.com/badhitman/DesignerApp/tree/constructor)
 
 - **Blazor NET.8**[^4] + **TelegramBot**[^5]: подойдёт как стартовый кейс web решения с поддержкой **Telegram бота**.
 
@@ -19,22 +19,25 @@
 ![связи между проектами](./img/struct.png)
 
 ### Службы (запуск):
-#### 1. Telegram.Bot.Polling
+#### 1. TelegramBot
+[Telegram.Bot.Polling](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling) - служба TelegramBot. Сохраняет все входящие сообщения и позволяет в последствии работать с чатами HelpDesk или другим сервисам решения.
+
 - В оригинальном исполнении `Worker Service`[^5].
 - Ответы на входящие Telegram сообщения обрабатывает реализация интерфейса `ITelegramDialogService`[^7]. Пользователям можно индивидуально устанавливать имя автоответчика[^2]. Это касается как простых текстовых `Message`, так и `CallbackQuery`.
 - Через RabbitMQ служба получает команды от внешних систем, выполняет их, а результат возвращает ответом отправителю (*например команда*: отправка сообщения Telegram клиенту от имени бота)[^1].
 
 #### 2. WEB: BlazorWebApp
+[BlankBlazorApp](https://github.com/badhitman/DesignerApp/tree/main/BlankBlazorApp/BlankBlazorApp) - Blazor вэб сервер.
 - Рендеринг: `InteractiveServerRenderMode(prerender: false)`
 - Авторизация типовая `Microsoft.AspNetCore.Identity`.
 - В Frontend добавлен базовый функционал для работы с Пользователями, Ролями, Claims и Telegram[^4]. 
 - Служба равно как и **Telegram.Bot.Polling** использует RabbitMQ для того что бы обслуживать команды, на которые она зарегистрировала свои обработчики[^1].
 
 #### 3. Helpdesk
-HelpdeskService - сервис обратной связи со своим собственным контекстом: `HelpdeskContext`.
+[HelpdeskService](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) - сервис обратной связи со своим собственным контекстом: `HelpdeskContext`.
 
 #### 4. Parameters storage
-RemoteCallLib - общее пространство хранения параметров со своим контекстом: `CloudParametersContext`. Хранение сериализуемых данных.
+[RemoteCallLib](https://github.com/badhitman/DesignerApp/tree/main/RemoteCallLib) - общее пространство хранения параметров со своим контекстом: `CloudParametersContext`. Хранение сериализуемых данных. Позволяет разным службам обращаться к параметрам друг друга. Например в Web интерфейсе HelpDesk можно изменить режим работы TelegramBot, потому что бот читает этот параметр при каждом входящем сообщении.
 
 > все четыре службы должны быть настроены, запущены вместе и соединены общим RabbitMQ. в противном случае в MQ очередях будут копиться запросы без ответов и функционал местами будет недоступен если ответственная служба будет молчать.
 

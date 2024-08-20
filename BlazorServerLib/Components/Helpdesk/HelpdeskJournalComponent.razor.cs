@@ -21,6 +21,9 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
 
     [Inject]
+    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+
+    [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
 
@@ -52,6 +55,9 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
 
     private string? searchString = null;
 
+    UserInfoModel CurrentUser = default!;
+    List<UserInfoModel> usersDump = [];
+
     /// <inheritdoc/>
     public MudTable<IssueHelpdeskModel> TableRef = default!;
 
@@ -61,10 +67,8 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
         SetTab(this);
     }
 
-    /// <summary>
-    /// Here we simulate getting the paged, filtered and ordered data from the server, with a token for canceling this request
-    /// </summary>
-    private async Task<TableData<IssueHelpdeskModel>> ServerReload(TableState state, CancellationToken token)
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
 
@@ -76,11 +80,21 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
             throw new Exception();
         }
 
+        IsBusyProgress = false;
+        CurrentUser = _current_user.Response;
+    }
+
+    /// <summary>
+    /// Here we simulate getting the paged, filtered and ordered data from the server, with a token for canceling this request
+    /// </summary>
+    private async Task<TableData<IssueHelpdeskModel>> ServerReload(TableState state, CancellationToken token)
+    {
+        IsBusyProgress = true;
         TPaginationRequestModel<GetIssuesForUserRequestModel> req = new()
         {
             Payload = new()
             {
-                IdentityUserId = _current_user.Response.UserId,
+                IdentityUserId = CurrentUser.UserId,
                 JournalMode = JournalMode,
                 SearchQuery = searchString,
                 UserArea = UserArea
@@ -95,8 +109,25 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
 
         // Forward the provided token to methods which support it
         List<IssueHelpdeskModel> data = rest.Response!.Response!;
+        await UpdateUsersData(rest.Response.Response!.SelectMany(x => new string?[] { x.AuthorIdentityUserId, x.ExecutorIdentityUserId }).ToArray());
         // Return the data
         return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
+    }
+
+    async Task UpdateUsersData(string?[] users_ids)
+    {
+        string[] _ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x) && !usersDump.Any(y => y.UserId == x))];
+        if (_ids.Length == 0)
+            return;
+
+        IsBusyProgress = true;
+        TResponseModel<UserInfoModel[]?> res = await WebRepo.FindUsersIdentity(_ids);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (res.Response is null)
+            return;
+        usersDump.AddRange(res.Response);
+        //
     }
 
     private void OnSearch(string text)

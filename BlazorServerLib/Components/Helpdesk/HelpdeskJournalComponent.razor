@@ -14,14 +14,28 @@
         <MudTh>Статус</MudTh>
         <MudTh>Тема</MudTh>
         <MudTh>Рубрика</MudTh>
-        <MudTh></MudTh>
+        @if (UserArea == UsersAreasHelpdeskEnum.Author)
+        {
+            <MudTh>Исполнитель</MudTh>
+        }
+        else
+        {
+            <MudTh>Автор</MudTh>
+        }
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Создан"><a href="@($"/issue-card/{context.Id}")">@context.CreatedAt.ToShortDateString()<sup>@context.CreatedAt.ToShortTimeString()</sup></a></MudTd>
         <MudTd DataLabel="Статус">@context.StepIssue.DescriptionInfo()</MudTd>
         <MudTd DataLabel="Тема">@context.Name</MudTd>
         <MudTd DataLabel="Рубрика">@context.RubricIssue?.Name</MudTd>
-        <MudTd></MudTd>
+        @if (UserArea == UsersAreasHelpdeskEnum.Author)
+        {
+            <MudTd>@(usersDump.FirstOrDefault(x => x.UserId == context.ExecutorIdentityUserId)?.UserName ?? context.ExecutorIdentityUserId)</MudTd>
+        }
+        else
+        {
+            <MudTd>@(usersDump.FirstOrDefault(x => x.UserId == context.AuthorIdentityUserId)?.UserName ?? context.AuthorIdentityUserId)</MudTd>
+        }
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Ни одной записи не найдено</MudText>
