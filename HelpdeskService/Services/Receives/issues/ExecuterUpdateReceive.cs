@@ -50,6 +50,35 @@ public class ExecuterUpdateReceive(
         UserInfoModel actor = users_rest.Response.First(x => x.UserId == req.SenderActionUserId);
         UserInfoModel? requested_user = users_rest.Response.FirstOrDefault(x => x.UserId == req.Payload.UserId);
 
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Response.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
+        {
+            await helpdeskTransmissionRepo.SubscribeUpdate(new()
+            {
+                SenderActionUserId = GlobalStaticConstants.Roles.System,
+                Payload = new()
+                {
+                    IssueId = issue_data.Response.Id,
+                    SetValue = true,
+                    UserId = actor.UserId,
+                    IsSilent = false,
+                }
+            });
+        }
+        if (issue_data.Response.Subscribers?.Any(x => x.UserId == req.Payload.UserId) != true)
+        {
+            await helpdeskTransmissionRepo.SubscribeUpdate(new()
+            {
+                SenderActionUserId = GlobalStaticConstants.Roles.System,
+                Payload = new()
+                {
+                    IssueId = issue_data.Response.Id,
+                    SetValue = true,
+                    UserId = req.Payload.UserId,
+                    IsSilent = false,
+                }
+            });
+        }
+
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         string msg;
         if (string.IsNullOrWhiteSpace(req.Payload.UserId))
@@ -58,13 +87,19 @@ public class ExecuterUpdateReceive(
                 res.AddInfo("Исполнитель уже отсутствует");
             else
             {
-                msg = $"Исполнитель `{users_rest.Response.First(x => x.UserId == issue_data.Response.ExecutorIdentityUserId)}` успешно откреплён от обращения";
-                res.AddSuccess(msg);
+                if (issue_data.Response.StepIssue >= HelpdeskIssueStepsEnum.Progress)
+                {
+                    res.AddError($"Обращение в статусе [{issue_data.Response.StepIssue.DescriptionInfo()}]. После того как обращение переходит в работу (и далее) удалить исполнителя нельзя. Для открепления исполнителя поставьте обращение на паузу");
+                    return res;
+                }
 
                 await context
                     .Issues
                     .Where(x => x.Id == req.Payload.IssueId)
                     .ExecuteUpdateAsync(set => set.SetProperty(b => b.ExecutorIdentityUserId, req.Payload.UserId));
+
+                msg = $"Исполнитель `{users_rest.Response.First(x => x.UserId == issue_data.Response.ExecutorIdentityUserId).UserName}` успешно откреплён от обращения";
+                res.AddSuccess(msg);
 
                 await helpdeskTransmissionRepo.PulsePush(new()
                 {

@@ -38,5 +38,5 @@ public class FileBaseTelegramModel
     /// <summary>
     /// Message
     /// </summary>
-    public int? MessageId { get; set; }
+    public required int MessageId { get; set; }
 }

@@ -55,19 +55,40 @@ public class StatusChangeReceive(
             return res;
         }
 
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Response.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
+        {
+            await helpdeskTransmissionRepo.SubscribeUpdate(new()
+            {
+                SenderActionUserId = GlobalStaticConstants.Roles.System,
+                Payload = new()
+                {
+                    IssueId = issue_data.Response.Id,
+                    SetValue = true,
+                    UserId = actor.UserId,
+                    IsSilent = false,
+                }
+            });
+        }
+
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         if (issue_data.Response.StepIssue == req.Payload.Step)
             res.AddInfo("Статус уже установлен");
         else
         {
+            if (string.IsNullOrWhiteSpace(issue_data.Response.ExecutorIdentityUserId) && req.Payload.Step >= HelpdeskIssueStepsEnum.Progress)
+            {
+                res.AddError("Для перевода обращения в работу нужно сначала указать исполнителя");
+                return res;
+            }
+
             string msg = $"Статус успешно изменён с `{issue_data.Response.StepIssue}` на `{req.Payload.Step}`";
 
             await context
                 .Issues
                 .Where(x => x.Id == issue_data.Response.Id)
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.StepIssue, req.Payload.Step));
-            
+
             res.AddSuccess(msg);
             res.Response = true;
             await helpdeskTransmissionRepo.PulsePush(new()

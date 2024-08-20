@@ -18,9 +18,9 @@
 Зависимости решения (между проектами). Службы **Telegram.Bot.Polling** и **BlazorWebApp** связаны только двумя общими библиотеками `RemoteCallLib`+`SharedLib`:
 ![связи между проектами](./img/struct.png)
 
-### Службы (запуск):
+### Службы (активные/запускаемые):
 #### 1. TelegramBot
-[Telegram.Bot.Polling](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling) - служба TelegramBot. Сохраняет все входящие сообщения и позволяет в последствии работать с чатами HelpDesk или другим сервисам решения.
+[Telegram.Bot.Polling](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling) - сохраняет все входящие сообщения и позволяет в последствии работать с чатами HelpDesk или другим сервисам решения.
 
 - В оригинальном исполнении `Worker Service`[^5].
 - Ответы на входящие Telegram сообщения обрабатывает реализация интерфейса `ITelegramDialogService`[^7]. Пользователям можно индивидуально устанавливать имя автоответчика[^2]. Это касается как простых текстовых `Message`, так и `CallbackQuery`.
@@ -37,8 +37,8 @@
 #### 3. Helpdesk
 [HelpdeskService](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) - сервис обратной связи со своим собственным контекстом: `HelpdeskContext`.
 
-#### 4. Parameters storage
-[RemoteCallLib](https://github.com/badhitman/DesignerApp/tree/main/RemoteCallLib) - общее пространство хранения параметров со своим контекстом: `CloudParametersContext`. Хранение сериализуемых данных. Позволяет разным службам обращаться к параметрам друг друга. Например в Web интерфейсе HelpDesk можно изменить режим работы TelegramBot, потому что бот читает этот параметр при каждом входящем сообщении.
+#### 4. Transmission
+[RemoteCallLib](https://github.com/badhitman/DesignerApp/tree/main/RemoteCallLib) - общий узел зависимостей для взаимодействия через MQ. + активный сервис *Parameters storage* - общее пространство хранения параметров со своим контекстом: `CloudParametersContext`. Хранение сериализуемых данных. Позволяет разным службам обращаться к параметрам друг друга. Например в Web интерфейсе HelpDesk можно изменить режим работы TelegramBot, потому что бот читает этот параметр при каждом входящем сообщении.
 
 > все четыре службы должны быть настроены, запущены вместе и соединены общим RabbitMQ. в противном случае в MQ очередях будут копиться запросы без ответов и функционал местами будет недоступен если ответственная служба будет молчать.
 

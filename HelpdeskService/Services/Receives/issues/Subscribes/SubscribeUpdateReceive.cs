@@ -51,7 +51,7 @@ public class SubscribeUpdateReceive(
         if (!issue_data.Success() || issue_data.Response is null)
             return new() { Messages = issue_data.Messages };
 
-        if (!actor.IsAdmin && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
+        if (actor.UserId != GlobalStaticConstants.Roles.System && !actor.IsAdmin && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
         {
             res.AddError("У вас не достаточно прав для выполнения этой операции");
             return res;
@@ -75,17 +75,18 @@ public class SubscribeUpdateReceive(
                 await context.SaveChangesAsync();
                 res.AddSuccess(msg);
 
-                await helpdeskTransmissionRepo.PulsePush(new()
-                {
-                    SenderActionUserId = req.SenderActionUserId,
-                    Payload = new()
+                if (req.SenderActionUserId != GlobalStaticConstants.Roles.System)
+                    await helpdeskTransmissionRepo.PulsePush(new()
                     {
-                        IssueId = issue_data.Response.Id,
-                        PulseType = PulseIssuesTypesEnum.Subscribes,
-                        Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
-                        Description = $"Пользователь `{requested_user.UserName}` добавлен в подписчики",
-                    }
-                });
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Response.Id,
+                            PulseType = PulseIssuesTypesEnum.Subscribes,
+                            Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
+                            Description = $"Пользователь `{requested_user.UserName}` добавлен в подписчики",
+                        }
+                    });
             }
             else
             {
@@ -101,17 +102,18 @@ public class SubscribeUpdateReceive(
                     msg = $"Уведомления успешно {(req.Payload.IsSilent ? "отключены" : "включены")} для: {requested_user.UserName}";
                     res.AddSuccess(msg);
 
-                    await helpdeskTransmissionRepo.PulsePush(new()
-                    {
-                        SenderActionUserId = req.SenderActionUserId,
-                        Payload = new()
+                    if (req.SenderActionUserId != GlobalStaticConstants.Roles.System)
+                        await helpdeskTransmissionRepo.PulsePush(new()
                         {
-                            IssueId = issue_data.Response.Id,
-                            PulseType = PulseIssuesTypesEnum.Subscribes,
-                            Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
-                            Description = msg,
-                        }
-                    });
+                            SenderActionUserId = req.SenderActionUserId,
+                            Payload = new()
+                            {
+                                IssueId = issue_data.Response.Id,
+                                PulseType = PulseIssuesTypesEnum.Subscribes,
+                                Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
+                                Description = msg,
+                            }
+                        });
                 }
             }
         }
@@ -127,17 +129,18 @@ public class SubscribeUpdateReceive(
                 msg = "Подписка успешно удалена";
                 res.AddSuccess(msg);
 
-                await helpdeskTransmissionRepo.PulsePush(new()
-                {
-                    SenderActionUserId = req.SenderActionUserId,
-                    Payload = new()
+                if (req.SenderActionUserId != GlobalStaticConstants.Roles.System)
+                    await helpdeskTransmissionRepo.PulsePush(new()
                     {
-                        IssueId = issue_data.Response.Id,
-                        PulseType = PulseIssuesTypesEnum.Subscribes,
-                        Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
-                        Description = $"Пользователь `{requested_user.UserName}` удалён из подписок",
-                    }
-                });
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Response.Id,
+                            PulseType = PulseIssuesTypesEnum.Subscribes,
+                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                            Description = $"Пользователь `{requested_user.UserName}` удалён из подписок",
+                        }
+                    });
             }
         }
         res.Response = true;

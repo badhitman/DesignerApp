@@ -39,9 +39,16 @@ public partial class TelegramBotLayerContext : DbContext
     public DbSet<ChatTelegramModelDB> Chats { get; set; }
 
     /// <summary>
+    /// Chats Photos
+    /// </summary>
+    public DbSet<ChatPhotoTelegramModelDB> ChatsPhotos { get; set; }
+
+
+    /// <summary>
     /// Users
     /// </summary>
     public DbSet<UserTelegramModelDB> Users { get; set; }
+
 
     /// <summary>
     /// Messages
@@ -49,9 +56,21 @@ public partial class TelegramBotLayerContext : DbContext
     public DbSet<MessageTelegramModelDB> Messages { get; set; }
 
     /// <summary>
+    /// Photos Messages
+    /// </summary>
+    public DbSet<PhotoMessageTelegramModelDB> PhotosMessages { get; set; }
+
+
+    /// <summary>
     /// Audios
     /// </summary>
     public DbSet<AudioTelegramModelDB> Audios { get; set; }
+
+    /// <summary>
+    /// AudiosThumbnails
+    /// </summary>
+    public DbSet<AudioThumbnailTelegramModelDB> AudiosThumbnails { get; set; }
+
 
     /// <summary>
     /// Documents
@@ -59,19 +78,27 @@ public partial class TelegramBotLayerContext : DbContext
     public DbSet<DocumentTelegramModelDB> Documents { get; set; }
 
     /// <summary>
+    /// DocumentsThumbnails
+    /// </summary>
+    public DbSet<DocumentThumbnailTelegramModelDB> DocumentsThumbnails { get; set; }
+
+
+    /// <summary>
     /// Videos
     /// </summary>
     public DbSet<VideoTelegramModelDB> Videos { get; set; }
 
     /// <summary>
-    /// PhotoSizes
+    /// VideosThumbnails
     /// </summary>
-    public DbSet<PhotoSizeTelegramModelDB> PhotoSizes { get; set; }
+    public DbSet<VideoThumbnailTelegramModelDB> VideosThumbnails { get; set; }
+
 
     /// <summary>
     /// Voices
     /// </summary>
     public DbSet<VoiceTelegramModelDB> Voices { get; set; }
+
 
     /// <summary>
     /// Contacts

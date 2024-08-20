@@ -127,7 +127,6 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
         if (res.Response is null)
             return;
         usersDump.AddRange(res.Response);
-        //
     }
 
     private void OnSearch(string text)

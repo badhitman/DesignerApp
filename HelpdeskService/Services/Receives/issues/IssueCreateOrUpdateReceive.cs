@@ -140,6 +140,21 @@ public class IssueCreateOrUpdateReceive(
                         Description = msg,
                     }
                 });
+
+                if (issue_upd.SenderActionUserId != GlobalStaticConstants.Roles.System && issue.Subscribers?.Any(x => x.UserId == issue_upd.SenderActionUserId) != true)
+                {
+                    await helpdeskRemoteRepo.SubscribeUpdate(new()
+                    {
+                        SenderActionUserId = GlobalStaticConstants.Roles.System,
+                        Payload = new()
+                        {
+                            IssueId = issue.Id,
+                            SetValue = true,
+                            UserId = actor.UserId,
+                            IsSilent = false,
+                        }
+                    });
+                }
             }
             else
                 res.AddError($"У вас не достаточно прав для редактирования этого обращения #{issue_upd.Payload.Id} '{issue.Name}'");

@@ -20,6 +20,5 @@ public class VoiceTelegramModelDB : FileBaseTelegramModel
     /// <summary>
     /// Optional. MIME type of the file as defined by sender
     /// </summary>
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public string? MimeType { get; set; }
 }

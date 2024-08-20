@@ -42,6 +42,9 @@ public class MessageUpdateOrCreateReceive(
             Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },
         });
 
+        if (!issue_data.Success() || issue_data.Response is null)
+            return new() { Messages = issue_data.Messages };
+
         TResponseModel<UserInfoModel[]?> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
             ? new() { Response = [UserInfoModel.BuildSystem()] }
             : await webTransmissionRepo.FindUsersIdentity([req.SenderActionUserId]);
@@ -51,13 +54,25 @@ public class MessageUpdateOrCreateReceive(
 
         UserInfoModel actor = rest.Response[0];
 
-        if (!issue_data.Success() || issue_data.Response is null)
-            return new() { Messages = issue_data.Messages };
-
         if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
         {
             res.AddError("У вас не достаточно прав");
             return res;
+        }
+
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Response.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
+        {
+            await helpdeskTransmissionRepo.SubscribeUpdate(new()
+            {
+                SenderActionUserId = GlobalStaticConstants.Roles.System,
+                Payload = new()
+                {
+                    IssueId = issue_data.Response.Id,
+                    SetValue = true,
+                    UserId = actor.UserId,
+                    IsSilent = false,
+                }
+            });
         }
 
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();

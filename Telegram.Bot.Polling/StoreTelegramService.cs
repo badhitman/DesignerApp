@@ -36,6 +36,19 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                 Username = chat.Username,
                 Type = (ChatsTypesTelegramEnum)(int)chat.Type,
             };
+
+            if (chat.Photo is not null)
+            {
+                chat_db.ChatPhoto = new()
+                {
+                    BigFileId = chat.Photo.BigFileId,
+                    BigFileUniqueId = chat.Photo.BigFileUniqueId,
+                    SmallFileId = chat.Photo.SmallFileId,
+                    SmallFileUniqueId = chat.Photo.SmallFileUniqueId,
+                    ChatOwner = chat_db
+                };
+            }
+
             await context.AddAsync(chat_db);
         }
         else
@@ -109,8 +122,8 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
 
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         MessageTelegramModelDB? messageDb = from_db is null
-            ? await context.Messages.FirstOrDefaultAsync(x => x.MessageId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == null)
-            : await context.Messages.FirstOrDefaultAsync(x => x.MessageId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == from_db.Id);
+            ? await context.Messages.FirstOrDefaultAsync(x => x.MessageTelegramId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == null)
+            : await context.Messages.FirstOrDefaultAsync(x => x.MessageTelegramId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == from_db.Id);
 
         if (messageDb is null)
         {
@@ -128,7 +141,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                 ForwardSignature = message.ForwardSignature,
 
                 IsAutomaticForward = message.IsAutomaticForward,
-                MessageId = message.MessageId,
+                MessageTelegramId = message.MessageId,
                 MessageThreadId = message.MessageThreadId,
 
                 ViaBotId = message.ViaBot?.Id,
@@ -144,7 +157,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
 
             if (message.Photo is not null && message.Photo.Length != 0)
             {
-                messageDb.Photo = [..message.Photo.Select(x => new PhotoSizeTelegramModelDB()
+                messageDb.Photo = [..message.Photo.Select(x => new PhotoMessageTelegramModelDB()
                 {
                     FileId = x.FileId,
                     FileUniqueId = x.FileUniqueId,
@@ -159,7 +172,8 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             await context.SaveChangesAsync();
 
             if (message.Audio is not null)
-                await context.AddAsync(new AudioTelegramModelDB()
+            {
+                AudioTelegramModelDB au = new()
                 {
                     FileId = message.Audio.FileId,
                     FileUniqueId = message.Audio.FileId,
@@ -169,10 +183,26 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                     MimeType = message.Audio.MimeType,
                     Title = message.Audio.Title,
                     Performer = message.Audio.Performer,
-                    MessageId = messageDb.Id
-                });
+                    MessageId = messageDb.Id,
+                };
+
+                if (message.Audio.Thumbnail is not null)
+                    au.AudioThumbnail = new()
+                    {
+                        FileId = message.Audio.Thumbnail.FileId,
+                        FileUniqueId = message.Audio.Thumbnail.FileId,
+                        FileSize = message.Audio.Thumbnail.FileSize,
+                        MessageId = messageDb.Id,
+                        Width = message.Audio.Thumbnail.Width,
+                        Height = message.Audio.Thumbnail.Height,
+                        AudioOwner = au
+                    };
+
+                await context.AddAsync(au);
+            }
             if (message.Document is not null)
-                await context.AddAsync(new DocumentTelegramModelDB()
+            {
+                DocumentTelegramModelDB dt = new()
                 {
                     FileId = message.Document.FileId,
                     FileUniqueId = message.Document.FileId,
@@ -180,9 +210,26 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                     FileSize = message.Document.FileSize,
                     MimeType = message.Document.MimeType,
                     MessageId = messageDb.Id,
-                });
+                };
+
+                if (message.Document.Thumbnail is not null)
+                    dt.ThumbnailDocument = new()
+                    {
+                        FileId = message.Document.Thumbnail.FileId,
+                        FileUniqueId = message.Document.Thumbnail.FileUniqueId,
+                        MessageId = messageDb.Id,
+                        DocumentOwner = dt,
+                        FileSize = message.Document.Thumbnail.FileSize,
+                        Width = message.Document.Thumbnail.Width,
+                        Height = message.Document.Thumbnail.Height,
+                    };
+
+                await context.AddAsync(dt);
+            }
+
             if (message.Video is not null)
-                await context.AddAsync(new VideoTelegramModelDB()
+            {
+                VideoTelegramModelDB vt = new()
                 {
                     FileId = message.Video.FileId,
                     FileUniqueId = message.Video.FileId,
@@ -193,7 +240,23 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                     Height = message.Video.Height,
                     Width = message.Video.Width,
                     MessageId = messageDb.Id,
-                });
+                };
+
+                if (message.Video.Thumbnail is not null)
+                    vt.ThumbnailVideo = new()
+                    {
+                        FileId = message.Video.Thumbnail.FileId,
+                        FileUniqueId = message.Video.Thumbnail.FileUniqueId,
+                        MessageId = messageDb.Id,
+                        FileSize = message.Video.Thumbnail.FileSize,
+                        Height = message.Video.Thumbnail.Height,
+                        Width = message.Video.Thumbnail.Width,
+                        VideoOwner = vt
+                    };
+
+                await context.AddAsync(vt);
+            }
+
             if (message.Voice is not null)
                 await context.AddAsync(new VoiceTelegramModelDB()
                 {
@@ -204,6 +267,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                     Duration = message.Voice.Duration,
                     MessageId = messageDb.Id,
                 });
+
             if (message.Contact is not null)
                 await context.AddAsync(new ContactTelegramModelDB()
                 {
@@ -232,7 +296,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             messageDb.ForwardSignature = message.ForwardSignature;
 
             messageDb.IsAutomaticForward = message.IsAutomaticForward;
-            messageDb.MessageId = message.MessageId;
+            messageDb.MessageTelegramId = message.MessageId;
             messageDb.MessageThreadId = message.MessageThreadId;
 
             messageDb.ViaBotId = message.ViaBot?.Id;

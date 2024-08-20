@@ -8,7 +8,7 @@ namespace SharedLib;
 /// This object represents one size of a photo or a <see cref="DocumentTelegramModelDB">file</see>.
 /// </summary>
 /// <remarks>A missing thumbnail for a file (or sticker) is presented as an empty object.</remarks>
-public class PhotoSizeTelegramModelDB : FileBaseTelegramModel
+public class PhotoSizeTelegramModel : FileBaseTelegramModel
 {
     /// <summary>
     /// Photo width

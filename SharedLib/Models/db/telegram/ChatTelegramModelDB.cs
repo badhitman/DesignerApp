@@ -62,6 +62,11 @@ public class ChatTelegramModelDB
     /// </summary>
     public bool? IsForum { get; set; }
 
+    /// <summary>
+    /// ChatPhoto
+    /// </summary>
+    public ChatPhotoTelegramModelDB? ChatPhoto { get; set; }
+
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {

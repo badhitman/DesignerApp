@@ -54,6 +54,21 @@ public class MessageVoteReceive(
             return res;
         }
 
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Response.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
+        {
+            await helpdeskTransmissionRepo.SubscribeUpdate(new()
+            {
+                SenderActionUserId = GlobalStaticConstants.Roles.System,
+                Payload = new()
+                {
+                    IssueId = issue_data.Response.Id,
+                    SetValue = true,
+                    UserId = actor.UserId,
+                    IsSilent = false,
+                }
+            });
+        }
+
         int? vote_db_key = await context
             .Votes
             .Where(x => x.MessageId == msg_db.Id && x.IdentityUserId == req.SenderActionUserId)

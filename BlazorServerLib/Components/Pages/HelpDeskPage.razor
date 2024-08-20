@@ -10,7 +10,7 @@
     <MudTabPanel ToolTip="Ваши личные обращения в службу техподдержки" Text="Мои обращения" Icon="@Icons.Material.Filled.AllInbox">
         <MyHelpdeskComponent />
     </MudTabPanel>
-    <AuthorizeView Roles="@($"{string.Join(",",GlobalStaticConstants.Roles.AllHelpDeskRoles)},{GlobalStaticConstants.Roles.Admin}")">
+    <AuthorizeView Roles="@($"{string.Join(",", GlobalStaticConstants.Roles.AllHelpDeskRoles)},{GlobalStaticConstants.Roles.Admin}")">
         <Authorized>
             <MudTabPanel ToolTip="Обслуживание входящих обращений" Text="Обращения клиентов" Icon="@Icons.Material.Filled.BugReport">
                 <MudPaper Class="ma-2" Elevation="3">
@@ -21,7 +21,12 @@
     </AuthorizeView>
     <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.HelpDeskTelegramBotManager},{GlobalStaticConstants.Roles.Admin}")">
         <Authorized>
-            <MudTabPanel ToolTip="Управление настройками" Text="Рубрики" Icon="@Icons.Material.Filled.AccountTree">
+            <MudTabPanel ToolTip="Доска обращений" Text="Консоль" Icon="@Icons.Material.Filled.Apps">
+                <MudPaper Class="ma-2" Elevation="3">
+                    <ConsoleHelpdeskComponent />
+                </MudPaper>
+            </MudTabPanel>
+            <MudTabPanel ToolTip="Категории/рубрики обращений" Text="Рубрики" Icon="@Icons.Material.Filled.AccountTree">
                 <MudPaper Class="ma-2" Elevation="3">
                     <RubricsManageComponent />
                 </MudPaper>

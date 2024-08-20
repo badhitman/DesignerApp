@@ -33,4 +33,9 @@ public class VideoTelegramModelDB : FileBaseTelegramModel
     /// Optional. Mime type of a file as defined by sender
     /// </summary>
     public string? MimeType { get; set; }
+
+    /// <summary>
+    /// ThumbnailVideo
+    /// </summary>
+    public VideoThumbnailTelegramModelDB? ThumbnailVideo { get; set; }
 }

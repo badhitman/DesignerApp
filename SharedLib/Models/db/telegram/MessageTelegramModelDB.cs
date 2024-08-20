@@ -12,7 +12,7 @@ namespace SharedLib;
 /// <summary>
 /// MessageTelegramModelDB
 /// </summary>
-[Index(nameof(MessageId), IsUnique = true)]
+[Index(nameof(MessageTelegramId), IsUnique = true)]
 public class MessageTelegramModelDB
 {
     /// <summary>
@@ -25,13 +25,14 @@ public class MessageTelegramModelDB
     /// Unique message identifier inside this chat
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public int MessageId { get; set; }
+    public int MessageTelegramId { get; set; }
 
     /// <summary>
     /// Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
     /// </summary>
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public int? MessageThreadId { get; set; }
+
 
     /// <summary>
     /// Optional. Sender, empty for messages sent to channels
@@ -42,6 +43,7 @@ public class MessageTelegramModelDB
     /// Optional. Sender, empty for messages sent to channels
     /// </summary>
     public int? FromId { get; set; }
+
 
     /// <summary>
     /// Optional. Sender of the message, sent on behalf of a chat. The channel itself for channel messages.
@@ -57,6 +59,7 @@ public class MessageTelegramModelDB
     /// </summary>
     public int ChatId { get; set; }
 
+
     /// <summary>
     /// Optional. Sender of the message, sent on behalf of a chat. The channel itself for channel messages.
     /// The supergroup itself for messages from anonymous group administrators. The linked channel for messages
@@ -69,6 +72,7 @@ public class MessageTelegramModelDB
     /// automatically forwarded to the discussion group
     /// </summary>
     public int? SenderChatId { get; set; }
+
 
     /// <summary>
     /// Optional. For forwarded messages, sender of the original message
@@ -144,7 +148,6 @@ public class MessageTelegramModelDB
     /// <summary>
     /// Optional. For text messages, the actual text of the message, 0-4096 characters
     /// </summary>
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public string? Text { get; set; }
 
     /// <summary>
@@ -155,8 +158,8 @@ public class MessageTelegramModelDB
     /// <summary>
     /// Optional. Message is a photo, available sizes of the photo
     /// </summary>
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public PhotoSizeTelegramModelDB[]? Photo { get; set; }
+    public PhotoMessageTelegramModelDB[]? Photo { get; set; }
+
 
     /// <summary>
     /// Audio
@@ -167,6 +170,7 @@ public class MessageTelegramModelDB
     /// </summary>
     public AudioTelegramModelDB? Audio { get; set; }
 
+
     /// <summary>
     /// Video
     /// </summary>
@@ -175,6 +179,7 @@ public class MessageTelegramModelDB
     /// Video
     /// </summary>
     public int? VideoId { get; set; }
+
 
     /// <summary>
     /// Document
@@ -185,6 +190,7 @@ public class MessageTelegramModelDB
     /// </summary>
     public int? DocumentId { get; set; }
 
+
     /// <summary>
     /// Voice
     /// </summary>
@@ -193,6 +199,7 @@ public class MessageTelegramModelDB
     /// Voice
     /// </summary>
     public int? VoiceId { get; set; }
+
 
     /// <summary>
     /// Optional. Caption for the animation, audio, document, photo, video or voice, 0-1024 characters

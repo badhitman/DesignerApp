@@ -33,4 +33,9 @@ public class AudioTelegramModelDB : FileBaseTelegramModel
     /// Optional. MIME type of the file as defined by sender
     /// </summary>
     public string? MimeType { get; set; }
+
+    /// <summary>
+    /// AudioThumbnail
+    /// </summary>
+    public AudioThumbnailTelegramModelDB? AudioThumbnail { get; set; }
 }
