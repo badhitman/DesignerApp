@@ -276,9 +276,6 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
 
             await context.AddAsync(messageDb);
             await context.SaveChangesAsync();
-
-            if (message.Audio is not null || message.Document is not null || message.Video is not null || message.Voice is not null || message.Contact is not null)
-                await context.SaveChangesAsync();
         }
         else
         {
