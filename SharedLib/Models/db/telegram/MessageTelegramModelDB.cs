@@ -2,10 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 
 namespace SharedLib;
 
@@ -60,12 +60,6 @@ public class MessageTelegramModelDB
     public int ChatId { get; set; }
 
 
-    /// <summary>
-    /// Optional. Sender of the message, sent on behalf of a chat. The channel itself for channel messages.
-    /// The supergroup itself for messages from anonymous group administrators. The linked channel for messages
-    /// automatically forwarded to the discussion group
-    /// </summary>
-    public ChatTelegramModelDB? SenderChat { get; set; }
     /// <summary>
     /// Optional. Sender of the message, sent on behalf of a chat. The channel itself for channel messages.
     /// The supergroup itself for messages from anonymous group administrators. The linked channel for messages

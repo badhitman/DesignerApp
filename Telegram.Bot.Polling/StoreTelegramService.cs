@@ -38,18 +38,6 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                 Type = (ChatsTypesTelegramEnum)(int)chat.Type,
             };
 
-            if (chat.Photo is not null)
-            {
-                chat_db.ChatPhoto = new()
-                {
-                    BigFileId = chat.Photo.BigFileId,
-                    BigFileUniqueId = chat.Photo.BigFileUniqueId,
-                    SmallFileId = chat.Photo.SmallFileId,
-                    SmallFileUniqueId = chat.Photo.SmallFileUniqueId,
-                    ChatOwner = chat_db
-                };
-            }
-
             await context.AddAsync(chat_db);
         }
         else
@@ -61,25 +49,8 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             chat_db.Title = chat.Title;
             chat_db.Username = chat.Username;
             chat_db.Type = (ChatsTypesTelegramEnum)(int)chat.Type;
+            chat_db.LastMessageUtc = DateTime.UtcNow;
             context.Update(chat_db);
-
-            if (chat.Photo is null && chat_db.ChatPhoto is not null)
-            {
-                await context.ChatsPhotos.Where(x => x.Id == chat_db.ChatPhoto.Id).ExecuteDeleteAsync();
-                chat_db.ChatPhoto = null;
-            }
-            else if (chat.Photo is not null && chat_db.ChatPhoto is not null &&
-                (chat.Photo.SmallFileUniqueId != chat_db.ChatPhoto.SmallFileUniqueId ||
-                chat.Photo.SmallFileId != chat_db.ChatPhoto.SmallFileId ||
-                chat.Photo.BigFileId != chat_db.ChatPhoto.BigFileId ||
-                chat.Photo.BigFileUniqueId != chat_db.ChatPhoto.BigFileUniqueId))
-            {
-                chat_db.ChatPhoto.SmallFileUniqueId = chat.Photo.SmallFileUniqueId;
-                chat_db.ChatPhoto.SmallFileId = chat.Photo.SmallFileId;
-                chat_db.ChatPhoto.BigFileId = chat.Photo.BigFileId;
-                chat_db.ChatPhoto.BigFileUniqueId = chat.Photo.BigFileUniqueId;
-                context.Update(chat_db.ChatPhoto);
-            }
         }
         await context.SaveChangesAsync();
         return chat_db;
@@ -120,6 +91,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             user_db.LanguageCode = user.LanguageCode;
             user_db.Username = user.Username;
             user_db.UserTelegramId = user.Id;
+            user_db.LastMessageUtc = DateTime.UtcNow;
 
             context.Update(user_db);
         }
@@ -245,7 +217,6 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
 
                 await context.AddAsync(dt);
             }
-
             if (message.Video is not null)
             {
                 VideoTelegramModelDB vt = new()
@@ -327,9 +298,25 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             messageDb.AuthorSignature = message.AuthorSignature;
             messageDb.MediaGroupId = message.MediaGroupId;
             messageDb.Text = message.Text;
+
             context.Update(messageDb);
             await context.SaveChangesAsync();
         }
+
+        await context
+            .Chats
+            .Where(x => x.Id == chat_db.Id)
+            .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastMessageId, messageDb.Id));
+
+        if (sender_chat_db is not null && sender_chat_db.Id != chat_db.Id)
+            await context
+                .Chats.Where(x => x.Id == sender_chat_db.Id)
+                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastMessageId, messageDb.Id));
+
+        if (from_db is not null)
+            await context
+                .Users.Where(x => x.Id == from_db.Id)
+                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastMessageId, messageDb.Id));
 
         return messageDb;
     }

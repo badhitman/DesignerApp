@@ -2,9 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
@@ -63,9 +63,29 @@ public class ChatTelegramModelDB
     public bool? IsForum { get; set; }
 
     /// <summary>
+    /// LastUpdateUtc
+    /// </summary>
+    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// LastMessageUtc
+    /// </summary>
+    public DateTime LastMessageUtc { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// LastMessageId
+    /// </summary>
+    public int LastMessageId { get; set; }
+
+    /// <summary>
     /// ChatPhoto
     /// </summary>
     public ChatPhotoTelegramModelDB? ChatPhoto { get; set; }
+
+    /// <summary>
+    /// Messages
+    /// </summary>
+    public List<MessageTelegramModelDB>? Messages { get; set; }
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)

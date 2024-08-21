@@ -2,9 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
@@ -64,6 +64,16 @@ public class UserTelegramModelDB
     /// Optional. <see langword="true"/>, if this user added the bot to the attachment menu
     /// </summary>
     public bool? AddedToAttachmentMenu { get; set; }
+
+    /// <summary>
+    /// LastMessageUtc
+    /// </summary>
+    public DateTime LastMessageUtc { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// LastMessageId
+    /// </summary>
+    public int LastMessageId { get; set; }
 
     /// <summary>
     /// Messages

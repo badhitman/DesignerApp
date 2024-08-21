@@ -45,30 +45,45 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
             res.AddWarning(msg);
         }
 
-        Telegram.Bot.Types.Message sender_msg;
+        Message sender_msg;
         try
         {
             string msg_text = string.IsNullOrWhiteSpace(message.From)
                 ? ""
                 : $"{message.Message}\n--- {message.From.Trim()}";
 
-            if (message.Data is not null)
+            if (message.Files is not null && message.Files.Count != 0)
             {
-                sender_msg = await _botClient.SendDocumentAsync(
-                chatId: message.UserTelegramId,
-                document: InputFile.FromStream(new MemoryStream(message.Data)),
-                caption: msg_text,
-                parseMode: parse_mode,
-                replyToMessageId: message.ReplyToMessageId);
+                int? messageThreadId = null;
+                foreach (FileAttachTelegramModel file in message.Files)
+                {
+                    sender_msg = await _botClient.SendDocumentAsync(
+                                    chatId: message.UserTelegramId,
+                                    document: InputFile.FromStream(new MemoryStream(file.Data), file.Name),
+                                    messageThreadId: messageThreadId,
+                                    caption: msg_text,
+                                    parseMode: parse_mode,
+                                    replyToMessageId: message.ReplyToMessageId);
+
+                    res.Response = sender_msg.MessageId;
+                    messageThreadId ??= res.Response;
+
+                    await storeTgRepo.StoreMessage(sender_msg);
+                }
             }
             else
+            {
                 sender_msg = await _botClient.SendTextMessageAsync(
                     chatId: message.UserTelegramId,
                     text: msg_text,
                     parseMode: parse_mode,
                     replyToMessageId: message.ReplyToMessageId);
 
-            await storeTgRepo.StoreMessage(sender_msg);
+                res.Response = sender_msg.MessageId;
+
+                await storeTgRepo.StoreMessage(sender_msg);
+            }
+
             //#if DEBUG
             //            await _botClient.EditMessageTextAsync(
             //                chatId: message.UserTelegramId,
@@ -90,7 +105,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
             res.Messages.InjectException(ex);
             return res;
         }
-        res.Response = sender_msg.MessageId;
+        
         if (message.MainTelegramMessageId.HasValue && message.MainTelegramMessageId != 0)
         {
             try

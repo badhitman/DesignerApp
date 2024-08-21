@@ -43,7 +43,7 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
 
     bool NavbarToggle = true;
 
-    private List<IBrowserFile> loadedFiles = [];
+    private readonly List<IBrowserFile> loadedFiles = [];
 
     async Task SendMessage()
     {
@@ -54,15 +54,20 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
         SendTextMessageTelegramBotModel req = new() { Message = _textSendMessage, UserTelegramId = Chat.ChatTelegramId, From = "Техподдержка" };
 
         // await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
-        MemoryStream ms = new MemoryStream();
+        MemoryStream ms;
 
         if (loadedFiles.Count != 0)
         {
-           await loadedFiles[0].OpenReadStream().CopyToAsync(ms);
-
-            req.Data = ms.ToArray();
+            req.Files = [];
+            loadedFiles.ForEach(async fileBrowser =>
+            {
+                ms = new();
+                await fileBrowser.OpenReadStream().CopyToAsync(ms);
+                req.Files.Add(new() { ContentType = fileBrowser.ContentType, Name = fileBrowser.Name, Data = ms.ToArray() });
+                await ms.DisposeAsync();
+            });
         }
-        
+
         TResponseModel<int?> rest = await TelegramRepo.SendTextMessageTelegram(req);
         _textSendMessage = "";
         await _messagesTelegramComponent.TableRef.ReloadServerData();
@@ -78,7 +83,7 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
     void SelectFilesChange(InputFileChangeEventArgs e)
     {
         loadedFiles.Clear();
-        
+
         foreach (IBrowserFile file in e.GetMultipleFiles())
         {
             loadedFiles.Add(file);
