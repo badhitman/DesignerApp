@@ -65,6 +65,11 @@ public partial class TelegramBotLayerContext : DbContext
     }
 
     /// <summary>
+    /// JoinsUsersToChats
+    /// </summary>
+    public DbSet<JoinUserChatModelDB> JoinsUsersToChats {  get; set; }
+
+    /// <summary>
     /// Chats
     /// </summary>
     public DbSet<ChatTelegramModelDB> Chats { get; set; }

@@ -79,4 +79,9 @@ public class UserTelegramModelDB
     /// Messages
     /// </summary>
     public List<MessageTelegramModelDB>? Messages { get; set; }
+
+    /// <summary>
+    /// ChatsJoins
+    /// </summary>
+    public List<JoinUserChatModelDB>? ChatsJoins { get; set; }
 }

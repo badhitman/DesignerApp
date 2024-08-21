@@ -87,6 +87,11 @@ public class ChatTelegramModelDB
     /// </summary>
     public List<MessageTelegramModelDB>? Messages { get; set; }
 
+    /// <summary>
+    /// ChatsJoins
+    /// </summary>
+    public List<JoinUserChatModelDB>? UsersJoins { get; set; }
+
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
