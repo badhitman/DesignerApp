@@ -9,6 +9,9 @@ using SharedLib;
 
 namespace BlazorWebLib.Components;
 
+/// <summary>
+/// NoteSimpleComponent
+/// </summary>
 public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
 {
     [Inject]

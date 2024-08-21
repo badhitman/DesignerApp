@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -9,6 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// JoinUserChatModelDB
 /// </summary>
+[Index(nameof(UserId), nameof(ChatId), IsUnique = true)]
 public class JoinUserChatModelDB
 {
     /// <summary>
@@ -20,7 +22,7 @@ public class JoinUserChatModelDB
     /// <summary>
     /// User
     /// </summary>
-    public UserTelegramModelDB? User {  get; set; }
+    public UserTelegramModelDB? User { get; set; }
     /// <summary>
     /// User
     /// </summary>

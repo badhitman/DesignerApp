@@ -325,9 +325,10 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                 .Where(x => x.Id == from_db.Id)
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastMessageId, messageDb.Id));
 
-        if (from_db is not null && from_db.UserTelegramId != chat_db.ChatTelegramId)
+        if (from_db is not null && from_db.UserTelegramId != chat_db.ChatTelegramId && !await context.JoinsUsersToChats.AnyAsync(x => x.UserId == from_db.Id && x.ChatId == chat_db.Id))
         {
-
+            await context.AddAsync(new JoinUserChatModelDB() { ChatId = chat_db.Id, UserId = from_db.Id });
+            await context.SaveChangesAsync();
         }
 
         return messageDb;
