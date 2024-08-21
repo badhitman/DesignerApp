@@ -211,6 +211,11 @@ public static partial class GlobalStaticConstants
         public const string USERS_CONTROLLER_NAME = "users";
 
         /// <summary>
+        /// Notes
+        /// </summary>
+        public const string NOTES_CONTROLLER_NAME = "notes";
+
+        /// <summary>
         /// Перечисления (enum`s)
         /// </summary>
         public const string ENUMS_CONTROLLER_NAME = "enums";
@@ -244,6 +249,11 @@ public static partial class GlobalStaticConstants
         /// Helpdesk
         /// </summary>
         public const string HELPDESK_CONTROLLER_NAME = "helpdesk";
+
+        /// <summary>
+        /// Storage
+        /// </summary>
+        public const string STORAGE_CONTROLLER_NAME = "storage";
 
         /// <summary>
         /// Cloud

@@ -21,6 +21,6 @@ public partial class UserCardMainComponent : IssueWrapBaseModel
     /// <summary>
     /// Author
     /// </summary>
-    [Parameter,EditorRequired]
+    [Parameter, EditorRequired]
     public required UserInfoModel Author { get; set; }
 }

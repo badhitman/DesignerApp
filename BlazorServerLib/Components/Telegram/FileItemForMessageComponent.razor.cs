@@ -24,11 +24,13 @@ public partial class FileItemForMessageComponent : BlazorBusyComponentBaseModel
     [Inject]
     IJSRuntime JSRepo { get; set; } = default!;
 
+
     /// <summary>
     /// FileElement
     /// </summary>
     [Parameter, EditorRequired]
     public required FileBaseTelegramModel FileElement { get; set; }
+
 
     string? fileName;
 

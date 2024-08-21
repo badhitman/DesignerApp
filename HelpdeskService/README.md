@@ -14,6 +14,11 @@
 ## Диалог внутри обращения
 ![issue card body edit](img/issue-card-edit-body.png)
 
+В любом обращении вам доступна карточка клиента текущего автора обращения:
+![issues notes](img/issues-notes.png)
+
+Доступны два вида записок: общий для клиента, который существует один для всех сотрудников сразу и второй, который ваш личный и привязан непосредственно к обращению.
+
 ### Сообщения
 ![messages - issue card](img/issue-card-messages.png)
 ![messages (edit) - issue card](img/issue-card-messages-edit.png)

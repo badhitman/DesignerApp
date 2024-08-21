@@ -7,9 +7,19 @@
         <button @onclick="CloseAction" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        <div>
-            Карточка клиента
-        </div>
+        <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME"
+                             TypeName="@GlobalStaticConstants.Routes.STORAGE_CONTROLLER_NAME"
+                             Name="@GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME"
+                             PrefixPropertyName="@($"{Author.UserName}")"
+                             Label="О клиенте (в общем)"
+                             Hint="Единый параметр для всех сотрудников" />
+        <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME"
+                             TypeName="@GlobalStaticConstants.Routes.STORAGE_CONTROLLER_NAME"
+                             Name="@Path.Combine(GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME, GlobalStaticConstants.Routes.DOCUMENTS_CONTROLLER_NAME)"
+                             PrefixPropertyName="@CurrentUser.UserId"
+                             OwnerPrimaryKey="Issue.Id"
+                             Label="О заявке (приватно)"
+                             Hint="Ваш личный (ни кому не видный) комментарий непосредственно к этому обращению" />
     </div>
 </div>
 <div @onclick="CloseAction" class="offcanvas-backdrop fade show"></div>

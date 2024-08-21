@@ -1,0 +1,18 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="mb-3">
+            <label for="@(domId)" class="form-label">@Label</label>
+            <textarea @bind-value="@editValue" @bind-value:event="oninput" class="form-control" id="@(domId)" rows="3" aria-describedby="@(domId)Help"></textarea>
+            <div id="@(domId)Help" class="form-text">@Hint</div>
+        </div>
+        <div class="d-grid gap-2">
+            <button @onclick="SaveText" disabled="@(initValue?.Trim() == editValue?.Trim())" class="btn btn-outline-success" type="button">Сохранить</button>
+            @if (initValue != editValue)
+            {
+                <button @onclick="() => { editValue = initValue; }" class="btn btn-primary" type="button">Отмена</button>
+            }
+        </div>
+    </div>
+</div>
