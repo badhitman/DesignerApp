@@ -152,7 +152,7 @@ public class MessageTelegramModelDB
     /// <summary>
     /// Optional. Message is a photo, available sizes of the photo
     /// </summary>
-    public PhotoMessageTelegramModelDB[]? Photo { get; set; }
+    public List<PhotoMessageTelegramModelDB>? Photo { get; set; }
 
 
     /// <summary>
@@ -194,6 +194,14 @@ public class MessageTelegramModelDB
     /// </summary>
     public int? VoiceId { get; set; }
 
+    /// <summary>
+    /// Contact
+    /// </summary>
+    public ContactTelegramModelDB? Contact { get; set; }
+    /// <summary>
+    /// Contact
+    /// </summary>
+    public int? ContactId { get; set; }
 
     /// <summary>
     /// Optional. Caption for the animation, audio, document, photo, video or voice, 0-1024 characters

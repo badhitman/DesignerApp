@@ -26,6 +26,37 @@ public partial class TelegramBotLayerContext : DbContext
     }
 
     /// <inheritdoc/>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<MessageTelegramModelDB>()
+            .HasOne(a => a.Audio)
+            .WithOne(a => a.Message)
+            .HasForeignKey<AudioTelegramModelDB>(c => c.MessageId);
+
+        modelBuilder.Entity<MessageTelegramModelDB>()
+            .HasOne(a => a.Document)
+            .WithOne(a => a.Message)
+            .HasForeignKey<DocumentTelegramModelDB>(c => c.MessageId);
+
+        modelBuilder.Entity<MessageTelegramModelDB>()
+            .HasOne(a => a.Video)
+            .WithOne(a => a.Message)
+            .HasForeignKey<VideoTelegramModelDB>(c => c.MessageId);
+
+        modelBuilder.Entity<MessageTelegramModelDB>()
+            .HasOne(a => a.Voice)
+            .WithOne(a => a.Message)
+            .HasForeignKey<VoiceTelegramModelDB>(c => c.MessageId);
+
+        modelBuilder.Entity<MessageTelegramModelDB>()
+            .HasOne(a => a.Contact)
+            .WithOne(a => a.Message)
+            .HasForeignKey<ContactTelegramModelDB>(c => c.MessageId);
+    }
+
+    /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
 #if DEBUG

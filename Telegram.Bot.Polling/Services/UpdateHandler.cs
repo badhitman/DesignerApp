@@ -50,12 +50,12 @@ public class UpdateHandler(
     private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
     {
         logger.LogInformation("Receive message type: {MessageType}", message.Type);
+        await storeRepo.StoreMessage(message);
         if (message.Text is not { } messageText || message.From is null)
             return;
 
         await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
 
-        await storeRepo.StoreMessage(message);
 
         TResponseModel<CheckTelegramUserModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
         await Usage(uc, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
@@ -88,14 +88,14 @@ public class UpdateHandler(
                                 replyMarkup: new ReplyKeyboardRemove(),
                                 cancellationToken: cancellationToken);
             logger.LogError(msg);
-#if DEBUG
-            await botClient.EditMessageTextAsync(
-                chatId: msg_s.Chat.Id,
-                messageId: msg_s.MessageId,
-                text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
-                parseMode: ParseMode.Html,
-                cancellationToken: cancellationToken);
-#endif
+//#if DEBUG
+//            await botClient.EditMessageTextAsync(
+//                chatId: msg_s.Chat.Id,
+//                messageId: msg_s.MessageId,
+//                text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
+//                parseMode: ParseMode.Html,
+//                cancellationToken: cancellationToken);
+//#endif
 
             return;
         }

@@ -2,12 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using static MudBlazor.CategoryTypes;
-using System.Net.Http;
 
 namespace BlazorWebLib.Components.Telegram;
 
@@ -16,20 +14,19 @@ namespace BlazorWebLib.Components.Telegram;
 /// </summary>
 public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
 {
-    /// <summary>
-    /// 
-    /// </summary>
     [Inject]
     ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+
     /// <summary>
     /// Id - of database
     /// </summary>
     [Parameter, EditorRequired]
     public int ChatId { get; set; }
+
 
     /// <summary>
     /// Table

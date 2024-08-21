@@ -29,6 +29,11 @@ public class MessagesListTelegramReceive(IDbContextFactory<TelegramBotContext> t
         TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         IQueryable<MessageTelegramModelDB> q = context
             .Messages
+            .Include(x => x.Audio)
+            .Include(x => x.Document)
+            .Include(x => x.Photo)
+            .Include(x => x.Voice)
+            .Include(x => x.Video)
             .Where(x => x.ChatId == req.Payload);
 
         res.Response = new()
@@ -39,7 +44,7 @@ public class MessagesListTelegramReceive(IDbContextFactory<TelegramBotContext> t
             SortingDirection = req.SortingDirection,
             TotalRowsCount = await q.CountAsync(),
             Response = req.SortingDirection == VerticalDirectionsEnum.Up
-                  ? await q.OrderBy(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize).Include(x=>x.From).ToListAsync()
+                  ? await q.OrderBy(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize).Include(x => x.From).ToListAsync()
                   : await q.OrderByDescending(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize).Include(x => x.From).ToListAsync()
         };
 

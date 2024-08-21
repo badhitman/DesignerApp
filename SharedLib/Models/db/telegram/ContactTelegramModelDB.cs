@@ -45,5 +45,9 @@ public class ContactTelegramModelDB
     /// <summary>
     /// Message
     /// </summary>
-    public int? MessageId { get; set; }
+    public int MessageId { get; set; }
+    /// <summary>
+    /// Message
+    /// </summary>
+    public MessageTelegramModelDB? Message { get; set; }
 }

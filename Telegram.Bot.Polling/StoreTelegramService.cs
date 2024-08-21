@@ -155,42 +155,10 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                     FileSize = x.FileSize,
                     Height = x.Height,
                     Width = x.Width,
-                    MessageId = messageDb.Id,
+                    Message = messageDb,
                 })];
             }
 
-            await context.AddAsync(messageDb);
-            await context.SaveChangesAsync();
-
-            if (message.Audio is not null)
-            {
-                AudioTelegramModelDB au = new()
-                {
-                    FileId = message.Audio.FileId,
-                    FileUniqueId = message.Audio.FileId,
-                    Duration = message.Audio.Duration,
-                    FileName = message.Audio.FileName,
-                    FileSize = message.Audio.FileSize,
-                    MimeType = message.Audio.MimeType,
-                    Title = message.Audio.Title,
-                    Performer = message.Audio.Performer,
-                    MessageId = messageDb.Id,
-                };
-
-                if (message.Audio.Thumbnail is not null)
-                    au.AudioThumbnail = new()
-                    {
-                        FileId = message.Audio.Thumbnail.FileId,
-                        FileUniqueId = message.Audio.Thumbnail.FileId,
-                        FileSize = message.Audio.Thumbnail.FileSize,
-                        MessageId = messageDb.Id,
-                        Width = message.Audio.Thumbnail.Width,
-                        Height = message.Audio.Thumbnail.Height,
-                        AudioOwner = au
-                    };
-
-                await context.AddAsync(au);
-            }
             if (message.Document is not null)
             {
                 DocumentTelegramModelDB dt = new()
@@ -200,7 +168,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                     FileName = message.Document.FileName,
                     FileSize = message.Document.FileSize,
                     MimeType = message.Document.MimeType,
-                    MessageId = messageDb.Id,
+                    Message = messageDb,
                 };
 
                 if (message.Document.Thumbnail is not null)
@@ -215,8 +183,39 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                         Height = message.Document.Thumbnail.Height,
                     };
 
-                await context.AddAsync(dt);
+                messageDb.Document = dt;
             }
+
+            if (message.Audio is not null)
+            {
+                AudioTelegramModelDB au = new()
+                {
+                    FileId = message.Audio.FileId,
+                    FileUniqueId = message.Audio.FileId,
+                    Duration = message.Audio.Duration,
+                    FileName = message.Audio.FileName,
+                    FileSize = message.Audio.FileSize,
+                    MimeType = message.Audio.MimeType,
+                    Title = message.Audio.Title,
+                    Performer = message.Audio.Performer,
+                    Message = messageDb,
+                };
+
+                if (message.Audio.Thumbnail is not null)
+                    au.AudioThumbnail = new()
+                    {
+                        FileId = message.Audio.Thumbnail.FileId,
+                        FileUniqueId = message.Audio.Thumbnail.FileId,
+                        FileSize = message.Audio.Thumbnail.FileSize,
+                        MessageId = messageDb.Id,
+                        Width = message.Audio.Thumbnail.Width,
+                        Height = message.Audio.Thumbnail.Height,
+                        AudioOwner = au
+                    };
+
+                messageDb.Audio = au;
+            }
+
             if (message.Video is not null)
             {
                 VideoTelegramModelDB vt = new()
@@ -229,7 +228,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                     Duration = message.Video.Duration,
                     Height = message.Video.Height,
                     Width = message.Video.Width,
-                    MessageId = messageDb.Id,
+                    Message = messageDb,
                 };
 
                 if (message.Video.Thumbnail is not null)
@@ -244,30 +243,39 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                         VideoOwner = vt
                     };
 
-                await context.AddAsync(vt);
+                messageDb.Video = vt;
             }
 
             if (message.Voice is not null)
-                await context.AddAsync(new VoiceTelegramModelDB()
+            {
+                VoiceTelegramModelDB vt = new()
                 {
                     FileId = message.Voice.FileId,
                     FileUniqueId = message.Voice.FileId,
                     FileSize = message.Voice.FileSize,
                     MimeType = message.Voice.MimeType,
                     Duration = message.Voice.Duration,
-                    MessageId = messageDb.Id,
-                });
+                    Message = messageDb,
+                };
+                messageDb.Voice = vt;
+            }
 
             if (message.Contact is not null)
-                await context.AddAsync(new ContactTelegramModelDB()
+            {
+                ContactTelegramModelDB ct = new()
                 {
                     FirstName = message.Contact.FirstName,
                     LastName = message.Contact.LastName,
                     PhoneNumber = message.Contact.PhoneNumber,
                     Vcard = message.Contact.Vcard,
                     UserId = message.Contact.UserId,
-                    MessageId = messageDb.Id,
-                });
+                    Message = messageDb,
+                };
+                messageDb.Contact = ct;
+            }
+
+            await context.AddAsync(messageDb);
+            await context.SaveChangesAsync();
 
             if (message.Audio is not null || message.Document is not null || message.Video is not null || message.Voice is not null || message.Contact is not null)
                 await context.SaveChangesAsync();

@@ -11,12 +11,16 @@
         <MudTh>Автор</MudTh>
         <MudTh>Примечание</MudTh>
         <MudTh>Текст</MudTh>
+        <MudTh>Файлы</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Создан">@context.CreatedAtUtc</MudTd>
         <MudTd DataLabel="Автор">@context.From!.Username</MudTd>
         <MudTd DataLabel="Примечание">@context.Caption</MudTd>
         <MudTd DataLabel="Текст">@context.Text</MudTd>
+        <MudTd DataLabel="Файлы">
+            <FilesForMessageComponent Message="context" />
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Сообщения не найдены</MudText>
@@ -25,6 +29,6 @@
         <MudText>Загрузка...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager />
+        <MudTablePager AllItemsText="Все сообщения" />
     </PagerContent>
 </MudTable>

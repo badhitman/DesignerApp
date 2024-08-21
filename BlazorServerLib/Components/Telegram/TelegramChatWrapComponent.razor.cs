@@ -59,13 +59,14 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
         if (loadedFiles.Count != 0)
         {
             req.Files = [];
-            loadedFiles.ForEach(async fileBrowser =>
+
+            foreach (var fileBrowser in loadedFiles)
             {
                 ms = new();
                 await fileBrowser.OpenReadStream().CopyToAsync(ms);
                 req.Files.Add(new() { ContentType = fileBrowser.ContentType, Name = fileBrowser.Name, Data = ms.ToArray() });
                 await ms.DisposeAsync();
-            });
+            }
         }
 
         TResponseModel<int?> rest = await TelegramRepo.SendTextMessageTelegram(req);
