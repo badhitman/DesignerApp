@@ -19,6 +19,7 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
     [Inject]
     IWebRemoteTransmissionService WebRemoteRepo { get; set; } = default!;
 
+
     private IEnumerable<IssueMessageHelpdeskModelDB> Elements = [];
 
     MudTable<IssueMessageHelpdeskModelDB> tableRef = default!;

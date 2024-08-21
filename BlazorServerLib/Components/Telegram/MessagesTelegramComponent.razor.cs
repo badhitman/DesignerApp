@@ -28,6 +28,18 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
     public int ChatId { get; set; }
 
 
+    private string _searchStringQuery = "";
+    private string searchStringQuery
+    {
+        get => _searchStringQuery;
+        set
+        {
+            _searchStringQuery = value;
+            InvokeAsync(TableRef.ReloadServerData);
+        }
+    }
+
+
     /// <summary>
     /// Table
     /// </summary>
@@ -40,14 +52,15 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
     {
         IsBusyProgress = true;
         TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?> rest_message = await TelegramRepo
-            .MessagesListTelegram(new TPaginationRequestModel<int>()
+            .MessagesListTelegram(new TPaginationRequestModel<SearchMessagesChatModel>()
             {
-                Payload = ChatId,
+                Payload = new() { ChatId = ChatId, SearchQuery = searchStringQuery },
                 PageNum = state.Page,
                 PageSize = state.PageSize,
                 SortingDirection = state.SortDirection == SortDirection.Descending ? VerticalDirectionsEnum.Down : VerticalDirectionsEnum.Up,
                 SortBy = state.SortLabel,
             });
+
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest_message.Messages);
 

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Transmission.Receives.telegram;
 
@@ -13,13 +14,13 @@ namespace Transmission.Receives.telegram;
 /// Получить сообщения из чата
 /// </summary>
 public class MessagesListTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
-    : IResponseReceive<TPaginationRequestModel<int>?, TPaginationResponseModel<MessageTelegramModelDB>?>
+    : IResponseReceive<TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessagesChatsSelectTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?>> ResponseHandleAction(TPaginationRequestModel<int>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?>> ResponseHandleAction(TPaginationRequestModel<SearchMessagesChatModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         if (req.PageSize < 5)
@@ -29,12 +30,31 @@ public class MessagesListTelegramReceive(IDbContextFactory<TelegramBotContext> t
         TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         IQueryable<MessageTelegramModelDB> q = context
             .Messages
-            .Include(x => x.Audio)
+            .Where(x => x.ChatId == req.Payload.ChatId);
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
+        {
+            req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
+            q = q.Where(x => (x.NormalizedUpperText != null && x.NormalizedUpperText.Contains(req.Payload.SearchQuery)) || (x.NormalizedUpperCaption != null && x.NormalizedUpperCaption.Contains(req.Payload.SearchQuery)));
+        }
+
+        IIncludableQueryable<MessageTelegramModelDB, UserTelegramModelDB?> Include(IQueryable<MessageTelegramModelDB> query)
+        {
+            return query.Include(x => x.Audio)
             .Include(x => x.Document)
             .Include(x => x.Photo)
             .Include(x => x.Voice)
             .Include(x => x.Video)
-            .Where(x => x.ChatId == req.Payload);
+            .Include(x => x.From)
+            ;
+        }
+
+        IQueryable<MessageTelegramModelDB> TakePart(IQueryable<MessageTelegramModelDB> q, VerticalDirectionsEnum direct)
+        {
+            return direct == VerticalDirectionsEnum.Up
+                ? q.OrderBy(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
+                : q.OrderByDescending(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        }
 
         res.Response = new()
         {
@@ -43,9 +63,7 @@ public class MessagesListTelegramReceive(IDbContextFactory<TelegramBotContext> t
             SortBy = req.SortBy,
             SortingDirection = req.SortingDirection,
             TotalRowsCount = await q.CountAsync(),
-            Response = req.SortingDirection == VerticalDirectionsEnum.Up
-                  ? await q.OrderBy(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize).Include(x => x.From).ToListAsync()
-                  : await q.OrderByDescending(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize).Include(x => x.From).ToListAsync()
+            Response = await Include(TakePart(q, req.SortingDirection)).ToListAsync()
         };
 
         return res;

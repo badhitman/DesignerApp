@@ -34,7 +34,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Получить сообщения чата Telegram
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?>> MessagesListTelegram(TPaginationRequestModel<int> req);
+    public Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?>> MessagesListTelegram(TPaginationRequestModel<SearchMessagesChatModel> req);
 
     /// <summary>
     /// Получить данные файла

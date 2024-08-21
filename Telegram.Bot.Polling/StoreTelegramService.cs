@@ -141,9 +141,11 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                 ReplyToMessageId = replyToMessageDB?.Id,
                 //
                 Caption = message.Caption,
+                NormalizedUpperCaption = message.Caption?.ToUpper(),
                 AuthorSignature = message.AuthorSignature,
                 MediaGroupId = message.MediaGroupId,
                 Text = message.Text,
+                NormalizedUpperText = message.Text?.ToUpper()
             };
 
             if (message.Photo is not null && message.Photo.Length != 0)
@@ -298,11 +300,13 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             messageDb.IsTopicMessage = message.IsTopicMessage;
             messageDb.SenderChatId = sender_chat_db?.Id;
             messageDb.ReplyToMessageId = replyToMessageDB?.Id;
-            //            
+            //
             messageDb.Caption = message.Caption;
+            messageDb.NormalizedUpperCaption = message.Caption?.ToUpper();
             messageDb.AuthorSignature = message.AuthorSignature;
             messageDb.MediaGroupId = message.MediaGroupId;
             messageDb.Text = message.Text;
+            messageDb.NormalizedUpperText = message.Text?.ToUpper();
 
             context.Update(messageDb);
             await context.SaveChangesAsync();

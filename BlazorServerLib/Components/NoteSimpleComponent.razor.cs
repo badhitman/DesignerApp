@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -32,6 +32,11 @@ public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [Parameter, EditorRequired]
     public required string Hint { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    [Parameter]
+    public BootstrapColorsStylesEnum ColorTheme { get; set; } = BootstrapColorsStylesEnum.Secondary;
 
     /// <summary>
     /// Имя приложения, которое обращается к службе облачного хранения параметров
