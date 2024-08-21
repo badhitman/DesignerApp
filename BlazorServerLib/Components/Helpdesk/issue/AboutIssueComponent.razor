@@ -6,7 +6,20 @@
         <h6 class="card-title mb-2 text-body-secondary">Информация</h6>
         <dl class="row">
             <dt>Автор</dt>
-            <dd>@Author?.Email</dd>
+            <dd>
+                <span>
+                    @Author?.Email
+
+                    @if (Author is not null)
+                    {
+                        <sup @onclick="() => IsShow = true" title="О клиенте" style="cursor:pointer" class="bi bi-card-checklist text-info-emphasis ms-2"> card</sup>
+                        @if (IsShow)
+                        {
+                            <UserCardMainComponent Author="Author" CloseAction="() => { IsShow = false; StateHasChanged(); }" />
+                        }
+                    }
+                </span>
+            </dd>
 
             <dt>Исполнитель</dt>
             <dd>

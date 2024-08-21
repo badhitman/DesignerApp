@@ -11,5 +11,13 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 /// </summary>
 public partial class AboutIssueComponent : IssueWrapBaseModel
 {
-    UserInfoModel? Author => UsersIdentityDump?.FirstOrDefault(x => x.UserId == Issue.AuthorIdentityUserId);
+    bool IsShow;
+
+    UserInfoModel? Author;
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        Author = UsersIdentityDump?.FirstOrDefault(x => x.UserId == Issue.AuthorIdentityUserId);
+    }
 }

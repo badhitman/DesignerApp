@@ -2,15 +2,17 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using System.IO;
 
 namespace BlazorWebLib.Components.Telegram;
 
+/// <summary>
+/// FileItemForMessageComponent
+/// </summary>
 public partial class FileItemForMessageComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
