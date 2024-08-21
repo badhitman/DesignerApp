@@ -16,5 +16,5 @@ public class DocumentThumbnailTelegramModelDB : PhotoSizeTelegramModel
     /// <summary>
     /// Document
     /// </summary>
-    public int DocumentId { get; set; }
+    public int DocumentOwnerId { get; set; }
 }
