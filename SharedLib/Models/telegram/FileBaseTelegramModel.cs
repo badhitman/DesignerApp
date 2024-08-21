@@ -20,13 +20,14 @@ public class FileBaseTelegramModel
     public int Id { get; set; }
 
     /// <summary>
-    /// Identifier for this file, which can be used to download or reuse the file
+    /// Identifier for this file, which can be used to download or reuse the file.
+    /// Идентификатор этого файла, который можно использовать для загрузки или повторного использования файла.
     /// </summary>
     public required string FileId { get; set; }
 
     /// <summary>
-    /// Unique identifier for this file, which is supposed to be the same over time and for different bots.
-    /// Can't be used to download or reuse the file.
+    /// Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
+    /// Уникальный идентификатор файла, который должен быть одинаковым во времени и для разных ботов. Невозможно использовать для загрузки или повторного использования файла.
     /// </summary>
     public required string FileUniqueId { get; set; }
 

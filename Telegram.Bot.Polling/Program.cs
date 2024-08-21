@@ -108,6 +108,7 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<GetBotUsernameReceive, object?, string?>();
     services.RegisterMqListener<ChatsReadTelegramReceive, long[]?, ChatTelegramModelDB[]?>();
     services.RegisterMqListener<MessagesListTelegramReceive, TPaginationRequestModel<int>?, TPaginationResponseModel<MessageTelegramModelDB>?>();
+    services.RegisterMqListener<GetFileTelegramReceive, string?, byte[]?>();
     #endregion
 });
 

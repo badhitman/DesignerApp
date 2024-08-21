@@ -119,6 +119,9 @@ public static partial class GlobalStaticConstants
         public readonly static string SendTextMessageTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.TEXT_CONTROLLER_NAME, Routes.MESSAGE_CONTROLLER_NAME, Routes.SEND_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string ReadFileTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.FILE_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string ChatsReadTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.CHATS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -346,6 +349,11 @@ public static partial class GlobalStaticConstants
         /// Text
         /// </summary>
         public const string TEXT_CONTROLLER_NAME = "text";
+
+        /// <summary>
+        /// File
+        /// </summary>
+        public const string FILE_CONTROLLER_NAME = "file";
 
         /// <summary>
         /// Chat

@@ -1,35 +1,49 @@
 ﻿<div class="text-primary-emphasis">
-
-    @if (Message.Audio is not null)
-    {
-        <i class="bi bi-cassette"></i>
-    }
-    @if (Message.Document is not null)
-    {
-        <i class="bi bi-file-arrow-down"></i>
-    }
     @if (Message.Photo is not null && Message.Photo.Count != 0)
     {
-        if (Message.Photo.Count == 1)
+        <PhotoForMessageComponent Photo="Message.Photo" />
+    }
+    @if (files.Count == 1)
+    {
+        <FileItemForMessageComponent FileElement="@(files[0])" />
+    }
+    else if (files.Count > 0)
+    {
+        if (isExpand)
         {
-            <i class="bi bi-file-image"></i>
+            foreach (FileBaseTelegramModel _f in files)
+            {
+                <FileItemForMessageComponent FileElement="@_f" />
+            }
         }
         else
         {
-            <i class="bi bi-images"></i>
+            <i title="Развернуть (файлов: @files.Count шт)" style="cursor:pointer" @onclick="() => isExpand = true" class="bi bi-files"> Файлы (@(files.Count) развернуть)</i>
         }
-    }
-    @if (Message.Voice is not null)
-    {
-        <i class="bi bi-voicemail"></i>
-    }
-    @if (Message.Video is not null)
-    {
-        <i class="bi bi-camera-reels"></i>
     }
 </div>
 
 @code {
     [Parameter, EditorRequired]
     public required MessageTelegramModelDB Message { get; set; }
+
+
+    List<FileBaseTelegramModel> files = [];
+
+    bool isExpand;
+
+    protected override void OnInitialized()
+    {
+        if (Message.Audio is not null)
+            files.Add(Message.Audio);
+
+        if (Message.Document is not null)
+            files.Add(Message.Document);
+
+        if (Message.Video is not null)
+            files.Add(Message.Video);
+
+        if (Message.Voice is not null)
+            files.Add(Message.Voice);
+    }
 }

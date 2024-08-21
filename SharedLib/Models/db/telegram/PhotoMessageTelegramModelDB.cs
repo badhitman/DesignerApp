@@ -9,8 +9,5 @@ namespace SharedLib;
 /// </summary>
 public class PhotoMessageTelegramModelDB : PhotoSizeTelegramModel
 {
-    /// <summary>
-    /// Message
-    /// </summary>
-    public MessageTelegramModelDB? Message { get; set; }
+
 }
