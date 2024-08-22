@@ -8,16 +8,27 @@
             <dt>Автор</dt>
             <dd>
                 <span>
-                    @Author?.Email
-
-                    @if (Author is not null)
+                    @if (Author?.UserId == CurrentUser.UserId)
                     {
-                        <sup @onclick="() => IsShow = true" title="О клиенте" style="cursor:pointer" class="bi bi-card-checklist text-info-emphasis ms-2"> card</sup>
-                        @if (IsShow)
-                        {
-                            <UserCardMainComponent Author="Author" CloseAction="() => { IsShow = false; StateHasChanged(); }" />
-                        }
+                        <b title="Вы автор обращения">Вы</b>
                     }
+                    else
+                    {
+                        @Author?.Email
+                    }
+
+                    <AuthorizeView Roles="@($"{string.Join(",",GlobalStaticConstants.Roles.AllHelpDeskRoles)},{GlobalStaticConstants.Roles.Admin}")">
+                        <Authorized>
+                            @if (Author is not null)
+                            {
+                                <sup @onclick="() => IsShow = true" title="О клиенте" style="cursor:pointer" class="bi bi-card-checklist text-info-emphasis ms-2"> card</sup>
+                                @if (IsShow)
+                                {
+                                    <UserCardMainComponent Author="Author" CloseAction="() => { IsShow = false; StateHasChanged(); }" />
+                                }
+                            }
+                        </Authorized>
+                    </AuthorizeView>
                 </span>
             </dd>
 

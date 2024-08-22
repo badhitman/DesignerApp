@@ -1,0 +1,15 @@
+﻿@using MudBlazor
+
+<MudSelect T="string" Label="@Title" AnchorOrigin="Origin.BottomCenter" HelperText="@Hint">
+    <MudSelectItem Value="@("Cappuccino")" />
+    <MudSelectItem Value="@("Cafe Latte")" />
+    <MudSelectItem Value="@("Espresso")" />
+</MudSelect>
+
+@code {
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+
+    [Parameter, EditorRequired]
+    public required string Hint { get; set; }
+}

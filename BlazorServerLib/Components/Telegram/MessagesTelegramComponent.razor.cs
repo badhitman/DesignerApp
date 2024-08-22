@@ -39,7 +39,6 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
         }
     }
 
-
     /// <summary>
     /// Table
     /// </summary>
