@@ -92,6 +92,20 @@ public class ChatTelegramModelDB
     /// </summary>
     public List<JoinUserChatModelDB>? UsersJoins { get; set; }
 
+/// <inheritdoc/>
+    public override string ToString()
+    {
+        string res = Id < 1 ? "" : $"[{Type.DescriptionInfo()}]";
+
+        if (!string.IsNullOrWhiteSpace(Title))
+            res += $" /{Title.Trim()}/";
+
+        if (!string.IsNullOrWhiteSpace(Username))
+            res += $" (@{Username.Trim()})";
+
+        return $"{$"{FirstName} {LastName}".Trim()} {res}".Trim();
+    }
+
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {

@@ -7,25 +7,16 @@
         <button @onclick="CloseAction" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">TelegramBot уведомления</h5>
-                <h6 class="card-subtitle mb-2 text-body-secondary">Переадресация входящих сообщений</h6>
-                <NotificationTelegramIssueConfigComponent Title="Общее правило для клиента" Hint="Действует для клиента в общем, но может быть переопределено в обращении" />
-                <NotificationTelegramIssueConfigComponent Title="Для обращения (приоритетное)" Hint="Временное правило пока этот инцидент не завершён (переопределяет общее для клиента)" />
-            </div>
-        </div>
+        <NotificationsAreaTelegramIssueConfigComponent />
 
-        <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME"
-                             TypeName="@GlobalStaticConstants.Routes.STORAGE_CONTROLLER_NAME"
-                             Name="@GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME"
+        <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME"
+                             Name="@GlobalStaticConstants.Routes.USERS_CONTROLLER_NAME"
                              PrefixPropertyName="@($"{Author.UserName}")"
-                             Label="О клиенте (в общем)"
+                             Label="О клиенте (общее)"
                              Hint="Единый параметр для всех сотрудников" />
 
-        <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME"
-                             TypeName="@GlobalStaticConstants.Routes.STORAGE_CONTROLLER_NAME"
-                             Name="@Path.Combine(GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME, GlobalStaticConstants.Routes.DOCUMENTS_CONTROLLER_NAME)"
+        <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME"
+                             Name="@($"{GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DOCUMENT_CONTROLLER_NAME}")"
                              PrefixPropertyName="@CurrentUser.UserId"
                              OwnerPrimaryKey="Issue.Id"
                              Label="О заявке (приватно)"

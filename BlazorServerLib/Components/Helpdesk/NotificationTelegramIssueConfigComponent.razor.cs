@@ -2,41 +2,33 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlazorWebLib.Components.Helpdesk.issue;
 using Microsoft.AspNetCore.Components;
-using BlazorLib;
-using MudBlazor;
 using SharedLib;
+using BlazorLib;
 
-namespace BlazorWebLib.Components;
+namespace BlazorWebLib.Components.Helpdesk;
 
 /// <summary>
-/// NoteSimpleComponent
+/// NotificationTelegramIssueConfigComponent
 /// </summary>
-public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
+public partial class NotificationTelegramIssueConfigComponent : IssueWrapBaseModel
 {
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
 
-
-    /// <summary>
-    /// Label
-    /// </summary>
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required string Label { get; set; }
+    public required string Title { get; set; }
 
-    /// <summary>
-    /// Hint
-    /// </summary>
+    /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required string Hint { get; set; }
-    /// <summary>
-    /// ColorTheme
-    /// </summary>
-    [Parameter]
-    public BootstrapColorsStylesEnum ColorTheme { get; set; } = BootstrapColorsStylesEnum.Secondary;
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
+    public required List<ChatTelegramModelDB> ChatsTelegram { get; set; }
 
     /// <summary>
     /// Имя приложения, которое обращается к службе облачного хранения параметров
@@ -71,28 +63,29 @@ public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
         PrefixPropertyName = PrefixPropertyName,
     };
 
-    string domId = default!;
+    long initValue;
 
-    string? initValue;
-    string? editValue;
+    bool IsEdited => initValue != SelectedChatSet.ChatTelegramId;
 
-    async Task SaveText()
+    private ChatTelegramModelDB SelectedChatSet { get; set; } = default!;
+
+    async Task SaveConfig()
     {
         IsBusyProgress = true;
-        TResponseModel<int> rest = await StorageRepo.SaveParameter(editValue, KeyStorage);
+        TResponseModel<int> rest = await StorageRepo.SaveParameter(SelectedChatSet.ChatTelegramId, KeyStorage);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         IsBusyProgress = false;
-        initValue = editValue;
+        initValue = SelectedChatSet.ChatTelegramId;
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        domId = $"{OwnerPrimaryKey}/{nameof(NoteSimpleComponent)}{ApplicationName}{Name}{PrefixPropertyName}";
         IsBusyProgress = true;
-        TResponseModel<string?> rest = await StorageRepo.ReadParameter<string>(KeyStorage);
+        TResponseModel<long?> rest = await StorageRepo.ReadParameter<long?>(KeyStorage);
         IsBusyProgress = false;
-        initValue = rest.Response;
-        editValue = initValue;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        initValue = rest.Response ?? 0;
+        SelectedChatSet = ChatsTelegram.First(x => x.ChatTelegramId == initValue);
     }
 }

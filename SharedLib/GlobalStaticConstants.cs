@@ -71,7 +71,7 @@ public static partial class GlobalStaticConstants
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"),
         };
-        
+
         /// <inheritdoc/>
         public static StorageCloudParameterModel ParameterIsCommandModeTelegramBot => new()
         {
@@ -125,7 +125,10 @@ public static partial class GlobalStaticConstants
         public readonly static string ChatsReadTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.CHATS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string MessagesChatsSelectTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME,Routes.MESSAGES_CONTROLLER_NAME,Routes.CHATS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+        public readonly static string ChatsFindForUserTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, $"{Routes.CHATS_CONTROLLER_NAME}-for-{Routes.USERS_CONTROLLER_NAME}", Routes.FIND_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string MessagesChatsSelectTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.MESSAGES_CONTROLLER_NAME, Routes.CHATS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string SetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.EDIT_ACTION_NAME);
@@ -216,6 +219,11 @@ public static partial class GlobalStaticConstants
         public const string NOTES_CONTROLLER_NAME = "notes";
 
         /// <summary>
+        /// Notifications
+        /// </summary>
+        public const string NOTIFICATIONS_CONTROLLER_NAME = "notifications";
+
+        /// <summary>
         /// Перечисления (enum`s)
         /// </summary>
         public const string ENUMS_CONTROLLER_NAME = "enums";
@@ -224,6 +232,11 @@ public static partial class GlobalStaticConstants
         /// Документы
         /// </summary>
         public const string DOCUMENTS_CONTROLLER_NAME = "documents";
+
+        /// <summary>
+        /// Документ
+        /// </summary>
+        public const string DOCUMENT_CONTROLLER_NAME = "document";
 
         /// <summary>
         /// Проекты

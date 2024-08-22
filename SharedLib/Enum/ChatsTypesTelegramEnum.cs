@@ -14,7 +14,7 @@ public enum ChatsTypesTelegramEnum
     /// <summary>
     /// Normal one to one
     /// </summary>
-    [Description("Личный")]
+    [Description("Лично")]
     Private = 1,
 
     /// <summary>
@@ -38,6 +38,6 @@ public enum ChatsTypesTelegramEnum
     /// <summary>
     /// “sender” for a private chat with the inline query sender
     /// </summary>
-    [Description("Inline")]
+    [Description("Inline sender")]
     Sender
 }
