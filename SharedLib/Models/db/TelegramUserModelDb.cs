@@ -9,13 +9,13 @@ namespace SharedLib;
 /// <summary>
 /// Telegram пользователь
 /// </summary>
-[Index(nameof(NormalizedName)), Index(nameof(NormalizedFirstName)), Index(nameof(NormalizedLastName))]
+[Index(nameof(NormalizedUserName)), Index(nameof(NormalizedFirstName)), Index(nameof(NormalizedLastName))]
 public class TelegramUserModelDb : TelegramUserBaseModel
 {
     /// <summary>
     /// Username
     /// </summary>
-    public string? NormalizedName { get; set; }
+    public string? NormalizedUserName { get; set; }
 
     /// <summary>
     /// User's or bot’s first name
@@ -49,6 +49,6 @@ public class TelegramUserModelDb : TelegramUserBaseModel
             TelegramId = user.TelegramUserId,
             IsBot = user.IsBot,
             Username = user.Username ?? "",
-            NormalizedName = user.Username?.ToUpper(),
+            NormalizedUserName = user.Username?.ToUpper(),
         };
 }

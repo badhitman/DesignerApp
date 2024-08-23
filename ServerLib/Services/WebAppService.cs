@@ -54,7 +54,7 @@ public class WebAppService(
             tgUserDb.TelegramId = user.TelegramUserId;
             tgUserDb.IsBot = user.IsBot;
             tgUserDb.Username = user.Username ?? "";
-            tgUserDb.NormalizedName = user.Username?.ToUpper();
+            tgUserDb.NormalizedUserName = user.Username?.ToUpper();
             mainContext.Update(tgUserDb);
             await mainContext.SaveChangesAsync();
         }
@@ -378,7 +378,7 @@ public class WebAppService(
             string find_query = req.FindQuery.ToUpper();
             query = query.Where(x =>
             EF.Functions.Like(x.NormalizedFirstName, $"%{find_query.ToUpper()}%") ||
-            (x.NormalizedName != null && EF.Functions.Like(x.NormalizedName, $"%{find_query.ToUpper()}%")) ||
+            (x.NormalizedUserName != null && EF.Functions.Like(x.NormalizedUserName, $"%{find_query.ToUpper()}%")) ||
             (x.NormalizedLastName != null && EF.Functions.Like(x.NormalizedLastName, $"%{find_query.ToUpper()}%")));
         }
 
