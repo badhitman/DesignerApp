@@ -64,7 +64,14 @@ public class UpdateHandler(
             await Usage(uc.Response, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
         }
         else
-            await Usage(new() { FirstName = message.From.FirstName,  }, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
+            await Usage(new()
+            {
+                FirstName = message.From.FirstName,
+                LastName = message.From.LastName,
+                Username = message.From.Username,
+                IsBot = message.From.IsBot,
+                TelegramId = message.From.Id,
+            }, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
     }
 
     // Process Inline Keyboard callback data
@@ -79,6 +86,15 @@ public class UpdateHandler(
         TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(callbackQuery.From.Id, callbackQuery.From.FirstName, callbackQuery.From.LastName, callbackQuery.From.Username, callbackQuery.From.IsBot));
         if (uc.Response is not null && uc.Success())
             await Usage(uc.Response, callbackQuery.Message.MessageId, MessagesTypesEnum.CallbackQuery, callbackQuery.Message.Chat.Id, callbackQuery.Data, cancellationToken);
+        else
+            await Usage(new()
+            {
+                FirstName = callbackQuery.Message.From.FirstName,
+                LastName = callbackQuery.Message.From.LastName,
+                Username = callbackQuery.Message.From.Username,
+                IsBot = callbackQuery.Message.From.IsBot,
+                TelegramId = callbackQuery.Message.From.Id,
+            }, callbackQuery.Message.MessageId, MessagesTypesEnum.TextMessage, callbackQuery.Message.Chat.Id, callbackQuery.Data, cancellationToken);
     }
 
     private async Task Usage(TelegramUserBaseModel uc, int incomingMessageId, MessagesTypesEnum eventType, ChatId chatId, string messageText, CancellationToken cancellationToken)
@@ -91,7 +107,7 @@ public class UpdateHandler(
             if (messageText.StartsWith("/start ") && Guid.TryParse(messageText[7..], out _))
             {
                 messageText = messageText[7..];
-                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() {  TelegramUser = uc, Token = messageText.Trim() });
+                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramUser = uc, Token = messageText.Trim() });
             }
             else if (Guid.TryParse(messageText.Trim(), out _))
                 check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramUser = uc, Token = messageText.Trim() });
