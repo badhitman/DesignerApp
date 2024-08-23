@@ -47,43 +47,19 @@ public class WebAppService(
         else
         {
             tgUserDb!.FirstName = user.FirstName;
-            tgUserDb.NormalizedFirstName = user.FirstName.ToUpper();
+            tgUserDb.NormalizedFirstNameUpper = user.FirstName.ToUpper();
 
             tgUserDb.LastName = user.LastName;
-            tgUserDb.NormalizedLastName = user.LastName?.ToUpper();
+            tgUserDb.NormalizedLastNameUpper = user.LastName?.ToUpper();
 
             tgUserDb.Username = user.Username ?? "";
-            tgUserDb.NormalizedUserName = user.Username?.ToUpper();
+            tgUserDb.NormalizedUserNameUpper = user.Username?.ToUpper();
 
             tgUserDb.TelegramId = user.TelegramUserId;
             tgUserDb.IsBot = user.IsBot;
             identityContext.Update(tgUserDb);
             await identityContext.SaveChangesAsync();
         }
-
-        //res.Response = tgUserDb is null ? null : CheckTelegramUserModel.Build(tgUserDb);
-        //if (res.Response is null)
-        //{
-        //    res.Response = CheckTelegramUserModel.Build(user);
-        //    tgUserDb = TelegramUserModelDb.Build(user);
-        //    await mainContext.AddAsync(tgUserDb);
-        //    await mainContext.SaveChangesAsync();
-        //}
-        //else
-        //{
-        //    tgUserDb!.FirstName = user.FirstName;
-        //    tgUserDb.NormalizedFirstName = user.FirstName.ToUpper();
-        //    tgUserDb.LastName = user.LastName;
-        //    tgUserDb.NormalizedLastName = user.LastName?.ToUpper();
-        //    tgUserDb.TelegramId = user.TelegramUserId;
-        //    tgUserDb.IsBot = user.IsBot;
-        //    tgUserDb.Name = user.Username ?? "";
-        //    tgUserDb.NormalizedName = user.Username?.ToUpper();
-        //    mainContext.Update(tgUserDb);
-        //    await mainContext.SaveChangesAsync();
-        //}
-
-        
 
         IdentityUserRecord? userIdentityDb = null;
         userIdentityDb = await identityContext.Users
@@ -122,17 +98,9 @@ public class WebAppService(
                 PhoneNumberConfirmed = userIdentityDb.PhoneNumberConfirmed,
                 LockoutEnabled = userIdentityDb.LockoutEnabled,
             };
-
-            //res.Response!.UserEmail = userIdentityDb.Email;
-            //res.Response.PhoneNumber = userIdentityDb.PhoneNumber;
-            //res.Response.PhoneNumberConfirmed = userIdentityDb.PhoneNumberConfirmed;
-            //res.Response.EmailConfirmed = userIdentityDb.EmailConfirmed;
-            //res.Response.AccessFailedCount = userIdentityDb.AccessFailedCount;
-            //res.Response.LockoutEnd = userIdentityDb.LockoutEnd;
-            //res.Response.LockoutEnabled = userIdentityDb.LockoutEnabled;
-            //res.Response.TelegramId = user.TelegramUserId;
-            //res.Response.UserIdentityId = userIdentityDb.Id;
         }
+        else
+            res.AddWarning("Пользователь Telegram не связан с учётной записью на сайте");
 
         return res;
     }
@@ -262,7 +230,7 @@ public class WebAppService(
     public async Task<ResponseBaseModel> TelegramJoinAccountConfirmTokenFromTelegram(TelegramJoinAccountConfirmModel req)
     {
         DateTime lifeTime = DateTime.UtcNow.AddMinutes(-webConfig.Value.TelegramJoinAccountTokenLifetimeMinutes);
-        
+
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         TelegramJoinAccountModelDb? act = await identityContext.TelegramJoinActions
            .FirstOrDefaultAsync(x => x.CreatedAt > lifeTime && x.GuidToken == req.Token);
@@ -347,7 +315,7 @@ public class WebAppService(
             TResponseModel<TelegramUserBaseModel?> tg_user_dump = await GetTelegramUserCachedInfo(telegramId);
             await mailRepo.SendEmailAsync(userIdentityDb.Email, "Удаление привязки Telegram к учётной записи", $"Telegram аккаунт {tg_user_dump.Response} отключён от вашей учётной записи на сайте.");
         }
-        
+
         TelegramUserModelDb tg_user_info = await identityContext.TelegramUsers.FirstAsync(x => x.TelegramId == telegramId);
         TResponseModel<int?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
         {
@@ -396,9 +364,9 @@ public class WebAppService(
         {
             string find_query = req.FindQuery.ToUpper();
             query = query.Where(x =>
-            EF.Functions.Like(x.NormalizedFirstName, $"%{find_query.ToUpper()}%") ||
-            (x.NormalizedUserName != null && EF.Functions.Like(x.NormalizedUserName, $"%{find_query.ToUpper()}%")) ||
-            (x.NormalizedLastName != null && EF.Functions.Like(x.NormalizedLastName, $"%{find_query.ToUpper()}%")));
+            EF.Functions.Like(x.NormalizedFirstNameUpper, $"%{find_query.ToUpper()}%") ||
+            (x.NormalizedUserNameUpper != null && EF.Functions.Like(x.NormalizedUserNameUpper, $"%{find_query.ToUpper()}%")) ||
+            (x.NormalizedLastNameUpper != null && EF.Functions.Like(x.NormalizedLastNameUpper, $"%{find_query.ToUpper()}%")));
         }
 
         int total = query.Count();

@@ -2,11 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using SharedLib;
+using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
+using SharedLib;
+using DbcLib;
 
 namespace Telegram.Bot.Services;
 
@@ -30,27 +30,44 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
         {
             chat_db = new ChatTelegramModelDB()
             {
-                ChatTelegramId = chat.Id,
-                FirstName = chat.FirstName,
-                IsForum = chat.IsForum,
-                LastName = chat.LastName,
-                Title = chat.Title,
-                Username = chat.Username,
                 Type = (ChatsTypesTelegramEnum)(int)chat.Type,
+                ChatTelegramId = chat.Id,
+                IsForum = chat.IsForum,
+
+                Title = chat.Title,
+                NormalizedTitleUpper = chat.Title?.ToUpper(),
+
+                FirstName = chat.FirstName,
+                NormalizedFirstNameUpper = chat.FirstName?.ToUpper(),
+
+                LastName = chat.LastName,
+                NormalizedLastNameUpper = chat.LastName?.ToUpper(),
+
+                Username = chat.Username,
+                NormalizedUsernameUpper = chat.Username?.ToUpper(),
             };
 
             await context.AddAsync(chat_db);
         }
         else
         {
-            chat_db.ChatTelegramId = chat.Id;
-            chat_db.FirstName = chat.FirstName;
-            chat_db.IsForum = chat.IsForum;
-            chat_db.LastName = chat.LastName;
-            chat_db.Title = chat.Title;
-            chat_db.Username = chat.Username;
             chat_db.Type = (ChatsTypesTelegramEnum)(int)chat.Type;
-            chat_db.LastMessageUtc = DateTime.UtcNow;
+            chat_db.ChatTelegramId = chat.Id;
+            chat_db.IsForum = chat.IsForum;
+
+            chat_db.Title = chat.Title;
+            chat_db.NormalizedTitleUpper = chat.Title?.ToUpper();
+
+            chat_db.FirstName = chat.FirstName;
+            chat_db.NormalizedFirstNameUpper = chat.FirstName?.ToUpper();
+
+            chat_db.LastName = chat.LastName;
+            chat_db.NormalizedLastNameUpper = chat.LastName?.ToUpper();
+
+            chat_db.Username = chat.Username;
+            chat_db.NormalizedUsernameUpper = chat.Username?.ToUpper();
+
+            chat_db.LastUpdateUtc = DateTime.UtcNow;
             context.Update(chat_db);
         }
         await context.SaveChangesAsync();
@@ -71,28 +88,42 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
         {
             user_db = new()
             {
-                AddedToAttachmentMenu = user.AddedToAttachmentMenu,
                 FirstName = user.FirstName,
+                NormalizedFirstNameUpper = user.FirstName.ToUpper(),
+
                 LastName = user.LastName,
+                NormalizedLastNameUpper = user.LastName?.ToUpper(),
+
+                Username = user.Username,
+                NormalizedUsernameUpper = user.Username?.ToUpper(),
+
+                UserTelegramId = user.Id,
                 IsBot = user.IsBot,
                 IsPremium = user.IsPremium,
+
+                AddedToAttachmentMenu = user.AddedToAttachmentMenu,
                 LanguageCode = user.LanguageCode,
-                Username = user.Username,
-                UserTelegramId = user.Id,
             };
             await context.AddAsync(user_db);
         }
         else
         {
-            user_db.AddedToAttachmentMenu = user.AddedToAttachmentMenu;
             user_db.FirstName = user.FirstName;
+            user_db.NormalizedFirstNameUpper = user.FirstName.ToUpper();
+
             user_db.LastName = user.LastName;
+            user_db.NormalizedLastNameUpper = user.LastName?.ToUpper();
+
+            user_db.Username = user.Username;
+            user_db.NormalizedUsernameUpper = user.Username?.ToUpper();
+
+            user_db.UserTelegramId = user.Id;
             user_db.IsBot = user.IsBot;
             user_db.IsPremium = user.IsPremium;
+
+            user_db.AddedToAttachmentMenu = user.AddedToAttachmentMenu;
             user_db.LanguageCode = user.LanguageCode;
-            user_db.Username = user.Username;
-            user_db.UserTelegramId = user.Id;
-            user_db.LastMessageUtc = DateTime.UtcNow;
+            user_db.LastUpdateUtc = DateTime.UtcNow;
 
             context.Update(user_db);
         }
@@ -153,11 +184,13 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                 ReplyToMessageId = replyToMessageDB?.Id,
                 //
                 Caption = message.Caption,
-                NormalizedUpperCaption = message.Caption?.ToUpper(),
+                NormalizedCaptionUpper = message.Caption?.ToUpper(),
+
+                Text = message.Text,
+                NormalizedTextUpper = message.Text?.ToUpper(),
+
                 AuthorSignature = message.AuthorSignature,
                 MediaGroupId = message.MediaGroupId,
-                Text = message.Text,
-                NormalizedUpperText = message.Text?.ToUpper()
             };
 
             if (message.Photo is not null && message.Photo.Length != 0)
@@ -314,11 +347,13 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             messageDb.ReplyToMessageId = replyToMessageDB?.Id;
             //
             messageDb.Caption = message.Caption;
-            messageDb.NormalizedUpperCaption = message.Caption?.ToUpper();
+            messageDb.NormalizedCaptionUpper = message.Caption?.ToUpper();
+
+            messageDb.Text = message.Text;
+            messageDb.NormalizedTextUpper = message.Text?.ToUpper();
+
             messageDb.AuthorSignature = message.AuthorSignature;
             messageDb.MediaGroupId = message.MediaGroupId;
-            messageDb.Text = message.Text;
-            messageDb.NormalizedUpperText = message.Text?.ToUpper();
 
             context.Update(messageDb);
             await context.SaveChangesAsync();

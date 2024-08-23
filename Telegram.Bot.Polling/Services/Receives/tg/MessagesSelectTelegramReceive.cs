@@ -2,18 +2,18 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace Transmission.Receives.telegram;
 
 /// <summary>
 /// Получить сообщения из чата
 /// </summary>
-public class MessagesListTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
+public class MessagesSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
     : IResponseReceive<TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>
 {
     /// <inheritdoc/>
@@ -35,7 +35,7 @@ public class MessagesListTelegramReceive(IDbContextFactory<TelegramBotContext> t
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
         {
             req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
-            q = q.Where(x => (x.NormalizedUpperText != null && x.NormalizedUpperText.Contains(req.Payload.SearchQuery)) || (x.NormalizedUpperCaption != null && x.NormalizedUpperCaption.Contains(req.Payload.SearchQuery)));
+            q = q.Where(x => (x.NormalizedTextUpper != null && x.NormalizedTextUpper.Contains(req.Payload.SearchQuery)) || (x.NormalizedCaptionUpper != null && x.NormalizedCaptionUpper.Contains(req.Payload.SearchQuery)));
         }
 
         IIncludableQueryable<MessageTelegramModelDB, UserTelegramModelDB?> Include(IQueryable<MessageTelegramModelDB> query)

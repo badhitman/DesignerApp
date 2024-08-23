@@ -9,23 +9,23 @@ namespace SharedLib;
 /// <summary>
 /// Telegram пользователь
 /// </summary>
-[Index(nameof(NormalizedUserName)), Index(nameof(NormalizedFirstName)), Index(nameof(NormalizedLastName))]
+[Index(nameof(NormalizedUserNameUpper)), Index(nameof(NormalizedFirstNameUpper)), Index(nameof(NormalizedLastNameUpper))]
 public class TelegramUserModelDb : TelegramUserBaseModel
 {
     /// <summary>
     /// Username
     /// </summary>
-    public string? NormalizedUserName { get; set; }
+    public string? NormalizedUserNameUpper { get; set; }
 
     /// <summary>
     /// User's or bot’s first name
     /// </summary>
-    public required string NormalizedFirstName { get; set; }
+    public required string NormalizedFirstNameUpper { get; set; }
 
     /// <summary>
     /// Optional. User's or bot’s last name
     /// </summary>
-    public string? NormalizedLastName { get; set; }
+    public string? NormalizedLastNameUpper { get; set; }
 
     /// <inheritdoc/>
     public override string ToString()
@@ -43,12 +43,12 @@ public class TelegramUserModelDb : TelegramUserBaseModel
         => new()
         {
             FirstName = user.FirstName,
-            NormalizedFirstName = user.FirstName.ToUpper(),
+            NormalizedFirstNameUpper = user.FirstName.ToUpper(),
             LastName = user.LastName,
-            NormalizedLastName = user.LastName?.ToUpper(),
+            NormalizedLastNameUpper = user.LastName?.ToUpper(),
             TelegramId = user.TelegramUserId,
             IsBot = user.IsBot,
             Username = user.Username ?? "",
-            NormalizedUserName = user.Username?.ToUpper(),
+            NormalizedUserNameUpper = user.Username?.ToUpper(),
         };
 }

@@ -41,6 +41,11 @@ public class SendTextMessageTelegramBotModel
     public int? ReplyToMessageId { get; set; }
 
     /// <summary>
+    /// Клавиатура ответа.
+    /// </summary>
+    public List<IEnumerable<ButtonActionModel>>? ReplyKeyboard { get; set; }
+
+    /// <summary>
     /// Data
     /// </summary>
     public List<FileAttachTelegramModel>? Files { get; set; }

@@ -49,17 +49,61 @@ public class UpdateHandler(
     {
         logger.LogInformation("Receive message type: {MessageType}", message.Type);
         await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
-
         MessageTelegramModelDB msg_db = await storeRepo.StoreMessage(message);
-        if (message.Text is not { } messageText || message.From is null)
+
+        string messageText = message.Text ?? message.Caption ?? "";
+        if (message.From is null || (string.IsNullOrWhiteSpace(messageText) && string.IsNullOrEmpty(message.Caption) && message.Audio is null && message.Contact is null && message.Document is null && message.Photo is null && message.Video is null && message.Voice is null))
             return;
+
+        if (messageText == "")
+            messageText = "Вложения";
 
         TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
 
         if (uc.Response is not null && uc.Success())
         {
-            TelegramIncomingMessageModel hd_request = (TelegramIncomingMessageModel)msg_db;
-            hd_request.User = uc.Response;
+            TelegramIncomingMessageModel hd_request = new()
+            {
+                Audio = msg_db.Audio,
+                User = uc.Response,
+                Voice = msg_db.Voice,
+                Video = msg_db.Video,
+                AudioId = msg_db.AudioId,
+                AuthorSignature = msg_db.AuthorSignature,
+                Caption = msg_db.Caption,
+                Chat = msg_db.Chat,
+                ChatId = msg_db.ChatId,
+                Contact = msg_db.Contact,
+                ContactId = msg_db.ContactId,
+                CreatedAtUtc = msg_db.CreatedAtUtc,
+                DocumentId = msg_db.DocumentId,
+                ForwardDate = msg_db.ForwardDate,
+                ForwardFromChatId = msg_db.ForwardFromChatId,
+                EditDate = msg_db.EditDate,
+                ForwardFromId = msg_db.ForwardFromId,
+                ForwardFromMessageId = msg_db.ForwardFromMessageId,
+                ForwardSenderName = msg_db.ForwardSenderName,
+                ForwardSignature = msg_db.ForwardSignature,
+                From = msg_db.From,
+                FromId = msg_db.FromId,
+                Id = msg_db.Id,
+                Document = msg_db.Document,
+                IsAutomaticForward = msg_db.IsAutomaticForward,
+                IsTopicMessage = msg_db.IsTopicMessage,
+                MediaGroupId = msg_db.MediaGroupId,
+                MessageTelegramId = msg_db.MessageTelegramId,
+                MessageThreadId = msg_db.MessageThreadId,
+                NormalizedCaptionUpper = msg_db.NormalizedCaptionUpper,
+                NormalizedTextUpper = msg_db.NormalizedTextUpper,
+                ReplyToMessageId = msg_db.ReplyToMessageId,
+                SenderChatId = msg_db.SenderChatId,
+                Text = msg_db.Text,
+                Photo = msg_db.Photo,
+                ViaBotId = msg_db.ViaBotId,
+                VideoId = msg_db.VideoId,
+                VoiceId = msg_db.VoiceId,
+            };
+
             TResponseModel<bool?> hd_res = await helpdeskRepo.TelegramMessageIncoming(hd_request);
             await Usage(uc.Response, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
         }
@@ -213,6 +257,7 @@ public class UpdateHandler(
             ? null
             : new InlineKeyboardMarkup(resp.ReplyKeyboard
             .Select(x => x.Select(y => InlineKeyboardButton.WithCallbackData(y.Title, y.Data))));
+
         ResponseBaseModel upd_main_msg_res;
         Message? messageSended = null;
         if (resp.ReplyKeyboard is null && string.IsNullOrEmpty(resp.Response))

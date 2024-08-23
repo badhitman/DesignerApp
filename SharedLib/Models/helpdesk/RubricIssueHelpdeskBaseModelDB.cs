@@ -12,7 +12,7 @@ public class RubricIssueHelpdeskBaseModelDB : RubricIssueHelpdeskLowModel
     /// <summary>
     /// ToUpper
     /// </summary>
-    public string? NormalizedNameToUpper { get; set; }
+    public string? NormalizedNameUpper { get; set; }
 
     /// <inheritdoc/>
     public List<RubricIssueHelpdeskModelDB>? NestedRubrics { get; set; }

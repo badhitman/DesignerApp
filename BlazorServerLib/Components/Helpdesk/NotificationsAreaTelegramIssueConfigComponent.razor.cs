@@ -20,8 +20,6 @@ public partial class NotificationsAreaTelegramIssueConfigComponent : IssueWrapBa
 
     List<ChatTelegramModelDB>? chatsTelegram;
 
-    const string AppName = $"{GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.NOTIFICATIONS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME}";
-
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {

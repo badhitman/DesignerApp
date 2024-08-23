@@ -52,7 +52,7 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
                 join rubric_element in context.RubricsForIssues on issue_element.RubricIssueId equals rubric_element.Id
                 into grp_rubrics
                 from c in grp_rubrics.DefaultIfEmpty()
-                where issue_element.NormalizeNameUpper!.Contains(req.Payload.SearchQuery) || c.NormalizedNameToUpper!.Contains(req.Payload.SearchQuery)
+                where issue_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || c.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)
                 select issue_element;
         }
 

@@ -13,7 +13,7 @@ namespace SharedLib;
 public class IssueHelpdeskModelDB : IssueHelpdeskModel
 {
     /// <inheritdoc/>
-    public string? NormalizeNameUpper { get; set; }
+    public string? NormalizedNameUpper { get; set; }
 
     /// <summary>
     /// Rubric Issue

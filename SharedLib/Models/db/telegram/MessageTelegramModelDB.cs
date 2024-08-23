@@ -147,7 +147,7 @@ public class MessageTelegramModelDB
     /// <summary>
     /// Optional. For text messages, the actual text of the message, 0-4096 characters
     /// </summary>
-    public string? NormalizedUpperText { get; set; }
+    public string? NormalizedTextUpper { get; set; }
 
     /// <summary>
     /// CreatedAtUtc
@@ -216,5 +216,5 @@ public class MessageTelegramModelDB
     /// <summary>
     /// Optional. Caption for the animation, audio, document, photo, video or voice, 0-1024 characters
     /// </summary>
-    public string? NormalizedUpperCaption { get; set; }
+    public string? NormalizedCaptionUpper { get; set; }
 }

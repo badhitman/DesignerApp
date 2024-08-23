@@ -24,7 +24,11 @@ public class TelegramMessageIncomingReceive(IDbContextFactory<HelpdeskContext> h
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<bool> res = new() { Response = false };
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-        //var rissues_for_user = await context.Issues.Where(x=>x.AuthorIdentityUserId == req.User.)
+
+        IssueHelpdeskModelDB[] issues_for_user = await context
+            .Issues
+            .Where(x => x.AuthorIdentityUserId == req.User.UserIdentityId)
+            .ToArrayAsync();
 
 
 

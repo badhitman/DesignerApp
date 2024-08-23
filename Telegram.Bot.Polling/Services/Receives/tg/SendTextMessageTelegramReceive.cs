@@ -10,6 +10,7 @@ using Telegram.Bot;
 using Telegram.Bot.Services;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Transmission.Receives.telegram;
 
@@ -45,6 +46,13 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
             res.AddWarning(msg);
         }
 
+
+        IReplyMarkup? replyKB = message.ReplyKeyboard is null
+            ? null
+            : new InlineKeyboardMarkup(message.ReplyKeyboard
+            .Select(x => x.Select(y => InlineKeyboardButton.WithCallbackData(y.Title, y.Data))));
+
+
         Message sender_msg;
         try
         {
@@ -64,6 +72,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
                                                             photo: InputFile.FromStream(new MemoryStream(file.Data), file.Name),
                                                             messageThreadId: messageThreadId,
                                                             caption: msg_text,
+                                                            replyMarkup: replyKB,
                                                             parseMode: parse_mode,
                                                             replyToMessageId: message.ReplyToMessageId);
                     }

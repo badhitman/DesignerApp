@@ -33,21 +33,38 @@ public class UserTelegramModelDB
     [JsonProperty(Required = Required.Always)]
     public bool IsBot { get; set; }
 
+
     /// <summary>
     /// User's or bot’s first name
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     public string FirstName { get; set; } = default!;
+    /// <summary>
+    /// User's or bot’s first name
+    /// </summary>
+    [JsonProperty(Required = Required.Always)]
+    public string NormalizedFirstNameUpper { get; set; } = default!;
+
 
     /// <summary>
     /// Optional. User's or bot’s last name
     /// </summary>
     public string? LastName { get; set; }
+    /// <summary>
+    /// Optional. User's or bot’s last name
+    /// </summary>
+    public string? NormalizedLastNameUpper { get; set; }
+
 
     /// <summary>
     /// Optional. User's or bot’s username
     /// </summary>
     public string? Username { get; set; }
+    /// <summary>
+    /// Optional. User's or bot’s username
+    /// </summary>
+    public string? NormalizedUsernameUpper { get; set; }
+
 
     /// <summary>
     /// Optional. <a href="https://en.wikipedia.org/wiki/IETF_language_tag">IETF language tag</a> of the
@@ -68,7 +85,7 @@ public class UserTelegramModelDB
     /// <summary>
     /// LastMessageUtc
     /// </summary>
-    public DateTime LastMessageUtc { get; set; } = DateTime.UtcNow;
+    public DateTime LastUpdateUtc { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// LastMessageId

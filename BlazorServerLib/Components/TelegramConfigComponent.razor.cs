@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -15,10 +15,14 @@ namespace BlazorWebLib.Components;
 public partial class TelegramConfigComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
+    ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
+
+    [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
+
 
     bool _isCommandModeTelegramBot;
     bool IsCommandModeTelegramBot

@@ -95,7 +95,8 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<StatusChangeReceive, TAuthRequestModel<StatusChangeRequestModel>?, bool>();
     services.RegisterMqListener<PulseIssueReceive, TAuthRequestModel<PulseIssueBaseModel>?, bool>();
     services.RegisterMqListener<PulseJournalReceive, TPaginationRequestModel<UserIssueModel>?, TPaginationResponseModel<PulseViewModel>>();
-    //
+    services.RegisterMqListener<TelegramMessageIncomingReceive, TelegramIncomingMessageModel?, bool>();
+    // 
     #endregion
 });
 
@@ -118,23 +119,23 @@ using (IServiceScope ss = app.Services.CreateScope())
             new ()
             {
                 Name = "Секретарь",
-                NormalizedNameToUpper = "СЕКРЕТАРЬ",
+                NormalizedNameUpper = "СЕКРЕТАРЬ",
                 SortIndex = 1,
             },
             new ()
             {
                 Name = "Техническая поддержка",
-                NormalizedNameToUpper = "ТЕХНИЧЕСКАЯ ПОДДЕРЖКА",
+                NormalizedNameUpper = "ТЕХНИЧЕСКАЯ ПОДДЕРЖКА",
                 SortIndex = 2,
             },
             new ()
             {
                 Name = "Другое",
-                NormalizedNameToUpper = "ДРУГОЕ",
+                NormalizedNameUpper = "ДРУГОЕ",
                 SortIndex = 3,
             }];
-        demo_rubrics[0].NestedRubrics = [new() { Name = "Справки", NormalizedNameToUpper = "СПРАВКИ", ParentRubric = demo_rubrics[0], SortIndex = 1 }, new() { Name = "Жалобы", NormalizedNameToUpper = "ЖАЛОБЫ", ParentRubric = demo_rubrics[0], SortIndex = 2 }];
-        demo_rubrics[1].NestedRubrics = [new() { Name = "Линия 1", NormalizedNameToUpper = "ЛИНИЯ 1", ParentRubric = demo_rubrics[1], SortIndex = 1 }, new() { Name = "Линия 2", NormalizedNameToUpper = "ЛИНИЯ 2", ParentRubric = demo_rubrics[1], SortIndex = 2 }];
+        demo_rubrics[0].NestedRubrics = [new() { Name = "Справки", NormalizedNameUpper = "СПРАВКИ", ParentRubric = demo_rubrics[0], SortIndex = 1 }, new() { Name = "Жалобы", NormalizedNameUpper = "ЖАЛОБЫ", ParentRubric = demo_rubrics[0], SortIndex = 2 }];
+        demo_rubrics[1].NestedRubrics = [new() { Name = "Линия 1", NormalizedNameUpper = "ЛИНИЯ 1", ParentRubric = demo_rubrics[1], SortIndex = 1 }, new() { Name = "Линия 2", NormalizedNameUpper = "ЛИНИЯ 2", ParentRubric = demo_rubrics[1], SortIndex = 2 }];
         await context_seed.AddRangeAsync(demo_rubrics);
         await context_seed.SaveChangesAsync();
     }

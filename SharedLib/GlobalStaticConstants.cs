@@ -53,6 +53,7 @@ public static partial class GlobalStaticConstants
     /// </summary>
     public const string TransmissionQueueNamePrefix = "Transmission.Receives";
 
+
     /// <summary>
     /// Cloud storage metadata
     /// </summary>
@@ -206,6 +207,11 @@ public static partial class GlobalStaticConstants
     /// </summary>
     public static class Routes
     {
+        /// <summary>
+        /// Global
+        /// </summary>
+        public const string GLOBAL_CONTROLLER_NAME = "global";
+
         /// <summary>
         /// Аутентификация
         /// </summary>
@@ -578,9 +584,14 @@ public static partial class GlobalStaticConstants
         /// </summary>
         public const string HelpDeskTelegramBotUnit = "HelpDeskTelegramBotUnit";
         #endregion
-
-
     }
+
+
+    /// <summary>
+    /// HelpdeskNotificationsTelegramAppName
+    /// </summary>
+    public const string HelpdeskNotificationsTelegramAppName = $"{Routes.HELPDESK_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}/{Routes.TELEGRAM_CONTROLLER_NAME}";
+
 
     /// <summary>
     /// Имя пространства имён мемкеша для хранения сессий

@@ -29,7 +29,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
             res.AddError("Рубрика должна иметь имя");
             return res;
         }
-        rubric.NormalizedNameToUpper = rubric.Name.ToUpper();
+        rubric.NormalizedNameUpper = rubric.Name.ToUpper();
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         if (await context.RubricsForIssues.AnyAsync(x => x.Id != rubric.Id && x.ParentRubricId == rubric.ParentRubricId && x.Name == rubric.Name))

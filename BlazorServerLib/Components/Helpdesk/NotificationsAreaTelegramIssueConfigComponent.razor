@@ -20,21 +20,21 @@
                     <p>Не найдено ни одного связанного Telegram чата.</p>
                 </blockquote>
                 <figcaption class="blockquote-footer">
-                    Отсутствуют пользователи <cite title="Source Title">TelegramBot</cite>
+                    Отсутствуют пользователи <cite>TelegramBot</cite>
                 </figcaption>
             </figure>
         }
         else
         {
             <CascadingValue Value="chatsTelegram">
-                <NotificationTelegramIssueConfigComponent ApplicationName="@AppName"
+                <NotificationTelegramIssueConfigComponent ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
                                                           Name="@($"{GlobalStaticConstants.Routes.USER_CONTROLLER_NAME}")"
                                                           PrefixPropertyName="@Issue.AuthorIdentityUserId"
                                                           OwnerPrimaryKey="0"
                                                           Title="Общее правило для клиента"
                                                           Hint="Действует для клиента в общем, но может быть переопределено в обращении" />
 
-                <NotificationTelegramIssueConfigComponent ApplicationName="@AppName"
+                <NotificationTelegramIssueConfigComponent ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
                                                           Name="@GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME"
                                                           OwnerPrimaryKey="Issue.Id"
                                                           Title="Для обращения (приоритетное)"

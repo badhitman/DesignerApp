@@ -37,25 +37,46 @@ public class ChatTelegramModelDB
     [JsonProperty(Required = Required.Always)]
     public ChatsTypesTelegramEnum Type { get; set; }
 
+
     /// <summary>
     /// Optional. Title, for supergroups, channels and group chats
     /// </summary>
     public string? Title { get; set; }
+    /// <summary>
+    /// Optional. Title, for supergroups, channels and group chats
+    /// </summary>
+    public string? NormalizedTitleUpper { get; set; }
+
 
     /// <summary>
     /// Optional. Username, for private chats, supergroups and channels if available
     /// </summary>
     public string? Username { get; set; }
+    /// <summary>
+    /// Optional. Username, for private chats, supergroups and channels if available
+    /// </summary>
+    public string? NormalizedUsernameUpper { get; set; }
+
 
     /// <summary>
     /// Optional. First name of the other party in a private chat
     /// </summary>
     public string? FirstName { get; set; }
+    /// <summary>
+    /// Optional. First name of the other party in a private chat
+    /// </summary>
+    public string? NormalizedFirstNameUpper { get; set; }
+
 
     /// <summary>
     /// Optional. Last name of the other party in a private chat
     /// </summary>
     public string? LastName { get; set; }
+    /// <summary>
+    /// Optional. Last name of the other party in a private chat
+    /// </summary>
+    public string? NormalizedLastNameUpper { get; set; }
+
 
     /// <summary>
     /// Optional. <see langword="true"/>, if the supergroup chat is a forum (has topics enabled)
@@ -65,12 +86,7 @@ public class ChatTelegramModelDB
     /// <summary>
     /// LastUpdateUtc
     /// </summary>
-    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// LastMessageUtc
-    /// </summary>
-    public DateTime LastMessageUtc { get; set; } = DateTime.UtcNow;
+    public DateTime LastUpdateUtc { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// LastMessageId
@@ -92,7 +108,7 @@ public class ChatTelegramModelDB
     /// </summary>
     public List<JoinUserChatModelDB>? UsersJoins { get; set; }
 
-/// <inheritdoc/>
+    /// <inheritdoc/>
     public override string ToString()
     {
         string res = Id < 1 ? "" : $"[{Type.DescriptionInfo()}]";
