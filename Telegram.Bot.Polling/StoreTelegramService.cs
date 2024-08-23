@@ -4,6 +4,7 @@
 
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using SharedLib;
 using Telegram.Bot.Types;
 
@@ -112,9 +113,20 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
         MessageTelegramModelDB? replyToMessageDB = message.ReplyToMessage is null ? null : await StoreMessage(message.ReplyToMessage);
 
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
+
+        IIncludableQueryable<MessageTelegramModelDB, List<PhotoMessageTelegramModelDB>?> q = context
+            .Messages
+            .Include(x => x.Audio)
+            .Include(x => x.Chat)
+            .Include(x => x.Voice)
+            .Include(x => x.Contact)
+            .Include(x => x.Document)
+            .Include(x => x.From)
+            .Include(x => x.Photo);
+
         MessageTelegramModelDB? messageDb = from_db is null
-            ? await context.Messages.FirstOrDefaultAsync(x => x.MessageTelegramId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == null)
-            : await context.Messages.FirstOrDefaultAsync(x => x.MessageTelegramId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == from_db.Id);
+            ? await q.FirstOrDefaultAsync(x => x.MessageTelegramId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == null)
+            : await q.FirstOrDefaultAsync(x => x.MessageTelegramId == message.MessageId && x.ChatId == chat_db.ChatTelegramId && x.FromId == from_db.Id);
 
         if (messageDb is null)
         {

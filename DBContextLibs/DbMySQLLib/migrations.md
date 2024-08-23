@@ -4,13 +4,13 @@ Update-Database -Context MainDbAppContext -Project DbMySQLLib -StartupProject Bl
 ```
 
 ```
-Add-Migration MainHelpdeskMySQLContext001 -Context HelpdeskContext -Project DbMySQLLib -StartupProject HelpdeskService
-Update-Database -Context HelpdeskContext -Project DbMySQLLib -StartupProject HelpdeskService
+Add-Migration MainStorageContext001 -Context CloudParametersContext -Project DbMySQLLib -StartupProject RemoteCallLib
+Update-Database -Context CloudParametersContext -Project DbMySQLLib -StartupProject RemoteCallLib
 ```
 
 ```
-Add-Migration MainStorageContext001 -Context CloudParametersContext -Project DbMySQLLib -StartupProject RemoteCallLib
-Update-Database -Context CloudParametersContext -Project DbMySQLLib -StartupProject RemoteCallLib
+Add-Migration MainHelpdeskMySQLContext001 -Context HelpdeskContext -Project DbMySQLLib -StartupProject HelpdeskService
+Update-Database -Context HelpdeskContext -Project DbMySQLLib -StartupProject HelpdeskService
 ```
 
 ```

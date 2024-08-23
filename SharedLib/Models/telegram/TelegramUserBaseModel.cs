@@ -7,30 +7,15 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// TelegramUserBaseModelDb
+/// TelegramUserBaseModel
 /// </summary>
 [Index(nameof(TelegramId), IsUnique = true)]
-public class TelegramUserBaseModelDb : EntryCreatedModel
+public class TelegramUserBaseModel : TelegramUserLiteModel
 {
     /// <summary>
     /// Уникальный идентификатор Telegram пользователя (или бота)
     /// </summary>
     public long TelegramId { get; set; }
-
-    /// <summary>
-    ///  true, if this user is a bot
-    /// </summary>
-    public bool IsBot { get; set; }
-
-    /// <summary>
-    /// User's or bot’s first name
-    /// </summary>
-    public required string FirstName { get; set; }
-
-    /// <summary>
-    /// Optional. User's or bot’s last name
-    /// </summary>
-    public string? LastName { get; set; }
 
     /// <summary>
     /// Основное сообщение в чате в котором Bot ведёт диалог с пользователем.
@@ -49,13 +34,13 @@ public class TelegramUserBaseModelDb : EntryCreatedModel
         string res = FirstName;
         if (!string.IsNullOrWhiteSpace(LastName))
             res += $" {LastName}";
-        if (!string.IsNullOrWhiteSpace(Name))
-            res += $" @{Name}";
+        if (!string.IsNullOrWhiteSpace(Username))
+            res += $" @{Username}";
         return res;
     }
 
     /// <inheritdoc/>
-    public static TelegramUserBaseModelDb? Build(TelegramUserModelDb? user)
+    public static TelegramUserBaseModel? Build(TelegramUserModelDb? user)
         => user is null
         ? null
         : new()
@@ -64,8 +49,7 @@ public class TelegramUserBaseModelDb : EntryCreatedModel
             LastName = user.LastName,
             TelegramId = user.TelegramId,
             IsBot = user.IsBot,
-            Name = user.Name,
-            CreatedAt = user.CreatedAt,
+            Username = user.Username,
             Id = user.Id,
             IsDisabled = user.IsDisabled,
             DialogTelegramTypeHandler = user.DialogTelegramTypeHandler,
@@ -73,13 +57,13 @@ public class TelegramUserBaseModelDb : EntryCreatedModel
         };
 
     /// <inheritdoc/>
-    public static TelegramUserBaseModelDb Build(CheckTelegramUserHandleModel user)
+    public static TelegramUserBaseModel Build(CheckTelegramUserHandleModel user)
         => new()
         {
             FirstName = user.FirstName,
             LastName = user.LastName,
             TelegramId = user.TelegramUserId,
             IsBot = user.IsBot,
-            Name = user.Username ?? "",
+            Username = user.Username ?? "",
         };
 }

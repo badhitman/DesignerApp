@@ -5,10 +5,15 @@
 namespace SharedLib;
 
 /// <summary>
-/// CheckTelegramUser
+/// CheckTelegramUserAuthModel
 /// </summary>
-public class CheckTelegramUserModel : TelegramUserBaseModelDb
+public class CheckTelegramUserAuthModel : TelegramUserBaseModel
 {
+    /// <summary>
+    /// User id (if Identity)
+    /// </summary>
+    public required string UserIdentityId { get; set; }
+
     /// <summary>
     /// Email пользователя
     /// </summary>
@@ -55,54 +60,4 @@ public class CheckTelegramUserModel : TelegramUserBaseModelDb
     /// Gets or sets the number of failed login attempts for the current user.
     /// </summary>
     public virtual int AccessFailedCount { get; set; }
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $"{base.ToString()} {UserEmail}".Trim();
-    }
-
-    /// <inheritdoc/>
-    public static new CheckTelegramUserModel? Build(TelegramUserModelDb tgUserDb)
-    {
-        return new()
-        {
-            Name = tgUserDb.Name,
-            FirstName = tgUserDb.FirstName,
-            LastName = tgUserDb.LastName,
-            TelegramId = tgUserDb.TelegramId,
-            IsBot = tgUserDb.IsBot,
-            Id = tgUserDb.Id,
-            CreatedAt = tgUserDb.CreatedAt,
-            IsDisabled = tgUserDb.IsDisabled,
-            DialogTelegramTypeHandler = tgUserDb.DialogTelegramTypeHandler,
-            MainTelegramMessageId = tgUserDb.MainTelegramMessageId,
-        };
-    }
-
-    /// <inheritdoc/>
-    public static new CheckTelegramUserModel? Build(CheckTelegramUserHandleModel tgUserDb)
-    {
-        return new()
-        {
-            FirstName = tgUserDb.FirstName,
-            LastName = tgUserDb.LastName,
-            TelegramId = tgUserDb.TelegramUserId,
-            IsBot = tgUserDb.IsBot,
-            Name = tgUserDb.Username ?? "",
-        };
-    }
-
-    /// <inheritdoc/>
-    public static implicit operator CheckTelegramUserModel(CheckTelegramUserHandleModel user)
-    {
-        return new()
-        {
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            IsBot = user.IsBot,
-            TelegramId = user.TelegramUserId,
-            Name = user.Username ?? "",
-        };
-    }
 }

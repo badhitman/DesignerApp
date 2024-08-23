@@ -164,6 +164,9 @@ public static partial class GlobalStaticConstants
         public readonly static string IssueGetHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.USER_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string IncomingTelegramMessageHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-for-{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.INCOMING_CONTROLLER_NAME}");
+
+        /// <inheritdoc/>
         public readonly static string SubscribeIssueUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.SUBSCRIBE_CONTROLLER_NAME}-{Routes.ISSUE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -242,6 +245,11 @@ public static partial class GlobalStaticConstants
         /// Проекты
         /// </summary>
         public const string PROJECTS_CONTROLLER_NAME = "projects";
+
+        /// <summary>
+        /// Incoming Telegram message
+        /// </summary>
+        public const string INCOMING_CONTROLLER_NAME = "incoming";
 
         /// <summary>
         /// Telegram check-user

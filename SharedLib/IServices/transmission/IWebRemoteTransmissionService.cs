@@ -28,7 +28,7 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Проверка Telegram пользователя
     /// </summary>
-    public Task<TResponseModel<CheckTelegramUserModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user);
+    public Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user);
 
     /// <summary>
     /// Проверка Telegram пользователя
@@ -49,6 +49,6 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Получить данные пользователя из кэша
     /// </summary>
-    public Task<TResponseModel<TelegramUserBaseModelDb?>> GetTelegramUser(long telegramUserId);
+    public Task<TResponseModel<TelegramUserBaseModel?>> GetTelegramUser(long telegramUserId);
     #endregion
 }

@@ -882,4 +882,4 @@ public class UsersProfilesService(
         return ResponseBaseModel.CreateSuccess("Claim успешно удалён");
     }
 }
-internal record IdentityUserRecord(string? Email, bool EmailConfirmed, string? PhoneNumber, bool PhoneNumberConfirmed, bool TwoFactorEnabled, DateTimeOffset? LockoutEnd, bool LockoutEnabled, int AccessFailedCount, long? ChatId);
+internal record IdentityUserRecord(string Id, string? Email, bool EmailConfirmed, string? PhoneNumber, bool PhoneNumberConfirmed, bool TwoFactorEnabled, DateTimeOffset? LockoutEnd, bool LockoutEnabled, int AccessFailedCount, long? ChatId);

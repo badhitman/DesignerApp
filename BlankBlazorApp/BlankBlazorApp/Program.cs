@@ -143,12 +143,12 @@ builder.Services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpd
 builder.Services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
 builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
 //
-builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserModel?>();
+builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserAuthModel?>();
 builder.Services.RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();
 builder.Services.RegisterMqListener<TelegramJoinAccountDeleteReceive, long, object?>();
 builder.Services.RegisterMqListener<GetWebConfigReceive, object?, WebConfigModel>();
 builder.Services.RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>();
-builder.Services.RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModelDb>();
+builder.Services.RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModel>();
 builder.Services.RegisterMqListener<FindUserIdentityReceive, string[], UserInfoModel[]>();
 builder.Services.RegisterMqListener<SendEmailReceive, SendEmailRequestModel, bool>();
 #endregion

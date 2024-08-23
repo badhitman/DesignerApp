@@ -9,6 +9,11 @@ namespace SharedLib;
 /// </summary>
 public interface IHelpdeskRemoteTransmissionService
 {
+    /// <summary>
+    /// Входящее сообщение от клиента в TelegramBot
+    /// </summary>
+    public Task<TResponseModel<bool?>> TelegramMessageIncoming(TelegramIncomingMessageModel req);
+
     #region rubric
     /// <summary>
     /// Получить темы обращений

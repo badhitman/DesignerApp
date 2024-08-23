@@ -9,17 +9,6 @@ namespace SharedLib;
 /// </summary>
 public class CheckTelegramUserHandleModel
 {
-    /// <inheritdoc/>
-    public static CheckTelegramUserHandleModel Build(long telegramUserId, string firstName, string? lastName, string? username, bool isBot)
-        => new()
-        {
-            TelegramUserId = telegramUserId,
-            FirstName = firstName,
-            LastName = lastName,
-            Username = username,
-            IsBot = isBot,
-        };
-
     /// <summary>
     /// Уникальный идентификатор Telegram пользователя (или бота)
     /// </summary>
@@ -44,4 +33,15 @@ public class CheckTelegramUserHandleModel
     /// Optional. User's or bot’s username
     /// </summary>
     public string? Username { get; set; }
+
+    /// <inheritdoc/>
+    public static CheckTelegramUserHandleModel Build(long telegramUserId, string firstName, string? lastName, string? username, bool isBot)
+        => new()
+        {
+            TelegramUserId = telegramUserId,
+            FirstName = firstName,
+            LastName = lastName,
+            Username = username,
+            IsBot = isBot,
+        };
 }

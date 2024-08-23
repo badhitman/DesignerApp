@@ -41,7 +41,7 @@ else
     [Parameter, EditorRequired]
     public long TelegramId { get; set; } = default!;
 
-    TelegramUserBaseModelDb TelegramUser = default!;
+    TelegramUserBaseModel TelegramUser = default!;
 
     string? messageText;
     bool ShowForm;
@@ -68,7 +68,7 @@ else
     {
         errorMessage = null;
         IsBusyProgress = true;
-        TResponseModel<TelegramUserBaseModelDb?> tg_user_info = await tgWebRepo.GetTelegramUserCachedInfo(TelegramId);
+        TResponseModel<TelegramUserBaseModel?> tg_user_info = await tgWebRepo.GetTelegramUserCachedInfo(TelegramId);
 
         if (!tg_user_info.Success())
             errorMessage += $"\n{tg_user_info.Message()}";

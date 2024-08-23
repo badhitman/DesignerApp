@@ -9,6 +9,10 @@ namespace RemoteCallLib;
 /// <inheritdoc/>
 public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdeskRemoteTransmissionService
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> TelegramMessageIncoming(TelegramIncomingMessageModel req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.IncomingTelegramMessageHelpdeskReceive, req);
+
     #region rubric
     /// <inheritdoc/>
     public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricRead(int rubricId)
@@ -76,6 +80,6 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
 
     /// <inheritdoc/>
     public async Task<TResponseModel<IssueMessageHelpdeskModelDB[]?>> MessagesList(TAuthRequestModel<int> req)
-        => await rabbitClient.MqRemoteCall<IssueMessageHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.MessagesOfIssueListHelpdeskReceive, req);    
+        => await rabbitClient.MqRemoteCall<IssueMessageHelpdeskModelDB[]>(GlobalStaticConstants.TransmissionQueues.MessagesOfIssueListHelpdeskReceive, req);
     #endregion
 }

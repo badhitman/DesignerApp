@@ -55,7 +55,7 @@ else
 
     TelegramJoinAccountModelDb? TelegramJoinAccount;
     List<ResultMessage> Messages = [];
-    TelegramUserBaseModelDb? TelegramUser;
+    TelegramUserBaseModel? TelegramUser;
 
     string About
     {
@@ -128,7 +128,7 @@ else
         if (User.TelegramId.HasValue)
         {
             IsBusyProgress = true;
-            TResponseModel<TelegramUserBaseModelDb?> rest = await tgWebRepo.GetTelegramUserCachedInfo(User.TelegramId.Value);
+            TResponseModel<TelegramUserBaseModel?> rest = await tgWebRepo.GetTelegramUserCachedInfo(User.TelegramId.Value);
             IsBusyProgress = false;
             Messages.AddRange(rest.Messages);
             TelegramUser = rest.Response;

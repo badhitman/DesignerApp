@@ -1,12 +1,9 @@
-using DbcLib;
-using Microsoft.EntityFrameworkCore;
 using ServerLib;
 using SharedLib;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Telegram.Bot.Services;
@@ -21,6 +18,7 @@ public class UpdateHandler(
     ILogger<UpdateHandler> logger,
     ISerializeStorageRemoteTransmissionService serializeStorageRepo,
     IWebRemoteTransmissionService webRemoteRepo,
+    IHelpdeskRemoteTransmissionService helpdeskRepo,
     IServiceProvider servicesProvider) : IUpdateHandler
 {
     static readonly Type defHandlerType = typeof(DefaultTelegramDialogHandle);
@@ -50,15 +48,23 @@ public class UpdateHandler(
     private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
     {
         logger.LogInformation("Receive message type: {MessageType}", message.Type);
-        await storeRepo.StoreMessage(message);
+        await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
+
+        MessageTelegramModelDB msg_db = await storeRepo.StoreMessage(message);
         if (message.Text is not { } messageText || message.From is null)
             return;
 
-        await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
+        TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
 
-
-        TResponseModel<CheckTelegramUserModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
-        await Usage(uc, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
+        if (uc.Response is not null && uc.Success())
+        {
+            TelegramIncomingMessageModel hd_request = (TelegramIncomingMessageModel)msg_db;
+            hd_request.User = uc.Response;
+            TResponseModel<bool?> hd_res = await helpdeskRepo.TelegramMessageIncoming(hd_request);
+            await Usage(uc.Response, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
+        }
+        else
+            await Usage(new() { FirstName = message.From.FirstName,  }, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
     }
 
     // Process Inline Keyboard callback data
@@ -70,36 +76,14 @@ public class UpdateHandler(
             return;
 
         await botClient.SendChatActionAsync(callbackQuery.Message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
-        TResponseModel<CheckTelegramUserModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(callbackQuery.From.Id, callbackQuery.From.FirstName, callbackQuery.From.LastName, callbackQuery.From.Username, callbackQuery.From.IsBot));
-        await Usage(uc, callbackQuery.Message.MessageId, MessagesTypesEnum.CallbackQuery, callbackQuery.Message.Chat.Id, callbackQuery.Data, cancellationToken);
+        TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(callbackQuery.From.Id, callbackQuery.From.FirstName, callbackQuery.From.LastName, callbackQuery.From.Username, callbackQuery.From.IsBot));
+        if (uc.Response is not null && uc.Success())
+            await Usage(uc.Response, callbackQuery.Message.MessageId, MessagesTypesEnum.CallbackQuery, callbackQuery.Message.Chat.Id, callbackQuery.Data, cancellationToken);
     }
 
-    private async Task Usage(TResponseModel<CheckTelegramUserModel?> uc, int incomingMessageId, MessagesTypesEnum eventType, ChatId chatId, string messageText, CancellationToken cancellationToken)
+    private async Task Usage(TelegramUserBaseModel uc, int incomingMessageId, MessagesTypesEnum eventType, ChatId chatId, string messageText, CancellationToken cancellationToken)
     {
         string msg;
-        if (uc.Response is null || !uc.Success())
-        {
-            msg = $"Ошибка проверки пользователя: {uc.Message()}";
-            Message msg_s = await botClient.SendTextMessageAsync(
-                                chatId: chatId,
-                                text: msg,
-                                replyToMessageId: incomingMessageId,
-                                parseMode: ParseMode.Html,
-                                replyMarkup: new ReplyKeyboardRemove(),
-                                cancellationToken: cancellationToken);
-            logger.LogError(msg);
-//#if DEBUG
-//            await botClient.EditMessageTextAsync(
-//                chatId: msg_s.Chat.Id,
-//                messageId: msg_s.MessageId,
-//                text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
-//                parseMode: ParseMode.Html,
-//                cancellationToken: cancellationToken);
-//#endif
-
-            return;
-        }
-        CheckTelegramUserModel UserTelegram = uc.Response;
 
         if (eventType == MessagesTypesEnum.TextMessage)
         {
@@ -107,10 +91,10 @@ public class UpdateHandler(
             if (messageText.StartsWith("/start ") && Guid.TryParse(messageText[7..], out _))
             {
                 messageText = messageText[7..];
-                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramUser = UserTelegram, Token = messageText.Trim() });
+                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() {  TelegramUser = uc, Token = messageText.Trim() });
             }
             else if (Guid.TryParse(messageText.Trim(), out _))
-                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramUser = UserTelegram, Token = messageText.Trim() });
+                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramUser = uc, Token = messageText.Trim() });
 
             if (check_token is not null)
             {
@@ -166,12 +150,12 @@ public class UpdateHandler(
         using IServiceScope scope = servicesProvider.CreateScope();
         receiveService = scope.ServiceProvider
             .GetServices<ITelegramDialogService>()
-            .FirstOrDefault(o => o.GetType().FullName == UserTelegram.DialogTelegramTypeHandler);
+            .FirstOrDefault(o => o.GetType().FullName == uc.DialogTelegramTypeHandler);
 
         if (receiveService is null)
         {
-            if (!string.IsNullOrWhiteSpace(UserTelegram.DialogTelegramTypeHandler))
-                logger.LogError($"Ошибка в имени {nameof(UserTelegram.DialogTelegramTypeHandler)}: {UserTelegram.DialogTelegramTypeHandler}. error {{2A878102-BC1A-4637-8B02-D33DCE1E7591}}");
+            if (!string.IsNullOrWhiteSpace(uc.DialogTelegramTypeHandler))
+                logger.LogError($"Ошибка в имени {nameof(uc.DialogTelegramTypeHandler)}: {uc.DialogTelegramTypeHandler}. error {{2A878102-BC1A-4637-8B02-D33DCE1E7591}}");
 
             receiveService = scope.ServiceProvider
                 .GetServices<ITelegramDialogService>()
@@ -182,7 +166,7 @@ public class UpdateHandler(
         {
             MessageText = messageText,
             MessageTelegramId = incomingMessageId,
-            TelegramUser = UserTelegram,
+            TelegramUser = uc,
             TypeMessage = eventType,
         });
 
@@ -240,15 +224,15 @@ public class UpdateHandler(
         }
         else if (string.IsNullOrEmpty(resp.Response))
         {
-            if (UserTelegram.MainTelegramMessageId.HasValue)
+            if (uc.MainTelegramMessageId.HasValue)
             {
                 try
                 {
-                    messageSended = await botClient.EditMessageReplyMarkupAsync(chatId: chatId, messageId: UserTelegram.MainTelegramMessageId.Value, replyMarkup: (InlineKeyboardMarkup?)replyKB, cancellationToken: cancellationToken);
+                    messageSended = await botClient.EditMessageReplyMarkupAsync(chatId: chatId, messageId: uc.MainTelegramMessageId.Value, replyMarkup: (InlineKeyboardMarkup?)replyKB, cancellationToken: cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    msg = $"Привет, {UserTelegram}!";
+                    msg = $"Привет, {uc}!";
                     logger.LogError(ex, $"{msg} error {{F0A92AB9-9136-43C0-9422-AADA61A82841}}");
                     messageSended = await botClient.SendTextMessageAsync(
                                         chatId: chatId,
@@ -257,12 +241,12 @@ public class UpdateHandler(
                                         replyMarkup: replyKB,
                                         cancellationToken: cancellationToken);
                     upd_main_msg_res = await webRemoteRepo
-                    .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = UserTelegram.TelegramId });
+                    .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = uc.TelegramId });
 
                     if (!upd_main_msg_res.Success())
-                        logger.LogError($"Попытка установить TelegramMessageId #{messageSended.MessageId} для [основного сообщения] {UserTelegram} вернула ошибку:\n{upd_main_msg_res.Message()}");
+                        logger.LogError($"Попытка установить TelegramMessageId #{messageSended.MessageId} для [основного сообщения] {uc} вернула ошибку:\n{upd_main_msg_res.Message()}");
                     else
-                        logger.LogDebug($"TelegramMessageId для [основного сообщения] {UserTelegram} изменён на #{messageSended.MessageId}.");
+                        logger.LogDebug($"TelegramMessageId для [основного сообщения] {uc} изменён на #{messageSended.MessageId}.");
 #if DEBUG
                     await botClient.EditMessageTextAsync(
                         chatId: messageSended.Chat.Id,
@@ -276,7 +260,7 @@ public class UpdateHandler(
             }
             else
             {
-                msg = $"Привет, {UserTelegram}!";
+                msg = $"Привет, {uc}!";
                 messageSended = await botClient.SendTextMessageAsync(
                                     chatId: chatId,
                                     text: msg,
@@ -284,12 +268,12 @@ public class UpdateHandler(
                                     replyMarkup: replyKB,
                                     cancellationToken: cancellationToken);
                 upd_main_msg_res = await webRemoteRepo
-                .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = UserTelegram.TelegramId });
+                .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = uc.TelegramId });
 
                 if (!upd_main_msg_res.Success())
-                    logger.LogError($"Попытка установить TelegramMessageId #{messageSended.MessageId} для [основного сообщения] {UserTelegram} вернула ошибку:\n{upd_main_msg_res.Message()}");
+                    logger.LogError($"Попытка установить TelegramMessageId #{messageSended.MessageId} для [основного сообщения] {uc} вернула ошибку:\n{upd_main_msg_res.Message()}");
                 else
-                    logger.LogDebug($"TelegramMessageId для [основного сообщения] {UserTelegram} изменён на #{messageSended.MessageId}.");
+                    logger.LogDebug($"TelegramMessageId для [основного сообщения] {uc} изменён на #{messageSended.MessageId}.");
 #if DEBUG
                 await botClient.EditMessageTextAsync(
                     chatId: messageSended.Chat.Id,
@@ -306,26 +290,26 @@ public class UpdateHandler(
 
         if (!resp.MainTelegramMessageId.HasValue || resp.MainTelegramMessageId == default)
         {
-            if (UserTelegram.MainTelegramMessageId.HasValue && UserTelegram.MainTelegramMessageId != default && UserTelegram.MainTelegramMessageId != 0)
+            if (uc.MainTelegramMessageId.HasValue && uc.MainTelegramMessageId != default && uc.MainTelegramMessageId != 0)
             {
                 try
                 {
                     await botClient.DeleteMessageAsync(
                                                     chatId: chatId,
-                                                    messageId: UserTelegram.MainTelegramMessageId.Value,
+                                                    messageId: uc.MainTelegramMessageId.Value,
                                                     cancellationToken: cancellationToken);
-                    logger.LogDebug($"[Основное сообщение #{UserTelegram.MainTelegramMessageId.Value}] Telegram бота для {UserTelegram} удалено (сервис обработки входящих сообщений запросил удаление).");
+                    logger.LogDebug($"[Основное сообщение #{uc.MainTelegramMessageId.Value}] Telegram бота для {uc} удалено (сервис обработки входящих сообщений запросил удаление).");
                     upd_main_msg_res = await webRemoteRepo
-                .UpdateTelegramMainUserMessage(new() { MessageId = 0, UserId = UserTelegram.TelegramId });
+                .UpdateTelegramMainUserMessage(new() { MessageId = 0, UserId = uc.TelegramId });
 
                     if (!upd_main_msg_res.Success())
-                        logger.LogError($"Попытка обнулить TelegramMessageId для [основного сообщения] {UserTelegram} вернула ошибку:\n{upd_main_msg_res.Message()}");
+                        logger.LogError($"Попытка обнулить TelegramMessageId для [основного сообщения] {uc} вернула ошибку:\n{upd_main_msg_res.Message()}");
                     else
-                        logger.LogDebug($"TelegramMessageId для [основного сообщения] {UserTelegram} обнулён (сервис обработки входящих сообщений запросил удаление).");
+                        logger.LogDebug($"TelegramMessageId для [основного сообщения] {uc} обнулён (сервис обработки входящих сообщений запросил удаление).");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogWarning(ex, $"Команда удаления [основного сообщения] TelegramBot (сервис обработки входящих сообщений запросил удаление) не выполнена.Ошибка удаления [основного сообщения #{UserTelegram.MainTelegramMessageId.Value}] для {UserTelegram} (вероятно оно уже было удалено ранее). warning 4B369044-6501-4BAE-9F4D-D69439D971D1");
+                    logger.LogWarning(ex, $"Команда удаления [основного сообщения] TelegramBot (сервис обработки входящих сообщений запросил удаление) не выполнена.Ошибка удаления [основного сообщения #{uc.MainTelegramMessageId.Value}] для {uc} (вероятно оно уже было удалено ранее). warning 4B369044-6501-4BAE-9F4D-D69439D971D1");
                 }
             }
             //replyKB ??= new ReplyKeyboardRemove();
@@ -348,12 +332,12 @@ public class UpdateHandler(
 #endif
 
             upd_main_msg_res = await webRemoteRepo
-                .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = UserTelegram.TelegramId });
+                .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = uc.TelegramId });
 
             if (!upd_main_msg_res.Success())
                 logger.LogError(upd_main_msg_res.Message());
             else
-                logger.LogDebug($"TelegramMessageId для [основного сообщения] сменился: {UserTelegram.MainTelegramMessageId} -> {messageSended.MessageId}");
+                logger.LogDebug($"TelegramMessageId для [основного сообщения] сменился: {uc.MainTelegramMessageId} -> {messageSended.MessageId}");
         }
         else
         {
@@ -366,11 +350,11 @@ public class UpdateHandler(
                                             parseMode: ParseMode.Html,
                                             replyMarkup: (InlineKeyboardMarkup?)replyKB,
                                             cancellationToken: cancellationToken);
-                logger.LogDebug($"[Основное сообщение #{resp.MainTelegramMessageId.Value}] Telegram бота для {UserTelegram} изменено.");
+                logger.LogDebug($"[Основное сообщение #{resp.MainTelegramMessageId.Value}] Telegram бота для {uc} изменено.");
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, $"Не удалось изменить [основного сообщения] для {UserTelegram} (вероятно ранее оно уже было удалено). warning 6C43B500-A863-4C3E-B4A6-238483F27166");
+                logger.LogWarning(ex, $"Не удалось изменить [основного сообщения] для {uc} (вероятно ранее оно уже было удалено). warning 6C43B500-A863-4C3E-B4A6-238483F27166");
                 replyKB ??= new ReplyKeyboardRemove();
                 messageSended = await botClient.SendTextMessageAsync(
                                             chatId: chatId,
@@ -391,12 +375,12 @@ public class UpdateHandler(
 #endif
 
                 upd_main_msg_res = await webRemoteRepo
-                .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = UserTelegram.TelegramId });
+                .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = uc.TelegramId });
 
                 if (!upd_main_msg_res.Success())
                     logger.LogError(upd_main_msg_res.Message());
                 else
-                    logger.LogDebug($"TelegramMessageId для [основного сообщения] сменился: {UserTelegram.MainTelegramMessageId} -> {messageSended.MessageId}");
+                    logger.LogDebug($"TelegramMessageId для [основного сообщения] сменился: {uc.MainTelegramMessageId} -> {messageSended.MessageId}");
             }
         }
 

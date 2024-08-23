@@ -13,5 +13,5 @@ public class TelegramJoinAccountConfirmModel
     /// <summary>
     /// TelegramUser
     /// </summary>
-    public required CheckTelegramUserModel TelegramUser { get; set; }
+    public required TelegramUserBaseModel TelegramUser { get; set; }
 }

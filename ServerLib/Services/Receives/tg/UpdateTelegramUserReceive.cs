@@ -12,15 +12,15 @@ namespace Transmission.Receives.web;
 /// UpdateTelegramUser
 /// </summary>
 public class UpdateTelegramUserReceive(IWebAppService tgWebRepo, ILogger<UpdateTelegramUserReceive> _logger)
-    : IResponseReceive<CheckTelegramUserHandleModel?, CheckTelegramUserModel?>
+    : IResponseReceive<CheckTelegramUserHandleModel?, CheckTelegramUserAuthModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateTelegramUserReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<CheckTelegramUserModel?>> ResponseHandleAction(CheckTelegramUserHandleModel? user)
+    public async Task<TResponseModel<CheckTelegramUserAuthModel?>> ResponseHandleAction(CheckTelegramUserHandleModel? user)
     {
-        TResponseModel<CheckTelegramUserModel?> res = new();
+        TResponseModel<CheckTelegramUserAuthModel?> res = new();
         string msg;
         if (user is null)
         {
