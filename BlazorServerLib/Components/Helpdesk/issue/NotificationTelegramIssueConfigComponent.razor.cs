@@ -2,12 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorWebLib.Components.Helpdesk.issue;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 using BlazorLib;
 
-namespace BlazorWebLib.Components.Helpdesk;
+namespace BlazorWebLib.Components.Helpdesk.issue;
 
 /// <summary>
 /// NotificationTelegramIssueConfigComponent

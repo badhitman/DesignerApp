@@ -3,11 +3,10 @@
 ////////////////////////////////////////////////
 
 using BlazorLib;
-using BlazorWebLib.Components.Helpdesk.issue;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Helpdesk;
+namespace BlazorWebLib.Components.Helpdesk.issue;
 
 /// <summary>
 /// NotificationsAreaTelegramIssueConfigComponent
