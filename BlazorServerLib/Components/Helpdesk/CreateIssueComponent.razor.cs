@@ -88,7 +88,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         SnackbarRepo.ShowMessagesResponse(res_ModeSelectingRubrics.Messages);
-        if (res_ModeSelectingRubrics.Response is null || (int)res_ModeSelectingRubrics.Response == default)
+        if (res_ModeSelectingRubrics.Response is null || (int)res_ModeSelectingRubrics.Response == 0)
             res_ModeSelectingRubrics.Response = ModesSelectRubricsEnum.AllowWithoutRubric;
 
         ShowDisabledRubrics = res.Response == true;

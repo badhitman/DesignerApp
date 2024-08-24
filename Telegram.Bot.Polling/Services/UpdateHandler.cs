@@ -349,7 +349,7 @@ public class UpdateHandler(
         }
 
 
-        if (!resp.MainTelegramMessageId.HasValue || resp.MainTelegramMessageId == default)
+        if (!resp.MainTelegramMessageId.HasValue || resp.MainTelegramMessageId == 0)
         {
             if (uc.MainTelegramMessageId.HasValue && uc.MainTelegramMessageId != default && uc.MainTelegramMessageId != 0)
             {

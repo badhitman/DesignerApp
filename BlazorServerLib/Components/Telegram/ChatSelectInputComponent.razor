@@ -1,7 +1,16 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<h3>ChatSelectInputComponent</h3>
-
-@code {
-
-}
+<div class="mb-3">
+    <label for="basic-url" class="form-label">Чат Telegram</label>
+    <div class="input-group">
+        <input @bind-value="SelectedChatText" @bind-value:event="oninput" readonly="@(!IsEditing)" type="text" class="form-control" id="basic-url">
+        @if (IsEditing)
+        {
+            <button @onclick="EditToggle" class="btn btn-outline-secondary bi bi-x-octagon" type="button"> Отмена</button>
+        }
+        else
+        {
+            <button @onclick="EditToggle" class="btn btn-outline-secondary bi bi-pen" type="button"> Изменить</button>
+        }
+    </div>
+</div>

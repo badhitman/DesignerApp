@@ -23,7 +23,7 @@ public class GetTelegramUserReceive(IWebAppService tgWebRepo, ILogger<GetTelegra
     {
         TResponseModel<TelegramUserBaseModel?> res = new();
         string msg;
-        if (payload == default)
+        if (payload == 0)
         {
             msg = "remote call [payload] == default: error 76FC1696-0849-42F9-BFEA-57622031EB8F";
             _logger.LogError(msg);

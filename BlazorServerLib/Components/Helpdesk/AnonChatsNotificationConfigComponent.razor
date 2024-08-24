@@ -1,14 +1,18 @@
-﻿@using BlazorWebLib.Components.Telegram
+﻿@inherits BlazorBusyComponentBaseModel
 
-<div class="card" style="width: 18rem;">
+@using BlazorWebLib.Components.Telegram
+@using MudBlazor
+
+<div class="card">
     <div class="card-body">
-        <h5 class="card-title">Переадресация Telegram сообщений</h5>
+        <h5 class="card-title">Переадресация Telegram сообщений (глобально)</h5>
         <h6 class="card-subtitle mb-2 text-body-secondary">Для клиентов, на которых ни кто не подписан</h6>
-        <ChatSelectInputComponent />
+        <ChatSelectInputComponent NullableAllow="true" SelectedChat="initValue" SelectChatHandle="SelectChatHandler" />
+        @if (selectedChat is not null && selectedChat.Id == 0)
+        {
+            <div class="alert alert-warning" role="alert">
+                Новые клиенты (без подписанных на них сотрудников) не будут переадресованы! Укажите чат, что бы эти сообщения не прошли незамечеными.
+            </div>
+        }
     </div>
 </div>
-
-@code {
-    [Inject]
-    ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
-}

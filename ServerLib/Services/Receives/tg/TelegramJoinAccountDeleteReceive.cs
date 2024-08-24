@@ -22,7 +22,7 @@ public class TelegramJoinAccountDeleteReceive(IWebAppService tgWebRepo, ILogger<
     {
         TResponseModel<object?> res = new();
         string msg;
-        if (payload == default)
+        if (payload == 0)
         {
             msg = $"remote call [payload] == default: error {{A3BF41B7-D330-42AF-A745-5E7C41E155DE}}";
             res.AddError(msg);
