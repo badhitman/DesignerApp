@@ -149,5 +149,5 @@ public partial class TelegramBotLayerContext : DbContext
     /// <summary>
     /// Ошибки отправки сообщений TelegramBot
     /// </summary>
-    public DbSet<ErrorSendingTextMessageTelegramBotModelDB> ErrorsSendingTextMessageTelegramBot { get; set; }
+    public DbSet<ErrorSendingMessageTelegramBotModelDB> ErrorsSendingTextMessageTelegramBot { get; set; }
 }

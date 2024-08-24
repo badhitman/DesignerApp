@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Ошибка отправки сообщения TelegramBot
 /// </summary>
-public class ErrorSendingTextMessageTelegramBotModelDB : IdSwitchableModel
+public class ErrorSendingMessageTelegramBotModelDB : IdSwitchableModel
 {
     /// <summary>
     /// CreatedAtUtc

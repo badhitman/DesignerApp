@@ -9,7 +9,7 @@ using Telegram.Bot;
 namespace Transmission.Receives.telegram;
 
 /// <summary>
-/// GetFileTelegramReceive
+/// Получить файл из Telegram
 /// </summary>
 public class GetFileTelegramReceive(ITelegramBotClient _botClient)
     : IResponseReceive<string?, byte[]?>

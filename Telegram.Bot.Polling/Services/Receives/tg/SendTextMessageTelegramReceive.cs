@@ -2,15 +2,15 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
+using Telegram.Bot.Types.ReplyMarkups;
 using Microsoft.EntityFrameworkCore;
-using RemoteCallLib;
-using SharedLib;
-using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Services;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
+using RemoteCallLib;
+using Telegram.Bot;
+using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.telegram;
 
@@ -118,7 +118,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
         catch (Exception ex)
         {
             TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
-            await context.AddAsync(new ErrorSendingTextMessageTelegramBotModelDB() { ChatId = message.UserTelegramId, Message = ex.Message });
+            await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB() { ChatId = message.UserTelegramId, Message = ex.Message });
             await context.SaveChangesAsync();
 
             msg = "Ошибка отправки Telegram сообщения. error FA51C4EC-6AC7-4F7D-9B64-A6D6436DFDDA";

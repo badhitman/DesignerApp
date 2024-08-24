@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface ITelegramRemoteTransmissionService
 {
     /// <summary>
+    /// Переслать сообщение пользователю через TelegramBot
+    /// </summary>
+    public Task<TResponseModel<int?>> ForwardMessage(ForwardMessageTelegramBotModel message);
+
+    /// <summary>
     /// Получить Username для TelegramBot
     /// </summary>
     public Task<TResponseModel<string?>> GetBotUsername();
