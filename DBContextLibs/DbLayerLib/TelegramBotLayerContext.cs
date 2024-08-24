@@ -67,7 +67,7 @@ public partial class TelegramBotLayerContext : DbContext
     /// <summary>
     /// JoinsUsersToChats
     /// </summary>
-    public DbSet<JoinUserChatModelDB> JoinsUsersToChats {  get; set; }
+    public DbSet<JoinUserChatModelDB> JoinsUsersToChats { get; set; }
 
     /// <summary>
     /// Chats
@@ -141,6 +141,10 @@ public partial class TelegramBotLayerContext : DbContext
     /// </summary>
     public DbSet<ContactTelegramModelDB> Contacts { get; set; }
 
+    /// <summary>
+    /// Пересланные сообщения
+    /// </summary>
+    public DbSet<ForwardMessageTelegramBotModelDB> ForwardedMessages { get; set; }
 
     /// <summary>
     /// Ошибки отправки сообщений TelegramBot

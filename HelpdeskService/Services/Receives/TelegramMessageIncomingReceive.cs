@@ -12,7 +12,10 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// TelegramMessageIncomingReceive
 /// </summary>
-public class TelegramMessageIncomingReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+public class TelegramMessageIncomingReceive(
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
+    ITelegramRemoteTransmissionService tgRepo,
+    ISerializeStorageRemoteTransmissionService StorageRepo)
     : IResponseReceive<TelegramIncomingMessageModel?, bool>
 {
     /// <inheritdoc/>
@@ -30,6 +33,25 @@ public class TelegramMessageIncomingReceive(IDbContextFactory<HelpdeskContext> h
             .Where(x => x.AuthorIdentityUserId == req.User.UserIdentityId)
             .ToArrayAsync();
 
+        if (issues_for_user.Length == 1)
+        {//ForwardMessageTelegramBotModelDB
+            IssueHelpdeskModelDB issue_db = issues_for_user[0];
+
+
+            StorageCloudParameterModel KeyStorage = new()
+            {
+                ApplicationName = GlobalStaticConstants.HelpdeskNotificationsTelegramAppName,
+                Name = GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME,
+                OwnerPrimaryKey = issue_db.Id,
+            };
+            TResponseModel<long?> rest = await StorageRepo.ReadParameter<long?>(KeyStorage);
+            if (rest.Response.HasValue && rest.Response != 0)
+            {
+                //var v = await tgRepo.
+            }
+
+
+        }
 
 
         return res;
