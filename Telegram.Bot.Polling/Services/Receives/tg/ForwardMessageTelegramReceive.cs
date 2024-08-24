@@ -19,23 +19,27 @@ public class ForwardMessageTelegramReceive(
     ITelegramBotClient _botClient,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
     StoreTelegramService storeTgRepo)
-    : IResponseReceive<ForwardMessageTelegramBotModel?, int?>
+    : IResponseReceive<ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ForwardTextMessageTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(ForwardMessageTelegramBotModel? message)
+    public async Task<TResponseModel<MessageComplexIdsModel?>> ResponseHandleAction(ForwardMessageTelegramBotModel? message)
     {
         ArgumentNullException.ThrowIfNull(message);
-        TResponseModel<int?> res = new() { Response = 0 };
+        TResponseModel<MessageComplexIdsModel?> res = new();
         Message sender_msg;
         try
         {
             sender_msg = await _botClient.ForwardMessageAsync(chatId: message.DestinationChatId, fromChatId: message.SourceChatId, messageId: message.SourceMessageId);
-            res.Response = sender_msg.MessageId;
-            await storeTgRepo.StoreMessage(sender_msg);
 
+            MessageTelegramModelDB msg_db = await storeTgRepo.StoreMessage(sender_msg);
+            res.Response = new()
+            {
+                TelegramId = sender_msg.MessageId,
+                DatabaseId = msg_db.Id,
+            };
         }
         catch (Exception ex)
         {

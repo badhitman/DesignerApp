@@ -24,8 +24,8 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<ChatTelegramModelDB>?>(GlobalStaticConstants.TransmissionQueues.ChatsSelectTelegramReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ForwardMessage(ForwardMessageTelegramBotModel message)
-        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.ForwardTextMessageTelegramReceive, message);
+    public async Task<TResponseModel<MessageComplexIdsModel?>> ForwardMessage(ForwardMessageTelegramBotModel message)
+        => await rabbitClient.MqRemoteCall<MessageComplexIdsModel?>(GlobalStaticConstants.TransmissionQueues.ForwardTextMessageTelegramReceive, message);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<string?>> GetBotUsername()
@@ -40,8 +40,8 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<MessageTelegramModelDB>>(GlobalStaticConstants.TransmissionQueues.MessagesChatsSelectTelegramReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram)
-        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive, message_telegram);
+    public async Task<TResponseModel<MessageComplexIdsModel?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram)
+        => await rabbitClient.MqRemoteCall<MessageComplexIdsModel?>(GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive, message_telegram);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<object?>> SetWebConfig(WebConfigModel webConf)

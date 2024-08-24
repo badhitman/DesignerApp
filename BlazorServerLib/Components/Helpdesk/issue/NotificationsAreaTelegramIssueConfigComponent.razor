@@ -32,13 +32,13 @@
                                                           PrefixPropertyName="@Issue.AuthorIdentityUserId"
                                                           OwnerPrimaryKey="0"
                                                           Title="Общее правило для клиента"
-                                                          Hint="Действует для клиента в общем, но может быть переопределено в обращении" />
+                                                          Hint="Действует для клиента в общем" />
 
-                <NotificationTelegramIssueConfigComponent ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
+                @* <NotificationTelegramIssueConfigComponent ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
                                                           Name="@GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME"
                                                           OwnerPrimaryKey="Issue.Id"
                                                           Title="Для обращения (приоритетное)"
-                                                          Hint="Временное правило пока этот инцидент не завершён (переопределяет общее для клиента)" />
+                                                          Hint="Временное правило пока этот инцидент не завершён" /> *@
             </CascadingValue>
         }
     </div>

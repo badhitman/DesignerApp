@@ -103,7 +103,7 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
     services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     //
-    services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>();
+    services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, MessageComplexIdsModel?>();
     services.RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>();
     services.RegisterMqListener<GetBotUsernameReceive, object?, string?>();
     services.RegisterMqListener<ChatsReadTelegramReceive, long[]?, ChatTelegramModelDB[]?>();
@@ -111,7 +111,7 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<GetFileTelegramReceive, string?, byte[]?>();
     services.RegisterMqListener<ChatsFindForUserTelegramReceive, long[]?, ChatTelegramModelDB[]?>();
     services.RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>?, TPaginationResponseModel<ChatTelegramModelDB>?>();
-    services.RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel?, int?>();
+    services.RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>();
     #endregion
 });
 

@@ -18,16 +18,16 @@ namespace Transmission.Receives.telegram;
 /// Отправить сообщение пользователю через TelegramBot SendTextMessageTelegramBotModel
 /// </summary>
 public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbContextFactory<TelegramBotContext> tgDbFactory, IWebRemoteTransmissionService webRemoteCall, StoreTelegramService storeTgRepo, ILogger<SendTextMessageTelegramReceive> _logger)
-    : IResponseReceive<SendTextMessageTelegramBotModel?, int?>
+    : IResponseReceive<SendTextMessageTelegramBotModel?, MessageComplexIdsModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(SendTextMessageTelegramBotModel? message)
+    public async Task<TResponseModel<MessageComplexIdsModel?>> ResponseHandleAction(SendTextMessageTelegramBotModel? message)
     {
         ArgumentNullException.ThrowIfNull(message);
-        TResponseModel<int?> res = new();
+        TResponseModel<MessageComplexIdsModel?> res = new();
         string msg;
         if (string.IsNullOrWhiteSpace(message.Message))
         {
@@ -87,10 +87,14 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
                                     replyToMessageId: message.ReplyToMessageId);
                     }
 
-                    res.Response = sender_msg.MessageId;
-                    messageThreadId ??= res.Response;
+                    messageThreadId ??= sender_msg.MessageId;
 
-                    await storeTgRepo.StoreMessage(sender_msg);
+                    MessageTelegramModelDB msg_db = await storeTgRepo.StoreMessage(sender_msg);
+                    res.Response = new MessageComplexIdsModel()
+                    {
+                        DatabaseId = msg_db.Id,
+                        TelegramId = sender_msg.MessageId
+                    };
                 }
             }
             else
@@ -101,9 +105,13 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
                     parseMode: parse_mode,
                     replyToMessageId: message.ReplyToMessageId);
 
-                res.Response = sender_msg.MessageId;
+                MessageTelegramModelDB msg_db = await storeTgRepo.StoreMessage(sender_msg);
+                res.Response = new MessageComplexIdsModel()
+                {
+                    DatabaseId = msg_db.Id,
+                    TelegramId = sender_msg.MessageId
+                };
 
-                await storeTgRepo.StoreMessage(sender_msg);
             }
 
             //#if DEBUG

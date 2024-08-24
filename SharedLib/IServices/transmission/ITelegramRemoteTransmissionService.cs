@@ -12,7 +12,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Переслать сообщение пользователю через TelegramBot
     /// </summary>
-    public Task<TResponseModel<int?>> ForwardMessage(ForwardMessageTelegramBotModel message);
+    public Task<TResponseModel<MessageComplexIdsModel?>> ForwardMessage(ForwardMessageTelegramBotModel message);
 
     /// <summary>
     /// Получить Username для TelegramBot
@@ -22,7 +22,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Отправить сообщение через Telegram бота
     /// </summary>
-    public Task<TResponseModel<int?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram);
+    public Task<TResponseModel<MessageComplexIdsModel?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram);
 
     /// <summary>
     /// ChatsSelect

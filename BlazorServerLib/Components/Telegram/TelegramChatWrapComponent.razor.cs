@@ -69,7 +69,7 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
             }
         }
 
-        TResponseModel<int?> rest = await TelegramRepo.SendTextMessageTelegram(req);
+        TResponseModel<MessageComplexIdsModel?> rest = await TelegramRepo.SendTextMessageTelegram(req);
         _textSendMessage = "";
         await _messagesTelegramComponent.TableRef.ReloadServerData();
 

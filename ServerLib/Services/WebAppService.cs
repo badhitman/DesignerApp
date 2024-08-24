@@ -275,7 +275,7 @@ public class WebAppService(
             await identityContext.SaveChangesAsync();
         }
 
-        TResponseModel<int?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
+        TResponseModel<MessageComplexIdsModel?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
         {
             Message = $"Ваш Telegram аккаунт привязан к учётной записи '{userIdentityDb.Email}' сайта {webConfig.Value.ClearBaseUri}",
             UserTelegramId = req.TelegramUser.TelegramId,
@@ -317,7 +317,7 @@ public class WebAppService(
         }
 
         TelegramUserModelDb tg_user_info = await identityContext.TelegramUsers.FirstAsync(x => x.TelegramId == telegramId);
-        TResponseModel<int?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
+        TResponseModel<MessageComplexIdsModel?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
         {
             Message = $"Ваш Telegram аккаунт отключён от учётной записи {userIdentityDb.Email} с сайта {webConfig.Value.ClearBaseUri}",
             UserTelegramId = tg_user_info.TelegramId,
@@ -341,7 +341,7 @@ public class WebAppService(
         if (MailAddress.TryCreate(user.Email, out _))
             await mailRepo.SendEmailAsync(user.Email, "Удаление привязки Telegram к учётной записи", $"Аккаунт Telegram {tg_user_dump} отключён от вашей учётной записи на сайте");
 
-        TResponseModel<int?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
+        TResponseModel<MessageComplexIdsModel?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
         {
             Message = $"Ваш Telegram аккаунт отключён от учётной записи {user.Email} с сайта {webConfig.Value.ClearBaseUri}",
             UserTelegramId = (await identityContext.TelegramUsers.FirstAsync(x => x.TelegramId == tg_user_dump)).TelegramId,

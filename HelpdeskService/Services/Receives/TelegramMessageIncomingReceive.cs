@@ -14,7 +14,7 @@ namespace Transmission.Receives.helpdesk;
 /// </summary>
 public class TelegramMessageIncomingReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
-    ITelegramRemoteTransmissionService tgRepo,
+    //ITelegramRemoteTransmissionService tgRepo,
     ISerializeStorageRemoteTransmissionService StorageRepo)
     : IResponseReceive<TelegramIncomingMessageModel?, bool>
 {
@@ -33,7 +33,6 @@ public class TelegramMessageIncomingReceive(
             .Where(x => x.AuthorIdentityUserId == req.User.UserIdentityId)
             .ToArrayAsync();
 
-        //ForwardMessageTelegramBotModelDB
         if (issues_for_user.Length == 1)
         {
             IssueHelpdeskModelDB issue_db = issues_for_user[0];
@@ -44,11 +43,28 @@ public class TelegramMessageIncomingReceive(
                 Name = GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME,
                 OwnerPrimaryKey = issue_db.Id,
             };
-            TResponseModel<long?> rest = await StorageRepo.ReadParameter<long?>(KeyStorage);
-            if (rest.Response.HasValue && rest.Response != 0)
+
+            TResponseModel<long?> helpdesk_personal_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(KeyStorage);
+            if (!helpdesk_personal_redirect_telegram_for_issue_rest.Success() || !helpdesk_personal_redirect_telegram_for_issue_rest.Response.HasValue || helpdesk_personal_redirect_telegram_for_issue_rest.Response == 0)
             {
-                //var v = await tgRepo.
+                res.AddRangeMessages(helpdesk_personal_redirect_telegram_for_issue_rest.Messages);
+                res.AddError("Отсутствует значение helpdesk_personal_redirect_telegram_for_issue_rest");
+                return res;
             }
+
+            //TResponseModel<MessageComplexIdsModel?> forward_res = await tgRepo.ForwardMessage(new()
+            //{
+            //    DestinationChatId = helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value,
+            //    SourceChatId = req.Chat.ChatTelegramId,
+            //    SourceMessageId = req.MessageTelegramId,
+            //});
+            //await context.AddAsync(new ForwardMessageTelegramBotModelDB()
+            //{
+            //    DestinationChatId = helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value,
+            //    ResultMessageId = forward_res.Response.DatabaseId,
+            //    ResultMessageTelegramId = forward_res.Response.TelegramId,
+            //     SourceChatId = req.Chat!.ChatTelegramId
+            //});
         }
 
         return res;
