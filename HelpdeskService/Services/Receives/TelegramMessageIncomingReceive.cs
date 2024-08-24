@@ -33,10 +33,10 @@ public class TelegramMessageIncomingReceive(
             .Where(x => x.AuthorIdentityUserId == req.User.UserIdentityId)
             .ToArrayAsync();
 
+        //ForwardMessageTelegramBotModelDB
         if (issues_for_user.Length == 1)
-        {//ForwardMessageTelegramBotModelDB
+        {
             IssueHelpdeskModelDB issue_db = issues_for_user[0];
-
 
             StorageCloudParameterModel KeyStorage = new()
             {
@@ -49,10 +49,7 @@ public class TelegramMessageIncomingReceive(
             {
                 //var v = await tgRepo.
             }
-
-
         }
-
 
         return res;
     }

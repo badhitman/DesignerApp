@@ -62,7 +62,7 @@ public partial class ChatSelectInputComponent : BlazorBusyComponentBaseModel
 
     static readonly int page_size = 10;
 
-    ChatTelegramModelDB selectedChatDb = default!;
+    ChatTelegramModelDB? selectedChatDb;
 
     readonly string toggleBtnId = Guid.NewGuid().ToString();
     readonly string dropdownId = Guid.NewGuid().ToString();
@@ -117,7 +117,7 @@ public partial class ChatSelectInputComponent : BlazorBusyComponentBaseModel
     string? _selectedChatText;
     string? SelectedChatText
     {
-        get => IsEditing ? _selectedChatText : selectedChatDb.ToString();
+        get => IsEditing ? _selectedChatText : selectedChatDb?.ToString();
         set
         {
             _selectedChatText = value;
