@@ -1,35 +1,17 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-@* <div class="mb-3">
-    <label for="basic-url" class="form-label">Чат Telegram</label>
-    <div class="input-group">
-        <input @bind-value="SelectedChatText" @bind-value:event="oninput" readonly="@(!IsEditing)" type="text" class="form-control" id="basic-url">
-        @if (IsEditing)
-        {
-            <button @onclick="EditToggle" class="btn btn-outline-secondary bi bi-x-octagon" type="button"> Отмена</button>
-        }
-        else
-        {
-            <button @onclick="EditToggle" class="btn btn-outline-secondary bi bi-pen dropdown-toggle" data-bs-toggle="dropdown" type="button"> Изменить</button>
-        }
-    </div>
-    @if (IsEditing)
-    {
-        <ul class="dropdown-menu show dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-        </ul>
-    }
-</div> *@
 <div id="@toggleBtnId" class="input-group mb-3">
-    <button @onclick="EditToggle" class="btn btn-outline-secondary dropdown-toggle@(IsEditing ? " show" : "")" type="button" data-bs-toggle="dropdown" data-meta="@yToggleBtn" aria-expanded="@IsEditing">Изменить</button>
-    <ul class="dropdown-menu@(IsEditing ? " show" : "")" id="@dropdownId" style="@(IsEditing ? $"position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, {HeightToggleBtn}px);" : "")" data-meta="@HeightDropdown">
-        <li><span class="dropdown-item">Action</span></li>
-        <li><span class="dropdown-item">Another action</span></li>
-        <li><span class="dropdown-item">Something else here</span></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><span class="dropdown-item">Separated link</span></li>
+    <button @onclick="EditToggle" class="btn btn-outline-secondary dropdown-toggle @ShowIfEditing" type="button" data-bs-toggle="dropdown" data-meta="@yToggleBtn" aria-expanded="@IsEditing">Изменить</button>
+    <ul class="chat-selector-input dropdown-menu @ShowIfEditing" id="@dropdownId" style="@StyleIfEditing" data-meta="@HeightDropdown">
+        @foreach (ChatTelegramModelDB ch in loadedData)
+        {
+            <li @onclick="() => SelectChatEvent(ch)"><span class="dropdown-item">@ch.ToString()</span></li>
+        }
+        @if (loadedData.Count < TotalRowsCount)
+        {
+            <li><hr class="dropdown-divider"></li>
+            <li @onclick="LoadPartData"><span class="dropdown-item">Загрузить ещё</span></li>
+        }
     </ul>
     <input @bind-value="SelectedChatText" @bind-value:event="oninput" readonly="@(!IsEditing)" type="text" class="form-control" aria-label="Text input with dropdown button">
 </div>

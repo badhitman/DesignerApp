@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -20,6 +20,7 @@ public partial class AnonChatsNotificationConfigComponent : BlazorBusyComponentB
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+
     ChatTelegramModelDB? selectedChat;
 
     long initValue;
@@ -33,7 +34,7 @@ public partial class AnonChatsNotificationConfigComponent : BlazorBusyComponentB
     };
 
     double heightCard;
-    void setHeightCard(double set_h)
+    void SetHeightCard(double set_h)
     {
         heightCard = set_h;
         StateHasChanged();
@@ -41,12 +42,13 @@ public partial class AnonChatsNotificationConfigComponent : BlazorBusyComponentB
 
     async void SelectChatHandler(ChatTelegramModelDB? selected)
     {
-        selectedChat = selected;
-        if (initValue == selected?.Id)
+        if (selectedChat?.ChatTelegramId == selected?.ChatTelegramId || selectedChat is null)
         {
+            selectedChat = selected;
             StateHasChanged();
             return;
         }
+        selectedChat = selected;
 
         IsBusyProgress = true;
         TResponseModel<int> rest = await StorageRepo.SaveParameter(selected?.ChatTelegramId, KeyStorage);

@@ -3,10 +3,10 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using Microsoft.JSInterop;
 using System.Collections.Generic;
 
 namespace BlazorWebLib.Components.Telegram;
@@ -50,16 +50,69 @@ public partial class ChatSelectInputComponent : BlazorBusyComponentBaseModel
     [Parameter]
     public required Action<double>? SetHeightCard { get; set; }
 
+
+    void SelectChatEvent(ChatTelegramModelDB sender)
+    {
+        selectedChatDb = sender;
+        if (SelectChatHandle is not null)
+            SelectChatHandle(sender);
+
+        EditToggle();
+    }
+
+
+    static readonly int page_size = 10;
+
     ChatTelegramModelDB selectedChatDb = default!;
 
-    string toggleBtnId = Guid.NewGuid().ToString();
-    string dropdownId = Guid.NewGuid().ToString();
+    readonly string toggleBtnId = Guid.NewGuid().ToString();
+    readonly string dropdownId = Guid.NewGuid().ToString();
 
+    string StyleIfEditing => IsEditing ? $"position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, {HeightToggleBtn}px);" : "";
+    string ShowIfEditing => IsEditing ? " show" : "";
     bool IsEditing;
+
+    readonly List<ChatTelegramModelDB> loadedData = [];
+    int pageNum = 0;
+    int TotalRowsCount;
 
     void EditToggle()
     {
         IsEditing = !IsEditing;
+        if (!IsEditing)
+        {
+            loadedData.Clear();
+            pageNum = 0;
+            TotalRowsCount = 0;
+            return;
+        }
+        _selectedChatText = "";
+        InvokeAsync(LoadPartData);
+    }
+
+    async Task LoadPartData()
+    {
+        IsBusyProgress = true;
+        TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?> rest = await TelegramRepo
+            .ChatsSelect(new()
+            {
+                Payload = SelectedChatText,
+                PageNum = pageNum,
+                PageSize = page_size,
+            });
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (rest.Success() && rest.Response?.Response is not null)
+        {
+            TotalRowsCount = rest.Response.TotalRowsCount;
+            loadedData.AddRange(rest.Response.Response);
+
+            if (pageNum == 0)
+                loadedData.Insert(0, new() { Title = "OFF" });
+
+            pageNum++;
+        }
+        StateHasChanged();
     }
 
     string? _selectedChatText;
@@ -69,6 +122,11 @@ public partial class ChatSelectInputComponent : BlazorBusyComponentBaseModel
         set
         {
             _selectedChatText = value;
+
+            loadedData.Clear();
+            pageNum = 0;
+            TotalRowsCount = 0;
+            InvokeAsync(LoadPartData);
         }
     }
 
@@ -101,9 +159,6 @@ public partial class ChatSelectInputComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-
-
-
         if (SelectedChat < 1)
         {
             selectedChatDb = new() { Title = "OFF", Type = ChatsTypesTelegramEnum.Private };
