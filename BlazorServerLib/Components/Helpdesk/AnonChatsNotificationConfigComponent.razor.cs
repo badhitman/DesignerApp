@@ -32,6 +32,13 @@ public partial class AnonChatsNotificationConfigComponent : BlazorBusyComponentB
         OwnerPrimaryKey = 0,
     };
 
+    double heightCard;
+    void setHeightCard(double set_h)
+    {
+        heightCard = set_h;
+        StateHasChanged();
+    }
+
     async void SelectChatHandler(ChatTelegramModelDB? selected)
     {
         selectedChat = selected;

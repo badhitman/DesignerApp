@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.JSInterop;
+using System.Collections.Generic;
 
 namespace BlazorWebLib.Components.Telegram;
 
@@ -19,6 +21,9 @@ public partial class ChatSelectInputComponent : BlazorBusyComponentBaseModel
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
+
+    [Inject]
+    IJSRuntime JS { get; set; } = default!;
 
 
     /// <summary>
@@ -39,8 +44,16 @@ public partial class ChatSelectInputComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required Action<ChatTelegramModelDB?> SelectChatHandle { get; set; }
 
+    /// <summary>
+    /// SetHeightCard
+    /// </summary>
+    [Parameter]
+    public required Action<double>? SetHeightCard { get; set; }
 
     ChatTelegramModelDB selectedChatDb = default!;
+
+    string toggleBtnId = Guid.NewGuid().ToString();
+    string dropdownId = Guid.NewGuid().ToString();
 
     bool IsEditing;
 
@@ -59,9 +72,38 @@ public partial class ChatSelectInputComponent : BlazorBusyComponentBaseModel
         }
     }
 
+    double HeightToggleBtn, yToggleBtn, HeightDropdown;
+    double _HeightToggleBtn, _yToggleBtn, _HeightDropdown;
+    bool _ised;
+
+    /// <inheritdoc/>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        HeightToggleBtn = await JS.InvokeAsync<int>("BoundingClientRect.Height", toggleBtnId);
+
+        if (SetHeightCard is not null)
+        {
+            yToggleBtn = await JS.InvokeAsync<double>("BoundingClientRect.Y", toggleBtnId);
+            HeightDropdown = await JS.InvokeAsync<double>("BoundingClientRect.Height", dropdownId);
+
+            if (_HeightToggleBtn != HeightToggleBtn || _yToggleBtn != yToggleBtn || _HeightDropdown != HeightDropdown || _ised != IsEditing)
+            {
+                _HeightToggleBtn = HeightToggleBtn;
+                _yToggleBtn = yToggleBtn;
+                _HeightDropdown = HeightDropdown;
+                _ised = IsEditing;
+
+                SetHeightCard(IsEditing ? yToggleBtn + HeightToggleBtn + HeightDropdown : 0);
+            }
+        }
+    }
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+
+
+
         if (SelectedChat < 1)
         {
             selectedChatDb = new() { Title = "OFF", Type = ChatsTypesTelegramEnum.Private };
