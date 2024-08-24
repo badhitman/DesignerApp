@@ -16,7 +16,7 @@ public class ChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tg
     : IResponseReceive<TPaginationRequestModel<string?>?, TPaginationResponseModel<ChatTelegramModelDB>?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessagesChatsSelectTelegramReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.ChatsSelectTelegramReceive;
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?>> ResponseHandleAction(TPaginationRequestModel<string?>? req)
@@ -42,7 +42,6 @@ public class ChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tg
             );
         }
 
-
         IQueryable<ChatTelegramModelDB> TakePart(IQueryable<ChatTelegramModelDB> q, VerticalDirectionsEnum direct)
         {
             return direct == VerticalDirectionsEnum.Up
@@ -57,7 +56,7 @@ public class ChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tg
             SortBy = req.SortBy,
             SortingDirection = req.SortingDirection,
             TotalRowsCount = await q.CountAsync(),
-            Response = await TakePart(q, req.SortingDirection).ToListAsync()
+            Response = await TakePart(q, req.SortingDirection).ToListAsync(),
         };
 
         return res;

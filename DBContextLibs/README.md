@@ -2,12 +2,14 @@
 Для упрощённого переключения между разными СУБД: **SQLite**, **MySql** и **PostgreSQL** используйте соответствующие рекомендации ниже.
 
 > [!NOTE]
-> После того как определена СУБД миграции следует применить для обоих контекстов: `IdentityAppDbContext` и `MainDbAppContext`.
+> После того как определена СУБД миграции следует применить для всех контекстов: `IdentityAppDbContext`, `MainDbAppContext`, `CloudParametersContext`, `HelpdeskContext`, `TelegramBotContext`.
 
->Для работы с контекстом `IdentityAppDbContext` в консоли диспетчера пакетов используется **проект по умолчанию**: `IdentityLib` 
+>Для работы с контекстом `IdentityAppDbContext` в консоли диспетчера пакетов используется **проект по умолчанию**: `IdentityLib`: [команды миграции подготовлены](https://github.com/badhitman/DesignerApp/blob/main/IdentityLib/migrations.md)
 
->Для работы с контекстом `MainDbAppContext` в консоли диспетчера пакетов используемый/требуемый **проект по умолчанию** один из: DbMySQLLib, DbPostgreLib или DbSqliteLib. В зависимости от выбранной СУБД нужно выбрать тот или иной проект: MySQL, Postgre или Sqlite. Запускаемым проектом используйте BlazorWebApp службу.
+>Для работы с нужным контекстом в консоли диспетчера пакетов используемый/требуемый **проект по умолчанию** один из: DbMySQLLib, DbPostgreLib или DbSqliteLib. В зависимости от выбранной СУБД нужно выбрать тот или иной проект: MySQL, Postgre или Sqlite. Запускаемым проектом используйте BlazorWebApp службу.
 
+## Примеры конфигураций
+На примере `MainDbAppContext` и `MainDbAppContext`. Остальные контексты (`CloudParametersContext`, `HelpdeskContext`, `TelegramBotContext`) устроены как `MainDbAppContext`, поэтому настройка для одного контекста наследуется на остальные.
 
 ### SQLite (установлен по умолчанию)
 - Для использования **SQLite** в библиотеке `IdentityLib` дополнительных пакетов не требуется.

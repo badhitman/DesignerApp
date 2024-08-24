@@ -19,6 +19,10 @@ public interface ITelegramRemoteTransmissionService
     /// </summary>
     public Task<TResponseModel<int?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram);
 
+    /// <summary>
+    /// ChatsSelect
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?>> ChatsSelect(TPaginationRequestModel<string?> req);
 
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
