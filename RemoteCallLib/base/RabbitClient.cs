@@ -111,7 +111,17 @@ public class RabbitClient : IRabbitClient
                       autoDelete: false,
                       arguments: null);
 
-        byte[] body = request is null ? [] : Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request));
+        string request_payload_json = "";
+        try
+        {
+            request_payload_json = JsonConvert.SerializeObject(request, Formatting.Indented, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+        }
+        catch (Exception ex)
+        {
+            loggerRepo.LogError(ex, $"Ошибка сериализации объекта [{request?.GetType().Name}]: {request}");
+        }
+
+        byte[] body = request is null ? [] : Encoding.UTF8.GetBytes(request_payload_json);
         _channel!.BasicPublish(exchange: "",
                        routingKey: queue,
                        basicProperties: properties,

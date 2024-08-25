@@ -14,7 +14,7 @@ namespace Transmission.Receives.helpdesk;
 /// </summary>
 public class TelegramMessageIncomingReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
-    //ITelegramRemoteTransmissionService tgRepo,
+    ITelegramRemoteTransmissionService tgRepo,
     ISerializeStorageRemoteTransmissionService StorageRepo)
     : IResponseReceive<TelegramIncomingMessageModel?, bool>
 {
@@ -28,43 +28,87 @@ public class TelegramMessageIncomingReceive(
         TResponseModel<bool> res = new() { Response = false };
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        IssueHelpdeskModelDB[] issues_for_user = await context
-            .Issues
-            .Where(x => x.AuthorIdentityUserId == req.User.UserIdentityId)
-            .ToArrayAsync();
+        //IssueHelpdeskModelDB[] issues_for_user = await context
+        //    .Issues
+        //    .Where(x => x.AuthorIdentityUserId == req.User.UserIdentityId)
+        //    .ToArrayAsync();
 
-        if (issues_for_user.Length == 1)
+        StorageCloudParameterModel key_storage = new()
         {
-            IssueHelpdeskModelDB issue_db = issues_for_user[0];
+            ApplicationName = GlobalStaticConstants.HelpdeskNotificationsTelegramAppName,
+            Name = GlobalStaticConstants.Routes.USER_CONTROLLER_NAME,
+            PrefixPropertyName = req.User.UserIdentityId,
+        };
 
-            StorageCloudParameterModel KeyStorage = new()
+        TResponseModel<long?> helpdesk_personal_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(key_storage);
+        if (helpdesk_personal_redirect_telegram_for_issue_rest.Success() && helpdesk_personal_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_personal_redirect_telegram_for_issue_rest.Response != 0)
+        {
+            TResponseModel<MessageComplexIdsModel?> forward_res = await tgRepo.ForwardMessage(new()
             {
-                ApplicationName = GlobalStaticConstants.HelpdeskNotificationsTelegramAppName,
-                Name = GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME,
-                OwnerPrimaryKey = issue_db.Id,
-            };
+                DestinationChatId = helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value,
+                SourceChatId = req.Chat!.ChatTelegramId,
+                SourceMessageId = req.MessageTelegramId,
+            });
 
-            TResponseModel<long?> helpdesk_personal_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(KeyStorage);
-            if (!helpdesk_personal_redirect_telegram_for_issue_rest.Success() || !helpdesk_personal_redirect_telegram_for_issue_rest.Response.HasValue || helpdesk_personal_redirect_telegram_for_issue_rest.Response == 0)
+            if (forward_res.Success() && forward_res.Response is not null)
             {
-                res.AddRangeMessages(helpdesk_personal_redirect_telegram_for_issue_rest.Messages);
-                res.AddError("Отсутствует значение helpdesk_personal_redirect_telegram_for_issue_rest");
+                await context.AddAsync(new ForwardMessageTelegramBotModelDB()
+                {
+                    DestinationChatId = helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value,
+                    ResultMessageId = forward_res.Response.DatabaseId,
+                    ResultMessageTelegramId = forward_res.Response.TelegramId,
+                    SourceChatId = req.Chat!.ChatTelegramId,
+                    SourceMessageId = req.MessageTelegramId,
+                });
+                await context.SaveChangesAsync();
+                res.AddSuccess($"Сообщение было переслано в чат #{helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value} по подписке на пользователя");
                 return res;
             }
+            else
+                res.AddRangeMessages(forward_res.Messages);
+        }
 
-            //TResponseModel<MessageComplexIdsModel?> forward_res = await tgRepo.ForwardMessage(new()
-            //{
-            //    DestinationChatId = helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value,
-            //    SourceChatId = req.Chat.ChatTelegramId,
-            //    SourceMessageId = req.MessageTelegramId,
-            //});
-            //await context.AddAsync(new ForwardMessageTelegramBotModelDB()
-            //{
-            //    DestinationChatId = helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value,
-            //    ResultMessageId = forward_res.Response.DatabaseId,
-            //    ResultMessageTelegramId = forward_res.Response.TelegramId,
-            //     SourceChatId = req.Chat!.ChatTelegramId
-            //});
+        key_storage = new()
+        {
+            ApplicationName = GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME,
+            Name = $"{GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.NOTIFICATIONS_CONTROLLER_NAME}",
+            PrefixPropertyName = GlobalStaticConstants.Routes.GLOBAL_CONTROLLER_NAME,
+        };
+
+#if DEBUG
+        if (req.Chat is null)
+        {
+            res.Response = false;
+            return res;
+        }
+#endif
+
+        helpdesk_personal_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(key_storage);
+        if (helpdesk_personal_redirect_telegram_for_issue_rest.Success() && helpdesk_personal_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_personal_redirect_telegram_for_issue_rest.Response != 0)
+        {
+            TResponseModel<MessageComplexIdsModel?> forward_res = await tgRepo.ForwardMessage(new()
+            {
+                DestinationChatId = helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value,
+                SourceChatId = req.Chat!.ChatTelegramId,
+                SourceMessageId = req.MessageTelegramId,
+            });
+
+            if (forward_res.Success() && forward_res.Response is not null)
+            {
+                await context.AddAsync(new ForwardMessageTelegramBotModelDB()
+                {
+                    DestinationChatId = helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value,
+                    ResultMessageId = forward_res.Response.DatabaseId,
+                    ResultMessageTelegramId = forward_res.Response.TelegramId,
+                    SourceChatId = req.Chat!.ChatTelegramId,
+                    SourceMessageId = req.MessageTelegramId,
+                });
+                await context.SaveChangesAsync();
+                res.AddSuccess($"Сообщение было переслано в чат #{helpdesk_personal_redirect_telegram_for_issue_rest.Response.Value} по глобальной подписке");
+                return res;
+            }
+            else
+                res.AddRangeMessages(forward_res.Messages);
         }
 
         return res;

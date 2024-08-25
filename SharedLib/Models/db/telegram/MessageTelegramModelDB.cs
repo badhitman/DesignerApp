@@ -6,13 +6,14 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SharedLib;
 
 /// <summary>
 /// MessageTelegramModelDB
 /// </summary>
-[Index(nameof(MessageTelegramId), IsUnique = true)]
+[Index(nameof(MessageTelegramId), nameof(ChatId), nameof(FromId))]
 public class MessageTelegramModelDB
 {
     /// <summary>
@@ -71,7 +72,7 @@ public class MessageTelegramModelDB
     /// <summary>
     /// Optional. For forwarded messages, sender of the original message
     /// </summary>
-    public int? ForwardFromId { get; set; }
+    public long? ForwardFromId { get; set; }
 
     /// <summary>
     /// Optional. <see langword="true"/>, if the message is sent to a forum topic
@@ -82,7 +83,7 @@ public class MessageTelegramModelDB
     /// Optional. For messages forwarded from channels or from anonymous administrators, information about the
     /// original sender chat
     /// </summary>
-    public int? ForwardFromChatId { get; set; }
+    public long? ForwardFromChatId { get; set; }
 
     /// <summary>
     /// Optional. For messages forwarded from channels, identifier of the original message in the channel
@@ -112,10 +113,15 @@ public class MessageTelegramModelDB
     public bool? IsAutomaticForward { get; set; }
 
     /// <summary>
-    /// Optional. For replies, the original message. Note that the <see cref="MessageTelegramModelDB"/> object in this field
-    /// will not contain further <see cref="ReplyToMessageId"/> fields even if it itself is a reply.
+    /// Ответ на сообщение (db:id).
     /// </summary>
     public int? ReplyToMessageId { get; set; }
+
+    /// <summary>
+    /// Ответ на сообщение
+    /// </summary>
+    [NotMapped]
+    public MessageTelegramModelDB? ReplyToMessage { get; set; }
 
     /// <summary>
     /// Optional. Bot through which the message was sent <see cref="UserTelegramModelDB"/>
@@ -217,4 +223,16 @@ public class MessageTelegramModelDB
     /// Optional. Caption for the animation, audio, document, photo, video or voice, 0-1024 characters
     /// </summary>
     public string? NormalizedCaptionUpper { get; set; }
+
+    /// <summary>
+    /// SenderChat
+    /// </summary>
+    [NotMapped]
+    public ChatTelegramModelDB? SenderChat { get; set; }
+
+    /// <summary>
+    /// ForwardFrom
+    /// </summary>
+    [NotMapped]
+    public UserTelegramModelDB? ForwardFrom { get; set; }
 }

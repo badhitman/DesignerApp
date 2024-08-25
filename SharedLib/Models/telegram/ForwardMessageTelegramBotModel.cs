@@ -10,17 +10,17 @@ namespace SharedLib;
 public class ForwardMessageTelegramBotModel
 {
     /// <summary>
-    /// Чат назначения
+    /// Чат назначения (Telegram id)
     /// </summary>
     public required long DestinationChatId { get; set; }
 
     /// <summary>
-    /// Чат источник
+    /// Чат источник (Telegram id)
     /// </summary>
     public required long SourceChatId { get; set; }
 
     /// <summary>
-    /// Пересылаемое сообщение
+    /// Пересылаемое сообщение (Telegram id)
     /// </summary>
     public required int SourceMessageId { get; set; }
 }

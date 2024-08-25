@@ -30,7 +30,6 @@ public partial class AnonChatsNotificationConfigComponent : BlazorBusyComponentB
         ApplicationName = GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME,
         Name = $"{GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.NOTIFICATIONS_CONTROLLER_NAME}",
         PrefixPropertyName = GlobalStaticConstants.Routes.GLOBAL_CONTROLLER_NAME,
-        OwnerPrimaryKey = 0,
     };
 
     double heightCard;

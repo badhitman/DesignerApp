@@ -49,6 +49,7 @@ public class UpdateHandler(
     {
         logger.LogInformation("Receive message type: {MessageType}", message.Type);
         await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
+
         MessageTelegramModelDB msg_db = await storeRepo.StoreMessage(message);
 
         string messageText = message.Text ?? message.Caption ?? "";
@@ -102,6 +103,7 @@ public class UpdateHandler(
                 ViaBotId = msg_db.ViaBotId,
                 VideoId = msg_db.VideoId,
                 VoiceId = msg_db.VoiceId,
+                ReplyToMessage = msg_db.ReplyToMessage,
             };
 
             TResponseModel<bool?> hd_res = await helpdeskRepo.TelegramMessageIncoming(hd_request);

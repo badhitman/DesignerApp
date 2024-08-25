@@ -168,9 +168,9 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
                 EditDate = message.EditDate,
                 ForwardDate = message.ForwardDate,
 
-                ForwardFromChatId = message.ForwardFromMessageId,
+                ForwardFromChatId = message.ForwardFromChat?.Id,
                 ForwardFromMessageId = message.ForwardFromMessageId,
-                ForwardFromId = forward_from_db?.Id,
+                ForwardFromId = message.ForwardFrom?.Id,
                 ForwardSenderName = message.ForwardSenderName,
                 ForwardSignature = message.ForwardSignature,
 
@@ -322,6 +322,7 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             }
 
             await context.AddAsync(messageDb);
+
             await context.SaveChangesAsync();
         }
         else
@@ -381,6 +382,12 @@ public class StoreTelegramService(IDbContextFactory<TelegramBotContext> tgDbFact
             await context.AddAsync(new JoinUserChatModelDB() { ChatId = chat_db.Id, UserId = from_db.Id });
             await context.SaveChangesAsync();
         }
+
+        messageDb.Chat = chat_db;
+        messageDb.From = from_db;
+        messageDb.SenderChat = sender_chat_db;
+        messageDb.ForwardFrom = forward_from_db;
+        messageDb.ReplyToMessage = replyToMessageDB;
 
         return messageDb;
     }
