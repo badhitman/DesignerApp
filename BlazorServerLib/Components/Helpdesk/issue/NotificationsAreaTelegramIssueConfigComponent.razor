@@ -31,14 +31,14 @@
                                                           Name="@($"{GlobalStaticConstants.Routes.USER_CONTROLLER_NAME}")"
                                                           PrefixPropertyName="@Issue.AuthorIdentityUserId"
                                                           OwnerPrimaryKey="0"
-                                                          Title="Общее правило для клиента"
-                                                          Hint="Действует для клиента в общем" />
+                                                          Title="Групповой чат или персональный"
+                                                          Hint="Правило переадресации для сообщений от клиента" />
 
                 @* <NotificationTelegramIssueConfigComponent ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
-                                                          Name="@GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME"
-                                                          OwnerPrimaryKey="Issue.Id"
-                                                          Title="Для обращения (приоритетное)"
-                                                          Hint="Временное правило пока этот инцидент не завершён" /> *@
+            Name="@GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME"
+            OwnerPrimaryKey="Issue.Id"
+            Title="Для обращения (приоритетное)"
+            Hint="Временное правило пока этот инцидент не завершён" /> *@
             </CascadingValue>
         }
     </div>
