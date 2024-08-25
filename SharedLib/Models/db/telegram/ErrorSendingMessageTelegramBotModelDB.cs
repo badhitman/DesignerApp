@@ -20,6 +20,11 @@ public class ErrorSendingMessageTelegramBotModelDB : IdSwitchableModel
     public long ChatId { get; set; }
 
     /// <summary>
+    /// Имя типа исключения
+    /// </summary>
+    public required string? ExceptionTypeName { get; set; }
+
+    /// <summary>
     /// Message (error)
     /// </summary>
     public required string Message { get; set; }

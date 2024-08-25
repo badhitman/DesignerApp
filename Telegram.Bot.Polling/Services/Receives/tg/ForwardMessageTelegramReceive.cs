@@ -44,7 +44,12 @@ public class ForwardMessageTelegramReceive(
         catch (Exception ex)
         {
             TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
-            await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB() { ChatId = message.DestinationChatId, Message = ex.Message });
+            await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB()
+            {
+                ChatId = message.DestinationChatId,
+                Message = ex.Message,
+                ExceptionTypeName = ex.GetType().FullName,
+            });
             await context.SaveChangesAsync();
 
             res.AddError("Ошибка отправки Telegram сообщения. error FA51C4EC-6AC7-4F7D-9B64-A6D6436DFDDA");

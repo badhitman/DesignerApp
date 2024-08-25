@@ -28,17 +28,30 @@ public class TelegramMessageIncomingReceive(
         TResponseModel<bool> res = new() { Response = false };
         HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        if (await context.ForwardedMessages.AnyAsync())
+        if (req.ReplyToMessage is not null)
         {
-            res.AddInfo("Данное сообщение является ответом на другое сообщение. К пересылке не подлежит!");
-            res.Response = true;
-            return res;
-        }
+            ForwardMessageTelegramBotModelDB? inc_msg = await context.ForwardedMessages
+            .FirstOrDefaultAsync(x =>
+            x.DestinationChatId == req.ReplyToMessage.Chat!.ChatTelegramId &&
+            x.SourceChatId == req.ReplyToMessage.ForwardFromId &&
+            x.ResultMessageTelegramId == req.ReplyToMessage.MessageTelegramId);
 
-        //IssueHelpdeskModelDB[] issues_for_user = await context
-        //    .Issues
-        //    .Where(x => x.AuthorIdentityUserId == req.User.UserIdentityId)
-        //    .ToArrayAsync();
+            if (inc_msg is not null)
+            {
+                SendTextMessageTelegramBotModel sender = new()
+                {
+                    Message = "",
+                    UserTelegramId = req.ReplyToMessage.Chat!.ChatTelegramId,
+
+                };
+
+                var send_answer = await tgRepo.SendTextMessageTelegram(sender);
+
+                res.AddInfo("Данное сообщение является ответом на другое сообщение!");
+                res.Response = true;
+                return res;
+            }
+        }
 
         StorageCloudParameterModel key_storage = new()
         {
