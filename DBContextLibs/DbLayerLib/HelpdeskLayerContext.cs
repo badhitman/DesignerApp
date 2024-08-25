@@ -84,4 +84,9 @@ public partial class HelpdeskLayerContext : DbContext
     /// События в обращениях
     /// </summary>
     public DbSet<PulseIssueModelDB> PulseEvents { get; set; }
+
+    /// <summary>
+    /// Пересланные сообщения
+    /// </summary>
+    public DbSet<ForwardMessageTelegramBotModelDB> ForwardedMessages { get; set; }
 }

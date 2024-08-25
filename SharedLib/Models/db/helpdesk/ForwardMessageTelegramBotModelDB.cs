@@ -26,9 +26,4 @@ public class ForwardMessageTelegramBotModelDB : ForwardMessageTelegramBotModel
     /// Результат пересылки db:id
     /// </summary>
     public required int ResultMessageId { get; set; }
-
-    /// <summary>
-    /// Результат пересылки
-    /// </summary>
-    public MessageTelegramModelDB? ResultMessage { get; set; }
 }

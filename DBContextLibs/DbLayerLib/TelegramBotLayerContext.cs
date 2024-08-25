@@ -142,11 +142,6 @@ public partial class TelegramBotLayerContext : DbContext
     public DbSet<ContactTelegramModelDB> Contacts { get; set; }
 
     /// <summary>
-    /// Пересланные сообщения
-    /// </summary>
-    public DbSet<ForwardMessageTelegramBotModelDB> ForwardedMessages { get; set; }
-
-    /// <summary>
     /// Ошибки отправки сообщений TelegramBot
     /// </summary>
     public DbSet<ErrorSendingMessageTelegramBotModelDB> ErrorsSendingTextMessageTelegramBot { get; set; }
