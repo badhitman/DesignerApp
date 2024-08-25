@@ -11,6 +11,7 @@ using RemoteCallLib;
 using Telegram.Bot;
 using SharedLib;
 using DbcLib;
+using Telegram.Bot.Polling;
 
 namespace Transmission.Receives.telegram;
 
@@ -59,18 +60,19 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
             string msg_text = string.IsNullOrWhiteSpace(message.From)
                 ? ""
                 : $"{message.Message}\n--- {message.From.Trim()}";
-
+            MessageTelegramModelDB msg_db;
             if (message.Files is not null && message.Files.Count != 0)
             {
-                int? messageThreadId = null;
-                foreach (FileAttachTelegramModel file in message.Files)
+                if (message.Files.Count == 1)
                 {
+                    FileAttachTelegramModel file = message.Files[0];
+
                     if (GlobalTools.IsImageFile(file.Name))
                     {
                         sender_msg = await _botClient.SendPhotoAsync(
                                                             chatId: message.UserTelegramId,
                                                             photo: InputFile.FromStream(new MemoryStream(file.Data), file.Name),
-                                                            messageThreadId: messageThreadId,
+
                                                             caption: msg_text,
                                                             replyMarkup: replyKB,
                                                             parseMode: parse_mode,
@@ -81,20 +83,35 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
                         sender_msg = await _botClient.SendDocumentAsync(
                                     chatId: message.UserTelegramId,
                                     document: InputFile.FromStream(new MemoryStream(file.Data), file.Name),
-                                    messageThreadId: messageThreadId,
+
                                     caption: msg_text,
                                     parseMode: parse_mode,
                                     replyToMessageId: message.ReplyToMessageId);
                     }
 
-                    messageThreadId ??= sender_msg.MessageId;
-
-                    MessageTelegramModelDB msg_db = await storeTgRepo.StoreMessage(sender_msg);
+                    msg_db = await storeTgRepo.StoreMessage(sender_msg);
                     res.Response = new MessageComplexIdsModel()
                     {
                         DatabaseId = msg_db.Id,
                         TelegramId = sender_msg.MessageId
                     };
+                }
+                else
+                {
+                    Message[] senders_msgs = await _botClient.SendMediaGroupAsync(
+                        chatId: message.UserTelegramId,
+                        media: message.Files.Select(ToolsStatic.ConvertFile).ToArray(),
+                        replyToMessageId: message.ReplyToMessageId);
+
+                    foreach (Message mm in senders_msgs)
+                    {
+                        msg_db = await storeTgRepo.StoreMessage(mm);
+                        res.Response = new MessageComplexIdsModel()
+                        {
+                            DatabaseId = msg_db.Id,
+                            TelegramId = mm.MessageId
+                        };
+                    }
                 }
             }
             else
@@ -105,7 +122,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
                     parseMode: parse_mode,
                     replyToMessageId: message.ReplyToMessageId);
 
-                MessageTelegramModelDB msg_db = await storeTgRepo.StoreMessage(sender_msg);
+                msg_db = await storeTgRepo.StoreMessage(sender_msg);
                 res.Response = new MessageComplexIdsModel()
                 {
                     DatabaseId = msg_db.Id,
@@ -126,11 +143,11 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
         catch (Exception ex)
         {
             TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
-            await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB() 
-            { 
-                ChatId = message.UserTelegramId, 
-                Message = ex.Message, 
-                ExceptionTypeName = ex.GetType().FullName 
+            await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB()
+            {
+                ChatId = message.UserTelegramId,
+                Message = ex.Message,
+                ExceptionTypeName = ex.GetType().FullName
             });
             await context.SaveChangesAsync();
 

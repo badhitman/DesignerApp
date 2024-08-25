@@ -158,7 +158,7 @@ public partial class ChatSelectInputComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        if (SelectedChat < 1)
+        if (SelectedChat == 0)
         {
             selectedChatDb = new() { Title = "OFF", Type = ChatsTypesTelegramEnum.Private };
             SelectChatHandle(selectedChatDb);

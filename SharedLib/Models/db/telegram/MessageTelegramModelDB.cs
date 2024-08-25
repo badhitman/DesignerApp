@@ -2,11 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SharedLib;
 
@@ -23,7 +23,7 @@ public class MessageTelegramModelDB
     public int Id { get; set; }
 
     /// <summary>
-    /// Unique message identifier inside this chat
+    /// Message id (Telegram id)
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     public int MessageTelegramId { get; set; }
@@ -67,7 +67,6 @@ public class MessageTelegramModelDB
     /// automatically forwarded to the discussion group
     /// </summary>
     public int? SenderChatId { get; set; }
-
 
     /// <summary>
     /// Optional. For forwarded messages, sender of the original message

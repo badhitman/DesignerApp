@@ -31,12 +31,10 @@ public class TelegramMessageIncomingReceive(
         if (req.ReplyToMessage is not null)
         {
             ForwardMessageTelegramBotModelDB? inc_msg = await context.ForwardedMessages
-            .FirstOrDefaultAsync(x =>
-            x.DestinationChatId == req.ReplyToMessage.Chat!.ChatTelegramId &&
-            x.SourceChatId == req.ReplyToMessage.ForwardFromId &&
-            x.ResultMessageTelegramId == req.ReplyToMessage.MessageTelegramId);
-
-            // AnswerToForwardModelDB
+                .FirstOrDefaultAsync(x =>
+                    x.DestinationChatId == req.ReplyToMessage.Chat!.ChatTelegramId &&
+                    x.SourceChatId == req.ReplyToMessage.ForwardFromId &&
+                    x.ResultMessageTelegramId == req.ReplyToMessage.MessageTelegramId);
 
             if (inc_msg is not null)
             {
@@ -44,12 +42,24 @@ public class TelegramMessageIncomingReceive(
                 {
                     Message = req.Text ?? req.Caption ?? "Вложения",
                     UserTelegramId = req.ReplyToMessage.Chat!.ChatTelegramId,
-
+                    Files = await Files(req),
+                    ReplyToMessageId = inc_msg.SourceMessageId,
                 };
 
                 TResponseModel<MessageComplexIdsModel?> send_answer = await tgRepo.SendTextMessageTelegram(sender);
 
-                res.AddInfo("Данное сообщение является ответом на другое сообщение!");
+                if (send_answer.Success() && send_answer.Response is not null)
+                {
+                    await context.AddAsync(new AnswerToForwardModelDB()
+                    {
+                        ResultMessageId = send_answer.Response.DatabaseId,
+                        ResultMessageTelegramId = send_answer.Response.TelegramId,
+                        ForwardMessageId = inc_msg.Id,
+                    });
+                    await context.SaveChangesAsync();
+                }
+
+                res.AddInfo("Сообщение является экспресс-ответом клиенту!");
                 res.Response = true;
                 return res;
             }
@@ -126,5 +136,45 @@ public class TelegramMessageIncomingReceive(
         }
 
         return res;
+    }
+
+    async Task<List<FileAttachTelegramModel>?> Files(TelegramIncomingMessageModel req)
+    {
+        List<FileAttachTelegramModel> files = [];
+        TResponseModel<byte[]?> data_res;
+        //
+        if (req.Audio is not null)
+        {
+            data_res = await tgRepo.GetFile(req.Audio.FileId);
+            if (data_res.Success() && data_res.Response is not null && data_res.Response.Length != 0)
+                files.Add(new() { ContentType = req.Audio.MimeType ?? "application/octet-stream", Data = data_res.Response, Name = req.Audio.FileName ?? req.Audio.Title ?? "Audio" });
+        }
+        if (req.Document is not null)
+        {
+            data_res = await tgRepo.GetFile(req.Document.FileId);
+            if (data_res.Success() && data_res.Response is not null && data_res.Response.Length != 0)
+                files.Add(new() { ContentType = req.Document.MimeType ?? "application/octet-stream", Data = data_res.Response, Name = req.Document.FileName ?? "Document" });
+        }
+        if (req.Photo is not null && req.Photo.Count != 0)
+        {
+            PhotoMessageTelegramModelDB _f = req.Photo.OrderByDescending(x => x.FileSize).First();
+            data_res = await tgRepo.GetFile(_f.FileId);
+            if (data_res.Success() && data_res.Response is not null && data_res.Response.Length != 0)
+                files.Add(new() { ContentType = "image/jpeg", Data = data_res.Response, Name = "Photo" });
+        }
+        if (req.Voice is not null)
+        {
+            data_res = await tgRepo.GetFile(req.Voice.FileId);
+            if (data_res.Success() && data_res.Response is not null && data_res.Response.Length != 0)
+                files.Add(new() { ContentType = req.Voice.MimeType ?? "application/octet-stream", Data = data_res.Response, Name = "Voice" });
+        }
+        if (req.Video is not null)
+        {
+            data_res = await tgRepo.GetFile(req.Video.FileId);
+            if (data_res.Success() && data_res.Response is not null && data_res.Response.Length != 0)
+                files.Add(new() { ContentType = req.Video.MimeType ?? "application/octet-stream", Data = data_res.Response, Name = req.Video.FileName ?? "Video" });
+        }
+
+        return files.Count == 0 ? null : files;
     }
 }
