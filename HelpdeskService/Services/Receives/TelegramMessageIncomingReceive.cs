@@ -36,16 +36,18 @@ public class TelegramMessageIncomingReceive(
             x.SourceChatId == req.ReplyToMessage.ForwardFromId &&
             x.ResultMessageTelegramId == req.ReplyToMessage.MessageTelegramId);
 
+            // AnswerToForwardModelDB
+
             if (inc_msg is not null)
             {
                 SendTextMessageTelegramBotModel sender = new()
                 {
-                    Message = "",
+                    Message = req.Text ?? req.Caption ?? "Вложения",
                     UserTelegramId = req.ReplyToMessage.Chat!.ChatTelegramId,
 
                 };
 
-                var send_answer = await tgRepo.SendTextMessageTelegram(sender);
+                TResponseModel<MessageComplexIdsModel?> send_answer = await tgRepo.SendTextMessageTelegram(sender);
 
                 res.AddInfo("Данное сообщение является ответом на другое сообщение!");
                 res.Response = true;

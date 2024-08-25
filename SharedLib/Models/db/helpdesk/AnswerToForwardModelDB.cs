@@ -8,12 +8,12 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// ForwardMessageTelegramBotModelDB
+/// Ответ на пересланный вопрос клиента
 /// </summary>
 [Index(nameof(ResultMessageTelegramId))]
 [Index(nameof(ResultMessageId))]
 [Index(nameof(CreatedAtUtc))]
-public class ForwardMessageTelegramBotModelDB : ForwardMessageTelegramBotModel
+public class AnswerToForwardModelDB
 {
     /// <summary>
     /// Идентификатор/Key
@@ -37,7 +37,12 @@ public class ForwardMessageTelegramBotModelDB : ForwardMessageTelegramBotModel
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 
     /// <summary>
-    /// Ответы на пересланный вопрос клиента
+    /// Пересланное сообщение
     /// </summary>
-    public List<AnswerToForwardModelDB>? Answers { get; set; }
+    public ForwardMessageTelegramBotModelDB? ForwardMessage { get; set; }
+
+    /// <summary>
+    /// Пересланное сообщение
+    /// </summary>
+    public int ForwardMessageId { get; set; }
 }

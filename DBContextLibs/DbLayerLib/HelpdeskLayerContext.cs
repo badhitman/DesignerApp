@@ -89,4 +89,9 @@ public partial class HelpdeskLayerContext : DbContext
     /// Пересланные сообщения
     /// </summary>
     public DbSet<ForwardMessageTelegramBotModelDB> ForwardedMessages { get; set; }
+
+    /// <summary>
+    /// Ответы на пересланные запросы от пользователей
+    /// </summary>
+    public DbSet<AnswerToForwardModelDB> AnswersToForwards { get; set; }
 }

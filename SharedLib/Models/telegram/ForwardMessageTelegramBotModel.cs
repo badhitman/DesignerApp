@@ -2,11 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
+
 namespace SharedLib;
 
 /// <summary>
 /// Пересылка сообщения
 /// </summary>
+[Index(nameof(DestinationChatId), nameof(SourceChatId), nameof(SourceMessageId))]
 public class ForwardMessageTelegramBotModel
 {
     /// <summary>
