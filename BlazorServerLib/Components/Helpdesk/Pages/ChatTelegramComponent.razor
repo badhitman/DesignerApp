@@ -1,0 +1,44 @@
+﻿@page "/helpdesk/telegram-chat-page/{ChatId:int}"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using BlazorWebLib.Components.Telegram
+@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (Chat is null)
+{
+    <div class="alert alert-primary" role="alert">
+        Не указан чат!
+    </div>
+}
+else
+{
+
+    @if (Chat.UsersJoins!.Count > 1)
+    {
+        <h5 class="card-title"> Участники: 
+            @foreach (JoinUserChatModelDB uj in Chat.UsersJoins)
+            {
+                <span class="badge rounded-pill text-bg-primary mx-1">@uj.User!.FirstName @uj.User.LastName@(string.IsNullOrWhiteSpace(uj.User.Username) ? "" : $" @{uj.User.Username}")</span>
+            }
+        </h5>
+        <hr />
+    }
+
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Чат">
+            <TelegramChatWrapComponent Chat="Chat" />
+        </MudTabPanel>
+        <MudTabPanel Text="Обращения">
+            <MudText>Content Two</MudText>
+        </MudTabPanel>
+    </MudTabs>
+}

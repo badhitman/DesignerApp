@@ -56,7 +56,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     private string? searchString = null;
 
     UserInfoModel CurrentUser = default!;
-    List<UserInfoModel> usersDump = [];
+    readonly List<UserInfoModel> usersDump = [];
 
     /// <inheritdoc/>
     public MudTable<IssueHelpdeskModel> TableRef = default!;
@@ -97,8 +97,12 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
                 IdentityUserId = CurrentUser.UserId,
                 JournalMode = JournalMode,
                 SearchQuery = searchString,
-                UserArea = UserArea
-            }
+                UserArea = UserArea,
+            },
+            PageNum = state.Page,
+            PageSize = state.PageSize,
+            SortBy = state.SortLabel,
+            SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
 
         TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> rest = await HelpdeskRepo

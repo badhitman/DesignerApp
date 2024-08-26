@@ -10,6 +10,12 @@ namespace SharedLib;
 public interface ITelegramRemoteTransmissionService
 {
     /// <summary>
+    /// Прочитать данные чата
+    /// </summary>
+    /// <param name="chatIdDb">Chat id (db:id)</param>
+    public Task<TResponseModel<ChatTelegramModelDB?>> ChatTelegramRead(int chatIdDb);
+
+    /// <summary>
     /// Переслать сообщение пользователю через TelegramBot
     /// </summary>
     public Task<TResponseModel<MessageComplexIdsModel?>> ForwardMessage(ForwardMessageTelegramBotModel message);

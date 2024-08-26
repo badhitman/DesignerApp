@@ -29,20 +29,21 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
 
 
     private string _searchStringQuery = "";
-    private string searchStringQuery
+    private string SearchStringQuery
     {
         get => _searchStringQuery;
         set
         {
             _searchStringQuery = value;
-            InvokeAsync(TableRef.ReloadServerData);
+            if (TableRef is not null)
+                InvokeAsync(TableRef.ReloadServerData);
         }
     }
 
     /// <summary>
     /// Table
     /// </summary>
-    public MudTable<MessageTelegramModelDB> TableRef { get; set; } = default!;
+    public MudTable<MessageTelegramModelDB>? TableRef { get; set; }
 
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
@@ -53,7 +54,7 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
         TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?> rest_message = await TelegramRepo
             .MessagesListTelegram(new TPaginationRequestModel<SearchMessagesChatModel>()
             {
-                Payload = new() { ChatId = ChatId, SearchQuery = searchStringQuery },
+                Payload = new() { ChatId = ChatId, SearchQuery = SearchStringQuery },
                 PageNum = state.Page,
                 PageSize = state.PageSize,
                 SortingDirection = state.SortDirection == SortDirection.Descending ? VerticalDirectionsEnum.Down : VerticalDirectionsEnum.Up,
@@ -68,4 +69,11 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
 
         return new TableData<MessageTelegramModelDB>() { TotalItems = rest_message.Response.TotalRowsCount, Items = rest_message.Response.Response };
     }
+    /*
+    /// <inheritdoc/>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (TableRef is not null)
+            await TableRef.ReloadServerData();
+    }*/
 }

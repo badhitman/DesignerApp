@@ -71,7 +71,8 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
 
         TResponseModel<MessageComplexIdsModel?> rest = await TelegramRepo.SendTextMessageTelegram(req);
         _textSendMessage = "";
-        await _messagesTelegramComponent.TableRef.ReloadServerData();
+        if (_messagesTelegramComponent.TableRef is not null)
+            await _messagesTelegramComponent.TableRef.ReloadServerData();
 
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

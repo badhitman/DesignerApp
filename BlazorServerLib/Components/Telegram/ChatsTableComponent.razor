@@ -4,13 +4,13 @@
 
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table" Loading="IsBusyProgress">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Чаты Telegram</MudText>
+        <MudText Typo="Typo.h6">Чаты TelegramBot`а</MudText>
         <MudSpacer />
-        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Поиск" Adornment="Adornment.Start"
+        <MudTextField title="без учёта регистра = регистронезависимый поиск" T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Поиск по: Title, Username, FirstName, LastName" Adornment="Adornment.Start" Immediate="true"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="@(nameof(ChatTelegramModelDB.LastUpdateUtc))" T="ChatTelegramModelDB">Updated</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="@(nameof(ChatTelegramModelDB.LastUpdateUtc))" T="ChatTelegramModelDB">Updated</MudTableSortLabel></MudTh>
         <MudTh>Title</MudTh>
         <MudTh>Type</MudTh>
         <MudTh>Username</MudTh>
@@ -18,7 +18,9 @@
         <MudTh>LastName</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Updated">@context.LastUpdateUtc.ToLongDateString()</MudTd>
+        <MudTd DataLabel="@(nameof(ChatTelegramModelDB.LastUpdateUtc))">
+            <a href="@($"/helpdesk/telegram-chat-page/{context.Id}")">@context.LastUpdateUtc.ToShortDateString()<sup>@context.LastUpdateUtc.ToShortTimeString()</sup></a>
+        </MudTd>
         <MudTd DataLabel="Title">@context.Title</MudTd>
         <MudTd DataLabel="Type">@context.Type.DescriptionInfo()</MudTd>
         <MudTd DataLabel="Username">@(string.IsNullOrWhiteSpace(context.Username) ? "" : $"@{context.Username}")</MudTd>

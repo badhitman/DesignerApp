@@ -34,11 +34,12 @@ public class ChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tg
 
         if (!string.IsNullOrWhiteSpace(req.Payload))
         {
+            string find_req = req.Payload.ToUpper();
             q = q.Where(x =>
-            (x.NormalizedFirstNameUpper != null && x.NormalizedFirstNameUpper.Contains(req.Payload)) ||
-            (x.NormalizedLastNameUpper != null && x.NormalizedLastNameUpper.Contains(req.Payload)) ||
-            (x.NormalizedTitleUpper != null && x.NormalizedTitleUpper.Contains(req.Payload)) ||
-            (x.NormalizedUsernameUpper != null && x.NormalizedUsernameUpper.Contains(req.Payload))
+            (x.NormalizedFirstNameUpper != null && x.NormalizedFirstNameUpper.Contains(find_req)) ||
+            (x.NormalizedLastNameUpper != null && x.NormalizedLastNameUpper.Contains(find_req)) ||
+            (x.NormalizedTitleUpper != null && x.NormalizedTitleUpper.Contains(find_req)) ||
+            (x.NormalizedUsernameUpper != null && x.NormalizedUsernameUpper.Contains(find_req))
             );
         }
 

@@ -10,7 +10,7 @@
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="CreatedAt" T="IssueHelpdeskModel">Создан</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="@(nameof(IssueHelpdeskModel.CreatedAt))" T="IssueHelpdeskModel">Создан</MudTableSortLabel></MudTh>
         <MudTh>Статус</MudTh>
         <MudTh>Тема</MudTh>
         <MudTh>Рубрика</MudTh>

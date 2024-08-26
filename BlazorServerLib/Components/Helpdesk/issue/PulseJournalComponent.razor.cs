@@ -33,6 +33,7 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortingDirection = state.SortDirection == SortDirection.Descending ? VerticalDirectionsEnum.Down : VerticalDirectionsEnum.Up,
+            SortBy = state.SortLabel,
             Payload = new()
             {
                 UserId = CurrentUser.UserId,
