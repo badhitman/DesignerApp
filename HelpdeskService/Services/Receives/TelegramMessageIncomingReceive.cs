@@ -58,6 +58,21 @@ public class TelegramMessageIncomingReceive(
                     });
                     await context.SaveChangesAsync();
                 }
+                else
+                {
+                    sender.ReplyToMessageId = null;
+                    send_answer = await tgRepo.SendTextMessageTelegram(sender);
+                    if (send_answer.Success() && send_answer.Response is not null)
+                    {
+                        await context.AddAsync(new AnswerToForwardModelDB()
+                        {
+                            ResultMessageId = send_answer.Response.DatabaseId,
+                            ResultMessageTelegramId = send_answer.Response.TelegramId,
+                            ForwardMessageId = inc_msg.Id,
+                        });
+                        await context.SaveChangesAsync();
+                    }
+                }
 
                 res.AddInfo("Сообщение является экспресс-ответом клиенту!");
                 res.Response = true;
