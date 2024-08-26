@@ -1,6 +1,8 @@
 ﻿@page "/help-desk/main-page"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @using BlazorWebLib.Components.Helpdesk
+@using BlazorWebLib.Components.Telegram
 @using MudBlazor
 
 @attribute [Authorize]
@@ -26,6 +28,12 @@
                     <ConsoleHelpdeskComponent />
                 </MudPaper>
             </MudTabPanel>
+            <MudTabPanel ToolTip="TelegramBot чаты" Text="Чаты" Icon="@Icons.Custom.Brands.Telegram">
+                <MudPaper Class="ma-2" Elevation="3">
+                    <ChatsTableComponent />
+                </MudPaper>
+            </MudTabPanel>
+
             <MudTabPanel ToolTip="Категории/рубрики обращений" Text="Рубрики" Icon="@Icons.Material.Filled.AccountTree">
                 <MudPaper Class="ma-2" Elevation="3">
                     <RubricsManageComponent />

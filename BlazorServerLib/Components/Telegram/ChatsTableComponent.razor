@@ -1,0 +1,37 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@using MudBlazor
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table" Loading="IsBusyProgress">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Чаты Telegram</MudText>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Поиск" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="@(nameof(ChatTelegramModelDB.LastUpdateUtc))" T="ChatTelegramModelDB">Updated</MudTableSortLabel></MudTh>
+        <MudTh>Title</MudTh>
+        <MudTh>Type</MudTh>
+        <MudTh>Username</MudTh>
+        <MudTh>FirstName</MudTh>
+        <MudTh>LastName</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Updated">@context.LastUpdateUtc.ToLongDateString()</MudTd>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Type">@context.Type.DescriptionInfo()</MudTd>
+        <MudTd DataLabel="Username">@(string.IsNullOrWhiteSpace(context.Username) ? "" : $"@{context.Username}")</MudTd>
+        <MudTd DataLabel="FirstName">@context.FirstName</MudTd>
+        <MudTd DataLabel="LastName">@context.LastName</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Ни чего не найдено</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
