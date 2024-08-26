@@ -58,7 +58,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
         try
         {
             string msg_text = string.IsNullOrWhiteSpace(message.From)
-                ? ""
+                ? message.Message
                 : $"{message.Message}\n--- {message.From.Trim()}";
             MessageTelegramModelDB msg_db;
             if (message.Files is not null && message.Files.Count != 0)

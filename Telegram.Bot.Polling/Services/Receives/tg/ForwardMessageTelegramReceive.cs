@@ -52,7 +52,7 @@ public class ForwardMessageTelegramReceive(
             });
             await context.SaveChangesAsync();
 
-            res.AddError("Ошибка отправки Telegram сообщения. error FA51C4EC-6AC7-4F7D-9B64-A6D6436DFDDA");
+            res.AddError("Ошибка отправки Telegram сообщения. error E06E939D-6E93-45CE-A5F5-19A417A27DC1");
 
             res.Messages.InjectException(ex);
             return res;

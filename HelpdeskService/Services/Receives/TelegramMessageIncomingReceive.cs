@@ -41,7 +41,7 @@ public class TelegramMessageIncomingReceive(
                 SendTextMessageTelegramBotModel sender = new()
                 {
                     Message = req.Text ?? req.Caption ?? "Вложения",
-                    UserTelegramId = req.ReplyToMessage.Chat!.ChatTelegramId,
+                    UserTelegramId = inc_msg.SourceChatId,
                     Files = await Files(req),
                     ReplyToMessageId = inc_msg.SourceMessageId,
                 };
