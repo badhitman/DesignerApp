@@ -17,7 +17,7 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Поиск пользователей в Identity по их идентификаторам
     /// </summary>
-    public Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] req);
+    public Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] ids_users);
 
     /// <summary>
     /// Отправка Email

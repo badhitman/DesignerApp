@@ -69,11 +69,4 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
 
         return new TableData<MessageTelegramModelDB>() { TotalItems = rest_message.Response.TotalRowsCount, Items = rest_message.Response.Response };
     }
-    /*
-    /// <inheritdoc/>
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (TableRef is not null)
-            await TableRef.ReloadServerData();
-    }*/
 }

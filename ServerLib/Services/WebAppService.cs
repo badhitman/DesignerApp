@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,8 +11,6 @@ using Microsoft.AspNetCore.Http;
 using System.Net.Mail;
 using IdentityLib;
 using SharedLib;
-using DbcLib;
-using Microsoft.AspNetCore.Identity;
 
 namespace ServerLib;
 
@@ -40,9 +40,25 @@ public class WebAppService(
 
         if (tgUserDb is null)
         {
-            tgUserDb = TelegramUserModelDb.Build(user);
+            using IDbContextTransaction transaction = identityContext.Database.BeginTransaction();
+            ApplicationUser app_user = new()
+            {
+                ChatTelegramId = user.TelegramUserId,
+                EmailConfirmed = true,
+
+                Email = $"tg.{user.TelegramUserId}@fake.null",
+                NormalizedEmail = userManager.NormalizeEmail($"tg.{user.TelegramUserId}@fake.null"),
+
+                UserName = $"tg.{user.TelegramUserId}@fake.null",
+                NormalizedUserName = userManager.NormalizeEmail($"tg.{user.TelegramUserId}@fake.null"),
+            };
+            await userManager.CreateAsync(app_user);
+
+            tgUserDb = TelegramUserModelDb.Build(user, app_user.Id);
             await identityContext.AddAsync(tgUserDb);
             await identityContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
         }
         else
         {
@@ -385,13 +401,13 @@ public class WebAppService(
 
         TelegramUserViewModel identity_get(TelegramUserModelDb ctx)
         {
-            var id_data = users_identity_data.FirstOrDefault(x => x.ChatTelegramId == ctx.TelegramId);
-            return TelegramUserViewModel.Build(ctx, id_data?.Id, id_data?.Email);
+            var id_data = users_identity_data.First(x => x.ChatTelegramId == ctx.TelegramId);
+            return TelegramUserViewModel.Build(ctx, id_data.Id, id_data?.Email);
         }
 
         return new()
         {
-            Response = users_tg.Select(x => identity_get(x)).ToList(),
+            Response = users_tg.Select(identity_get).ToList(),
             TotalRowsCount = total,
             PageNum = req.PageNum,
             PageSize = req.PageSize,

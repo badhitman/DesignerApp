@@ -61,63 +61,53 @@ public class UpdateHandler(
 
         TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
 
-        if (uc.Response is not null && uc.Success())
-        {
-            TelegramIncomingMessageModel hd_request = new()
-            {
-                Audio = msg_db.Audio,
-                User = uc.Response,
-                Voice = msg_db.Voice,
-                Video = msg_db.Video,
-                AudioId = msg_db.AudioId,
-                AuthorSignature = msg_db.AuthorSignature,
-                Caption = msg_db.Caption,
-                Chat = msg_db.Chat,
-                ChatId = msg_db.ChatId,
-                Contact = msg_db.Contact,
-                ContactId = msg_db.ContactId,
-                CreatedAtUtc = msg_db.CreatedAtUtc,
-                DocumentId = msg_db.DocumentId,
-                ForwardDate = msg_db.ForwardDate,
-                ForwardFromChatId = msg_db.ForwardFromChatId,
-                EditDate = msg_db.EditDate,
-                ForwardFromId = msg_db.ForwardFromId,
-                ForwardFromMessageId = msg_db.ForwardFromMessageId,
-                ForwardSenderName = msg_db.ForwardSenderName,
-                ForwardSignature = msg_db.ForwardSignature,
-                From = msg_db.From,
-                FromId = msg_db.FromId,
-                Id = msg_db.Id,
-                Document = msg_db.Document,
-                IsAutomaticForward = msg_db.IsAutomaticForward,
-                IsTopicMessage = msg_db.IsTopicMessage,
-                MediaGroupId = msg_db.MediaGroupId,
-                MessageTelegramId = msg_db.MessageTelegramId,
-                MessageThreadId = msg_db.MessageThreadId,
-                NormalizedCaptionUpper = msg_db.NormalizedCaptionUpper,
-                NormalizedTextUpper = msg_db.NormalizedTextUpper,
-                ReplyToMessageId = msg_db.ReplyToMessageId,
-                SenderChatId = msg_db.SenderChatId,
-                Text = msg_db.Text,
-                Photo = msg_db.Photo,
-                ViaBotId = msg_db.ViaBotId,
-                VideoId = msg_db.VideoId,
-                VoiceId = msg_db.VoiceId,
-                ReplyToMessage = msg_db.ReplyToMessage,
-            };
 
-            TResponseModel<bool?> hd_res = await helpdeskRepo.TelegramMessageIncoming(hd_request);
-            await Usage(uc.Response, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
-        }
-        else
-            await Usage(new()
-            {
-                FirstName = message.From.FirstName,
-                LastName = message.From.LastName,
-                Username = message.From.Username,
-                IsBot = message.From.IsBot,
-                TelegramId = message.From.Id,
-            }, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
+        TelegramIncomingMessageModel hd_request = new()
+        {
+            Audio = msg_db.Audio,
+            User = uc.Response!,
+            Voice = msg_db.Voice,
+            Video = msg_db.Video,
+            AudioId = msg_db.AudioId,
+            AuthorSignature = msg_db.AuthorSignature,
+            Caption = msg_db.Caption,
+            Chat = msg_db.Chat,
+            ChatId = msg_db.ChatId,
+            Contact = msg_db.Contact,
+            ContactId = msg_db.ContactId,
+            CreatedAtUtc = msg_db.CreatedAtUtc,
+            DocumentId = msg_db.DocumentId,
+            ForwardDate = msg_db.ForwardDate,
+            ForwardFromChatId = msg_db.ForwardFromChatId,
+            EditDate = msg_db.EditDate,
+            ForwardFromId = msg_db.ForwardFromId,
+            ForwardFromMessageId = msg_db.ForwardFromMessageId,
+            ForwardSenderName = msg_db.ForwardSenderName,
+            ForwardSignature = msg_db.ForwardSignature,
+            From = msg_db.From,
+            FromId = msg_db.FromId,
+            Id = msg_db.Id,
+            Document = msg_db.Document,
+            IsAutomaticForward = msg_db.IsAutomaticForward,
+            IsTopicMessage = msg_db.IsTopicMessage,
+            MediaGroupId = msg_db.MediaGroupId,
+            MessageTelegramId = msg_db.MessageTelegramId,
+            MessageThreadId = msg_db.MessageThreadId,
+            NormalizedCaptionUpper = msg_db.NormalizedCaptionUpper,
+            NormalizedTextUpper = msg_db.NormalizedTextUpper,
+            ReplyToMessageId = msg_db.ReplyToMessageId,
+            SenderChatId = msg_db.SenderChatId,
+            Text = msg_db.Text,
+            Photo = msg_db.Photo,
+            ViaBotId = msg_db.ViaBotId,
+            VideoId = msg_db.VideoId,
+            VoiceId = msg_db.VoiceId,
+            ReplyToMessage = msg_db.ReplyToMessage,
+        };
+
+        TResponseModel<bool?> hd_res = await helpdeskRepo.TelegramMessageIncoming(hd_request);
+        await Usage(uc.Response!, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);
+
     }
 
     // Process Inline Keyboard callback data
@@ -130,17 +120,7 @@ public class UpdateHandler(
 
         await botClient.SendChatActionAsync(callbackQuery.Message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
         TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(callbackQuery.From.Id, callbackQuery.From.FirstName, callbackQuery.From.LastName, callbackQuery.From.Username, callbackQuery.From.IsBot));
-        if (uc.Response is not null && uc.Success())
-            await Usage(uc.Response, callbackQuery.Message.MessageId, MessagesTypesEnum.CallbackQuery, callbackQuery.Message.Chat.Id, callbackQuery.Data, cancellationToken);
-        else
-            await Usage(new()
-            {
-                FirstName = callbackQuery.Message.From.FirstName,
-                LastName = callbackQuery.Message.From.LastName,
-                Username = callbackQuery.Message.From.Username,
-                IsBot = callbackQuery.Message.From.IsBot,
-                TelegramId = callbackQuery.Message.From.Id,
-            }, callbackQuery.Message.MessageId, MessagesTypesEnum.TextMessage, callbackQuery.Message.Chat.Id, callbackQuery.Data, cancellationToken);
+        await Usage(uc.Response!, callbackQuery.Message.MessageId, MessagesTypesEnum.CallbackQuery, callbackQuery.Message.Chat.Id, callbackQuery.Data, cancellationToken);
     }
 
     private async Task Usage(TelegramUserBaseModel uc, int incomingMessageId, MessagesTypesEnum eventType, ChatId chatId, string messageText, CancellationToken cancellationToken)

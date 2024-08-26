@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -40,10 +40,17 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     public required UsersAreasHelpdeskEnum UserArea { get; set; }
 
     /// <summary>
+    /// UserIdentityId
+    /// </summary>
+    [Parameter]
+    public string? UserIdentityId { get; set; }
+
+    /// <summary>
     /// SetTab
     /// </summary>
     [CascadingParameter, EditorRequired]
     public required Action<HelpdeskJournalComponent> SetTab { get; set; }
+
 
     /// <summary>
     /// SetArea
@@ -72,7 +79,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     {
         IsBusyProgress = true;
 
-        TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync();
+        TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync(UserIdentityId);
         if (!_current_user.Success() || _current_user.Response is null)
         {
             IsBusyProgress = false;

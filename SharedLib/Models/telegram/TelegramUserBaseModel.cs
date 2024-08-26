@@ -13,6 +13,11 @@ namespace SharedLib;
 public class TelegramUserBaseModel : TelegramUserLiteModel
 {
     /// <summary>
+    /// User id (if Identity)
+    /// </summary>
+    public required string UserIdentityId { get; set; }
+
+    /// <summary>
     /// Уникальный идентификатор Telegram пользователя (или бота)
     /// </summary>
     public long TelegramId { get; set; }
@@ -54,16 +59,6 @@ public class TelegramUserBaseModel : TelegramUserLiteModel
             IsDisabled = user.IsDisabled,
             DialogTelegramTypeHandler = user.DialogTelegramTypeHandler,
             MainTelegramMessageId = user.MainTelegramMessageId,
-        };
-
-    /// <inheritdoc/>
-    public static TelegramUserBaseModel Build(CheckTelegramUserHandleModel user)
-        => new()
-        {
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            TelegramId = user.TelegramUserId,
-            IsBot = user.IsBot,
-            Username = user.Username ?? "",
+            UserIdentityId = user.UserIdentityId,
         };
 }

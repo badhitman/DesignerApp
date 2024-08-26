@@ -744,7 +744,9 @@ public class UsersProfilesService(
                 x.EmailConfirmed,
                 x.LockoutEnd,
                 x.LockoutEnabled,
-                x.AccessFailedCount
+                x.AccessFailedCount,
+                x.FirstName,
+                x.LastName,
             })
             .ToArrayAsync();
         string[] users_ids = users.Select(x => x.Id).ToArray();
@@ -759,7 +761,7 @@ public class UsersProfilesService(
 
         return new()
         {
-            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.ChatTelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, roles: roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray(), claims: claims.Where(o => o.UserId == x.Id).Select(q => new EntryAltModel() { Id = q.ClaimType, Name = q.ClaimValue }).ToArray())).ToList(),
+            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.ChatTelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, firstName: x.FirstName, lastName: x.LastName, roles: roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray(), claims: claims.Where(o => o.UserId == x.Id).Select(q => new EntryAltModel() { Id = q.ClaimType, Name = q.ClaimValue }).ToArray())).ToList(),
             TotalRowsCount = total,
             PageNum = req.PageNum,
             PageSize = req.PageSize,

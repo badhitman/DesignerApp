@@ -9,6 +9,16 @@ namespace SharedLib;
 /// </summary>
 public class UserInfoModel : UserInfoMainModel
 {
+    /// <summary>
+    /// FirstName
+    /// </summary>
+    public string? FirstName { get; set; }
+
+    /// <summary>
+    /// LastName
+    /// </summary>
+    public string? LastName { get; set; }
+
     /// <inheritdoc/>
     public string? PhoneNumber { get; set; }
 
@@ -47,9 +57,11 @@ public class UserInfoModel : UserInfoMainModel
     public bool IsAdmin => Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase)) == true;
 
     /// <inheritdoc/>
-    public static UserInfoModel Build(string userId, string? userName, string? email, string? phoneNumber, long? telegramId, bool emailConfirmed, DateTimeOffset? lockoutEnd, bool lockoutEnabled, int accessFailedCount, string[]? roles = null, EntryAltModel[]? claims = null)
+    public static UserInfoModel Build(string userId, string? userName, string? email, string? phoneNumber, long? telegramId, bool emailConfirmed, DateTimeOffset? lockoutEnd, bool lockoutEnabled, int accessFailedCount, string? firstName, string? lastName, string[]? roles = null, EntryAltModel[]? claims = null)
         => new()
         {
+            FirstName = firstName,
+            LastName = lastName,
             UserId = userId,
             Email = email,
             UserName = userName,

@@ -39,7 +39,7 @@ public class TelegramUserModelDb : TelegramUserBaseModel
     }
 
     /// <inheritdoc/>
-    public static new TelegramUserModelDb Build(CheckTelegramUserHandleModel user)
+    public static TelegramUserModelDb Build(CheckTelegramUserHandleModel user, string user_identity_id)
         => new()
         {
             FirstName = user.FirstName,
@@ -50,5 +50,6 @@ public class TelegramUserModelDb : TelegramUserBaseModel
             IsBot = user.IsBot,
             Username = user.Username ?? "",
             NormalizedUserNameUpper = user.Username?.ToUpper(),
+            UserIdentityId = user_identity_id,
         };
 }

@@ -10,11 +10,6 @@ namespace SharedLib;
 public class CheckTelegramUserAuthModel : TelegramUserBaseModel
 {
     /// <summary>
-    /// User id (if Identity)
-    /// </summary>
-    public required string UserIdentityId { get; set; }
-
-    /// <summary>
     /// Email пользователя
     /// </summary>
     public string? UserEmail { get; set; }

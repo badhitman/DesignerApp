@@ -20,6 +20,9 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+    [Inject]
+    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+
 
     /// <summary>
     /// Chat id (db:id)
@@ -28,7 +31,20 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
     public int? ChatId { get; set; }
 
 
+    HelpdeskJournalComponent? _tab;
+
+    void Update()
+    {
+        _tab?.TableRef.ReloadServerData();
+    }
+
+    void SetTab(HelpdeskJournalComponent page)
+    {
+        _tab = page;
+    }
+
     ChatTelegramModelDB? Chat;
+    TelegramUserBaseModel? CurrentUser;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -39,7 +55,15 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<ChatTelegramModelDB?> rest = await TelegramRepo.ChatTelegramRead(ChatId.Value);
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);        
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
         Chat = rest.Response;
+        if (Chat is null)
+            return;
+
+        IsBusyProgress = true;
+        TResponseModel<TelegramUserBaseModel?> get_user = await WebRepo.GetTelegramUser(Chat.ChatTelegramId);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(get_user.Messages);
+        CurrentUser = get_user.Response;
     }
 }

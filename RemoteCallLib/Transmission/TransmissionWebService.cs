@@ -16,8 +16,8 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
         => await rabbitClient.MqRemoteCall<WebConfigModel?>(GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] req)
-        => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.FindUsersOfIdentityReceive, req);
+    public async Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] ids_users)
+        => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.FindUsersOfIdentityReceive, ids_users);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req)

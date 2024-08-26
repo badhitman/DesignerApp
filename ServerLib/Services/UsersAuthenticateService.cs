@@ -39,7 +39,9 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
             emailConfirmed: au.EmailConfirmed,
             lockoutEnd: au.LockoutEnd,
             lockoutEnabled: au.LockoutEnabled,
-            accessFailedCount: au.AccessFailedCount)
+            accessFailedCount: au.AccessFailedCount,
+             firstName: au.FirstName,
+             lastName: au.LastName)
         };
     }
 
