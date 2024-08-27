@@ -63,7 +63,7 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<TelegramUserBaseModel?> get_user = await WebRepo.GetTelegramUser(Chat.ChatTelegramId);
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(get_user.Messages);
+        //SnackbarRepo.ShowMessagesResponse(get_user.Messages);
         CurrentUser = get_user.Response;
     }
 }

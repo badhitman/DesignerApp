@@ -80,8 +80,7 @@ public class WebAppService(
             await identityContext.SaveChangesAsync();
         }
 
-        ApplicationUser? appUserDb = await identityContext.Users
-                        .FirstOrDefaultAsync(x => x.ChatTelegramId == user.TelegramUserId);
+        ApplicationUser? appUserDb = await identityContext.Users.FirstOrDefaultAsync(x => x.ChatTelegramId == user.TelegramUserId);
 
         if (appUserDb is not null)
         {
@@ -104,7 +103,16 @@ public class WebAppService(
                 LockoutEnabled = appUserDb.LockoutEnabled,
             };
 
+            if (tgUserDb.UserIdentityId != appUserDb.Id)
+            {
+                await identityContext
+                    .TelegramUsers
+                    .Where(x => x.Id == tgUserDb.Id)
+                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.UserIdentityId, appUserDb.Id));
+            }
+
             await identityToolsRepo.ClaimsUpdateForUser(appUserDb);
+
         }
         else
             res.AddWarning("Пользователь Telegram не связан с учётной записью на сайте");
@@ -337,7 +345,7 @@ public class WebAppService(
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         TResponseModel<TelegramUserBaseModel?> res = new() { Response = TelegramUserBaseModel.Build(await identityContext.TelegramUsers.FirstOrDefaultAsync(x => x.TelegramId == telegramId)) };
         if (res.Response is null)
-            res.AddError($"Пользователь Telegram #{telegramId} не найден в кешэ БД");
+            res.AddInfo($"Пользователь Telegram #{telegramId} не найден в кешэ БД");
 
         return res;
     }

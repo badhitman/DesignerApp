@@ -16,9 +16,6 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
@@ -27,9 +24,16 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
 
+
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required Action Update { get; set; }
+
+    /// <summary>
+    /// UserIdentityId
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string UserIdentityId { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -52,20 +56,21 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     bool ShowDisabledRubrics;
     RubricIssueHelpdeskLowModel? SelectedRubric;
 
-    UserInfoMainModel user = default!;
-
     async Task CreateIssue()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        if(string.IsNullOrWhiteSpace(Name))
+        {
+            SnackbarRepo.Error("Не указано имя");
+            return;
+        }
 
         TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new()
         {
-            SenderActionUserId = user.UserId,
+            SenderActionUserId = UserIdentityId,
             Payload = new()
             {
                 RubricId = SelectedRubric?.Id,
-                Name = Name!,
+                Name = Name,
                 Description = Description,
             }
         });

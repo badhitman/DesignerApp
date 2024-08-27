@@ -9,7 +9,10 @@ using SharedLib;
 using MudBlazor;
 
 namespace BlazorWebLib.Components.Account.Pages.Manage;
-//BlazorWebLib.Components.Account.Pages.Manage.IndexPage
+
+/// <summary>
+/// IndexPage
+/// </summary>
 public partial class IndexPage : ComponentBase
 {
     [Inject]

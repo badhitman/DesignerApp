@@ -23,6 +23,7 @@ public class UsersProfilesService(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     RoleManager<ApplicationRole> roleManager,
     UserManager<ApplicationUser> userManager,
+    IdentityTools IdentityToolsRepo,
     SignInManager<ApplicationUser> signInManager,
     IUserStore<ApplicationUser> userStore,
     IHttpContextAccessor httpContextAccessor,
@@ -891,11 +892,9 @@ public class UsersProfilesService(
         lastName ??= "";
 
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        var user_db = await identityContext
+        ApplicationUser? user_db = await identityContext
             .Users
-            .Where(x => x.Id == userId && (x.FirstName != firstName || x.LastName != lastName))
-            .Select(x => new { x.Id, x.FirstName, x.LastName })
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(x => x.Id == userId && (x.FirstName != firstName || x.LastName != lastName));
 
         if (user_db is null)
             return ResponseBaseModel.CreateInfo("Без изменений");
@@ -904,6 +903,8 @@ public class UsersProfilesService(
             .Users
             .Where(x => x.Id == userId)
             .ExecuteUpdateAsync(set => set.SetProperty(p => p.FirstName, firstName).SetProperty(p => p.LastName, lastName));
+
+        await IdentityToolsRepo.ClaimsUpdateForUser(user_db);
 
         return ResponseBaseModel.CreateSuccess("First/Last names update");
     }

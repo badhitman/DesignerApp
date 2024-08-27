@@ -60,16 +60,16 @@ else
                             <HelpdeskJournalComponent UserIdentityId="@CurrentUser.UserIdentityId" UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.ActualOnly" />
                         </TabComponent>
                         <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ArchiveOnly))" Title="Завершённые">
-                            <HelpdeskJournalComponent UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.ArchiveOnly" />
+                            <HelpdeskJournalComponent UserIdentityId="@CurrentUser.UserIdentityId" UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.ArchiveOnly" />
                         </TabComponent>
                         <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.All))" Title="Все">
-                            <HelpdeskJournalComponent UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.All" />
+                            <HelpdeskJournalComponent UserIdentityId="@CurrentUser.UserIdentityId" UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.All" />
                         </TabComponent>
                     </TabSetComponent>
                 }
             </CascadingValue>
 
-            @* <CreateIssueComponent Update="Update" /> *@
+            <CreateIssueComponent Update="Update" UserIdentityId="@CurrentUser!.UserIdentityId" />
         </MudTabPanel>
     </MudTabs>
 }
