@@ -46,7 +46,7 @@ public class PulseJournalReceive(
         if (!issue_data.Success() || issue_data.Response is null)
             return new() { Messages = issue_data.Messages };
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         IQueryable<PulseIssueModelDB> q = context
             .PulseEvents

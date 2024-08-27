@@ -50,7 +50,7 @@ public class MessagesListReceive(
             return res;
         }
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         res.Response = await context
             .IssuesMessages

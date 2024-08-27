@@ -57,7 +57,7 @@ public class SubscribeUpdateReceive(
             return res;
         }
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         var sdb = await context
              .SubscribersOfIssues

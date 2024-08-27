@@ -10,6 +10,11 @@ namespace SharedLib;
 public static partial class GlobalStaticConstants
 {
     /// <summary>
+    /// Fake Host
+    /// </summary>
+    public const string FakeHost = "fake.null";
+
+    /// <summary>
     /// Identity.StatusMessage
     /// </summary>
     public const string StatusCookieName = "Identity.StatusMessage";

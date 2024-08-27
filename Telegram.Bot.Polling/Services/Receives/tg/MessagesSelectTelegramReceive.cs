@@ -27,7 +27,7 @@ public class MessagesSelectTelegramReceive(IDbContextFactory<TelegramBotContext>
             req.PageSize = 5;
 
         TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?> res = new();
-        TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
+        using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         IQueryable<MessageTelegramModelDB> q = context
             .Messages
             .Where(x => x.ChatId == req.Payload.ChatId);

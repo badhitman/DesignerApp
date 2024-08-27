@@ -79,7 +79,7 @@ public class ExecuterUpdateReceive(
             });
         }
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         string msg;
         if (string.IsNullOrWhiteSpace(req.Payload.UserId))
         {

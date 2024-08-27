@@ -37,7 +37,7 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
             }
         };
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         IQueryable<IssueHelpdeskModelDB> q = context
             .Issues

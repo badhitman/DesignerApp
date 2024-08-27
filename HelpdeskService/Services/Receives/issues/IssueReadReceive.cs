@@ -34,7 +34,7 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
             return res;
         }
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IIncludableQueryable<IssueHelpdeskModelDB, List<SubscriberIssueHelpdeskModelDB>?> q = context.Issues.Include(x => x.Subscribers);
         IssueHelpdeskModelDB? issue_db = req.Payload.IncludeSubscribersOnly
             ? await q.FirstOrDefaultAsync(x => x.Id == req.Payload.IssueId)
@@ -53,7 +53,7 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 
-        
+
         if (!rest.Response[0].IsAdmin && rest.Response[0].Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true)
             return new()
             {

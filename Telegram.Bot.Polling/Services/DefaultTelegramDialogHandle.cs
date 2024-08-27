@@ -42,10 +42,13 @@ public class DefaultTelegramDialogHandle(IWebRemoteTransmissionService webRemote
                 }
                 break;
             default:
-                if (tgDialog.TelegramUser is CheckTelegramUserAuthModel ctu && MailAddress.TryCreate(ctu.UserEmail, out _))
+                if (tgDialog.TelegramUser is CheckTelegramUserAuthModel ctu && MailAddress.TryCreate(ctu.UserEmail, out MailAddress? ma) && ma is not null)
                 {
-                    resp.Response += "Для удаления связи с учётной записью сайта нажмите 'Выход'.";
-                    resp.ReplyKeyboard = [[new ButtonActionModel() { Data = "/logout", Title = "Выход" }]];
+                    if (ma.Host != GlobalStaticConstants.FakeHost)
+                    {
+                        resp.Response += "Для удаления связи с учётной записью сайта нажмите 'Выход'.";
+                        resp.ReplyKeyboard = [[new ButtonActionModel() { Data = "/logout", Title = "Выход" }]];
+                    }
                 }
                 else
                 {

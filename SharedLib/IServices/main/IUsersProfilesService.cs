@@ -256,4 +256,9 @@ public partial interface IUsersProfilesService
     /// Установить блокировку пользователю
     /// </summary>
     public Task<ResponseBaseModel> SetLockUser(string userId, bool locketSet);
+
+    /// <summary>
+    /// Обновить пользователю поля: FirstName и LastName
+    /// </summary>
+    public Task<ResponseBaseModel> UpdateFirstLastNamesUser(string userId, string? firstName, string? lastName);
 }

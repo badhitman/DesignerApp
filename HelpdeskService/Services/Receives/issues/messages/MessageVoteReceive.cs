@@ -36,7 +36,7 @@ public class MessageVoteReceive(
 
         UserInfoModel actor = rest.Response[0];
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IssueMessageHelpdeskModelDB msg_db = await context.IssuesMessages.FirstAsync(x => x.Id == req.Payload.MessageId);
 
         TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
@@ -82,7 +82,7 @@ public class MessageVoteReceive(
                 VoteHelpdeskModelDB vote_db = new() { IdentityUserId = actor.UserId, IssueId = issue_data.Response.Id, MessageId = msg_db.Id };
                 await context.AddAsync(vote_db);
                 await context.SaveChangesAsync();
-                
+
                 res.AddSuccess("Ваш голос учтён");
                 await helpdeskTransmissionRepo.PulsePush(new()
                 {
@@ -109,7 +109,7 @@ public class MessageVoteReceive(
                     .Votes
                     .Where(x => x.Id == vote_db_key.Value)
                     .ExecuteDeleteAsync();
-                
+
                 res.AddInfo("Ваш голос удалён");
                 await helpdeskTransmissionRepo.PulsePush(new()
                 {

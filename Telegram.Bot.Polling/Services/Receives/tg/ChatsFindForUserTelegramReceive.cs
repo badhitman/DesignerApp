@@ -23,7 +23,7 @@ public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContex
     {
         ArgumentNullException.ThrowIfNull(chats_ids);
         TResponseModel<ChatTelegramModelDB[]?> res = new();
-        TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
+        using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
 
         int[] users_ids = await context.Users.Where(x => chats_ids.Contains(x.UserTelegramId)).Select(x => x.Id).ToArrayAsync();
 

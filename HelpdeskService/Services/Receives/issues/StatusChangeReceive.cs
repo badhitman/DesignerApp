@@ -70,7 +70,7 @@ public class StatusChangeReceive(
             });
         }
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         if (issue_data.Response.StepIssue == req.Payload.Step)
             res.AddInfo("Статус уже установлен");

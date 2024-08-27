@@ -8,17 +8,27 @@
 <StatusMessage Messages="@Messages" />
 <div class="row">
     <div class="col-md-6">
-        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
+        <EditForm Model="InputPhone" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
-                <input type="text" value="@username" class="form-control" placeholder="Пожалуйста, введите ваш логин." disabled />
+                <input type="text" value="@username" id="username" class="form-control" placeholder="Пожалуйста, введите ваш логин." disabled />
                 <label for="username" class="form-label">Имя пользователя</label>
             </div>
+
             <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Пожалуйста введите ваш номер телефона." />
+                <input type="text" @bind="@firstName" id="first-name" class="form-control" placeholder="FirstName" />
+                <label for="first-name" class="form-label">FirstName</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" @bind="lastName" id="last-name" class="form-control" placeholder="LastName" />
+                <label for="last-name" class="form-label">LastName</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="InputPhone.PhoneNumber" class="form-control" placeholder="Пожалуйста введите ваш номер телефона." />
                 <label for="phone-number" class="form-label">Номер телефона</label>
-                <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
+                <ValidationMessage For="() => InputPhone.PhoneNumber" class="text-danger" />
             </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Сохранить</button>
         </EditForm>
@@ -30,11 +40,15 @@
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    private PhoneSingleModel Input { get; set; } = new();
+    private PhoneSingleModel InputPhone { get; set; } = new();
 
     UserInfoMainModel? user;
-    private string? username;
-    private string? phoneNumber;
+
+    string? username;
+    string? phoneNumber;
+    string? firstName;
+    string? lastName;
+
     List<ResultMessage> Messages = [];
 
     protected override async Task OnInitializedAsync()
@@ -50,16 +64,16 @@
         Messages.AddRange(phone_number_rest.Messages);
         phoneNumber = phone_number_rest.Response;
 
-        Input.PhoneNumber ??= phoneNumber;
+        InputPhone.PhoneNumber ??= phoneNumber;
     }
 
     private async Task OnValidSubmitAsync()
     {
         Messages = [];
         ResponseBaseModel rest;
-        if (Input.PhoneNumber != phoneNumber)
+        if (InputPhone.PhoneNumber != phoneNumber)
         {
-            rest = await UsersProfilesRepo.SetPhoneNumberAsync(Input.PhoneNumber);
+            rest = await UsersProfilesRepo.SetPhoneNumberAsync(InputPhone.PhoneNumber);
             Messages = rest.Messages;
             if (!rest.Success())
             {
@@ -67,6 +81,9 @@
                 return;
             }
         }
+
+
+
         rest = await UsersProfilesRepo.RefreshSignInAsync();
         Messages.AddRange(rest.Messages);
         Messages.Add(new() { TypeMessage = ResultTypesEnum.Info, Text = "Ваш профиль был обновлен" });

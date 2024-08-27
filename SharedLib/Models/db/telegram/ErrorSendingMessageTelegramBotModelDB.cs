@@ -28,4 +28,12 @@ public class ErrorSendingMessageTelegramBotModelDB : IdSwitchableModel
     /// Message (error)
     /// </summary>
     public required string Message { get; set; }
+
+    /// <summary>
+    /// Признак того, что ошибка уже не актуальна
+    /// </summary>
+    /// <remarks>
+    /// Например если администратор исследовал и решил проблему
+    /// </remarks>
+    public bool IsRead { get; set; }
 }

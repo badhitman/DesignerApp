@@ -42,7 +42,7 @@ public class PulseIssueReceive(
         if (!issue_data.Success() || issue_data.Response is null)
             return new() { Messages = issue_data.Messages };
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         await context.AddAsync(new PulseIssueModelDB()
         {
             AuthorUserIdentityId = req.SenderActionUserId,

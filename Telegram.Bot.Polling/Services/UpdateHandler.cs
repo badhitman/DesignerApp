@@ -126,7 +126,7 @@ public class UpdateHandler(
     private async Task Usage(TelegramUserBaseModel uc, int incomingMessageId, MessagesTypesEnum eventType, ChatId chatId, string messageText, CancellationToken cancellationToken)
     {
         string msg;
-
+        uc.DialogTelegramTypeHandler ??= typeof(DefaultTelegramDialogHandle).FullName;
         if (eventType == MessagesTypesEnum.TextMessage)
         {
             ResponseBaseModel? check_token = null;

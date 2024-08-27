@@ -40,7 +40,7 @@ public class IssueCreateOrUpdateReceive(
         IssueHelpdeskModelDB issue;
         DateTime dtn = DateTime.UtcNow;
         string msg;
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
 
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);

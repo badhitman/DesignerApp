@@ -75,7 +75,7 @@ public class MessageUpdateOrCreateReceive(
             });
         }
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IssueMessageHelpdeskModelDB msg_db;
         IssueReadMarkerHelpdeskModelDB? my_marker;
         DateTime dtn = DateTime.UtcNow;

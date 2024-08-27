@@ -30,7 +30,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
             return res;
         }
         rubric.NormalizedNameUpper = rubric.Name.ToUpper();
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         if (await context.RubricsForIssues.AnyAsync(x => x.Id != rubric.Id && x.ParentRubricId == rubric.ParentRubricId && x.Name == rubric.Name))
         {

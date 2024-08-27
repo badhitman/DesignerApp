@@ -35,7 +35,7 @@ public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
             return res;
         }
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         List<RubricIssueHelpdeskModelDB> ctrl = [await context
             .RubricsForIssues

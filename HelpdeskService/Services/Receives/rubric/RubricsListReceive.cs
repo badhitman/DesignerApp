@@ -28,7 +28,7 @@ public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFac
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<RubricIssueHelpdeskLowModel[]?> res = new();
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         IQueryable<RubricIssueHelpdeskLowModel> q = context
             .RubricsForIssues

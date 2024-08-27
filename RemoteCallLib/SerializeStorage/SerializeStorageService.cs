@@ -15,7 +15,7 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
     /// <inheritdoc/>
     public async Task<T?[]> Find<T>(RequestStorageCloudParameterModel req)
     {
-        CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        using CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         string _tn = typeof(T).FullName ?? throw new Exception();
         StorageCloudParameterModelDB[] _dbd = await context
             .CloudProperties
@@ -28,7 +28,7 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
     /// <inheritdoc/>
     public async Task<T?> Read<T>(StorageCloudParameterModel req)
     {
-        CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        using CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         string _tn = typeof(T).FullName ?? throw new Exception();
 
         StorageCloudParameterModelDB? pdb = await context
@@ -72,7 +72,7 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> FlushParameter(StorageCloudParameterModelDB _set)
     {
-        CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        using CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         TResponseModel<int?> res = new();
         await context.AddAsync(_set);
         bool success;
@@ -135,7 +135,7 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
     /// <inheritdoc/>
     public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageCloudParameterModel req)
     {
-        CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        using CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         TResponseModel<StorageCloudParameterPayloadModel?> res = new();
         StorageCloudParameterModelDB? parameter_db = await context
             .CloudProperties
@@ -166,7 +166,7 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
     public async Task<TResponseModel<FoundParameterModel[]?>> Find(RequestStorageCloudParameterModel req)
     {
         TResponseModel<FoundParameterModel[]?> res = new();
-        CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        using CloudParametersContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         StorageCloudParameterModelDB[] prop_db = await context
             .CloudProperties
             .Where(x => req.Name == x.Name && req.ApplicationName == x.ApplicationName)

@@ -883,5 +883,12 @@ public class UsersProfilesService(
 
         return ResponseBaseModel.CreateSuccess("Claim успешно удалён");
     }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> UpdateFirstLastNamesUser(string userId, string? firstName, string? lastName)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+
+        throw new NotImplementedException();
+    }
 }
-internal record IdentityUserRecord(string Id, string? Email, bool EmailConfirmed, string? PhoneNumber, bool PhoneNumberConfirmed, bool TwoFactorEnabled, DateTimeOffset? LockoutEnd, bool LockoutEnabled, int AccessFailedCount, long? ChatId);

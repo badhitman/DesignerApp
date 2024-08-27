@@ -22,7 +22,7 @@ public class MailProviderService(IOptions<SmtpConfigModel> _config, ILogger<Mail
         if (!System.Net.Mail.MailAddress.TryCreate(email, out System.Net.Mail.MailAddress? mail) || mail is null)
             return ResponseBaseModel.CreateError("Не корректный Email");
 
-        if (mail.Host == "fake.null")
+        if (mail.Host == GlobalStaticConstants.FakeHost)
             return ResponseBaseModel.CreateInfo("Заглушка: email host");
 
         TextFormat format = (TextFormat)Enum.Parse(typeof(TextFormat), mimekit_format, true);

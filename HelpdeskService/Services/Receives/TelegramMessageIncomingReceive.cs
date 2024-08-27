@@ -26,7 +26,7 @@ public class TelegramMessageIncomingReceive(
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<bool> res = new() { Response = false };
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         if (req.ReplyToMessage is not null)
         {

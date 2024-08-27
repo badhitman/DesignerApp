@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
@@ -17,7 +18,16 @@ namespace ServerLib;
 /// <summary>
 /// Сервис работы с аутентификацией пользователей
 /// </summary>
-public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRepo, IUsersProfilesService usersProfilesRepo, UserManager<ApplicationUser> userManager, IUserStore<ApplicationUser> userStore, IEmailSender<ApplicationUser> emailSender, SignInManager<ApplicationUser> signInManager, IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
+public class UsersAuthenticateService(
+    ILogger<UsersAuthenticateService> loggerRepo,
+    IUsersProfilesService usersProfilesRepo,
+    UserManager<ApplicationUser> userManager,
+    IUserStore<ApplicationUser> userStore,
+    IdentityTools identityToolsRepo,
+    IEmailSender<ApplicationUser> emailSender,
+    SignInManager<ApplicationUser> signInManager,
+    IDbContextFactory<IdentityAppDbContext> identityDbFactory,
+    IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {
     UserManageConfigModel UserConfMan => userManageConfig.Value;
 
@@ -218,6 +228,7 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
             return new() { Messages = [new() { Text = $"Ошибка авторизации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
         SignInResult sr = await signInManager.PasswordSignInAsync(userEmail, password, isPersistent, lockoutOnFailure: true);
+
         IdentityResultResponseModel res = new();
         if (!sr.Succeeded)
         {
@@ -234,16 +245,22 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
 
             return res;
         }
-        ApplicationUser? currentUser = await userManager.FindByEmailAsync(userEmail);
-        if (currentUser is null)
+        ApplicationUser? currentAppUser = await userManager.FindByEmailAsync(userEmail);
+
+        if (currentAppUser is null)
             return (IdentityResultResponseModel)ResponseBaseModel.CreateError($"current user by email '{userEmail}' is null. error {{A19FC284-C437-4CC6-A7D2-C96FC6F6A42F}}");
+
+        if (await identityToolsRepo.ClaimsUpdateForUser(currentAppUser))
+            await signInManager.RefreshSignInAsync(currentAppUser);
+
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
 
         FlushUserRolesModel? user_flush = userManageConfig.Value.UpdatesUsersRoles?.FirstOrDefault(x => x.EmailUser.Equals(userEmail, StringComparison.OrdinalIgnoreCase));
         if (user_flush is not null)
         {
-            ResponseBaseModel add_res = await usersProfilesRepo.TryAddRolesToUser(user_flush.SetRoles, currentUser.Id);
+            ResponseBaseModel add_res = await usersProfilesRepo.TryAddRolesToUser(user_flush.SetRoles, currentAppUser.Id);
             if (add_res.Success())
-                await signInManager.RefreshSignInAsync(currentUser);
+                await signInManager.RefreshSignInAsync(currentAppUser);
         }
 
         return new()
@@ -251,7 +268,7 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
             IsLockedOut = sr.IsLockedOut,
             IsNotAllowed = sr.IsNotAllowed,
             RequiresTwoFactor = sr.RequiresTwoFactor,
-            Succeeded = sr.Succeeded
+            Succeeded = sr.Succeeded,
         };
     }
 

@@ -25,7 +25,7 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<bool?> res = new();
 
-        HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         var data = await context
         .RubricsForIssues

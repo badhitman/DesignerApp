@@ -43,7 +43,7 @@ public class ForwardMessageTelegramReceive(
         }
         catch (Exception ex)
         {
-            TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
+            using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
             await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB()
             {
                 ChatId = message.DestinationChatId,
