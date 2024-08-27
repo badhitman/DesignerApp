@@ -50,8 +50,7 @@
 
 ![attaches](img/telegram-messages-attaches.png)
 
-Чаты TelegramBot
-
+### Чаты TelegramBot
 ![TelegramBot чаты](img/telegram-chats.png)
 
 Любой чат можно открыть и начать переписку с клиентом от имени бота или посмотреть обращения, связанные с чатом:
