@@ -26,7 +26,7 @@ else
                     <h7 class="card-subtitle mb-2 text-body-secondary">Рубрика: @issue_element.RubricIssue.Name</h7>
                 }
                 @myMarkup(issue_element.Description ?? "без описания")
-                <a href="/issue-card/@issue_element.Id" class="card-link">Открыть</a>
+                <a title="открыть обращение" href="/issue-card/@issue_element.Id" class="card-link">Перейти</a>
             </div>
         </div>
     }

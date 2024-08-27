@@ -3,9 +3,20 @@
 
 @inherits BlazorBusyComponentBaseModel
 
+<style>
+    .size-console-change span.text-secondary {
+        cursor: pointer;
+    }
+</style>
+
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">Консоль</h5>
+        <h5 class="card-title">
+            Консоль
+            <sup class="size-console-change">
+                <span @onclick="ToggleSize" title="@(IsLarge ? "включён крупный режим. включить мелкий?" : "включён мелкий режим")" class="@(IsLarge ? "text-secondary" : "text-primary text-decoration-underline")">мелко</span> | <span @onclick="ToggleSize" title="@(IsLarge ? "включён крупный режим" : "включён мелкий режим. включить крупный?")" class="@(IsLarge ? "text-primary text-decoration-underline" : "text-secondary")">крупно</span>
+            </sup>
+        </h5>
         <h6 class="card-subtitle mb-2 text-body-secondary">Обзор обращений по статусам</h6>
         <div class="container-fluid">
             <!-- Stack the columns on mobile by making one full-width and the other half-width -->
