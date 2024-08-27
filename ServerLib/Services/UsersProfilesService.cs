@@ -140,7 +140,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string? userId = null)
+    public async Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string userId)
     {
         TResponseModel<UserInfoModel[]?> rest;
         if (!string.IsNullOrWhiteSpace(userId))

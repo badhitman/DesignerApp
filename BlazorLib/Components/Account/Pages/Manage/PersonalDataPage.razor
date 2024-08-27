@@ -4,7 +4,6 @@
 
 <PageTitle>Личные данные</PageTitle>
 
-<StatusMessage Messages="@Messages" />
 <h3>Личные данные</h3>
 
 <div class="row">
@@ -22,18 +21,3 @@
         </p>
     </div>
 </div>
-
-@code {
-    IEnumerable<ResultMessage>? Messages;
-
-    protected override async Task OnInitializedAsync()
-    {
-        TResponseModel<UserInfoModel?> rest = await UsersProfilesRepo.FindByIdAsync();
-        if (rest.Response is null)
-        {
-            string msg = "user data can`t load. error {8F75F2FF-31F1-4E7D-8E41-CD2494C39FD8}";
-            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = msg }];
-            throw new Exception(msg);
-        }
-    }
-}

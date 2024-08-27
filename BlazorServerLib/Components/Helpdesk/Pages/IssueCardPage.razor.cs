@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Helpdesk.Pages;
 
@@ -15,13 +16,13 @@ namespace BlazorWebLib.Components.Helpdesk.Pages;
 public partial class IssueCardPage : BlazorBusyComponentBaseModel
 {
     [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
     IWebRemoteTransmissionService WebRemoteRepo { get; set; } = default!;
-
-    [Inject]
-    IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
@@ -33,15 +34,13 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public int Id { get; set; }
 
-
     bool CanEdit =>
         CurrentUser.IsAdmin ||
         CurrentUser.Roles?.Contains(GlobalStaticConstants.Roles.HelpDeskTelegramBotManager) == true ||
         CurrentUser.UserId == IssueSource?.ExecutorIdentityUserId ||
         CurrentUser.UserId == IssueSource?.AuthorIdentityUserId;
 
-
-    UserInfoModel CurrentUser { get; set; } = default!;
+    UserInfoMainModel CurrentUser { get; set; } = default!;
     IssueHelpdeskModelDB? IssueSource { get; set; }
 
     /// <summary>
@@ -52,10 +51,9 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
-        TResponseModel<UserInfoModel?> user = await UsersProfilesRepo.FindByIdAsync();
-        SnackbarRepo.ShowMessagesResponse(user.Messages);
-        CurrentUser = user.Response ?? throw new Exception();
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+                
         TResponseModel<IssueHelpdeskModelDB?> issue_res = await HelpdeskRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>() { Payload = new() { IssueId = Id }, SenderActionUserId = CurrentUser.UserId });
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
         IssueSource = issue_res.Response;

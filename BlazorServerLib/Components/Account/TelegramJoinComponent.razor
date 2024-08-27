@@ -43,11 +43,16 @@ else
 }
 
 @code {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+
     [Parameter]
     public string? UserId { get; set; }
 
     [Parameter, EditorRequired]
     public string TelegramBotUsername { get; set; } = default!;
+
 
     UserInfoModel User = default!;
 
@@ -109,6 +114,14 @@ else
     async Task Rest()
     {
         IsBusyProgress = true;
+
+        if (string.IsNullOrWhiteSpace(UserId))
+        {
+            AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+            UserInfoMainModel user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+            UserId = user.UserId;
+        }
+
         TResponseModel<UserInfoModel?> rest = await UsersManageRepo.FindByIdAsync(UserId);
         Messages = rest.Messages;
         if (!rest.Success() || rest.Response is null)

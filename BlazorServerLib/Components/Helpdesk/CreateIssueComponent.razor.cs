@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -15,10 +16,10 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    AuthenticationStateProvider authRepo { get; set; } = default!;
 
     [Inject]
-    IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
+    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
@@ -51,20 +52,16 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     bool ShowDisabledRubrics;
     RubricIssueHelpdeskLowModel? SelectedRubric;
 
+    UserInfoMainModel user = default!;
+
     async Task CreateIssue()
     {
-        IsBusyProgress = true;
-        TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync();
-        if (!_current_user.Success() || _current_user.Response is null)
-        {
-            IsBusyProgress = false;
-            SnackbarRepo.ShowMessagesResponse(_current_user.Messages);
-            return;
-        }
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new()
         {
-            SenderActionUserId = _current_user.Response.UserId,
+            SenderActionUserId = user.UserId,
             Payload = new()
             {
                 RubricId = SelectedRubric?.Id,

@@ -16,6 +16,7 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
     [Inject]
     ITelegramRemoteTransmissionService tgRepo { get; set; } = default!;
 
+
     ChatTelegramModelDB[]? chats = null;
 
     async void SendMessageTelegramAction(SendTextMessageTelegramBotModel msg)

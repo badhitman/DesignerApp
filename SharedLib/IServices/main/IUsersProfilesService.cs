@@ -28,7 +28,7 @@ public partial interface IUsersProfilesService
     /// Найти пользователя по <paramref name="userId"/>.
     /// Если <paramref name="userId"/> не указан, то возвращается текущий пользователь (запрос/сессия)
     /// </summary>
-    public Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string? userId = null);
+    public Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string userId);
 
     /// <summary>
     /// Обновляет адрес Email, если токен <paramref name="token"/> действительный для пользователя <paramref name="userId"/>.

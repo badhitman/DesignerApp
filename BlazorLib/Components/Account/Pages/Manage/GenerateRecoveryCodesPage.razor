@@ -34,25 +34,20 @@ else
 }
 
 @code {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     private string? message;
-    private UserInfoModel user = default!;
+    private UserInfoMainModel user = default!;
     private IEnumerable<string>? recoveryCodes;
 
     List<ResultMessage> Messages = [];
 
     protected override async Task OnInitializedAsync()
     {
-        TResponseModel<UserInfoModel?> user_rest = await UsersProfilesRepo.FindByIdAsync();
-        Messages = user_rest.Messages;
-        string msg;
-        if (!user_rest.Success() || user_rest.Response is null)
-        {
-            msg = "can`t read user data. error {7DF5F380-19AB-40BD-87B8-3E96D0FBE1B3}";
-            Messages.Add(new ResultMessage() { });
-            throw new Exception(msg);
-        }
-
-        user = user_rest.Response;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        
         TResponseModel<bool?> isTwoFactorEnabled = await UsersProfilesRepo.GetTwoFactorEnabledAsync();
         Messages.AddRange(isTwoFactorEnabled.Messages);
         if (!isTwoFactorEnabled.Success() || isTwoFactorEnabled.Response != true)

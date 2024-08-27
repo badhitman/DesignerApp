@@ -25,7 +25,7 @@ public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
     /// CurrentUser
     /// </summary>
     [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
+    public required UserInfoMainModel CurrentUser { get; set; }
 
     /// <summary>
     /// Issue

@@ -9,23 +9,8 @@ namespace SharedLib;
 /// </summary>
 public class UserInfoModel : UserInfoMainModel
 {
-    /// <summary>
-    /// FirstName
-    /// </summary>
-    public string? FirstName { get; set; }
-
-    /// <summary>
-    /// LastName
-    /// </summary>
-    public string? LastName { get; set; }
-
     /// <inheritdoc/>
     public string? PhoneNumber { get; set; }
-
-    /// <summary>
-    /// Пользователь привязал Telegram к учётной записи
-    /// </summary>
-    public long? TelegramId { get; set; }
 
     /// <summary>
     /// Флаг, указывающий, подтвердил ли пользователь свой адрес электронной почты.
@@ -51,17 +36,12 @@ public class UserInfoModel : UserInfoMainModel
     /// </summary>
     public int AccessFailedCount { get; set; }
 
-    /// <summary>
-    /// Наличие роли admin
-    /// </summary>
-    public bool IsAdmin => Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase)) == true;
-
     /// <inheritdoc/>
     public static UserInfoModel Build(string userId, string? userName, string? email, string? phoneNumber, long? telegramId, bool emailConfirmed, DateTimeOffset? lockoutEnd, bool lockoutEnabled, int accessFailedCount, string? firstName, string? lastName, string[]? roles = null, EntryAltModel[]? claims = null)
         => new()
         {
-            FirstName = firstName,
-            LastName = lastName,
+            GivenName = firstName,
+            Surname = lastName,
             UserId = userId,
             Email = email,
             UserName = userName,

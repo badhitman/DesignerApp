@@ -10,6 +10,16 @@ namespace SharedLib;
 /// </summary>
 public class UserInfoMainModel
 {
+    /// <summary>
+    /// FirstName
+    /// </summary>
+    public string? GivenName { get; set; }
+
+    /// <summary>
+    /// LastName
+    /// </summary>
+    public string? Surname { get; set; }
+
     /// <inheritdoc/>
     public required string UserId { get; set; }
 
@@ -18,6 +28,11 @@ public class UserInfoMainModel
 
     /// <inheritdoc/>
     public string? Email { get; set; }
+
+    /// <summary>
+    /// Пользователь привязал Telegram к учётной записи
+    /// </summary>
+    public long? TelegramId { get; set; }
 
     /// <summary>
     /// Роли пользователя
@@ -39,7 +54,10 @@ public class UserInfoMainModel
     /// </summary>
     public string ClaimsAsString(string separator) => Claims is null || Claims.Length == 0 ? string.Empty : $"{string.Join(separator, Claims.Select(y => $"[{y.Id}: {y.Name}]"))}{separator}".Trim();
 
-    /// <inheritdoc/>
-    public static UserInfoMainModel Build(string userId, string? userName, string? email, string[]? roles = null)
-        => new() { UserId = userId, Email = email, Roles = roles, UserName = userName };
+    /// <summary>
+    /// Наличие роли admin
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public bool IsAdmin => Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase)) == true;
 }

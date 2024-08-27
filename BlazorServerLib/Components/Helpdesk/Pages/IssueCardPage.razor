@@ -13,40 +13,40 @@
 }
 else
 {
-    <CascadingValue Value="CurrentUser">
-        <div class="container-fluid">
-            <div class="row">
-                @if (IssueSource is null)
-                {
-                    <figure class="text-center">
-                        <blockquote class="blockquote">
-                            <p>Обращение не найдено.</p>
-                        </blockquote>
-                        <figcaption class="blockquote-footer">
-                            Либо недостаточно прав на просмотр этого документа
-                        </figcaption>
-                    </figure>
-                }
-                else
-                {
-                    <CascadingValue Value="CanEdit">
-                        <CascadingValue Value="IssueSource">
-                            <CascadingValue Value="UsersIdentityDump">
-                                <CascadingValue Value="CurrentUser">
-                                    <div class="col-sm-9">
-                                        <div class="vstack gap-3">
-                                            <div>
-                                                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-                                                    <MudTabPanel Text="Обращение">
-                                                        <IssueBodyComponent />
-                                                    </MudTabPanel>
-                                                    <MudTabPanel Text="Хроника">
-                                                        <PulseJournalComponent />
-                                                    </MudTabPanel>
-                                                </MudTabs>
-                                            </div>
-                                            <div><IssueMessagesComponent /></div>
-                                            @if (UsersIdentityDump.Any(x => x.TelegramId.HasValue))
+
+    <div class="container-fluid">
+        <div class="row">
+            @if (IssueSource is null)
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Обращение не найдено.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Либо недостаточно прав на просмотр этого документа
+                    </figcaption>
+                </figure>
+            }
+            else
+            {
+                <CascadingValue Value="CanEdit">
+                    <CascadingValue Value="IssueSource">
+                        <CascadingValue Value="UsersIdentityDump">
+                            <CascadingValue Value="CurrentUser">
+                                <div class="col-sm-9">
+                                    <div class="vstack gap-3">
+                                        <div>
+                                            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                                                <MudTabPanel Text="Обращение">
+                                                    <IssueBodyComponent />
+                                                </MudTabPanel>
+                                                <MudTabPanel Text="Хроника">
+                                                    <PulseJournalComponent />
+                                                </MudTabPanel>
+                                            </MudTabs>
+                                        </div>
+                                        <div><IssueMessagesComponent /></div>
+                                        @if (UsersIdentityDump.Any(x => x.TelegramId.HasValue))
                                         {
                                             <div><ChatsTelegramIssueComponent /></div>
                                         }
@@ -57,8 +57,7 @@ else
                         </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
-                }
-            </div>
+            }
         </div>
-    </CascadingValue>
+    </div>
 }

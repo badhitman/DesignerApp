@@ -38,6 +38,10 @@ else
 }
 
 @code {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+
     [Parameter, EditorRequired]
     public long TelegramId { get; set; } = default!;
 
@@ -50,18 +54,12 @@ else
 
     string? errorMessage;
 
-    UserInfoModel? UserInfo;
+    UserInfoMainModel UserInfo = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        errorMessage = null;
-        TResponseModel<UserInfoModel?> rest = await UsersManageRepo.FindByIdAsync();
-        if (!rest.Success())
-        {
-            errorMessage = rest.Message();
-            return;
-        }
-        UserInfo = rest.Response;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        UserInfo = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 
     async Task SendMessage()
@@ -78,7 +76,7 @@ else
         TResponseModel<MessageComplexIdsModel?> rest = await tgRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
             {
                 From = $"<a href='{conf.Value.BaseUri}'>{conf.Value.ClearBaseUri}</a> (от: {UserInfo?.UserName})",
-                 UserTelegramId = TelegramUser.TelegramId,
+                UserTelegramId = TelegramUser.TelegramId,
                 Message = messageText!
             });
         IsBusyProgress = false;

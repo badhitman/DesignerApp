@@ -26,19 +26,21 @@
 </div>
 
 @code {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     [SupplyParameterFromForm]
     private PhoneSingleModel Input { get; set; } = new();
 
-    UserInfoModel? user;
+    UserInfoMainModel? user;
     private string? username;
     private string? phoneNumber;
     List<ResultMessage> Messages = [];
 
     protected override async Task OnInitializedAsync()
     {
-        TResponseModel<UserInfoModel?> user_rest = await UsersProfilesRepo.FindByIdAsync();
-        Messages = user_rest.Messages;
-        user = user_rest.Response;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo();
 
         TResponseModel<string?> username_rest = await UsersProfilesRepo.GetUserNameAsync();
         Messages.AddRange(username_rest.Messages);

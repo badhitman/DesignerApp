@@ -39,7 +39,10 @@ public class PersistentAuthenticationStateProvider : AuthenticationStateProvider
         List<Claim> claims = [
             new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
             new Claim(ClaimTypes.Name, userInfo.UserName ?? ""),
-            new Claim(ClaimTypes.Email, userInfo.Email ?? "")
+            new Claim(ClaimTypes.Email, userInfo.Email ?? ""),
+            new Claim(ClaimTypes.GivenName, userInfo.GivenName ?? ""),
+            new Claim(ClaimTypes.Surname, userInfo.Surname ?? ""),
+            new Claim(GlobalStaticConstants.TelegramIdClaimName, userInfo.TelegramId.ToString() ?? ""),
             ];
 
         if (userInfo.Roles is not null && userInfo.Roles.Length != 0)

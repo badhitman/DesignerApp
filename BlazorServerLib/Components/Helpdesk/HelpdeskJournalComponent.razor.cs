@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -14,6 +15,9 @@ namespace BlazorWebLib.Components.Helpdesk;
 /// </summary>
 public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
@@ -78,6 +82,13 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
+
+        if(string.IsNullOrWhiteSpace(UserIdentityId))
+        {
+            AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+            UserInfoMainModel user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+            UserIdentityId = user.UserId;
+        }
 
         TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync(UserIdentityId);
         if (!_current_user.Success() || _current_user.Response is null)

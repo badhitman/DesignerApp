@@ -58,37 +58,30 @@ else
 }
 
 @code {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     [SupplyParameterFromForm]
     private CodeSingleModel Input { get; set; } = new();
 
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
     private string? message;
-    private UserInfoModel user = default!;
+    private UserInfoMainModel user = default!;
     private string? sharedKey;
     private string? authenticatorUri;
     private IEnumerable<string>? recoveryCodes;
 
     List<ResultMessage> Messages = [];
-
     protected override async Task OnInitializedAsync()
     {
-        TResponseModel<UserInfoModel?> rest = await UsersProfilesRepo.FindByIdAsync();
-        Messages = rest.Messages;
-        string msg;
-        if (rest.Response is null)
-        {
-            msg = "UserInfo is null. error {8064A25A-6E50-480D-A45F-31148093EB1C}";
-            Messages.Add(new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = msg });
-            throw new Exception(msg);
-        }
-        user = rest.Response;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();        
         await LoadSharedKeyAndQrCodeUriAsync();
     }
 
     private async Task OnValidSubmitAsync()
     {
-        Messages.Clear();
         // Strip spaces and hyphens
         string verificationCode = Input.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
         TResponseModel<bool?> is_2fa_token_valid_rest = await UsersProfilesRepo.VerifyTwoFactorTokenAsync(verificationCode);

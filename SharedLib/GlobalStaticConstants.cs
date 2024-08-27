@@ -212,6 +212,11 @@ public static partial class GlobalStaticConstants
     }
 
     /// <summary>
+    /// TelegramIdClaimName
+    /// </summary>
+    public readonly static string TelegramIdClaimName = Path.Combine(Routes.USER_CONTROLLER_NAME, Routes.TELEGRAM_CONTROLLER_NAME, Routes.IDENTITY_CONTROLLER_NAME);
+
+    /// <summary>
     /// имена контроллеров и действий
     /// </summary>
     public static class Routes
@@ -359,7 +364,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// main
         /// </summary>
-        public const string MAIN_CONTROLLER_NAME = "telegram";
+        public const string MAIN_CONTROLLER_NAME = "main";
 
         /// <summary>
         /// configuration
