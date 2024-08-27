@@ -96,7 +96,8 @@ builder.ConfigureServices((context, services) =>
     services.RegisterMqListener<PulseIssueReceive, TAuthRequestModel<PulseIssueBaseModel>?, bool>();
     services.RegisterMqListener<PulseJournalReceive, TPaginationRequestModel<UserIssueModel>?, TPaginationResponseModel<PulseViewModel>>();
     services.RegisterMqListener<TelegramMessageIncomingReceive, TelegramIncomingMessageModel?, bool>();
-    // 
+    services.RegisterMqListener<ConsoleIssuesSelectReceive, TPaginationRequestModel<ConsoleIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>>();
+    //  
     #endregion
 });
 

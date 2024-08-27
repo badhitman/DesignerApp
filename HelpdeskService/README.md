@@ -17,6 +17,11 @@
 
 ![журнал исполнителя](img/journal-executor.png)
 
+## Консоль
+![консоль обращений](img/console-issues.png)
+
+Консоль отображает все обращения с разбивкой по статусам.
+
 ## Диалог внутри обращения
 ![issue card body edit](img/issue-card-edit-body.png)
 

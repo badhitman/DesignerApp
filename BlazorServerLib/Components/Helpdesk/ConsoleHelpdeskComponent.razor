@@ -1,18 +1,27 @@
-﻿<h4>Консоль</h4>
+﻿@using BlazorWebLib.Components.Helpdesk.console
+@using MudBlazor
 
-<div class="container-fluid">
-    <!-- Stack the columns on mobile by making one full-width and the other half-width -->
-    <div class="row">
-        <div class="d-flex justify-content-between"><button type="button" class="btn btn-outline-primary">Primary</button><button type="button" class="btn btn-outline-primary">Primary</button></div>
-        <div class="col-12 col-md-2">col-12 col-md-2</div>
-        <div class="col-12 col-md-2">col-12 col-md-2</div>
-        <div class="col-12 col-md-2">col-12 col-md-2</div>
-        <div class="col-12 col-md-2">col-12 col-md-2</div>
-        <div class="col-12 col-md-2">col-12 col-md-2</div>
-        <div class="col-12 col-md-2">col-12 col-md-2</div>
+@inherits BlazorBusyComponentBaseModel
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Консоль</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">Обзор обращений по статусам</h6>
+        <div class="container-fluid">
+            <!-- Stack the columns on mobile by making one full-width and the other half-width -->
+            <div class="row">
+                <div class="d-flex justify-content-between my-2">
+                    <MudFab Disabled="@(stepNum == 0)" OnClick="() => { stepNum--; }" Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowLeft" Size="Size.Small" />
+                    <MudFab Disabled="@(stepNum >= Steps.Count - 6)" OnClick="() => { stepNum++; }" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.KeyboardArrowRight" Size="Size.Small" />
+                </div>
+
+                @foreach (HelpdeskIssueStepsEnum s in Steps.Skip(stepNum).Take(6))
+                {
+                    <div @key="@s.ToString()" class="col-12 col-md-2">
+                        <ConsoleSegmentColumnComponent StepIssue="s" />
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>
-
-@code {
-
-}

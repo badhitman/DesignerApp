@@ -67,6 +67,10 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<PulseViewModel>?>> PulseJournal(TPaginationRequestModel<UserIssueModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<PulseViewModel>>(GlobalStaticConstants.TransmissionQueues.PulseJournalHelpdeskReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<IssueHelpdeskModel>>(GlobalStaticConstants.TransmissionQueues.ConsoleIssuesSelectHelpdeskReceive, req);
     #endregion
 
     #region message

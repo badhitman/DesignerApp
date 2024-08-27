@@ -86,10 +86,10 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
         res.Response.TotalRowsCount = await q.CountAsync();
 
         List<IssueHelpdeskModelDB> data = await q
-            .Include(x => x.RubricIssue)
             .OrderBy(x => x.CreatedAt)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
+            .Include(x => x.RubricIssue)
             .ToListAsync();
 
         res.Response.Response = data.Select(x => IssueHelpdeskModel.Build(x)).ToList();

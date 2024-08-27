@@ -81,6 +81,11 @@ public interface IHelpdeskRemoteTransmissionService
     /// Журнал событий в обращении
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<PulseViewModel>?>> PulseJournal(TPaginationRequestModel<UserIssueModel> req);
+
+    /// <summary>
+    /// Получить обращения
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req);
     #endregion
 
     #region message
