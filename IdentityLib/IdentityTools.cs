@@ -70,7 +70,8 @@ public class IdentityTools(IDbContextFactory<IdentityAppDbContext> identityDbFac
                 await identityContext.AddAsync(new IdentityUserClaim<string>()
                 {
                     ClaimType = ClaimTypes.GivenName,
-                    ClaimValue = app_user.FirstName ?? ""
+                    ClaimValue = app_user.FirstName ?? "",
+                    UserId = app_user.Id
                 });
                 res = 0 != await identityContext.SaveChangesAsync() || res;
             }
@@ -104,7 +105,8 @@ public class IdentityTools(IDbContextFactory<IdentityAppDbContext> identityDbFac
                 await identityContext.AddAsync(new IdentityUserClaim<string>()
                 {
                     ClaimType = ClaimTypes.Surname,
-                    ClaimValue = app_user.LastName ?? ""
+                    ClaimValue = app_user.LastName ?? "",
+                    UserId = app_user.Id
                 });
                 res = 0 != await identityContext.SaveChangesAsync() || res;
             }

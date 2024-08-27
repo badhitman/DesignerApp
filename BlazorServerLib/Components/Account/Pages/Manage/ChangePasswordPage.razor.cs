@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorLib;
+using Microsoft.AspNetCore.Components;
 using SharedLib;
 
-namespace BlazorLib.Components.Account.Pages.Manage;
+namespace BlazorWebLib.Components.Account.Pages.Manage;
 
 /// <summary>
 /// 

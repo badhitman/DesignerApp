@@ -1,5 +1,10 @@
 ﻿@page "/Account/Manage/EnableAuthenticator"
 
+@using System.Text.Encodings.Web
+@using System.Net.Mail
+@using System.Text
+@using System.Globalization
+
 @inject UrlEncoder UrlEncoder
 @inject IdentityRedirectManager RedirectManager
 @inject IUsersProfilesService UsersProfilesRepo
@@ -76,7 +81,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();        
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
         await LoadSharedKeyAndQrCodeUriAsync();
     }
 

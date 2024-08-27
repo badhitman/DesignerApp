@@ -887,8 +887,24 @@ public class UsersProfilesService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> UpdateFirstLastNamesUser(string userId, string? firstName, string? lastName)
     {
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        firstName ??= "";
+        lastName ??= "";
 
-        throw new NotImplementedException();
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        var user_db = await identityContext
+            .Users
+            .Where(x => x.Id == userId && (x.FirstName != firstName || x.LastName != lastName))
+            .Select(x => new { x.Id, x.FirstName, x.LastName })
+            .FirstOrDefaultAsync();
+
+        if (user_db is null)
+            return ResponseBaseModel.CreateInfo("Без изменений");
+
+        await identityContext
+            .Users
+            .Where(x => x.Id == userId)
+            .ExecuteUpdateAsync(set => set.SetProperty(p => p.FirstName, firstName).SetProperty(p => p.LastName, lastName));
+
+        return ResponseBaseModel.CreateSuccess("First/Last names update");
     }
 }
