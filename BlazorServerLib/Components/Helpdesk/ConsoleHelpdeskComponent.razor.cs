@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -20,26 +21,37 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
 
     readonly List<HelpdeskIssueStepsEnum> Steps = [.. Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>()];
     byte stepNum;
     bool IsLarge;
+    UserInfoMainModel CurrentUser =default!;
 
-    static StorageCloudParameterModel KeyStorage => new()
+    StorageCloudParameterModel KeyStorage => new()
     {
-        ApplicationName = "",
-        Name = "",
-        PrefixPropertyName = ""
+        ApplicationName = GlobalStaticConstants.Routes.CONSOLE_CONTROLLER_NAME,
+        Name = GlobalStaticConstants.Routes.SIZE_CONTROLLER_NAME,
+        PrefixPropertyName = CurrentUser.UserId,
     };
 
     async Task ToggleSize()
     {
         IsLarge = !IsLarge;
+        IsBusyProgress = true;
+        TResponseModel<int> res = await storageRepo.SaveParameter(IsLarge, KeyStorage);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
         IsBusyProgress = true;
         TResponseModel<bool> res = await storageRepo.ReadParameter<bool>(KeyStorage);
         IsBusyProgress = false;

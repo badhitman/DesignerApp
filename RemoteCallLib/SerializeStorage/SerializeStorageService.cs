@@ -84,7 +84,7 @@ public class SerializeStorageService(IDbContextFactory<CloudParametersContext> c
             {
                 await context.SaveChangesAsync();
                 success = true;
-                res.AddSuccess($"Данные успешно сохранены{(i > 0 ? $" (на попытке [{i}])" : "")}: {_set.ApplicationName}{_set.Name} > {_set.PrefixPropertyName}");
+                res.AddSuccess($"Данные успешно сохранены{(i > 0 ? $" (на попытке [{i}])" : "")}: {_set.ApplicationName}{_set.Name}");
                 res.Response = _set.Id;
             }
             catch (Exception ex)

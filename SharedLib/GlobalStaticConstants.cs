@@ -395,6 +395,11 @@ public static partial class GlobalStaticConstants
         public const string CONSOLE_CONTROLLER_NAME = "console";
 
         /// <summary>
+        /// Size
+        /// </summary>
+        public const string SIZE_CONTROLLER_NAME = "size";
+
+        /// <summary>
         /// Identity
         /// </summary>
         public const string IDENTITY_CONTROLLER_NAME = "identity";
