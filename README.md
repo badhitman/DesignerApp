@@ -1,6 +1,6 @@
 ## Blazor NET.8 TelegramBot HelpDesk
 
-###### + развитие решения конструктора в отдельной ветке [constructor](https://github.com/badhitman/DesignerApp/tree/constructor)
+###### + развитие решения конструктора [constructor](https://github.com/badhitman/DesignerApp/tree/main/ConstructorBlazorApp)
 
 - **Blazor NET.8**[^4] + **TelegramBot**[^5]: подойдёт как стартовый кейс web решения с поддержкой **Telegram бота**.
 
