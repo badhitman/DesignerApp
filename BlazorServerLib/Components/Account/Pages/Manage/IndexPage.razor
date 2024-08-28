@@ -1,5 +1,5 @@
 ﻿@page "/Account/Manage"
-
+@inherits BlazorBusyComponentBaseModel
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @inject IdentityRedirectManager RedirectManager
@@ -17,14 +17,14 @@
             </div>
 
             <div class="form-floating mb-3">
-                <input type="text" @bind="@firstName" id="first-name" class="form-control" placeholder="FirstName" />
+                <input type="text" @bind-value="@firstName" @bind-value:event="oninput" id="first-name" class="form-control" placeholder="FirstName" />
                 <label for="first-name" class="form-label">FirstName</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" @bind="lastName" id="last-name" class="form-control" placeholder="LastName" />
+                <input type="text" @bind-value="lastName" @bind-value:event="oninput" id="last-name" class="form-control" placeholder="LastName" />
                 <label for="last-name" class="form-label">LastName</label>
             </div>
-            <button @onclick="OnValidSubmitAsync" type="button" class="w-100 btn btn-lg btn-primary">Сохранить</button>
+            <button disabled="@(!IsEdited)" @onclick="SaveAsync" type="button" class="w-100 btn btn-lg btn-@(IsEdited?"primary":"outline-secondary")">Сохранить</button>
         </div>
     </div>
 </div>

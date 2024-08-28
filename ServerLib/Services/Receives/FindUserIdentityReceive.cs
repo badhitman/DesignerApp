@@ -45,7 +45,7 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
 
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
         ApplicationUser[] users = find_users_ids.Length == 0
-            ?[]
+            ? []
             : await identityContext
             .Users
             .Where(x => find_users_ids.Contains(x.Id))
@@ -91,6 +91,8 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
         {
             return new()
             {
+                GivenName = app_user.FirstName,
+                Surname = app_user.LastName,
                 UserId = app_user.Id,
                 AccessFailedCount = app_user.AccessFailedCount,
                 Email = app_user.Email,

@@ -33,7 +33,7 @@
                 @foreach (HelpdeskIssueStepsEnum s in Steps.Skip(stepNum).Take(IsLarge ? 4 : 6))
                 {
                     <div @key="@s.ToString()" class="col-12 col-md-@(IsLarge ? "3" : "2")">
-                        <ConsoleSegmentColumnComponent StepIssue="s" />
+                        <ConsoleSegmentColumnComponent StepIssue="s" IsLarge="IsLarge" />
                     </div>
                 }
             </div>
