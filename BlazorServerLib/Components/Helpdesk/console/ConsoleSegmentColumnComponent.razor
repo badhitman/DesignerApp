@@ -71,7 +71,7 @@ else
         TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> res = await helpdeskRepo.ConsoleIssuesSelect(new TPaginationRequestModel<ConsoleIssuesRequestModel>
             {
                 PageNum = pageNum,
-                PageSize = 10,
+                PageSize = 5,
                 SortingDirection = VerticalDirectionsEnum.Down,
                 Payload = new()
                 {
