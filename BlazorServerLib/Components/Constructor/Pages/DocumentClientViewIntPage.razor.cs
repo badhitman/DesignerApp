@@ -2,8 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Constructor.Pages;
@@ -12,10 +13,10 @@ namespace BlazorWebLib.Components.Constructor.Pages;
 public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    AuthenticationStateProvider authRepo { get; set; } = default!;
 
     [Inject]
-    IUsersProfilesService UsersProfiles { get; set; } = default!;
+    IConstructorService ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -23,21 +24,19 @@ public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseModel
     public int DocumentId { get; set; }
 
 
-
     /// <inheritdoc/>
-    public UserInfoModel? CurrentUser { get; private set; }
+    public UserInfoMainModel CurrentUser { get; private set; } = default!;
 
     SessionOfDocumentDataModelDB SessionDocument = default!;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;        
-        TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
-        CurrentUser = currentUser.Response;
+        IsBusyProgress = true;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocument(DocumentId);
-        
         IsBusyProgress = false;
 
         if (rest.Response is null)

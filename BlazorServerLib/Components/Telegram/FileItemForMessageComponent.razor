@@ -1,0 +1,29 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<div class="links-for-files-messages">
+    @if (FileElement is AudioTelegramModelDB au)
+    {
+        fileName = au.FileName;
+        <i class="bi bi-cassette"> @au.FileName (@au.Duration sec) - <u @onclick="DownloadFile" title="Скачать файл">@(au.FileSize is null ? "" : GlobalTools.SizeDataAsString(au.FileSize.Value))</u></i>
+    }
+    else if (FileElement is DocumentTelegramModelDB doc)
+    {
+        fileName = doc.FileName;
+        <i class="bi bi-file-arrow-down"> @doc.FileName (@doc.MimeType) - <u @onclick="DownloadFile" title="Скачать файл">@(doc.FileSize is null ? "" : GlobalTools.SizeDataAsString(doc.FileSize.Value))</u></i>
+    }
+    else if (FileElement is PhotoMessageTelegramModelDB ph)
+    {
+        fileName = $"Photo-{DateTime.Now}";
+        <i class="bi bi-file-image"> (w:@ph.Width h:@ph.Height) - <u @onclick="DownloadFile" title="Скачать файл">@(ph.FileSize is null ? "" : GlobalTools.SizeDataAsString(ph.FileSize.Value))</u></i>
+    }
+    else if (FileElement is VoiceTelegramModelDB vct)
+    {
+        fileName = $"Voice-{DateTime.Now}";
+        <i class="bi bi-voicemail"> @vct.MimeType (@vct.Duration sec) - <u @onclick="DownloadFile" title="Скачать файл">@(vct.FileSize is null ? "" : GlobalTools.SizeDataAsString(vct.FileSize.Value))</u></i>
+    }
+    else if (FileElement is VideoTelegramModelDB vdt)
+    {
+        fileName = $"Video-{DateTime.Now}";
+        <i class="bi bi-camera-reels"> @vdt.FileName (w:@vdt.Width h:@vdt.Height @vdt.Duration sec) - <u @onclick="DownloadFile" title="Скачать файл">@(vdt.FileSize is null ? "" : GlobalTools.SizeDataAsString(vdt.FileSize.Value))</u></i>
+    }
+</div>

@@ -37,9 +37,4 @@ public partial class CloudParametersLayerContext : DbContext
     /// Параметры
     /// </summary>
     public DbSet<StorageCloudParameterModelDB> CloudProperties { get; set; }
-
-    /// <summary>
-    /// Блокировщики
-    /// </summary>
-    public DbSet<LockUniqueTokenModelDB> Lockers { get; set; }
 }

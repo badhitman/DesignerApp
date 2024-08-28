@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
@@ -17,7 +18,16 @@ namespace ServerLib;
 /// <summary>
 /// Сервис работы с аутентификацией пользователей
 /// </summary>
-public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRepo, IUsersProfilesService usersProfilesRepo, UserManager<ApplicationUser> userManager, IUserStore<ApplicationUser> userStore, IEmailSender<ApplicationUser> emailSender, SignInManager<ApplicationUser> signInManager, IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
+public class UsersAuthenticateService(
+    ILogger<UsersAuthenticateService> loggerRepo,
+    IUsersProfilesService usersProfilesRepo,
+    UserManager<ApplicationUser> userManager,
+    IUserStore<ApplicationUser> userStore,
+    IdentityTools identityToolsRepo,
+    IEmailSender<ApplicationUser> emailSender,
+    SignInManager<ApplicationUser> signInManager,
+    IDbContextFactory<IdentityAppDbContext> identityDbFactory,
+    IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {
     UserManageConfigModel UserConfMan => userManageConfig.Value;
 
@@ -39,7 +49,9 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
             emailConfirmed: au.EmailConfirmed,
             lockoutEnd: au.LockoutEnd,
             lockoutEnabled: au.LockoutEnabled,
-            accessFailedCount: au.AccessFailedCount)
+            accessFailedCount: au.AccessFailedCount,
+             firstName: au.FirstName,
+             lastName: au.LastName)
         };
     }
 
@@ -60,13 +72,13 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
         {
             msg = $"Пользователь с идентификатором '{userId}' вошел в систему с кодом восстановления.";
             loggerRepo.LogInformation(msg);
-            return new IdentityResultResponseModel() { };
+            return new() { };
         }
         else if (result.IsLockedOut)
         {
             msg = $"Учетная запись пользователя #'{userId}' заблокирована.";
             loggerRepo.LogError(msg);
-            return new IdentityResultResponseModel()
+            return new()
             {
                 IsLockedOut = result.IsLockedOut,
                 Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = msg }],
@@ -163,7 +175,7 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
     public async Task<RegistrationNewUserResponseModel> RegisterNewUserAsync(string userEmail, string password, string baseAddress)
     {
         if (!UserConfMan.UserRegistrationIsAllowed(userEmail))
-            return new RegistrationNewUserResponseModel() { Messages = [new() { Text = $"Ошибка регистрации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
+            return new() { Messages = [new() { Text = $"Ошибка регистрации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
         ApplicationUser user = CreateUser();
 
@@ -173,7 +185,7 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
         IdentityResult result = await userManager.CreateAsync(user, password);
 
         if (!result.Succeeded)
-            return new RegistrationNewUserResponseModel() { Messages = result.Errors.Select(x => new ResultMessage() { Text = $"[{x.Code}: {x.Description}]", TypeMessage = ResultTypesEnum.Error }).ToList() };
+            return new() { Messages = result.Errors.Select(x => new ResultMessage() { Text = $"[{x.Code}: {x.Description}]", TypeMessage = ResultTypesEnum.Error }).ToList() };
 
         string userId = await userManager.GetUserIdAsync(user);
         loggerRepo.LogInformation($"User #{userId} [{userEmail}] created a new account with password.");
@@ -213,9 +225,10 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
     public async Task<IdentityResultResponseModel> UserLoginAsync(string userEmail, string password, bool isPersistent)
     {
         if (!UserConfMan.UserAuthorizationIsAllowed(userEmail))
-            return new IdentityResultResponseModel() { Messages = [new() { Text = $"Ошибка авторизации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
+            return new() { Messages = [new() { Text = $"Ошибка авторизации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
         SignInResult sr = await signInManager.PasswordSignInAsync(userEmail, password, isPersistent, lockoutOnFailure: true);
+
         IdentityResultResponseModel res = new();
         if (!sr.Succeeded)
         {
@@ -232,16 +245,22 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
 
             return res;
         }
-        ApplicationUser? currentUser = await userManager.FindByEmailAsync(userEmail);
-        if (currentUser is null)
+        ApplicationUser? currentAppUser = await userManager.FindByEmailAsync(userEmail);
+
+        if (currentAppUser is null)
             return (IdentityResultResponseModel)ResponseBaseModel.CreateError($"current user by email '{userEmail}' is null. error {{A19FC284-C437-4CC6-A7D2-C96FC6F6A42F}}");
+
+        if (await identityToolsRepo.ClaimsUpdateForUser(currentAppUser))
+            await signInManager.RefreshSignInAsync(currentAppUser);
+
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
 
         FlushUserRolesModel? user_flush = userManageConfig.Value.UpdatesUsersRoles?.FirstOrDefault(x => x.EmailUser.Equals(userEmail, StringComparison.OrdinalIgnoreCase));
         if (user_flush is not null)
         {
-            ResponseBaseModel add_res = await usersProfilesRepo.TryAddRolesToUser(user_flush.SetRoles, currentUser.Id);
+            ResponseBaseModel add_res = await usersProfilesRepo.TryAddRolesToUser(user_flush.SetRoles, currentAppUser.Id);
             if (add_res.Success())
-                await signInManager.RefreshSignInAsync(currentUser);
+                await signInManager.RefreshSignInAsync(currentAppUser);
         }
 
         return new()
@@ -249,7 +268,7 @@ public class UsersAuthenticateService(ILogger<UsersAuthenticateService> loggerRe
             IsLockedOut = sr.IsLockedOut,
             IsNotAllowed = sr.IsNotAllowed,
             RequiresTwoFactor = sr.RequiresTwoFactor,
-            Succeeded = sr.Succeeded
+            Succeeded = sr.Succeeded,
         };
     }
 

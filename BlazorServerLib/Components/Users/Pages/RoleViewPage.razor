@@ -1,5 +1,5 @@
 ﻿@page "/Users/Roles/view-{RoleId:guid}"
-@attribute [Authorize(Roles = "admin")]
+@attribute [Authorize(Roles = GlobalStaticConstants.Roles.Admin)]
 
 @inject IUsersProfilesService UsersProfilesRepo
 

@@ -12,7 +12,7 @@ public class TelegramDialogRequestModel
     /// <summary>
     /// Пользователь (отправитель  сообщения в Telegram)
     /// </summary>
-    public required CheckTelegramUserModel TelegramUser { get; set; }
+    public required TelegramUserBaseModel TelegramUser { get; set; }
 
     /// <summary>
     /// Telegram MessageId

@@ -19,6 +19,16 @@ public class ApplicationUser : IdentityUser
     /// </summary>
     public long? ChatTelegramId { get; set; }
 
+    /// <summary>
+    /// FirstName
+    /// </summary>
+    public string? FirstName { get; set; }
+
+    /// <summary>
+    /// LastName
+    /// </summary>
+    public string? LastName { get; set; }
+
     /// <inheritdoc/>
     public static explicit operator UserInfoModel(ApplicationUser app_user)
     {
@@ -31,6 +41,8 @@ public class ApplicationUser : IdentityUser
             emailConfirmed: app_user.EmailConfirmed,
             lockoutEnd: app_user.LockoutEnd,
             lockoutEnabled: app_user.LockoutEnabled,
-            accessFailedCount: app_user.AccessFailedCount);
+            accessFailedCount: app_user.AccessFailedCount,
+            firstName: app_user.FirstName,
+            lastName: app_user.LastName);
     }
 }

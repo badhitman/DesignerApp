@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared;
 
@@ -15,6 +16,9 @@ namespace BlazorWebLib.Components.Constructor.Shared;
 /// </summary>
 public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     [Inject]
     IDialogService DialogServiceRepo { get; set; } = default!;
 
@@ -32,9 +36,8 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
+
+    UserInfoMainModel CurrentUser { get; set; } = default!;
 
 
     IEnumerable<DocumentSchemeConstructorModelDB> DocumentsAll = [];
@@ -169,17 +172,12 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/текущий проект");
 
-        TResponseModel<UserInfoModel?> current_user = await UsersProfilesRepo.FindByIdAsync();
-
-        if (current_user.Response?.UserId is null)
-            throw new Exception("Ошибка установки автора ссылки");
-
         SessionOfDocumentDataModelDB req = new()
         {
             Name = NameSessionForCreate,
             NormalizeUpperName = NameSessionForCreate.Trim().ToUpper(),
             OwnerId = SelectedDocumentSchemeId,
-            AuthorUser = current_user.Response.UserId,
+            AuthorUser = CurrentUser.UserId,
             ProjectId = ParentFormsPage.MainProject.Id
         };
         IsBusyProgress = true;
@@ -230,5 +228,9 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         await RestUpdate();
+        IsBusyProgress = true;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        IsBusyProgress = false;
     }
 }

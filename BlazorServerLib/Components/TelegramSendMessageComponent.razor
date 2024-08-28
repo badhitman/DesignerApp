@@ -1,9 +1,9 @@
 ﻿@using Microsoft.Extensions.Options
-
+@attribute [Authorize]
 @inherits BlazorBusyComponentBaseModel
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-@inject ITelegramWebService tgWebRepo
+@inject IWebAppService tgWebRepo
 @inject ITelegramRemoteTransmissionService tgRepo
 @inject IUsersProfilesService UsersManageRepo
 @inject IOptions<WebConfigModel> conf
@@ -38,10 +38,14 @@ else
 }
 
 @code {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+
     [Parameter, EditorRequired]
     public long TelegramId { get; set; } = default!;
 
-    TelegramUserBaseModelDb TelegramUser = default!;
+    TelegramUserBaseModel TelegramUser = default!;
 
     string? messageText;
     bool ShowForm;
@@ -50,35 +54,29 @@ else
 
     string? errorMessage;
 
-    UserInfoModel? UserInfo;
+    UserInfoMainModel UserInfo = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        errorMessage = null;
-        TResponseModel<UserInfoModel?> rest = await UsersManageRepo.FindByIdAsync();
-        if (!rest.Success())
-        {
-            errorMessage = rest.Message();
-            return;
-        }
-        UserInfo = rest.Response;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        UserInfo = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 
     async Task SendMessage()
     {
         errorMessage = null;
         IsBusyProgress = true;
-        TResponseModel<TelegramUserBaseModelDb?> tg_user_info = await tgWebRepo.GetTelegramUserCachedInfo(TelegramId);
+        TResponseModel<TelegramUserBaseModel?> tg_user_info = await tgWebRepo.GetTelegramUserCachedInfo(TelegramId);
 
         if (!tg_user_info.Success())
             errorMessage += $"\n{tg_user_info.Message()}";
 
         TelegramUser = tg_user_info.Response ?? throw new Exception($"error {{6090D4EA-4B24-47E1-8090-6272549BDAFB}}\n{tg_user_info.Message()}");
 
-        TResponseModel<int?> rest = await tgRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
+        TResponseModel<MessageComplexIdsModel?> rest = await tgRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
             {
                 From = $"<a href='{conf.Value.BaseUri}'>{conf.Value.ClearBaseUri}</a> (от: {UserInfo?.UserName})",
-                UserTelegram = TelegramUser,
+                UserTelegramId = TelegramUser.TelegramId,
                 Message = messageText!
             });
         IsBusyProgress = false;

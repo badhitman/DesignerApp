@@ -49,7 +49,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
             throw new Exception();
 
         IsBusyProgress = true;
-        TResponseModel<int?> rest = await HelpdeskRepo.RubricForIssuesCreateOrUpdate(new() { Name = rubricName, ParentRubricId = ItemModel.ParentRubricId > 0 ? ItemModel.ParentRubricId : null });
+        TResponseModel<int?> rest = await HelpdeskRepo.RubricCreateOrUpdate(new() { Name = rubricName, ParentRubricId = ItemModel.ParentRubricId > 0 ? ItemModel.ParentRubricId : null });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 

@@ -1,6 +1,7 @@
 ﻿@page "/auth"
 
 @using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
 
 @attribute [Authorize]
 
@@ -11,8 +12,7 @@
 <AuthorizeView>
     Привет @context.User.Identity?.Name!
     <ul>
-
-        @foreach (var c in context.User.Claims)
+        @foreach (Claim c in context.User.Claims)
         {
             <li>[@c.Type] @c.Value</li>
         }

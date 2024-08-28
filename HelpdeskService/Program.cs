@@ -68,20 +68,36 @@ builder.ConfigureServices((context, services) =>
 #endif
     });
 
+    services.AddMemoryCache();
+
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
+    //
+    services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
+    //
     services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
     services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
     services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
-    ////
-    services.RegisterMqListener<RubricsForIssuesListReceive, ProjectOwnedRequestModel?, RubricIssueHelpdeskLowModel[]?>();
-    services.RegisterMqListener<RubricForIssueCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
-    services.RegisterMqListener<IssuesForUserSelectReceive, GetIssuesForUserRequestModel?, TPaginationResponseModel<IssueHelpdeskModelDB>?>();
-    services.RegisterMqListener<IssueCreateOrUpdateReceive, IssueHelpdeskModelDB?, int?>();
-    services.RegisterMqListener<MessageIssueSetAsResponseReceive, SetMessageAsResponseIssueRequestModel?, bool?>();
-    services.RegisterMqListener<MessageForIssueUpdateOrCreateReceive, IssueMessageHelpdeskBaseModel?, int?>();
-    services.RegisterMqListener<RubricForIssuesMoveReceive, RowMoveModel?, bool?>();
-    //
+    // 
+    services.RegisterMqListener<RubricsListReceive, TProjectedRequestModel<int>?, RubricIssueHelpdeskLowModel[]?>();
+    services.RegisterMqListener<RubricCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>();
+    services.RegisterMqListener<IssuesForUserSelectReceive, TPaginationRequestModel<GetIssuesForUserRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>();
+    services.RegisterMqListener<IssueCreateOrUpdateReceive, TAuthRequestModel<IssueUpdateRequestModel>?, int>();
+    services.RegisterMqListener<MessageVoteReceive, TAuthRequestModel<VoteIssueRequestModel>?, bool?>();
+    services.RegisterMqListener<MessageUpdateOrCreateReceive, TAuthRequestModel<IssueMessageHelpdeskBaseModel>?, int?>();
+    services.RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>();
+    services.RegisterMqListener<IssueReadReceive, TAuthRequestModel<IssueReadRequestModel>?, IssueHelpdeskModelDB?>();
+    services.RegisterMqListener<RubricReadReceive, int?, List<RubricIssueHelpdeskModelDB>?>();
+    services.RegisterMqListener<SubscribeUpdateReceive, TAuthRequestModel<SubscribeUpdateRequestModel>?, bool?>();
+    services.RegisterMqListener<SubscribesListReceive, TAuthRequestModel<int>?, SubscriberIssueHelpdeskModelDB[]?>();
+    services.RegisterMqListener<ExecuterUpdateReceive, TAuthRequestModel<UserIssueModel>?, bool>();
+    services.RegisterMqListener<MessagesListReceive, TAuthRequestModel<int>?, IssueMessageHelpdeskModelDB[]>();
+    services.RegisterMqListener<StatusChangeReceive, TAuthRequestModel<StatusChangeRequestModel>?, bool>();
+    services.RegisterMqListener<PulseIssueReceive, TAuthRequestModel<PulseIssueBaseModel>?, bool>();
+    services.RegisterMqListener<PulseJournalReceive, TPaginationRequestModel<UserIssueModel>?, TPaginationResponseModel<PulseViewModel>>();
+    services.RegisterMqListener<TelegramMessageIncomingReceive, TelegramIncomingMessageModel?, bool>();
+    services.RegisterMqListener<ConsoleIssuesSelectReceive, TPaginationRequestModel<ConsoleIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>>();
+    //  
     #endregion
 });
 
@@ -94,6 +110,38 @@ using (IServiceScope ss = app.Services.CreateScope())
     TResponseModel<WebConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
     if (wc_remote.Response is not null && wc_remote.Success())
         wc_main.Update(wc_remote.Response);
+
+#if DEMO
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory = ss.ServiceProvider.GetRequiredService<IDbContextFactory<HelpdeskContext>>();
+    using HelpdeskContext context_seed = await helpdeskDbFactory.CreateDbContextAsync();
+    if (!await context_seed.RubricsForIssues.AnyAsync())
+    {
+        List<RubricIssueHelpdeskModelDB> demo_rubrics = [
+            new ()
+            {
+                Name = "Секретарь",
+                NormalizedNameUpper = "СЕКРЕТАРЬ",
+                SortIndex = 1,
+            },
+            new ()
+            {
+                Name = "Техническая поддержка",
+                NormalizedNameUpper = "ТЕХНИЧЕСКАЯ ПОДДЕРЖКА",
+                SortIndex = 2,
+            },
+            new ()
+            {
+                Name = "Другое",
+                NormalizedNameUpper = "ДРУГОЕ",
+                SortIndex = 3,
+            }];
+        demo_rubrics[0].NestedRubrics = [new() { Name = "Справки", NormalizedNameUpper = "СПРАВКИ", ParentRubric = demo_rubrics[0], SortIndex = 1 }, new() { Name = "Жалобы", NormalizedNameUpper = "ЖАЛОБЫ", ParentRubric = demo_rubrics[0], SortIndex = 2 }];
+        demo_rubrics[1].NestedRubrics = [new() { Name = "Линия 1", NormalizedNameUpper = "ЛИНИЯ 1", ParentRubric = demo_rubrics[1], SortIndex = 1 }, new() { Name = "Линия 2", NormalizedNameUpper = "ЛИНИЯ 2", ParentRubric = demo_rubrics[1], SortIndex = 2 }];
+        await context_seed.AddRangeAsync(demo_rubrics);
+        await context_seed.SaveChangesAsync();
+    }
+#endif
+
 }
 
 await app.RunAsync();

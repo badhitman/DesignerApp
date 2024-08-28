@@ -1,0 +1,52 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<style>
+    .links-for-files-messages i > u {
+        cursor: pointer;
+    }
+</style>
+
+<MudTable @ref="TableRef"  ServerData="ServerReload" Dense="true" Hover="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Сообщения</MudText>
+        <MudSpacer />
+        <MudTextField Immediate="true" @bind-Value="SearchStringQuery" Placeholder="Поиск по тексту" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="@(nameof(MessageTelegramModelDB.CreatedAtUtc))" T="MessageTelegramModelDB">Дата</MudTableSortLabel></MudTh>
+        <MudTh>Автор</MudTh>
+        <MudTh>Примечание</MudTh>
+        <MudTh>Текст</MudTh>
+        <MudTh>Файлы</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Создан">@context.CreatedAtUtc</MudTd>
+        <MudTd DataLabel="Автор">@context.From!.Username</MudTd>
+        <MudTd DataLabel="Примечание">
+            @context.Caption
+            @if (context.Contact is not null)
+            {
+                <span class="badge text-bg-primary">
+                    @context.Contact.FirstName |
+                    @context.Contact.LastName |
+                    @context.Contact.PhoneNumber |
+                    @context.Contact.Vcard
+                </span>
+            }
+        </MudTd>
+        <MudTd DataLabel="Текст">@context.Text</MudTd>
+        <MudTd DataLabel="Файлы">
+            <FilesForMessageComponent Message="context" />
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Сообщения не найдены</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager AllItemsText="Все сообщения" />
+    </PagerContent>
+</MudTable>

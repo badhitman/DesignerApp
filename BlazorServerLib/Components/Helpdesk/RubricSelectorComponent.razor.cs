@@ -23,7 +23,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required Action<RubricIssueHelpdeskLowModel> SelectedRubricsHandle { get; set; }
+    public required Action<RubricIssueHelpdeskLowModel?> SelectedRubricsHandle { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -37,6 +37,19 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required ModesSelectRubricsEnum ModeSelectingRubrics { get; set; }
 
+    /// <summary>
+    /// Owner issue
+    /// </summary>
+    [CascadingParameter]
+    public IssueHelpdeskModelDB? IssueSource { get; set; }
+
+    [CascadingParameter]
+    List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow { get; set; }
+
+
+    RubricSelectorComponent? childSelector;
+
+    List<RubricIssueHelpdeskLowModel>? CurrentRubrics;
 
     int _selectedRubricId;
     /// <summary>
@@ -49,38 +62,45 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         {
             _selectedRubricId = value;
             if (childSelector is not null)
-                InvokeAsync(async () => await childSelector.Reset(_selectedRubricId));
-
-            SelectedRubricsHandle(CurrentRubrics!.First(x => x.Id == _selectedRubricId));
+                InvokeAsync(async () => await childSelector.OwnerRubricSet(_selectedRubricId));
+            SelectedRubricsHandle(_selectedRubricId > 0 ? CurrentRubrics!.First(x => x.Id == _selectedRubricId) : null);
         }
     }
 
     /// <summary>
     /// Сброс состояния селектора.
     /// </summary>
-    public async Task Reset(int parentSet)
+    public async Task OwnerRubricSet(int ownerRubricId)
     {
-        _selectedRubricId = 0;
+        if(ParentRubric != ownerRubricId)
+        {
+            ParentRubric = ownerRubricId;
+            _selectedRubricId = 0;
+        }
+
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsForIssuesList(new ProjectOwnedRequestModel() { OwnerId = parentSet });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new TProjectedRequestModel<int>() { Request = ownerRubricId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         CurrentRubrics = rest.Response;
     }
 
-#if DEBUG
-    static bool IsDebug => true;
-#else
-    static bool IsDebug => false;
-#endif
-
-    RubricSelectorComponent? childSelector;
-
-    List<RubricIssueHelpdeskLowModel>? CurrentRubrics;
-
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await Reset(ParentRubric);
+        await OwnerRubricSet(ParentRubric);
+        if (ParentRubric == 0 && IssueSource is not null && IssueSource.RubricIssueId.HasValue)
+        {
+            IsBusyProgress = true;
+            TResponseModel<List<RubricIssueHelpdeskModelDB>?> dump_rubric = await HelpdeskRepo.RubricRead(IssueSource.RubricIssueId.Value);
+            RubricMetadataShadow = dump_rubric.Response;
+            SnackbarRepo.ShowMessagesResponse(dump_rubric.Messages);
+            IsBusyProgress = false;
+            _selectedRubricId = RubricMetadataShadow?.LastOrDefault()?.Id ?? 0;
+        }
+        else if (RubricMetadataShadow is not null && RubricMetadataShadow.Count != 0)
+        {
+            _selectedRubricId = RubricMetadataShadow?.LastOrDefault()?.Id ?? 0;
+        }
     }
 }

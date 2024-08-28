@@ -76,21 +76,32 @@ public sealed class PersistingRevalidatingAuthenticationStateProvider(ILoggerFac
 
         if (principal.Identity?.IsAuthenticated == true)
         {
+            string? givenName = principal.FindFirst(ClaimTypes.GivenName)?.Value;
+            string? surName = principal.FindFirst(ClaimTypes.Surname)?.Value;
             string? userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             string? userName = principal.FindFirst(ClaimTypes.Name)?.Value;
             string? email = principal.FindFirst(ClaimTypes.Email)?.Value;
             string[] roles = principal.FindAll(ClaimTypes.Role).Select(x => x.Value).ToArray();
+
+            long? telegram_id = null;
+            string? telegramIdAsString = principal.FindFirst(GlobalStaticConstants.TelegramIdClaimName)?.Value;
+            if (!string.IsNullOrWhiteSpace(telegramIdAsString) && long.TryParse(telegramIdAsString, out long tgId))
+                telegram_id = tgId;
+
             EntryAltModel[] claims = principal.FindAll((c) => c.ValueType != ClaimTypes.Role).Select(x => new EntryAltModel() { Id = x.ValueType, Name = x.Value }).ToArray();
 
             if (userId != null && email != null)
             {
                 state.PersistAsJson(nameof(UserInfoMainModel), new UserInfoMainModel
                 {
+                    GivenName = givenName,
+                    Surname = surName,
                     UserId = userId,
                     UserName = userName,
                     Email = email,
                     Roles = roles,
-                    Claims = claims
+                    Claims = claims,
+                    TelegramId = telegram_id,
                 });
             }
         }

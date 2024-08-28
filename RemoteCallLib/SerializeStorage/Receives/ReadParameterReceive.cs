@@ -21,9 +21,9 @@ public class ReadParameterReceive(ISerializeStorage serializeStorageRepo)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-#if DEBUG
-        TResponseModel<StorageCloudParameterPayloadModel?> _debug = await serializeStorageRepo.ReadParameter(request);
-#endif
+//#if DEBUG
+//        TResponseModel<StorageCloudParameterPayloadModel?> _debug = await serializeStorageRepo.ReadParameter(request);
+//#endif
 
         return await serializeStorageRepo.ReadParameter(request);
     }

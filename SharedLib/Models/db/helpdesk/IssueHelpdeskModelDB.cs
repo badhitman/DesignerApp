@@ -10,57 +10,15 @@ namespace SharedLib;
 /// IssueTelegramModelDB
 /// </summary>
 [Index(nameof(AuthorIdentityUserId), nameof(ExecutorIdentityUserId), nameof(LastUpdateAt))]
-public class IssueHelpdeskModelDB : EntryDescriptionModel
+public class IssueHelpdeskModelDB : IssueHelpdeskModel
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public string? NormalizeNameUpper { get; set; }
-
-    /// <summary>
-    /// Шаг/статус обращения: "Создан", "В работе", "На проверке" и "Готово"
-    /// </summary>
-    public HelpdeskIssueStepsEnum StepIssue { get; set; }
-
-    /// <summary>
-    /// IdentityUserId
-    /// </summary>
-    public required string? AuthorIdentityUserId { get; set; }
-
-    /// <summary>
-    /// Исполнитель
-    /// </summary>
-    public string? ExecutorIdentityUserId { get; set; }
-
-    /// <summary>
-    /// ProjectId
-    /// </summary>
-    public int ProjectId { get; set; }
+    /// <inheritdoc/>
+    public string? NormalizedNameUpper { get; set; }
 
     /// <summary>
     /// Rubric Issue
     /// </summary>
     public required int? RubricIssueId { get; set; }
-
-    /// <summary>
-    /// Rubric Issue
-    /// </summary>
-    public RubricIssueHelpdeskModelDB? RubricIssue { get; set; }
-
-    /// <summary>
-    /// CreatedAt
-    /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// LastUpdateAt
-    /// </summary>
-    public DateTime LastUpdateAt { get; set; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// AnonymAccess
-    /// </summary>
-    public List<AnonymTelegramAccessHelpdeskModelDB>? AnonymAccess { get; set; }
 
     /// <summary>
     /// Subscribers
@@ -71,4 +29,14 @@ public class IssueHelpdeskModelDB : EntryDescriptionModel
     /// Messages
     /// </summary>
     public List<IssueMessageHelpdeskModelDB>? Messages { get; set; }
+
+    /// <summary>
+    /// ReadMarkers
+    /// </summary>
+    public List<IssueReadMarkerHelpdeskModelDB>? ReadMarkers { get; set; }
+
+    /// <summary>
+    /// События
+    /// </summary>
+    public List<PulseIssueModelDB>? PulseEvents { get; set; }
 }

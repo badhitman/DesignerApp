@@ -1,0 +1,47 @@
+﻿@attribute [Authorize]
+@inherits IssueWrapBaseModel
+
+<div class="card">
+    <div class="card-body p-3">
+        <h6 class="card-title mb-2 text-body-secondary">Информация</h6>
+        <dl class="row">
+            <dt>Автор</dt>
+            <dd>
+                <span>
+                    @if (Author?.UserId == CurrentUser.UserId)
+                    {
+                        <b title="Вы автор обращения">Вы</b>
+                    }
+                    else
+                    {
+                        @Author?.Email
+                    }
+
+                    <AuthorizeView Roles="@($"{string.Join(",",GlobalStaticConstants.Roles.AllHelpDeskRoles)},{GlobalStaticConstants.Roles.Admin}")">
+                        <Authorized>
+                            @if (Author is not null)
+                            {
+                                <sup @onclick="() => IsShow = true" title="О клиенте" style="cursor:pointer" class="bi bi-card-checklist text-info-emphasis ms-2"> card</sup>
+                                @if (IsShow)
+                                {
+                                    <UserCardMainComponent Author="Author" CloseAction="() => { IsShow = false; StateHasChanged(); }" />
+                                }
+                            }
+                        </Authorized>
+                    </AuthorizeView>
+                </span>
+            </dd>
+
+            <dt>Исполнитель</dt>
+            <dd>
+                <ExecutorIssueComponent />
+            </dd>
+
+            <dt>Создан:</dt>
+            <dd>@Issue.CreatedAt</dd>
+
+            <dt>Обновлён:</dt>
+            <dd>@Issue.LastUpdateAt</dd>
+        </dl>
+    </div>
+</div>

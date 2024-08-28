@@ -1,0 +1,96 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<h5 class="card-title">@StepIssue.DescriptionInfo()</h5>
+<hr />
+@if (Issues.Count == 0)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Данных нет.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Обращений <cite title="В статусе @StepIssue.ToString() обращений нет">не найдено</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    foreach (IssueHelpdeskModel issue_element in Issues)
+    {
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">@issue_element.Name</h6>
+                @if (issue_element.RubricIssue is not null)
+                {
+                    <h7 class="card-subtitle mb-2 text-body-secondary">Рубрика: @issue_element.RubricIssue.Name</h7>
+                }
+                @myMarkup(issue_element.Description ?? "без описания")
+                               
+                <MudStack Row="true">
+                    <a title="открыть обращение" href="/issue-card/@issue_element.Id" class="card-link">Перейти</a>
+                    <MudSpacer />
+                    <code title="Дата последнего обновления">@(IsLarge ? issue_element.LastUpdateAt.ToString() : issue_element.LastUpdateAt.ToShortDateString())</code>
+                </MudStack>
+            </div>
+        </div>
+    }
+    @if (Issues.Count < totalCount)
+    {
+        <div class="d-grid gap-2">
+            <button @onclick="LoadData" class="btn btn-primary" type="button">Загрузить ещё</button>
+        </div>
+    }
+}
+
+@code {
+    [Inject]
+    IHelpdeskRemoteTransmissionService helpdeskRepo { get; set; } = default!;
+
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
+
+
+    [Parameter, EditorRequired]
+    public HelpdeskIssueStepsEnum StepIssue { get; set; }
+
+    [Parameter,EditorRequired]
+    public bool IsLarge { get; set; }
+
+    MarkupString myMarkup(string descr_issue) =>
+        new MarkupString(descr_issue);
+
+    List<IssueHelpdeskModel> Issues = [];
+    int totalCount;
+    int pageNum = 0;
+
+    async Task LoadData()
+    {
+        IsBusyProgress = true;
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> res = await helpdeskRepo.ConsoleIssuesSelect(new TPaginationRequestModel<ConsoleIssuesRequestModel>
+            {
+                PageNum = pageNum,
+                PageSize = 10,
+                SortingDirection = VerticalDirectionsEnum.Down,
+                Payload = new()
+                {
+                    Status = StepIssue,
+                }
+            });
+
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+
+        if (res.Response?.Response is not null && res.Response.Response.Count != 0)
+        {
+            totalCount = res.Response.TotalRowsCount;
+            Issues.AddRange(res.Response.Response);
+            pageNum++;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+}

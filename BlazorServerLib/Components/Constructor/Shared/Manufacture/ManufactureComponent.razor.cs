@@ -9,6 +9,7 @@ using CodegeneratorLib;
 using MudBlazor;
 using SharedLib;
 using BlazorLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Manufacture;
 
@@ -17,6 +18,9 @@ namespace BlazorWebLib.Components.Constructor.Shared.Manufacture;
 /// </summary>
 public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     [Inject]
     IConstructorService ConstructorRepo { get; set; } = default!;
 
@@ -37,6 +41,8 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
+
+    UserInfoMainModel user = default!;
 
     ConfigManufactureComponent _conf = default!;
 
@@ -100,7 +106,10 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
         ProjectConstructorModelDB? rest_project = await ConstructorRepo.ReadProject(ParentFormsPage.MainProject!.Id);
         CurrentProject = rest_project ?? throw new Exception();
 
-        TResponseModel<ManageManufactureModelDB> rest_manufacture = await ManufactureRepo.ReadManufactureConfig(ParentFormsPage.MainProject.Id);
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
+        TResponseModel<ManageManufactureModelDB> rest_manufacture = await ManufactureRepo.ReadManufactureConfig(ParentFormsPage.MainProject.Id, user.UserId);
         if (!rest_manufacture.Success())
             SnackbarRepo.ShowMessagesResponse(rest_manufacture.Messages);
         Manufacture = rest_manufacture.Response ?? throw new Exception();

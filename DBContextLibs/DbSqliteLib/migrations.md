@@ -4,11 +4,16 @@ Update-Database -Context MainDbAppContext -Project DbSqliteLib -StartupProject B
 ```
 
 ```
+Add-Migration MainStorageContext001 -Context CloudParametersContext -Project DbSqliteLib -StartupProject RemoteCallLib
+Update-Database -Context CloudParametersContext -Project DbSqliteLib -StartupProject RemoteCallLib
+```
+
+```
 Add-Migration MainHelpdeskContext001 -Context HelpdeskContext -Project DbSqliteLib -StartupProject HelpdeskService
 Update-Database -Context HelpdeskContext -Project DbSqliteLib -StartupProject HelpdeskService
 ```
 
 ```
-Add-Migration MainStorageContext001 -Context CloudParametersContext -Project DbSqliteLib -StartupProject RemoteCallLib
-Update-Database -Context CloudParametersContext -Project DbSqliteLib -StartupProject RemoteCallLib
+Add-Migration MainTelegramBotContext001 -Context TelegramBotContext -Project DbSqliteLib -StartupProject Telegram.Bot.Polling
+Update-Database -Context TelegramBotContext -Project DbSqliteLib -StartupProject Telegram.Bot.Polling
 ```

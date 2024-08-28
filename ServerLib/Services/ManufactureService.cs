@@ -2,34 +2,40 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore.Storage;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using SharedLib;
 using DbcLib;
-using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace ServerLib;
 
 /// <inheritdoc/>
 public class ManufactureService(
     IDbContextFactory<MainDbAppContext> mainDbFactory,
+    IWebRemoteTransmissionService webRepo,
+    IHttpContextAccessor httpContextAccessor,
     IUsersProfilesService usersProfilesRepo) : IManufactureService
 {
     /// <inheritdoc/>
     public async Task CreateSnapshot(StructureProjectModel dump, int projectId, string name)
     {
-        TResponseModel<UserInfoModel?> user = await usersProfilesRepo.FindByIdAsync();
 
-        if (!user.Success() || user.Response is null)
-            throw new Exception();
+
+        string user_id = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception();
+
+        TResponseModel<UserInfoModel[]?> users_find = await webRepo.FindUsersIdentity([user_id]);
+        UserInfoModel current_user = users_find.Response![0];
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
         using IDbContextTransaction transaction = context_forms.Database.BeginTransaction();
 
         ProjectSnapshotModelDB _project_snapshot = new()
         {
-            UserId = user.Response.UserId,
+            UserId = current_user.UserId,
             ProjectId = projectId,
             Name = name,
             Directories = [],
@@ -163,7 +169,7 @@ public class ManufactureService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ManageManufactureModelDB>> ReadManufactureConfig(int projectId, string? userId = null)
+    public async Task<TResponseModel<ManageManufactureModelDB>> ReadManufactureConfig(int projectId, string userId)
     {
         TResponseModel<ManageManufactureModelDB> res = new();
         TResponseModel<UserInfoModel?> user = await usersProfilesRepo.FindByIdAsync(userId);

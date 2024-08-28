@@ -2,11 +2,12 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlazorWebLib.Components.Constructor.Shared.Manufacture;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using BlazorWebLib.Components.Constructor.Shared.Manufacture;
 
 namespace BlazorWebLib.Components.Constructor.Pages;
 
@@ -14,10 +15,10 @@ namespace BlazorWebLib.Components.Constructor.Pages;
 public partial class ConstructorPage : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    AuthenticationStateProvider authRepo { get; set; } = default!;
 
     [Inject]
-    IUsersProfilesService UsersProfiles { get; set; } = default!;
+    IConstructorService ConstructorRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
@@ -33,7 +34,7 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     public List<SystemNameEntryModel> SystemNamesManufacture = default!;
 
     /// <inheritdoc/>
-    UserInfoModel CurrentUser = default!;
+    UserInfoMainModel CurrentUser = default!;
 
     /// <inheritdoc/>
     public MainProjectViewModel? MainProject { get; private set; }
@@ -47,16 +48,8 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
-
-        if (currentUser.Response is null)
-            throw new Exception("Current user is null");
-
-        IsBusyProgress = false;
-
-        CurrentUser = currentUser.Response;
-        if (!currentUser.Success())
-            SnackbarRepo.ShowMessagesResponse(currentUser.Messages);
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         await ReadCurrentMainProject();
     }

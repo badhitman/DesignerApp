@@ -1,0 +1,17 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<div id="@toggleBtnId" class="input-group mb-3">
+    <button @onclick="EditToggle" class="btn btn-outline-secondary dropdown-toggle @ShowIfEditing" type="button" data-bs-toggle="dropdown" data-meta="@yToggleBtn" aria-expanded="@IsEditing">Изменить</button>
+    <ul class="chat-selector-input dropdown-menu @ShowIfEditing" id="@dropdownId" style="@StyleIfEditing" data-meta="@HeightDropdown">
+        @foreach (ChatTelegramModelDB ch in loadedData)
+        {
+            <li @onclick="() => SelectChatEvent(ch)"><span class="dropdown-item">@ch.ToString()</span></li>
+        }
+        @if (loadedData.Count < TotalRowsCount)
+        {
+            <li><hr class="dropdown-divider"></li>
+            <li @onclick="LoadPartData"><span class="dropdown-item">Загрузить ещё</span></li>
+        }
+    </ul>
+    <input @bind-value="SelectedChatText" @bind-value:event="oninput" readonly="@(!IsEditing)" type="text" class="form-control" aria-label="Text input with dropdown button">
+</div>

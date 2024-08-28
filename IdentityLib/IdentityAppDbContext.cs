@@ -22,6 +22,16 @@ public class IdentityAppDbContext : IdentityDbContext<ApplicationUser, Applicati
         Database.Migrate();
     }
 
+    /// <summary>
+    /// Telegram пользователи
+    /// </summary>
+    public DbSet<TelegramUserModelDb> TelegramUsers { get; set; }
+
+    /// <summary>
+    /// Действия, связанные с подключения Telegram аккаунта к учётной записи сайта
+    /// </summary>
+    public DbSet<TelegramJoinAccountModelDb> TelegramJoinActions { get; set; }
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder builder)
     {

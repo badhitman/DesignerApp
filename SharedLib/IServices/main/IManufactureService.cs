@@ -12,7 +12,7 @@ public interface IManufactureService
     /// <summary>
     /// Прочитать конфигурацию генератора кода
     /// </summary>
-    public Task<TResponseModel<ManageManufactureModelDB>> ReadManufactureConfig(int projectId, string? userId = null);
+    public Task<TResponseModel<ManageManufactureModelDB>> ReadManufactureConfig(int projectId, string userId);
 
     /// <summary>
     /// Обновить конфигурацию генератора кода

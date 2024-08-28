@@ -1,0 +1,27 @@
+﻿@attribute [Authorize]
+@inherits IssueWrapBaseModel
+
+<div class="offcanvas offcanvas-start show" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasExampleLabel">@Author.UserName</h5>
+        <button @onclick="CloseAction" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <NotificationsAreaTelegramIssueConfigComponent />
+
+        <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME"
+                             Name="@GlobalStaticConstants.Routes.USERS_CONTROLLER_NAME"
+                             PrefixPropertyName="@($"{Author.UserName}")"
+                             Label="О клиенте (общее)"
+                             Hint="Единый параметр для всех сотрудников" />
+
+        <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME"
+                             Name="@($"{GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DOCUMENT_CONTROLLER_NAME}")"
+                             PrefixPropertyName="@CurrentUser.UserId"
+                             OwnerPrimaryKey="Issue.Id"
+                             Label="О заявке (приватно)"
+                             Hint="Ваш личный (ни кому не видный) комментарий непосредственно к этому обращению"
+                             ColorTheme="BootstrapColorsStylesEnum.Warning" />
+    </div>
+</div>
+<div @onclick="CloseAction" class="offcanvas-backdrop fade show"></div>

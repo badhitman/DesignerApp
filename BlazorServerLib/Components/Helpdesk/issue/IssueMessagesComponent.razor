@@ -1,0 +1,41 @@
+﻿@using MudBlazor
+
+@attribute [Authorize]
+@inherits IssueWrapBaseModel
+
+<MudCard Class="mb-2">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Сообщения</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudFab OnClick="()=>{ AddingNewMessage = true; }" Disabled="AddingNewMessage" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" Color="@(AddingNewMessage ? Color.Default : Color.Info)" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <CascadingValue Value="this">
+            @if (AddingNewMessage)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <MessageOfIssueComponent />
+                    </div>
+                </div>
+            }
+            <MudTable @ref="tableRef" ServerData="ServerReload" Dense="true" Hover="true">
+                <ToolBarContent>
+                    <MudTextField Immediate="true" @bind-Value="searchStringQuery" Placeholder="Поиск по тексту" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd><MessageOfIssueComponent Message="context" /></MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </CascadingValue>
+    </MudCardContent>
+</MudCard>

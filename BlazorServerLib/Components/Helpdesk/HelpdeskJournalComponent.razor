@@ -4,22 +4,38 @@
 
 <MudTable @ref="TableRef" ServerData="ServerReload" Dense="true" Hover="true" Loading="IsBusyProgress">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Ваши диалоги</MudText>
+        <MudText Typo="Typo.h6">Диалоги</MudText>
         <MudSpacer />
-        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" title="Без учёта регистра" Placeholder="Поиск по имени" Adornment="Adornment.Start"
+        <MudTextField T="string" Clearable="true" ValueChanged="@(s => OnSearch(s))" title="Без учёта регистра" Placeholder="Поиск по теме обращения и имени рубрики" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="CreatedAt" T="IssueHelpdeskModelDB">Дата время</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="Rubric" T="IssueHelpdeskModelDB">Рубрика</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="Name" T="IssueHelpdeskModelDB">Имя</MudTableSortLabel></MudTh>
-        <MudTh></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="@(nameof(IssueHelpdeskModel.CreatedAt))" T="IssueHelpdeskModel">Создан</MudTableSortLabel></MudTh>
+        <MudTh>Статус</MudTh>
+        <MudTh>Тема</MudTh>
+        <MudTh>Рубрика</MudTh>
+        @if (UserArea == UsersAreasHelpdeskEnum.Author)
+        {
+            <MudTh>Исполнитель</MudTh>
+        }
+        else
+        {
+            <MudTh>Автор</MudTh>
+        }
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="CreatedAt"><a href="@($"/issue-card/{context.Id}")">@context.CreatedAt</a></MudTd>
-        <MudTd DataLabel="Name">@context.RubricIssue?.Name</MudTd>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd></MudTd>
+        <MudTd DataLabel="Создан"><a href="@($"/issue-card/{context.Id}")">@context.CreatedAt.ToShortDateString()<sup>@context.CreatedAt.ToShortTimeString()</sup></a></MudTd>
+        <MudTd DataLabel="Статус">@context.StepIssue.DescriptionInfo()</MudTd>
+        <MudTd DataLabel="Тема">@context.Name</MudTd>
+        <MudTd DataLabel="Рубрика">@context.RubricIssue?.Name</MudTd>
+        @if (UserArea == UsersAreasHelpdeskEnum.Author)
+        {
+            <MudTd>@(usersDump.FirstOrDefault(x => x.UserId == context.ExecutorIdentityUserId)?.UserName ?? context.ExecutorIdentityUserId)</MudTd>
+        }
+        else
+        {
+            <MudTd>@(usersDump.FirstOrDefault(x => x.UserId == context.AuthorIdentityUserId)?.UserName ?? context.AuthorIdentityUserId)</MudTd>
+        }
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Ни одной записи не найдено</MudText>

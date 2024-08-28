@@ -13,11 +13,6 @@ public class UserInfoModel : UserInfoMainModel
     public string? PhoneNumber { get; set; }
 
     /// <summary>
-    /// Пользователь привязал Telegram к учётной записи
-    /// </summary>
-    public long? TelegramId { get; set; }
-
-    /// <summary>
     /// Флаг, указывающий, подтвердил ли пользователь свой адрес электронной почты.
     /// </summary>
     /// <value>True, если адрес электронной почты был подтвержден, в противном случае — false.</value>
@@ -41,15 +36,12 @@ public class UserInfoModel : UserInfoMainModel
     /// </summary>
     public int AccessFailedCount { get; set; }
 
-    /// <summary>
-    /// Наличие роли admin
-    /// </summary>
-    public bool IsAdmin => Roles?.Any(x => x.Equals("admin", StringComparison.OrdinalIgnoreCase)) == true;
-
     /// <inheritdoc/>
-    public static UserInfoModel Build(string userId, string? userName, string? email, string? phoneNumber, long? telegramId, bool emailConfirmed, DateTimeOffset? lockoutEnd, bool lockoutEnabled, int accessFailedCount, string[]? roles = null, EntryAltModel[]? claims = null)
+    public static UserInfoModel Build(string userId, string? userName, string? email, string? phoneNumber, long? telegramId, bool emailConfirmed, DateTimeOffset? lockoutEnd, bool lockoutEnabled, int accessFailedCount, string? firstName, string? lastName, string[]? roles = null, EntryAltModel[]? claims = null)
         => new()
         {
+            GivenName = firstName,
+            Surname = lastName,
             UserId = userId,
             Email = email,
             UserName = userName,
@@ -62,4 +54,17 @@ public class UserInfoModel : UserInfoMainModel
             Roles = roles,
             Claims = claims
         };
+
+    /// <inheritdoc/>
+    public static UserInfoModel BuildSystem()
+    {
+        return new()
+        {
+            UserId = GlobalStaticConstants.Roles.System,
+            Email = GlobalStaticConstants.Roles.System,
+            EmailConfirmed = true,
+            Roles = [GlobalStaticConstants.Roles.System],
+            UserName = "Система",
+        };
+    }
 }

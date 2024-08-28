@@ -6,13 +6,18 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
 using SharedLib;
 using DbcLib;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace ServerLib;
 
 /// <summary>
 /// Journal Constructor
 /// </summary>
-public partial class JournalConstructorService(IDbContextFactory<MainDbAppContext> mainDbFactory, IUsersProfilesService usersProfilesRepo) : IJournalUniversalService
+public partial class JournalConstructorService(
+    IDbContextFactory<MainDbAppContext> mainDbFactory,
+    IHttpContextAccessor httpContextAccessor,
+    IWebRemoteTransmissionService webRepo) : IJournalUniversalService
 {
     /// <inheritdoc/>
     public async Task<DocumentFitModel> GetDocumentMetadata(string document_name_or_id, int? projectId = null)
@@ -230,24 +235,22 @@ public partial class JournalConstructorService(IDbContextFactory<MainDbAppContex
     {
         TResponseModel<DocumentSchemeConstructorModelDB[]?> res = new();
 
-        TResponseModel<UserInfoModel?> current_user = await usersProfilesRepo.FindByIdAsync();
-        if (!current_user.Success())
+        string? user_id = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (user_id is null)
         {
-            res.Messages = current_user.Messages;
+            res.AddError("HttpContext is null (текущий пользователь) не авторизован. info D485BA3C-081C-4E2F-954D-759A181DCE78");
             return res;
         }
 
-        if (current_user.Response is null)
-        {
-            res.AddError("Пользователь сессии не найден");
-            return res;
-        }
+        TResponseModel<UserInfoModel[]?> users_find = await webRepo.FindUsersIdentity([user_id]);
+        UserInfoModel current_user = users_find.Response![0];
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<DocumentSchemeConstructorModelDB> pre_q = from scheme in context_forms.DocumentSchemes
                                                              join pt in context_forms.Projects on scheme.ProjectId equals pt.Id
-                                                             where pt.OwnerUserId == current_user.Response.UserId || context_forms.MembersOfProjects.Any(x => x.ProjectId == pt.Id && x.UserId == current_user.Response.UserId)
+                                                             where pt.OwnerUserId == current_user.UserId || context_forms.MembersOfProjects.Any(x => x.ProjectId == pt.Id && x.UserId == current_user.UserId)
                                                              select scheme;
 
         if (projectId.HasValue)
@@ -278,15 +281,20 @@ public partial class JournalConstructorService(IDbContextFactory<MainDbAppContex
     /// <inheritdoc/>
     public async Task<EntryAltTagModel[]> GetMyDocumentsSchemas()
     {
-        TResponseModel<UserInfoModel?> current_user = await usersProfilesRepo.FindByIdAsync();
-        if (!current_user.Success() || current_user.Response is null)
+        string? user_id = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (user_id is null)
             return [];
+
+        TResponseModel<UserInfoModel[]?> users_find = await webRepo.FindUsersIdentity([user_id]);
+        UserInfoModel current_user = users_find.Response![0];
+
 
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<EntryAltTagModel> pre_q = from scheme in context_forms.DocumentSchemes
                                              join pt in context_forms.Projects on scheme.ProjectId equals pt.Id
-                                             where pt.OwnerUserId == current_user.Response.UserId || context_forms.MembersOfProjects.Any(x => x.ProjectId == pt.Id && x.UserId == current_user.Response.UserId)
+                                             where pt.OwnerUserId == current_user.UserId || context_forms.MembersOfProjects.Any(x => x.ProjectId == pt.Id && x.UserId == current_user.UserId)
                                              select new EntryAltTagModel() { Id = scheme.Id.ToString(), Name = scheme.Name, Tag = pt.Name };
 
         return await pre_q.OrderBy(x => x.Name).ToArrayAsync();
@@ -298,8 +306,8 @@ public partial class JournalConstructorService(IDbContextFactory<MainDbAppContex
         using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<ValueDataForSessionOfDocumentModelDB> q = from val in context_forms.ValuesSessions.Where(x => x.OwnerId == sessionId)
-                join tj in context_forms.TabsJoinsForms.Where(x => x.TabId == tabId) on val.JoinFormToTabId equals tj.Id
-                select val;
+                                                             join tj in context_forms.TabsJoinsForms.Where(x => x.TabId == tabId) on val.JoinFormToTabId equals tj.Id
+                                                             select val;
 
         return await q.Include(x => x.JoinFormToTab).ToArrayAsync();
     }

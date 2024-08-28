@@ -1,4 +1,7 @@
-﻿@inject IUsersProfilesService UsersProfilesRepo
+﻿@using MudBlazor
+@using System.Security.Claims
+@inject IUsersProfilesService UsersProfilesRepo
+@inject ISnackbar SnackbarRepo
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
@@ -56,6 +59,21 @@ else
 
     async Task AddClaim()
     {
+        if (string.IsNullOrWhiteSpace(claimValue) || string.IsNullOrWhiteSpace(claimType))
+        {
+            SnackbarRepo.Error("Укажите имя и значение");
+            return;
+        }
+
+        claimType = claimType.Trim();
+        claimValue = claimValue.Trim();
+
+        if (claimType == GlobalStaticConstants.TelegramIdClaimName || claimType == ClaimTypes.GivenName || claimType == ClaimTypes.Surname)
+        {
+            SnackbarRepo.Error("Имя зарезервировано. Укажите другое");
+            return;
+        }
+
         ResponseBaseModel res = await UsersProfilesRepo.ClaimUpdateOrCreate(new ClaimModel() { ClaimType = claimType?.Trim(), ClaimValue = claimValue?.Trim(), OwnerId = OwnerId }, ClaimArea);
 
         if (!res.Success())

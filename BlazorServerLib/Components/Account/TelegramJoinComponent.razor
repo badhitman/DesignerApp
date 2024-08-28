@@ -1,6 +1,6 @@
 ﻿@inject ITelegramRemoteTransmissionService TelegramRemoteRepo
 @inject IUsersProfilesService UsersManageRepo
-@inject ITelegramWebService tgWebRepo
+@inject IWebAppService tgWebRepo
 
 @inherits BlazorBusyComponentBaseModel
 
@@ -43,11 +43,16 @@ else
 }
 
 @code {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+
     [Parameter]
     public string? UserId { get; set; }
 
     [Parameter, EditorRequired]
     public string TelegramBotUsername { get; set; } = default!;
+
 
     UserInfoModel User = default!;
 
@@ -55,7 +60,7 @@ else
 
     TelegramJoinAccountModelDb? TelegramJoinAccount;
     List<ResultMessage> Messages = [];
-    TelegramUserBaseModelDb? TelegramUser;
+    TelegramUserBaseModel? TelegramUser;
 
     string About
     {
@@ -109,6 +114,14 @@ else
     async Task Rest()
     {
         IsBusyProgress = true;
+
+        if (string.IsNullOrWhiteSpace(UserId))
+        {
+            AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+            UserInfoMainModel user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+            UserId = user.UserId;
+        }
+
         TResponseModel<UserInfoModel?> rest = await UsersManageRepo.FindByIdAsync(UserId);
         Messages = rest.Messages;
         if (!rest.Success() || rest.Response is null)
@@ -128,7 +141,7 @@ else
         if (User.TelegramId.HasValue)
         {
             IsBusyProgress = true;
-            TResponseModel<TelegramUserBaseModelDb?> rest = await tgWebRepo.GetTelegramUserCachedInfo(User.TelegramId.Value);
+            TResponseModel<TelegramUserBaseModel?> rest = await tgWebRepo.GetTelegramUserCachedInfo(User.TelegramId.Value);
             IsBusyProgress = false;
             Messages.AddRange(rest.Messages);
             TelegramUser = rest.Response;

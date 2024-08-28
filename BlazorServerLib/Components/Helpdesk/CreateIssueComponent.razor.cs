@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -18,17 +19,21 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
-
-    [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
 
+
     /// <inheritdoc/>
-    [Parameter,EditorRequired]
-    public required Action Update {  get; set; }
+    [Parameter, EditorRequired]
+    public required Action Update { get; set; }
+
+    /// <summary>
+    /// UserIdentityId
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string UserIdentityId { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -51,26 +56,23 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     bool ShowDisabledRubrics;
     RubricIssueHelpdeskLowModel? SelectedRubric;
 
-
     async Task CreateIssue()
     {
-        IsBusyProgress = true;
-        TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync();
-        if (!_current_user.Success() || _current_user.Response is null)
+        if(string.IsNullOrWhiteSpace(Name))
         {
-            IsBusyProgress = false;
-            SnackbarRepo.ShowMessagesResponse(_current_user.Messages);
+            SnackbarRepo.Error("Не указано имя");
             return;
         }
 
-        TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new IssueHelpdeskModelDB()
+        TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new()
         {
-            AuthorIdentityUserId = _current_user.Response.UserId,
-            RubricIssueId = SelectedRubric?.Id,
-            Name = Name!,
-            Description = Description,
-            StepIssue = HelpdeskIssueStepsEnum.Created,
-
+            SenderActionUserId = UserIdentityId,
+            Payload = new()
+            {
+                RubricId = SelectedRubric?.Id,
+                Name = Name,
+                Description = Description,
+            }
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -88,24 +90,18 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         SnackbarRepo.ShowMessagesResponse(res_ModeSelectingRubrics.Messages);
-        if (res_ModeSelectingRubrics.Response is null || (int)res_ModeSelectingRubrics.Response == default)
+        if (res_ModeSelectingRubrics.Response is null || (int)res_ModeSelectingRubrics.Response == 0)
             res_ModeSelectingRubrics.Response = ModesSelectRubricsEnum.AllowWithoutRubric;
 
         ShowDisabledRubrics = res.Response == true;
         ModeSelectingRubrics = res_ModeSelectingRubrics.Response.Value;
     }
 
-    void RubricSelectAction(RubricIssueHelpdeskLowModel selectedRubric)
+    void RubricSelectAction(RubricIssueHelpdeskLowModel? selectedRubric)
     {
         SelectedRubric = selectedRubric;
         StateHasChanged();
     }
-
-#if DEBUG
-    static bool IsDebug => true;
-#else
-    static bool IsDebug => false;
-#endif
 
     void ToggleMode()
     {

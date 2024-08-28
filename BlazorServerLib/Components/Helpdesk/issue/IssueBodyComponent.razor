@@ -1,0 +1,48 @@
+﻿@using MudBlazor
+
+@attribute [Authorize]
+@inherits IssueWrapBaseModel
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            @if (IsEditMode)
+            {
+                <MudTextField Immediate="true" @bind-Value="NameIssueEdit" Label="Тема обращения" Variant="Variant.Text"></MudTextField>
+            }
+            else
+            {
+                <MudText Typo="Typo.h6">Обращение: @Issue.Name</MudText>
+            }
+        </CardHeaderContent>
+        <CardHeaderActions>
+            @if (IsEditMode)
+            {
+                <MudIconButton title="Сохранить" Disabled="@(!IsEdited || !CanSave)" OnClick="SaveIssue" Size="Size.Small" Icon="@Icons.Material.Filled.Save" Color="@(IsEdited ? Color.Primary : Color.Default)" />
+                <MudIconButton title="Отмена" OnClick="CancelEdit" Size="Size.Small" Icon="@Icons.Material.Filled.Cancel" />
+            }
+            else
+            {
+                <MudIconButton Disabled="@(!CanEdit)" title="Редактировать" OnClick="EditToggle" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" />
+            }
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (IsEditMode)
+        {
+            <CascadingValue Value="RubricSelectAction">
+                <CascadingValue Value="SelectedRubric">
+                    <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" ParentRubric="0" />
+                </CascadingValue>
+            </CascadingValue>
+            <hr />
+            <InputRichTextComponent @bind-Value="DescriptionIssueEdit" ReadOnly="IsBusyProgress" />
+        }
+        else
+        {
+            <span><b>Рубрика:</b> "@Issue.RubricIssue!.Name"</span>
+            <hr />
+            @DescriptionHtml
+        }
+    </MudCardContent>
+</MudCard>

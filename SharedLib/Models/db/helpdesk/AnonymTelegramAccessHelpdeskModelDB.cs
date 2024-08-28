@@ -14,7 +14,6 @@ namespace SharedLib;
 /// Используется для доступа из Telegram WebApp
 /// </remarks>
 [Index(nameof(TokenAccess), IsUnique = true)]
-[Index(nameof(IssueId), nameof(TelegramUserId), IsUnique = true)]
 [Index(nameof(CreatedAt))]
 public class AnonymTelegramAccessHelpdeskModelDB
 {
@@ -40,14 +39,4 @@ public class AnonymTelegramAccessHelpdeskModelDB
     /// CreatedAt
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// Issue
-    /// </summary>
-    public IssueHelpdeskModelDB? Issue { get; set; }
-
-    /// <summary>
-    /// Issue
-    /// </summary>
-    public int? IssueId { get; set; }
 }

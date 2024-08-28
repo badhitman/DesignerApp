@@ -1,0 +1,58 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <span class="navbar-brand">@GetTitle()</span>
+        <button disabled="@IsBusyProgress" @onclick="() => NavbarToggle =! NavbarToggle" class="navbar-toggler@(NavbarToggle ? "" : " collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse@(NavbarToggle ? "" : " show")" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <span class="nav-link active" aria-current="page">Чат</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link">Вложения</span>
+                </li>
+            </ul>
+            <span class="navbar-text">
+                @Chat.Type.DescriptionInfo()
+            </span>
+        </div>
+    </div>
+</nav>
+
+<div class="my-3">
+    <label for="exampleFormControlTextarea1" class="form-label">Отправка сообщения</label>
+    <div class="input-group">
+        <textarea readonly="@IsBusyProgress" @bind:event="oninput" @bind="_textSendMessage" class="form-control" aria-label="With textarea" id="exampleFormControlTextarea1"></textarea>
+        <button @onclick="SendMessage" disabled="@(string.IsNullOrWhiteSpace(_textSendMessage) || IsBusyProgress)" class="btn btn-outline-@(string.IsNullOrWhiteSpace(_textSendMessage)?"secondary":"success") bi bi-send" type="button" id="button-addon2"></button>
+    </div>
+</div>
+
+<div class="input-group mb-3">
+    <InputFile @key=@(_inputFileId) class="form-control" OnChange="SelectFilesChange" />
+</div>
+
+@if (loadedFiles.Count != 0)
+{
+    <ol class="list-group list-group-numbered mb-2">
+        @foreach (IBrowserFile file_element in loadedFiles)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">@file_element.Name</div>
+                    @GlobalTools.SizeDataAsString(file_element.Size)
+                </div>
+                <span class="badge text-bg-primary rounded-pill">@file_element.LastModified</span>
+            </li>
+        }
+    </ol>
+    <div class="d-grid gap-2 mb-3">
+        <button @onclick="() => { loadedFiles.Clear(); _inputFileId = Guid.NewGuid().ToString(); }" class="btn btn-outline-primary" type="button">Отмена</button>
+    </div>
+}
+
+<MessagesTelegramComponent @ref="_messagesTelegramComponent" ChatId="Chat.Id" />

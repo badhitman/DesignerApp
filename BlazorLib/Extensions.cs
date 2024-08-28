@@ -1,5 +1,6 @@
 ﻿using SharedLib;
 using MudBlazor;
+using System.Security.Claims;
 
 namespace BlazorLib;
 
@@ -8,6 +9,39 @@ namespace BlazorLib;
 /// </summary>
 public static class Extensions
 {
+    /// <summary>
+    /// Получить данные по текущему пользователю
+    /// </summary>
+    public static UserInfoMainModel? ReadCurrentUserInfo(this ClaimsPrincipal principal)
+    {
+        string? userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null)
+            return null;
+
+        string? givenName = principal.FindFirst(ClaimTypes.GivenName)?.Value;
+        string? surName = principal.FindFirst(ClaimTypes.Surname)?.Value;
+        string? userName = principal.FindFirst(ClaimTypes.Name)?.Value;
+        string? email = principal.FindFirst(ClaimTypes.Email)?.Value;
+        string[] roles = principal.FindAll(ClaimTypes.Role).Select(x => x.Value).ToArray();
+
+        long? telegram_id = null;
+        string? telegramIdAsString = principal.FindFirst(GlobalStaticConstants.TelegramIdClaimName)?.Value;
+        if (!string.IsNullOrWhiteSpace(telegramIdAsString) && long.TryParse(telegramIdAsString, out long tgId))
+            telegram_id = tgId;
+
+        return new()
+        {
+            UserId = userId,
+            Email = email,
+            TelegramId = telegram_id,
+            Surname = surName,
+            UserName = userName,
+            Roles = roles,
+            GivenName = givenName,
+            Claims = [.. principal.Claims.Where(x => x.Type != ClaimTypes.Role).Select(x => new EntryAltModel() { Id = x.Type, Name = x.Value })],
+        };
+    }
+
     /// <inheritdoc/>
     public static void ShowMessagesResponse(this ISnackbar SnackbarRepo, IEnumerable<ResultMessage> messages)
     {

@@ -144,24 +144,9 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender
 // Scoped
 builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>();
 builder.Services.AddScoped<IUsersProfilesService, UsersProfilesService>();
-builder.Services.AddScoped<ITelegramWebService, TelegramWebService>();
 builder.Services.AddScoped<IConstructorService, ConstructorService>();
 builder.Services.AddScoped<IManufactureService, ManufactureService>();
 builder.Services.AddScoped<IJournalUniversalService, JournalConstructorService>();
-
-#region MQ Transmission (remote methods call)
-builder.Services.AddScoped<IRabbitClient, RabbitClient>();
-builder.Services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
-builder.Services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
-builder.Services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
-//
-builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserModel?>();
-builder.Services.RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();
-builder.Services.RegisterMqListener<TelegramJoinAccountDeleteReceive, long, object?>();
-builder.Services.RegisterMqListener<GetWebConfigReceive, object?, WebConfigModel>();
-builder.Services.RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>();
-builder.Services.RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModelDb?>();
-#endregion
 
 WebApplication app = builder.Build();
 // Configure the HTTP request pipeline.

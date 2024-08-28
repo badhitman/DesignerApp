@@ -27,6 +27,10 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
+    public required Action<RubricIssueHelpdeskLowModel> ItemUpdateHandle { get; set; }
+
+    /// <inheritdoc/>
+    [CascadingParameter, EditorRequired]
     public required TreeItemDataRubricModel Item { get; set; }
 
     /// <inheritdoc/>
@@ -56,7 +60,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
             throw new ArgumentNullException(nameof(ItemModel));
 
         IsBusyProgress = true;
-        TResponseModel<bool?> res = await HelpdeskRepo.RubricForIssuesMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id });
+        TResponseModel<bool?> res = await HelpdeskRepo.RubricMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);
@@ -74,7 +78,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         ItemModel.Name = itemSystemName;
 
         IsBusyProgress = true;
-        TResponseModel<int?> res = await HelpdeskRepo.RubricForIssuesCreateOrUpdate(new RubricIssueHelpdeskModelDB()
+        TResponseModel<int?> res = await HelpdeskRepo.RubricCreateOrUpdate(new RubricIssueHelpdeskModelDB()
         {
             Name = ItemModel.Name,
             Description = ItemModel.Description,
@@ -86,6 +90,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
+        ItemUpdateHandle(ItemModel);
         //ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);
     }
 

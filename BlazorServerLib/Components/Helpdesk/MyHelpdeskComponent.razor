@@ -1,27 +1,30 @@
-﻿@using MudBlazor
+﻿@inherits BlazorBusyComponentBaseModel
+
+@using MudBlazor
+
 <br />
 <CascadingValue Value="SetTab">
     <TabSetComponent IsSilent="true" AsPills="true">
-        <CascadingValue Value="Request">
-            <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ActualOnly))" Title="В работе">
-                <HelpdeskJournalComponent JournalMode="HelpdeskJournalModesEnum.ActualOnly" />
-            </TabComponent>
-            <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ArchiveOnly))" Title="Завершённые">
-                <HelpdeskJournalComponent JournalMode="HelpdeskJournalModesEnum.ArchiveOnly" />
-            </TabComponent>
-            <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.All))" Title="Все">
-                <HelpdeskJournalComponent JournalMode="HelpdeskJournalModesEnum.All" />
-            </TabComponent>
-        </CascadingValue>
+        <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ActualOnly))" Title="Открытые">
+            <HelpdeskJournalComponent UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.ActualOnly" />
+        </TabComponent>
+        <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ArchiveOnly))" Title="Завершённые">
+            <HelpdeskJournalComponent UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.ArchiveOnly" />
+        </TabComponent>
+        <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.All))" Title="Все">
+            <HelpdeskJournalComponent UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.All" />
+        </TabComponent>
     </TabSetComponent>
 </CascadingValue>
-<CreateIssueComponent Update="Update" />
+
+<CreateIssueComponent Update="Update" UserIdentityId="@user.UserId" />
 
 @code {
-    [Parameter]
-    public required GetIssuesForUserRequestModel Request { get; set; }
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
 
     HelpdeskJournalComponent? _tab;
+    UserInfoMainModel user = default!;
 
     void Update()
     {
@@ -31,5 +34,13 @@
     void SetTab(HelpdeskJournalComponent page)
     {
         _tab = page;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusyProgress = true;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        IsBusyProgress = false;
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 }

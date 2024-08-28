@@ -10,15 +10,14 @@ namespace SharedLib;
 /// <summary>
 /// IssueMessageModelDB
 /// </summary>
-[Index(nameof(IdentityUserId), nameof(TelegramId))]
+[Index(nameof(AuthorUserId))]
 [Index(nameof(CreatedAt), nameof(LastUpdateAt))]
 public class IssueMessageHelpdeskModelDB : IssueMessageHelpdeskBaseModel
 {
     /// <summary>
-    /// Идентификатор/Key
+    /// Автор сообщения
     /// </summary>
-    [Key]
-    public int Id { get; set; }
+    public required string AuthorUserId { get; set; }
 
     /// <summary>
     /// Issue
@@ -38,5 +37,5 @@ public class IssueMessageHelpdeskModelDB : IssueMessageHelpdeskBaseModel
     /// <summary>
     /// Отметки как ответ
     /// </summary>
-    public List<MarkAsResponseHelpdeskModelDB>? MarksAsResponse { get; set; }
+    public List<VoteHelpdeskModelDB>? Votes { get; set; }
 }

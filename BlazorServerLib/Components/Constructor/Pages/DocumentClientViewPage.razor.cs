@@ -4,6 +4,7 @@
 
 using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Constructor.Pages;
@@ -13,13 +14,8 @@ namespace BlazorWebLib.Components.Constructor.Pages;
 /// </summary>
 public partial class DocumentClientViewPage : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
     [Inject]
     IConstructorService ConstructorRepo { get; set; } = default!;
-
-    [Inject]
-    IUsersProfilesService UsersProfiles { get; set; } = default!;
-
 
 
     /// <inheritdoc/>
@@ -27,21 +23,14 @@ public partial class DocumentClientViewPage : BlazorBusyComponentBaseModel
     public Guid DocumentGuid { get; set; } = default!;
 
 
-    /// <inheritdoc/>
-    public UserInfoModel? CurrentUser { get; private set; }
-
     SessionOfDocumentDataModelDB SessionDocument = default!;
+
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-
-        TResponseModel<UserInfoModel?> currentUser = await UsersProfiles.FindByIdAsync();
-        CurrentUser = currentUser.Response;
-
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocumentData(DocumentGuid.ToString());
-
         IsBusyProgress = false;
 
         if (rest.Response is null)

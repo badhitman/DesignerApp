@@ -1,0 +1,23 @@
+﻿@page "/Account/Manage/PersonalData"
+@attribute [Authorize]
+@inject IUsersProfilesService UsersProfilesRepo
+
+<PageTitle>Личные данные</PageTitle>
+
+<h3>Личные данные</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Ваша учетная запись содержит персональные данные, которые вы нам предоставили. Эта страница позволяет вам загрузить или удалить эти данные.</p>
+        <p>
+            <strong>Удаление этих данных приведет к безвозвратному удалению вашей учетной записи, и ее невозможно будет восстановить.</strong>
+        </p>
+        <form action="Account/Manage/DownloadPersonalData" method="post">
+            <AntiforgeryToken />
+            <button class="btn btn-primary" type="submit">Скачать</button>
+        </form>
+        <p>
+            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger">Удалить</a>
+        </p>
+    </div>
+</div>

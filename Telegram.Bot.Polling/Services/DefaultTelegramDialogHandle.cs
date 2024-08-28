@@ -36,16 +36,19 @@ public class DefaultTelegramDialogHandle(IWebRemoteTransmissionService webRemote
                 }
                 else
                 {
-                    resp.Response = $"Учётная запись на сайте {tgDialog.TelegramUser.UserEmail} больше не связана с Telegram аккаунтом [{tgDialog.TelegramUser}]. Для повторной ассоциации Telegram аккаунта с у/з сайта необходимо заново пройти процедуру привязки {webConf.BaseUri}.";
+                    resp.Response = $"Учётная запись на сайте больше не связана с Telegram аккаунтом [{tgDialog.TelegramUser}]. Для повторной ассоциации Telegram аккаунта с у/з сайта необходимо заново пройти процедуру привязки {webConf.BaseUri}.";
                     resp.MainTelegramMessageId = null;
                     _logger.LogInformation(resp.Response);
                 }
                 break;
             default:
-                if (MailAddress.TryCreate(tgDialog.TelegramUser.UserEmail, out _))
+                if (tgDialog.TelegramUser is CheckTelegramUserAuthModel ctu && MailAddress.TryCreate(ctu.UserEmail, out MailAddress? ma) && ma is not null)
                 {
-                    resp.Response += "Для удаления связи с учётной записью сайта нажмите 'Выход'.";
-                    resp.ReplyKeyboard = [[new ButtonActionModel() { Data = "/logout", Title = "Выход" }]];
+                    if (ma.Host != GlobalStaticConstants.FakeHost)
+                    {
+                        resp.Response += "Для удаления связи с учётной записью сайта нажмите 'Выход'.";
+                        resp.ReplyKeyboard = [[new ButtonActionModel() { Data = "/logout", Title = "Выход" }]];
+                    }
                 }
                 else
                 {

@@ -70,7 +70,7 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(res_ModeSelectingRubrics.Messages);
         _showDisabledRubrics = res_ShowDisabledRubrics.Response == true;
 
-        if (res_ModeSelectingRubrics.Response is null || ((int)res_ModeSelectingRubrics.Response) == default)
+        if (res_ModeSelectingRubrics.Response is null || ((int)res_ModeSelectingRubrics.Response) == 0)
             res_ModeSelectingRubrics.Response = ModesSelectRubricsEnum.AllowWithoutRubric;
 
         _selectedOption = res_ModeSelectingRubrics.Response!.Value;

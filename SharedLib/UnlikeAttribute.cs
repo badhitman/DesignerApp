@@ -43,7 +43,7 @@ public class UnlikeAttribute : ValidationAttribute
             object? otherPropertyValue = otherProperty?.GetValue(validationContext.ObjectInstance, null);
             if (value.Equals(otherPropertyValue))
             {
-                return new ValidationResult(ErrorMessage);
+                return new(ErrorMessage);
             }
         }
         return ValidationResult.Success;

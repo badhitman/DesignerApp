@@ -1,4 +1,4 @@
-////$.validator.addMethod('unlike',
+﻿////$.validator.addMethod('unlike',
 ////    function (value, element, params) {
 ////        var propertyValue = $(params[0]).val();
 ////        var dependentPropertyValue = $(params[1]).val();
@@ -12,6 +12,43 @@
 ////        options.rules['unlike'] = [element, options.element];
 ////        options.messages['unlike'] = options.message;
 ////    });
+
+window.BoundingClientRect = (() => {
+    return {
+        Height(id) {
+            var _d = $(`#${id}`);
+            if (_d.length == 0)
+                return 0;
+
+            return _d.height();
+        },
+        Width(id) {
+            var _d = $(`#${id}`);
+            if (_d.length == 0)
+                return 0;
+
+            return _d.width();
+        },
+        X(id) {
+            var _d = $(`#${id}`);
+            if (_d.length == 0)
+                return 0;
+
+            var _p = _d.position();
+
+            return _p.left;
+        },
+        Y(id) {
+            var _d = $(`#${id}`);
+            if (_d.length == 0)
+                return 0;
+
+            var _p = _d.position();
+
+            return _p.top;
+        }
+    };
+})();
 
 window.methods = {
     CreateCookie: function (name, value, seconds, path) {

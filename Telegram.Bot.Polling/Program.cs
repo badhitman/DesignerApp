@@ -1,4 +1,6 @@
+using DbcLib;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
@@ -61,6 +63,18 @@ builder.ConfigureServices((context, services) =>
     services.AddSingleton<WebConfigModel>();
     services.AddOptions();
 
+
+    string connectionIdentityString = context.Configuration.GetConnectionString("TelegramBotConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
+    services.AddDbContextFactory<TelegramBotContext>(opt =>
+    {
+        opt.UseSqlite(connectionIdentityString);
+
+#if DEBUG
+        opt.EnableSensitiveDataLogging(true);
+#endif
+    });
+
+
     // Register named HttpClient to benefits from IHttpClientFactory
     // and consume it with ITelegramBotClient typed client.
     // More read:
@@ -74,6 +88,7 @@ builder.ConfigureServices((context, services) =>
                 return new TelegramBotClient(options, httpClient);
             });
 
+    services.AddScoped<StoreTelegramService>();
     services.AddScoped<UpdateHandler>();
     services.AddScoped<ReceiverService>();
     services.AddHostedService<PollingService>();
@@ -88,9 +103,16 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
     services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     //
-    services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, int?>();
+    services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, MessageComplexIdsModel?>();
     services.RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>();
     services.RegisterMqListener<GetBotUsernameReceive, object?, string?>();
+    services.RegisterMqListener<ChatsReadTelegramReceive, long[]?, ChatTelegramModelDB[]?>();
+    services.RegisterMqListener<MessagesSelectTelegramReceive, TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>();
+    services.RegisterMqListener<GetFileTelegramReceive, string?, byte[]?>();
+    services.RegisterMqListener<ChatsFindForUserTelegramReceive, long[]?, ChatTelegramModelDB[]?>();
+    services.RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>?, TPaginationResponseModel<ChatTelegramModelDB>?>();
+    services.RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>();
+    services.RegisterMqListener<ChatTelegramReadReceive, int?, ChatTelegramModelDB?>();
     #endregion
 });
 

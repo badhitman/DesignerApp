@@ -12,7 +12,7 @@ public class AltSimplePaginationRequestModel : SimplePaginationRequestModel
     /// <inheritdoc/>
     public static AltSimplePaginationRequestModel Build(string? simpleRequest, int pageSize = 10, int pageNum = 0, bool strongMode = false)
     {
-        return new AltSimplePaginationRequestModel()
+        return new()
         {
             PageNum = pageNum,
             SimpleRequest = simpleRequest,

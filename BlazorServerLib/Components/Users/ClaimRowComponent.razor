@@ -1,4 +1,5 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using System.Security.Claims
+@inherits BlazorBusyComponentBaseModel
 
 @inject IUsersProfilesService UsersProfilesRepo
 
@@ -22,8 +23,15 @@
         <th scope="row">@Claim.ClaimType</th>
         <td>
             @Claim.ClaimValue
-            <span class="ms-1 badge text-bg-@(IsBusyProgress? "secondary" : "primary") my-btn" @onclick="() => { if(!IsBusyProgress) { isEdit = true; } }">изменить</span>
-            <span class="ms-1 badge text-bg-@(IsBusyProgress ? "secondary" : (initRemoveClaim ? "danger" : "warning")) my-btn" @onclick="async () => { if(!IsBusyProgress) { await RemoveClaim(); } }">@(initRemoveClaim ? "подтвердить удаление?" : "удалить")</span>
+
+            @if (Claim.ClaimType != GlobalStaticConstants.TelegramIdClaimName &&
+           Claim.ClaimType != ClaimTypes.GivenName &&
+           Claim.ClaimType != ClaimTypes.Surname)
+            {
+                <span class="ms-1 badge text-bg-@(IsBusyProgress? "secondary" : "primary") my-btn" @onclick="() => { if(!IsBusyProgress) { isEdit = true; } }">изменить</span>
+                <span class="ms-1 badge text-bg-@(IsBusyProgress ? "secondary" : (initRemoveClaim ? "danger" : "warning")) my-btn" @onclick="async () => { if(!IsBusyProgress) { await RemoveClaim(); } }">@(initRemoveClaim ? "подтвердить удаление?" : "удалить")</span>
+            }
+
             @if (initRemoveClaim)
             {
                 <span class="ms-1 badge text-bg-light my-btn" @onclick="() => { if(!IsBusyProgress) { initRemoveClaim = false; } }">не удалять</span>

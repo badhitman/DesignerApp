@@ -41,34 +41,32 @@
     </MudTooltip>
 </h3>
 
-<CascadingValue Value="CurrentUser">
-    <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
-        <CascadingValue Value="this">
-            <MudTabPanel Disabled="IsBusyProgress" Text="Проекты">
-                <ProjectsListComponent />
-            </MudTabPanel>
-            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Списки">
-                <DirectoryViewComponent />
-            </MudTabPanel>
-            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Формы">
-                <FormsViewComponent />
-            </MudTabPanel>
-            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Документы">
-                <DocumentsSchemesTableComponent />
-            </MudTabPanel>
-            <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки" ToolTip="Доступ к заполнению данными документов (в т.ч. анонимные пользователи)">
-                <SessionsViewComponent />
-            </MudTabPanel>
-            <AuthorizeView Roles="admin,manufacture">
-                <Authorized>
-                    <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text=".NET" BadgeData='"C#"' BadgeColor="Color.Primary" ToolTip="Генерация кодовой базы C# .NET">
-                        <ManufactureComponent @ref="manufacture_ref" />
-                    </MudTabPanel>
-                </Authorized>
-            </AuthorizeView>
-        </CascadingValue>
-    </MudTabs>
-</CascadingValue>
+<MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
+    <CascadingValue Value="this">
+        <MudTabPanel Disabled="IsBusyProgress" Text="Проекты">
+            <ProjectsListComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Списки">
+            <DirectoryViewComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Формы">
+            <FormsViewComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Документы">
+            <DocumentsSchemesTableComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки" ToolTip="Доступ к заполнению данными документов (в т.ч. анонимные пользователи)">
+            <SessionsViewComponent />
+        </MudTabPanel>
+        <AuthorizeView Roles="admin,manufacture">
+            <Authorized>
+                <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text=".NET" BadgeData='"C#"' BadgeColor="Color.Primary" ToolTip="Генерация кодовой базы C# .NET">
+                    <ManufactureComponent @ref="manufacture_ref" />
+                </MudTabPanel>
+            </Authorized>
+        </AuthorizeView>
+    </CascadingValue>
+</MudTabs>
 
 @if (MainProject is null)
 {

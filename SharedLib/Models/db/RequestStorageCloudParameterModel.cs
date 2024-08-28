@@ -12,7 +12,7 @@ namespace SharedLib;
 [Index(nameof(ApplicationName), nameof(Name))]
 public class RequestStorageCloudParameterModel
 {
-/// <summary>
+    /// <summary>
     /// Имя приложения, которое обращается к службе облачного хранения параметров
     /// </summary>
     public required string ApplicationName { get; set; }
@@ -21,5 +21,4 @@ public class RequestStorageCloudParameterModel
     /// Имя параметра
     /// </summary>
     public required string Name { get; set; }
-
 }

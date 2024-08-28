@@ -2,9 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MailKit.Net.Smtp;
 using MimeKit;
 using MimeKit.Text;
 using SharedLib;
@@ -19,6 +19,12 @@ public class MailProviderService(IOptions<SmtpConfigModel> _config, ILogger<Mail
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SendEmailAsync(string email, string subject, string message, string mimekit_format = "html")
     {
+        if (!System.Net.Mail.MailAddress.TryCreate(email, out System.Net.Mail.MailAddress? mail) || mail is null)
+            return ResponseBaseModel.CreateError("Не корректный Email");
+
+        if (mail.Host == GlobalStaticConstants.FakeHost)
+            return ResponseBaseModel.CreateInfo("Заглушка: email host");
+
         TextFormat format = (TextFormat)Enum.Parse(typeof(TextFormat), mimekit_format, true);
         MimeMessage? emailMessage = new();
 

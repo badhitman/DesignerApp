@@ -1,0 +1,44 @@
+﻿@using BlazorWebLib.Components.Helpdesk.issue
+
+@inherits IssueWrapBaseModel
+
+<style>
+    .change-tg-notify i {
+        cursor: pointer;
+    }
+</style>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">TelegramBot уведомления</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">Переадресация входящих сообщений</h6>
+
+        @if (chatsTelegram is null || chatsTelegram.Count == 0)
+        {
+            <figure class="text-center">
+                <blockquote class="blockquote">
+                    <p>Не найдено ни одного связанного Telegram чата.</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    Отсутствуют пользователи <cite>TelegramBot</cite>
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            <CascadingValue Value="chatsTelegram">
+                <NotificationTelegramIssueConfigComponent ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
+                                                          Name="@($"{GlobalStaticConstants.Routes.USER_CONTROLLER_NAME}")"
+                                                          PrefixPropertyName="@Issue.AuthorIdentityUserId"
+                                                          Title="Групповой чат или персональный"
+                                                          Hint="Правило переадресации для сообщений от клиента" />
+
+                @* <NotificationTelegramIssueConfigComponent ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
+            Name="@GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME"
+            OwnerPrimaryKey="Issue.Id"
+            Title="Для обращения (приоритетное)"
+            Hint="Временное правило пока этот инцидент не завершён" /> *@
+            </CascadingValue>
+        }
+    </div>
+</div>

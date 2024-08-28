@@ -1,0 +1,22 @@
+﻿@if (IsExpand)
+{
+    <ul>
+        @foreach (PhotoMessageTelegramModelDB _f in Photo)
+        {
+            <li>
+                <FileItemForMessageComponent FileElement="@_f" />
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <i title="Развернуть (файлов:@(Photo.Count) шт.)" @onclick="() => IsExpand = true" style="cursor:pointer" class="bi bi-images"></i>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public required List<PhotoMessageTelegramModelDB> Photo { get; set; }
+
+    bool IsExpand;
+}

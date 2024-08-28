@@ -1,0 +1,24 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@using BlazorWebLib.Components.Telegram
+@using MudBlazor
+
+<style>
+    .chat-selector-input li{
+        cursor:pointer;
+    }
+</style>
+
+<div class="card">
+    <div class="card-body" style="@(heightCard > 0 ?  $"min-height:{(int)heightCard}px;" : "")">
+        <h5 class="card-title">Переадресация Telegram сообщений (глобально)</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">Для клиентов, на которых ни кто не подписан</h6>
+        <ChatSelectInputComponent NullableAllow="true" SelectedChat="initValue" SelectChatHandle="SelectChatHandler" SetHeightCard="SetHeightCard" />
+        @if (selectedChat is not null && selectedChat.Id == 0)
+        {
+            <div class="alert alert-warning" role="alert">
+                Новые клиенты (без подписанных на них сотрудников) не будут переадресованы! Укажите чат, что бы эти сообщения не прошли незамеченными.
+            </div>
+        }
+    </div>
+</div>

@@ -14,6 +14,8 @@ using SharedLib;
 using DbcLib;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace ServerLib;
 
@@ -24,6 +26,7 @@ public partial class ConstructorService(
     IDbContextFactory<MainDbAppContext> mainDbFactory,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IUsersProfilesService usersProfilesRepo,
+    IHttpContextAccessor httpContextAccessor,
     ILogger<ConstructorService> logger,
     IOptions<ServerConstructorConfigModel> _conf) : IConstructorService
 {
@@ -820,6 +823,8 @@ public partial class ConstructorService(
     {
         if (project_id < 1)
             return ResponseBaseModel.CreateError("Не указан проект");
+
+        user_id ??= httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception();
 
         TResponseModel<UserInfoModel?> call_user = await usersProfilesRepo.FindByIdAsync(user_id);
 
