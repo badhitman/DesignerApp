@@ -5,16 +5,20 @@
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 using BlazorLib;
+using MudBlazor;
 
 namespace BlazorWebLib.Components.Helpdesk.issue;
 
 /// <summary>
 /// NotificationTelegramIssueConfigComponent
 /// </summary>
-public partial class NotificationTelegramIssueConfigComponent : IssueWrapBaseModel
+public partial class NotificationTelegramIssueConfigComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
+
+    [Inject]
+    internal ISnackbar SnackbarRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

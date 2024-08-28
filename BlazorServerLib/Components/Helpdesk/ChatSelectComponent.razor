@@ -1,0 +1,22 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@using BlazorWebLib.Components.Telegram
+@using MudBlazor
+
+<style>
+    .chat-selector-input li {
+        cursor: pointer;
+    }
+</style>
+
+<div class="card">
+    <div class="card-body" style="@(heightCard > 0 ?  $"min-height:{(int)heightCard}px;" : "")">
+        <h5 class="card-title">@Title</h5>
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <h6 class="card-subtitle mb-2 text-body-secondary">@Subtitle</h6>
+        }
+
+        <ChatSelectInputComponent NullableAllow="true" SelectedChat="initValue" SelectChatHandle="SelectChatHandler" SetHeightCard="SetHeightCard" />
+    </div>
+</div>

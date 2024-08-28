@@ -7,8 +7,12 @@
     <MudTabPanel Text="Рубрики">
         <RubricsParametersComponent />
     </MudTabPanel>
-    <MudTabPanel Text="HelpDesk" >
-        <AnonChatsNotificationConfigComponent />
+    <MudTabPanel Text="HelpDesk">
+        <ChatSelectComponent Title="Переадресация Telegram сообщений (глобально)"
+                             Subtitle="Для клиентов, на которых ни кто не подписан"
+                             ApplicationName="@GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME"
+                             Name="@($"{GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.NOTIFICATIONS_CONTROLLER_NAME}")"
+                             PrefixPropertyName="@GlobalStaticConstants.Routes.GLOBAL_CONTROLLER_NAME" />
     </MudTabPanel>
     <MudTabPanel Text="Telegram">
         <TelegramConfigComponent />

@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Helpdesk;
 /// <summary>
 /// Выбор Telegram чата для глобальной переадресации клиентов, которым не обнаружена подписка среди сотрудников
 /// </summary>
-public partial class AnonChatsNotificationConfigComponent : BlazorBusyComponentBaseModel
+public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
@@ -21,15 +21,54 @@ public partial class AnonChatsNotificationConfigComponent : BlazorBusyComponentB
     ISnackbar SnackbarRepo { get; set; } = default!;
 
 
-    ChatTelegramModelDB? selectedChat;
+    /// <summary>
+    /// ApplicationName
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string ApplicationName { get; set; }
+
+    /// <summary>
+    /// Name
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// PrefixPropertyName
+    /// </summary>
+    [Parameter]
+    public string? PrefixPropertyName { get; set; }
+
+    /// <summary>
+    /// Card title
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+
+    /// <summary>
+    /// CArd subtitle
+    /// </summary>
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    /// <summary>
+    /// Выбор чата
+    /// </summary>
+    [CascadingParameter]
+    public Action<ChatSelectComponent>? ChatChangeHandler { get; set; }
+
+    /// <summary>
+    /// Выбранный чат
+    /// </summary>
+    public ChatTelegramModelDB? SelectedChat;
 
     long initValue;
 
-    static StorageCloudParameterModel KeyStorage => new()
+    StorageCloudParameterModel KeyStorage => new()
     {
-        ApplicationName = GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME,
-        Name = $"{GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.NOTIFICATIONS_CONTROLLER_NAME}",
-        PrefixPropertyName = GlobalStaticConstants.Routes.GLOBAL_CONTROLLER_NAME,
+        ApplicationName = ApplicationName,
+        Name = Name,
+        PrefixPropertyName = PrefixPropertyName,
     };
 
     double heightCard;
@@ -41,19 +80,26 @@ public partial class AnonChatsNotificationConfigComponent : BlazorBusyComponentB
 
     async void SelectChatHandler(ChatTelegramModelDB? selected)
     {
-        if (selectedChat?.ChatTelegramId == selected?.ChatTelegramId || selectedChat is null)
+        if (SelectedChat?.ChatTelegramId == selected?.ChatTelegramId || SelectedChat is null)
         {
-            selectedChat = selected;
+            SelectedChat = selected;
             StateHasChanged();
+
+            if (ChatChangeHandler is not null)
+                ChatChangeHandler(this);
+
             return;
         }
-        selectedChat = selected;
+        SelectedChat = selected;
 
         IsBusyProgress = true;
         TResponseModel<int> rest = await StorageRepo.SaveParameter(selected?.ChatTelegramId, KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         StateHasChanged();
+
+        if (ChatChangeHandler is not null)
+            ChatChangeHandler(this);
     }
 
     /// <inheritdoc/>
