@@ -19,7 +19,8 @@
 ![связи между проектами](./img/struct.png)
 
 ### Службы (активные/запускаемые):
-![dd](./img/csproj-set.png)
+Пример того как может быть настроено в VS:
+![пример состава и порядка запуска проектов](./img/csproj-set.png)
 #### 1. TelegramBot
 [Telegram.Bot.Polling](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling) - сохраняет все входящие сообщения и позволяет в последствии работать с чатами HelpDesk или другим сервисам решения.
 
