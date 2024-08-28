@@ -1,0 +1,74 @@
+﻿@using Newtonsoft.Json
+
+@inherits FieldBaseComponentModel
+
+<MudSelect ReadOnly="Readonly" T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="true" @bind-SelectedValues="EntriesValues" ToStringFunc="converter">
+    @if (Entries?.Any() == true)
+    {
+        @foreach (EntryModel d in Entries)
+        {
+            <MudSelectItem T="EntryModel" Value="@d">@d.Name</MudSelectItem>
+        }
+    }
+</MudSelect>
+
+@code {
+    [Parameter, EditorRequired]
+    public required List<EntryModel> Entries { get; set; }
+
+    [Parameter]
+    public int[]? Value { get; set; }
+    int[]? _value;
+
+    [Parameter]
+    public EventCallback<int[]?> ValueChanged { get; set; }
+
+
+    Func<EntryModel?, string> converter = p => p?.Name ?? "";
+
+    public override bool IsEdited
+    {
+        get
+        {
+            if (Value?.Count() < 1 && _value?.Count() < 1)
+                return false;
+            else
+                return
+                Value?.Any(x => _value?.Any(y => y == x) != true) == true ||
+                _value?.Any(x => Value?.Any(y => y == x) != true) == true;
+        }
+    }
+
+
+    IEnumerable<EntryModel>? _entriesValues;
+    IEnumerable<EntryModel>? EntriesValues
+    {
+        get => _entriesValues ?? Entries?.Where(x => Value?.Contains(x.Id) == true);
+        set
+        {
+            _entriesValues = value;
+            if (value is not null)
+                Value = [.. value.Select(x => x.Id)];
+            else
+                Value = null;
+
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    public override void Reset()
+    {
+        EntriesValues = Entries.Where(x => _value?.Contains(x.Id) == true);
+    }
+
+    public override void CommitChange()
+    {
+        _value = GlobalTools.CreateDeepCopy(Value);
+    }
+
+    protected override void OnInitialized()
+    {
+        CommitChange();
+        base.OnInitialized();
+    }
+}

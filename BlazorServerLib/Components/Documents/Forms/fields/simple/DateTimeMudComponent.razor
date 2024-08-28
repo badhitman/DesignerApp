@@ -1,0 +1,41 @@
+﻿@inherits FieldBaseComponentModel
+
+<MudTextField @bind-Value="DateTimeValue" HelperText="@Hint" Format="s" Label="@Label" ReadOnly="Readonly" Required="@Required" InputType="InputType.DateTimeLocal" InputId="@Id" />
+
+@code {
+    [Parameter]
+    public DateTime? Value { get; set; }
+    DateTime? _value;
+
+    [Parameter]
+    public EventCallback<DateTime?> ValueChanged { get; set; }
+
+
+    public override bool IsEdited => Value != _value && !((Value is null || Value == default) && (_value is null || _value == default));
+
+    DateTime? DateTimeValue
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    public override void Reset()
+    {
+        DateTimeValue = _value;
+    }
+
+    public override void CommitChange()
+    {
+        _value = Value;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CommitChange();
+    }
+}

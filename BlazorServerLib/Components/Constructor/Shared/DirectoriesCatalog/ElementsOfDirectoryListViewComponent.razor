@@ -1,0 +1,51 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<style>
+    .list-group-item .link-primary, .list-group-item .link-info {
+        cursor: pointer;
+    }
+</style>
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (EntriesElements is null)
+{
+    @* if (SelectedDirectoryId > 0)
+    {
+        <text>EntriesElements is null</text>
+    } *@
+}
+else if (!EntriesElements.Any())
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Пусто.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            В справочнике <cite title="Создайте первый элемент справочника">нет элементов</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    <ul class="list-group list-group-flush">
+        <CascadingValue Value="this">
+            @foreach (EntryModel e in EntriesElements)
+            {
+                <li class="list-group-item">
+                    <div class="d-flex">
+                        <CascadingValue Value="e">
+                            <ElementDirectoryFieldSetComponent SelectedDirectoryId="SelectedDirectoryId" />
+                        </CascadingValue>
+                    </div>
+                </li>
+            }
+        </CascadingValue>
+    </ul>
+}

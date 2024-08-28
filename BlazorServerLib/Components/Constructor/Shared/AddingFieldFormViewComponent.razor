@@ -1,0 +1,54 @@
+﻿<div class="col-auto">
+    <select title="Тип добавляемого поля" @bind="SelectedTypeFieldForAdding" class="form-select" name="adding-new-field-to-form" id="adding-new-field-to-form">
+        <option value="0" disabled="@(SelectedTypeFieldForAdding > 0)">Выбор типа поля...</option>
+        @foreach (TypesFieldsFormsEnum tf in Enum.GetValues(typeof(TypesFieldsFormsEnum)))
+        {
+            <option class="@GetStyleClassForOption(tf)" value="@((int)tf)">@tf.DescriptionInfo()</option>
+        }
+        <option class="text-success" value="@int.MaxValue">Список/Справочник</option>
+    </select>
+</div>
+@if (SelectedTypeFieldForAdding < 1)
+{
+    <div class="col-auto">
+        <span class="form-text">
+            Для добавления нового поля - укажите его тип
+        </span>
+    </div>
+}
+else
+{
+    <div class="col-auto">
+        <input @bind-value="FieldName" @bind-value:event="oninput" placeholder="Название" type="text" id="inputName" class="form-control" autocomplete="off">
+    </div>
+
+    switch (SelectedTypeFieldForAdding)
+    {
+        case int.MaxValue:
+            <DirectoryFieldFormUIComponent @ref="FieldDirUI" FieldObject="FieldObjectForDirectory" />
+            break;
+        case (int)TypesFieldsFormsEnum.Text:
+            <TextFieldFormUIComponent @ref="FieldTextUI" FieldObject="FieldObjectStandard" />
+            break;
+        case (int)TypesFieldsFormsEnum.ProgramCalculationDouble:
+            <div class="col-auto">
+                <ProgramCalculationFieldFormUIComponent @ref="FieldProgramCalculationDouble" FieldObject="FieldObjectStandard" />
+            </div>
+            break;
+        case (int)TypesFieldsFormsEnum.Generator:
+            <div class="col-auto">
+                <GeneratorFieldFormUIComponent @ref="FieldGeneratorUI" FieldObject="FieldObjectStandard" />
+            </div>
+            break;
+    }
+
+    @if (SelectedTypeFieldForAdding != (int)TypesFieldsFormsEnum.ProgramCalculationDouble)
+    {
+        <div class="col-auto">
+            <div class="form-check form-switch mt-2">
+                <input @bind="FieldIsRequired" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Обязательный</label>
+            </div>
+        </div>
+    }
+}

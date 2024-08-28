@@ -1,0 +1,76 @@
+﻿@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using MudBlazor
+@using System.Diagnostics
+
+@inherits DocumentEditBaseComponent
+
+@if (schemes is null || schemes.Length == 0)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Метаданные схемы документа не загружены.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Схема данных <cite title="документа/схемы">@DocumentNameOrId</cite> отсутсвует
+        </figcaption>
+    </figure>
+}
+else if (schemes.Length > 1)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Коллизия имени метаданных схемы документа.</p>
+        </blockquote>
+        @foreach (DocumentSchemeConstructorModelDB _sc in schemes)
+        {
+            <figcaption class="blockquote-footer">
+                <a href="@($"/journal-{_sc.Id}/project-{_sc.ProjectId}/document/{DocumentKey}")">@_sc.Name</a>
+            </figcaption>
+        }
+
+    </figure>
+}
+else if (DocumentKey > 0 && session is null)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>Сессия не найдена.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Токен доступа не действителен.
+        </figcaption>
+    </figure>
+}
+else
+{
+    DocumentSchemeConstructorModelDB scheme_obj = schemes[0];
+    scheme_obj.Tabs = scheme_obj.Tabs?.OrderBy(x => x.SortIndex).ToList();
+    scheme_obj.Tabs?.ForEach(x => x.JoinsForms = x.JoinsForms?.OrderBy(y => y.SortIndex).ToList());
+
+    DocumentMetadata.Tabs = DocumentMetadata.Tabs.OrderBy(x => x.SortIndex).ToList();
+    DocumentMetadata.Tabs.ForEach(x => x.Forms = x.Forms.OrderBy(x => x.SortIndex).ToArray());
+
+    <TabSetComponent>
+        @foreach (TabFitModel _tab in DocumentMetadata.Tabs)
+        {
+            <TabComponent OnClickHandle="TabTryChange" Title="@_tab.Name" SystemName='@_tab.SystemName'>
+                <CascadingValue Value="scheme_obj">
+                    <CascadingValue Value="DocumentMetadata">
+                        <CascadingValue Value="session">
+                            <CascadingValue Value="_tab">
+                                <CascadingValue Value="TabChangeEvent">
+                                    <CascadingValue Value="this">
+                                        <CascadingValue Value="scheme_obj.Tabs!.First(x=>x.SortIndex == _tab.SortIndex)">
+                                            <TabOfDocumentConstructorComponent DocumentKey="@DocumentKey" TabChangeHandle="TabChangeEvent" ID="@($"{(DocumentKey.HasValue ? $"{DocumentKey.Value}>" : "")}{_tab.SystemName}")" />
+                                        </CascadingValue>
+                                    </CascadingValue>
+                                </CascadingValue>
+                            </CascadingValue>
+                        </CascadingValue>
+                    </CascadingValue>
+                </CascadingValue>
+            </TabComponent>
+        }
+    </TabSetComponent>
+}

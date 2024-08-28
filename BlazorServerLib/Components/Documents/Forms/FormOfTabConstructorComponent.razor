@@ -1,0 +1,88 @@
+﻿@inherits FormBaseModel
+
+<MudCard Class="mb-4">
+    <MudCardContent id="@($"ref-form:{ID}")">
+        <CascadingValue Value="this">
+            <div class="@FormMetadata.Css" title="@(string.IsNullOrWhiteSpace(FormMetadata.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(FormMetadata.Description)))">
+                @{
+                    int i = -1;
+                }
+                @foreach (BaseRequiredFormFitModel field in FormMetadata.AllFields)
+                {
+                    i++;
+                    FieldFormBaseLowConstructorModel _field_c = Join.Form!.AllFields[i];
+                    <div class="@field.Css" title="@(string.IsNullOrWhiteSpace(field.Description) ? "" : string.Join(" ", GlobalTools.DescriptionHtmlToLinesRemark(field.Description)))">
+                        @if (field is FieldFitModel bf)
+                        {
+                            FieldFormConstructorModelDB _field_b = (FieldFormConstructorModelDB)_field_c;
+                            switch (bf.TypeField)
+                            {
+                                case TypesFieldsFormsEnum.Bool:
+                                    <CheckBoxComponent Readonly="IsBusyProgress" Value="BoolSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldValue(bf, e.ToString(), _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Int:
+                                    <IntMudFieldComponent Readonly="IsBusyProgress" Value="IntSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldValue(bf, e.ToString(), _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Double:
+                                    <DoubleMudFieldComponent Readonly="IsBusyProgress" Value="DoubleSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldValue(bf, e.ToString(), _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.DateTime:
+                                    <DateTimeMudComponent Readonly="IsBusyProgress" Value="DateTimeSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldValue(bf, e.ToString(), _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Date:
+                                    <DateMudComponent Readonly="IsBusyProgress" Value="DateOnlySimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldValue(bf, e.ToString(), _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Time:
+                                    <TimeMudComponent Readonly="IsBusyProgress" Value="TimeOnlySimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldValue(bf, e.ToString(), _field_b)" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.Text or TypesFieldsFormsEnum.Password:
+                                    <TextMudComponent Readonly="IsBusyProgress" Value="@StringSimpleValue(bf, _field_b)" ValueChanged="(e) => SetSimpleFieldValue(bf, e, _field_b)" AsPassword="bf.TypeField == TypesFieldsFormsEnum.Password" Label="@bf.Name" Hint="@bf.Description" Id="@GetFieldDomId(bf)" Required="@bf.Required" />
+                                    break;
+                                case TypesFieldsFormsEnum.ProgramCalculationDouble:
+                                    <div class="alert alert-primary" role="alert">
+                                        TypesFieldsFormsEnum.ProgramCalculationDouble
+                                    </div>
+                                    break;
+                                case TypesFieldsFormsEnum.Generator:
+                                    <div class="alert alert-primary" role="alert">
+                                        TypesFieldsFormsEnum.Generator
+                                    </div>
+                                    break;
+                                default:
+                                    <div class="alert alert-danger" role="alert">
+                                        Не известный вид поля: @bf.TypeField
+                                    </div>
+                                    break;
+                            }
+                        }
+                        else if (field is FieldAkaDirectoryFitModel df)
+                        {
+                            FieldFormAkaDirectoryConstructorModelDB _field_p = (FieldFormAkaDirectoryConstructorModelDB)_field_c;
+                            if (df.IsMultiSelect)
+                            {
+                                <SelectFieldMudMultiselectComponent Readonly="IsBusyProgress" Entries="@df.Items.ToList()" Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictsValue(df, _field_p)" ValueChanged="(e) => SetSimpleFieldValue(df, e, _field_p)" />
+                            }
+                            else
+                            {
+                                <SelectFieldMudComponent Readonly="IsBusyProgress" Entries="@df.Items.ToList()" Label="@df.Name" Hint="@df.Description" Id="@GetFieldDomId(df)" Required="@df.Required" Value="DictValue(df, _field_p)" ValueChanged="(e) => SetDirectoryFieldValue(df, e, _field_p)" />
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                Не известный тип поля: @field.GetType().FullName
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </CascadingValue>
+    </MudCardContent>
+    @if (IsEdited)
+    {
+        <MudCardActions>
+            <MudButton OnClick="SaveForm" Variant="Variant.Text" Color="Color.Success">Сохранить...</MudButton>
+            <MudButton OnClick="ResetForm" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
+        </MudCardActions>
+    }
+</MudCard>

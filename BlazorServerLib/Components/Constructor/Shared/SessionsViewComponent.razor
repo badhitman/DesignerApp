@@ -1,0 +1,129 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<div class="card d-flex flex-column flex-grow-1">
+    <div class="card-header">
+        <form class="row row-cols-lg-auto g-3 align-items-center">
+            <div class="col-12">
+                <label class="visually-hidden" for="inlineFormInputGroupSessionName">Имя ссылки (опционально)</label>
+                <div class="input-group">
+                    <div class="input-group-text">Создание новой сессии/ссылки</div>
+                    <input @bind="NameSessionForCreate" type="text" class="form-control" id="inlineFormInputGroupSessionName" placeholder="Название">
+                </div>
+            </div>
+            <div class="col-12" title="Выбранная схема документа используется в том числе и для фильтрации выводимых ссылок">
+                <label class="visually-hidden" for="inlineFormSelectPref">Документ/схема</label>
+                <select @bind="SelectedDocumentSchemeId" class="form-select" disabled="@(ParentFormsPage is null)" id="inlineFormSelectPref">
+                    <option value="0">Выбор анкеты...</option>
+                    @foreach (DocumentSchemeConstructorModelDB q in DocumentsAll)
+                    {
+                        <option value="@q.Id">@q.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-12">
+                <button @onclick="CreateNewSession" disabled="@(SelectedDocumentSchemeId < 1 || ParentFormsPage is null)" type="button" class="btn btn@(SelectedDocumentSchemeId > 0 ? "" : "-outline")-primary">@CreateSessionButtonTitle</button>
+            </div>
+            @if (SelectedDocumentSchemeId > 0)
+            {
+                <div class="col-12">
+                    <button @onclick="() => { SelectedDocumentSchemeId = 0; NameSessionForCreate = null; }" type="button" class="btn btn-outline-secondary" disabled="@(ParentFormsPage is null)">Отмена</button>
+                </div>
+            }
+        </form>
+    </div>
+    <div class="card-body">
+        <MudTable ServerData="@(new Func<TableState, CancellationToken, Task<TableData<SessionOfDocumentDataModelDB>>>(ServerReload))" Loading="IsBusyProgress" Dense="true" Hover="true" Striped="true" @ref="table">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Ссылки/сессии</MudText>
+                <MudSpacer />
+                <MudTextField Disabled="IsBusyProgress" T="string" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Поиск по имени и GUID" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh>Опрос/анкета</MudTh>
+                <MudTh>Наблюдатели</MudTh>
+                <MudTh>Информация</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd><span id="@context.SessionToken">@context.Name</span></MudTd>
+                <MudTd>
+                    @context.Owner?.Name
+                    <sup title="автор/создатель сессии" class="text-muted">by <code>@context.AuthorUser</code></sup>
+                </MudTd>
+                <MudTd><span title="Адреса для получения уведомлений при смене статуса">@context.EmailsNotifications</span></MudTd>
+                <MudTd>
+                    <div class="hstack gap-3">
+                        @if (string.IsNullOrEmpty(context.SessionToken) || context.SessionStatus == SessionsStatusesEnum.None)
+                        {
+                            <MudChip T="string" Variant="Variant.Outlined" Size="Size.Small">
+                                <NavLink title="Доступ к заполнению заблокирован" class="nav-link text-muted" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/protected/{context.Id}")">
+                                    Аннулирован
+                                </NavLink>
+                            </MudChip>
+                        }
+                        else if (context.SessionStatus == SessionsStatusesEnum.Sended)
+                        {
+                            <MudChip T="string" Icon="@Icons.Material.Outlined.CircleNotifications" Color="Color.Info" Size="Size.Small">
+                                <NavLink title="Данные отправлены на проверку администратору" class="nav-link text-light" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{context.SessionToken}")">
+                                    Проверка
+                                </NavLink>
+                            </MudChip>
+                        }
+                        else if (context.SessionStatus == SessionsStatusesEnum.Accepted)
+                        {
+                            <MudChip T="string" Icon="@Icons.Material.Filled.VerifiedUser" Color="Color.Success" Variant="Variant.Outlined" Size="Size.Small">
+                                <NavLink title="Анкета принята" class="nav-link text-secondary" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{context.SessionToken}")">
+                                    Принято
+                                </NavLink>
+                            </MudChip>
+                        }
+                        else if (context.DeadlineDate <= DateTime.Now)
+                        {
+                            <div class="hstack">
+                                <div>
+                                    <NavLink class="nav-link text-secondary" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/protected/{context.Id}")">
+                                        Просрочен
+                                    </NavLink>
+                                </div>
+                                <div>
+                                    <em title="Кончился крайний срок заполнения данными">
+                                        (<LastUpdateViewComponent LastUpdateDate="context.DeadlineDate" />)
+                                    </em>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="hstack">
+                                <div>
+                                    <NavLink class="nav-link" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{context.SessionToken}")">
+                                        В работе <sup title="дата/время создания" class="ms-3"> (<LastUpdateViewComponent LastUpdateDate="context.DeadlineDate" Reverse="true" />)</sup>
+                                    </NavLink>
+                                </div>
+                                <div class="ms-2">
+                                    @if (context.LastDocumentUpdateActivity is not null)
+                                    {
+                                        <mark title="дата/время последнего действия по заполнению"> upd: <LastUpdateViewComponent LastUpdateDate="@context.LastDocumentUpdateActivity" /></mark>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        <span>@context.Editors</span>
+                        <MudSpacer />
+                        <MudIconButton OnClick="async () => { await EditSession(context); }" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" Color="@(Color.Dark)" aria-label="Редактировать" />
+                        <MudIconButton title="ВНИМАНИЕ! Операция не обратимая!!!" OnClick="async () => { await DeleteSession(context.Id);  }" Size="Size.Small" Icon="@Icons.Material.Filled.DeleteOutline" Color="@(Color.Warning)" aria-label="Удалить" />
+                    </div>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>Ни чего не найдено</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Загрузка...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </div>
+</div>

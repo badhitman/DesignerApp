@@ -1,0 +1,18 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Документы</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">бизнес-сущности</h6>
+
+        <MudTreeView @ref="TreeView_ref" Items="@TreeItems" Hover="true">
+            <ItemTemplate Context="item">
+                <MudTreeViewItem Items="@item.Children" Icon="@item.Icon" IconColor="@GetColor(item.Icon)">
+                    <BodyContent>
+                        <SystemNameManufactureComponent Item="item" />
+                    </BodyContent>
+                </MudTreeViewItem>
+            </ItemTemplate>
+        </MudTreeView>
+    </div>
+</div>

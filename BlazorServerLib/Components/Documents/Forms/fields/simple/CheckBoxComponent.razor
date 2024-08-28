@@ -1,0 +1,50 @@
+﻿@inherits FieldBaseComponentModel
+
+<InputCheckbox @bind-Value="CheckBoxValue" class="form-check-input" id="@Id" />
+<label for="@Id" class="form-label">@Label</label>
+<div class="form-text">
+    @Hint
+</div>
+
+@code {
+    [Parameter]
+    public bool Value { get; set; }
+    bool _value;
+
+    [Parameter]
+    public EventCallback<bool> ValueChanged { get; set; }
+
+    bool _isEdited;
+    public override bool IsEdited => _isEdited;
+
+    bool CheckBoxValue
+    {
+        get => Value;
+        set
+        {
+            if (Readonly)
+                return;
+
+            Value = value;
+            _isEdited = Value != _value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    public override void Reset()
+    {
+        CheckBoxValue = _value;
+    }
+
+    public override void CommitChange()
+    {
+        _value = Value;
+        _isEdited = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CommitChange();
+    }
+}

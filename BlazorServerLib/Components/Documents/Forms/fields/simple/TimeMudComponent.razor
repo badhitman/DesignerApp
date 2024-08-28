@@ -1,0 +1,41 @@
+﻿@inherits FieldBaseComponentModel
+
+<MudTextField @bind-Value="TimeOnlyValue" HelperText="@Hint" Label="@Label" Required="@Required" InputType="InputType.Time" InputId="@Id" ReadOnly="Readonly" />
+
+@code {
+    [Parameter]
+    public TimeOnly? Value { get; set; }
+    TimeOnly? _value;
+
+    [Parameter]
+    public EventCallback<TimeOnly?> ValueChanged { get; set; }
+
+
+    public override bool IsEdited => Value != _value && !((Value is null || Value == default) && (_value is null || _value == default));
+
+    TimeOnly? TimeOnlyValue
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    public override void Reset()
+    {
+        TimeOnlyValue = _value;
+    }
+
+    public override void CommitChange()
+    {
+        _value = Value;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CommitChange();
+    }
+}

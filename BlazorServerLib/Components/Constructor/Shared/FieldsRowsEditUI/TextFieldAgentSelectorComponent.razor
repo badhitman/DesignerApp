@@ -1,0 +1,13 @@
+﻿<sup @onclick="() => { IsOpenMenu = !IsOpenMenu; }" title="Программируемое поведение текстового поля" class="selector-agent-dd text-primary" aria-expanded="@IsOpenMenu">
+    Агенты
+</sup>
+<ul class="shadow-lg dropdown-menu@(IsOpenMenu?" show":"")">
+    @foreach (CommandEntryModel row_element in DeclarationAbstraction.CommandsAsEntries<TextFieldValueAgent>())
+    {
+        <li @onclick="() => { IsOpenMenu = false; SelectAgentHandle(row_element); }" title="@row_element.Description">
+            <span class="dropdown-item@($"{row_element.Name} #{row_element.Id}".Equals(SelectedAgent) ? " active" : "")">
+                @($"{row_element.Name} #{row_element.Id}")
+            </span>
+        </li>
+    }
+</ul>

@@ -1,0 +1,20 @@
+﻿<div class="hstack">
+    <select @bind="SelectedGeneratorField" class="form-select">
+        @foreach (EntryAltDescriptionModel e in Entries)
+        {
+            <option value="@e.Id">
+                <MudTooltip Text="@e.Description">
+                    @e.Name
+                </MudTooltip>
+            </option>
+        }
+    </select>
+    @if (_declaration?.AllowCallWithoutParameters != true)
+    {
+        <div class="ms-1">
+            <MudTooltip Text="Словарь опций генерации списка">
+                <input style="width: max-content;" @bind-value="OptionsGeneration" @bind-value:event="oninput" placeholder='{"Поле1":"xxx", "Поле2":"yyy", ...}' type="text" id="inputName" class="form-control">
+            </MudTooltip>
+        </div>
+    }
+</div>

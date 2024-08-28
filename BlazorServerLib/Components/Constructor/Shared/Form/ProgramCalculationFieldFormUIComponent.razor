@@ -1,0 +1,17 @@
+﻿<div class="hstack">
+    <select @bind="SelectedProgramCalculationField" class="form-select">
+        @foreach (EntryAltDescriptionModel e in Entries)
+        {
+            <option value="@e.Id">
+                <MudTooltip Text="@e.Description">
+                    @e.Name
+                </MudTooltip>
+            </option>
+        }
+    </select>
+    <div class="ms-1">
+        <MudTooltip Text="Массив имён полей в формате JSON">
+            <input @bind-value="FieldsNames" @bind-value:event="oninput" placeholder='["Имя поля 1", "Ещё", ...]' type="text" id="inputName" class="form-control">
+        </MudTooltip>
+    </div>
+</div>

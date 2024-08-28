@@ -1,0 +1,127 @@
+﻿@* Project: {project.Name} - by  © https://github.com/badhitman - @FakeGov *@
+
+@inherits BlazorBusyComponentBaseModel
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Настройки</h5>
+        <h6 class="card-subtitle mb-4 text-body-secondary">предварительная конфигурация</h6>
+
+        <div class="mb-3">
+            <label for="namespaceFormControlInput1" class="form-label">Пространство имён (базовое)</label>
+            <input @bind-value="manufactureEdit.Namespace" @bind-value:event="oninput" type="text" class="form-control" id="namespaceFormControlInput1" placeholder="Your project system name" aria-describedby="namespaceHelpBlock">
+        </div>
+        @if (manufactureEdit.Namespace.Equals(GlobalTools.TranslitToSystemName(ManufactureParentView.CurrentProject.Name)))
+        {
+            <div id="namespaceHelpBlock" class="form-text text-warning">
+                Пространство имён было сгенерировано автоматически. Измените на своё, пожалуйста
+            </div>
+        }
+
+        <hr class="mb-5">
+        <p class="card-text">
+            Имена папок для сохранения файлов.
+            Генератор кода создаст Zip архив в котором будет набор требуемых файлов, которые в свою очередь будут сгруппированы по папкам внутри архива.
+            Результат генерации можно приземлить на main ветку и получить готовую ИС в которой будет воспроизведена структура проекта (DB, DI, IoC, View`s).
+        </p>
+
+        <div class="row align-items-center mt-2" title="Обязательно для заполнения">
+            <div class="col-sm-2">
+                <label for="inputEnumDirectoryPath" class="col-form-label">
+                    Списки/Перечисления
+                    <sup class="text-danger">*</sup>
+                </label>
+            </div>
+            <div class="col-sm-10">
+                <input @bind-value="manufactureEdit.EnumDirectoryPath" @bind-value:event="oninput" type="text" id="inputEnumDirectoryPath" class="form-control">
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-2" title="Обязательно для заполнения">
+            <div class="col-sm-2">
+                <label for="inputDocumentsMastersDbDirectoryPath" class="col-form-label">
+                    Документы
+                    <sup class="text-danger">*</sup>
+                </label>
+            </div>
+            <div class="col-sm-10">
+                <input @bind-value="manufactureEdit.DocumentsMastersDbDirectoryPath" @bind-value:event="oninput" type="text" id="inputDocumentsMastersDbDirectoryPath" class="form-control">
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-2" title="Обязательно для заполнения">
+            <div class="col-sm-2">
+                <label for="inputAccessDataDirectoryPath" class="col-form-label">
+                    Службы DI
+                    <sup class="text-danger">*</sup>
+                </label>
+            </div>
+            <div class="col-sm-10">
+                <input @bind-value="manufactureEdit.AccessDataDirectoryPath" @bind-value:event="oninput" type="text" id="inputAccessDataDirectoryPath" class="form-control">
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-2" title="Обязательно для заполнения">
+            <div class="col-sm-2">
+                <label for="inputBlazorDirectoryPath" class="col-form-label">
+                    Blazor UI
+                    <sup class="text-danger">*</sup>
+                </label>
+            </div>
+            <div class="col-sm-8">
+                <input @bind-value="manufactureEdit.BlazorDirectoryPath" @bind-value:event="oninput" type="text" id="inputBlazorDirectoryPath" class="form-control">
+            </div>
+
+            <div class="col-sm-2">
+                <div class="form-check" title="Раздельные файлы: *.razor + *.razor.cs">
+                    <input class="form-check-input" type="checkbox" id="autoSizingCheck" @bind="manufactureEdit.BlazorSplitFiles">
+                    <label class="form-check-label" for="autoSizingCheck">
+                        split classes
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+            <button disabled="@Manufacture.Equals(manufactureEdit)" @onclick="UpdateManufacture" class="btn btn-@(Manufacture.Equals(manufactureEdit) ? "outline-secondary" : "primary")" type="button">Сохранить</button>
+            @if (!Manufacture.Equals(manufactureEdit))
+            {
+                <button title="Сбросить изменения и вернуть исходные значения настроек" @onclick="() => { manufactureEdit = GlobalTools.CreateDeepCopy(Manufacture) ?? throw new Exception(); }" class="btn btn-outline-info" type="button">Отмена</button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    IManufactureService ManufactureRepo { get; set; } = default!;
+
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
+
+
+    [CascadingParameter, EditorRequired]
+    public required ManufactureComponent ManufactureParentView { get; set; }
+
+
+    ManageManufactureModelDB manufactureEdit = default!;
+
+
+    ManageManufactureModelDB Manufacture => ManufactureParentView.Manufacture;
+
+    async Task UpdateManufacture()
+    {
+        IsBusyProgress = true;
+        ResponseBaseModel res = await ManufactureRepo.UpdateManufactureConfig(manufactureEdit);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+
+        if (res.Success())
+            Manufacture.Reload(manufactureEdit);
+    }
+
+    protected override void OnInitialized()
+    {
+        manufactureEdit = (ManageManufactureModelDB)Manufacture.Clone();
+    }
+}

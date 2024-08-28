@@ -1,0 +1,13 @@
+﻿@page "/documents-journal/{DocumentNameOrId}"
+@page "/documents-journal"
+
+@attribute [Authorize]
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+<h3>Документы</h3>
+
+<JournalUniversalComponent DocumentNameOrIdType="@DocumentNameOrId" ProjectId="ProjectId" ShowNavigation="true" />

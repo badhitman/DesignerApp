@@ -1,0 +1,49 @@
+﻿@inherits FormBaseCore
+
+<MudCard>
+    <MudCardHeader id="@ID">
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@FormMetadata.Title</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton title="Добавить строку в таблицу" Icon="@Icons.Material.Filled.Add" Color="Color.Default" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTable ServerData="ServerReload" Dense="true" Hover="true" Loading="IsBusyProgress">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">@Join.Form!.Name</MudText>
+            </ToolBarContent>
+            <HeaderContent>
+                @foreach (BaseRequiredFormFitModel _r in FormMetadata.AllFields)
+                {
+                    <MudTh>
+                        <MudTableSortLabel SortLabel="@_r.SystemName" T="KeyValuePair<int, Dictionary<string, object>>">@_r.Name</MudTableSortLabel>
+                    </MudTh>
+                }
+                <MudTh>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                @foreach (BaseRequiredFormFitModel _r in FormMetadata.AllFields)
+                {
+                    <MudTd DataLabel="@_r.SystemName">@context.Value[_r.SystemName!]</MudTd>
+                }
+                
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Warning" Size="Size.Small" />
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Загрузка...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudCardContent>
+</MudCard>

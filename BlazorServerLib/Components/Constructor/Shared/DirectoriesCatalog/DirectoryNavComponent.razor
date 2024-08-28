@@ -1,0 +1,62 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@if (!ModesForHideSelector.Contains(DirectoryNavState))
+{
+    <div class="input-group me-4">
+        <span class="input-group-text">Справочник</span>
+        <select disabled="@(allDirectories.Any() != true || IsBusyProgress)" @bind="SelectedDirectoryId" class="form-select" aria-label="справочник/список">
+            @if (allDirectories.Any() != true)
+            {
+                <option value="-1" selected>Справочники отсутствуют</option>
+            }
+            else
+            {
+                foreach (EntryModel el in allDirectories)
+                {
+                    <option value="@el.Id">@el.Name</option>
+                }
+            }
+        </select>
+        @if (ParentFormsPage.CanEditProject)
+        {
+            @if (SelectedDirectoryId > 0)
+            {
+                <button type="button" class="btn btn-outline-secondary bi bi-pen-fill" disabled="@IsBusyProgress" @onclick="InitRenameDirectory" title="Редактировать выбранный справочник"></button>
+                <button type="button" class="btn btn-outline-secondary bi bi-trash-fill" disabled="@IsBusyProgress" @onclick="() => { DirectoryNavState = DirectoryNavStatesEnum.Delete; }" title="Удаление выбранного справочника вместе с его элементами"></button>
+            }
+            <button type="button" class="btn btn-outline-secondary bi bi-plus-square-fill" disabled="@IsBusyProgress" @onclick="() => { Description = default; DirectoryNavState = DirectoryNavStatesEnum.Create; }" title="Создать новый справочник"></button>
+        }
+    </div>
+}
+
+@if (DirectoryNavState == DirectoryNavStatesEnum.Create)
+{
+    <div class="vstack gap-3">
+        <div class="input-group">
+            <span class="input-group-text">новый справочник/список:</span>
+            <input @bind-value="directoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника" disabled="@IsBusyProgress">
+            <button disabled="@(IsBusyProgress || !GlobalTools.ValidateObject(directoryObject).IsValid)" @onclick="CreateDirectory" class="btn btn-outline-success" type="button">@GetTitleForButtonCreate</button>
+            <button @onclick="CancelCreatingDirectory" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
+        </div>
+        <InputRichTextComponent @bind-Value="Description" @ref="_currentTemplateInputRichText_ref" ReadOnly="IsBusyProgress" />
+    </div>
+}
+else if (DirectoryNavState == DirectoryNavStatesEnum.Rename)
+{
+    <div class="input-group pb-1">
+        <span class="input-group-text">редактирование справочника/списка:</span>
+        <input @bind-value="directoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника" disabled="@IsBusyProgress">
+        <button @onclick="SaveRenameDirectory" disabled="@(IsBusyProgress || !GlobalTools.ValidateObject(directoryObject).IsValid)" class="btn btn-outline-secondary" type="button">Сохранить</button>
+        <button @onclick="() => ResetNavForm()" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
+    </div>
+    <InputRichTextComponent @bind-Value="Description" @ref="_currentTemplateInputRichText_ref" ReadOnly="IsBusyProgress" />
+}
+else if (DirectoryNavState == DirectoryNavStatesEnum.Delete)
+{
+    <div class="input-group me-4">
+        <span class="input-group-text">Справочник</span>
+        <input disabled type="text" value="@allDirectories.First(x=> x.Id == SelectedDirectoryId).Name" class="form-control">
+        <button @onclick="DeleteSelectedDirectory" class="btn btn-outline-danger" type="button" disabled="@IsBusyProgress">Подтвердить удаление</button>
+        <button @onclick="() => { DirectoryNavState = DirectoryNavStatesEnum.None; }" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
+    </div>
+}

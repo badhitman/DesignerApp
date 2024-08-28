@@ -1,0 +1,74 @@
+﻿@inherits FieldBaseComponentModel
+
+<MudSelect ReadOnly="Readonly" T="EntryModel" Label="@Label" HelperText="@Hint" MultiSelection="false" @bind-Value="EntryValue" ToStringFunc="@converter">
+    @if (Entries?.Any() == true)
+    {
+        @foreach (EntryModel d in Entries)
+        {
+            <MudSelectItem T="EntryModel" Value="@d">@d.Name</MudSelectItem>
+        }
+    }
+</MudSelect>
+
+@code {
+    [Parameter, EditorRequired]
+    public required List<EntryModel> Entries { get; set; }
+
+    [Parameter]
+    public int? Value { get; set; }
+    int? _value;
+
+    [Parameter]
+    public EventCallback<int?> ValueChanged { get; set; }
+
+
+    Func<EntryModel?, string> converter = p => p?.Name ?? "";
+
+    public override bool IsEdited
+    {
+        get
+        {
+            if ((Value is null || Value == 0 || Value == default) && (_value is null || _value == 0 || _value == default))
+                return false;
+
+            return Value != _value;
+        }
+    }
+
+    EntryModel? _entryValue;
+    EntryModel? EntryValue
+    {
+        get 
+        {
+            if (!Value.HasValue || Value < 1)
+                return null;
+
+            if (_entryValue is not null)
+                return _entryValue;
+
+            return Entries?.First(x => x.Id == Value);
+        }
+        set
+        {
+            _entryValue = value;
+            Value = value?.Id;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    public override void Reset()
+    {
+        EntryValue = Entries.FirstOrDefault(x => x.Id == _value);
+    }
+
+    public override void CommitChange()
+    {
+        _value = GlobalTools.CreateDeepCopy(Value);
+    }
+
+    protected override void OnInitialized()
+    {
+        CommitChange();
+        base.OnInitialized();
+    }
+}

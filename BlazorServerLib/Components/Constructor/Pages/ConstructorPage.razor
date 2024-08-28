@@ -1,0 +1,78 @@
+﻿@page "/constructor"
+
+@attribute [Authorize]
+
+@inherits BlazorBusyComponentBaseModel
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Конструктор</PageTitle>
+
+<h3>
+    Конструктор
+    <MudTooltip>
+        <ChildContent>
+            <sup class="@(MainProject is null ? "text-secondary" : "text-primary-emphasis")">
+                @if (MainProject is null)
+                {
+                    <text>[проект не выбран]</text>
+                }
+                else
+                {
+                    <text>"@MainProject.Name"</text>
+                }
+            </sup>
+        </ChildContent>
+        <TooltipContent>
+            @if (MainProject is null)
+            {
+                <p>не выбран <b>текущий/основной</b> проект контекста конструктора</p>
+            }
+            else
+            {
+                <p>
+                    конструктор работает в контексте основного/текущего проекта
+                    @if (!string.IsNullOrWhiteSpace(MainProject.Description))
+                    {
+                        @((MarkupString)MainProject.Description)
+                    }
+                </p>
+            }
+        </TooltipContent>
+    </MudTooltip>
+</h3>
+
+<MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
+    <CascadingValue Value="this">
+        <MudTabPanel Disabled="IsBusyProgress" Text="Проекты">
+            <ProjectsListComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Списки">
+            <DirectoryViewComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Формы">
+            <FormsViewComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Документы">
+            <DocumentsSchemesTableComponent />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки" ToolTip="Доступ к заполнению данными документов (в т.ч. анонимные пользователи)">
+            <SessionsViewComponent />
+        </MudTabPanel>
+        <AuthorizeView Roles="admin,manufacture">
+            <Authorized>
+                <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text=".NET" BadgeData='"C#"' BadgeColor="Color.Primary" ToolTip="Генерация кодовой базы C# .NET">
+                    <ManufactureComponent @ref="manufacture_ref" />
+                </MudTabPanel>
+            </Authorized>
+        </AuthorizeView>
+    </CascadingValue>
+</MudTabs>
+
+@if (MainProject is null)
+{
+    <div class="alert alert-success mt-2" role="alert">
+        <h4 class="alert-heading">Не выбран проект</h4>
+        <hr>
+        <p class="mb-0">Что бы работать с конструктором - необходимо назначить проект контекста работы</p>
+    </div>
+}

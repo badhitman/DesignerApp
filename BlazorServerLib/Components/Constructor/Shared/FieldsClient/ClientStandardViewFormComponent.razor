@@ -1,0 +1,55 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (!Form.AllFields.Any())
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Полей в форме нет.</p>
+            @if (!string.IsNullOrWhiteSpace(Title))
+            {
+                <p class="h5 mt-4">@Title</p>
+            }
+        </blockquote>
+    </figure>
+}
+else
+{
+    if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <p class="h5 mt-4">@Title</p>
+    }
+
+    <form class="@Form.Css" autocomplete="off" data-dom-id="BC2D7640-6991-4A94-A663-8760B805483B">
+        @foreach (FieldFormBaseLowConstructorModel fb in Form.AllFields)
+        {
+            <div class="@fb.Css mb-3">
+                @if (fb is FieldFormConstructorModelDB fs)
+                {
+                    <CascadingValue Value="fs">
+                        <FieldBaseClientComponent GroupByRowNum="@RowNum" FieldsReferring="FieldsReferring" />
+                    </CascadingValue>
+                }
+                else if (fb is FieldFormAkaDirectoryConstructorModelDB fd)
+                {
+                    <CascadingValue Value="fd">
+                        <FieldDirectoryClientComponent DirectoryObject="@Directories.FirstOrDefault(x => x.Id == fd.DirectoryId)" GroupByRowNum="@RowNum" FieldsReferring="FieldsReferring" />
+                    </CascadingValue>
+                }
+                else
+                {
+                    <div class="alert alert-danger" role="alert">
+                        ошибка 23156FD9-D4A5-415B-B00E-D97E7EE53F74
+                    </div>
+                }
+            </div>
+        }
+    </form>
+}

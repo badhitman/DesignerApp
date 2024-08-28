@@ -1,0 +1,40 @@
+﻿@inherits FieldBaseComponentModel
+
+<MudTextField @bind-Value="DateOnlyValue" HelperText="@Hint" Format="yyyy-MM-dd" Label="@Label" Required="@Required" ReadOnly="Readonly" InputType="InputType.Date" InputId="@Id" />
+
+@code {
+    [Parameter]
+    public DateOnly? Value { get; set; }
+    DateOnly? _value;
+
+    [Parameter]
+    public EventCallback<DateOnly?> ValueChanged { get; set; }
+
+    public override bool IsEdited => Value != _value && !((Value is null || Value == default) && (_value is null || _value == default));
+
+    DateOnly? DateOnlyValue
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    public override void Reset()
+    {
+        DateOnlyValue = _value;
+    }
+
+    public override void CommitChange()
+    {
+        _value = Value;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CommitChange();
+    }
+}

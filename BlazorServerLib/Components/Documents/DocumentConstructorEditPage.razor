@@ -1,0 +1,58 @@
+﻿@page "/journal-{DocumentNameOrId}/document"
+@page "/journal-{DocumentNameOrId}/document/"
+@page "/journal-{DocumentNameOrId}/document/{DocumentKey}"
+
+@page "/journal-{DocumentNameOrId}/project-{ProjectId}/document"
+@page "/journal-{DocumentNameOrId}/project-{ProjectId}/document/"
+@page "/journal-{DocumentNameOrId}/project-{ProjectId}/document/{DocumentKey}"
+
+<h3>Документ (@(_dpk.HasValue ? _dpk > 0 ? "редактирование" : "создание нового" : "DEMO"))</h3>
+
+<MudCard>
+    <MudCardContent>
+        @if (string.IsNullOrWhiteSpace(DocumentNameOrId))
+        {
+            <figure>
+                <blockquote class="blockquote">
+                    <p>Не указано имя журнала.</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    Требуется указать <cite title="Имя типа данных документа">имя журнала/документа</cite>
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            <DocumentEditConstructorComponent DocumentNameOrId="@DocumentNameOrId" ProjectId="ProjectId" DocumentKey="_dpk" ID="@($"doc:{DocumentKey}")" />
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    /// <summary>
+    /// Тип документа
+    /// </summary>
+    [Parameter]
+    public string? DocumentNameOrId { get; set; }
+
+    /// <summary>
+    /// ProjectId
+    /// </summary>
+    [Parameter]
+    public string? DocumentKey { get; set; }
+    int? _dpk;
+
+    /// <summary>
+    /// Project Id
+    /// </summary>
+    [Parameter]
+    public int? ProjectId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (int.TryParse(DocumentKey, out int _i))
+            _dpk = _i;
+
+        base.OnInitialized();
+    }
+}

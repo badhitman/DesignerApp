@@ -1,0 +1,58 @@
+﻿@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@inherits FieldBaseComponentModel
+
+<MudTextField UserAttributes="@(new Dictionary<string, object>(){{"autocomplete","off"}})" @bind-Value="StringValue" HelperText="@Hint" Label="@Label" ReadOnly="Readonly" Required="@Required" Variant="Variant.Text" InputType="@(AsPassword?InputType.Password: InputType.Text )" InputId="@Id"></MudTextField>
+
+@code {
+    /// <summary>
+    /// Поле является паролем
+    /// </summary>
+    [Parameter]
+    public bool AsPassword { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+    string? _value;
+
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+
+    public override bool IsEdited
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(Value) && string.IsNullOrWhiteSpace(_value))
+                return false;
+
+            return Value != _value;
+        }
+    }
+
+    string? StringValue
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    public override void Reset()
+    {
+        StringValue = _value;
+    }
+
+    public override void CommitChange()
+    {
+        _value = Value;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CommitChange();
+    }
+}

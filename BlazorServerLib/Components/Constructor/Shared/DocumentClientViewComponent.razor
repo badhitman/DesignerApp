@@ -1,0 +1,67 @@
+﻿@if (SessionOfDocumentData.Id < 1)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Ошибка 2490B8C9-270C-4E84-8C3E-D5342CDC456E.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            попробуйте <cite title="F5">перезагрузить страницу</cite>
+        </figcaption>
+    </figure>
+}
+else if (SessionOfDocumentData.Owner?.Tabs is null)
+{
+    <div class="alert alert-dark" role="alert">
+        SessionDocument.Owner?.Pages is null! ошибка 58539246-ACB4-46F0-A9E9-7EF06EEE10E6
+    </div>
+}
+else
+{
+    <MudTabs PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+        @if (!SessionOfDocumentData.Owner.Tabs.Any())
+        {
+            <figure class="text-center mt-3">
+                <blockquote class="blockquote">
+                    <p>Нет ни одной страницы</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    добавьте первую <cite>страницу</cite>
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            if (SessionOfDocumentData.ShowDescriptionAsStartPage)
+            {
+                if (!string.IsNullOrWhiteSpace(SessionOfDocumentData.Description) || !string.IsNullOrWhiteSpace(SessionOfDocumentData.Owner.Description))
+                {
+                    <MudTabPanel ID="@int.MinValue" Text="Информация" ShowCloseIcon="@false" Icon="@Icons.Material.Filled.Info">
+                        <div class="card">
+                            <div class="card-body">
+                                @Information
+                            </div>
+                        </div>
+                    </MudTabPanel>
+
+                }
+            }
+            @foreach (TabOfDocumentSchemeConstructorModelDB tab_of_document_scheme in SessionOfDocumentData.Owner.Tabs.OrderBy(x => x.SortIndex))
+            {
+                tab_of_document_scheme.Owner ??= SessionOfDocumentData.Owner;
+                if (tab_of_document_scheme.Owner is null)
+                {
+                    SnackbarRepo.Add($"");
+                }
+                <MudTabPanel ID="@tab_of_document_scheme.Id"
+                             Text="@tab_of_document_scheme.Name"
+                             ShowCloseIcon="@(tab_of_document_scheme.Id < 1)"
+                             BadgeDot="@(tab_of_document_scheme.Id < 1)">
+                    <CascadingValue Value="tab_of_document_scheme">
+                        <TabsOfDocumentViewComponent />
+                    </CascadingValue>
+                </MudTabPanel>
+            }
+        }
+    </MudTabs>
+    <DoneClientViewComponent />
+}

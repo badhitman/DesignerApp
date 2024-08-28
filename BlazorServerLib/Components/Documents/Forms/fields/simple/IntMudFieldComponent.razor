@@ -1,0 +1,41 @@
+﻿@inherits FieldBaseComponentModel
+
+<MudNumericField Label="@Label" HelperText="@Hint" @bind-Value="IntValue" InputId="@Id" ReadOnly="Readonly" />
+
+@code {
+    [Parameter]
+    public int Value { get; set; }
+    int _value;
+
+    [Parameter]
+    public required EventCallback<int> ValueChanged { get; set; }
+
+
+    public override bool IsEdited => Value != _value;
+
+    int IntValue
+    {
+        get => Value;
+        set
+        {
+            Value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    public override void Reset()
+    {
+        IntValue = _value;
+    }
+
+    public override void CommitChange()
+    {
+        _value = Value;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CommitChange();
+    }
+}

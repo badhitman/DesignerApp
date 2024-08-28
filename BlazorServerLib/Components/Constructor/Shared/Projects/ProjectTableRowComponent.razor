@@ -1,0 +1,38 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<tr>
+    <th scope="row" class="@(ProjectRow.IsDisabled ? "text-decoration-line-through" : "")">
+        <span title="Название проекта">
+            @ProjectRow.Name
+            @if (!IsMyProject)
+            {
+                <sup class="badge text-bg-secondary ms-1">гостевой</sup>
+            }
+        </span>
+    </th>
+    <td>
+        @if (ProjectRow.Members is null || ProjectRow.Members.Count == 0)
+        {
+            <span class="invisible">участников нет</span>
+        }
+        else
+        {
+            @($"{string.Join("; ", ProjectRow.Members.Select(x => x.Name))};")
+        }
+    </td>
+    <td>
+        @if (ProjectRow.Id == ParentFormsPage.MainProject?.Id)
+        {
+            <MudIcon Class="me-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" Title="Основной/используемый проект контекста" Color="Color.Secondary"></MudIcon>
+        }
+        else
+        {
+            <MudIconButton Class="me-2" Icon="@Icons.Material.Filled.Api" Size="Size.Small" title="Сделать основным" OnClick="SetMainProjectHandle"></MudIconButton>
+        }
+        @if (IsMyProject)
+        {
+            <MudIconButton Class="me-2" Color="@(ProjectRow.IsDisabled ? Color.Info : Color.Default)" Icon="@(ProjectRow.IsDisabled ? Icons.Material.Filled.FlashOff : Icons.Material.Filled.FlashOn)" aria-label="disable" Size="Size.Small" OnClick="DeleteProject"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" title="Редактирование проекта" OnClick="EditProject"></MudIconButton>
+        }
+    </td>
+</tr>

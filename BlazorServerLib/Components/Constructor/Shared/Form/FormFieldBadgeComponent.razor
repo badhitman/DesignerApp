@@ -1,0 +1,82 @@
+﻿@if (string.IsNullOrWhiteSpace(Field.Description))
+{
+    if (Field is FieldFormAkaDirectoryConstructorModelDB _fd)
+    {
+        <span title="словарь/список" class="position-absolute top-0 start-100 translate-middle p-2 bg-success border border-light rounded-circle">
+            <span class="visually-hidden">Directory ID: @_fd.DirectoryId</span>
+        </span>
+    }
+    else if (Field is FieldFormConstructorModelDB _f)
+    {
+        string _t = $"{_f.TypeField.DescriptionInfo()}";
+        Dictionary<MetadataExtensionsFormFieldsEnum, object?> _dict = _f.MetadataValueTypeGet();
+        if (_dict.ContainsKey(MetadataExtensionsFormFieldsEnum.Descriptor))
+            _t += $" &#10149; <b>{_dict[MetadataExtensionsFormFieldsEnum.Descriptor]}</b>";
+
+        if (_dict.ContainsKey(MetadataExtensionsFormFieldsEnum.Parameter))
+            _t += $" &#9776; <u>{_dict[MetadataExtensionsFormFieldsEnum.Parameter]}</u>";
+
+        KeyValuePair<MetadataExtensionsFormFieldsEnum, object?>[] _dict_echo = _dict.Where(x => !new[] { MetadataExtensionsFormFieldsEnum.Descriptor, MetadataExtensionsFormFieldsEnum.Parameter }.Contains(x.Key)).ToArray();
+        if (_dict_echo.Any())
+        {
+            _t += ": ";
+            foreach (KeyValuePair<MetadataExtensionsFormFieldsEnum, object?> de_kvp in _dict_echo)
+                _t += $"[<span class='font-monospace'>{de_kvp.Key.DescriptionInfo()}</span> = {de_kvp.Value}]; ";
+        }
+        <MudTooltip>
+            <ChildContent>
+                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgramCalculationDouble => "primary", TypesFieldsFormsEnum.Generator => "info", _=> "secondary" }) border border-light rounded-circle">
+                    <span class="visually-hidden">Тип поля: @_f.TypeField</span>
+                </span>
+            </ChildContent>
+            <TooltipContent>
+                @Descr(_t.Trim())
+            </TooltipContent>
+        </MudTooltip>
+    }
+    else
+    {
+        <span>error 8A8D886F-549A-4F05-A414-375153D6A8E8</span>
+    }
+}
+else
+{
+    <MudTooltip>
+        <ChildContent>
+            @if (Field is FieldFormAkaDirectoryConstructorModelDB _fd)
+            {
+                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-info border border-light rounded-circle">
+                    <span class="visually-hidden">Directory ID: @_fd.DirectoryId</span>
+                </span>
+            }
+            else if (Field is FieldFormConstructorModelDB _f)
+            {
+                if (_f.TypeField == TypesFieldsFormsEnum.Generator || _f.TypeField == TypesFieldsFormsEnum.ProgramCalculationDouble)
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle p-2 bg-@(_f.TypeField switch { TypesFieldsFormsEnum.ProgramCalculationDouble => "warning", TypesFieldsFormsEnum.Generator => "primary", _=> "body" }) border border-light rounded-circle">
+                        <span class="visually-hidden">Тип поля: @_f.TypeField</span>
+                    </span>
+                }
+            }
+            else
+            {
+                <span>error 8B165734-D891-4E8C-BA83-095F9835BB34</span>
+            }
+        </ChildContent>
+        <TooltipContent>
+            @if (Field is FieldFormAkaDirectoryConstructorModelDB _fd)
+            {
+                <MudText Typo="Typo.h6">словарь/список</MudText>
+            }
+            else if (Field is FieldFormConstructorModelDB _f)
+            {
+                <MudText Typo="Typo.h6">@_f.TypeField.DescriptionInfo() // @_f.MetadataValueType</MudText>
+            }
+            else
+            {
+                <span>error 71F590DE-563D-4DCA-A1DA-31A11CEAFE4C</span>
+            }
+            @Descr(Field.Description)
+        </TooltipContent>
+    </MudTooltip>
+}

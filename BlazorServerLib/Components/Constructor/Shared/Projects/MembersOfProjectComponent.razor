@@ -1,0 +1,34 @@
+﻿@using System.Net.Mail
+@inherits BlazorBusyComponentBaseModel
+
+<div class="input-group mb-3">
+    <span class="input-group-text" id="inputGroup-sizing-default">Добавить участника к проекту</span>
+    <input type="email" class="form-control" @bind-value="emailForAddMember" @bind-value:event="oninput" aria-label="email пользователя для добавления" placeholder="Email пользователя">
+    <button @onclick="AddMember" class="btn btn-outline-secondary" type="button" disabled="@(!MailAddress.TryCreate(emailForAddMember, out _))">Добавить</button>
+</div>
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (ProjectView.Members is null)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>В проекте отсутствуют участники.</p>
+        </blockquote>
+    </figure>
+}
+else
+{
+    <MudChipSet T="EntryAltModel" AllClosable="true">
+        @foreach (EntryAltModel member in ProjectView.Members)
+        {
+            <MudChip T="EntryAltModel" Value="member" Text="@member.Name" OnClose="Closed"></MudChip>
+        }
+    </MudChipSet>
+}

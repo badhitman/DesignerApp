@@ -1,0 +1,60 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else if (TabOfDocumentScheme.Id < 1)
+{
+    <figure class="text-center mt-3">
+        <blockquote class="blockquote">
+            <p>Страница не записана.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Для добавления форм на страницу: <cite title="после записи страницы вы получите доступ к её управлению">запишите её</cite>
+        </figcaption>
+    </figure>
+}
+else if (TabOfDocumentScheme.JoinsForms is null)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>DocumentPage.JoinsForms is null</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            ошибка <cite>F53C237A-BDB8-4138-91D7-C766750EEEC5</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            @if (!TabOfDocumentScheme.JoinsForms.Any())
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Форм нет.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        На страницу ещё не добавлены <cite title="добавьте форму на страницу опроса/анкеты">формы</cite>
+                    </figcaption>
+                </figure>
+            }
+            else
+            {
+                foreach (FormToTabJoinConstructorModelDB pjf in TabOfDocumentScheme.JoinsForms.OrderBy(x => x.SortIndex))
+                {
+                    pjf.Tab ??= TabOfDocumentScheme;
+                    <CascadingValue Value="pjf">
+                        <TabOfDocumentMainViewComponent @key="@($"page-{TabOfDocumentScheme.Id}_jform-{pjf.Id}")" UpdatePageActionHandle="UpdatePageAction" CurrentFormJoinEdit="_join_form_id" CanDown="@(CanDownJoinForm(pjf))" CanUp="@(CanUpJoinForm(pjf))" JoinFormHoldHandle="JoinFormHoldAction" />
+                    </CascadingValue>
+                }
+            }
+        </div>
+    </div>
+}

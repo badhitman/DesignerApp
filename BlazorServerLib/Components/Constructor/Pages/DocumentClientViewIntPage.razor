@@ -1,0 +1,27 @@
+﻿@page "/questionnaire/session/protected/{DocumentId:int}"
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@inherits BlazorBusyComponentBaseModel
+
+@attribute [Authorize]
+
+<span>Опрос/анкета</span>
+
+@if (IsBusyProgress)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
+}
+else
+{
+    <CascadingValue Value="CurrentUser">
+        <CascadingValue Value="SessionDocument">
+            <CascadingValue Value="true">
+                <DocumentClientViewComponent />
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+}

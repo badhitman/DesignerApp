@@ -1,0 +1,75 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@if (DocumentScheme.Tabs is null)
+{
+    <figure>
+        <blockquote class="blockquote">
+            <p>DocumentScheme.Pages is null</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            ошибка <cite>E112BEFB-5709-4D5A-89A5-987F19FB0371</cite>
+        </figcaption>
+    </figure>
+}
+else if (!ParentFormsPage.CanEditProject)
+{
+    <MudTabs @bind-ActivePanelIndex="@DocumentIndex" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+        @if (!DocumentScheme.Tabs.Any())
+        {
+            <figure class="text-center mt-3">
+                <blockquote class="blockquote">
+                    <p>Нет ни одной страницы</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    добавьте первую <cite>страницу</cite>
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            foreach (TabOfDocumentSchemeConstructorModelDB questionnaire_page in DocumentScheme.Tabs.OrderBy(x => x.SortIndex))
+            {
+                questionnaire_page.Owner = DocumentScheme;
+                <MudTabPanel ID="@($"document-scheme_{questionnaire_page.Id}")"
+                             Text="@questionnaire_page.Name"               
+                             BadgeDot="@(questionnaire_page.Id < 1)">
+                    <CascadingValue Value="questionnaire_page">
+                        <TabsOfDocumentViewComponent />
+                    </CascadingValue>
+                </MudTabPanel>
+            }
+        }
+    </MudTabs>
+}
+else
+{
+    <MudDynamicTabs @bind-ActivePanelIndex="@DocumentIndex" AddTab="@AddTab" AddIconClass="mud-secondary-text" AddIconToolTip="Добавить страницу анкеты/опроса" CloseTab="@CloseTabCallback" CloseIconToolTip="Close tab. All data will be lost" PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+        @if (!DocumentScheme.Tabs.Any())
+        {
+            <figure class="text-center mt-3">
+                <blockquote class="blockquote">
+                    <p>Нет ни одной страницы</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    добавьте первую <cite>страницу</cite>
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            foreach (TabOfDocumentSchemeConstructorModelDB tab_of_document_scheme in DocumentScheme.Tabs.OrderBy(x => x.SortIndex))
+            {
+                tab_of_document_scheme.Owner = DocumentScheme;
+                <MudTabPanel ID="tab_of_document_scheme.Id"
+                             Text="@tab_of_document_scheme.Name"
+                             Disabled="@TabIsDisabled(tab_of_document_scheme.Id)"
+                             ShowCloseIcon="@(tab_of_document_scheme.Id < 1)"
+                             BadgeDot="@(tab_of_document_scheme.Id < 1)">
+                    <CascadingValue Value="tab_of_document_scheme">
+                        <TabOfDocumentEditViewComponent AllForms="AllForms" CanUpMove="@(CanUpPage(tab_of_document_scheme))" CanDownMove="@(CanDownPage(tab_of_document_scheme))" SetHoldHandle="SetHoldAction" UpdateDocumentHandle="Update" DocumentReloadHandle="DocumentReloadAction" SetNameForPageHandle="SetNameForPage" SetIdForPageHandle="SetIdForPageAction" />
+                    </CascadingValue>
+                </MudTabPanel>
+            }
+        }
+    </MudDynamicTabs>
+}
