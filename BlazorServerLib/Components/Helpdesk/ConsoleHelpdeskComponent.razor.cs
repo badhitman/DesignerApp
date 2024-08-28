@@ -28,7 +28,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
     readonly List<HelpdeskIssueStepsEnum> Steps = [.. Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>()];
     byte stepNum;
     bool IsLarge;
-    UserInfoMainModel CurrentUser =default!;
+    UserInfoMainModel CurrentUser = default!;
 
     StorageCloudParameterModel KeyStorage => new()
     {
@@ -40,6 +40,8 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
     async Task ToggleSize()
     {
         IsLarge = !IsLarge;
+        stepNum = 0;
+
         IsBusyProgress = true;
         TResponseModel<int> res = await storageRepo.SaveParameter(IsLarge, KeyStorage);
         IsBusyProgress = false;

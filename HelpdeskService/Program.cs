@@ -111,12 +111,17 @@ using (IServiceScope ss = app.Services.CreateScope())
     if (wc_remote.Response is not null && wc_remote.Success())
         wc_main.Update(wc_remote.Response);
 
+
+
+
+#if DEBUG
 #if DEMO
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory = ss.ServiceProvider.GetRequiredService<IDbContextFactory<HelpdeskContext>>();
     using HelpdeskContext context_seed = await helpdeskDbFactory.CreateDbContextAsync();
-    if (!await context_seed.RubricsForIssues.AnyAsync())
+    List<RubricIssueHelpdeskModelDB> demo_rubrics = [.. await context_seed.RubricsForIssues.ToArrayAsync()];
+    if (demo_rubrics.Count == 0)
     {
-        List<RubricIssueHelpdeskModelDB> demo_rubrics = [
+        demo_rubrics = [
             new ()
             {
                 Name = "Секретарь",
@@ -139,9 +144,39 @@ using (IServiceScope ss = app.Services.CreateScope())
         demo_rubrics[1].NestedRubrics = [new() { Name = "Линия 1", NormalizedNameUpper = "ЛИНИЯ 1", ParentRubric = demo_rubrics[1], SortIndex = 1 }, new() { Name = "Линия 2", NormalizedNameUpper = "ЛИНИЯ 2", ParentRubric = demo_rubrics[1], SortIndex = 2 }];
         await context_seed.AddRangeAsync(demo_rubrics);
         await context_seed.SaveChangesAsync();
+
+
+    }
+
+    if (!await context_seed.Issues.AnyAsync())
+    {
+        int[] rubric_ids = [.. demo_rubrics.Select(x => x.Id)];
+        List<HelpdeskIssueStepsEnum> Steps = [.. Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>()];
+
+        List<IssueHelpdeskModelDB> issues = [];
+        Random random = new();
+        uint issues_demo_count = 1;
+        foreach (HelpdeskIssueStepsEnum st in Steps)
+        {
+            int size = random.Next(3, 30);
+            for (int i = 0; i < size; i++)
+            {
+                issues.Add(new()
+                {
+                    AuthorIdentityUserId = "",
+                    Name = $"Тест {issues_demo_count++}",
+                    NormalizedNameUpper = $"ТЕСТ {issues_demo_count}",
+                    RubricIssueId = rubric_ids[random.Next(0, rubric_ids.Length)],
+                    Description = $"Доброго дня. Это demo описание {issues_demo_count}",
+                    StepIssue = st,
+                });
+            }
+        }
+        await context_seed.AddRangeAsync(issues);
+        await context_seed.SaveChangesAsync();
     }
 #endif
-
+#endif
 }
 
 await app.RunAsync();

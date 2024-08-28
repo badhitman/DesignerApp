@@ -53,7 +53,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     {
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-                
+
         TResponseModel<IssueHelpdeskModelDB?> issue_res = await HelpdeskRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>() { Payload = new() { IssueId = Id }, SenderActionUserId = CurrentUser.UserId });
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
         IssueSource = issue_res.Response;
@@ -71,7 +71,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
             {
                 users_ids.AddRange(IssueSource.Messages.Select(x => x.AuthorUserId));
             }
-
+            users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x))];
             if (users_ids.Count != 0)
             {
                 users_ids = users_ids.Distinct().ToList();

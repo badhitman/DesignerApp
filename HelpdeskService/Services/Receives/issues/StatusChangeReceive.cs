@@ -76,7 +76,10 @@ public class StatusChangeReceive(
             res.AddInfo("Статус уже установлен");
         else
         {
-            if (string.IsNullOrWhiteSpace(issue_data.Response.ExecutorIdentityUserId) && req.Payload.Step >= HelpdeskIssueStepsEnum.Progress)
+            if (string.IsNullOrWhiteSpace(
+                issue_data.Response.ExecutorIdentityUserId) && 
+                req.Payload.Step >= HelpdeskIssueStepsEnum.Progress && 
+                req.Payload.Step != HelpdeskIssueStepsEnum.Canceled)
             {
                 res.AddError("Для перевода обращения в работу нужно сначала указать исполнителя");
                 return res;
