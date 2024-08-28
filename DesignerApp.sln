@@ -82,6 +82,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "secrets", "secrets", "{AC94
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "constructor", "constructor", "{BD1AED10-FC4F-4FF5-B51A-9BCB41B59FD9}"
+	ProjectSection(SolutionItems) = preProject
+		ConstructorBlazorApp\README.md = ConstructorBlazorApp\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConstructorBlazorApp", "ConstructorBlazorApp\ConstructorBlazorApp\ConstructorBlazorApp.csproj", "{02D2C459-E24F-44DC-BDF0-869FF9883F6F}"
 EndProject
