@@ -41,37 +41,22 @@ else
         </MudTabPanel>
         <MudTabPanel Disabled="@(CurrentUser is null)" Text="Обращения">
             <CascadingValue Value="SetTab">
-                @if (CurrentUser is null)
-                {
-                    <figure class="text-center">
-                        <blockquote class="blockquote">
-                            <p>Пользователь не найден.</p>
-                        </blockquote>
-                        <figcaption class="blockquote-footer">
-                            Ошибка <cite title="не найден пользователь">поиска пользователя</cite>
-                        </figcaption>
-                    </figure>
-                }
-                else
-                {
-                    <TabSetComponent IsSilent="true" AsPills="true">
-                        <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ActualOnly))" Title="Открытые">
-                            <HelpdeskJournalComponent UserIdentityId="@CurrentUser.UserIdentityId" UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.ActualOnly" />
-                        </TabComponent>
-                        <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ArchiveOnly))" Title="Завершённые">
-                            <HelpdeskJournalComponent UserIdentityId="@CurrentUser.UserIdentityId" UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.ArchiveOnly" />
-                        </TabComponent>
-                        <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.All))" Title="Все">
-                            <HelpdeskJournalComponent UserIdentityId="@CurrentUser.UserIdentityId" UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.All" />
-                        </TabComponent>
-                    </TabSetComponent>
-                }
+                <TabSetComponent IsSilent="true" AsPills="true">
+                    <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ActualOnly))" Title="Открытые">
+                        <HelpdeskJournalComponent UserIdentityId="@CurrentUser!.UserIdentityId" UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.ActualOnly" />
+                    </TabComponent>
+                    <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.ArchiveOnly))" Title="Завершённые">
+                        <HelpdeskJournalComponent UserIdentityId="@CurrentUser!.UserIdentityId" UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.ArchiveOnly" />
+                    </TabComponent>
+                    <TabComponent SystemName="@(nameof(HelpdeskJournalModesEnum.All))" Title="Все">
+                        <HelpdeskJournalComponent UserIdentityId="@CurrentUser!.UserIdentityId" UserArea="UsersAreasHelpdeskEnum.Author" JournalMode="HelpdeskJournalModesEnum.All" />
+                    </TabComponent>
+                </TabSetComponent>
             </CascadingValue>
-
             <CreateIssueComponent Update="Update" UserIdentityId="@CurrentUser!.UserIdentityId" />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(CurrentUser is null)" Text="Настройки">
+            <ChatSettingsHelpdeskComponent />
         </MudTabPanel>
     </MudTabs>
 }
-
-
-

@@ -1,0 +1,11 @@
+﻿@using BlazorWebLib.Components.Telegram
+
+<ChatSelectComponent Title="Переадресация Telegram сообщений для клиента"
+                     ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
+                     Name="@($"{GlobalStaticConstants.Routes.USER_CONTROLLER_NAME}")"
+                     PrefixPropertyName="@GlobalStaticConstants.Routes.GLOBAL_CONTROLLER_NAME"
+                     Hint="Правило для всех входящих сообщений в бота" />
+
+@code {
+
+}

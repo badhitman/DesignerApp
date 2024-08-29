@@ -7,7 +7,7 @@ using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Helpdesk;
+namespace BlazorWebLib.Components.Telegram;
 
 /// <summary>
 /// Выбор Telegram чата для глобальной переадресации клиентов, которым не обнаружена подписка среди сотрудников
@@ -50,6 +50,12 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [Parameter]
     public string? Subtitle { get; set; }
+
+    /// <summary>
+    /// Hint
+    /// </summary>
+    [Parameter]
+    public string? Hint { get; set; }
 
     /// <summary>
     /// Выбор чата

@@ -3,6 +3,7 @@
 <div id="@toggleBtnId" class="input-group mb-3">
     <button @onclick="EditToggle" class="btn btn-outline-secondary dropdown-toggle @ShowIfEditing" type="button" data-bs-toggle="dropdown" data-meta="@yToggleBtn" aria-expanded="@IsEditing">Изменить</button>
     <ul class="chat-selector-input dropdown-menu @ShowIfEditing" id="@dropdownId" style="@StyleIfEditing" data-meta="@HeightDropdown">
+        <i title="Отмена (закрыть меню выбора)" @onclick="EditToggle" class="bi bi-x-lg position-absolute top-0 end-0" style="cursor:pointer;"></i>
         @foreach (ChatTelegramModelDB ch in loadedData)
         {
             <li @onclick="() => SelectChatEvent(ch)"><span class="dropdown-item">@ch.ToString()</span></li>
@@ -13,5 +14,5 @@
             <li @onclick="LoadPartData"><span class="dropdown-item">Загрузить ещё</span></li>
         }
     </ul>
-    <input @bind-value="SelectedChatText" @bind-value:event="oninput" readonly="@(!IsEditing)" type="text" class="form-control" aria-label="Text input with dropdown button">
+    <input title="@(IsEditing ? "Введите текст запроса для поиска чата" : "")" @bind-value="SelectedChatText" @bind-value:event="oninput" readonly="@(!IsEditing)" type="text" class="form-control" placeholder="@(IsEditing ? "Поиск по чатам" : "")" aria-label="Text input with dropdown button">
 </div>

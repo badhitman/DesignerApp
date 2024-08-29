@@ -20,7 +20,7 @@ public enum HelpdeskIssueStepsEnum
     /// <summary>
     /// Возвращён в работу
     /// </summary>
-    [Description("Возвращён в работу")]
+    [Description("Возвращён")]
     Reopen = 20,
 
     /// <summary>
@@ -38,7 +38,7 @@ public enum HelpdeskIssueStepsEnum
     /// <summary>
     /// На проверке
     /// </summary>
-    [Description("На проверке")]
+    [Description("Проверка")]
     Check = 50,
 
     /// <summary>

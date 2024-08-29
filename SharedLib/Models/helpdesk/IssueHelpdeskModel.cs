@@ -19,6 +19,9 @@ public class IssueHelpdeskModel : EntryDescriptionModel
     /// </summary>
     public required string AuthorIdentityUserId { get; set; }
 
+    /// <inheritdoc/>
+    public string? NormalizedDescriptionUpper { get; set; }
+
     /// <summary>
     /// Исполнитель
     /// </summary>

@@ -16,7 +16,10 @@
         {
             <h6 class="card-subtitle mb-2 text-body-secondary">@Subtitle</h6>
         }
-
         <ChatSelectInputComponent NullableAllow="true" SelectedChat="initValue" SelectChatHandle="SelectChatHandler" SetHeightCard="SetHeightCard" />
+        @if (!string.IsNullOrWhiteSpace(Hint))
+        {
+            <footer style="padding-top: 5px;" class="blockquote-footer">@Hint</footer>
+        }
     </div>
 </div>

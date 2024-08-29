@@ -47,7 +47,12 @@ public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpd
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
         {
             req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
-            q = q.Where(x => x.NormalizedNameUpper!.Contains(req.Payload.SearchQuery));
+            //q = q.Where(x => x.NormalizedNameUpper!.Contains(req.Payload.SearchQuery));
+            q = from issue_element in q
+                join rubric_element in context.RubricsForIssues on issue_element.RubricIssueId equals rubric_element.Id into outer_rubric
+                from rubric_item in outer_rubric.DefaultIfEmpty()
+                where issue_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || issue_element.NormalizedDescriptionUpper!.Contains(req.Payload.SearchQuery) || rubric_item.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)
+                select issue_element;
         }
 
         res.Response.TotalRowsCount = await q.CountAsync();
