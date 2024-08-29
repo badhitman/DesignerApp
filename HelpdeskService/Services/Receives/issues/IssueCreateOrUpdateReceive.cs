@@ -45,7 +45,6 @@ public class IssueCreateOrUpdateReceive(
         string msg;
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         ModesSelectRubricsEnum _current_mode_rubric = res_ModeSelectingRubrics.Response ?? ModesSelectRubricsEnum.AllowWithoutRubric;
         string[] sub_rubrics = await context

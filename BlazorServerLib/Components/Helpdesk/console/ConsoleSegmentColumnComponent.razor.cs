@@ -9,6 +9,9 @@ using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.console;
 
+/// <summary>
+/// ConsoleSegmentColumnComponent
+/// </summary>
 public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
@@ -38,6 +41,8 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
         set
         {
             _searchQuery = value;
+            pageNum = 0;
+            Issues.Clear();
             InvokeAsync(LoadData);
         }
     }

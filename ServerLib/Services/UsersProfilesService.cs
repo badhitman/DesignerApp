@@ -525,7 +525,7 @@ public class UsersProfilesService(
 
         string[] roles_for_add_normalized = addRoles.Select(r => userManager.NormalizeName(r)).ToArray();
 
-        IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         // роли, которые есть в БД
         string?[] roles_that_are_in_db = await identityContext.Roles
             .Where(x => roles_for_add_normalized.Contains(x.NormalizedName))
