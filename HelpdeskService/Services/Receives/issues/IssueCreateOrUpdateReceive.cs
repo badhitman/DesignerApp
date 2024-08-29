@@ -35,8 +35,11 @@ public class IssueCreateOrUpdateReceive(
         UserInfoModel actor = rest.Response[0];
 
         issue_upd.Payload.Description = issue_upd.Payload.Description?.Trim();
+        string? normalizedDescriptionUpper = issue_upd.Payload.Description?.ToUpper();
+
         issue_upd.Payload.Name = issue_upd.Payload.Name.Trim();
         string normalizedNameUpper = issue_upd.Payload.Name.ToUpper();
+
         IssueHelpdeskModelDB issue;
         DateTime dtn = DateTime.UtcNow;
         string msg;
@@ -66,6 +69,7 @@ public class IssueCreateOrUpdateReceive(
                 Description = issue_upd.Payload.Description,
                 RubricIssueId = issue_upd.Payload.RubricId,
                 NormalizedNameUpper = normalizedNameUpper,
+                NormalizedDescriptionUpper = normalizedDescriptionUpper,
                 StepIssue = HelpdeskIssueStepsEnum.Created,
                 ProjectId = issue_upd.Payload.ProjectId,
                 CreatedAt = dtn,
@@ -123,6 +127,7 @@ public class IssueCreateOrUpdateReceive(
                                 .ExecuteUpdateAsync(setters => setters
                                 .SetProperty(b => b.Description, issue_upd.Payload.Description)
                                 .SetProperty(b => b.NormalizedNameUpper, normalizedNameUpper)
+                                .SetProperty(b => b.NormalizedDescriptionUpper, normalizedDescriptionUpper)
                                 .SetProperty(b => b.RubricIssueId, issue_upd.Payload.RubricId)
                                 .SetProperty(b => b.Name, issue_upd.Payload.Name)
                                 .SetProperty(b => b.LastUpdateAt, DateTime.UtcNow));
