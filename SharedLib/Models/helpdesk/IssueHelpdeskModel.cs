@@ -33,6 +33,11 @@ public class IssueHelpdeskModel : EntryDescriptionModel
     public int ProjectId { get; set; }
 
     /// <summary>
+    /// Subscribers
+    /// </summary>
+    public List<SubscriberIssueHelpdeskModelDB>? Subscribers { get; set; }
+
+    /// <summary>
     /// Rubric Issue
     /// </summary>
     public RubricIssueHelpdeskModelDB? RubricIssue { get; set; }
@@ -64,6 +69,7 @@ public class IssueHelpdeskModel : EntryDescriptionModel
             Id = sender.Id,
             ProjectId = sender.ProjectId,
             RubricIssue = sender.RubricIssue,
+            Subscribers = sender.Subscribers,
         };
     }
 }

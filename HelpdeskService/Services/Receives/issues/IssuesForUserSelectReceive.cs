@@ -71,26 +71,32 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
         switch (req.Payload.UserArea)
         {
             case UsersAreasHelpdeskEnum.Subscriber:
-                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Payload.IdentityUserId));
+                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.IdentityUsersIds.Contains(y.UserId)));
                 break;
             case UsersAreasHelpdeskEnum.Executor:
-                q = q.Where(x => x.ExecutorIdentityUserId == req.Payload.IdentityUserId);
+                q = q.Where(x => req.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId));
                 break;
             case UsersAreasHelpdeskEnum.Main:
-                q = q.Where(x => x.ExecutorIdentityUserId == req.Payload.IdentityUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Payload.IdentityUserId));
+                q = q.Where(x => req.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.IdentityUsersIds.Contains(y.UserId)));
+                break;
+            case UsersAreasHelpdeskEnum.Author:
+                q = q.Where(x => req.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId));
                 break;
             default:
-                q = q.Where(x => x.AuthorIdentityUserId == req.Payload.IdentityUserId);
+                q = q.Where(x => req.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId) || req.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.IdentityUsersIds.Contains(y.UserId)));
                 break;
         }
         res.Response.TotalRowsCount = await q.CountAsync();
 
-        List<IssueHelpdeskModelDB> data = await q
+        var inc = q
             .OrderBy(x => x.CreatedAt)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
-            .Include(x => x.RubricIssue)
-            .ToListAsync();
+            .Include(x => x.RubricIssue);
+
+        List<IssueHelpdeskModelDB> data = req.Payload.IncludeSubscribers
+            ? await inc.Include(x => x.Subscribers).ToListAsync()
+            : await inc.ToListAsync();
 
         res.Response.Response = data.Select(x => IssueHelpdeskModel.Build(x)).ToList();
 

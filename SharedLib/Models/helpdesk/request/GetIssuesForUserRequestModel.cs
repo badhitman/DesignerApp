@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// GetIssuesForUserRequestModel
+/// GetIssuesForUsersRequestModel
 /// </summary>
 public class GetIssuesForUserRequestModel
 {
@@ -15,7 +15,7 @@ public class GetIssuesForUserRequestModel
     /// IdentityUserId
     /// </summary>
     [Required]
-    public required string IdentityUserId { get; set; }
+    public required string[] IdentityUsersIds { get; set; }
 
     /// <summary>
     /// ProjectId
@@ -28,12 +28,17 @@ public class GetIssuesForUserRequestModel
     public string? SearchQuery { get; set; }
 
     /// <summary>
-    /// Автор, Исполнитель, Подписчик или Исполнитель||Подписчик
+    /// Автор, Исполнитель, Подписчик или Main (= Исполнитель||Подписчик)
     /// </summary>
-    public required UsersAreasHelpdeskEnum UserArea { get; set; }
+    public UsersAreasHelpdeskEnum? UserArea { get; set; }
 
     /// <summary>
-    /// JournalMode
+    /// Journal mode: All, ActualOnly, ArchiveOnly
     /// </summary>
     public required HelpdeskJournalModesEnum JournalMode { get; set; }
+
+    /// <summary>
+    /// Загрузить данные по подписчикам
+    /// </summary>
+    public bool IncludeSubscribers { get; set; }
 }

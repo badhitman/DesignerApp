@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using System.Collections.Generic;
 
 namespace BlazorWebLib.Components.Telegram;
 
@@ -24,6 +23,8 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
     [Inject]
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
+    [Inject]
+    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     private IEnumerable<ChatTelegramModelDB> pagedData = [];
     private MudTable<ChatTelegramModelDB> table = default!;
@@ -31,6 +32,7 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
     private string? searchString = null;
 
     readonly List<UserInfoModel> UsersCache = [];
+    readonly Dictionary<string, List<IssueHelpdeskModel>> IssuesCache = [];
 
     async Task<TableData<ChatTelegramModelDB>> ServerReload(TableState state, CancellationToken token)
     {
@@ -56,7 +58,11 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
 
     async Task LoadUsersData()
     {
-        long[] users_ids_for_load = pagedData.Where(x => x.Type == ChatsTypesTelegramEnum.Private && !UsersCache.Any(y => y.TelegramId == x.ChatTelegramId)).Select(x => x.ChatTelegramId).ToArray();
+        IQueryable<ChatTelegramModelDB> q = pagedData
+            .Where(x => x.Type == ChatsTypesTelegramEnum.Private && !UsersCache.Any(y => y.TelegramId == x.ChatTelegramId))
+            .AsQueryable();
+
+        long[] users_ids_for_load = [.. q.Select(x => x.ChatTelegramId)];
         if (users_ids_for_load.Length == 0)
             return;
 
@@ -68,6 +74,32 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
             return;
 
         UsersCache.AddRange(users_res.Response);
+
+        string[] users_ids_identity = [.. users_res.Response.Select(x => x.UserId)];
+        IsBusyProgress = true;
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> issues_users_res = await HelpdeskRepo
+                    .IssuesSelect(new()
+                    {
+                        Payload = new()
+                        {
+                            IdentityUsersIds = [.. users_ids_identity],
+                            JournalMode = HelpdeskJournalModesEnum.All,
+                            IncludeSubscribers = true,
+                        },
+                        PageNum = 0,
+                        PageSize = int.MaxValue,
+                        SortBy = nameof(IssueHelpdeskModel.LastUpdateAt),
+                        SortingDirection = VerticalDirectionsEnum.Down,
+                    });
+        IsBusyProgress = false;
+        SnackBarRepo.ShowMessagesResponse(issues_users_res.Messages);
+        if (!issues_users_res.Success() || issues_users_res.Response?.Response is null || issues_users_res.Response.Response.Count == 0)
+            return;
+
+        /*foreach (IssueHelpdeskModel issue_el in issues_users_res.Response.Response)
+                    {
+                        // IssuesCache.Add();
+                    }*/
     }
 
     private void OnSearch(string text)

@@ -21,11 +21,6 @@ public class IssueHelpdeskModelDB : IssueHelpdeskModel
     public required int? RubricIssueId { get; set; }
 
     /// <summary>
-    /// Subscribers
-    /// </summary>
-    public List<SubscriberIssueHelpdeskModelDB>? Subscribers { get; set; }
-
-    /// <summary>
     /// Messages
     /// </summary>
     public List<IssueMessageHelpdeskModelDB>? Messages { get; set; }

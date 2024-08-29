@@ -112,7 +112,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
         {
             Payload = new()
             {
-                IdentityUserId = CurrentUser.UserId,
+                IdentityUsersIds = [CurrentUser.UserId],
                 JournalMode = JournalMode,
                 SearchQuery = searchString,
                 UserArea = UserArea,

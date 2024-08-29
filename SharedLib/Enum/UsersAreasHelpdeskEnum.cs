@@ -32,5 +32,6 @@ public enum UsersAreasHelpdeskEnum
     /// <summary>
     /// Executor || Subscriber
     /// </summary>
+    [Description("Исполнитель или Подписчик")]
     Main = 50
 }
