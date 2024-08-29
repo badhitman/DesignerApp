@@ -2,18 +2,21 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using IdentityLib;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
+using IdentityLib;
 using SharedLib;
+using System.Linq;
 
 namespace Transmission.Receives.web;
 
 /// <summary>
 /// Find user identity - receive
 /// </summary>
-public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, IMemoryCache cache)
+public class FindUserIdentityReceive(
+    IDbContextFactory<IdentityAppDbContext> identityDbFactory,
+    IMemoryCache cache)
     : IResponseReceive<string[]?, UserInfoModel[]?>
 {
     /// <inheritdoc/>
@@ -36,7 +39,7 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
         if (find_users_ids.Length == 0)
             return res;
 
-        string mem_token = $"{QueueName}-{string.Join(",", find_users_ids)}";
+        string mem_token = $"{QueueName}-identity/{string.Join(",", find_users_ids)}";
         if (cache.TryGetValue(mem_token, out UserInfoModel[]? users_cache))
         {
             res.Response = users_cache;
@@ -44,14 +47,12 @@ public class FindUserIdentityReceive(IDbContextFactory<IdentityAppDbContext> ide
         }
 
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
-        ApplicationUser[] users = find_users_ids.Length == 0
-            ? []
-            : await identityContext
+        ApplicationUser[] users = await identityContext
             .Users
             .Where(x => find_users_ids.Contains(x.Id))
             .ToArrayAsync();
 
-        if (users.Length == 0 && find_users_ids.Length != users.Length)
+        if (users.Length == 0)
         {
             cache.Set(mem_token, Array.Empty<ApplicationUser>(), new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
             res.AddWarning("Не найдено ни одного пользователя");

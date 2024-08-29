@@ -16,6 +16,7 @@
         <MudTh>Username</MudTh>
         <MudTh>FirstName</MudTh>
         <MudTh>LastName</MudTh>
+        <MudTh>About</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="@(nameof(ChatTelegramModelDB.LastUpdateUtc))">
@@ -26,6 +27,20 @@
         <MudTd DataLabel="Username">@(string.IsNullOrWhiteSpace(context.Username) ? "" : $"@{context.Username}")</MudTd>
         <MudTd DataLabel="FirstName">@context.FirstName</MudTd>
         <MudTd DataLabel="LastName">@context.LastName</MudTd>
+        <MudTd DataLabel="About">
+            @if(context.Type == ChatsTypesTelegramEnum.Private)
+            {
+                UserInfoModel? user = UsersCache.FirstOrDefault(x => x.TelegramId == context.ChatTelegramId);
+                if (user is null)
+                {
+                    <b>ошибка. не найден пользователь</b>
+                }
+                else
+                {
+                    <span>@user.RolesAsString(";")</span>
+                }                
+            }
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Ни чего не найдено</MudText>

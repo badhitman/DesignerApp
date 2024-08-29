@@ -20,6 +20,11 @@ public interface IWebRemoteTransmissionService
     public Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] ids_users);
 
     /// <summary>
+    /// Поиск пользователей в Identity по их Telegram chat id
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel[]?>> FindUserIdentityByTelegram(long[] ids_users);
+
+    /// <summary>
     /// Отправка Email
     /// </summary>
     public Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req);

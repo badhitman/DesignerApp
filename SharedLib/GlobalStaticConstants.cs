@@ -94,6 +94,9 @@ public static partial class GlobalStaticConstants
         #region Web
         /// <inheritdoc/>
         public readonly static string FindUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
+        
+        /// <inheritdoc/>
+        public readonly static string FindUsersOfIdentityByTelegramIdsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.FIND_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}");
 
         /// <inheritdoc/>
         public readonly static string SendEmailReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.EMAIL_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
