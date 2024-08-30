@@ -36,6 +36,11 @@ public interface ITelegramRemoteTransmissionService
     public Task<TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?>> ChatsSelect(TPaginationRequestModel<string?> req);
 
     /// <summary>
+    /// Получить ошибки отправок сообщений (для чатов)
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]?> req);
+
+    /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
     /// </summary>
     public Task<TResponseModel<object?>> SetWebConfig(WebConfigModel webConf);

@@ -1,0 +1,29 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" Loading="IsBusyProgress">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Ошибки отправки команд в TelegramBot</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="CreatedAtUtc" T="ErrorSendingMessageTelegramBotModelDB">Date</MudTableSortLabel></MudTh>
+        <MudTh>Type</MudTh>
+        <MudTh>Message</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Date">@context.CreatedAtUtc</MudTd>
+        <MudTd DataLabel="Type">@context.ExceptionTypeName</MudTd>
+        <MudTd DataLabel="Message">@context.Message</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Данные отсутствуют</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

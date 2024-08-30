@@ -8,7 +8,7 @@
         <h5 class="card-title">Рубрики/категории обращений</h5>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
-                Выбор рубрик/категорий обращений
+                Режим выбора рубрик/категорий обращений
                 <MudRadioGroup @bind-Value="SelectedOption">
                     @foreach (ModesSelectRubricsEnum mode in Enum.GetValues(typeof(ModesSelectRubricsEnum)).Cast<ModesSelectRubricsEnum>())
                     {

@@ -14,7 +14,7 @@ public enum ModesSelectRubricsEnum
     /// <summary>
     /// Разрешить без рубрик
     /// </summary>
-    [Description("Можно без рубрики")]
+    [Description("Рубрика не обязательна")]
     AllowWithoutRubric = 10,
 
     /// <summary>

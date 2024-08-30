@@ -94,7 +94,7 @@ public static partial class GlobalStaticConstants
         #region Web
         /// <inheritdoc/>
         public readonly static string FindUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
-        
+
         /// <inheritdoc/>
         public readonly static string FindUsersOfIdentityByTelegramIdsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.FIND_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}");
 
@@ -147,6 +147,9 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string ChatsSelectTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.CHATS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string ErrorsForChatsSelectTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.ERRORS_CONTROLLER_NAME, Routes.CHATS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string SetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.EDIT_ACTION_NAME);
@@ -436,6 +439,11 @@ public static partial class GlobalStaticConstants
         /// Chats
         /// </summary>
         public const string CHATS_CONTROLLER_NAME = "chats";
+
+        /// <summary>
+        /// Errors
+        /// </summary>
+        public const string ERRORS_CONTROLLER_NAME = "errors";
 
         /// <summary>
         /// Message

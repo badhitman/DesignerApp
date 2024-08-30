@@ -28,6 +28,10 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<ChatTelegramModelDB?>(GlobalStaticConstants.TransmissionQueues.ChatReadTelegramReceive, chatIdDb);
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]?> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>(GlobalStaticConstants.TransmissionQueues.ErrorsForChatsSelectTelegramReceive, req);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<MessageComplexIdsModel?>> ForwardMessage(ForwardMessageTelegramBotModel message)
         => await rabbitClient.MqRemoteCall<MessageComplexIdsModel?>(GlobalStaticConstants.TransmissionQueues.ForwardTextMessageTelegramReceive, message);
 

@@ -1,12 +1,15 @@
 ﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @FakeGov 
+// © https://github.com/badhitman - @FakeGov
 ////////////////////////////////////////////////
+
+using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib;
 
 /// <summary>
 /// Ошибка отправки сообщения TelegramBot
 /// </summary>
+[Index(nameof(ChatId))]
 public class ErrorSendingMessageTelegramBotModelDB : IdSwitchableModel
 {
     /// <summary>
@@ -30,10 +33,7 @@ public class ErrorSendingMessageTelegramBotModelDB : IdSwitchableModel
     public required string Message { get; set; }
 
     /// <summary>
-    /// Признак того, что ошибка уже не актуальна
+    /// Признак того, что ошибка возникла не в процессе отправки, а в процессе изменения существующего сообщения Telegram
     /// </summary>
-    /// <remarks>
-    /// Например если администратор исследовал и решил проблему
-    /// </remarks>
-    public bool IsRead { get; set; }
+    public bool IsEditing { get; set; }
 }

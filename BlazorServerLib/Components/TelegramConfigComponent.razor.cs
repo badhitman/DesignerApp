@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components;
 public partial class TelegramConfigComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
-
-    [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
