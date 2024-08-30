@@ -1,11 +1,38 @@
 ﻿@using BlazorWebLib.Components.Telegram
 
-<ChatSelectComponent Title="Переадресация Telegram сообщений для клиента"
-                     ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
-                     Name="@($"{GlobalStaticConstants.Routes.USER_CONTROLLER_NAME}")"
-                     PrefixPropertyName="@GlobalStaticConstants.Routes.GLOBAL_CONTROLLER_NAME"
-                     Hint="Правило для всех входящих сообщений в бота" />
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">TelegramBot</h5>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item my-2">
+                <h6 class="card-subtitle mb-2 text-body-secondary">Маршрутизация входящих сообщений</h6>
+                <ChatSelectComponent Title="Переадресация Telegram сообщений для клиента"
+                                     ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
+                                     Name="@($"{GlobalStaticConstants.Routes.USER_CONTROLLER_NAME}")"
+                                     PrefixPropertyName="@GlobalStaticConstants.Routes.GLOBAL_CONTROLLER_NAME"
+                                     Hint="Правило для всех входящих сообщений в бота, которые будут поступать от клиента. Команды и CallbackQuery не переадресовываются!" />
+            </li>
+            <li class="list-group-item my-2">
+                <h6 class="card-subtitle mb-2 text-body-secondary">Состояние службы</h6>
+                <ErrorMessageTelegramBotComponent ChatId="user.TelegramId" />
+                <div class="form-text">
+                    Если бота удалят, заблокируют в чате, тогда его попытки отправить туда сообщение будут завершаться ошибкой.
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
 
 @code {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
 
+
+    UserInfoMainModel user = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+    }
 }

@@ -22,7 +22,7 @@ public partial class ErrorMessageTelegramBotComponent : BlazorBusyComponentBaseM
     /// ChatId
     /// </summary>
     [Parameter]
-    public long ChatId { get; set; }
+    public long? ChatId { get; set; }
 
 
     private IEnumerable<ErrorSendingMessageTelegramBotModelDB> pagedData = default!;
@@ -35,7 +35,7 @@ public partial class ErrorMessageTelegramBotComponent : BlazorBusyComponentBaseM
         IsBusyProgress = true;
         TResponseModel<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?> err_res = await TelegramRepo.ErrorsForChatsSelectTelegram(new TPaginationRequestModel<long[]?>()
         {
-            Payload = [ChatId],
+            Payload = ChatId is null || ChatId.Value == 0 ? null : [ChatId.Value],
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortBy = state.SortLabel,
