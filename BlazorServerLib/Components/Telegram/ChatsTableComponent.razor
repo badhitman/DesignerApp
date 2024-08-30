@@ -4,8 +4,8 @@
 @using MudBlazor
 
 <style>
-    .issues-for-chat-info{
-        cursor:pointer;
+    .issues-for-chat-info {
+        cursor: pointer;
     }
 </style>
 
@@ -48,7 +48,22 @@
                 }
                 else
                 {
-                    <span>@user.RolesAsString(";")</span>
+                    if (user.IsAdmin)
+                    {
+                        <span class="badge text-bg-warning m-1">Admin</span>
+                    }
+                    if (user.Roles!.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)))
+                    {
+                        <span title="@user.RolesAsString("; ").TrimEnd()" class="badge text-bg-success m-1 position-relative">
+                            HD
+                            @if (user.Roles!.Contains(GlobalStaticConstants.Roles.HelpDeskTelegramBotManager))
+                            {
+                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                    <span class="visually-hidden">New alerts</span>
+                                </span>
+                            }
+                        </span>
+                    }
                 }
                 @if (issues is not null)
                 {
