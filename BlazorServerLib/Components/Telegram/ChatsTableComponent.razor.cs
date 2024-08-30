@@ -26,13 +26,14 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
+
     private IEnumerable<ChatTelegramModelDB> pagedData = [];
     private MudTable<ChatTelegramModelDB> table = default!;
 
     private string? searchString = null;
 
     readonly List<UserInfoModel> UsersCache = [];
-    readonly Dictionary<string, List<IssueHelpdeskModel>> IssuesCache = [];
+    readonly Dictionary<string, IssueHelpdeskModel[]> IssuesCache = [];
 
     async Task<TableData<ChatTelegramModelDB>> ServerReload(TableState state, CancellationToken token)
     {
@@ -96,10 +97,17 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
         if (!issues_users_res.Success() || issues_users_res.Response?.Response is null || issues_users_res.Response.Response.Count == 0)
             return;
 
-        /*foreach (IssueHelpdeskModel issue_el in issues_users_res.Response.Response)
-                    {
-                        // IssuesCache.Add();
-                    }*/
+        foreach (UserInfoModel us in users_res.Response)
+        {
+            IssueHelpdeskModel[] issues_for_user = [.. issues_users_res.Response.Response
+                .Where(x =>
+                x.ExecutorIdentityUserId == us.UserId ||
+                x.Subscribers!.Any(y => y.UserId == us.UserId) ||
+                x.AuthorIdentityUserId == us.UserId)];
+
+            if (issues_for_user.Length != 0)
+                IssuesCache.Add(us.UserId, issues_for_user);
+        }
     }
 
     private void OnSearch(string text)

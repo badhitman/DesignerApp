@@ -1,6 +1,13 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
+@using BlazorWebLib.Components.Helpdesk.issue
 @using MudBlazor
+
+<style>
+    .issues-for-chat-info{
+        cursor:pointer;
+    }
+</style>
 
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table" Loading="IsBusyProgress">
     <ToolBarContent>
@@ -28,9 +35,13 @@
         <MudTd DataLabel="FirstName">@context.FirstName</MudTd>
         <MudTd DataLabel="LastName">@context.LastName</MudTd>
         <MudTd DataLabel="About">
-            @if(context.Type == ChatsTypesTelegramEnum.Private)
+            @if (context.Type == ChatsTypesTelegramEnum.Private)
             {
                 UserInfoModel? user = UsersCache.FirstOrDefault(x => x.TelegramId == context.ChatTelegramId);
+                IssueHelpdeskModel[]? issues = user is null || !IssuesCache.TryGetValue(user.UserId, out IssueHelpdeskModel[]? issues_cached)
+                ? null
+                : issues_cached;
+
                 if (user is null)
                 {
                     <b>ошибка. не найден пользователь</b>
@@ -38,7 +49,11 @@
                 else
                 {
                     <span>@user.RolesAsString(";")</span>
-                }                
+                }
+                @if (issues is not null)
+                {
+                    <IssuesForChatComponent Issues="issues" />
+                }
             }
         </MudTd>
     </RowTemplate>
