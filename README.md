@@ -48,34 +48,49 @@ note for DbSqliteLib "Если используется другая СУБД, �
     BlazorLib <|-- BlankBlazorApp_Client
     	
     class CodegeneratorLib{
+        Генератор исходников для Web конструктора
     }
     class IdentityLib{
+        Контекст пакета Identity
     }
     class DbLayerLib{
+        Абстракция над кросс-СУБД
     }
     class ServerLib{
+        Backend для BlankBlazorApp
     }
     class BlazorLib{
+        CSR Blazor WebAssembly
     }
     class DbSqliteLib{
+        SQLite (по умолчанию)
     }
     class DbPostgreLib{
+        PostgreSQL
     }
     class DbMySQLLib{
+        MySQL
     }
     class RemoteCallLib{
+        +Микросервис
     }
     class HtmlGenerator{
+        Внешний репозиторий
     }
     class BlankBlazorApp{
+        +Микросервис
     }
     class BlankBlazorApp_Client["BlankBlazorApp.Client"]{
+        CSR Blazor WebAssembly
     }
     class Telegram_Bot_Polling["Telegram.Bot.Polling"]{
+        +Микросервис
     }
     class BlazorWebLib{
+        SSR Blazor Server
     }
     class HelpdeskService{
+        +Микросервис
     }
 ```
 
