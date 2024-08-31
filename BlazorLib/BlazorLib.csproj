@@ -21,7 +21,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\CodegeneratorLib\CodegeneratorLib.csproj" />
-		<ProjectReference Include="..\SharedLib\SharedLib.csproj" />
 	</ItemGroup>
 
 </Project>

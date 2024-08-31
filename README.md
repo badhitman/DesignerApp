@@ -17,6 +17,67 @@
 Зависимости решения (между проектами). Службы **Telegram.Bot.Polling** и **BlazorWebApp** связаны только двумя общими библиотеками `RemoteCallLib`+`SharedLib`:
 ![связи между проектами](./img/struct.png)
 
+---
+title: Схема зависимостей проектов в решении
+---
+classDiagram
+note for DbSqliteLib "Если используется другая СУБД, тогда
+указатели  от [ServerLib] [Telegram.Bot.Polling], [HelpdeskService] и [RemoteCallLib]
+должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]"
+    SharedLib <|-- CodegeneratorLib
+    SharedLib <|-- IdentityLib
+    SharedLib <|-- DbLayerLib
+    SharedLib : Общие модели
+    IdentityLib <|-- ServerLib
+    DbSqliteLib <|-- ServerLib
+    RemoteCallLib <|-- ServerLib
+    CodegeneratorLib <|-- BlazorLib
+    HtmlGenerator <|-- CodegeneratorLib
+    DbLayerLib <|-- DbSqliteLib
+    DbLayerLib <|-- DbPostgreLib
+    DbLayerLib <|-- DbMySQLLib
+	DbSqliteLib <|-- RemoteCallLib
+    BlankBlazorApp_Client  <|-- BlankBlazorApp
+	BlazorWebLib  <|-- BlankBlazorApp
+	ServerLib  <|-- BlankBlazorApp
+    RemoteCallLib <|-- Telegram_Bot_Polling
+	DbSqliteLib <|-- Telegram_Bot_Polling
+    RemoteCallLib <|-- HelpdeskService
+	DbSqliteLib <|-- HelpdeskService
+    BlazorLib <|-- BlazorWebLib
+    BlazorLib <|-- BlankBlazorApp_Client
+    	
+    class CodegeneratorLib{
+    }
+    class IdentityLib{
+    }
+    class DbLayerLib{
+    }
+    class ServerLib{
+    }
+    class BlazorLib{
+    }
+    class DbSqliteLib{
+    }
+    class DbPostgreLib{
+    }
+    class DbMySQLLib{
+    }
+    class RemoteCallLib{
+    }
+    class HtmlGenerator{
+    }
+    class BlankBlazorApp{
+    }
+    class BlankBlazorApp_Client["BlankBlazorApp.Client"]{
+    }
+    class Telegram_Bot_Polling["Telegram.Bot.Polling"]{
+    }
+    class BlazorWebLib{
+    }
+    class HelpdeskService{
+    }
+
 ### Службы (активные/запускаемые):
 Пример того как может быть настроено в VS:
 ![пример состава и порядка запуска проектов](./img/csproj-set.png)
