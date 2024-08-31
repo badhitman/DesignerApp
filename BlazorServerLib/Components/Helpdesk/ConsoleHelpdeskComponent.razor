@@ -1,5 +1,6 @@
 ﻿@using BlazorWebLib.Components.Helpdesk.console
 @using MudBlazor
+@using BlazorWebLib.Components
 
 @inherits BlazorBusyComponentBaseModel
 
@@ -8,9 +9,9 @@
         cursor: pointer;
     }
 
-    .size-console-change span.text-secondary:hover {
-        text-decoration: underline dotted;
-    }
+        .size-console-change span.text-secondary:hover {
+            text-decoration: underline dotted;
+        }
 </style>
 
 <div class="card">
@@ -27,6 +28,7 @@
             <div class="row">
                 <div class="d-flex justify-content-between my-2">
                     <MudFab Disabled="@(stepNum == 0)" OnClick="() => { stepNum--; }" Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowLeft" Size="Size.Small" />
+                    <UserSelectorComponent SelectHandleAction="SelectUserHandler" />
                     <MudFab Disabled="@(stepNum >= Steps.Count - (IsLarge ? 4 : 6))" OnClick="() => { stepNum++; }" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.KeyboardArrowRight" Size="Size.Small" />
                 </div>
 

@@ -2,11 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -29,6 +29,11 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
     byte stepNum;
     bool IsLarge;
     UserInfoMainModel CurrentUser = default!;
+
+    async void SelectUserHandler(UserInfoModel? selected)
+    {
+
+    }
 
     StorageCloudParameterModel KeyStorage => new()
     {

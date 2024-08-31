@@ -906,7 +906,9 @@ public class UsersProfilesService(
             .Where(x => x.Id == userId)
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.FirstName, firstName)
-            .SetProperty(p => p.LastName, lastName));
+            .SetProperty(p => p.NormalizedFirstNameUpper, firstName.ToUpper())
+            .SetProperty(p => p.LastName, lastName)
+            .SetProperty(p => p.NormalizedLastNameUpper, lastName.ToUpper()));
 
         await IdentityToolsRepo.ClaimsUpdateForUser(user_db);
 
