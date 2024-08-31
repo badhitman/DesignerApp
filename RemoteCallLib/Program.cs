@@ -64,15 +64,15 @@ builder.ConfigureServices((context, services) =>
 
 
     #region MQ Transmission (remote methods call)
-    services.AddScoped<IRabbitClient, RabbitClient>();
-    services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
-    services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
+    services.AddScoped<IRabbitClient, RabbitClient>()
+    .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
+    .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
 
     services.AddScoped<ISerializeStorage, SerializeStorageService>();
     ////
-    services.RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>();
-    services.RegisterMqListener<ReadParameterReceive, StorageCloudParameterModel?, StorageCloudParameterPayloadModel?>();
-    services.RegisterMqListener<FindParametersReceive, RequestStorageCloudParameterModel?, FoundParameterModel[]?>();
+    services.RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>()
+    .RegisterMqListener<ReadParameterReceive, StorageCloudParameterModel?, StorageCloudParameterPayloadModel?>()
+    .RegisterMqListener<FindParametersReceive, RequestStorageCloudParameterModel?, FoundParameterModel[]?>();
     //
     #endregion
 

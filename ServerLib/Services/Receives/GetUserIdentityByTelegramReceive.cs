@@ -13,14 +13,14 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// Find user identity by telegram - receive
 /// </summary>
-public class FindUserIdentityByTelegramReceive(
+public class GetUserIdentityByTelegramReceive(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IWebRemoteTransmissionService webRepo,
     IMemoryCache cache)
     : IResponseReceive<long[]?, UserInfoModel[]?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.FindUsersOfIdentityByTelegramIdsReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByTelegramIdsReceive;
 
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 
@@ -58,7 +58,7 @@ public class FindUserIdentityByTelegramReceive(
 
         string[] users_ids = [.. users.Select(x => x.Id)];
 
-        TResponseModel<UserInfoModel[]?> res_find_users_identity = await webRepo.FindUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]?> res_find_users_identity = await webRepo.GetUsersIdentity(users_ids);
         if (!res_find_users_identity.Success())
         {
             res.AddRangeMessages(res_find_users_identity.Messages);

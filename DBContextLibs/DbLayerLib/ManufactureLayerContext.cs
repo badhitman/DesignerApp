@@ -3,7 +3,7 @@ using SharedLib;
 
 namespace DbLayerLib;
 
-public partial class LayerContext
+public partial class ConstructorLayerContext
 {
     /// <summary>
     /// Projects

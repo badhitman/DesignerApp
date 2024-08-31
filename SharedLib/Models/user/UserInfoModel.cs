@@ -37,6 +37,12 @@ public class UserInfoModel : UserInfoMainModel
     public int AccessFailedCount { get; set; }
 
     /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{this.UserName} {this.GivenName} {this.Surname} {this.Email}";
+    }
+
+    /// <inheritdoc/>
     public static UserInfoModel Build(string userId, string? userName, string? email, string? phoneNumber, long? telegramId, bool emailConfirmed, DateTimeOffset? lockoutEnd, bool lockoutEnabled, int accessFailedCount, string? firstName, string? lastName, string[]? roles = null, EntryAltModel[]? claims = null)
         => new()
         {

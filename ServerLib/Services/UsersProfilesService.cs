@@ -114,7 +114,7 @@ public class UsersProfilesService(
             return (UserBooleanResponseModel)ResponseBaseModel.CreateError(msg);
         }
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([user.ApplicationUser.Id]);
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 
@@ -146,7 +146,7 @@ public class UsersProfilesService(
         TResponseModel<UserInfoModel[]?> rest;
         if (!string.IsNullOrWhiteSpace(userId))
         {
-            rest = await webTransmissionRepo.FindUsersIdentity([userId]);
+            rest = await webTransmissionRepo.GetUsersIdentity([userId]);
             return new() { Response = rest.Response?.FirstOrDefault(), Messages = rest.Messages };
         }
 
@@ -154,7 +154,7 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        rest = await webTransmissionRepo.FindUsersIdentity([user.ApplicationUser.Id]);
+        rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 
@@ -168,7 +168,7 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new UserBooleanResponseModel() { Messages = user.Messages };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([user.ApplicationUser.Id]);
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 
@@ -214,7 +214,7 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([user.ApplicationUser.Id]);
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 

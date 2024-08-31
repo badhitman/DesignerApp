@@ -16,8 +16,8 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
         => await rabbitClient.MqRemoteCall<WebConfigModel?>(GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] ids_users)
-        => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.FindUsersOfIdentityReceive, ids_users);
+    public async Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(string[] ids_users)
+        => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityReceive, ids_users);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req)
@@ -45,7 +45,11 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
         => await rabbitClient.MqRemoteCall<TelegramUserBaseModel?>(GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive, telegramUserId);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> FindUserIdentityByTelegram(long[] ids_users)
-        => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.FindUsersOfIdentityByTelegramIdsReceive, ids_users);
+    public async Task<TResponseModel<UserInfoModel[]?>> GetUserIdentityByTelegram(long[] ids_users)
+        => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByTelegramIdsReceive, ids_users);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<UserInfoModel>?>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<UserInfoModel>?>(GlobalStaticConstants.TransmissionQueues.SelectUsersOfIdentityReceive, req);
     #endregion
 }

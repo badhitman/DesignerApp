@@ -143,7 +143,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
             return;
 
         IsBusyProgress = true;
-        TResponseModel<UserInfoModel[]?> res = await WebRepo.FindUsersIdentity(_ids);
+        TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentity(_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response is null)

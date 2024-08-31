@@ -48,7 +48,7 @@ public partial class IndexPage : BlazorBusyComponentBaseModel
         username = username_rest.Response;
 
         IsBusyProgress = true;
-        TResponseModel<UserInfoModel[]?> user_data = await webRepo.FindUsersIdentity([user_state.UserId]);
+        TResponseModel<UserInfoModel[]?> user_data = await webRepo.GetUsersIdentity([user_state.UserId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(user_data.Messages);
         if (!user_data.Success() || user_data.Response is null)

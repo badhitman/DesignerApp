@@ -17,12 +17,17 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Поиск пользователей в Identity по их идентификаторам
     /// </summary>
-    public Task<TResponseModel<UserInfoModel[]?>> FindUsersIdentity(string[] ids_users);
+    public Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(string[] ids_users);
 
     /// <summary>
     /// Поиск пользователей в Identity по их Telegram chat id
     /// </summary>
-    public Task<TResponseModel<UserInfoModel[]?>> FindUserIdentityByTelegram(long[] ids_users);
+    public Task<TResponseModel<UserInfoModel[]?>> GetUserIdentityByTelegram(long[] ids_users);
+
+    /// <summary>
+    /// SelectUsersOfIdentity
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<UserInfoModel>?>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req);
 
     /// <summary>
     /// Отправка Email

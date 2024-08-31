@@ -29,7 +29,7 @@ public class MessageVoteReceive(
 
         TResponseModel<UserInfoModel[]?> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
             ? new() { Response = [UserInfoModel.BuildSystem()] }
-            : await webTransmissionRepo.FindUsersIdentity([req.SenderActionUserId]);
+            : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
 
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };

@@ -127,7 +127,7 @@ public class WebAppService(
 
         if (!string.IsNullOrWhiteSpace(userId))
         {
-            TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([userId]);
+            TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([userId]);
             if (!rest.Success() || rest.Response is null || rest.Response.Length != 1 || string.IsNullOrWhiteSpace(rest.Response[0].Email))
                 throw new Exception();
 

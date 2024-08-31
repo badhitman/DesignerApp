@@ -49,7 +49,7 @@ public class IssueReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFacto
         if (req.SenderActionUserId == GlobalStaticConstants.Roles.System || issue_db.ExecutorIdentityUserId == req.SenderActionUserId || issue_db.AuthorIdentityUserId == req.SenderActionUserId || issue_db.Subscribers!.Any(x => x.UserId == req.SenderActionUserId))
             return new() { Response = issue_db };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([req.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 

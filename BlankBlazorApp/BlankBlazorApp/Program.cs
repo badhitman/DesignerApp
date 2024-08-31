@@ -127,33 +127,35 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddHttpContextAccessor();
 
 //Singleton
-builder.Services.AddSingleton<IMailProviderService, MailProviderService>();
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
+builder.Services
+    .AddSingleton<IMailProviderService, MailProviderService>()
+    .AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
 
 // Scoped
-builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>();
-builder.Services.AddScoped<IUsersProfilesService, UsersProfilesService>();
-builder.Services.AddScoped<IWebAppService, WebAppService>();
+builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>()
+    .AddScoped<IUsersProfilesService, UsersProfilesService>()
+    .AddScoped<IWebAppService, WebAppService>();
 //
 builder.Services.AddScoped<IdentityTools>();
 
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
-builder.Services.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
-builder.Services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
-builder.Services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
-builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
+builder.Services
+    .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
+    .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
+    .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
+    .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
 //
-builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserAuthModel?>();
-builder.Services.RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>();
-builder.Services.RegisterMqListener<TelegramJoinAccountDeleteReceive, long, object?>();
-builder.Services.RegisterMqListener<GetWebConfigReceive, object?, WebConfigModel>();
-builder.Services.RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>();
-builder.Services.RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModel>();
-builder.Services.RegisterMqListener<FindUserIdentityReceive, string[], UserInfoModel[]>();
-builder.Services.RegisterMqListener<SendEmailReceive, SendEmailRequestModel, bool>();
-builder.Services.RegisterMqListener<FindUserIdentityByTelegramReceive, long[], UserInfoModel[]>();
+builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserAuthModel?>()
+    .RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>()
+    .RegisterMqListener<TelegramJoinAccountDeleteReceive, long, object?>()
+    .RegisterMqListener<GetWebConfigReceive, object?, WebConfigModel>()
+    .RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>()
+    .RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModel>()
+    .RegisterMqListener<GetUsersOfIdentityReceive, string[], UserInfoModel[]>()
+    .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, bool>()
+    .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], UserInfoModel[]>();
 #endregion
 
 WebApplication app = builder.Build();

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
+using static SharedLib.GlobalStaticConstants;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -28,17 +29,25 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
     readonly List<HelpdeskIssueStepsEnum> Steps = [.. Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>()];
     byte stepNum;
     bool IsLarge;
+    string? FilterUserId;
+
     UserInfoMainModel CurrentUser = default!;
 
     async void SelectUserHandler(UserInfoModel? selected)
     {
+        FilterUserId = selected?.UserId;
+        stepNum = 0;
 
+        IsBusyProgress = true;
+        TResponseModel<int> res = await storageRepo.SaveParameter(FilterUserId, CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId));
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
-    StorageCloudParameterModel KeyStorage => new()
+    StorageCloudParameterModel KeyStorageSizeColumns => new()
     {
-        ApplicationName = GlobalStaticConstants.Routes.CONSOLE_CONTROLLER_NAME,
-        Name = GlobalStaticConstants.Routes.SIZE_CONTROLLER_NAME,
+        ApplicationName = Path.Combine(Routes.CONSOLE_CONTROLLER_NAME, Routes.HELPDESK_CONTROLLER_NAME),
+        Name = Routes.SIZE_CONTROLLER_NAME,
         PrefixPropertyName = CurrentUser.UserId,
     };
 
@@ -48,7 +57,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         stepNum = 0;
 
         IsBusyProgress = true;
-        TResponseModel<int> res = await storageRepo.SaveParameter(IsLarge, KeyStorage);
+        TResponseModel<int> res = await storageRepo.SaveParameter(IsLarge, KeyStorageSizeColumns);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
@@ -60,9 +69,14 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         IsBusyProgress = true;
-        TResponseModel<bool> res = await storageRepo.ReadParameter<bool>(KeyStorage);
+        TResponseModel<bool> res = await storageRepo.ReadParameter<bool>(KeyStorageSizeColumns);
+        TResponseModel<string?> current_filter_user_res = await storageRepo.ReadParameter<string>(CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId));
         IsBusyProgress = false;
+
         SnackbarRepo.ShowMessagesResponse(res.Messages);
+        SnackbarRepo.ShowMessagesResponse(current_filter_user_res.Messages);
+
+        FilterUserId = current_filter_user_res.Response;
         IsLarge = res.Response == true;
     }
 }

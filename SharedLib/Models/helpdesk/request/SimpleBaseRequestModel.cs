@@ -5,17 +5,17 @@
 namespace SharedLib;
 
 /// <summary>
-/// ConsoleIssuesRequestModel
+/// SimpleBaseRequestModel
 /// </summary>
-public class ConsoleIssuesRequestModel : SimpleBaseRequestModel
+public class SimpleBaseRequestModel
 {
     /// <summary>
-    /// FilterUserId
+    /// Строка поиска
     /// </summary>
-    public string? FilterUserId { get; set; }
+    public string? SearchQuery { get; set; }
 
     /// <summary>
-    /// Status
+    /// ProjectId
     /// </summary>
-    public required HelpdeskIssueStepsEnum Status { get; set; }
+    public int ProjectId { get; set; }
 }

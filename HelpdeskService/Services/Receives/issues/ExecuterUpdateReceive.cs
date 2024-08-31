@@ -43,7 +43,7 @@ public class ExecuterUpdateReceive(
         string[] users_ids = [req.SenderActionUserId, req.Payload.UserId, issue_data.Response.ExecutorIdentityUserId ?? ""];
         users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
 
-        TResponseModel<UserInfoModel[]?> users_rest = await webTransmissionRepo.FindUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]?> users_rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
         if (!users_rest.Success() || users_rest.Response is null || users_rest.Response.Length != users_ids.Length)
             return new() { Messages = users_rest.Messages };
 

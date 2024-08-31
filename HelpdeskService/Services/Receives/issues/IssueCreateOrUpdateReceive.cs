@@ -28,7 +28,7 @@ public class IssueCreateOrUpdateReceive(
         ArgumentNullException.ThrowIfNull(issue_upd);
         TResponseModel<int> res = new() { Response = 0 };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity([issue_upd.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([issue_upd.SenderActionUserId]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 

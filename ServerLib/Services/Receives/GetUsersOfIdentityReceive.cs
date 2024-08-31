@@ -7,20 +7,19 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using IdentityLib;
 using SharedLib;
-using System.Linq;
 
 namespace Transmission.Receives.web;
 
 /// <summary>
 /// Find user identity - receive
 /// </summary>
-public class FindUserIdentityReceive(
+public class GetUsersOfIdentityReceive(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IMemoryCache cache)
     : IResponseReceive<string[]?, UserInfoModel[]?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.FindUsersOfIdentityReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityReceive;
 
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 

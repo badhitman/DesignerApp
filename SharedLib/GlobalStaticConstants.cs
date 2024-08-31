@@ -84,6 +84,24 @@ public static partial class GlobalStaticConstants
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.TELEGRAM_CONTROLLER_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.MODE_CONTROLLER_NAME),
         };
+
+        /// <inheritdoc/>
+        public static StorageCloudParameterModel ConsoleFilterForUser(string user_id) => new()
+        {
+            ApplicationName = Path.Combine(Routes.HELPDESK_CONTROLLER_NAME, Routes.CONSOLE_CONTROLLER_NAME),
+            Name = Path.Combine(Routes.FILTER_CONTROLLER_NAME, user_id),
+        };
+
+        /*
+         
+    StorageCloudParameterModel KeyStorageFilterUser => new()
+    {
+        ApplicationName = GlobalStaticConstants.Routes.CONSOLE_CONTROLLER_NAME,
+        Name = GlobalStaticConstants.Routes.SIZE_CONTROLLER_NAME,
+        PrefixPropertyName = CurrentUser.UserId,
+    };
+
+         */
     }
 
     /// <summary>
@@ -94,9 +112,18 @@ public static partial class GlobalStaticConstants
         #region Web
         /// <inheritdoc/>
         public readonly static string FindUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
+        
+        /// <inheritdoc/>
+        public readonly static string GetUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.GET_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string SelectUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string FindUsersOfIdentityByTelegramIdsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.FIND_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}");
+
+        /// <inheritdoc/>
+        public readonly static string GetUsersOfIdentityByTelegramIdsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.GET_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}");
 
         /// <inheritdoc/>
         public readonly static string SendEmailReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.EMAIL_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
@@ -299,6 +326,11 @@ public static partial class GlobalStaticConstants
         /// Command
         /// </summary>
         public const string COMMAND_CONTROLLER_NAME = "command";
+
+        /// <summary>
+        /// Filter
+        /// </summary>
+        public const string FILTER_CONTROLLER_NAME = "filter";
 
         /// <summary>
         /// Helpdesk
@@ -531,6 +563,11 @@ public static partial class GlobalStaticConstants
         /// Найти
         /// </summary>
         public const string FIND_ACTION_NAME = "find";
+
+        /// <summary>
+        /// Get
+        /// </summary>
+        public const string GET_ACTION_NAME = "get";
 
         /// <summary>
         /// Редактировать

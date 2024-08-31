@@ -63,6 +63,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     [CascadingParameter]
     public Action<ChatSelectComponent>? ChatChangeHandler { get; set; }
 
+
     /// <summary>
     /// Выбранный чат
     /// </summary>

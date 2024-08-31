@@ -15,7 +15,7 @@ namespace ServerLib;
 
 /// <inheritdoc/>
 public class ManufactureService(
-    IDbContextFactory<MainDbAppContext> mainDbFactory,
+    IDbContextFactory<ConstructorContext> mainDbFactory,
     IWebRemoteTransmissionService webRepo,
     IHttpContextAccessor httpContextAccessor,
     IUsersProfilesService usersProfilesRepo) : IManufactureService
@@ -27,10 +27,10 @@ public class ManufactureService(
 
         string user_id = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception();
 
-        TResponseModel<UserInfoModel[]?> users_find = await webRepo.FindUsersIdentity([user_id]);
+        TResponseModel<UserInfoModel[]?> users_find = await webRepo.GetUsersIdentity([user_id]);
         UserInfoModel current_user = users_find.Response![0];
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         using IDbContextTransaction transaction = context_forms.Database.BeginTransaction();
 
         ProjectSnapshotModelDB _project_snapshot = new()
@@ -160,7 +160,7 @@ public class ManufactureService(
     /// <inheritdoc/>
     public async Task<List<SystemNameEntryModel>> GetSystemNames(int manufactureId)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
             .SystemNamesManufactures
             .Where(x => x.ManufactureId == manufactureId)
@@ -180,7 +180,7 @@ public class ManufactureService(
             return res;
         }
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         res.Response = await context_forms
             .Manufactures
@@ -205,7 +205,7 @@ public class ManufactureService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetOrDeleteSystemName(UpdateSystemNameModel request)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ManufactureSystemNameModelDB? snMan = await context_forms
             .SystemNamesManufactures
             .FirstOrDefaultAsync(x => x.Qualification == request.Qualification && x.TypeDataName == request.TypeDataName && x.ManufactureId == request.ManufactureId && x.TypeDataId == request.TypeDataId);
@@ -267,7 +267,7 @@ public class ManufactureService(
         if (folder_names.Length != 0)
             return ResponseBaseModel.CreateError($"Имена папок должны быть уникальные. Есть дубликаты: {string.Join(";", folder_names)}");
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ManageManufactureModelDB manufacture_db = await context_forms.Manufactures.FirstAsync(x => x.Id == manufacture.Id);
         if (manufacture_db.Equals(manufacture))
             return ResponseBaseModel.CreateInfo("Обновление не требуется. Объекты равны");

@@ -98,22 +98,23 @@ builder.ConfigureServices((context, services) =>
     #endregion
 
     #region MQ Transmission (remote methods call)
-    services.AddScoped<IRabbitClient, RabbitClient>();
-    services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
-    services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
-    services.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
+    services
+    .AddScoped<IRabbitClient, RabbitClient>()
+    .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
+    .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
+    .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     //
-    services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, MessageComplexIdsModel?>();
-    services.RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>();
-    services.RegisterMqListener<GetBotUsernameReceive, object?, string?>();
-    services.RegisterMqListener<ChatsReadTelegramReceive, long[]?, ChatTelegramModelDB[]?>();
-    services.RegisterMqListener<MessagesSelectTelegramReceive, TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>();
-    services.RegisterMqListener<GetFileTelegramReceive, string?, byte[]?>();
-    services.RegisterMqListener<ChatsFindForUserTelegramReceive, long[]?, ChatTelegramModelDB[]?>();
-    services.RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>?, TPaginationResponseModel<ChatTelegramModelDB>?>();
-    services.RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>();
-    services.RegisterMqListener<ChatTelegramReadReceive, int?, ChatTelegramModelDB?>();
-    services.RegisterMqListener<ErrorsForChatsSelectTelegramReceive, TPaginationRequestModel<long[]?>?, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>();
+    services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, MessageComplexIdsModel?>()
+    .RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>()
+    .RegisterMqListener<GetBotUsernameReceive, object?, string?>()
+    .RegisterMqListener<ChatsReadTelegramReceive, long[]?, ChatTelegramModelDB[]?>()
+    .RegisterMqListener<MessagesSelectTelegramReceive, TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>()
+    .RegisterMqListener<GetFileTelegramReceive, string?, byte[]?>()
+    .RegisterMqListener<ChatsFindForUserTelegramReceive, long[]?, ChatTelegramModelDB[]?>()
+    .RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>?, TPaginationResponseModel<ChatTelegramModelDB>?>()
+    .RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>()
+    .RegisterMqListener<ChatTelegramReadReceive, int?, ChatTelegramModelDB?>()
+    .RegisterMqListener<ErrorsForChatsSelectTelegramReceive, TPaginationRequestModel<long[]?>?, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>();
     #endregion
 });
 

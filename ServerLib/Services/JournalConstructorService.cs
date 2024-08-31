@@ -15,7 +15,7 @@ namespace ServerLib;
 /// Journal Constructor
 /// </summary>
 public partial class JournalConstructorService(
-    IDbContextFactory<MainDbAppContext> mainDbFactory,
+    IDbContextFactory<ConstructorContext> mainDbFactory,
     IHttpContextAccessor httpContextAccessor,
     IWebRemoteTransmissionService webRepo) : IJournalUniversalService
 {
@@ -34,7 +34,7 @@ public partial class JournalConstructorService(
         if (find_doc.Response.Length > 1)
             throw new Exception();
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
 
         ManufactureSystemNameModelDB[] system_names = await (from sys_name in context_forms.SystemNamesManufactures
@@ -113,7 +113,7 @@ public partial class JournalConstructorService(
             return res;
 
         DocumentSchemeConstructorModelDB doc_db = find_doc.Response.Single();
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<SessionOfDocumentDataModelDB> q = context_forms
             .Sessions
@@ -243,10 +243,10 @@ public partial class JournalConstructorService(
             return res;
         }
 
-        TResponseModel<UserInfoModel[]?> users_find = await webRepo.FindUsersIdentity([user_id]);
+        TResponseModel<UserInfoModel[]?> users_find = await webRepo.GetUsersIdentity([user_id]);
         UserInfoModel current_user = users_find.Response![0];
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<DocumentSchemeConstructorModelDB> pre_q = from scheme in context_forms.DocumentSchemes
                                                              join pt in context_forms.Projects on scheme.ProjectId equals pt.Id
@@ -286,11 +286,11 @@ public partial class JournalConstructorService(
         if (user_id is null)
             return [];
 
-        TResponseModel<UserInfoModel[]?> users_find = await webRepo.FindUsersIdentity([user_id]);
+        TResponseModel<UserInfoModel[]?> users_find = await webRepo.GetUsersIdentity([user_id]);
         UserInfoModel current_user = users_find.Response![0];
 
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<EntryAltTagModel> pre_q = from scheme in context_forms.DocumentSchemes
                                              join pt in context_forms.Projects on scheme.ProjectId equals pt.Id
@@ -303,7 +303,7 @@ public partial class JournalConstructorService(
     /// <inheritdoc/>
     public async Task<ValueDataForSessionOfDocumentModelDB[]> ReadSessionTabValues(int tabId, int sessionId)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<ValueDataForSessionOfDocumentModelDB> q = from val in context_forms.ValuesSessions.Where(x => x.OwnerId == sessionId)
                                                              join tj in context_forms.TabsJoinsForms.Where(x => x.TabId == tabId) on val.JoinFormToTabId equals tj.Id

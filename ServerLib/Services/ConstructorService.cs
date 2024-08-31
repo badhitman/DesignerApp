@@ -23,7 +23,7 @@ namespace ServerLib;
 /// Constructor служба
 /// </summary>
 public partial class ConstructorService(
-    IDbContextFactory<MainDbAppContext> mainDbFactory,
+    IDbContextFactory<ConstructorContext> mainDbFactory,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IUsersProfilesService usersProfilesRepo,
     IHttpContextAccessor httpContextAccessor,
@@ -40,7 +40,7 @@ public partial class ConstructorService(
         if (!Guid.TryParse(guid_session, out Guid guid_parsed) || guid_parsed == Guid.Empty)
             return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Токен сессии имеет не корректный формат" }] };
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<SessionOfDocumentDataModelDB> q = context_forms
             .Sessions
@@ -81,7 +81,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetDoneSessionDocumentData(string token_session, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         SessionOfDocumentDataModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.SessionToken == token_session, cancellationToken: cancellationToken);
         if (sq is null)
             return ResponseBaseModel.CreateError($"Сессия [{token_session}] не найдена в БД. ошибка 638FB569-BB5E-43C2-9263-2DCB76F7D88E");
@@ -161,7 +161,7 @@ public partial class ConstructorService(
             res.AddError($"Поле '{req.NameField}' не найдено в форме #{form_join.Form.Id} '{form_join.Form.Name}'. ошибка 98371573-83A3-41A3-97C2-F8F775BFFD2D");
             return res;
         }
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ValueDataForSessionOfDocumentModelDB? existing_value = session_Document.DataSessionValues.FirstOrDefault(x => x.RowNum == req.GroupByRowNum && x.Name.Equals(req.NameField, StringComparison.OrdinalIgnoreCase) && x.JoinFormToTabId == form_join.Id);
         if (existing_value is null)
         {
@@ -215,7 +215,7 @@ public partial class ConstructorService(
         }
         IQueryable<ValueDataForSessionOfDocumentModelDB> q = session.DataSessionValues.Where(x => x.JoinFormToTabId == form_join.Id && x.RowNum > 0).AsQueryable();
         res.Response = (int)(q.Any() ? (q.Max(x => x.RowNum) + 1) : 1);
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ValueDataForSessionOfDocumentModelDB[] rows_add = form_join.Form.AllFields.Where(ScalarOnly).Select(x => new ValueDataForSessionOfDocumentModelDB()
         {
             RowNum = (uint)res.Response,
@@ -262,7 +262,7 @@ public partial class ConstructorService(
         if (values_for_delete.Length > 0)
         {
             session.LastDocumentUpdateActivity = DateTime.Now;
-            using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+            using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
             context_forms.RemoveRange(values_for_delete);
             await context_forms.SaveChangesAsync(cancellationToken);
             res.AddSuccess($"Строка №{req.GroupByRowNum} удалена ({values_for_delete.Length} значений ячеек)");
@@ -319,7 +319,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ProjectViewModel[]> GetProjects(string user_id, string? name_filter = null)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         IQueryable<ProjectConstructorModelDB> q = context_forms
             .Projects
             .Where(x => x.OwnerUserId == user_id || context_forms.MembersOfProjects.Any(y => y.ProjectId == x.Id && y.UserId == user_id))
@@ -378,7 +378,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ProjectConstructorModelDB?> ReadProject(int project_id)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
             .Projects
 
@@ -422,7 +422,7 @@ public partial class ConstructorService(
             res.AddError($"Пользователь #{user_id} не найден в БД");
             return res;
         }
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ProjectConstructorModelDB? projectDb = await context_forms
             .Projects
             .FirstOrDefaultAsync(x => x.OwnerUserId == userDb.Id && (x.Name == project.Name));
@@ -453,7 +453,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetMarkerDeleteProject(int project_id, bool is_deleted)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         ProjectConstructorModelDB? project = await context_forms
             .Projects
@@ -476,7 +476,7 @@ public partial class ConstructorService(
         if (!IsValid)
             return ResponseBaseModel.CreateError(ValidationResults);
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         ProjectConstructorModelDB? projectDb = await context_forms
             .Projects
@@ -506,7 +506,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<EntryAltModel[]> GetMembersOfProject(int project_id)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         string[] members_users_ids = await context_forms
             .MembersOfProjects
@@ -535,7 +535,7 @@ public partial class ConstructorService(
         if (userDb is null)
             return ResponseBaseModel.CreateError($"Пользователь #{member_user_id} не найден в БД");
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         MemberOfProjectConstructorModelDB? memberDb = await context_forms
             .MembersOfProjects
             .FirstOrDefaultAsync(x => x.ProjectId == project_id && x.UserId == userDb.Id);
@@ -582,7 +582,7 @@ public partial class ConstructorService(
         if (userDb is null)
             return ResponseBaseModel.CreateError($"Пользователь #{member_user_id} не найден в БД");
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         MemberOfProjectConstructorModelDB? memberDb = await context_forms
             .MembersOfProjects
             .Include(x => x.Project)
@@ -613,7 +613,7 @@ public partial class ConstructorService(
         if (userDb is null)
             return ResponseBaseModel.CreateError($"Пользователь #{user_id} не найден в БД");
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ProjectConstructorModelDB? projectDb = await context_forms.Projects.FirstOrDefaultAsync(x => x.Id == project_id);
         if (projectDb is null)
             return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
@@ -652,7 +652,7 @@ public partial class ConstructorService(
         bool _seed_call = false;
 #endif
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ProjectConstructorModelDB? project = null;
         ProjectUseConstructorModelDb? project_use = null;
         if (!await context_forms.Projects.AnyAsync(x => x.OwnerUserId == user_id) && !await context_forms.MembersOfProjects.AnyAsync(x => x.UserId == user_id))
@@ -831,7 +831,7 @@ public partial class ConstructorService(
         if (!call_user.Success())
             return ResponseBaseModel.Create(call_user.Messages);
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ProjectConstructorModelDB? project = await context_forms.Projects.FirstOrDefaultAsync(x => x.Id == project_id);
         if (project is null)
             return ResponseBaseModel.CreateError($"Проект #{project_id} не найден в БД");
@@ -851,7 +851,7 @@ public partial class ConstructorService(
     {
         if (!ids.Any())
             return [];
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         DirectoryConstructorModelDB[] res = await context_forms
             .Directories
             .Include(x => x.Elements)
@@ -864,7 +864,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseStrictModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         IQueryable<EntryModel> query = context_forms
             .Directories
@@ -881,7 +881,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<EntryDescriptionModel> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
             .Directories
             .Where(x => x.Id == enumeration_id)
@@ -903,7 +903,7 @@ public partial class ConstructorService(
 
         string msg;
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         DirectoryConstructorModelDB? directory_db = await context_forms
             .Directories
             .FirstOrDefaultAsync(x => x.Id != _dir.Id && x.ProjectId == _dir.ProjectId && x.Name == _dir.Name, cancellationToken: cancellationToken);
@@ -979,7 +979,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         DirectoryConstructorModelDB? directory_db = await context_forms
             .Directories
             .FirstOrDefaultAsync(x => x.Id == directory_id, cancellationToken: cancellationToken);
@@ -1006,7 +1006,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<EntryDescriptionModel> GetElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
             .ElementsOfDirectories
             .Where(x => x.Id == element_id)
@@ -1018,7 +1018,7 @@ public partial class ConstructorService(
     public async Task<TResponseModel<List<EntryModel>>> GetElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
         TResponseModel<List<EntryModel>> res = new();
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         DirectoryConstructorModelDB? dir = await context_forms.Directories
             .Include(x => x.Elements)
             .FirstOrDefaultAsync(x => x.Id == directory_id, cancellationToken: cancellationToken);
@@ -1050,7 +1050,7 @@ public partial class ConstructorService(
             return res;
         }
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         DirectoryConstructorModelDB? directory_db = await context_forms.Directories
             .Include(x => x.Elements)
             .FirstOrDefaultAsync(x => x.Id == element.OwnerId, cancellationToken: cancellationToken);
@@ -1120,7 +1120,7 @@ public partial class ConstructorService(
 
         ResponseBaseModel res = new();
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ElementOfDirectoryConstructorModelDB? element_db = await context_forms
             .ElementsOfDirectories
             .Include(x => x.Parent)
@@ -1171,7 +1171,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteElementFromDirectory(int element_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ElementOfDirectoryConstructorModelDB? element_db = await context_forms
             .ElementsOfDirectories
             .Include(x => x.Parent)
@@ -1198,7 +1198,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> UpMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ElementOfDirectoryConstructorModelDB? element_db = await context_forms
             .ElementsOfDirectories
             .Include(x => x.Parent)
@@ -1235,7 +1235,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DownMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         ElementOfDirectoryConstructorModelDB? element_db = await context_forms
             .ElementsOfDirectories
             .Include(x => x.Parent)
@@ -1272,7 +1272,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CheckAndNormalizeSortIndexForElementsOfDirectory(int directory_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         List<ElementOfDirectoryConstructorModelDB> elements = await context_forms
             .ElementsOfDirectories
             .Where(x => x.ParentId == directory_id)
@@ -1309,7 +1309,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<FormConstructorModelDB>> SelectForms(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TPaginationResponseModel<FormConstructorModelDB> res = new(req);
 
         IQueryable<FormConstructorModelDB> q;
@@ -1344,7 +1344,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseModel<FormConstructorModelDB>> GetForm(int form_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TResponseModel<FormConstructorModelDB> res = new()
         {
             Response = await context_forms
@@ -1414,7 +1414,7 @@ public partial class ConstructorService(
             return res;
         }
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 #pragma warning disable CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
         FormConstructorModelDB? form_db = await context_forms
             .Forms
@@ -1497,7 +1497,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> FormDelete(int form_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         FormConstructorModelDB? form_db = await context_forms
             .Forms
@@ -1524,7 +1524,7 @@ public partial class ConstructorService(
     {
         TResponseModel<FormConstructorModelDB> res = new();
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         FieldFormConstructorModelDB? field_db = await context_forms
             .Fields
             .Include(x => x.Owner)
@@ -1600,7 +1600,7 @@ public partial class ConstructorService(
     {
         TResponseModel<FormConstructorModelDB> res = new();
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         FieldFormAkaDirectoryConstructorModelDB? field_db = await context_forms
             .LinksDirectoriesToForms
             .Include(x => x.Owner)
@@ -1682,7 +1682,7 @@ public partial class ConstructorService(
             return ResponseBaseModel.CreateError(ValidationResults);
 
         ResponseBaseModel res = new();
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         FormConstructorModelDB? form_db = await context_forms
             .Forms
             .Include(x => x.Fields)
@@ -1853,7 +1853,7 @@ public partial class ConstructorService(
             return ResponseBaseModel.CreateError(ValidationResults);
 
         ResponseBaseModel res = new();
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         DirectoryConstructorModelDB? directory_db = await context_forms
             .Directories
@@ -2025,7 +2025,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> FormFieldDelete(int form_field_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         FieldFormConstructorModelDB? field_db = await context_forms
             .Fields
             .Include(x => x.Owner)
@@ -2060,7 +2060,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> FormFieldDirectoryDelete(int field_directory_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         FieldFormAkaDirectoryConstructorModelDB? field_db = await context_forms
             .LinksDirectoriesToForms
             .Include(x => x.Owner)
@@ -2095,7 +2095,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseModel<FormConstructorModelDB>> CheckAndNormalizeSortIndexFrmFields(int form_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         IIncludableQueryable<FormConstructorModelDB, DirectoryConstructorModelDB?> _q = context_forms
             .Forms
             .Where(x => x.Id == form_id)
@@ -2159,7 +2159,7 @@ public partial class ConstructorService(
         if (req.PageSize < 1)
             req.PageSize = 10;
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TPaginationResponseModel<DocumentSchemeConstructorModelDB> res = new(req);
 
         IQueryable<DocumentSchemeConstructorModelDB> query = context_forms
@@ -2207,7 +2207,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseModel<DocumentSchemeConstructorModelDB>> GetDocumentScheme(int document_scheme_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TResponseModel<DocumentSchemeConstructorModelDB> res = new()
         {
             Response = await context_forms
@@ -2236,7 +2236,7 @@ public partial class ConstructorService(
             return res;
         }
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         DocumentSchemeConstructorModelDB? questionnaire_db = await context_forms
             .DocumentSchemes
             .FirstOrDefaultAsync(x => x.Id != documentScheme.Id && x.ProjectId == documentScheme.ProjectId && x.Name.ToUpper() == documentScheme.Name.ToUpper(), cancellationToken: cancellationToken);
@@ -2315,7 +2315,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteDocumentScheme(int document_scheme_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         DocumentSchemeConstructorModelDB? document_scheme_db = await context_forms
             .DocumentSchemes
             .Include(x => x.Tabs!)
@@ -2345,7 +2345,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> GetTabOfDocumentScheme(int tab_of_document_scheme_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> res = new()
         {
             Response = await context_forms
@@ -2373,7 +2373,7 @@ public partial class ConstructorService(
     {
         TResponseModel<DocumentSchemeConstructorModelDB> res = new();
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TabOfDocumentSchemeConstructorModelDB? tab_of_document_scheme_db = await context_forms
             .TabsOfDocumentsSchemes
             .Include(x => x.Owner)
@@ -2469,7 +2469,7 @@ public partial class ConstructorService(
             return res;
         }
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         DocumentSchemeConstructorModelDB? document_scheme_db = await context_forms
             .DocumentSchemes
             .Include(x => x.Tabs)
@@ -2560,7 +2560,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteTabOfDocumentScheme(int tab_of_document_scheme_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TabOfDocumentSchemeConstructorModelDB? tab_of_document_scheme_db = await context_forms
             .TabsOfDocumentsSchemes
             .Include(x => x.JoinsForms)
@@ -2594,7 +2594,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseModel<FormToTabJoinConstructorModelDB>> GetTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TResponseModel<FormToTabJoinConstructorModelDB> res = new()
         {
             Response = await context_forms
@@ -2618,7 +2618,7 @@ public partial class ConstructorService(
     {
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> res = new();
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         FormToTabJoinConstructorModelDB? questionnaire_page_join_db = await context_forms
             .TabsJoinsForms
             .Include(x => x.Tab)
@@ -2718,7 +2718,7 @@ public partial class ConstructorService(
             return ResponseBaseModel.CreateError(ValidationResults);
 
         ResponseBaseModel res = new();
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TabOfDocumentSchemeConstructorModelDB? tab_of_document_db = await context_forms
             .TabsOfDocumentsSchemes
             .Include(x => x.JoinsForms)
@@ -2815,7 +2815,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteTabDocumentSchemeJoinForm(int tab_document_scheme_join_form_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         FormToTabJoinConstructorModelDB? questionnaire_page_db = await context_forms
             .TabsJoinsForms
             .FirstOrDefaultAsync(x => x.Id == tab_document_scheme_join_form_id, cancellationToken: cancellationToken);
@@ -2856,7 +2856,7 @@ public partial class ConstructorService(
     {
         sessionValues = [.. sessionValues.SkipWhile(x => x.Id < 1 && string.IsNullOrWhiteSpace(x.Value))];
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         SessionOfDocumentDataModelDB? sq = await context_forms
             .Sessions
             .Include(x => x.DataSessionValues!)
@@ -2930,7 +2930,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetStatusSessionDocument(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         SessionOfDocumentDataModelDB? sq = await context_forms.Sessions.FirstOrDefaultAsync(x => x.Id == id_session, cancellationToken: cancellationToken);
         if (sq is null)
             return ResponseBaseModel.CreateError($"Сессия [{id_session}] не найдена в БД. ошибка A85733AF-56F4-45D2-A16C-729352D1645B");
@@ -2962,7 +2962,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocument(int id_session, bool skip_include = false, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         IQueryable<SessionOfDocumentDataModelDB> q = context_forms
             .Sessions
             .Where(x => x.Id == id_session)
@@ -3039,7 +3039,7 @@ public partial class ConstructorService(
             return res;
         }
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         Expression<Func<SessionOfDocumentDataModelDB, bool>> expr = x
             => x.Id != session_json.Id &&
@@ -3130,7 +3130,7 @@ public partial class ConstructorService(
         if (req.PageSize < 10)
             req.PageSize = 10;
 
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         TPaginationResponseModel<SessionOfDocumentDataModelDB> res = new(req);
         IQueryable<SessionOfDocumentDataModelDB> query = context_forms
             .Sessions
@@ -3182,7 +3182,7 @@ public partial class ConstructorService(
             res.AddError("Не указано имя поля/колонки");
             return res;
         }
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         var q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
                 join _s in context_forms.Sessions on _vs.OwnerId equals _s.Id
                 join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.JoinFormToTabId equals _pjf.Id
@@ -3231,7 +3231,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ClearValuesForFieldName(FormFieldOfSessionModel req, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         IQueryable<ValueDataForSessionOfDocumentModelDB> q = from _vs in context_forms.ValuesSessions.Where(_vs => _vs.Name == req.FieldName)
                                                              join _s in context_forms.Sessions.Where(x => !req.SessionId.HasValue || x.Id == req.SessionId.Value) on _vs.OwnerId equals _s.Id
                                                              join _pjf in context_forms.TabsJoinsForms.Where(x => x.FormId == req.FormId) on _vs.JoinFormToTabId equals _pjf.Id
@@ -3249,7 +3249,7 @@ public partial class ConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteSessionDocument(int session_id, CancellationToken cancellationToken = default)
     {
-        using MainDbAppContext context_forms = mainDbFactory.CreateDbContext();
+        using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         SessionOfDocumentDataModelDB? session_db = await context_forms
             .Sessions
             .Include(x => x.DataSessionValues)

@@ -54,7 +54,7 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
         if (users_ids.Length != 0)
         {
             IsBusyProgress = true;
-            TResponseModel<UserInfoModel[]?> users_add = await webRemoteRepo.FindUsersIdentity(users_ids);
+            TResponseModel<UserInfoModel[]?> users_add = await webRemoteRepo.GetUsersIdentity(users_ids);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(users_add.Messages);
             if (users_add.Response is not null)

@@ -33,6 +33,12 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
     [Parameter, EditorRequired]
     public bool IsLarge { get; set; }
 
+    /// <summary>
+    /// UserFilter
+    /// </summary>
+    [Parameter]
+    public string? UserFilter { get; set; }
+
 
     string? _searchQuery;
     string? SearchQuery
@@ -66,6 +72,8 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
             {
                 Status = StepIssue,
                 SearchQuery = _searchQuery,
+                FilterUserId = UserFilter,
+                ProjectId = 0,
             }
         });
 
@@ -77,6 +85,19 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
             totalCount = res.Response.TotalRowsCount;
             Issues.AddRange(res.Response.Response);
             pageNum++;
+        }
+    }
+
+    string? _luf;
+    /// <inheritdoc/>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!firstRender && _luf != UserFilter)
+        {
+            pageNum = 0;
+            Issues.Clear();
+            _luf = UserFilter;
+            await LoadData();
         }
     }
 

@@ -6,8 +6,21 @@ namespace DbLayerLib;
 /// <summary>
 /// LayerContext
 /// </summary>
-public partial class LayerContext
+public partial class ConstructorLayerContext : DbContext
 {
+    /// <summary>
+    /// Промежуточный/общий слой контекста базы данных
+    /// </summary>
+    public ConstructorLayerContext(DbContextOptions options)
+        : base(options)
+    {
+#if DEBUG
+        Database.Migrate();
+#else
+        Database.EnsureCreated();
+#endif
+    }
+
     /// <summary>
     /// Снапшоты, которые формируются при каждом удачном скачивании/генерации кода к проекту
     /// </summary>

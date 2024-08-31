@@ -30,7 +30,7 @@ public class SubscribeUpdateReceive(
         string[] users_ids = [req.SenderActionUserId, req.Payload.UserId];
         users_ids = [.. users_ids.Distinct()];
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.FindUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != users_ids.Length)
             return new() { Messages = rest.Messages };
 
