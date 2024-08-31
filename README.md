@@ -51,16 +51,16 @@ note for DbSqliteLib "Если используется другая СУБД, �
         Генератор исходников для Web конструктора
     }
     class IdentityLib{
-        Контекст пакета Identity
+        Контекст пакета Identity (авторизация)
     }
     class DbLayerLib{
-        Абстракция над кросс-СУБД
+        Абстракция над Мульти-СУБД
     }
     class ServerLib{
         Backend для BlankBlazorApp
     }
     class BlazorLib{
-        CSR Blazor WebAssembly
+        Blazor UI Компоненты
     }
     class DbSqliteLib{
         SQLite (по умолчанию)
@@ -90,7 +90,7 @@ note for DbSqliteLib "Если используется другая СУБД, �
         SSR Blazor Server
     }
     class HelpdeskService{
-        +Микросервис
+        +Микросервис        
     }
 ```
 
