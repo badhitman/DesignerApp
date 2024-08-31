@@ -730,8 +730,10 @@ public class UsersProfilesService(
             q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.UserId && req.OwnerId == y.RoleId));
 
         if (!string.IsNullOrWhiteSpace(req.FindQuery))
-            q = q.Where(x => EF.Functions.Like(x.NormalizedEmail, $"%{userManager.KeyNormalizer.NormalizeEmail(req.FindQuery)}%") || EF.Functions.Like(x.UserName, $"%{req.FindQuery}%") || x.Id == req.FindQuery);
-
+        {
+            string upp_query = req.FindQuery.ToUpper();
+            q = q.Where(x => EF.Functions.Like(x.NormalizedEmail, $"%{userManager.KeyNormalizer.NormalizeEmail(req.FindQuery)}%") || EF.Functions.Like(x.NormalizedFirstNameUpper, $"%{upp_query}%") || EF.Functions.Like(x.NormalizedLastNameUpper, $"%{upp_query}%") || x.Id == req.FindQuery);
+        }
         int total = q.Count();
         q = q.Skip(req.PageNum * req.PageSize).Take(req.PageSize);
         var users = await q
@@ -902,7 +904,9 @@ public class UsersProfilesService(
         await identityContext
             .Users
             .Where(x => x.Id == userId)
-            .ExecuteUpdateAsync(set => set.SetProperty(p => p.FirstName, firstName).SetProperty(p => p.LastName, lastName));
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.FirstName, firstName)
+            .SetProperty(p => p.LastName, lastName));
 
         await IdentityToolsRepo.ClaimsUpdateForUser(user_db);
 

@@ -20,7 +20,10 @@ public class IdentityTools(IDbContextFactory<IdentityAppDbContext> identityDbFac
     public async Task<bool> ClaimsUpdateForUser(ApplicationUser app_user)
     {
         app_user.FirstName ??= "";
+        app_user.NormalizedFirstNameUpper = app_user.FirstName.ToUpper();
         app_user.LastName ??= "";
+        app_user.NormalizedLastNameUpper = app_user.LastName.ToUpper();
+
         bool res = false;
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
         string chat_tg_id = app_user.ChatTelegramId?.ToString() ?? "0";

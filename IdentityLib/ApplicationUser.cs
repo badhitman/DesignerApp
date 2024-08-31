@@ -12,6 +12,7 @@ namespace IdentityLib;
 /// Add profile data for application users by adding properties to the ApplicationUser class
 /// </summary>
 [Index(nameof(ChatTelegramId))]
+[Index(nameof(NormalizedFirstNameUpper)), Index(nameof(NormalizedLastNameUpper))]
 public class ApplicationUser : IdentityUser
 {
     /// <summary>
@@ -25,9 +26,20 @@ public class ApplicationUser : IdentityUser
     public string? FirstName { get; set; }
 
     /// <summary>
+    /// NormalizedFirstNameUpper
+    /// </summary>
+    public string? NormalizedFirstNameUpper { get; set; }
+
+    /// <summary>
     /// LastName
     /// </summary>
     public string? LastName { get; set; }
+
+    /// <summary>
+    /// NormalizedLastNameUpper
+    /// </summary>
+    public string? NormalizedLastNameUpper { get; set; }
+
 
     /// <inheritdoc/>
     public static explicit operator UserInfoModel(ApplicationUser app_user)

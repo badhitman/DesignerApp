@@ -50,8 +50,8 @@ public class UsersAuthenticateService(
             lockoutEnd: au.LockoutEnd,
             lockoutEnabled: au.LockoutEnabled,
             accessFailedCount: au.AccessFailedCount,
-             firstName: au.FirstName,
-             lastName: au.LastName)
+            firstName: au.FirstName,
+            lastName: au.LastName)
         };
     }
 

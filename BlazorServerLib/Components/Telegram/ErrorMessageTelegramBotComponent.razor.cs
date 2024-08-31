@@ -9,6 +9,9 @@ using SharedLib;
 
 namespace BlazorWebLib.Components.Telegram;
 
+/// <summary>
+/// ErrorMessageTelegramBotComponent
+/// </summary>
 public partial class ErrorMessageTelegramBotComponent : BlazorBusyComponentBaseModel
 {
     [Inject]

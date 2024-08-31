@@ -800,7 +800,7 @@ public partial class ConstructorService(
                             ProjectId = project!.Id,
                             AuthorUser = userDb.Id,
                             Name = "Debug session",
-                            NormalizeUpperName = "DEBUG SESSION",
+                            NormalizedUpperName = "DEBUG SESSION",
                             DeadlineDate = DateTime.Now.AddDays(1),
                             OwnerId = _document_scheme_seed.Id,
                             SessionStatus = SessionsStatusesEnum.InProgress,
@@ -3027,7 +3027,7 @@ public partial class ConstructorService(
             session_json.SessionToken = null;
 
         session_json.Name = MyRegexSpices().Replace(session_json.Name.Trim(), " ");
-        session_json.NormalizeUpperName = session_json.Name.ToUpper();
+        session_json.NormalizedUpperName = session_json.Name.ToUpper();
 
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         ApplicationUser? userDb = await identityContext.Users
@@ -3045,7 +3045,7 @@ public partial class ConstructorService(
             => x.Id != session_json.Id &&
             x.OwnerId == session_json.OwnerId &&
             x.ProjectId == session_json.ProjectId &&
-            x.NormalizeUpperName == session_json.NormalizeUpperName;
+            x.NormalizedUpperName == session_json.NormalizedUpperName;
 
         SessionOfDocumentDataModelDB? session_db = await context_forms
             .Sessions
@@ -3150,7 +3150,7 @@ public partial class ConstructorService(
         if (!string.IsNullOrWhiteSpace(req.SimpleRequest))
         {
             Expression<Func<SessionOfDocumentDataModelDB, bool>> expr = x
-                => EF.Functions.Like(x.NormalizeUpperName!, $"%{req.SimpleRequest.ToUpper()}%") ||
+                => EF.Functions.Like(x.NormalizedUpperName!, $"%{req.SimpleRequest.ToUpper()}%") ||
                 (x.SessionToken != null && x.SessionToken.ToLower() == req.SimpleRequest.ToLower()) ||
                 (!string.IsNullOrWhiteSpace(x.EmailsNotifications) && EF.Functions.Like(x.EmailsNotifications.ToLower(), $"%{req.SimpleRequest.ToLower()}%"));
 

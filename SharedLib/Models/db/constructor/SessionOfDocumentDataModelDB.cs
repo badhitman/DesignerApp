@@ -11,14 +11,14 @@ namespace SharedLib;
 /// Сессия опроса/анкеты
 /// </summary>
 [Index(nameof(AuthorUser)), Index(nameof(SessionToken)), Index(nameof(SessionStatus)), Index(nameof(CreatedAt)), Index(nameof(LastDocumentUpdateActivity)), Index(nameof(DeadlineDate))]
-[Index(nameof(OwnerId), nameof(ProjectId), nameof(NormalizeUpperName), IsUnique = true)]
+[Index(nameof(OwnerId), nameof(ProjectId), nameof(NormalizedUpperName), IsUnique = true)]
 public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneable
 {
     /// <summary>
     /// Нормализованное имя: UPPERCASE
     /// </summary>
     [Required(AllowEmptyStrings = false, ErrorMessage = "Поле наименования обязательно для заполнения")]
-    public required string NormalizeUpperName { get; set; }
+    public required string NormalizedUpperName { get; set; }
 
     /// <summary>
     /// Опрос/анкета
@@ -137,7 +137,7 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneab
         SessionToken = other.SessionToken;
         EmailsNotifications = other.EmailsNotifications;
         Name = other.Name;
-        NormalizeUpperName = other.NormalizeUpperName;
+        NormalizedUpperName = other.NormalizedUpperName;
         Description = other.Description;
         if (other.DataSessionValues is not null)
         {
@@ -174,7 +174,7 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneab
         {
             AuthorUser = AuthorUser,
             Name = Name,
-            NormalizeUpperName = NormalizeUpperName,
+            NormalizedUpperName = NormalizedUpperName,
             ProjectId = ProjectId,
             CreatedAt = CreatedAt,
             DataSessionValues = DataSessionValues,
