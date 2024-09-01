@@ -51,5 +51,9 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<UserInfoModel>?>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<UserInfoModel>?>(GlobalStaticConstants.TransmissionQueues.SelectUsersOfIdentityReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string[]?>> SetRoleForUser(SetRoleFoeUserRequestModel req)
+        => await rabbitClient.MqRemoteCall<string[]?>(GlobalStaticConstants.TransmissionQueues.SetRoleForUserOfIdentityReceive, req);
     #endregion
 }

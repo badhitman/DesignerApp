@@ -1,5 +1,6 @@
 ﻿@page "/help-desk/main-page"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Authorize]
 
 @using BlazorWebLib.Components.Helpdesk
 @using BlazorWebLib.Components.Telegram
@@ -12,33 +13,47 @@
     <MudTabPanel ToolTip="Ваши личные обращения в службу техподдержки" Text="Мои обращения" Icon="@Icons.Material.Filled.AllInbox">
         <MyHelpdeskComponent />
     </MudTabPanel>
+
     <AuthorizeView Roles="@($"{string.Join(",", GlobalStaticConstants.Roles.AllHelpDeskRoles)},{GlobalStaticConstants.Roles.Admin}")">
-        <Authorized>
-            <MudTabPanel ToolTip="Обслуживание входящих обращений" Text="Обращения клиентов" Icon="@Icons.Material.Filled.BugReport">
-                <MudPaper Class="ma-2" Elevation="3">
-                    <HelpdeskJobComponent />
-                </MudPaper>
-            </MudTabPanel>
-        </Authorized>
+        <MudTabPanel ToolTip="Обслуживание входящих обращений" Text="Обращения клиентов" Icon="@Icons.Material.Filled.BugReport">
+            <MudPaper Class="ma-2" Elevation="3">
+                <HelpdeskJobComponent />
+            </MudPaper>
+        </MudTabPanel>
     </AuthorizeView>
-    <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.HelpDeskTelegramBotManager},{GlobalStaticConstants.Roles.Admin}")">
+
+    <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.HelpDeskTelegramBotRubricsManage},{GlobalStaticConstants.Roles.Admin}")">
         <Authorized>
             <MudTabPanel ToolTip="Доска обращений" Text="Консоль" Icon="@Icons.Material.Filled.Apps">
                 <MudPaper Class="ma-2" Elevation="3">
                     <ConsoleHelpdeskComponent />
                 </MudPaper>
             </MudTabPanel>
+        </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.HelpDeskTelegramBotChatsManage},{GlobalStaticConstants.Roles.Admin}")">
+        <Authorized>
             <MudTabPanel ToolTip="TelegramBot чаты" Text="Чаты" Icon="@Icons.Custom.Brands.Telegram">
                 <MudPaper Class="ma-2" Elevation="3">
                     <ChatsTableComponent />
                 </MudPaper>
             </MudTabPanel>
+        </Authorized>
+    </AuthorizeView>
 
+    <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.HelpDeskTelegramBotChatsManage},{GlobalStaticConstants.Roles.Admin}")">
+        <Authorized>
             <MudTabPanel ToolTip="Категории/рубрики обращений" Text="Рубрики" Icon="@Icons.Material.Filled.AccountTree">
                 <MudPaper Class="ma-2" Elevation="3">
                     <RubricsManageComponent />
                 </MudPaper>
             </MudTabPanel>
+        </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
+        <Authorized>
             <MudTabPanel ToolTip="Управление настройками" Text="Инструменты" Icon="@Icons.Material.Filled.Build">
                 <MudPaper Class="ma-2" Elevation="3">
                     <ParametersHelpdeskComponent />

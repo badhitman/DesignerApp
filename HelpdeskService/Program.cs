@@ -73,9 +73,8 @@ builder.ConfigureServices((context, services) =>
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
     //
-    services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>();
-    //
-    services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
+    services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
+    .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
     .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     // 
@@ -111,9 +110,6 @@ using (IServiceScope ss = app.Services.CreateScope())
     if (wc_remote.Response is not null && wc_remote.Success())
         wc_main.Update(wc_remote.Response);
 
-
-
-
 #if DEBUG
 #if DEMO
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory = ss.ServiceProvider.GetRequiredService<IDbContextFactory<HelpdeskContext>>();
@@ -144,8 +140,6 @@ using (IServiceScope ss = app.Services.CreateScope())
         demo_rubrics[1].NestedRubrics = [new() { Name = "ÀËÌËˇ 1", NormalizedNameUpper = "À»Õ»ﬂ 1", ParentRubric = demo_rubrics[1], SortIndex = 1 }, new() { Name = "ÀËÌËˇ 2", NormalizedNameUpper = "À»Õ»ﬂ 2", ParentRubric = demo_rubrics[1], SortIndex = 2 }];
         await context_seed.AddRangeAsync(demo_rubrics);
         await context_seed.SaveChangesAsync();
-
-
     }
 
     if (!await context_seed.Issues.AnyAsync())

@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+<Project Sdk="Microsoft.NET.Sdk.Worker">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<UserSecretsId>dotnet-RemoteCallLib-314EA15B-5B57-4C95-9805-73A2EA269CD7</UserSecretsId>
+		<UserSecretsId>dotnet-CommerceService-76057119-cbe2-4e57-a74a-cd39087c8310</UserSecretsId>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
@@ -20,12 +20,11 @@
 		<PackageReference Include="NLog.Extensions.Logging" Version="5.3.12" />
 		<PackageReference Include="NLog.Web.AspNetCore" Version="5.3.12" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-		<PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\DBContextLibs\DbSqliteLib\DbSqliteLib.csproj" />
+		<ProjectReference Include="..\RemoteCallLib\RemoteCallLib.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -38,11 +37,6 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-		</Content>
-		<Content Update="nlog.config">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-		  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 	</ItemGroup>
 </Project>

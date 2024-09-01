@@ -12,6 +12,11 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Получить `web config` сайта
     /// </summary>
+    public Task<TResponseModel<string[]?>> SetRoleForUser(SetRoleFoeUserRequestModel req);
+
+    /// <summary>
+    /// Получить `web config` сайта
+    /// </summary>
     public Task<TResponseModel<WebConfigModel?>> GetWebConfig();
 
     /// <summary>

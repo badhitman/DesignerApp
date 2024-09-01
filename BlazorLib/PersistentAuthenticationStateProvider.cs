@@ -45,7 +45,7 @@ public class PersistentAuthenticationStateProvider : AuthenticationStateProvider
             new Claim(GlobalStaticConstants.TelegramIdClaimName, userInfo.TelegramId.ToString() ?? ""),
             ];
 
-        if (userInfo.Roles is not null && userInfo.Roles.Length != 0)
+        if (userInfo.Roles is not null && userInfo.Roles.Count != 0)
             claims.AddRange(userInfo.Roles.Select(x => new Claim(ClaimTypes.Role, x)));
 
         if (userInfo.Claims is not null && userInfo.Claims.Length != 0)

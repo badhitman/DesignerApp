@@ -37,7 +37,7 @@ public class UserInfoMainModel
     /// <summary>
     /// Роли пользователя
     /// </summary>
-    public string[]? Roles { get; set; }
+    public List<string>? Roles { get; set; }
 
     /// <summary>
     /// Claims
@@ -47,7 +47,7 @@ public class UserInfoMainModel
     /// <summary>
     /// Роли пользователя в виде одной строки
     /// </summary>
-    public string RolesAsString(string separator) => Roles is null || Roles.Length == 0 ? string.Empty : $"{string.Join(separator, Roles.Select(i => $"[{i}]"))}{separator}".Trim();
+    public string RolesAsString(string separator) => Roles is null || Roles.Count == 0 ? string.Empty : $"{string.Join(separator, Roles.Select(i => $"[{i}]"))}{separator}".Trim();
 
     /// <summary>
     /// Claims

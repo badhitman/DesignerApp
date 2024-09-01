@@ -57,7 +57,7 @@ public class UserInfoModel : UserInfoMainModel
             LockoutEnd = lockoutEnd,
             LockoutEnabled = lockoutEnabled,
             AccessFailedCount = accessFailedCount,
-            Roles = roles,
+            Roles = [..roles],
             Claims = claims
         };
 

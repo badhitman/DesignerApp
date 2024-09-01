@@ -99,7 +99,7 @@ public sealed class PersistingRevalidatingAuthenticationStateProvider(ILoggerFac
                     UserId = userId,
                     UserName = userName,
                     Email = email,
-                    Roles = roles,
+                    Roles = [..roles],
                     Claims = claims,
                     TelegramId = telegram_id,
                 });

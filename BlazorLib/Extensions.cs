@@ -36,7 +36,7 @@ public static class Extensions
             TelegramId = telegram_id,
             Surname = surName,
             UserName = userName,
-            Roles = roles,
+            Roles = [..roles],
             GivenName = givenName,
             Claims = [.. principal.Claims.Where(x => x.Type != ClaimTypes.Role).Select(x => new EntryAltModel() { Id = x.Type, Name = x.Value })],
         };

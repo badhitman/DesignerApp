@@ -1,0 +1,27 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<span @onclick="() => IsShow = !IsShow" style="cursor:pointer;" class="badge rounded-pill text-bg-primary">HelpDesk Access</span>
+
+@if (IsShow)
+{
+    <div class="offcanvas offcanvas-end show" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasRightLabel">@User.Email</h5>
+            <button @onclick="() => IsShow = false" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-group list-group-flush">
+                @foreach (string role in RolesManageKit)
+                {
+                    <li class="list-group-item">
+                        <div class="form-check form-switch">
+                            <input @onchange="(e) => ChangeUserRole(e, role)" checked="@(IsChecked(role))" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">@RoleDescription(role)</label>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div @onclick="() => IsShow = false" class="offcanvas-backdrop fade show"></div>
+}

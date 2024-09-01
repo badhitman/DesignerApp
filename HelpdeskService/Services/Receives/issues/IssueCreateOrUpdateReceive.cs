@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
-using System.Xml.Linq;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -17,7 +16,7 @@ public class IssueCreateOrUpdateReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IHelpdeskRemoteTransmissionService helpdeskRemoteRepo,
     ITelegramRemoteTransmissionService telegramRemoteRepo,
-    ISerializeStorageRemoteTransmissionService SerializeStorageRepo,
+    ISerializeStorageRemoteTransmissionService StorageRepo,
     IWebRemoteTransmissionService webTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<IssueUpdateRequestModel>?, int>
 {
@@ -30,11 +29,11 @@ public class IssueCreateOrUpdateReceive(
         ArgumentNullException.ThrowIfNull(issue_upd);
         TResponseModel<int> res = new() { Response = 0 };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([issue_upd.SenderActionUserId]);
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
+        TResponseModel<UserInfoModel[]?> users_rest = await webTransmissionRepo.GetUsersIdentity([issue_upd.SenderActionUserId]);
+        if (!users_rest.Success() || users_rest.Response is null || users_rest.Response.Length != 1)
+            return new() { Messages = users_rest.Messages };
 
-        UserInfoModel actor = rest.Response[0];
+        UserInfoModel actor = users_rest.Response.First(x => x.UserId == issue_upd.SenderActionUserId);
 
         issue_upd.Payload.Description = issue_upd.Payload.Description?.Trim();
         string? normalizedDescriptionUpper = issue_upd.Payload.Description?.ToUpper();
@@ -47,7 +46,7 @@ public class IssueCreateOrUpdateReceive(
         string msg;
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
+        TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await StorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         ModesSelectRubricsEnum _current_mode_rubric = res_ModeSelectingRubrics.Response ?? ModesSelectRubricsEnum.AllowWithoutRubric;
         string[] sub_rubrics = await context
             .RubricsForIssues
@@ -111,7 +110,16 @@ public class IssueCreateOrUpdateReceive(
                 }
             });
 
-
+            TResponseModel<long?> helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(GlobalStaticConstants.CloudStorageMetadata.HelpdeskNotificationTelegramForCreateIssue);
+            if (helpdesk_user_redirect_telegram_for_issue_rest.Success() && helpdesk_user_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_user_redirect_telegram_for_issue_rest.Response != 0)
+            {
+                await telegramRemoteRepo.SendTextMessageTelegram(new()
+                {
+                    Message = $"Создана новая заявка: #{issue.Id} {issue.Name}. Автор: {actor}",
+                    From = "уведомление",
+                    UserTelegramId = helpdesk_user_redirect_telegram_for_issue_rest.Response.Value,
+                });
+            }
         }
         else
         {

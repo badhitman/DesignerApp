@@ -17,3 +17,8 @@ Update-Database -Context HelpdeskContext -Project DbSqliteLib -StartupProject He
 Add-Migration MainTelegramBotContext001 -Context TelegramBotContext -Project DbSqliteLib -StartupProject Telegram.Bot.Polling
 Update-Database -Context TelegramBotContext -Project DbSqliteLib -StartupProject Telegram.Bot.Polling
 ```
+
+```
+Add-Migration MainCommerceContext001 -Context CommerceContext -Project DbSqliteLib -StartupProject CommerceService
+Update-Database -Context CommerceContext -Project DbSqliteLib -StartupProject CommerceService
+```

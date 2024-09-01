@@ -149,6 +149,9 @@ public static partial class GlobalStaticConstants
         public readonly static string SelectUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string SetRoleForUserOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, Routes.SET_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string FindUsersOfIdentityByTelegramIdsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.FIND_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}");
 
         /// <inheritdoc/>
@@ -457,6 +460,11 @@ public static partial class GlobalStaticConstants
         public const string USER_CONTROLLER_NAME = "user";
 
         /// <summary>
+        /// Role
+        /// </summary>
+        public const string ROLE_CONTROLLER_NAME = "role";
+
+        /// <summary>
         /// Console
         /// </summary>
         public const string CONSOLE_CONTROLLER_NAME = "console";
@@ -683,18 +691,28 @@ public static partial class GlobalStaticConstants
         {
             get
             {
-                _allHelpDeskRoles ??= [HelpDeskTelegramBotManager, HelpDeskTelegramBotUnit];
+                _allHelpDeskRoles ??= [HelpDeskTelegramBotManager, HelpDeskTelegramBotUnit, HelpDeskTelegramBotRubricsManage, HelpDeskTelegramBotChatsManage];
                 return _allHelpDeskRoles;
             }
         }
 
         /// <summary>
-        /// HelpDeskTelegramBotManager
+        /// Рубрики + <see cref="HelpDeskTelegramBotUnit"/> (таблица заявок клиентов связанных с текущим сотрудником)
+        /// </summary>
+        public const string HelpDeskTelegramBotRubricsManage = "HelpDeskTelegramBotRubricsManage";
+
+        /// <summary>
+        /// Чаты + <see cref="HelpDeskTelegramBotUnit"/> (таблица заявок клиентов связанных с текущим сотрудником)
+        /// </summary>
+        public const string HelpDeskTelegramBotChatsManage = "HelpDeskTelegramBotChatsManage";
+
+        /// <summary>
+        /// Консоль + <see cref="HelpDeskTelegramBotUnit"/> (таблица заявок клиентов связанных с текущим сотрудником)
         /// </summary>
         public const string HelpDeskTelegramBotManager = "HelpDeskTelegramBotManager";
 
         /// <summary>
-        /// HelpDeskTelegramBotUnit
+        /// Таблица заявок клиентов связанных с текущим сотрудником
         /// </summary>
         public const string HelpDeskTelegramBotUnit = "HelpDeskTelegramBotUnit";
         #endregion

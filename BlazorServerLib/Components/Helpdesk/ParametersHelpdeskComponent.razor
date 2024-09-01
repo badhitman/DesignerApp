@@ -1,4 +1,5 @@
 ﻿@using BlazorWebLib.Components.Telegram
+@using BlazorWebLib.Components.Users
 @using MudBlazor
 
 @inherits BlazorBusyComponentBaseModel
@@ -20,5 +21,8 @@
     </MudTabPanel>
     <MudTabPanel Text="Telegram">
         <TelegramConfigComponent />
+    </MudTabPanel>
+    <MudTabPanel ToolTip="Права пользователей" Text="Доступ">
+        <UsersTableComponent HideClaimsColumn="true" HideRolesColumn="true" RolesManageKit="@GlobalStaticConstants.Roles.AllHelpDeskRoles" />
     </MudTabPanel>
 </MudTabs>
