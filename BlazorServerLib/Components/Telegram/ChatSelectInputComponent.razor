@@ -1,7 +1,7 @@
 ﻿@inherits LazySelectorComponent<ChatTelegramModelDB>
 
 <div id="@toggleBtnId" class="input-group mb-3">
-    <button @onclick="EditToggle" class="btn btn-outline-secondary dropdown-toggle @ShowIfEditing" type="button" data-bs-toggle="dropdown" data-meta="@yToggleBtn" aria-expanded="@IsEditing">Изменить</button>
+    <button disabled="@(IsBusyProgress)" @onclick="EditToggle" class="btn btn-outline-secondary dropdown-toggle @ShowIfEditing" type="button" data-bs-toggle="dropdown" data-meta="@yToggleBtn" aria-expanded="@IsEditing">Изменить</button>
     <ul class="chat-selector-input dropdown-menu @ShowIfEditing" id="@dropdownId" style="@StyleIfEditing" data-meta="@HeightDropdown">
         <i title="Отмена (закрыть меню выбора)" @onclick="EditToggle" class="bi bi-x-lg position-absolute top-0 end-0" style="cursor:pointer;"></i>
         @foreach (ChatTelegramModelDB ch in LoadedData)
@@ -14,5 +14,5 @@
             <li @onclick="LoadPartData"><span class="dropdown-item">Загрузить ещё</span></li>
         }
     </ul>
-    <input title="@(IsEditing ? "Введите текст запроса для поиска чата" : "")" @bind-value="SelectedValueText" @bind-value:event="oninput" readonly="@(!IsEditing)" type="text" class="form-control" placeholder="@(IsEditing ? "Поиск по чатам" : "")" aria-label="Text input with dropdown button">
+    <input disabled="@(IsBusyProgress)" title="@(IsEditing ? "Введите текст запроса для поиска чата" : "")" @bind-value="SelectedValueText" @bind-value:event="oninput" readonly="@(!IsEditing)" type="text" class="form-control" placeholder="@(IsEditing ? "Поиск по чатам" : "")" aria-label="Text input with dropdown button">
 </div>

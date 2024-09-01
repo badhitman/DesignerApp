@@ -98,6 +98,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
             Issues.Clear();
             _luf = UserFilter;
             await LoadData();
+            StateHasChanged();
         }
     }
 

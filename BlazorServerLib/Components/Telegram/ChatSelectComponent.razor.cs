@@ -20,30 +20,17 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
-
-    /// <summary>
-    /// ApplicationName
-    /// </summary>
-    [Parameter, EditorRequired]
-    public required string ApplicationName { get; set; }
-
-    /// <summary>
-    /// Name
-    /// </summary>
-    [Parameter, EditorRequired]
-    public required string Name { get; set; }
-
-    /// <summary>
-    /// PrefixPropertyName
-    /// </summary>
-    [Parameter]
-    public string? PrefixPropertyName { get; set; }
-
     /// <summary>
     /// Card title
     /// </summary>
     [Parameter, EditorRequired]
     public required string Title { get; set; }
+
+    /// <summary>
+    /// KeyStorage
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required StorageCloudParameterModel KeyStorage {  get; set; }
 
     /// <summary>
     /// CArd subtitle
@@ -70,13 +57,6 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     public ChatTelegramModelDB? SelectedChat;
 
     long initValue;
-
-    StorageCloudParameterModel KeyStorage => new()
-    {
-        ApplicationName = ApplicationName,
-        Name = Name,
-        PrefixPropertyName = PrefixPropertyName,
-    };
 
     double heightCard;
     void SetHeightCard(double set_h)

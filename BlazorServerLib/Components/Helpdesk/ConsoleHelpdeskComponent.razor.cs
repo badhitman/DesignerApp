@@ -35,6 +35,9 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
 
     async void SelectUserHandler(UserInfoModel? selected)
     {
+        if (string.IsNullOrWhiteSpace(FilterUserId) && string.IsNullOrWhiteSpace(selected?.UserId) || FilterUserId == selected?.UserId)
+            return;
+
         FilterUserId = selected?.UserId;
         stepNum = 0;
 
@@ -42,6 +45,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         TResponseModel<int> res = await storageRepo.SaveParameter(FilterUserId, CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId));
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
+        StateHasChanged();
     }
 
     StorageCloudParameterModel KeyStorageSizeColumns => new()

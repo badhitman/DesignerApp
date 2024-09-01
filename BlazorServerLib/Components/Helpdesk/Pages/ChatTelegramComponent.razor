@@ -56,7 +56,7 @@ else
             <CreateIssueComponent Update="Update" UserIdentityId="@CurrentUser!.UserIdentityId" />
         </MudTabPanel>
         <MudTabPanel Disabled="@(CurrentUser is null)" Text="Настройки">
-            <ChatSettingsHelpdeskComponent />
+            <ChatSettingsHelpdeskComponent Chat="Chat" />
         </MudTabPanel>
     </MudTabs>
 }

@@ -13,7 +13,7 @@ namespace Transmission.Receives.web;
 /// SelectUsersOfIdentityReceive
 /// </summary>
 public class SelectUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SimpleBaseRequestModel>?, TPaginationResponseModel<UserInfoModel?>>
+    : IResponseReceive<TPaginationRequestModel<SimpleBaseRequestModel>?, TPaginationResponseModel<UserInfoModel?>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SelectUsersOfIdentityReceive;

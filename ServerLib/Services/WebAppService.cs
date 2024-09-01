@@ -52,6 +52,11 @@ public class WebAppService(
 
                 UserName = $"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}",
                 NormalizedUserName = userManager.NormalizeEmail($"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}"),
+
+                FirstName = user.FirstName,
+                NormalizedFirstNameUpper = user.FirstName.ToUpper(),
+                LastName = user.LastName,
+                NormalizedLastNameUpper = user.LastName?.ToUpper(),
             };
 
             await identityContext.AddAsync(app_user);
@@ -73,6 +78,11 @@ public class WebAppService(
 
             tgUserDb.Username = user.Username ?? "";
             tgUserDb.NormalizedUserNameUpper = user.Username?.ToUpper();
+
+            tgUserDb.FirstName = user.FirstName;
+            tgUserDb.NormalizedFirstNameUpper = user.FirstName.ToUpper();
+            tgUserDb.LastName = user.LastName;
+            tgUserDb.NormalizedLastNameUpper = user.LastName?.ToUpper();
 
             tgUserDb.TelegramId = user.TelegramUserId;
             tgUserDb.IsBot = user.IsBot;

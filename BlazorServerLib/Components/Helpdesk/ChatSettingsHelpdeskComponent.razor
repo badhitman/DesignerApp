@@ -7,14 +7,12 @@
             <li class="list-group-item my-2">
                 <h6 class="card-subtitle mb-2 text-body-secondary">Маршрутизация входящих сообщений</h6>
                 <ChatSelectComponent Title="Переадресация Telegram сообщений для клиента"
-                                     ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
-                                     Name="@($"{GlobalStaticConstants.Routes.USER_CONTROLLER_NAME}")"
-                                     PrefixPropertyName="@GlobalStaticConstants.Routes.GLOBAL_CONTROLLER_NAME"
+                                     KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HelpdeskNotificationsTelegramForUser(Chat.ChatTelegramId)"
                                      Hint="Правило для всех входящих сообщений в бота, которые будут поступать от клиента. Команды и CallbackQuery не переадресовываются!" />
             </li>
             <li class="list-group-item my-2">
                 <h6 class="card-subtitle mb-2 text-body-secondary">Состояние службы</h6>
-                <ErrorMessageTelegramBotComponent ChatId="user.TelegramId" />
+                <ErrorMessageTelegramBotComponent ChatId="Chat.ChatTelegramId" />
                 <div class="form-text">
                     Если бота удалят, заблокируют в чате, тогда его попытки отправить туда сообщение будут завершаться ошибкой.
                 </div>
@@ -24,15 +22,6 @@
 </div>
 
 @code {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-
-    UserInfoMainModel user = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-    }
+    [Parameter, EditorRequired]
+    public required ChatTelegramModelDB Chat { get; set; }
 }

@@ -24,8 +24,6 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
     public string? SelectedUser { get; set; }
 
 
-    bool IsEditMode;
-
     /// <inheritdoc/>
     public override async Task LoadPartData()
     {
@@ -33,7 +31,7 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
         TResponseModel<TPaginationResponseModel<UserInfoModel>?> rest = await WebRepo
             .SelectUsersOfIdentity(new()
             {
-                Payload = new() { SearchQuery = SelectedUser },
+                Payload = new() { SearchQuery = _selectedValueText },
                 PageNum = PageNum,
                 PageSize = page_size,
             });

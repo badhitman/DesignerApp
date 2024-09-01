@@ -155,7 +155,8 @@ builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUser
     .RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModel>()
     .RegisterMqListener<GetUsersOfIdentityReceive, string[], UserInfoModel[]>()
     .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, bool>()
-    .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], UserInfoModel[]>();
+    .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], UserInfoModel[]>()
+    .RegisterMqListener<SelectUsersOfIdentityReceive, TPaginationRequestModel<SimpleBaseRequestModel>, TPaginationResponseModel<UserInfoModel?>>();
 #endregion
 
 WebApplication app = builder.Build();

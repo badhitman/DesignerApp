@@ -64,44 +64,73 @@ public static partial class GlobalStaticConstants
     /// </summary>
     public static class CloudStorageMetadata
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// Отображение отключёных рубрик
+        /// </summary>
         public static StorageCloudParameterModel ParameterShowDisabledRubrics => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.SHOW_ACTION_NAME}-{Routes.DISABLED_CONTROLLER_NAME}"),
         };
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Режим выбора рубрик в заявках
+        /// </summary>
         public static StorageCloudParameterModel ModeSelectingRubrics => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"),
         };
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Включение командного режима боту
+        /// </summary>
         public static StorageCloudParameterModel ParameterIsCommandModeTelegramBot => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.TELEGRAM_CONTROLLER_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.MODE_CONTROLLER_NAME),
         };
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Уведомления Telegram о созданных заявках
+        /// </summary>
+        public static StorageCloudParameterModel HelpdeskNotificationTelegramForCreateIssue => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}",
+            PrefixPropertyName = $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
+        };
+
+        /// <summary>
+        /// Настройка пересылки входящих сообщений в TelegramBot: глобально для пользователей на которых нет персональных подписок
+        /// </summary>
+        public static StorageCloudParameterModel HelpdeskNotificationTelegramGlobalForIncomingMessage => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.GLOBAL_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// Фильтр консоли по пользователю
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <returns></returns>
         public static StorageCloudParameterModel ConsoleFilterForUser(string user_id) => new()
         {
             ApplicationName = Path.Combine(Routes.HELPDESK_CONTROLLER_NAME, Routes.CONSOLE_CONTROLLER_NAME),
             Name = Path.Combine(Routes.FILTER_CONTROLLER_NAME, user_id),
         };
 
-        /*
-         
-    StorageCloudParameterModel KeyStorageFilterUser => new()
-    {
-        ApplicationName = GlobalStaticConstants.Routes.CONSOLE_CONTROLLER_NAME,
-        Name = GlobalStaticConstants.Routes.SIZE_CONTROLLER_NAME,
-        PrefixPropertyName = CurrentUser.UserId,
-    };
-
-         */
+        /// <summary>
+        /// Переадресация для пользователя
+        /// </summary>
+        public static StorageCloudParameterModel HelpdeskNotificationsTelegramForUser(long chat_id) => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}/{Routes.USER_CONTROLLER_NAME}",
+            PrefixPropertyName = $"{chat_id}",
+        };
     }
 
     /// <summary>
@@ -112,7 +141,7 @@ public static partial class GlobalStaticConstants
         #region Web
         /// <inheritdoc/>
         public readonly static string FindUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
-        
+
         /// <inheritdoc/>
         public readonly static string GetUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.GET_ACTION_NAME);
 

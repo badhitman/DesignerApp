@@ -80,14 +80,7 @@ public class TelegramMessageIncomingReceive(
             }
         }
 
-        StorageCloudParameterModel key_storage = new()
-        {
-            ApplicationName = GlobalStaticConstants.HelpdeskNotificationsTelegramAppName,
-            Name = GlobalStaticConstants.Routes.USER_CONTROLLER_NAME,
-            PrefixPropertyName = req.User.UserIdentityId,
-        };
-
-        TResponseModel<long?> helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(key_storage);
+        TResponseModel<long?> helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(GlobalStaticConstants.CloudStorageMetadata.HelpdeskNotificationsTelegramForUser(req.From!.UserTelegramId));
         if (helpdesk_user_redirect_telegram_for_issue_rest.Success() && helpdesk_user_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_user_redirect_telegram_for_issue_rest.Response != 0)
         {
             TResponseModel<MessageComplexIdsModel?> forward_res = await tgRepo.ForwardMessage(new()
@@ -115,14 +108,7 @@ public class TelegramMessageIncomingReceive(
                 res.AddRangeMessages(forward_res.Messages);
         }
 
-        key_storage = new()
-        {
-            ApplicationName = GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME,
-            Name = $"{GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.NOTIFICATIONS_CONTROLLER_NAME}",
-            PrefixPropertyName = GlobalStaticConstants.Routes.GLOBAL_CONTROLLER_NAME,
-        };
-
-        helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(key_storage);
+        helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(GlobalStaticConstants.CloudStorageMetadata.HelpdeskNotificationTelegramGlobalForIncomingMessage);
         if (helpdesk_user_redirect_telegram_for_issue_rest.Success() && helpdesk_user_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_user_redirect_telegram_for_issue_rest.Response != 0)
         {
             TResponseModel<MessageComplexIdsModel?> forward_res = await tgRepo.ForwardMessage(new()

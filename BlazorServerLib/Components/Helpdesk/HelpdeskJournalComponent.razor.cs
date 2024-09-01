@@ -73,14 +73,9 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     public MudTable<IssueHelpdeskModel> TableRef = default!;
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        SetTab(this);
-    }
-
-    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        SetTab(this);
         IsBusyProgress = true;
 
         if(string.IsNullOrWhiteSpace(UserIdentityId))

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using System.Xml.Linq;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -15,6 +16,7 @@ namespace Transmission.Receives.helpdesk;
 public class IssueCreateOrUpdateReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IHelpdeskRemoteTransmissionService helpdeskRemoteRepo,
+    ITelegramRemoteTransmissionService telegramRemoteRepo,
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo,
     IWebRemoteTransmissionService webTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<IssueUpdateRequestModel>?, int>
@@ -108,6 +110,8 @@ public class IssueCreateOrUpdateReceive(
                     IssueId = issue.Id
                 }
             });
+
+
         }
         else
         {
