@@ -13,7 +13,7 @@ namespace SharedLib;
 public class EntrySwitchableUpdatedModel : EntrySwitchableModel
 {
     /// <summary>
-    /// LastUpdatedAt
+    /// Дата последнего обновления
     /// </summary>
-    public DateTime LastUpdatedAt { get; set; }
+    public DateTime LastAtUpdatedUTC { get; set; }
 }

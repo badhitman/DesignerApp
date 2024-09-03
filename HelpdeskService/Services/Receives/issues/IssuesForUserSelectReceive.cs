@@ -2,15 +2,15 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// GetIssuesForUser
+/// IssuesForUserSelectReceive
 /// </summary>
 public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
     : IResponseReceive<TPaginationRequestModel<GetIssuesForUserRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>

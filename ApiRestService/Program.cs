@@ -64,8 +64,7 @@ builder.Services
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
     .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
     .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
-    .AddScoped<ICommerceRemoteTransmissionService, CommerceRemoteTransmissionService>()
-    .AddScoped<ICommerceRemoteTransmissionService, CommerceRemoteTransmissionService>()
+    .AddScoped<ICommerceRemoteTransmissionService, TransmissionCommerceService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
 #endregion
 

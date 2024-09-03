@@ -1,0 +1,9 @@
+﻿@page "/order-document/{DocumentId}"
+
+@inherits BlazorBusyComponentBaseModel
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Authorize]
+
+<h3>Заказ</h3>
+

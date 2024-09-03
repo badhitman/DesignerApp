@@ -214,6 +214,19 @@ public static partial class GlobalStaticConstants
         public readonly static string SetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.EDIT_ACTION_NAME);
         #endregion
 
+        #region Commerce
+
+        /// <inheritdoc/>
+        public readonly static string OrganizationsSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string OrganizationsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATION_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string OrganizationUpdateOrCreateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
+        #endregion
+
         #region Helpdesk
         /// <inheritdoc/>
         public readonly static string RubricForIssuesUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.RUBRIC_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
@@ -373,6 +386,21 @@ public static partial class GlobalStaticConstants
         /// Helpdesk
         /// </summary>
         public const string HELPDESK_CONTROLLER_NAME = "helpdesk";
+
+        /// <summary>
+        /// Commerce
+        /// </summary>
+        public const string COMMERCE_CONTROLLER_NAME = "commerce";
+
+        /// <summary>
+        /// Organization
+        /// </summary>
+        public const string ORGANIZATION_CONTROLLER_NAME = "organization";
+
+        /// <summary>
+        /// Organizations
+        /// </summary>
+        public const string ORGANIZATIONS_CONTROLLER_NAME = "organizations";
 
         /// <summary>
         /// Storage

@@ -9,6 +9,7 @@ using SharedLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
+using Transmission.Receives.commerce;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -78,9 +79,9 @@ builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService
 .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
 .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
 //
-//  builder.Services.RegisterMqListener<RubricsListReceive, TProjectedRequestModel<int>?, RubricIssueHelpdeskLowModel[]?>()
-//
-
+builder.Services.RegisterMqListener<OrganizationUpdateReceive, OrganizationModelDB?, int?>();
+builder.Services.RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>();
+builder.Services.RegisterMqListener<OrganizationsReadReceive, int[]?, OrganizationModelDB[]?>();
 #endregion
 
 IHost host = builder.Build();

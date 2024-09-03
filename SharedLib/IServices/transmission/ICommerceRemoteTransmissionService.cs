@@ -9,5 +9,18 @@ namespace SharedLib;
 /// </summary>
 public interface ICommerceRemoteTransmissionService
 {
-    
+    /// <summary>
+    /// OrganizationsSelect
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>?>> OrganizationsSelect(TPaginationRequestModel<OrganizationsSelectRequestModel> req);
+
+    /// <summary>
+    /// OrganizationUpdate
+    /// </summary>
+    public Task<TResponseModel<int?>> OrganizationUpdate(OrganizationModelDB org);
+
+    /// <summary>
+    /// OrganizationsRead
+    /// </summary>
+    public Task<TResponseModel<OrganizationModelDB[]?>> OrganizationsRead(int[] org);
 }
