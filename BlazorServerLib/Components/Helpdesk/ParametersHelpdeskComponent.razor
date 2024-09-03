@@ -10,6 +10,17 @@
     <MudTabPanel Text="Рубрики">
         <RubricsParametersComponent />
     </MudTabPanel>
+    <MudTabPanel ToolTip="Регионы, районы, города" Text="Адреса" Icon="@Icons.Material.Filled.LocationCity">
+        <MudPaper Class="ma-2" Elevation="3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Регионы, районы, города (населённые пункты)</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Улицу, дом и далее заполняется в конце отдельно</h6>
+                    <RubricsManageComponent ContextName="@GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME" />
+                </div>
+            </div>
+        </MudPaper>
+    </MudTabPanel>
     <MudTabPanel Text="HelpDesk">
         <ChatSelectComponent Title="Переадресация Telegram сообщений (глобально)"
                              Subtitle="Для клиентов, на которых ни кто не подписан"

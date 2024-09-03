@@ -19,6 +19,13 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
 
+    /// <summary>
+    /// Имя контекста
+    /// </summary>
+    [Parameter]
+    public string? ContextName { get; set; }
+
+
     List<TreeItemDataRubricModel> InitialTreeItems { get; set; } = [];
 
     static List<TreeItemData<RubricIssueHelpdeskLowModel?>> ConvertRubrics(IEnumerable<RubricIssueHelpdeskLowModel> rubrics)
@@ -125,7 +132,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     async Task<List<RubricIssueHelpdeskLowModel>> RequestRubrics(int? parent_id = null)
     {
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0 });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null)

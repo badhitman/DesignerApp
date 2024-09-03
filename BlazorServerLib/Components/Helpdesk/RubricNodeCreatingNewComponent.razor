@@ -4,7 +4,7 @@
 
 <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%" class="@(ItemModel?.IsDisabled == true ? "text-decoration-line-through opacity-25": "")">
     <MudStack Row="true">
-        <span class="font-monospace">Создать новую рубрику</span>
+        <span class="font-monospace">Создать новый элемент</span>
     </MudStack>
     <div style="justify-self: end;">
         @if (ItemModel?.IsDisabled == true)
@@ -17,7 +17,7 @@
         {
             <div class="row">
                 <div class="col-auto">
-                    <input autocomplete="off" title="" @bind-value="rubricName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(rubricName) ? " border border-warning-subtle" : "")" placeholder="имя новой категории">
+                    <input autocomplete="off" title="" @bind-value="rubricName" @bind-value:event="oninput" type="text" class="form-control form-control-sm@(string.IsNullOrWhiteSpace(rubricName) ? " border border-warning-subtle" : "")" placeholder="имя нового элемента">
                 </div>
                 <div class="col-auto">
                     <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">

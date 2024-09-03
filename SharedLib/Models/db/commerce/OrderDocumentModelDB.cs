@@ -10,6 +10,19 @@ namespace SharedLib;
 public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
+    /// IdentityUserId
+    /// </summary>
+    public required string AuthorIdentityUserId { get; set; }
+
+    /// <summary>
+    /// Заявка, связанная с заказом.
+    /// </summary>
+    /// <remarks>
+    /// До тех пор пока не указана заявка этот заказ всего лишь [Корзина]
+    /// </remarks>
+    public int? HelpdeskId { get; set; }
+
+    /// <summary>
     /// Строки заказа
     /// </summary>
     public List<RowOfOrderDocumentModelDB>? Rows { get; set; }

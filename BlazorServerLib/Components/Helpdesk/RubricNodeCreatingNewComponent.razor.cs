@@ -33,6 +33,12 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
     [CascadingParameter, EditorRequired]
     public required TreeItemData<RubricIssueHelpdeskLowModel> Item { get; set; }
 
+    /// <summary>
+    /// Имя контекста
+    /// </summary>
+    [Parameter]
+    public string? ContextName { get; set; }
+
 
     RubricIssueHelpdeskLowModel ItemModel = default!;
 
@@ -49,7 +55,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
             throw new Exception();
 
         IsBusyProgress = true;
-        TResponseModel<int?> rest = await HelpdeskRepo.RubricCreateOrUpdate(new() { Name = rubricName, ParentRubricId = ItemModel.ParentRubricId > 0 ? ItemModel.ParentRubricId : null });
+        TResponseModel<int?> rest = await HelpdeskRepo.RubricCreateOrUpdate(new() { Name = rubricName, ParentRubricId = ItemModel.ParentRubricId > 0 ? ItemModel.ParentRubricId : null, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
@@ -59,6 +65,11 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        ItemModel = new RubricIssueHelpdeskBaseModelDB() { Name = "", ParentRubricId = Item.Value?.ParentRubricId };
+        ItemModel = new RubricIssueHelpdeskBaseModelDB()
+        {
+            Name = "",
+            ParentRubricId = Item.Value?.ParentRubricId,
+            ContextName = ContextName,
+        };
     }
 }
