@@ -54,6 +54,7 @@ builder.Services
 ;
 builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
+builder.Services.AddAuthorization();
 
 // Add services to the container.
 #region MQ Transmission (remote methods call)
@@ -97,17 +98,33 @@ builder.Services.AddSwaggerGenNewtonsoftSupport();
 
 WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.SwaggerEndpoint("v1/swagger.json", "tools - Rest/API");
+
+    options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+});
+
+app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseForwardedHeaders();
+app.MapControllers();
+#if DEBUG
+app.UseDeveloperExceptionPage();
+#else
+app.UseExceptionHandler("/Error");
+#endif
+
+app.UseAuthentication();
+app.UseWhen(context =>
+{
+    return context.Request.Path.Value?.StartsWith("/api") ?? false;
+}, appBuilder =>
+{
+    app.UseMiddleware<PassageMiddleware>();
+});
 
 app.UseAuthorization();
-
-app.MapControllers();
-
 app.Run();
 
 static string GetXmlCommentsPath()
