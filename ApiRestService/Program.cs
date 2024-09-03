@@ -2,19 +2,20 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using ApiRestService;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
 using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
-using SharedLib;
-using Microsoft.EntityFrameworkCore;
-using DbcLib;
 using RemoteCallLib;
+using SharedLib;
+using System.Reflection;
 
-// Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("init main");
-HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder
     .Logging
     .ClearProviders()
@@ -22,7 +23,6 @@ builder
 
 string curr_dir = Directory.GetCurrentDirectory();
 builder.Configuration.SetBasePath(curr_dir);
-
 
 builder.Configuration.SetBasePath(curr_dir);
 if (Path.Exists(Path.Combine(curr_dir, "appsettings.json")))
@@ -52,22 +52,10 @@ builder.Configuration.AddCommandLine(args);
 builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
 ;
-
-builder.Services.AddSingleton<WebConfigModel>();
 builder.Services.AddOptions();
-
-string connectionIdentityString = builder.Configuration.GetConnectionString("CommerceConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
-builder.Services.AddDbContextFactory<CommerceContext>(opt =>
-{
-    opt.UseSqlite(connectionIdentityString);
-
-#if DEBUG
-    opt.EnableSensitiveDataLogging(true);
-#endif
-});
-
 builder.Services.AddMemoryCache();
 
+// Add services to the container.
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
@@ -82,6 +70,49 @@ builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService
 //  
 #endregion
 
-IHost host = builder.Build();
+builder.Services
+    .AddControllers(options => options.Filters.Add(typeof(LoggerActionFilter)))
+    .AddNewtonsoftJson(options => { options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore; options.SerializerSettings.Converters.Add(new StringEnumConverter() { }); });
 
-host.Run();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(options =>
+          {
+              options.SwaggerDoc("v1", new OpenApiInfo
+              {
+                  Version = "v1",
+                  Title = "tools - Rest/API",
+                  Contact = new OpenApiContact { Email = "ru.usa@mail.ru" }
+              });
+
+              options.UseInlineDefinitionsForEnums();
+              options.IncludeXmlComments(GetXmlCommentsPath(), includeControllerXmlComments: true);
+
+              string commentsFileName = nameof(SharedLib) + ".xml";
+              string baseDirectory = AppContext.BaseDirectory;
+              options.IncludeXmlComments(Path.Combine(baseDirectory, commentsFileName), includeControllerXmlComments: true);
+          });
+builder.Services.AddSwaggerGenNewtonsoftSupport();
+
+WebApplication app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
+
+static string GetXmlCommentsPath()
+{
+    string baseDirectory = AppContext.BaseDirectory;
+    string commentsFileName = Assembly.GetEntryAssembly()!.GetName().Name + ".xml";
+    return Path.Combine(baseDirectory, commentsFileName);
+}

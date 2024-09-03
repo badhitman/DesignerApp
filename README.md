@@ -31,6 +31,8 @@ note for DbSqliteLib "Если используется другая СУБД, �
     IdentityLib <|-- ServerLib
     DbSqliteLib <|-- ServerLib
     RemoteCallLib <|-- ServerLib
+    RemoteCallLib <|-- CommerceService
+    RemoteCallLib <|-- ApiRestService
     CodegeneratorLib <|-- BlazorLib
     HtmlGenerator <|-- CodegeneratorLib
     DbLayerLib <|-- DbSqliteLib
@@ -90,6 +92,12 @@ note for DbSqliteLib "Если используется другая СУБД, �
         SSR Blazor Server
     }
     class HelpdeskService{
+        +Микросервис        
+    }
+    class CommerceService{
+        +Микросервис        
+    }
+    class ApiRestService{
         +Микросервис        
     }
 ```

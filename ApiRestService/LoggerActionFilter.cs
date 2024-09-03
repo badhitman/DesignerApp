@@ -7,7 +7,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using SharedLib;
 
-namespace ServerLib;
+namespace ApiRestService;
 
 /// <summary>
 /// 
@@ -39,22 +39,7 @@ public class LoggerActionFilter : IActionFilter
 
         JsonSerializerSettings jss = new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
 
-        // Добавляем обрезание "больших" значений
-        if (cad?.MethodInfo.IsDefined(typeof(LoggerStripDataAttribute)) == true)
-        {
-            LoggerStripDataAttribute? attr = cad.MethodInfo.GetCustomAttribute(typeof(LoggerStripDataAttribute)) as LoggerStripDataAttribute;
-            jss.Converters.Add(new StrippingBigData(attr?.Size ?? 0));
-        }
-
         string pars = string.Empty;
-
-        // Вытаскиваем различия при наличии
-        if (cad?.MethodInfo.IsDefined(typeof(LoggerUseDiffAttribute)) == true)
-        {
-            LoggerUseDiffAttribute? attr = cad.MethodInfo.GetCustomAttribute(typeof(LoggerUseDiffAttribute)) as LoggerUseDiffAttribute;
-            if (!string.IsNullOrEmpty(attr?.ParamName) && context.HttpContext.Items.ContainsKey(attr.ParamName))
-                pars = JsonConvert.SerializeObject(context.HttpContext.Items[attr.ParamName], Formatting.None, jss);
-        }
 
         // Собираем параметры, если они еще не готовы
         if (string.IsNullOrWhiteSpace(pars) && actionArguments != null && cad != null)

@@ -82,7 +82,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "secrets", "secrets", "{AC94
 		..\secrets\telegram-bot.Development.json = ..\secrets\telegram-bot.Development.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceService", "CommerceService\CommerceService.csproj", "{C8B00CC0-BAA6-48E4-9FC3-F89BD4B079C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommerceService", "CommerceService\CommerceService.csproj", "{C8B00CC0-BAA6-48E4-9FC3-F89BD4B079C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiRestService", "ApiRestService\ApiRestService.csproj", "{23129EDA-1CBD-4592-9EE6-0A4EC3344DAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,6 +160,10 @@ Global
 		{C8B00CC0-BAA6-48E4-9FC3-F89BD4B079C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8B00CC0-BAA6-48E4-9FC3-F89BD4B079C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8B00CC0-BAA6-48E4-9FC3-F89BD4B079C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23129EDA-1CBD-4592-9EE6-0A4EC3344DAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23129EDA-1CBD-4592-9EE6-0A4EC3344DAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23129EDA-1CBD-4592-9EE6-0A4EC3344DAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23129EDA-1CBD-4592-9EE6-0A4EC3344DAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
