@@ -2,13 +2,13 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using NLog;
-using NLog.Extensions.Logging;
-using NLog.Web;
-using SharedLib;
 using Microsoft.EntityFrameworkCore;
-using DbcLib;
+using NLog.Extensions.Logging;
 using RemoteCallLib;
+using SharedLib;
+using NLog.Web;
+using DbcLib;
+using NLog;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -77,9 +77,10 @@ builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService
 .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
 .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
 .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
-// 
-//    builder.Services.RegisterMqListener<RubricsListReceive, TProjectedRequestModel<int>?, RubricIssueHelpdeskLowModel[]?>()
-//  
+//
+//  builder.Services.RegisterMqListener<RubricsListReceive, TProjectedRequestModel<int>?, RubricIssueHelpdeskLowModel[]?>()
+//
+
 #endregion
 
 IHost host = builder.Build();

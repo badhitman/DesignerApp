@@ -76,6 +76,7 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
     .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
+    .AddScoped<ICommerceRemoteTransmissionService, CommerceRemoteTransmissionService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     // 
     services.RegisterMqListener<RubricsListReceive, TProjectedRequestModel<int>?, RubricIssueHelpdeskLowModel[]?>()

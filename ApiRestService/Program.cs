@@ -60,15 +60,13 @@ builder.Services.AddAuthorization();
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
-//    builder.Services;
-//
-builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
-.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
-.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
-.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
-// 
-//    builder.Services.RegisterMqListener<RubricsListReceive, TProjectedRequestModel<int>?, RubricIssueHelpdeskLowModel[]?>()
-//  
+builder.Services
+    .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
+    .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
+    .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
+    .AddScoped<ICommerceRemoteTransmissionService, CommerceRemoteTransmissionService>()
+    .AddScoped<ICommerceRemoteTransmissionService, CommerceRemoteTransmissionService>()
+    .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
 #endregion
 
 builder.Services
