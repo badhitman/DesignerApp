@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Transmission.Receives.commerce;
 using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 using RemoteCallLib;
@@ -9,7 +10,6 @@ using SharedLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
-using Transmission.Receives.commerce;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -72,16 +72,16 @@ builder.Services.AddMemoryCache();
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
-//    builder.Services;
-//
 builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
 .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
 .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
 .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
 //
-builder.Services.RegisterMqListener<OrganizationUpdateReceive, OrganizationModelDB?, int?>();
-builder.Services.RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>();
-builder.Services.RegisterMqListener<OrganizationsReadReceive, int[]?, OrganizationModelDB[]?>();
+builder.Services
+    .RegisterMqListener<OrganizationSetLegalReceive, OrganizationLegalModel?, bool?>()
+    .RegisterMqListener<OrganizationUpdateReceive, OrganizationModelDB?, int?>()
+    .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
+    .RegisterMqListener<OrganizationsReadReceive, int[]?, OrganizationModelDB[]?>();
 #endregion
 
 IHost host = builder.Build();

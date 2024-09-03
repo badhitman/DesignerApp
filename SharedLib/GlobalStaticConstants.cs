@@ -225,6 +225,12 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string OrganizationUpdateOrCreateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
+        /// <inheritdoc/>
+        public readonly static string OrganizationSetLegalCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.LEGAL_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string AddressOrganizationUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.ADDRESS_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
         #endregion
 
         #region Helpdesk
@@ -401,6 +407,11 @@ public static partial class GlobalStaticConstants
         /// Organizations
         /// </summary>
         public const string ORGANIZATIONS_CONTROLLER_NAME = "organizations";
+
+        /// <summary>
+        /// Legal
+        /// </summary>
+        public const string LEGAL_CONTROLLER_NAME = "legal";
 
         /// <summary>
         /// Storage

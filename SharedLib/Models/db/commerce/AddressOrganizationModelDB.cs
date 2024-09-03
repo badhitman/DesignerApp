@@ -9,7 +9,18 @@ namespace SharedLib;
 /// <summary>
 /// AddressOrganizationModelDB
 /// </summary>
-public class AddressOrganizationModelDB : EntrySwitchableUpdatedModel
+public class AddressOrganizationModelDB : AddressOrganizationBaseModel
+{
+    /// <summary>
+    /// Organization
+    /// </summary>
+    public OrganizationModelDB? Organization { get; set; }
+}
+
+/// <summary>
+/// AddressOrganizationBaseModel
+/// </summary>
+public class AddressOrganizationBaseModel : EntryModel
 {
     /// <summary>
     /// Регион/Город
@@ -27,11 +38,6 @@ public class AddressOrganizationModelDB : EntrySwitchableUpdatedModel
     /// </summary>
     [Required]
     public string? Contacts { get; set; }
-
-    /// <summary>
-    /// Organization
-    /// </summary>
-    public OrganizationModelDB? Organization { get; set; }
 
     /// <summary>
     /// Organization
