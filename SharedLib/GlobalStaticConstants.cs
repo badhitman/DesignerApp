@@ -315,6 +315,11 @@ public static partial class GlobalStaticConstants
         public const string NOTES_CONTROLLER_NAME = "notes";
 
         /// <summary>
+        /// Address
+        /// </summary>
+        public const string ADDRESS_CONTROLLER_NAME = "address";
+
+        /// <summary>
         /// Notifications
         /// </summary>
         public const string NOTIFICATIONS_CONTROLLER_NAME = "notifications";

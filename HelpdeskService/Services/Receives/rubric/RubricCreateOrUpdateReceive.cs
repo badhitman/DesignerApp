@@ -26,7 +26,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
         rubric.Name = rubric.Name.Trim();
         if (string.IsNullOrEmpty(rubric.Name))
         {
-            res.AddError("Рубрика должна иметь имя");
+            res.AddError("Объект должен иметь имя");
             return res;
         }
         rubric.NormalizedNameUpper = rubric.Name.ToUpper();
@@ -34,7 +34,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
 
         if (await context.RubricsForIssues.AnyAsync(x => x.Id != rubric.Id && x.ParentRubricId == rubric.ParentRubricId && x.Name == rubric.Name))
         {
-            res.AddError("Рубрика с таким именем уже существует");
+            res.AddError("Объект с таким именем уже существует в данном узле");
             return res;
         }
 
@@ -49,7 +49,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
             rubric.SortIndex = six.Length == 0 ? 1 : six.Max() + 1;
 
             await context.AddAsync(rubric);
-            res.AddSuccess("Рубрика успешна создана");
+            res.AddSuccess("Объект успешно создан");
         }
         else
         {
@@ -62,9 +62,10 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
             rubric_db.Description = rubric.Description;
             rubric_db.Name = rubric.Name;
             rubric_db.IsDisabled = rubric.IsDisabled;
+            rubric_db.ContextName = rubric.ContextName;
 
             context.Update(rubric_db);
-            res.AddSuccess("Рубрика успешна обновлена");
+            res.AddSuccess("Объект успешно обновлён");
         }
 
         await context.SaveChangesAsync();

@@ -23,7 +23,7 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.RubricForIssuesUpdateHelpdeskReceive, issueTheme);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsList(TProjectedRequestModel<int> req)
+    public async Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsList(RubricsListRequestModel req)
         => await rabbitClient.MqRemoteCall<List<RubricIssueHelpdeskLowModel>>(GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive, req);
 
     /// <inheritdoc/>

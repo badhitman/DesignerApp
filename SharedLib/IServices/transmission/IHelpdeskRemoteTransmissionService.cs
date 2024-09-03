@@ -18,7 +18,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsList(TProjectedRequestModel<int> req);
+    public Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsList(RubricsListRequestModel req);
 
     /// <summary>
     /// Создать тему для обращений

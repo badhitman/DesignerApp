@@ -2,10 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -13,7 +13,7 @@ namespace Transmission.Receives.helpdesk;
 /// Получить рубрики, вложенные в рубрику (если не указано, то root перечень)
 /// </summary>
 public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<TProjectedRequestModel<int>?, RubricIssueHelpdeskLowModel[]?>
+    : IResponseReceive<RubricsListRequestModel?, RubricIssueHelpdeskLowModel[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive;
@@ -23,7 +23,7 @@ public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFac
     /// </summary>
     /// <param name="req">OwnerId: вышестоящая рубрика.</param>
     /// <returns>Рубрики, подчинённые <c>OwnerId</c></returns>
-    public async Task<TResponseModel<RubricIssueHelpdeskLowModel[]?>> ResponseHandleAction(TProjectedRequestModel<int>? req)
+    public async Task<TResponseModel<RubricIssueHelpdeskLowModel[]?>> ResponseHandleAction(RubricsListRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<RubricIssueHelpdeskLowModel[]?> res = new();
@@ -32,8 +32,17 @@ public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFac
 
         IQueryable<RubricIssueHelpdeskLowModel> q = context
             .RubricsForIssues
-            .Where(x => x.ProjectId == req.ProjectId)
-            .Select(x => new RubricIssueHelpdeskLowModel() { Name = x.Name, Description = x.Description, Id = x.Id, IsDisabled = x.IsDisabled, ParentRubricId = x.ParentRubricId, ProjectId = x.ProjectId, SortIndex = x.SortIndex })
+            .Where(x => x.ProjectId == req.ProjectId && x.ContextName == req.ContextName)
+            .Select(x => new RubricIssueHelpdeskLowModel()
+            {
+                Name = x.Name,
+                Description = x.Description,
+                Id = x.Id,
+                IsDisabled = x.IsDisabled,
+                ParentRubricId = x.ParentRubricId,
+                ProjectId = x.ProjectId,
+                SortIndex = x.SortIndex,
+            })
             .AsQueryable();
 
         if (req.Request < 1)

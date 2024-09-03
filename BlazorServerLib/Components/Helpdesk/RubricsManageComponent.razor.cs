@@ -21,7 +21,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 
     List<TreeItemDataRubricModel> InitialTreeItems { get; set; } = [];
 
-    List<TreeItemData<RubricIssueHelpdeskLowModel?>> ConvertRubrics(IEnumerable<RubricIssueHelpdeskLowModel> rubrics)
+    static List<TreeItemData<RubricIssueHelpdeskLowModel?>> ConvertRubrics(IEnumerable<RubricIssueHelpdeskLowModel> rubrics)
     {
         (uint min, uint max) = rubrics.Any(x => x.SortIndex != uint.MaxValue)
             ? (rubrics.Min(x => x.SortIndex), rubrics.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
@@ -125,7 +125,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     async Task<List<RubricIssueHelpdeskLowModel>> RequestRubrics(int? parent_id = null)
     {
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new TProjectedRequestModel<int>() { Request = parent_id ?? 0 });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0 });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null)
