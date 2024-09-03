@@ -20,6 +20,11 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<int?>> OrganizationUpdate(OrganizationModelDB org);
 
     /// <summary>
+    /// OrganizationSetLegal
+    /// </summary>
+    public Task<TResponseModel<bool?>> OrganizationSetLegal(OrganizationModelDB org);
+
+    /// <summary>
     /// OrganizationsRead
     /// </summary>
     public Task<TResponseModel<OrganizationModelDB[]?>> OrganizationsRead(int[] org);
