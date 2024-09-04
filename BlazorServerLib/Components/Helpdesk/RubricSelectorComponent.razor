@@ -4,7 +4,7 @@
 
 @if (ParentRubric == 0)
 {
-    <MudText>Рубрика/категория обращения:</MudText>
+    <MudText>@Title:</MudText>
 }
 @if (IsBusyProgress)
 {
@@ -28,7 +28,7 @@ else
         <select @bind="SelectedRubricId" class="form-select">
             @if (SelectedRubricId < 1 || ModeSelectingRubrics == ModesSelectRubricsEnum.AllowWithoutRubric)
             {
-                <option value="0" selected>Выбор категории</option>
+                <option value="0" selected>Выбор элемента</option>
             }
             @foreach (RubricIssueHelpdeskLowModel rubric in CurrentRubrics!.Where(x => ShowDisabledRubrics || !x.IsDisabled))
             {

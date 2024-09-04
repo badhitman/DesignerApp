@@ -1,0 +1,85 @@
+﻿@using BlazorWebLib.Components.Helpdesk
+@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<MudPaper Class="pa-4">
+    <MudStack Spacing="2">
+        <MudButton Color="Color.Tertiary" OnClick="OnExpandCollapseClick">@(_expanded ? "Отмена" : "Добавить")</MudButton>
+        <MudDivider />
+        <MudCollapse Expanded="_expanded">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Новый адрес</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Disabled="IsBusyProgress" OnClick="ToggleMode" Icon="@Icons.Material.Filled.Close" Color="Color.Default" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack>
+                        <CascadingValue Value="RubricSelectAction">
+                            <CascadingValue Value="SelectedRubric">
+                                <RubricSelectorComponent ContextName="@GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME" Title="Адрес" ModeSelectingRubrics="ModesSelectRubricsEnum.Strict" ShowDisabledRubrics="false" ParentRubric="0" />
+                            </CascadingValue>
+                        </CascadingValue>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="nameFormControlInput1" class="form-label">Название</label>
+                                <input @bind-value:event="oninput" @bind-value="addingName" type="text" class="form-control" id="nameFormControlInput1" placeholder="Наименование">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="addrFormControlInput1" class="form-label">Адрес</label>
+                                <input @bind-value:event="oninput" @bind-value="addingAddress" type="text" class="form-control" id="addrFormControlInput1" placeholder="Улица, дом...">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="telFormControlInput" class="form-label">Контакты</label>
+                                <input @bind-value:event="oninput" @bind-value="addingContacts" type="tel" class="form-control" id="telFormControlInput" placeholder="Номер телефона, email...">
+                            </div>
+                        </div>
+                    </MudStack>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Disabled="(IsBusyProgress || !CanCreate)" OnClick="AddAddress" Variant="Variant.Text" Color="Color.Success">Создать</MudButton>
+                    <MudButton Disabled="IsBusyProgress" OnClick="ToggleMode" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudCollapse>
+    </MudStack>
+</MudPaper>
+
+@if (Organization.Addresses is null || Organization.Addresses.Count == 0)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Адресов нет.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Добавьте <cite title="для компании">адреса</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Address</th>
+                <th scope="col">Contacts</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (AddressOrganizationModelDB ad in Organization.Addresses)
+            {
+                <tr>
+                    <th scope="row"><b>@GetCity(ad)</b></th>
+                    <th><a href="/address-for-organization/@ad.Id">@ad.Name</a></th>
+                    <td>@ad.Address</td>
+                    <td>@ad.Contacts</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

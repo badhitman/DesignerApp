@@ -23,7 +23,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required Action<RubricIssueHelpdeskLowModel?> SelectedRubricsHandle { get; set; }
+    public required Action<RubricIssueHelpdeskLowModel?> SelectRubricsHandle { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -46,6 +46,18 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     [CascadingParameter]
     List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow { get; set; }
 
+    /// <summary>
+    /// Title
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = "Рубрика/категория обращения:";
+
+    /// <summary>
+    /// ContextName
+    /// </summary>
+    [Parameter]
+    public string? ContextName { get; set; }
+
 
     RubricSelectorComponent? childSelector;
 
@@ -63,7 +75,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
             _selectedRubricId = value;
             if (childSelector is not null)
                 InvokeAsync(async () => await childSelector.OwnerRubricSet(_selectedRubricId));
-            SelectedRubricsHandle(_selectedRubricId > 0 ? CurrentRubrics!.First(x => x.Id == _selectedRubricId) : null);
+            SelectRubricsHandle(_selectedRubricId > 0 ? CurrentRubrics!.First(x => x.Id == _selectedRubricId) : null);
         }
     }
 
@@ -79,7 +91,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new () { Request = ownerRubricId });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new () { Request = ownerRubricId, ContextName= ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         CurrentRubrics = rest.Response;

@@ -231,6 +231,9 @@ public static partial class GlobalStaticConstants
         public readonly static string OrganizationsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATION_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string AddressesOrganizationsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ADDRESSES_CONTROLLER_NAME, Routes.ORGANIZATION_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string OrganizationUpdateOrCreateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -481,6 +484,11 @@ public static partial class GlobalStaticConstants
         /// Organization
         /// </summary>
         public const string ORGANIZATION_CONTROLLER_NAME = "organization";
+
+        /// <summary>
+        /// Addresses
+        /// </summary>
+        public const string ADDRESSES_CONTROLLER_NAME = "addresses";
 
         /// <summary>
         /// Organizations

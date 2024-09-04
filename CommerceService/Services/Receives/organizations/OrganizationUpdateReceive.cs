@@ -31,6 +31,8 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
             org.NewBankName = org.BankName;
             org.NewINN = org.INN;
             org.NewOGRN = org.OGRN;
+            org.NewName = org.Name;
+            org.NewLegalAddress = org.LegalAddress;
             org.NewCorrespondentAccount = org.CorrespondentAccount;
             org.NewKPP = org.KPP;
             org.LastAtUpdatedUTC = DateTime.UtcNow;
@@ -47,6 +49,16 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
             IQueryable<OrganizationModelDB> q = context
                 .Organizations
                 .Where(x => x.Id == org_db.Id);
+
+            if (org_db.Name != org.Name)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewName, org.Name));
+            else if (org_db.Name != org_db.NewName)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewName, ""));
+
+            if (org_db.LegalAddress != org.LegalAddress)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewLegalAddress, org.LegalAddress));
+            else if (org_db.LegalAddress != org_db.NewLegalAddress)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewLegalAddress, ""));
 
             if (org_db.CurrentAccount != org.CurrentAccount)
                 await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewCurrentAccount, org.CurrentAccount));

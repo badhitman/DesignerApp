@@ -39,7 +39,6 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
 
     UserInfoMainModel? current_user;
 
-    private IEnumerable<OrganizationModelDB> pagedData = default!;
     private MudTable<OrganizationModelDB> table = default!;
 
     /// <inheritdoc/>

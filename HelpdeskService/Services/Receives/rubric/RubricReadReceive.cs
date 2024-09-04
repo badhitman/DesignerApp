@@ -28,6 +28,10 @@ public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
     {
         ArgumentNullException.ThrowIfNull(rubricId);
         TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = new();
+
+        if(rubricId <1)
+            return res;
+
         string mem_key = $"{QueueName}-{rubricId}";
         if (cache.TryGetValue(mem_key, out List<RubricIssueHelpdeskModelDB>? rubric))
         {
@@ -37,12 +41,13 @@ public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        List<RubricIssueHelpdeskModelDB> ctrl = [await context
+        RubricIssueHelpdeskModelDB? lpi = await context
             .RubricsForIssues
             .Include(x => x.ParentRubric)
-            .FirstAsync(x => x.Id == rubricId)];
+            .FirstAsync(x => x.Id == rubricId);
 
-        RubricIssueHelpdeskModelDB? lpi = ctrl.Last();
+        List<RubricIssueHelpdeskModelDB> ctrl = [lpi];
+
         while (lpi.ParentRubric is not null)
         {
             ctrl.Add(await context

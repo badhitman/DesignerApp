@@ -15,127 +15,135 @@
 }
 else
 {
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Карточка организации</h5>
-            <div class="card mb-3">
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Реквизиты">
+            <div class="card">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="inputPhone" class="form-label">Телефон</label>
-                            <input @bind-value="editOrg!.Phone" @bind-value:event="oninput" type="text" id="inputPhone" class="form-control">
+                    <h5 class="card-title">Карточка организации</h5>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="inputPhone" class="form-label">Телефон</label>
+                                    <input @bind-value="editOrg!.Phone" @bind-value:event="oninput" type="text" id="inputPhone" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="inputEmail" class="form-label">Email</label>
+                                    <input @bind-value="editOrg!.Email" @bind-value:event="oninput" type="text" id="inputEmail" class="form-control">
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="inputEmail" class="form-label">Email</label>
-                            <input @bind-value="editOrg!.Email" @bind-value:event="oninput" type="text" id="inputEmail" class="form-control">
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <label for="inputName" class="form-label">Название</label>
+                            <input @bind-value="editOrg!.Name" @bind-value:event="oninput" type="text" id="inputName" class="form-control" aria-describedby="nameHelpBlock">
+                            @if (!string.IsNullOrWhiteSpace(currentOrg.NewName))
+                            {
+                                <div id="nameHelpBlock" class="form-text">
+                                    Ожидается подвтерждение: @(currentOrg.NewName).
+                                </div>
+                            }
                         </div>
+                        <div class="col-md-4">
+                            <label for="inputINN" class="form-label">ИНН</label>
+                            <input @bind-value="editOrg!.INN" @bind-value:event="oninput" type="text" id="inputINN" class="form-control" aria-describedby="innHelpBlock">
+                            @if (!string.IsNullOrWhiteSpace(currentOrg.NewINN))
+                            {
+                                <div id="innHelpBlock" class="form-text">
+                                    Ожидается подвтерждение: @(currentOrg.NewINN).
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputKPP" class="form-label">КПП</label>
+                            <input @bind-value="editOrg!.KPP" @bind-value:event="oninput" type="text" id="inputKPP" class="form-control" aria-describedby="kppHelpBlock">
+                            @if (!string.IsNullOrWhiteSpace(currentOrg.NewKPP))
+                            {
+                                <div id="kppHelpBlock" class="form-text">
+                                    Ожидается подвтерждение: @(currentOrg.NewKPP).
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="inputLegalAddress" class="form-label">Юридический адрес</label>
+                        <input @bind-value="editOrg!.LegalAddress" @bind-value:event="oninput" type="text" id="inputLegalAddress" class="form-control" aria-describedby="legalAddressHelpBlock">
+                        @if (!string.IsNullOrWhiteSpace(currentOrg.NewLegalAddress))
+                        {
+                            <div id="legalAddressHelpBlock" class="form-text">
+                                Ожидается подвтерждение: @(currentOrg.NewLegalAddress).
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="inputOGRN" class="form-label">ОГРН</label>
+                        <input @bind-value="editOrg!.OGRN" @bind-value:event="oninput" type="text" id="inputOGRN" class="form-control" aria-describedby="ogrnHelpBlock">
+                        @if (!string.IsNullOrWhiteSpace(currentOrg.NewOGRN))
+                        {
+                            <div id="ogrnHelpBlock" class="form-text">
+                                Ожидается подвтерждение: @(currentOrg.NewOGRN).
+                            </div>
+                        }
+                    </div>
+                    <div class="mb-2">
+                        <label for="inputCurrentAccount" class="form-label">Расчетный счет</label>
+                        <input @bind-value="editOrg!.CurrentAccount" @bind-value:event="oninput" type="text" id="inputCurrentAccount" class="form-control" aria-describedby="currentAccountHelpBlock">
+                        @if (!string.IsNullOrWhiteSpace(currentOrg.NewCurrentAccount))
+                        {
+                            <div id="currentAccountHelpBlock" class="form-text">
+                                Ожидается подвтерждение: @(currentOrg.NewCurrentAccount).
+                            </div>
+                        }
+                    </div>
+                    <div class="mb-2">
+                        <label for="inputBankName" class="form-label">Банк</label>
+                        <input @bind-value="editOrg!.BankName" @bind-value:event="oninput" type="text" id="inputBankName" class="form-control" aria-describedby="bankNameHelpBlock">
+                        @if (!string.IsNullOrWhiteSpace(currentOrg.NewBankName))
+                        {
+                            <div id="bankNameHelpBlock" class="form-text">
+                                Ожидается подвтерждение: @(currentOrg.NewBankName).
+                            </div>
+                        }
+                    </div>
+                    <div class="mb-2">
+                        <label for="inputBankBIC" class="form-label">БИК</label>
+                        <input @bind-value="editOrg!.BankBIC" @bind-value:event="oninput" type="text" id="inputBankBIC" class="form-control" aria-describedby="bankBICHelpBlock">
+                        @if (!string.IsNullOrWhiteSpace(currentOrg.NewBankBIC))
+                        {
+                            <div id="bankBICHelpBlock" class="form-text">
+                                Ожидается подвтерждение: @(currentOrg.NewBankBIC).
+                            </div>
+                        }
+                    </div>
+                    <div class="mb-2">
+                        <label for="inputCorrespondentAccount" class="form-label">Корр. счет</label>
+                        <input @bind-value="editOrg!.CorrespondentAccount" @bind-value:event="oninput" type="text" id="inputCorrespondentAccount" class="form-control" aria-describedby="correspondentAccountHelpBlock">
+                        @if (!string.IsNullOrWhiteSpace(currentOrg.NewCorrespondentAccount))
+                        {
+                            <div id="correspondentAccountHelpBlock" class="form-text">
+                                Ожидается подвтерждение: @(currentOrg.NewCorrespondentAccount).
+                            </div>
+                        }
+                    </div>
+                    <MudSwitch @bind-Value="editOrg.IsDisabled" Label="Отключение" Color="Color.Success" />
+
+                    <div class="d-grid gap-2">
+                        <button @onclick="SaveOrganization" disabled="@(currentOrg.Equals(editOrg) || !GlobalTools.ValidateObject(editOrg).IsValid)" class="btn btn-primary" type="button">Сохранить</button>
+                        @if (editOrg.HasRequestToChange)
+                        {
+                            <button @onclick="CancelEditRequestOrganization" class="btn btn-primary" type="button">Отмена запроса изменений</button>
+                        }
                     </div>
                 </div>
             </div>
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(OrganizationId <= 0)" Text="Адреса">
+            <AddressesForOrganizationComponent Organization="currentOrg" />
+        </MudTabPanel>
+    </MudTabs>
 
-            <div class="row mb-2">
-                <div class="col-md-4">
-                    <label for="inputName" class="form-label">Название</label>
-                    <input @bind-value="editOrg!.Name" @bind-value:event="oninput" type="text" id="inputName" class="form-control" aria-describedby="nameHelpBlock">
-                    @if (!string.IsNullOrWhiteSpace(currentOrg.NewName))
-                    {
-                        <div id="nameHelpBlock" class="form-text">
-                            Ожидается подвтерждение: @(currentOrg.NewName).
-                        </div>
-                    }
-                </div>
-                <div class="col-md-4">
-                    <label for="inputINN" class="form-label">ИНН</label>
-                    <input @bind-value="editOrg!.INN" @bind-value:event="oninput" type="text" id="inputINN" class="form-control" aria-describedby="innHelpBlock">
-                    @if (!string.IsNullOrWhiteSpace(currentOrg.NewINN))
-                    {
-                        <div id="innHelpBlock" class="form-text">
-                            Ожидается подвтерждение: @(currentOrg.NewINN).
-                        </div>
-                    }
-                </div>
-                <div class="col-md-4">
-                    <label for="inputKPP" class="form-label">КПП</label>
-                    <input @bind-value="editOrg!.KPP" @bind-value:event="oninput" type="text" id="inputKPP" class="form-control" aria-describedby="kppHelpBlock">
-                    @if (!string.IsNullOrWhiteSpace(currentOrg.NewKPP))
-                    {
-                        <div id="kppHelpBlock" class="form-text">
-                            Ожидается подвтерждение: @(currentOrg.NewKPP).
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <div class="mb-2">
-                <label for="inputLegalAddress" class="form-label">Юридический адрес</label>
-                <input @bind-value="editOrg!.LegalAddress" @bind-value:event="oninput" type="text" id="inputLegalAddress" class="form-control" aria-describedby="legalAddressHelpBlock">
-                @if (!string.IsNullOrWhiteSpace(currentOrg.NewLegalAddress))
-                {
-                    <div id="legalAddressHelpBlock" class="form-text">
-                        Ожидается подвтерждение: @(currentOrg.NewLegalAddress).
-                    </div>
-                }
-            </div>
-
-            <div class="mb-2">
-                <label for="inputOGRN" class="form-label">ОГРН</label>
-                <input @bind-value="editOrg!.OGRN" @bind-value:event="oninput" type="text" id="inputOGRN" class="form-control" aria-describedby="ogrnHelpBlock">
-                @if (!string.IsNullOrWhiteSpace(currentOrg.NewOGRN))
-                {
-                    <div id="ogrnHelpBlock" class="form-text">
-                        Ожидается подвтерждение: @(currentOrg.NewOGRN).
-                    </div>
-                }
-            </div>
-            <div class="mb-2">
-                <label for="inputCurrentAccount" class="form-label">Расчетный счет</label>
-                <input @bind-value="editOrg!.CurrentAccount" @bind-value:event="oninput" type="text" id="inputCurrentAccount" class="form-control" aria-describedby="currentAccountHelpBlock">
-                @if (!string.IsNullOrWhiteSpace(currentOrg.NewCurrentAccount))
-                {
-                    <div id="currentAccountHelpBlock" class="form-text">
-                        Ожидается подвтерждение: @(currentOrg.NewCurrentAccount).
-                    </div>
-                }
-            </div>
-            <div class="mb-2">
-                <label for="inputBankName" class="form-label">Банк</label>
-                <input @bind-value="editOrg!.BankName" @bind-value:event="oninput" type="text" id="inputBankName" class="form-control" aria-describedby="bankNameHelpBlock">
-                @if (!string.IsNullOrWhiteSpace(currentOrg.NewBankName))
-                {
-                    <div id="bankNameHelpBlock" class="form-text">
-                        Ожидается подвтерждение: @(currentOrg.NewBankName).
-                    </div>
-                }
-            </div>
-            <div class="mb-2">
-                <label for="inputBankBIC" class="form-label">БИК</label>
-                <input @bind-value="editOrg!.BankBIC" @bind-value:event="oninput" type="text" id="inputBankBIC" class="form-control" aria-describedby="bankBICHelpBlock">
-                @if (!string.IsNullOrWhiteSpace(currentOrg.NewBankBIC))
-                {
-                    <div id="bankBICHelpBlock" class="form-text">
-                        Ожидается подвтерждение: @(currentOrg.NewBankBIC).
-                    </div>
-                }
-            </div>
-            <div class="mb-2">
-                <label for="inputCorrespondentAccount" class="form-label">Корр. счет</label>
-                <input @bind-value="editOrg!.CorrespondentAccount" @bind-value:event="oninput" type="text" id="inputCorrespondentAccount" class="form-control" aria-describedby="correspondentAccountHelpBlock">
-                @if (!string.IsNullOrWhiteSpace(currentOrg.NewCorrespondentAccount))
-                {
-                    <div id="correspondentAccountHelpBlock" class="form-text">
-                        Ожидается подвтерждение: @(currentOrg.NewCorrespondentAccount).
-                    </div>
-                }
-            </div>
-            <MudSwitch @bind-Value="editOrg.IsDisabled" Label="Отключение" Color="Color.Success" />
-
-            <div class="d-grid gap-2">
-                <button @onclick="SaveOrganization" disabled="@(currentOrg.Equals(editOrg) || !GlobalTools.ValidateObject(editOrg).IsValid)" class="btn btn-primary" type="button">Сохранить</button>
-                @if (editOrg.HasRequestToChange)
-                {
-                    <button @onclick="CancelEditRequestOrganization" class="btn btn-primary" type="button">Отмена запроса изменений</button>
-                }
-            </div>
-        </div>
-    </div>
 }

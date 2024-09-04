@@ -10,6 +10,9 @@ using SharedLib;
 
 namespace BlazorWebLib.Components.Commerce;
 
+/// <summary>
+/// OrganizationEditComponent
+/// </summary>
 public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
@@ -71,6 +74,9 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
 
     async Task ReadOrganization()
     {
+        if (OrganizationId is null)
+            return;
+
         IsBusyProgress = true;
         TResponseModel<OrganizationModelDB[]?> res = await CommerceRepo.OrganizationsRead([OrganizationId.Value]);
         IsBusyProgress = false;

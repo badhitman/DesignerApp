@@ -16,8 +16,8 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationDeleteCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> AddressOrganizationUpdate(AddressOrganizationBaseModel req)
-        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
+    public async Task<TResponseModel<int?>> AddressOrganizationUpdate(AddressOrganizationBaseModel req)
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> AttachmentForOrder(AttachmentForOrderRequestModel att)
@@ -82,4 +82,8 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> RowsForOrderDelete(int[] req)
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.RowsDeleteFromOrderCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<AddressOrganizationModelDB[]?>> AddressesOrganizationsRead(int[] ids)
+        => await rabbitClient.MqRemoteCall<AddressOrganizationModelDB[]?>(GlobalStaticConstants.TransmissionQueues.AddressesOrganizationsReadCommerceReceive, ids);
 }

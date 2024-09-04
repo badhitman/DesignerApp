@@ -10,26 +10,24 @@ using DbcLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// OrganizationsReadReceive
+/// AddressesOrganizationsReadReceive
 /// </summary>
-public class OrganizationsReadReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<int[]?, OrganizationModelDB[]?>
+public class AddressesOrganizationsReadReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+: IResponseReceive<int[]?, AddressOrganizationModelDB[]?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrganizationsReadCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.AddressesOrganizationsReadCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrganizationModelDB[]?>> ResponseHandleAction(int[]? req)
+    public async Task<TResponseModel<AddressOrganizationModelDB[]?>> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<OrganizationModelDB[]?> res = new();
+        TResponseModel<AddressOrganizationModelDB[]?> res = new();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         res.Response = await context
-            .Organizations
+            .AddressesOrganizations
             .Where(x => req.Any(y => y == x.Id))
-            .Include(x => x.Addresses)
-            .Include(x => x.Users)
             .ToArrayAsync();
 
         return res;
