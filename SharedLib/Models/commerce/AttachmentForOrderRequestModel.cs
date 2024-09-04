@@ -5,21 +5,14 @@
 namespace SharedLib;
 
 /// <summary>
-/// AttachmentForOrderModelDB
+/// AttachmentForOrderRequestModel
 /// </summary>
-public class AttachmentForOrderModelDB : EntryModel
+public class AttachmentForOrderRequestModel
 {
-    /// <inheritdoc/>
-    public override required string Name { get; set; }
-
     /// <summary>
-    /// Заказ (документ)
+    /// FileName
     /// </summary>
-    public OrderDocumentModelDB? OrderDocument { get; set; }
-    /// <summary>
-    /// Заказ (документ)
-    /// </summary>
-    public required int OrderDocumentId { get; set; }
+    public required string FileName { get; set; }
 
     /// <summary>
     /// FilePoint
@@ -32,7 +25,7 @@ public class AttachmentForOrderModelDB : EntryModel
     public required long FileSize { get; set; }
 
     /// <summary>
-    /// CreatedAtUTC
+    /// Заказ (документ)
     /// </summary>
-    public DateTime CreatedAtUTC { get; set; } = DateTime.UtcNow;
+    public required int OrderDocumentId { get; set; }
 }

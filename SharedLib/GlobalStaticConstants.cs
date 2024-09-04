@@ -246,6 +246,12 @@ public static partial class GlobalStaticConstants
         public readonly static string OrderUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string AttachmentAddToOrderCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.ATTACHMENT_ACTION_NAME, Routes.ADD_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string AttachmentDeleteFromOrderCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.ATTACHMENT_ACTION_NAME, Routes.DELETE_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string RowForOrderUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.ROW_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -662,6 +668,11 @@ public static partial class GlobalStaticConstants
         /// update
         /// </summary>
         public const string UPDATE_ACTION_NAME = "update";
+
+        /// <summary>
+        /// Attachment
+        /// </summary>
+        public const string ATTACHMENT_ACTION_NAME = "attachment";
 
         /// <summary>
         /// Подключить/присоединить

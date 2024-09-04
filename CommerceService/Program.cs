@@ -85,6 +85,8 @@ builder.Services
     .RegisterMqListener<AddressOrganizationDeleteReceive, int?, bool?>()
     .RegisterMqListener<GoodsUpdateReceive, GoodModelDB?, int?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
+    .RegisterMqListener<AttachmentDeleteFromOrderReceive, int?, bool?>()
+    .RegisterMqListener<AttachmentForOrderReceive, AttachmentForOrderRequestModel?, int?>()
     .RegisterMqListener<PaymentDocumentDeleteReceive, int?, bool?>()
     .RegisterMqListener<RowsForOrderDeleteReceive, int[]?, bool?>()
     .RegisterMqListener<RowForOrderUpdateReceive, RowOfOrderDocumentModelDB?, int?>()

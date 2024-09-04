@@ -9,6 +9,9 @@ namespace SharedLib;
 /// </summary>
 public class PaymentDocumentBaseModel : EntryModel
 {
+    /// <inheritdoc/>
+    public override required string Name { get; set; }
+
     /// <summary>
     /// Сумма оплаты
     /// </summary>

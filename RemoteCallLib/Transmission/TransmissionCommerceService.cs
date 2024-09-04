@@ -20,6 +20,10 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> AttachmentForOrder(AttachmentForOrderRequestModel att)
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.AttachmentAddToOrderCommerceReceive, att);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<int?>> DeliveryOrderUpdate(DeliveryForOrderUpdateRequestModel delivery)
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.DeliveryOrderUpdateCommerceReceive, delivery);
 
@@ -66,6 +70,10 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> PaymentDocumentDelete(int req)
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.PaymentDocumentDeleteCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> AttachmentDeleteFromOrder(int req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.AttachmentDeleteFromOrderCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> RowForOrderUpdate(RowOfOrderDocumentModelDB row)

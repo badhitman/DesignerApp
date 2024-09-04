@@ -11,6 +11,9 @@ namespace SharedLib;
 /// </summary>
 public class AddressOrganizationBaseModel : EntryModel
 {
+    /// <inheritdoc/>
+    public override required string Name { get; set; }
+
     /// <summary>
     /// Регион/Город
     /// </summary>
