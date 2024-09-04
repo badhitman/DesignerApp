@@ -49,7 +49,7 @@ public class AddressOrganizationUpdateReceive(IDbContextFactory<CommerceContext>
             .SetProperty(p => p.Contacts, req.Contacts)
             .SetProperty(p => p.OrganizationId, req.OrganizationId));
 
-        res.AddSuccess($"Обновление `{nameof(AddressOrganizationUpdateReceive)}` выполнено");
+        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
         return res;
     }
 }

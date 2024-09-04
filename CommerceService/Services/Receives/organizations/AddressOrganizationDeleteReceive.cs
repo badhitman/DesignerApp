@@ -46,6 +46,7 @@ public class AddressOrganizationDeleteReceive(IDbContextFactory<CommerceContext>
 
         await context.AddressesOrganizations.Where(x => x.Id == req).ExecuteDeleteAsync();
         res.AddSuccess("Команда успешно выполнена");
+        res.Response = true;
         return res;
     }
 }

@@ -38,6 +38,16 @@ public class RowOfOrderDocumentModelDB
     public int? OrderDocumentId { get; set; }
 
     /// <summary>
+    /// Offer
+    /// </summary>
+    public OfferGoodModelDB? Offer { get; set; }
+
+    /// <summary>
+    /// Offer
+    /// </summary>
+    public int OfferId { get; set; }
+
+    /// <summary>
     /// Good
     /// </summary>
     public OfferGoodModelDB? Good { get; set; }

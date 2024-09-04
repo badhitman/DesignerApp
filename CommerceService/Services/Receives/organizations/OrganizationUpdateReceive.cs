@@ -89,6 +89,17 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
                     .SetProperty(p => p.Phone, org.Phone));
                 res.AddSuccess("Phone изменён");
             }
+            if (org_db.IsDisabled != org.IsDisabled)
+            {
+                await context
+                    .Organizations
+                    .Where(x => x.Id == org_db.Id)
+                    .ExecuteUpdateAsync(set => set
+                    .SetProperty(p => p.LastAtUpdatedUTC, lud)
+                    .SetProperty(p => p.IsDisabled, org.IsDisabled));
+
+                res.AddSuccess(org.IsDisabled ? "Адрес отключён" : "Адрес включён");
+            }
         }
 
         return res;

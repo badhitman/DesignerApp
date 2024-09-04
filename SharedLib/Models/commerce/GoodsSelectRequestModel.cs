@@ -5,17 +5,12 @@
 namespace SharedLib;
 
 /// <summary>
-/// OrganizationsSelect
+/// GoodsSelectRequestModel
 /// </summary>
-public class OrganizationsSelectRequestModel
+public class GoodsSelectRequestModel
 {
     /// <summary>
-    /// For UserIdentity Id
-    /// </summary>
-    public string? ForUserIdentityId { get; set; }
-
-    /// <summary>
-    /// Дата обновления должна быть не меньше указаной
+    /// Дата обновления должна быть не меньше указанной
     /// </summary>
     public DateTime? AfterDateUpdate { get; set; }
 }

@@ -83,6 +83,11 @@ builder.Services
     .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
     .RegisterMqListener<AddressOrganizationUpdateReceive, AddressOrganizationBaseModel?, bool?>()
     .RegisterMqListener<AddressOrganizationDeleteReceive, int?, bool?>()
+    .RegisterMqListener<GoodUpdateReceive, GoodModelDB?, int?>()
+    .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
+    .RegisterMqListener<OfferUpdateReceive, OfferGoodModelDB?, int?>()
+    .RegisterMqListener<OffersSelectReceive, TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferGoodModelDB>?>()
+    .RegisterMqListener<GoodsSelectReceive, TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<GoodModelDB>?>()
     .RegisterMqListener<OrganizationsReadReceive, int[]?, OrganizationModelDB[]?>();
 #endregion
 

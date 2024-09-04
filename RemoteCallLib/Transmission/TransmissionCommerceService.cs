@@ -20,6 +20,26 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<GoodModelDB>?>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<GoodModelDB>?>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> GoodUpdateReceive(GoodModelDB req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.GoodsUpdateCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> OfferDelete(int req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.OfferDeleteCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<OfferGoodModelDB>?>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OfferGoodModelDB>?>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> OfferUpdate(OfferGoodModelDB offer)
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.OfferUpdateCommerceReceive, offer);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> OrganizationSetLegal(OrganizationModelDB org)
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.OrganizationSetLegalCommerceReceive, org);
 

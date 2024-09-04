@@ -215,6 +215,8 @@ public static partial class GlobalStaticConstants
         #endregion
 
         #region Commerce
+        /// <inheritdoc/>
+        public readonly static string GoodsSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string OrganizationsSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
@@ -232,7 +234,16 @@ public static partial class GlobalStaticConstants
         public readonly static string AddressOrganizationUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.ADDRESS_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string GoodsUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string OfferUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.OFFER_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string AddressOrganizationDeleteCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.ADDRESS_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string OfferDeleteCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.OFFER_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);
 
         #endregion
 
@@ -340,6 +351,16 @@ public static partial class GlobalStaticConstants
         /// Address
         /// </summary>
         public const string ADDRESS_CONTROLLER_NAME = "address";
+
+        /// <summary>
+        /// Goods
+        /// </summary>
+        public const string GOODS_CONTROLLER_NAME = "goods";
+
+        /// <summary>
+        /// Offer
+        /// </summary>
+        public const string OFFER_CONTROLLER_NAME = "offer";
 
         /// <summary>
         /// Notifications
