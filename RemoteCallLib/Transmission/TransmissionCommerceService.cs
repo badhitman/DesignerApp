@@ -64,6 +64,10 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.OrganizationUpdateOrCreateCommerceReceive, org);
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> PaymentDocumentDelete(int req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.PaymentDocumentDeleteCommerceReceive, req);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<int?>> RowForOrderUpdate(RowOfOrderDocumentModelDB row)
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.OrganizationUpdateOrCreateCommerceReceive, row);
 

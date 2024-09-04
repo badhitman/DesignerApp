@@ -30,7 +30,7 @@ public class RowForOrderUpdateReceive(IDbContextFactory<CommerceContext> commerc
                 .Where(x => x.Id == req.OrderDocumentId)
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
-        if (req.Id < 0)
+        if (req.Id < 1)
         {
             await context.AddAsync(req);
             await context.SaveChangesAsync();

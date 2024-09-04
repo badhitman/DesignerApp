@@ -25,7 +25,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
         TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         DateTime dtu = DateTime.UtcNow;
-        if (req.Id < 0)
+        if (req.Id < 1)
         {
             OrderDocumentModelDB order_db = new()
             {

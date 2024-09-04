@@ -25,7 +25,7 @@ public class AddressOrganizationUpdateReceive(IDbContextFactory<CommerceContext>
         TResponseModel<bool?> res = new() { Response = false };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        if (req.Id < 0)
+        if (req.Id < 1)
         {
             await context.AddAsync(new AddressOrganizationModelDB()
             {

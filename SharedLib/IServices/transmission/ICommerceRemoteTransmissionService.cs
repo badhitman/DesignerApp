@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// PaymentDocumentDelete
+    /// </summary>
+    public Task<TResponseModel<bool?>> PaymentDocumentDelete(int req);
+
+    /// <summary>
     /// RowsForOrderDelete
     /// </summary>
     public Task<TResponseModel<bool?>> RowsForOrderDelete(int[] req);
