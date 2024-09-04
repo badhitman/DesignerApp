@@ -10,6 +10,26 @@ namespace SharedLib;
 public interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// RowsForOrderDelete
+    /// </summary>
+    public Task<TResponseModel<bool?>> RowsForOrderDelete(int[] req);
+
+    /// <summary>
+    /// RowForOrderUpdate
+    /// </summary>
+    public Task<TResponseModel<int?>> RowForOrderUpdate(RowOfOrderDocumentModelDB row);
+
+    /// <summary>
+    /// DeliveryOrderUpdate
+    /// </summary>
+    public Task<TResponseModel<int?>> DeliveryOrderUpdate(DeliveryForOrderUpdateRequestModel delivery);
+
+    /// <summary>
+    /// OrdersRead
+    /// </summary>
+    public Task<TResponseModel<OrderDocumentModelDB[]?>> OrdersRead(int[] orders_ids);
+
+    /// <summary>
     /// Удалить Offer
     /// </summary>
     public Task<TResponseModel<bool?>> OfferDelete(int req);

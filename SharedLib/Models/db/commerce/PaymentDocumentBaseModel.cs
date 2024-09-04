@@ -5,22 +5,22 @@
 namespace SharedLib;
 
 /// <summary>
-/// Статусы доставок
+/// PaymentDocumentBaseModel
 /// </summary>
-public enum DeliveryStatus
+public class PaymentDocumentBaseModel : EntryModel
 {
     /// <summary>
-    /// Создан
+    /// Сумма оплаты
     /// </summary>
-    Created,
+    public double Amount { get; set; }
 
     /// <summary>
-    /// В пути
+    /// ExternalIdDocument
     /// </summary>
-    Progress,
+    public required string ExternalDocumentId { get; set; }
 
     /// <summary>
-    /// Доставлен
+    /// OrderDocument
     /// </summary>
-    Done,
+    public int OrderDocumentId { get; set; }
 }

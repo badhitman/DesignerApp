@@ -10,16 +10,16 @@ using DbcLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// GoodUpdateReceive
+/// OrderUpdateReceive
 /// </summary>
-public class GoodUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-    : IResponseReceive<GoodModelDB?, int?>
+public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+    : IResponseReceive<OrderDocumentModelDB?, int?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsUpdateCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrderUpdateCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(GoodModelDB? req)
+    public async Task<TResponseModel<int?>> ResponseHandleAction(OrderDocumentModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<int?> res = new() { Response = 0 };
@@ -27,26 +27,25 @@ public class GoodUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFact
         DateTime dtu = DateTime.UtcNow;
         if (req.Id < 0)
         {
-            GoodModelDB goods_db = new()
+            OrderDocumentModelDB order_db = new()
             {
                 Name = req.Name,
-                BaseUnit = req.BaseUnit,
+                AuthorIdentityUserId = req.AuthorIdentityUserId,
                 IsDisabled = req.IsDisabled,
                 LastAtUpdatedUTC = dtu,
             };
 
-            await context.AddAsync(goods_db);
+            await context.AddAsync(order_db);
             await context.SaveChangesAsync();
             res.AddSuccess("Товар добавлен");
-            res.Response = goods_db.Id;
+            res.Response = order_db.Id;
             return res;
         }
 
-        res.Response = await context.Goods
+        res.Response = await context.OrdersDocuments
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, req.Name)
-            .SetProperty(p => p.BaseUnit, req.BaseUnit)
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 

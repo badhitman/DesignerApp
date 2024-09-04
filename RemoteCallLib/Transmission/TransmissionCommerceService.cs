@@ -20,6 +20,10 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> DeliveryOrderUpdate(DeliveryForOrderUpdateRequestModel delivery)
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.DeliveryOrderUpdateCommerceReceive, delivery);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<GoodModelDB>?>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<GoodModelDB>?>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
 
@@ -40,6 +44,10 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.OfferUpdateCommerceReceive, offer);
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<OrderDocumentModelDB[]?>> OrdersRead(int[] orders_ids)
+        => await rabbitClient.MqRemoteCall<OrderDocumentModelDB[]?>(GlobalStaticConstants.TransmissionQueues.OrganizationsReadCommerceReceive, orders_ids);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> OrganizationSetLegal(OrganizationModelDB org)
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.OrganizationSetLegalCommerceReceive, org);
 
@@ -54,4 +62,12 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> OrganizationUpdate(OrganizationModelDB org)
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.OrganizationUpdateOrCreateCommerceReceive, org);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> RowForOrderUpdate(RowOfOrderDocumentModelDB row)
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.OrganizationUpdateOrCreateCommerceReceive, row);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> RowsForOrderDelete(int[] req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.RowsDeleteFromOrderCommerceReceive, req);
 }

@@ -2,13 +2,21 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
 /// Доставка
 /// </summary>
-public class DeliveryModelDb : EntryModel
+public class DeliveryModelDb
 {
+    /// <summary>
+    /// Идентификатор/Key
+    /// </summary>
+    [Key]
+    public int Id { get; set; }
+
     /// <summary>
     /// OrderDocument
     /// </summary>
@@ -38,5 +46,5 @@ public class DeliveryModelDb : EntryModel
     /// <summary>
     /// Статус доставки
     /// </summary>
-    public DeliveryStatus Status { get; set; }
+    public HelpdeskIssueStepsEnum Status { get; set; }
 }

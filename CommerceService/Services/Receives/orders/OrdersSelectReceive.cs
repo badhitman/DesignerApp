@@ -10,23 +10,23 @@ using DbcLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// GoodsSelectReceive
+/// OrdersSelectReceive
 /// </summary>
-public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<GoodModelDB>?>
+public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+: IResponseReceive<TPaginationRequestModel<OrdersSelectRequestModel>?, TPaginationResponseModel<OrderDocumentModelDB>?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrdersSelectCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<GoodModelDB>?>> ResponseHandleAction(TPaginationRequestModel<GoodsSelectRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>?>> ResponseHandleAction(TPaginationRequestModel<OrdersSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
         if (req.PageSize < 10)
             req.PageSize = 10;
 
-        TResponseModel<TPaginationResponseModel<GoodModelDB>?> res = new()
+        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>?> res = new()
         {
             Response = new()
             {
@@ -39,9 +39,12 @@ public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFac
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<GoodModelDB> q = context
-            .Goods
+        IQueryable<OrderDocumentModelDB> q = context
+            .OrdersDocuments
             .AsQueryable();
+
+        if (req.Payload.CartOnly)
+            q = q.Where(x => x.HelpdeskId == null || x.HelpdeskId == 0);
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
