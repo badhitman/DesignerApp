@@ -12,6 +12,14 @@ namespace RemoteCallLib;
 public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerceRemoteTransmissionService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> AddressOrganizationDelete(int req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationDeleteCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> AddressOrganizationUpdate(AddressOrganizationBaseModel req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> OrganizationSetLegal(OrganizationModelDB org)
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.OrganizationSetLegalCommerceReceive, org);
 

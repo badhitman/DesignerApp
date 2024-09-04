@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -9,6 +10,8 @@ namespace SharedLib;
 /// <summary>
 /// OrganizationLegalModel
 /// </summary>
+[Index(nameof(INN), IsUnique = true)]
+[Index(nameof(OGRN), IsUnique = true)]
 public class OrganizationLegalModel : EntrySwitchableUpdatedModel
 {
     /// <summary>

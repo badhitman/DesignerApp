@@ -28,4 +28,14 @@ public interface ICommerceRemoteTransmissionService
     /// OrganizationsRead
     /// </summary>
     public Task<TResponseModel<OrganizationModelDB[]?>> OrganizationsRead(int[] org);
+
+    /// <summary>
+    /// Удалить адрес организации
+    /// </summary>
+    public Task<TResponseModel<bool?>> AddressOrganizationDelete(int req);
+
+    /// <summary>
+    /// Обновить/Создать адрес организации
+    /// </summary>
+    public Task<TResponseModel<bool?>> AddressOrganizationUpdate(AddressOrganizationBaseModel req);
 }
