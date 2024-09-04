@@ -19,6 +19,9 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
     [Inject]
+    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+
+    [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
@@ -34,7 +37,8 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
 
     string? _filterUser;
 
-    UserInfoMainModel current_user = default!;
+    UserInfoMainModel? current_user;
+
     private IEnumerable<OrganizationModelDB> pagedData = default!;
     private MudTable<OrganizationModelDB> table = default!;
 
@@ -42,12 +46,26 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        current_user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        UserInfoMainModel me = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
-        if ((string.IsNullOrWhiteSpace(UserId) || _filterUser != current_user.UserId) && !current_user.IsAdmin && current_user.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true)
-            _filterUser = current_user.UserId;
+        if ((string.IsNullOrWhiteSpace(UserId) || _filterUser != me.UserId) && !me.IsAdmin && me.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true)
+        {
+            _filterUser = me.UserId;
+            current_user = me;
+        }
         else
             _filterUser = UserId;
+
+        if (UserId == me.UserId)
+            current_user = me;
+        else if (!string.IsNullOrWhiteSpace(UserId))
+        {
+            IsBusyProgress = true;
+            TResponseModel<UserInfoModel[]?> user_res = await WebRepo.GetUsersIdentity([UserId]);
+            IsBusyProgress = false;
+            SnackbarRepo.ShowMessagesResponse(user_res.Messages);
+            current_user = user_res.Response?.FirstOrDefault();
+        }
     }
 
     /// <summary>

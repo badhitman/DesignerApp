@@ -43,31 +43,47 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
         {
             DateTime lud = DateTime.UtcNow;
             OrganizationModelDB org_db = await context.Organizations.FirstAsync(x => x.Id == org.Id);
-            if (org_db.BankBIC == org.BankBIC &&
-                org_db.BankName == org.BankName &&
-                org_db.INN == org.INN &&
-                org_db.OGRN == org.OGRN &&
-                org_db.CorrespondentAccount == org.CorrespondentAccount &&
-                org_db.KPP == org.KPP)
-            {
-                res.AddInfo("Изменений в юридических данных нет");
-            }
-            else
-            {
-                await context
-                    .Organizations
-                    .Where(x => x.Id == org_db.Id)
-                    .ExecuteUpdateAsync(set => set
-                    .SetProperty(p => p.NewBankBIC, org.BankBIC)
-                    .SetProperty(p => p.NewBankName, org.BankName)
-                    .SetProperty(p => p.NewINN, org.INN)
-                    .SetProperty(p => p.NewOGRN, org.OGRN)
-                    .SetProperty(p => p.NewCorrespondentAccount, org.CorrespondentAccount)
-                    .SetProperty(p => p.NewKPP, org.KPP)
-                    .SetProperty(p => p.LastAtUpdatedUTC, lud));
 
-                res.AddWarning("Запрос на изменение сформирован");
-            }
+            IQueryable<OrganizationModelDB> q = context
+                .Organizations
+                .Where(x => x.Id == org_db.Id);
+
+            if (org_db.CurrentAccount != org.CurrentAccount)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewCurrentAccount, org.CurrentAccount));
+            else if (org_db.CurrentAccount != org_db.NewCurrentAccount)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewCurrentAccount, ""));
+
+            if (org_db.BankBIC != org.BankBIC)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewBankBIC, org.BankBIC));
+            else if (org_db.BankBIC != org_db.NewBankBIC)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewBankBIC, ""));
+
+            if (org_db.BankName != org.BankName)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewBankName, org.BankName));
+            else if (org_db.BankName != org_db.BankName)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewBankName, ""));
+
+            if (org_db.INN != org.INN)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewINN, org.INN));
+            else if (org_db.INN != org_db.INN)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewINN, ""));
+
+            if (org_db.OGRN != org.OGRN)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewOGRN, org.OGRN));
+            else if (org_db.OGRN != org_db.OGRN)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewOGRN, ""));
+
+            if (org_db.CorrespondentAccount != org.CorrespondentAccount)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewCorrespondentAccount, org.CorrespondentAccount));
+            else if (org_db.CorrespondentAccount != org_db.CorrespondentAccount)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewCorrespondentAccount, ""));
+
+            if (org_db.KPP != org.KPP)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewKPP, org.KPP));
+            else if (org_db.KPP != org_db.KPP)
+                await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.NewKPP, ""));
+
+            await q.ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, lud));
 
             if (org_db.Email != org.Email)
             {
@@ -95,7 +111,6 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
                     .Organizations
                     .Where(x => x.Id == org_db.Id)
                     .ExecuteUpdateAsync(set => set
-                    .SetProperty(p => p.LastAtUpdatedUTC, lud)
                     .SetProperty(p => p.IsDisabled, org.IsDisabled));
 
                 res.AddSuccess(org.IsDisabled ? "Адрес отключён" : "Адрес включён");

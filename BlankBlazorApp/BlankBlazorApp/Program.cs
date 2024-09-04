@@ -142,6 +142,7 @@ builder.Services.AddScoped<IdentityTools>();
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
 builder.Services
+    .AddScoped<ICommerceRemoteTransmissionService, TransmissionCommerceService>()
     .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
     .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()

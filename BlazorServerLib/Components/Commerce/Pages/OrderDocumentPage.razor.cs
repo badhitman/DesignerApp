@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 
-namespace BlazorWebLib.Components.Commerce;
+namespace BlazorWebLib.Components.Commerce.Pages;
 
 /// <summary>
 /// OrderDocumentPage

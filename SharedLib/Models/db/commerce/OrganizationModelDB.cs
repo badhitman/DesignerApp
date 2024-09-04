@@ -46,6 +46,17 @@ public class OrganizationModelDB : OrganizationLegalModel
     /// </summary>
     public string? NewBankBIC { get; set; }
 
+    /// <summary>
+    /// Находится ли объект в режиме запроса изменений реквизитов
+    /// </summary>
+    public bool HasRequestToChange =>
+        (!string.IsNullOrWhiteSpace(NewName) && NewName != Name) ||
+        (!string.IsNullOrWhiteSpace(NewBankBIC) && NewBankBIC != BankBIC) ||
+        (!string.IsNullOrWhiteSpace(NewBankName) && NewBankName != BankName) ||
+        (!string.IsNullOrWhiteSpace(NewCorrespondentAccount) && NewCorrespondentAccount != CorrespondentAccount) ||
+        (!string.IsNullOrWhiteSpace(NewCurrentAccount) && NewCurrentAccount != CurrentAccount) ||
+        (!string.IsNullOrWhiteSpace(NewINN) && NewINN != INN) ||
+        (!string.IsNullOrWhiteSpace(NewKPP) && NewKPP != KPP);
 
     /// <summary>
     /// Users
@@ -56,4 +67,33 @@ public class OrganizationModelDB : OrganizationLegalModel
     /// Addresses
     /// </summary>
     public List<AddressOrganizationModelDB>? Addresses { get; set; }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj is null)
+            return false;
+
+        if (obj is OrganizationModelDB org_db)
+            return
+                org_db.IsDisabled == IsDisabled &&
+                org_db.OGRN == OGRN &&
+                org_db.CurrentAccount == CurrentAccount &&
+                org_db.CorrespondentAccount == CorrespondentAccount &&
+                org_db.BankName == BankName &&
+                org_db.BankBIC == BankBIC &&
+                org_db.Email == Email &&
+                org_db.INN == INN &&
+                org_db.Name == Name &&
+                org_db.KPP == KPP &&
+                org_db.Id == Id &&
+                org_db.Phone == Phone &&
+                org_db.LegalAddress == LegalAddress;
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+        => $"{Id}{KPP}{Name}{INN}{Email}{BankBIC}{BankName}{CorrespondentAccount}{CurrentAccount}{OGRN}{IsDisabled}{LegalAddress}{Phone}".GetHashCode();
 }

@@ -4,7 +4,7 @@
 
 <MudTable Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Юридические лица</MudText>
+        <MudText Typo="Typo.h6">Юридические лица: (@(current_user is null ? "Все" : current_user.Email))</MudText>
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortLabel="@(nameof(OrganizationModelDB.Name))" T="OrganizationModelDB">Название</MudTableSortLabel></MudTh>
@@ -14,7 +14,7 @@
         <MudTh>Банк</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Название">@context.Name</MudTd>
+        <MudTd DataLabel="Название"><a href="/organization-edit/@(context.Id)">@context.Name</a></MudTd>
         <MudTd DataLabel="Связь">@($"{context.Phone} {context.Email}".Trim())</MudTd>
         <MudTd DataLabel="Адрес">@context.LegalAddress</MudTd>
         <MudTd DataLabel="ИНН/КПП/ОГРН">@($"{context.INN}/{context.KPP}/{context.OGRN}")</MudTd>
