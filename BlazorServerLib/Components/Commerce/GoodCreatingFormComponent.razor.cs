@@ -53,6 +53,9 @@ public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
         {
             new_obj.Id = res.Response.Value;
             GoodCreatingHandler(new_obj);
+
+            CreatingGoodsName = null;
+            UMeas = UnitsOfMeasurementEnum.Thing;
         }
     }
 }

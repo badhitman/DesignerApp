@@ -35,19 +35,20 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
     public int? OrganizationId { get; set; }
 
 
+    UserInfoMainModel user = default!;
     OrganizationModelDB? currentOrg;
     OrganizationModelDB? editOrg;
-    UserInfoMainModel user = default!;
 
     async Task CancelEditRequestOrganization()
     {
-        if (editOrg is null)
-            throw new ArgumentNullException(nameof(editOrg));
+        if (editOrg is null || editOrg.Equals(currentOrg))
+            return;
 
         editOrg = GlobalTools.CreateDeepCopy(currentOrg);
 
+        TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.OrganizationUpdate(editOrg!);
+        TResponseModel<int?> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await ReadOrganization();
@@ -55,15 +56,16 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
 
     async Task SaveOrganization()
     {
-        if (editOrg is null)
+        if (editOrg is null || !editOrg.Equals(currentOrg))
             throw new ArgumentNullException(nameof(editOrg));
 
+        TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.OrganizationUpdate(editOrg);
+        TResponseModel<int?> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
-        if(OrganizationId == 0)
+        if (OrganizationId == 0)
         {
             NavigationRepo.NavigateTo($"/organization-edit/{res.Response}");
             return;

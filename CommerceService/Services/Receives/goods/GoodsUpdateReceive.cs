@@ -48,6 +48,12 @@ public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             return res;
         }
 
+        if (await context.Goods.AnyAsync(x => x.Id != req.Id && x.Name == req.Name && x.BaseUnit == req.BaseUnit))
+        {
+            res.AddError("Такая номенклатура уже существует. Измените название или единицу измерения.");
+            return res;
+        }
+
         res.Response = await context.Goods
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set

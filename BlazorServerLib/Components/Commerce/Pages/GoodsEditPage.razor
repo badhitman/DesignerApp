@@ -1,0 +1,11 @@
+﻿@page "/goods-card/{GoodsId:int}"
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager}")]
+
+<GoodsEditComponent GoodsId="GoodsId" />
+
+@code {
+    [Parameter]
+    public int GoodsId { get; set; }
+}

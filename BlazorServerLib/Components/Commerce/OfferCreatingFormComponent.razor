@@ -1,0 +1,15 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<MudStack Row="true" Class="mb-3">
+    <MudTextField Disabled="IsBusyProgress" @bind-Value="nameOffer" Label="Название" Variant="Variant.Outlined" Immediate ShrinkLabel></MudTextField>
+    <MudSelect Disabled="IsBusyProgress" @bind-Value="UnitOffer" Label="Единица измерения" Placeholder="Выбор ед.изм." Variant="Variant.Outlined">
+        @foreach (UnitsOfMeasurementEnum u in Enum.GetValues(typeof(UnitsOfMeasurementEnum)).Cast<UnitsOfMeasurementEnum>())
+        {
+            <MudSelectItem Value="u">@u.DescriptionInfo()</MudSelectItem>
+        }
+    </MudSelect>
+    <MudNumericField Disabled="IsBusyProgress" @bind-Value="multiplicityOffer" Label="Кратность" Variant="Variant.Outlined" Immediate />
+    <MudNumericField Disabled="IsBusyProgress" @bind-Value="priceOffer" Label="Цена" Format="F1" Variant="Variant.Outlined" Immediate />
+    <MudFab Disabled="(!CanSave || IsBusyProgress)" OnClick="AddOffer" StartIcon="@Icons.Material.Filled.Add" Color="@(CanSave ? Color.Info : Color.Default)" Size="Size.Small" Class="align-self-center" />
+</MudStack>

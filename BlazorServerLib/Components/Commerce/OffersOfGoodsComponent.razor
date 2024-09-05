@@ -1,0 +1,40 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<MudPaper Class="pa-4 mt-3">
+    <MudStack Spacing="2">
+        <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Отмена" : "Создать")</MudButton>
+        <MudCollapse Expanded="_expanded">
+            <OfferCreatingFormComponent OfferCreatingHandler="CreateOfferAction" CurrentGoods="CurrentGoods" />
+        </MudCollapse>
+    </MudStack>
+    <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Offers</MudText>
+            <MudSpacer />
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Товар</MudTh>
+            <MudTh>Имя</MudTh>
+            <MudTh>Цена</MudTh>
+            <MudTh>Кратность</MudTh>
+            <MudTh>Ед. изм.</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Goods"> <a href="/offer-card/@context.Id">@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</a> </MudTd>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Price">@context.Price</MudTd>
+            <MudTd DataLabel="Multiplicity">@context.Multiplicity</MudTd>
+            <MudTd DataLabel="OfferUnit">@context.OfferUnit.DescriptionInfo()</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>Данные отсутсвуют</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Загрузка...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudPaper>

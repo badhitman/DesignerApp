@@ -10,6 +10,16 @@ namespace SharedLib;
 public interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// OffersRead
+    /// </summary>
+    public Task<TResponseModel<OfferGoodModelDB[]?>> OffersRead(int[] ids);
+
+    /// <summary>
+    /// GoodsRead
+    /// </summary>
+    public Task<TResponseModel<GoodsModelDB[]?>> GoodsRead(int[] ids);
+
+    /// <summary>
     /// AddressesOrganizationsRead
     /// </summary>
     public Task<TResponseModel<AddressOrganizationModelDB[]?>> AddressesOrganizationsRead(int[] ids);
@@ -77,7 +87,7 @@ public interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OrganizationUpdate
     /// </summary>
-    public Task<TResponseModel<int?>> OrganizationUpdate(OrganizationModelDB org);
+    public Task<TResponseModel<int?>> OrganizationUpdate(TAuthRequestModel<OrganizationModelDB> org);
 
     /// <summary>
     /// OrganizationSetLegal

@@ -79,12 +79,14 @@ builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService
 //
 builder.Services
     .RegisterMqListener<OrganizationSetLegalReceive, OrganizationLegalModel?, bool?>()
-    .RegisterMqListener<OrganizationUpdateReceive, OrganizationModelDB?, int?>()
+    .RegisterMqListener<OrganizationUpdateReceive, TAuthRequestModel<OrganizationModelDB>?, int?>()
     .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
     .RegisterMqListener<AddressOrganizationUpdateReceive, AddressOrganizationBaseModel?, int?>()
     .RegisterMqListener<AddressOrganizationDeleteReceive, int?, bool?>()
     .RegisterMqListener<GoodsUpdateReceive, GoodsModelDB?, int?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
+    .RegisterMqListener<OffersReadReceive, int[]?, OfferGoodModelDB[]?>()
+    .RegisterMqListener<GoodsReadReceive, int[]?, GoodsModelDB[]?>()
     .RegisterMqListener<AddressesOrganizationsReadReceive, int[]?, AddressOrganizationModelDB[]?>()
     .RegisterMqListener<AttachmentDeleteFromOrderReceive, int?, bool?>()
     .RegisterMqListener<AttachmentForOrderReceive, AttachmentForOrderRequestModel?, int?>()

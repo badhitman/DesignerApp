@@ -64,7 +64,7 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OrganizationModelDB>?>(GlobalStaticConstants.TransmissionQueues.OrganizationsSelectCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> OrganizationUpdate(OrganizationModelDB org)
+    public async Task<TResponseModel<int?>> OrganizationUpdate(TAuthRequestModel<OrganizationModelDB> org)
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.OrganizationUpdateOrCreateCommerceReceive, org);
 
     /// <inheritdoc/>
@@ -77,7 +77,7 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> RowForOrderUpdate(RowOfOrderDocumentModelDB row)
-        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.OrganizationUpdateOrCreateCommerceReceive, row);
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.RowForOrderUpdateCommerceReceive, row);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> RowsForOrderDelete(int[] req)
@@ -86,4 +86,12 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
     /// <inheritdoc/>
     public async Task<TResponseModel<AddressOrganizationModelDB[]?>> AddressesOrganizationsRead(int[] ids)
         => await rabbitClient.MqRemoteCall<AddressOrganizationModelDB[]?>(GlobalStaticConstants.TransmissionQueues.AddressesOrganizationsReadCommerceReceive, ids);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<GoodsModelDB[]?>> GoodsRead(int[] ids)
+        => await rabbitClient.MqRemoteCall<GoodsModelDB[]?>(GlobalStaticConstants.TransmissionQueues.GoodsReadCommerceReceive, ids);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<OfferGoodModelDB[]?>> OffersRead(int[] ids)
+        => await rabbitClient.MqRemoteCall<OfferGoodModelDB[]?>(GlobalStaticConstants.TransmissionQueues.OfferReadCommerceReceive, ids);
 }

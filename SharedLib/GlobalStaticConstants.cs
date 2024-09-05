@@ -216,6 +216,9 @@ public static partial class GlobalStaticConstants
 
         #region Commerce
         /// <inheritdoc/>
+        public readonly static string GoodsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string GoodsSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -274,6 +277,9 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string OfferSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.OFFER_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string OfferReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.OFFER_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string AddressOrganizationDeleteCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.ADDRESS_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);

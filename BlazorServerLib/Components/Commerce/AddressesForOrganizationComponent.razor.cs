@@ -33,7 +33,6 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
 
     RubricIssueHelpdeskLowModel? SelectedRubric;
 
-    bool _expanded;
     Dictionary<int, List<RubricIssueHelpdeskModelDB>> RubriciesCached = [];
     string? addingAddress, addingContacts, addingName;
 
@@ -42,6 +41,12 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
         !string.IsNullOrWhiteSpace(addingContacts) &&
         !string.IsNullOrWhiteSpace(addingName) &&
         SelectedRubric is not null;
+
+    bool _expanded;
+    private void OnExpandCollapseClick()
+    {
+        _expanded = !_expanded;
+    }
 
     async Task AddAddress()
     {
@@ -132,8 +137,5 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
         addingName = null;
     }
 
-    private void OnExpandCollapseClick()
-    {
-        _expanded = !_expanded;
-    }
+
 }

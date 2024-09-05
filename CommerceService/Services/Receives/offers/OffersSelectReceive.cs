@@ -50,6 +50,7 @@ public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
             .OrderBy(x => x.LastAtUpdatedUTC)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
+            .Include(x => x.Goods)
             .ToArrayAsync()];
 
         return res;
