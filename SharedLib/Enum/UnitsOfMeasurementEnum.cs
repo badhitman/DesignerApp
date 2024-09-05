@@ -14,13 +14,14 @@ public enum UnitsOfMeasurementEnum
     /// <summary>
     /// None
     /// </summary>
+    [Description("-нет-")]
     None = 0,
 
     /// <summary>
-    /// Коробка
+    /// Штука
     /// </summary>
-    [Description("Коробка")]
-    Box = 10,
+    [Description("Штука")]
+    Thing = 10,
 
     /// <summary>
     /// Кипа
@@ -35,8 +36,8 @@ public enum UnitsOfMeasurementEnum
     Bunch = 30,
 
     /// <summary>
-    /// Штука
+    /// Коробка
     /// </summary>
-    [Description("Штука")]
-    Thing = 40,
+    [Description("Коробка")]
+    Box = 40,
 }

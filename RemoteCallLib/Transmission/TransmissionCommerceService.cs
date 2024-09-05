@@ -28,12 +28,12 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.DeliveryOrderUpdateCommerceReceive, delivery);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<GoodModelDB>?>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<GoodModelDB>?>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
+    public async Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>?>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<GoodsModelDB>?>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> GoodUpdateReceive(GoodModelDB req)
-        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.GoodsUpdateCommerceReceive, req);
+    public async Task<TResponseModel<int?>> GoodUpdateReceive(GoodsModelDB req)
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.GoodsUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> OfferDelete(int req)
@@ -41,7 +41,7 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<OfferGoodModelDB>?>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OfferGoodModelDB>?>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OfferGoodModelDB>?>(GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> OfferUpdate(OfferGoodModelDB offer)

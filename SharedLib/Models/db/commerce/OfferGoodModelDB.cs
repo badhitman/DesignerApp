@@ -10,13 +10,13 @@ namespace SharedLib;
 public class OfferGoodModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
-    /// Good
+    /// Goods
     /// </summary>
-    public GoodModelDB? Good { get; set; }
+    public GoodsModelDB? Goods { get; set; }
     /// <summary>
     /// Good
     /// </summary>
-    public int GoodId { get; set; }
+    public int GoodsId { get; set; }
 
     /// <summary>
     /// Единица измерения предложения

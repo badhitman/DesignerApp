@@ -27,7 +27,7 @@ public class AddressOrganizationUpdateReceive(IDbContextFactory<CommerceContext>
 
         if (req.Id < 1)
         {
-            AddressOrganizationModelDB add = new ()
+            AddressOrganizationModelDB add = new()
             {
                 Address = req.Address,
                 Name = req.Name,
@@ -42,14 +42,23 @@ public class AddressOrganizationUpdateReceive(IDbContextFactory<CommerceContext>
             return res;
         }
 
-        res.Response = await context.AddressesOrganizations
-            .Where(x => x.Id == req.Id)
-            .ExecuteUpdateAsync(set => set
-            .SetProperty(p => p.Address, req.Address)
-            .SetProperty(p => p.Name, req.Name)
-            .SetProperty(p => p.ParentId, req.ParentId)
-            .SetProperty(p => p.Contacts, req.Contacts)
-            .SetProperty(p => p.OrganizationId, req.OrganizationId));
+        try
+        {
+            res.Response = await context.AddressesOrganizations
+                        .Where(x => x.Id == req.Id)
+                        .ExecuteUpdateAsync(set => set
+                        //.SetProperty(p => p.OrganizationId, req.OrganizationId)
+                        .SetProperty(p => p.Address, req.Address)
+                        .SetProperty(p => p.Name, req.Name)
+                        .SetProperty(p => p.ParentId, req.ParentId)
+                        .SetProperty(p => p.Contacts, req.Contacts));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+
+
 
         res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
         return res;

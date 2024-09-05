@@ -20,5 +20,5 @@ public class EntrySwitchableModel : IdSwitchableModel
     /// Имя объекта
     /// </summary>
     [Required(AllowEmptyStrings = false, ErrorMessage = "Поле наименования обязательно для заполнения")]
-    public required string Name { get; set; }
+    public virtual required string Name { get; set; }
 }

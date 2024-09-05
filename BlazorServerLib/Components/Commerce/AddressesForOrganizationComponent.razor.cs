@@ -82,6 +82,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
         await UpdateCacheRubricies();
     }
 
+    string? _last_request;
     async Task UpdateCacheRubricies()
     {
         Organization.Addresses ??= [];
@@ -90,20 +91,28 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
             .Where(x => !RubriciesCached.ContainsKey(x.ParentId))
             .Select(x=>x.ParentId)];
 
-        IsBusyProgress = true;
-        foreach (int i in added_rubrics)
+        if (added_rubrics.Length != 0)
         {
-            TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(i);
-            if (res.Success() && res.Response is not null)
-                RubriciesCached.Add(i, res.Response);
-        }
-        IsBusyProgress = false;
+            string _curr_request = string.Join(",", added_rubrics);
+            if (_curr_request == _last_request)
+                return;
+            _last_request = _curr_request;
 
+            IsBusyProgress = true;
+            foreach (int i in added_rubrics)
+            {
+                TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(i);
+                if (res.Success() && res.Response is not null)
+                    RubriciesCached.Add(i, res.Response);
+            }
+            IsBusyProgress = false;
+            StateHasChanged();
+        }
     }
 
     string? GetCity(AddressOrganizationModelDB ad)
     {
-        if(!RubriciesCached.TryGetValue(ad.ParentId, out List<RubricIssueHelpdeskModelDB>? value))
+        if (!RubriciesCached.TryGetValue(ad.ParentId, out List<RubricIssueHelpdeskModelDB>? value))
             return null;
 
         return value.LastOrDefault()?.Name;

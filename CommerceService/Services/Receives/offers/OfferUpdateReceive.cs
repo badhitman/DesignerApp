@@ -32,7 +32,7 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 Name = req.Name,
                 IsDisabled = req.IsDisabled,
                 Multiplicity = req.Multiplicity,
-                GoodId = req.GoodId,
+                GoodsId = req.GoodsId,
                 OfferUnit = req.OfferUnit,
                 Price = req.Price,
                 LastAtUpdatedUTC = dtu,
@@ -51,7 +51,7 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             .SetProperty(p => p.Name, req.Name)
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.Multiplicity, req.Multiplicity)
-            .SetProperty(p => p.GoodId, req.GoodId)
+            .SetProperty(p => p.GoodsId, req.GoodsId)
             .SetProperty(p => p.OfferUnit, req.OfferUnit)
             .SetProperty(p => p.Price, req.Price)
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));

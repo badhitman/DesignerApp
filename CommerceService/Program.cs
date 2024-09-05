@@ -83,7 +83,7 @@ builder.Services
     .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
     .RegisterMqListener<AddressOrganizationUpdateReceive, AddressOrganizationBaseModel?, int?>()
     .RegisterMqListener<AddressOrganizationDeleteReceive, int?, bool?>()
-    .RegisterMqListener<GoodsUpdateReceive, GoodModelDB?, int?>()
+    .RegisterMqListener<GoodsUpdateReceive, GoodsModelDB?, int?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
     .RegisterMqListener<AddressesOrganizationsReadReceive, int[]?, AddressOrganizationModelDB[]?>()
     .RegisterMqListener<AttachmentDeleteFromOrderReceive, int?, bool?>()
@@ -96,7 +96,7 @@ builder.Services
     .RegisterMqListener<OrdersSelectReceive, TPaginationRequestModel<OrdersSelectRequestModel>?, TPaginationResponseModel<OrderDocumentModelDB>?>()
     .RegisterMqListener<OfferUpdateReceive, OfferGoodModelDB?, int?>()
     .RegisterMqListener<OffersSelectReceive, TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferGoodModelDB>?>()
-    .RegisterMqListener<GoodsSelectReceive, TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<GoodModelDB>?>()
+    .RegisterMqListener<GoodsSelectReceive, TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<GoodsModelDB>?>()
     .RegisterMqListener<OrganizationsReadReceive, int[]?, OrganizationModelDB[]?>();
 #endregion
 

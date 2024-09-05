@@ -13,20 +13,20 @@ namespace Transmission.Receives.commerce;
 /// GoodsSelectReceive
 /// </summary>
 public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<GoodModelDB>?>
+: IResponseReceive<TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<GoodsModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<GoodModelDB>?>> ResponseHandleAction(TPaginationRequestModel<GoodsSelectRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>?>> ResponseHandleAction(TPaginationRequestModel<GoodsSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
         if (req.PageSize < 10)
             req.PageSize = 10;
 
-        TResponseModel<TPaginationResponseModel<GoodModelDB>?> res = new()
+        TResponseModel<TPaginationResponseModel<GoodsModelDB>?> res = new()
         {
             Response = new()
             {
@@ -39,7 +39,7 @@ public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFac
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<GoodModelDB> q = context
+        IQueryable<GoodsModelDB> q = context
             .Goods
             .AsQueryable();
 

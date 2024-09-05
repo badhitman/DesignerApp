@@ -34,6 +34,7 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
             org.NewName = org.Name;
             org.NewLegalAddress = org.LegalAddress;
             org.NewCorrespondentAccount = org.CorrespondentAccount;
+            org.NewCurrentAccount = org.NewCurrentAccount;
             org.NewKPP = org.KPP;
             org.LastAtUpdatedUTC = DateTime.UtcNow;
 

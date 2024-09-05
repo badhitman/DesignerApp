@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Товар
 /// </summary>
-public class GoodModelDB : EntrySwitchableUpdatedModel
+public class GoodsModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
     /// Базовая единица измерения

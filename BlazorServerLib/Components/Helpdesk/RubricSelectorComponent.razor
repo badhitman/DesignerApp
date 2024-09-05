@@ -25,7 +25,7 @@ else
     }
     else
     {
-        <select @bind="SelectedRubricId" class="form-select">
+        <select id="abra-kadabra" @bind="SelectedRubricId" class="form-select">
             @if (SelectedRubricId < 1 || ModeSelectingRubrics == ModesSelectRubricsEnum.AllowWithoutRubric)
             {
                 <option value="0" selected>Выбор элемента</option>

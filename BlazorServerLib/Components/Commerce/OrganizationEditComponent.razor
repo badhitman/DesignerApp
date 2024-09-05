@@ -19,7 +19,6 @@ else
         <MudTabPanel Text="Реквизиты">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Карточка организации</h5>
                     <div class="card mb-3">
                         <div class="card-body">
                             <div class="row">
@@ -132,10 +131,15 @@ else
                     <MudSwitch @bind-Value="editOrg.IsDisabled" Label="Отключение" Color="Color.Success" />
 
                     <div class="d-grid gap-2">
-                        <button @onclick="SaveOrganization" disabled="@(currentOrg.Equals(editOrg) || !GlobalTools.ValidateObject(editOrg).IsValid)" class="btn btn-primary" type="button">Сохранить</button>
-                        @if (editOrg.HasRequestToChange)
+                        <button title="Сохранить изменения" @onclick="SaveOrganization" disabled="@(currentOrg.Equals(editOrg) || !GlobalTools.ValidateObject(editOrg).IsValid)" class="btn btn-@(currentOrg.Equals(editOrg) ? "outline-primary" : "success")" type="button">Сохранить</button>
+                        @if (!currentOrg.Equals(editOrg))
                         {
-                            <button @onclick="CancelEditRequestOrganization" class="btn btn-primary" type="button">Отмена запроса изменений</button>
+                            <button title="Отменить редактирование формы" @onclick="() => editOrg = GlobalTools.CreateDeepCopy(currentOrg)" class="btn btn-primary" type="button">Отмена</button>
+                        }
+
+                        @if (editOrg.HasRequestToChange && currentOrg.Equals(editOrg))
+                        {
+                            <button title="Отказ от изменений юридических реквизитов" @onclick="CancelEditRequestOrganization" class="btn btn-primary" type="button">Аннулировать запрос изменений</button>
                         }
                     </div>
                 </div>

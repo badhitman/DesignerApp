@@ -16,7 +16,7 @@ public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
 : IResponseReceive<TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferGoodModelDB>?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive;
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<OfferGoodModelDB>?>> ResponseHandleAction(TPaginationRequestModel<OffersSelectRequestModel>? req)

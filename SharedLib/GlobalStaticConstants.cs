@@ -273,6 +273,9 @@ public static partial class GlobalStaticConstants
         public readonly static string OfferUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.OFFER_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string OfferSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.OFFER_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string AddressOrganizationDeleteCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.ADDRESS_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -856,6 +859,11 @@ public static partial class GlobalStaticConstants
         /// Таблица заявок клиентов связанных с текущим сотрудником
         /// </summary>
         public const string HelpDeskTelegramBotUnit = "HelpDeskTelegramBotUnit";
+
+        /// <summary>
+        /// CommerceManager
+        /// </summary>
+        public const string CommerceManager = "CommerceManager";
         #endregion
     }
 

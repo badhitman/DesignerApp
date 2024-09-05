@@ -62,7 +62,7 @@ public interface ICommerceRemoteTransmissionService
     /// <summary>
     /// GoodsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<GoodModelDB>?>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>?>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req);
 
     /// <summary>
     /// OrganizationsSelect
@@ -102,5 +102,5 @@ public interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Обновить/Создать товар
     /// </summary>
-    public Task<TResponseModel<bool?>> GoodUpdateReceive(GoodModelDB req);
+    public Task<TResponseModel<int?>> GoodUpdateReceive(GoodsModelDB req);
 }

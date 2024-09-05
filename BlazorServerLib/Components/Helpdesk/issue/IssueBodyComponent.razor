@@ -31,7 +31,7 @@
         @if (IsEditMode)
         {
             <CascadingValue Value="RubricSelectAction">
-                <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" ParentRubric="0" />
+                <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" ParentRubric="0" SelectedRubric="IssueSource?.RubricIssueId" />
             </CascadingValue>
             <hr />
             <InputRichTextComponent @bind-Value="DescriptionIssueEdit" ReadOnly="IsBusyProgress" />

@@ -1,4 +1,6 @@
 ﻿@page "/address-for-organization/{AddressForOrganization:int}"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @using BlazorWebLib.Components.Helpdesk
 @using MudBlazor
 
@@ -13,7 +15,7 @@
     <MudCardContent>
         <MudStack>
             <CascadingValue Value="RubricSelectAction">
-                <RubricSelectorComponent ContextName="@GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME" Title="Адрес" ModeSelectingRubrics="ModesSelectRubricsEnum.Strict" ShowDisabledRubrics="false" ParentRubric="@(SelectedRubric?.ParentRubricId ?? 0)" />
+                <RubricSelectorComponent @ref="rubricSelector_ref" ContextName="@GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME" Title="Регин, город" ModeSelectingRubrics="ModesSelectRubricsEnum.Strict" ShowDisabledRubrics="false" ParentRubric="0" StartRubric="AddressEdit.ParentId" />
             </CascadingValue>
             <div class="row mb-3">
                 <div class="col-md-4">

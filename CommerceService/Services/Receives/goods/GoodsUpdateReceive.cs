@@ -13,13 +13,13 @@ namespace Transmission.Receives.commerce;
 /// GoodsUpdateReceive
 /// </summary>
 public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-    : IResponseReceive<GoodModelDB?, int?>
+    : IResponseReceive<GoodsModelDB?, int?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsUpdateCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(GoodModelDB? req)
+    public async Task<TResponseModel<int?>> ResponseHandleAction(GoodsModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<int?> res = new() { Response = 0 };
@@ -27,7 +27,13 @@ public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
         DateTime dtu = DateTime.UtcNow;
         if (req.Id < 1)
         {
-            GoodModelDB goods_db = new()
+            if (await context.Goods.AnyAsync(x => x.Name == req.Name && x.BaseUnit == req.BaseUnit))
+            {
+                res.AddError("Такая номенклатура уже существует");
+                return res;
+            }
+
+            GoodsModelDB goods_db = new()
             {
                 Name = req.Name,
                 BaseUnit = req.BaseUnit,

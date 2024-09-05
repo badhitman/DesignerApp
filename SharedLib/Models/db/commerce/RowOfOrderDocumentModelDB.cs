@@ -48,14 +48,14 @@ public class RowOfOrderDocumentModelDB
     public int OfferId { get; set; }
 
     /// <summary>
-    /// Good
+    /// Goods
     /// </summary>
-    public OfferGoodModelDB? Good { get; set; }
+    public OfferGoodModelDB? Goods { get; set; }
 
     /// <summary>
-    /// Good
+    /// Goods
     /// </summary>
-    public int GoodId { get; set; }
+    public int GoodsId { get; set; }
 
     /// <summary>
     /// Quantity

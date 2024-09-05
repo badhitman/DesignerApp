@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using BlazorWebLib.Components.Helpdesk;
 
 namespace BlazorWebLib.Components.Commerce.Pages;
 
@@ -35,9 +36,10 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
     AddressOrganizationModelDB AddressEdit { get; set; } = default!;
 
     bool CanSave =>
-        AddressEdit.Address != AddressCurrent.Address &&
-        AddressEdit.Contacts != AddressCurrent.Contacts &&
-        AddressEdit.Name != AddressCurrent.Name &&
+        (AddressEdit.Address != AddressCurrent.Address ||
+        AddressEdit.Contacts != AddressCurrent.Contacts ||
+        AddressEdit.Name != AddressCurrent.Name ||
+        AddressEdit.ParentId != AddressCurrent.ParentId) &&
         SelectedRubric is not null;
 
     RubricIssueHelpdeskLowModel? SelectedRubric;
@@ -72,9 +74,16 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
         }
     }
 
+    RubricSelectorComponent rubricSelector_ref = default!;
+
     void ResetEdit()
     {
         AddressEdit = GlobalTools.CreateDeepCopy(AddressCurrent) ?? throw new Exception();
+        if (rubricSelector_ref.SelectedRubricId != AddressEdit.ParentId)
+        {
+            rubricSelector_ref.SelectedRubricId = AddressEdit.ParentId;
+            rubricSelector_ref.StateHasChangedCall();
+        }
     }
 
     async Task SaveAddress()
@@ -88,7 +97,6 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
             Address = AddressEdit.Address!,
             Name = AddressEdit.Name!,
             ParentId = SelectedRubric!.Id,
-            OrganizationId = AddressForOrganization,
             Contacts = AddressEdit.Contacts,
             Id = AddressForOrganization,
         });
@@ -103,6 +111,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
     void RubricSelectAction(RubricIssueHelpdeskLowModel? selectedRubric)
     {
         SelectedRubric = selectedRubric;
+        AddressEdit.ParentId = selectedRubric?.Id ?? 0;
         StateHasChanged();
     }
 }

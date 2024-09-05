@@ -26,10 +26,10 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     public required Action<RubricIssueHelpdeskLowModel?> SelectRubricsHandle { get; set; }
 
     /// <summary>
-    /// Owner issue
+    /// StartRubric
     /// </summary>
-    [CascadingParameter]
-    public IssueHelpdeskModelDB? IssueSource { get; set; }
+    [Parameter]
+    public int? StartRubric { get; set; }
 
     [CascadingParameter]
     List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow { get; set; }
@@ -67,7 +67,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Selected Rubric Id
     /// </summary>
-    int SelectedRubricId
+    public int SelectedRubricId
     {
         get => _selectedRubricId;
         set
@@ -101,10 +101,10 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         await OwnerRubricSet(ParentRubric);
-        if (ParentRubric == 0 && IssueSource is not null && IssueSource.RubricIssueId.HasValue)
+        if (ParentRubric == 0 && StartRubric is not null && StartRubric.HasValue)
         {
             IsBusyProgress = true;
-            TResponseModel<List<RubricIssueHelpdeskModelDB>?> dump_rubric = await HelpdeskRepo.RubricRead(IssueSource.RubricIssueId.Value);
+            TResponseModel<List<RubricIssueHelpdeskModelDB>?> dump_rubric = await HelpdeskRepo.RubricRead(StartRubric.Value);
             RubricMetadataShadow = dump_rubric.Response;
             SnackbarRepo.ShowMessagesResponse(dump_rubric.Messages);
             IsBusyProgress = false;

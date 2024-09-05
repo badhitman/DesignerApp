@@ -1,0 +1,6 @@
+﻿@page "/goods-manage"
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager}")]
+
+<GoodsManageComponent />

@@ -17,6 +17,11 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
     [Inject]
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
 
+    /// <summary>
+    /// IssueSource
+    /// </summary>
+    [Parameter,CascadingParameter]
+    public IssueHelpdeskModelDB? IssueSource { get; set; }
 
     bool CanSave =>
         !string.IsNullOrWhiteSpace(NameIssueEdit) &&

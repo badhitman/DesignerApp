@@ -66,7 +66,7 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// Товары
     /// </summary>
-    public DbSet<GoodModelDB> Goods { get; set; }
+    public DbSet<GoodsModelDB> Goods { get; set; }
 
     /// <summary>
     /// Organizations
