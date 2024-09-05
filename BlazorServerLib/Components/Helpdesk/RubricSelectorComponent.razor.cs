@@ -25,6 +25,15 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required Action<RubricIssueHelpdeskLowModel?> SelectRubricsHandle { get; set; }
 
+    /// <summary>
+    /// Owner issue
+    /// </summary>
+    [CascadingParameter]
+    public IssueHelpdeskModelDB? IssueSource { get; set; }
+
+    [CascadingParameter]
+    List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow { get; set; }
+
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required int ParentRubric { get; set; }
@@ -36,15 +45,6 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required ModesSelectRubricsEnum ModeSelectingRubrics { get; set; }
-
-    /// <summary>
-    /// Owner issue
-    /// </summary>
-    [CascadingParameter]
-    public IssueHelpdeskModelDB? IssueSource { get; set; }
-
-    [CascadingParameter]
-    List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow { get; set; }
 
     /// <summary>
     /// Title
