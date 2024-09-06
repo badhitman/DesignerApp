@@ -69,8 +69,17 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
             req.Payload.NewKPP = req.Payload.KPP;
             req.Payload.LastAtUpdatedUTC = DateTime.UtcNow;
 
-            await context.AddAsync(req);
-            await context.SaveChangesAsync();
+            try
+            {
+                await context.AddAsync(req.Payload);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
+
             res.Response = req.Payload.Id;
         }
         else
