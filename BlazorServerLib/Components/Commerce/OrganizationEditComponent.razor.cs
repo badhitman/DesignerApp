@@ -98,6 +98,8 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         OrganizationId ??= 0;
+        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         if (OrganizationId == 0)
         {
@@ -119,8 +121,6 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
         await ReadOrganization();
     }
 }
