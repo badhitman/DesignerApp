@@ -18,14 +18,13 @@ public class RowOfOrderDocumentModelDB
     public int Id { get; set; }
 
     /// <summary>
-    /// AddressOrganization
+    /// AddressForOrderTab
     /// </summary>
-    public AddressOrganizationModelDB? AddressOrganization { get; set; }
-
+    public AddressForOrderModelDb? AddressForOrderTab { get; set; }
     /// <summary>
-    /// AddressOrganization
+    /// AddressForOrderTab
     /// </summary>
-    public int AddressOrganizationId { get; set; }
+    public int AddressForOrderTabId { get; set; }
 
     /// <summary>
     /// Заказ (документ)
@@ -50,7 +49,7 @@ public class RowOfOrderDocumentModelDB
     /// <summary>
     /// Goods
     /// </summary>
-    public OfferGoodModelDB? Goods { get; set; }
+    public GoodsModelDB? Goods { get; set; }
 
     /// <summary>
     /// Goods

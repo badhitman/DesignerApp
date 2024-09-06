@@ -60,6 +60,11 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<OrderDocumentModelDB[]?>> OrdersRead(int[] orders_ids);
 
     /// <summary>
+    /// OrdersRead
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>?>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
+
+    /// <summary>
     /// Удалить Offer
     /// </summary>
     public Task<TResponseModel<bool?>> OfferDelete(int req);

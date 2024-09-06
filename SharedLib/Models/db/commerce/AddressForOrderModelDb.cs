@@ -7,9 +7,9 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// Доставка
+/// Адрес организации в заказе
 /// </summary>
-public class DeliveryModelDb
+public class AddressForOrderModelDb
 {
     /// <summary>
     /// Идентификатор/Key
@@ -41,10 +41,15 @@ public class DeliveryModelDb
     /// <summary>
     /// Цена доставки
     /// </summary>
-    public double Price { get; set; }
+    public double DeliveryPrice { get; set; }
 
     /// <summary>
     /// Статус доставки
     /// </summary>
     public HelpdeskIssueStepsEnum Status { get; set; }
+
+    /// <summary>
+    /// Строки заказа
+    /// </summary>
+    public List<RowOfOrderDocumentModelDB>? Rows { get; set; }
 }

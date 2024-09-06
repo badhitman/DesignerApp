@@ -44,9 +44,9 @@ public partial class CommerceLayerContext : DbContext
     public DbSet<PaymentDocumentModelDb> PaymentsDocuments { get; set; }
 
     /// <summary>
-    /// Доставка
+    /// Адреса организаций в заказе
     /// </summary>
-    public DbSet<DeliveryModelDb> Deliveries { get; set; }
+    public DbSet<AddressForOrderModelDb> AddressesForOrders { get; set; }
 
     /// <summary>
     /// Строки заказов

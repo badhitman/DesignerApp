@@ -18,7 +18,7 @@ public class PaymentDocumentBaseModel : EntryModel
     public double Amount { get; set; }
 
     /// <summary>
-    /// ExternalIdDocument
+    /// Идентификатор документа из внешней системы (например 1С)
     /// </summary>
     public required string ExternalDocumentId { get; set; }
 

@@ -15,10 +15,15 @@ public class OrdersSelectRequestModel
     public DateTime? AfterDateUpdate { get; set; }
 
     /// <summary>
-    /// Только корзины
+    /// Получить корзины клиента
     /// </summary>
     /// <remarks>
     /// Заказы, у которых не указан связанная заявка в HelpDesk считается не оформленным заказом, а предварительным (корзина)
     /// </remarks>
-    public bool CartOnly { get; set; }
+    public bool? IsCartFilter { get; set; }
+
+    /// <summary>
+    /// IncludeExternalData
+    /// </summary>
+    public bool IncludeExternalData {  get; set; }
 }

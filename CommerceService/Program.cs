@@ -95,7 +95,7 @@ builder.Services
     .RegisterMqListener<RowForOrderUpdateReceive, RowOfOrderDocumentModelDB?, int?>()
     .RegisterMqListener<DeliveryOrderUpdateReceive, DeliveryForOrderUpdateRequestModel?, int?>()
     .RegisterMqListener<OrdersReadReceive, int[]?, OrderDocumentModelDB[]?>()
-    .RegisterMqListener<OrdersSelectReceive, TPaginationRequestModel<OrdersSelectRequestModel>?, TPaginationResponseModel<OrderDocumentModelDB>?>()
+    .RegisterMqListener<OrdersSelectReceive, TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>>?, TPaginationResponseModel<OrderDocumentModelDB>?>()
     .RegisterMqListener<OfferUpdateReceive, OfferGoodModelDB?, int?>()
     .RegisterMqListener<OffersSelectReceive, TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferGoodModelDB>?>()
     .RegisterMqListener<GoodsSelectReceive, TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<GoodsModelDB>?>()

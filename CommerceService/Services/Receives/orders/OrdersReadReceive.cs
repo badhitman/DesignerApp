@@ -27,12 +27,15 @@ public class OrdersReadReceive(IDbContextFactory<CommerceContext> commerceDbFact
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        res.Response = await context
+        IQueryable<OrderDocumentModelDB> q = context
             .OrdersDocuments
-            .Where(x => req.Any(y => x.Id == y))
-            .Include(x => x.Attachments)
-            .Include(x => x.Rows)
-            .Include(x => x.Deliveries)
+            .Where(x => req.Any(y => x.Id == y));
+
+        res.Response = await q
+            .Include(x => x.AddressesTabs!)
+            .ThenInclude(x => x.Rows!)
+            .ThenInclude(x => x.Offer!)
+            .ThenInclude(x => x.Goods)
             .ToArrayAsync();
 
         return res;

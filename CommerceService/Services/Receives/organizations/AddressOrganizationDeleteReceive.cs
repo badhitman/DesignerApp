@@ -27,12 +27,12 @@ public class AddressOrganizationDeleteReceive(IDbContextFactory<CommerceContext>
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         OrderDocumentModelDB[] links_deliveries = await context
             .OrdersDocuments
-            .Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.AddressOrganizationId == req))
+            .Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.AddressForOrderTabId == req))
             .ToArrayAsync();
 
         OrderDocumentModelDB[] links_documents = await context
             .OrdersDocuments
-            .Where(x => context.Deliveries.Any(y => y.OrderDocumentId == x.Id && y.AddressOrganizationId == req))
+            .Where(x => context.AddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.AddressOrganizationId == req))
             .ToArrayAsync();
 
         if (links_deliveries.Length != 0)

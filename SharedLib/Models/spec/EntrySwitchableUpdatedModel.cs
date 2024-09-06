@@ -15,5 +15,10 @@ public class EntrySwitchableUpdatedModel : EntrySwitchableModel
     /// <summary>
     /// Дата последнего обновления
     /// </summary>
-    public DateTime LastAtUpdatedUTC { get; set; }
+    public DateTime LastAtUpdatedUTC { get; set; } = DateTime.MinValue;
+
+    /// <summary>
+    /// Дата создания
+    /// </summary>
+    public DateTime CreatedAtUTC { get; set; } = DateTime.UtcNow;
 }

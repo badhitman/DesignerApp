@@ -15,6 +15,11 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     public required string AuthorIdentityUserId { get; set; }
 
     /// <summary>
+    /// Идентификатор документа из внешней системы (например 1С)
+    /// </summary>
+    public string? ExternalDocumentId { get; set; }
+
+    /// <summary>
     /// Заявка, связанная с заказом.
     /// </summary>
     /// <remarks>
@@ -23,17 +28,37 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     public int? HelpdeskId { get; set; }
 
     /// <summary>
-    /// Строки заказа
+    /// Organization
     /// </summary>
-    public List<RowOfOrderDocumentModelDB>? Rows { get; set; }
+    public OrganizationModelDB? Organization { get; set; }
+    /// <summary>
+    /// Organization
+    /// </summary>
+    public int OrganizationId { get; set; }
 
     /// <summary>
-    /// Deliveries
+    /// AddressesTabs
     /// </summary>
-    public List<DeliveryModelDb>? Deliveries { get; set; }
+    public List<AddressForOrderModelDb>? AddressesTabs { get; set; }
 
     /// <summary>
     /// Вложения (файлы)
     /// </summary>
     public List<AttachmentForOrderModelDB>? Attachments { get; set; }
+
+    /// <summary>
+    /// Сумма заказа всего
+    /// </summary>
+    /// <returns></returns>
+    public (double for_goods, double for_delivery) TotalSumForRows()
+    {
+        if (AddressesTabs is null || AddressesTabs.Count == 0 || AddressesTabs.Any(x => x.Rows is null) || AddressesTabs.Any(x => x.Rows is null || x.Rows.Any(z => z.Offer is null)))
+            return (0, 0);
+
+        double
+            for_goods = AddressesTabs.Sum(x => x.Rows!.Sum(y => y.Quantity * y.Offer!.Price)),
+            for_delivery = AddressesTabs.Sum(x => x.DeliveryPrice);
+
+        return (for_goods, for_delivery);
+    }
 }

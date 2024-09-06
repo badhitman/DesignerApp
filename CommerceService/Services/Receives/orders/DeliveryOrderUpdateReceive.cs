@@ -27,7 +27,7 @@ public class DeliveryOrderUpdateReceive(IDbContextFactory<CommerceContext> comme
 
         if (req.SetAction)
         {
-            DeliveryModelDb? dlr = await context.Deliveries
+            AddressForOrderModelDb? dlr = await context.AddressesForOrders
                 .FirstOrDefaultAsync(x => x.AddressOrganizationId == req.DeliveryAddressId && x.OrderDocumentId == req.OrderDocumentId);
 
             if (dlr is null)
@@ -37,7 +37,7 @@ public class DeliveryOrderUpdateReceive(IDbContextFactory<CommerceContext> comme
                     AddressOrganizationId = req.DeliveryAddressId,
                     OrderDocumentId = req.OrderDocumentId,
                     Status = HelpdeskIssueStepsEnum.Created,
-                    Price = req.Price,
+                    DeliveryPrice = req.Price,
                 };
                 await context.AddAsync(dlr);
                 await context.SaveChangesAsync();                
@@ -45,15 +45,15 @@ public class DeliveryOrderUpdateReceive(IDbContextFactory<CommerceContext> comme
             }
             else
             {
-                await context.Deliveries
+                await context.AddressesForOrders
                     .Where(x => x.AddressOrganizationId == req.DeliveryAddressId && x.OrderDocumentId == req.OrderDocumentId)
-                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.Price, req.Price).SetProperty(p => p.Status, req.Status));
+                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.DeliveryPrice, req.Price).SetProperty(p => p.Status, req.Status));
             }
             res.Response = dlr.Id;
         }
         else
         {
-            res.Response = await context.Deliveries
+            res.Response = await context.AddressesForOrders
                 .Where(x => x.AddressOrganizationId == req.DeliveryAddressId && x.OrderDocumentId == req.OrderDocumentId)
                 .ExecuteDeleteAsync();
 
