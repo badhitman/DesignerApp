@@ -49,11 +49,13 @@ public class OrganizationsSelectReceive(IDbContextFactory<CommerceContext> comme
         if (!string.IsNullOrWhiteSpace(req.Payload.ForUserIdentityId))
             q = q.Where(x => context.OrganizationsUsers.Any(y => y.OrganizationId == x.Id && y.UserPersonIdentityId == req.Payload.ForUserIdentityId));
 
-        res.Response.Response = [.. await q
-            .OrderBy(x => x.LastAtUpdatedUTC)
+        q = q.OrderBy(x => x.LastAtUpdatedUTC)
             .Skip(req.PageNum * req.PageSize)
-            .Take(req.PageSize)
-            .ToArrayAsync()];
+            .Take(req.PageSize);
+
+        res.Response.Response = req.Payload.IncludeExternalData
+            ? [.. await q.Include(x => x.Addresses).ToArrayAsync()]
+            : [.. await q.ToArrayAsync()];
 
         return res;
     }

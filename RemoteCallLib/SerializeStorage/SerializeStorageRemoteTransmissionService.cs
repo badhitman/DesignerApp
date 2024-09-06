@@ -68,7 +68,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
         {
             ApplicationName = store.ApplicationName,
             Name = store.Name,
-            SerializedDataJson = JsonConvert.SerializeObject(payload_query),
+            SerializedDataJson = JsonConvert.SerializeObject(payload_query, Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }),
             TypeName = payload_query.GetType().FullName!,
             OwnerPrimaryKey = store.OwnerPrimaryKey,
             PrefixPropertyName = store.PrefixPropertyName,

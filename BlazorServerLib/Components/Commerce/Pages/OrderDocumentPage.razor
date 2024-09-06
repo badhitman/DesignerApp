@@ -1,17 +1,54 @@
 ﻿@page "/order-document/{DocumentId}"
 @page "/order-document"
 
+@using MudBlazor
+
 @inherits BlazorBusyComponentBaseModel
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize]
 
 <h3>Заказ</h3>
-@if (!DocumentId.HasValue)
+@if (pagedData is null)
 {
-    <span>Данные отсутсвуют</span>
+    <span>Данные отсутствуют</span>
+}
+else if (pagedData.Length > 1)
+{
+    <MudTable Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Предзаказы</MudText>
+            <MudSpacer />
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="nr_field" T="OrderDocumentModelDB">Nr</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Nr">@context.Name</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>Данные отсутсвуют</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Загрузка...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}
+else if (pagedData.Length == 1 && DocumentId == 0)
+{
+    <OrderDocumentComponent DocumentId="pagedData[0].Id" />
 }
 else
 {
-    <OrderDocumentComponent DocumentId="DocumentId.Value" />
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Предварительные заказы.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Дождитесь <cite title="или обновите страницу">загрузки</cite>
+        </figcaption>
+    </figure>
 }

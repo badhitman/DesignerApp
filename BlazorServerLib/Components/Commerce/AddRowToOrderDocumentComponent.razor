@@ -1,0 +1,34 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+@if (!_expanded)
+{
+    <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnExpandCollapseClick">Добавить</MudButton>
+}
+else
+{
+    <div class="hstack gap-3">
+        <select @bind="SelectedOfferId" class="form-select" aria-label="Default select example">
+
+            @foreach (var opt_g in AllOffers.GroupBy(x => x.Goods))
+            {
+                <optgroup label="@opt_g.Key!.Name">
+                    @foreach (var opt in opt_g)
+                    {
+                        <option value="@opt.Id">@opt.GetName @opt.Price руб.</option>
+                    }
+                </optgroup>
+            }
+        </select>
+        <div class="">
+            <MudNumericField @bind-Value="IntValue" Variant="Variant.Text" Min="1" />
+        </div>
+        <div class="">
+            <MudButton Disabled="@(selectedOffer is null)" StartIcon="@Icons.Material.Filled.Add">Добавить</MudButton>
+        </div>
+        <div class="">
+            <MudButton Color="Color.Tertiary" OnClick="OnExpandCollapseClick">Отмена</MudButton>
+        </div>
+    </div>
+}

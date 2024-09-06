@@ -15,6 +15,26 @@ public class OrdersSelectRequestModel
     public DateTime? AfterDateUpdate { get; set; }
 
     /// <summary>
+    /// AddressForOrganization
+    /// </summary>
+    public int? AddressForOrganizationFilter { get; set; }
+
+    /// <summary>
+    /// OrganizationFilter
+    /// </summary>
+    public int? OrganizationFilter { get; set; }
+
+    /// <summary>
+    /// GoodsFilter
+    /// </summary>
+    public int? GoodsFilter { get; set; }
+
+    /// <summary>
+    /// OfferFilter
+    /// </summary>
+    public int? OfferFilter { get; set; }
+
+    /// <summary>
     /// Получить корзины клиента
     /// </summary>
     /// <remarks>

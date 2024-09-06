@@ -49,7 +49,7 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
 
     /// <inheritdoc/>
     public async Task<TResponseModel<OrderDocumentModelDB[]?>> OrdersRead(int[] orders_ids)
-        => await rabbitClient.MqRemoteCall<OrderDocumentModelDB[]?>(GlobalStaticConstants.TransmissionQueues.OrganizationsReadCommerceReceive, orders_ids);
+        => await rabbitClient.MqRemoteCall<OrderDocumentModelDB[]?>(GlobalStaticConstants.TransmissionQueues.OrdersReadCommerceReceive, orders_ids);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> OrganizationSetLegal(OrganizationModelDB org)
@@ -98,4 +98,12 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>?>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OrderDocumentModelDB>?>(GlobalStaticConstants.TransmissionQueues.OrdersSelectCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> OrderUpdate(OrderDocumentModelDB order)
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.OrderUpdateCommerceReceive, order);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment)
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.PaymentDocumentUpdateCommerceReceive, payment);
 }

@@ -20,7 +20,7 @@ public enum UnitsOfMeasurementEnum
     /// <summary>
     /// Штука
     /// </summary>
-    [Description("Штука")]
+    [Description("шт.")]
     Thing = 10,
 
     /// <summary>

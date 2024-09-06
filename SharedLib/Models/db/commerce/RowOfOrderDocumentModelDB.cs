@@ -59,5 +59,5 @@ public class RowOfOrderDocumentModelDB
     /// <summary>
     /// Quantity
     /// </summary>
-    public uint Quantity { get; set; }
+    public int Quantity { get; set; }
 }

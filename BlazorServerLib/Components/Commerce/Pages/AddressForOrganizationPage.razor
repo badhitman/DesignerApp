@@ -6,35 +6,43 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-<MudCard>
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h6">Адрес организации:</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
-        <MudStack>
-            <CascadingValue Value="RubricSelectAction">
-                <RubricSelectorComponent @ref="rubricSelector_ref" ContextName="@GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME" Title="Регин, город" ModeSelectingRubrics="ModesSelectRubricsEnum.Strict" ShowDisabledRubrics="false" ParentRubric="0" StartRubric="AddressEdit.ParentId" />
-            </CascadingValue>
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="nameFormControlInput1" class="form-label">Название</label>
-                    <input @bind-value:event="oninput" @bind-value="AddressEdit.Name" type="text" class="form-control" id="nameFormControlInput1" placeholder="Наименование">
-                </div>
-                <div class="col-md-4">
-                    <label for="addrFormControlInput1" class="form-label">Адрес</label>
-                    <input @bind-value:event="oninput" @bind-value="AddressEdit.Address" type="text" class="form-control" id="addrFormControlInput1" placeholder="Улица, дом...">
-                </div>
-                <div class="col-md-4">
-                    <label for="telFormControlInput" class="form-label">Контакты</label>
-                    <input @bind-value:event="oninput" @bind-value="AddressEdit.Contacts" type="tel" class="form-control" id="telFormControlInput" placeholder="Номер телефона, email...">
-                </div>
-            </div>
-        </MudStack>
-    </MudCardContent>
-    <MudCardActions>
-        <MudButton Disabled="(IsBusyProgress || !CanSave)" OnClick="SaveAddress" Variant="Variant.Text" Color="Color.Success">Сохранить</MudButton>
-        <MudButton Disabled="IsBusyProgress || !CanSave" OnClick="ResetEdit" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
-    </MudCardActions>
-</MudCard>
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Параметры">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Адрес организации:</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack>
+                    <CascadingValue Value="RubricSelectAction">
+                        <RubricSelectorComponent @ref="rubricSelector_ref" ContextName="@GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME" Title="Регин, город" ModeSelectingRubrics="ModesSelectRubricsEnum.Strict" ShowDisabledRubrics="false" ParentRubric="0" StartRubric="AddressEdit.ParentId" />
+                    </CascadingValue>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="nameFormControlInput1" class="form-label">Название</label>
+                            <input @bind-value:event="oninput" @bind-value="AddressEdit.Name" type="text" class="form-control" id="nameFormControlInput1" placeholder="Наименование">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="addrFormControlInput1" class="form-label">Адрес</label>
+                            <input @bind-value:event="oninput" @bind-value="AddressEdit.Address" type="text" class="form-control" id="addrFormControlInput1" placeholder="Улица, дом...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="telFormControlInput" class="form-label">Контакты</label>
+                            <input @bind-value:event="oninput" @bind-value="AddressEdit.Contacts" type="tel" class="form-control" id="telFormControlInput" placeholder="Номер телефона, email...">
+                        </div>
+                    </div>
+                </MudStack>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Disabled="(IsBusyProgress || !CanSave)" OnClick="SaveAddress" Variant="Variant.Text" Color="Color.Success">Сохранить</MudButton>
+                <MudButton Disabled="IsBusyProgress || !CanSave" OnClick="ResetEdit" Variant="Variant.Text" Color="Color.Primary">Отмена</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudTabPanel>
+    <MudTabPanel Text="Заказы">
+        <OrdersJournalComponent CartFilter="false" AddressForOrganization="AddressForOrganization" />
+    </MudTabPanel>
+</MudTabs>
+

@@ -13,4 +13,9 @@ public class OffersSelectRequestModel
     /// Дата обновления должна быть не меньше указанной
     /// </summary>
     public DateTime? AfterDateUpdate { get; set; }
+
+    /// <summary>
+    /// GoodFilter
+    /// </summary>
+    public int? GoodFilter { get; set; }
 }

@@ -1,0 +1,44 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<MudTable Items="@CurrentTab.Rows" Hover="true" ReadOnly="ReadOnly" CanCancelEdit="true"
+          @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+          OnCommitEditClick="ItemHasBeenOnCommitEditClick" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted" EditTrigger="@editTrigger">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Состав заказа</MudText>
+        <MudSpacer />
+        @if (!ReadOnly)
+        {
+            <div class="ms-3">
+                <AddRowToOrderDocumentComponent AllOffers="allOffers" />
+            </div>
+        }
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Название</MudTh>
+        <MudTh>Количество</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">
+            @context?.Offer?.GetName
+        </MudTd>
+        <MudTd DataLabel="Quantity">
+            @context!.Quantity
+        </MudTd>
+    </RowTemplate>
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            @context?.Offer?.GetName
+        </MudTd>
+        <MudTd DataLabel="Quantity">
+            <MudNumericField @bind-Value="context!.Quantity" Required Min="1" />
+        </MudTd>
+    </RowEditingTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+    <EditButtonContent Context="button">
+        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
+    </EditButtonContent>
+</MudTable>

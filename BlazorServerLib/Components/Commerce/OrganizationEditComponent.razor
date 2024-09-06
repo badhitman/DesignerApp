@@ -40,7 +40,7 @@ else
                             <input @bind-value="editOrg!.Name" @bind-value:event="oninput" type="text" id="inputName" class="form-control" aria-describedby="nameHelpBlock">
                             @if (!string.IsNullOrWhiteSpace(currentOrg.NewName))
                             {
-                                <div id="nameHelpBlock" class="form-text">
+                                <div id="nameHelpBlock" class="form-text text-warning">
                                     Ожидается подвтерждение: @(currentOrg.NewName).
                                 </div>
                             }
@@ -50,7 +50,7 @@ else
                             <input @bind-value="editOrg!.INN" @bind-value:event="oninput" type="text" id="inputINN" class="form-control" aria-describedby="innHelpBlock">
                             @if (!string.IsNullOrWhiteSpace(currentOrg.NewINN))
                             {
-                                <div id="innHelpBlock" class="form-text">
+                                <div id="innHelpBlock" class="form-text text-warning">
                                     Ожидается подвтерждение: @(currentOrg.NewINN).
                                 </div>
                             }
@@ -60,7 +60,7 @@ else
                             <input @bind-value="editOrg!.KPP" @bind-value:event="oninput" type="text" id="inputKPP" class="form-control" aria-describedby="kppHelpBlock">
                             @if (!string.IsNullOrWhiteSpace(currentOrg.NewKPP))
                             {
-                                <div id="kppHelpBlock" class="form-text">
+                                <div id="kppHelpBlock" class="form-text text-warning">
                                     Ожидается подвтерждение: @(currentOrg.NewKPP).
                                 </div>
                             }
@@ -72,7 +72,7 @@ else
                         <input @bind-value="editOrg!.LegalAddress" @bind-value:event="oninput" type="text" id="inputLegalAddress" class="form-control" aria-describedby="legalAddressHelpBlock">
                         @if (!string.IsNullOrWhiteSpace(currentOrg.NewLegalAddress))
                         {
-                            <div id="legalAddressHelpBlock" class="form-text">
+                            <div id="legalAddressHelpBlock" class="form-text text-warning">
                                 Ожидается подвтерждение: @(currentOrg.NewLegalAddress).
                             </div>
                         }
@@ -83,7 +83,7 @@ else
                         <input @bind-value="editOrg!.OGRN" @bind-value:event="oninput" type="text" id="inputOGRN" class="form-control" aria-describedby="ogrnHelpBlock">
                         @if (!string.IsNullOrWhiteSpace(currentOrg.NewOGRN))
                         {
-                            <div id="ogrnHelpBlock" class="form-text">
+                            <div id="ogrnHelpBlock" class="form-text text-warning">
                                 Ожидается подвтерждение: @(currentOrg.NewOGRN).
                             </div>
                         }
@@ -93,7 +93,7 @@ else
                         <input @bind-value="editOrg!.CurrentAccount" @bind-value:event="oninput" type="text" id="inputCurrentAccount" class="form-control" aria-describedby="currentAccountHelpBlock">
                         @if (!string.IsNullOrWhiteSpace(currentOrg.NewCurrentAccount))
                         {
-                            <div id="currentAccountHelpBlock" class="form-text">
+                            <div id="currentAccountHelpBlock" class="form-text text-warning">
                                 Ожидается подвтерждение: @(currentOrg.NewCurrentAccount).
                             </div>
                         }
@@ -103,7 +103,7 @@ else
                         <input @bind-value="editOrg!.BankName" @bind-value:event="oninput" type="text" id="inputBankName" class="form-control" aria-describedby="bankNameHelpBlock">
                         @if (!string.IsNullOrWhiteSpace(currentOrg.NewBankName))
                         {
-                            <div id="bankNameHelpBlock" class="form-text">
+                            <div id="bankNameHelpBlock" class="form-text text-warning">
                                 Ожидается подвтерждение: @(currentOrg.NewBankName).
                             </div>
                         }
@@ -113,7 +113,7 @@ else
                         <input @bind-value="editOrg!.BankBIC" @bind-value:event="oninput" type="text" id="inputBankBIC" class="form-control" aria-describedby="bankBICHelpBlock">
                         @if (!string.IsNullOrWhiteSpace(currentOrg.NewBankBIC))
                         {
-                            <div id="bankBICHelpBlock" class="form-text">
+                            <div id="bankBICHelpBlock" class="form-text text-warning">
                                 Ожидается подвтерждение: @(currentOrg.NewBankBIC).
                             </div>
                         }
@@ -123,7 +123,7 @@ else
                         <input @bind-value="editOrg!.CorrespondentAccount" @bind-value:event="oninput" type="text" id="inputCorrespondentAccount" class="form-control" aria-describedby="correspondentAccountHelpBlock">
                         @if (!string.IsNullOrWhiteSpace(currentOrg.NewCorrespondentAccount))
                         {
-                            <div id="correspondentAccountHelpBlock" class="form-text">
+                            <div id="correspondentAccountHelpBlock" class="form-text text-warning">
                                 Ожидается подвтерждение: @(currentOrg.NewCorrespondentAccount).
                             </div>
                         }
@@ -147,6 +147,9 @@ else
         </MudTabPanel>
         <MudTabPanel Disabled="@(OrganizationId <= 0)" Text="Адреса">
             <AddressesForOrganizationComponent Organization="currentOrg" />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(OrganizationId <= 0)" Text="Заказы">
+            <OrdersJournalComponent CartFilter="false" OrganizationFilter="currentOrg.Id" />
         </MudTabPanel>
     </MudTabs>
 

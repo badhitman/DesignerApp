@@ -123,6 +123,17 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
+        /// Фильтр консоли по пользователю
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <returns></returns>
+        public static StorageCloudParameterModel OrderCartForUser(string user_id) => new()
+        {
+            ApplicationName = Path.Combine(Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME),
+            Name = Path.Combine(Routes.CART_CONTROLLER_NAME, user_id),
+        };
+
+        /// <summary>
         /// Переадресация для пользователя
         /// </summary>
         public static StorageCloudParameterModel HelpdeskNotificationsTelegramForUser(long chat_id) => new()
@@ -229,6 +240,9 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string OrganizationsSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string OrganizationsFindCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string OrganizationsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATION_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
@@ -483,6 +497,11 @@ public static partial class GlobalStaticConstants
         /// Helpdesk
         /// </summary>
         public const string HELPDESK_CONTROLLER_NAME = "helpdesk";
+
+        /// <summary>
+        /// Cart
+        /// </summary>
+        public const string CART_CONTROLLER_NAME = "cart";
 
         /// <summary>
         /// Commerce

@@ -18,4 +18,9 @@ public class OrganizationsSelectRequestModel
     /// Дата обновления должна быть не меньше указанной
     /// </summary>
     public DateTime? AfterDateUpdate { get; set; }
+
+    /// <summary>
+    /// IncludeExternalData
+    /// </summary>
+    public bool IncludeExternalData { get; set; }
 }

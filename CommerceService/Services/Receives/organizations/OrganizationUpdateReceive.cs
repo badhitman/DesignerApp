@@ -42,7 +42,11 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
 
             if (duble is not null)
             {
-                if (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && req.SenderActionUserId != GlobalStaticConstants.Roles.System)
+                IQueryable<UserOrganizationModelDB> sq = context
+                    .OrganizationsUsers
+                    .Where(x => x.UserPersonIdentityId == req.SenderActionUserId && x.OrganizationId == duble.Id);
+
+                if (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && req.SenderActionUserId != GlobalStaticConstants.Roles.System && sq.Any())
                 {
                     await context.AddAsync(new UserOrganizationModelDB()
                     {

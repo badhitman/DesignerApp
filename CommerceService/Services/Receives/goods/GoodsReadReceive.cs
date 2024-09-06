@@ -28,7 +28,7 @@ public class GoodsReadReceive(IDbContextFactory<CommerceContext> commerceDbFacto
             Response = await context
             .Goods
             .Where(x => req.Any(y => x.Id == y))
-            .Include(x => x.ProductsOffers)
+            .Include(x => x.Offers)
             .ToArrayAsync()
         };
     }

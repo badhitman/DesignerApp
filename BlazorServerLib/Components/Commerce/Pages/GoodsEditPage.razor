@@ -1,9 +1,17 @@
 ﻿@page "/goods-card/{GoodsId:int}"
+@using MudBlazor
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager}")]
 
-<GoodsEditComponent GoodsId="GoodsId" />
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Параметры">
+        <GoodsEditComponent GoodsId="GoodsId" />
+    </MudTabPanel>
+    <MudTabPanel Text="Заказы">
+        <OrdersJournalComponent GoodsFilter="GoodsId" CartFilter="false" />
+    </MudTabPanel>
+</MudTabs>
 
 @code {
     [Parameter]

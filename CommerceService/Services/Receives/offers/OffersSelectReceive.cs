@@ -43,6 +43,9 @@ public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
             .OffersGoods
             .AsQueryable();
 
+        if(req.Payload.GoodFilter.HasValue && req.Payload.GoodFilter.Value > 0)
+            q = q.Where(x => x.GoodsId == req.Payload.GoodFilter);
+
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
 

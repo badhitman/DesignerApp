@@ -8,8 +8,8 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize]
 
-<div class="d-grid gap-2 mb-2">
-    <a class="btn btn-outline-info" href="/organization-edit/0" role="button">Создать</a>
-</div>
-
 <OrganizationsTableComponent UserId="@UserId" />
+
+<div class="d-grid gap-2 mt-2">
+    <a class="btn btn-outline-success" href="/organization-edit/0" role="button">Создать</a>
+</div>

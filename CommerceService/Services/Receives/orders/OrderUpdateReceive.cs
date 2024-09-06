@@ -33,6 +33,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 AuthorIdentityUserId = req.AuthorIdentityUserId,
                 IsDisabled = req.IsDisabled,
                 LastAtUpdatedUTC = dtu,
+                OrganizationId = req.OrganizationId,
             };
 
             await context.AddAsync(order_db);

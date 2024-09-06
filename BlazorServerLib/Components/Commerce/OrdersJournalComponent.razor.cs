@@ -34,6 +34,30 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
     [Parameter]
     public bool? CartFilter { get; set; }
 
+    /// <summary>
+    /// OrganizationFilter
+    /// </summary>
+    [Parameter]
+    public int? OrganizationFilter { get; set; }
+
+    /// <summary>
+    /// GoodsFilter
+    /// </summary>
+    [Parameter]
+    public int? GoodsFilter { get; set; }
+
+    /// <summary>
+    /// OfferFilter
+    /// </summary>
+    [Parameter]
+    public int? OfferFilter { get; set; }
+
+    /// <summary>
+    /// AddressForOrganization
+    /// </summary>
+    [Parameter]
+    public int AddressForOrganization { get; set; } = default!;
+
 
     UserInfoMainModel user = default!;
 
@@ -61,9 +85,14 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
                 {
                     IncludeExternalData = true,
                     IsCartFilter = CartFilter,
+                    OrganizationFilter = OrganizationFilter,
+                    AddressForOrganizationFilter = AddressForOrganization,
+                    GoodsFilter = GoodsFilter,
+                    OfferFilter = OfferFilter,
                 }
             }
         };
+
         IsBusyProgress = true;
         TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>?> res = await CommerceRepo.OrdersSelect(req);
         IsBusyProgress = false;

@@ -44,7 +44,10 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
     {
         TPaginationRequestModel<OffersSelectRequestModel> req = new()
         {
-            Payload = new(),
+            Payload = new() 
+            { 
+                GoodFilter = CurrentGoods.Id 
+            },
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortBy = state.SortLabel,
