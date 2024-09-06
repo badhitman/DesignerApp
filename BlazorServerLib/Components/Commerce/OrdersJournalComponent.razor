@@ -17,7 +17,7 @@
         @{
             var sum_data = context.TotalSumForRows();
         }
-        <MudTd DataLabel="Создан">@context.CreatedAtUTC</MudTd>
+        <MudTd DataLabel="Создан"><a href="/order-document/@context.Id">@context.CreatedAtUTC</a></MudTd>
         <MudTd DataLabel="Информация">@context.Name</MudTd>
         <MudTd DataLabel="Сумма">
             @sum_data.for_goods

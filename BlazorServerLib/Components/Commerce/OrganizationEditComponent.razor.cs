@@ -56,7 +56,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
 
     async Task SaveOrganization()
     {
-        if (editOrg is null || !editOrg.Equals(currentOrg))
+        if (editOrg is null || editOrg.Equals(currentOrg))
             throw new ArgumentNullException(nameof(editOrg));
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
