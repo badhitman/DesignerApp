@@ -34,6 +34,11 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
     [Parameter]
     public bool ReadOnly { get; set; }
 
+    /// <summary>
+    /// DocumentUpdateHandler
+    /// </summary>
+    [Parameter]
+    public Action? DocumentUpdateHandler { get; set; }
 
     TableEditTrigger editTrigger = TableEditTrigger.EditButton;
     List<OfferGoodModelDB>? allOffers;
@@ -53,6 +58,10 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
             OrderDocumentId = CurrentTab.OrderDocumentId,
             Quantity = off.Quantity,
         });
+
+        if (DocumentUpdateHandler is not null)
+            DocumentUpdateHandler();
+
         StateHasChanged();
     }
 

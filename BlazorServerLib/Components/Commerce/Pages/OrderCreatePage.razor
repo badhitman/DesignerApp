@@ -64,7 +64,7 @@ else
                 {
                     AddressForOrderModelDb current_tab = CurrentCart.AddressesTabs!.First(x => x.AddressOrganizationId == add.Id);
                     <MudTabPanel Text="@add.Name">
-                        <TabAddressOfOrderDocumentComponent CurrentTab="current_tab" />
+                        <TabAddressOfOrderDocumentComponent CurrentTab="current_tab" DocumentUpdateHandler="DocumentUpdateAction" />
                     </MudTabPanel>
                 }
             </MudTabs>

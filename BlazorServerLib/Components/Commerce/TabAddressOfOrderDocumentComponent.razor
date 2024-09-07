@@ -30,6 +30,7 @@
         <col />
         <col />
         <col />
+        <col style="width:50px;" />
         @if (editTrigger == TableEditTrigger.EditButton)
         {
             <col style="width:50px;" />
@@ -40,11 +41,11 @@
         <MudTh>Цена</MudTh>
         <MudTh>Количество</MudTh>
         <MudTh>Сумма</MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">
             @context!.Offer!.GetName
-            <sup>удалить</sup>
         </MudTd>
         <MudTd DataLabel="Price">
             @context!.Offer!.Price руб.
@@ -55,6 +56,7 @@
         <MudTd DataLabel="Sum">
             @(context!.Quantity * context.Offer!.Price)
         </MudTd>
+        <MudTd><MudIconButton title="Удалить строку" Icon="@Icons.Material.Filled.Delete" aria-label="delete" Size="Size.Small" /></MudTd>
     </RowTemplate>
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
@@ -66,7 +68,7 @@
         <MudTd DataLabel="Quantity">
             <MudNumericField @bind-Value="context!.Quantity" Required Min="1" />
         </MudTd>
-        <MudTd>
+        <MudTd colspan="2">
             @(context!.Quantity * context.Offer!.Price)
         </MudTd>
     </RowEditingTemplate>
@@ -77,6 +79,7 @@
         <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
     </EditButtonContent>
 </MudTable>
+<hr/>
 <div class="hstack gap-3 d-flex justify-content-between mt-3">
     <div class="p-2 lead">Сумма всего:</div>
     <strong class="p-2"> @CurrentTab.Rows!.Select(x => x.Offer!.Price * x.Quantity).Sum()</strong>

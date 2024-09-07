@@ -153,6 +153,11 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         _visibleChangeOrganization = false;
     }
 
+    async void DocumentUpdateAction()
+    {
+        await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
+    }
+
     void CancelChangeOrganizations()
     {
         _visibleChangeOrganization = false;

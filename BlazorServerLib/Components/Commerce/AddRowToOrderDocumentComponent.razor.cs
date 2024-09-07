@@ -45,7 +45,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
         }
     }
 
-    IQueryable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentTab.Rows!.Any(y => y.OfferId == x.Id)).AsQueryable();
+    IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentTab.Rows!.Any(y => y.OfferId == x.Id));
 
     bool _expanded;
     int QuantityValue { get; set; } = 1;
@@ -79,6 +79,6 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        SelectedOfferId = AllOffers.First().Id;
+        SelectedOfferId = ActualOffers.First().Id;
     }
 }
