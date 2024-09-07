@@ -42,7 +42,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         get => CurrentCart.Organization;
         set
         {
-            if (SelectedAddresses.Any())
+            if (SelectedAddresses?.Any() == true)
             {
                 _visibleChangeOrganization = true;
                 prevCurrOrg = value;
@@ -60,14 +60,14 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
     readonly Func<AddressOrganizationModelDB, string> converter = p => p.Name;
 
     IEnumerable<AddressOrganizationModelDB>? _prevSelectedAddresses;
-    IEnumerable<AddressOrganizationModelDB> _selectedAddresses = [];
-    IEnumerable<AddressOrganizationModelDB> SelectedAddresses
+    IEnumerable<AddressOrganizationModelDB>? _selectedAddresses = [];
+    IEnumerable<AddressOrganizationModelDB>? SelectedAddresses
     {
-        get => _selectedAddresses;
+        get => _selectedAddresses ?? [];
         set
         {
             CurrentCart.AddressesTabs ??= [];
-            AddressOrganizationModelDB[] addresses = [.. value.Where(x => !CurrentCart.AddressesTabs.Any(y => y.AddressOrganizationId == x.Id))];
+            AddressOrganizationModelDB[] addresses = value is null ? [] : [.. value.Where(x => !CurrentCart.AddressesTabs.Any(y => y.AddressOrganizationId == x.Id))];
             if (addresses.Length != 0)
             {
                 CurrentCart.AddressesTabs.AddRange(addresses.Select(x => new AddressForOrderModelDb()
@@ -104,7 +104,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
 
             AddressForOrderModelDb[] _qr = CurrentCart
                 .AddressesTabs
-                .Where(x => !value.Any(y => y.Id == x.AddressOrganizationId)).ToArray();
+                .Where(x => value?.Any(y => y.Id == x.AddressOrganizationId) != true).ToArray();
 
             _prevSelectedAddresses = _qr
                 .Where(x => x.Rows is null || x.Rows.Count == 0)
@@ -130,7 +130,8 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
 
     void SubmitChangeAddresses()
     {
-        CurrentCart.AddressesTabs!.RemoveAll(x => _prevSelectedAddresses!.Any(y => y.Id == x.AddressOrganizationId));
+        if (_prevSelectedAddresses is not null)
+            CurrentCart.AddressesTabs!.RemoveAll(x => _prevSelectedAddresses.Any(y => y.Id == x.AddressOrganizationId));
         _selectedAddresses = _prevSelectedAddresses!;
         _prevSelectedAddresses = null;
         _visibleChangeAddresses = false;

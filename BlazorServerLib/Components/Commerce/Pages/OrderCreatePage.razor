@@ -42,7 +42,7 @@ else
             </MudSelect>
         </div>
     </div>
-    @if (!SelectedAddresses.Any())
+    @if (SelectedAddresses?.Any() != true)
     {
         <figure class="text-center mt-5">
             <blockquote class="blockquote">
@@ -55,7 +55,7 @@ else
     }
 }
 
-@if (CurrentCart.OrganizationId > 0 && CurrentOrganization is not null && SelectedAddresses.Any())
+@if (CurrentCart.OrganizationId > 0 && CurrentOrganization is not null && SelectedAddresses?.Any() == true)
 {
     <div class="card mt-3">
         <div class="card-body">

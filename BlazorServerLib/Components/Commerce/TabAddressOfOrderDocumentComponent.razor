@@ -1,38 +1,73 @@
 ﻿@using MudBlazor
 @inherits BlazorBusyComponentBaseModel
 
-<MudTable Items="@CurrentTab.Rows" Hover="true" ReadOnly="ReadOnly" CanCancelEdit="true"
-          @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
-          OnCommitEditClick="ItemHasBeenOnCommitEditClick" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted" EditTrigger="@editTrigger">
+<MudTable Hover="true"
+          ReadOnly="ReadOnly"
+          SortLabel="@(nameof(RowOfOrderDocumentModelDB.Goods.Name))"
+          CanCancelEdit="true"
+          Items="@CurrentTab.Rows"
+          RowEditPreview="BackupItem"
+          RowEditCommit="ItemHasBeenCommitted"
+          CancelEditIcon="@Icons.Material.Filled.Cancel"
+          CancelEditTooltip="Отменить изменение"
+          CommitEditTooltip="Сохранить изменения"
+          RowEditCancel="ResetItemToOriginalValues"
+          OnCommitEditClick="ItemHasBeenOnCommitEditClick"
+          EditTrigger="@editTrigger">
+
     <ToolBarContent>
         <MudText Typo="Typo.h6">Состав заказа</MudText>
         <MudSpacer />
         @if (!ReadOnly)
         {
             <div class="ms-3">
-                <AddRowToOrderDocumentComponent AllOffers="allOffers" />
+                <AddRowToOrderDocumentComponent AllOffers="allOffers" CurrentTab="CurrentTab" AddingOfferHandler="AddingOfferAction" />
             </div>
         }
     </ToolBarContent>
+    <ColGroup>
+        <col />
+        <col />
+        <col />
+        <col />
+        @if (editTrigger == TableEditTrigger.EditButton)
+        {
+            <col style="width:50px;" />
+        }
+    </ColGroup>
     <HeaderContent>
         <MudTh>Название</MudTh>
+        <MudTh>Цена</MudTh>
         <MudTh>Количество</MudTh>
+        <MudTh>Сумма</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">
-            @context?.Offer?.GetName
+            @context!.Offer!.GetName
+            <sup>удалить</sup>
+        </MudTd>
+        <MudTd DataLabel="Price">
+            @context!.Offer!.Price руб.
         </MudTd>
         <MudTd DataLabel="Quantity">
             @context!.Quantity
+        </MudTd>
+        <MudTd DataLabel="Sum">
+            @(context!.Quantity * context.Offer!.Price)
         </MudTd>
     </RowTemplate>
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
             @context?.Offer?.GetName
         </MudTd>
+        <MudTd DataLabel="Price">
+            @(context.Offer!.Price)
+        </MudTd>
         <MudTd DataLabel="Quantity">
             <MudNumericField @bind-Value="context!.Quantity" Required Min="1" />
+        </MudTd>
+        <MudTd>
+            @(context!.Quantity * context.Offer!.Price)
         </MudTd>
     </RowEditingTemplate>
     <PagerContent>
@@ -42,3 +77,7 @@
         <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
     </EditButtonContent>
 </MudTable>
+<div class="hstack gap-3 d-flex justify-content-between mt-3">
+    <div class="p-2 lead">Сумма всего:</div>
+    <strong class="p-2"> @CurrentTab.Rows!.Select(x => x.Offer!.Price * x.Quantity).Sum()</strong>
+</div>

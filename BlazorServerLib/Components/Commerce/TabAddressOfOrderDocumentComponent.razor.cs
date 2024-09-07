@@ -34,11 +34,27 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
     [Parameter]
     public bool ReadOnly { get; set; }
 
-    // OrganizationModelDB CurrentTabAddressDocument => Address.Organization!;
-    RowOfOrderDocumentModelDB? selectedItem1;
+
     TableEditTrigger editTrigger = TableEditTrigger.EditButton;
     List<OfferGoodModelDB>? allOffers;
 
+
+    void AddingOfferAction(OfferGoodActionModel off)
+    {
+        CurrentTab.Rows?.Add(new RowOfOrderDocumentModelDB()
+        {
+            AddressForOrderTab = CurrentTab,
+            AddressForOrderTabId = CurrentTab.Id,
+            Goods = off.Goods,
+            GoodsId = off.GoodsId,
+            Offer = off,
+            OfferId = off.Id,
+            OrderDocument = CurrentTab.OrderDocument,
+            OrderDocumentId = CurrentTab.OrderDocumentId,
+            Quantity = off.Quantity,
+        });
+        StateHasChanged();
+    }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
