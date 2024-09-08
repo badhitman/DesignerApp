@@ -65,7 +65,16 @@ public static partial class GlobalStaticConstants
     public static class CloudStorageMetadata
     {
         /// <summary>
-        /// Отображение отключёных рубрик
+        /// Минимальная цена доставки
+        /// </summary>
+        public static StorageCloudParameterModel CommerceMinimalPriceDelivery => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = Path.Combine(Routes.DELIVERY_CONTROLLER_NAME, Routes.DEFAULT_CONTROLLER_NAME, Routes.PRICE_CONTROLLER_NAME),
+        };
+
+        /// <summary>
+        /// Отображение отключённых рубрик
         /// </summary>
         public static StorageCloudParameterModel ParameterShowDisabledRubrics => new()
         {
@@ -552,6 +561,16 @@ public static partial class GlobalStaticConstants
         /// Form
         /// </summary>
         public const string FORM_CONTROLLER_NAME = "form";
+
+        /// <summary>
+        /// Default
+        /// </summary>
+        public const string DEFAULT_CONTROLLER_NAME = "default";
+
+        /// <summary>
+        /// Price
+        /// </summary>
+        public const string PRICE_CONTROLLER_NAME = "price";
 
         /// <summary>
         /// Disabled

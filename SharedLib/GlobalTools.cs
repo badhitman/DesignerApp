@@ -12,7 +12,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Xml.Serialization;
 
 namespace SharedLib;
 
@@ -177,11 +176,14 @@ public static partial class GlobalTools
         if (obj is null)
             return default;
 
-        using MemoryStream ms = new();
-        XmlSerializer serializer = new(obj!.GetType());
-        serializer.Serialize(ms, obj);
-        ms.Seek(0, SeekOrigin.Begin);
-        return (T)serializer.Deserialize(ms)!;
+        string json_raw = JsonConvert.SerializeObject(obj, Formatting.None, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+        return JsonConvert.DeserializeObject<T>(json_raw);
+
+        //using MemoryStream ms = new();
+        //XmlSerializer serializer = new(obj!.GetType());
+        //serializer.Serialize(ms, obj);
+        //ms.Seek(0, SeekOrigin.Begin);
+        //return (T)serializer.Deserialize(ms)!;
     }
 
 

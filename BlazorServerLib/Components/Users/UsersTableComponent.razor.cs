@@ -44,7 +44,7 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
     /// RolesManageKit
     /// </summary>
     [Parameter]
-    public string[]? RolesManageKit {  get; set; }
+    public IEnumerable<string>? RolesManageKit {  get; set; }
 
     PaginationState pagination = new() { ItemsPerPage = 15 };
     string nameFilter = string.Empty;

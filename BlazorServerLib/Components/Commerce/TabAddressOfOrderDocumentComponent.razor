@@ -6,17 +6,27 @@
           SortLabel="@(nameof(RowOfOrderDocumentModelDB.Goods.Name))"
           CanCancelEdit="true"
           Items="@CurrentTab.Rows"
-          RowEditPreview="BackupItem"
-          RowEditCommit="ItemHasBeenCommitted"
+          RowEditPreview="RowEditPreviewHandler"
+          RowEditCommit="RowEditCommitHandler"
           CancelEditIcon="@Icons.Material.Filled.Cancel"
           CancelEditTooltip="Отменить изменение"
           CommitEditTooltip="Сохранить изменения"
-          RowEditCancel="ResetItemToOriginalValues"
-          OnCommitEditClick="ItemHasBeenOnCommitEditClick"
+          RowEditCancel="RowEditCancelHandler"
           EditTrigger="@editTrigger">
 
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Состав заказа</MudText>
+        <MudText Typo="Typo.h6">
+            Товары для филиала
+            @{
+                double sum_of_tab = CurrentTab.Rows!.Select(x => x.Offer!.Price * x.Quantity).Sum();
+            }
+            @if (sum_of_tab > 0)
+            {
+                <text>: </text>
+
+                <span class="text-primary-emphasis">@sum_of_tab</span> <text>руб.</text>
+            }
+        </MudText>
         <MudSpacer />
         @if (!ReadOnly)
         {
@@ -79,8 +89,3 @@
         <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
     </EditButtonContent>
 </MudTable>
-<hr />
-<div class="hstack gap-3 d-flex justify-content-between mt-3">
-    <div class="p-2 lead">Сумма всего:</div>
-    <strong class="p-2"> @CurrentTab.Rows!.Select(x => x.Offer!.Price * x.Quantity).Sum()</strong>
-</div>

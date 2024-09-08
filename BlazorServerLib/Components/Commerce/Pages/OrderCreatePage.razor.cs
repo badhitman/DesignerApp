@@ -67,6 +67,8 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         set
         {
             CurrentCart.AddressesTabs ??= [];
+
+            // адреса/вкладки, которые следует добавить
             AddressOrganizationModelDB[] addresses = value is null ? [] : [.. value.Where(x => !CurrentCart.AddressesTabs.Any(y => y.AddressOrganizationId == x.Id))];
             if (addresses.Length != 0)
             {
@@ -102,15 +104,16 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
                 OrganizationId = x.AddressOrganization.OrganizationId,
             };
 
+            // адреса/вкладки, которые пользователь хочет удалить
             AddressForOrderModelDb[] _qr = CurrentCart
                 .AddressesTabs
                 .Where(x => value?.Any(y => y.Id == x.AddressOrganizationId) != true).ToArray();
 
+            // адреса/вкладки, которые можно свободно удалить (без строк)
             _prevSelectedAddresses = _qr
                 .Where(x => x.Rows is null || x.Rows.Count == 0)
                 .Select(Convert)
                 .ToArray();
-
             if (_prevSelectedAddresses.Any())
             {
                 CurrentCart.AddressesTabs!.RemoveAll(x => _prevSelectedAddresses!.Any(y => y.Id == x.AddressOrganizationId));
@@ -118,6 +121,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
                 InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
             }
 
+            // адреса/вкладки, которые имеют строки: требуют подтверждения у пользователя
             _prevSelectedAddresses = _qr
                 .Where(x => x.Rows is not null && x.Rows.Count != 0)
                 .Select(Convert)
@@ -127,6 +131,26 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
                 _visibleChangeAddresses = true;
             else
                 _prevSelectedAddresses = null;
+        }
+    }
+
+    double SumOfDocument
+    {
+        get
+        {
+            if (CurrentCart.AddressesTabs is null || CurrentCart.AddressesTabs.Count == 0)
+                return 0;
+
+            IQueryable<RowOfOrderDocumentModelDB> rows = CurrentCart
+                .AddressesTabs
+                .Where(x => x.Rows is not null)
+                .SelectMany(x => x.Rows!)
+                .AsQueryable();
+
+            if (!rows.Any())
+                return 0;
+
+            return rows.Sum(x => x.Quantity * x.Offer!.Price);
         }
     }
 
@@ -212,6 +236,16 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
             AuthorIdentityUserId = user.UserId,
             Name = "Новый заказ",
         };
+
+        if (CurrentCart.OrganizationId != 0)
+        {
+            CurrentCart.Organization = Organizations.FirstOrDefault(x => x.Id == CurrentCart.OrganizationId);
+            if (CurrentCart.Organization is null)
+                CurrentCart.OrganizationId = 0;
+
+            await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
+        }
+
         CurrentCart.AddressesTabs ??= [];
         CurrentCart.AddressesTabs.RemoveAll(x => !CurrentOrganization!.Addresses!.Any(y => y.Id == x.AddressOrganizationId));
         if (CurrentCart.AddressesTabs.Count != 0)

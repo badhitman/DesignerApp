@@ -57,7 +57,7 @@
                 </div>
             </TemplateColumn>
 
-            @if (RolesManageKit is not null && RolesManageKit.Length != 0)
+            @if (RolesManageKit is not null && RolesManageKit.Any())
             {
                 <TemplateColumn Title="Доступ" Align="Align.Right">
                     <RolesManageKitComponent RolesManageKit="RolesManageKit" User="context" />

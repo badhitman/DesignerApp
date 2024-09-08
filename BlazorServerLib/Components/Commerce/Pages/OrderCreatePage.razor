@@ -6,7 +6,17 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-<h3>Новый заказ</h3>
+@{
+    double sum_doc = SumOfDocument;
+}
+
+<h4>
+    Новый заказ
+    @if (sum_doc > 0)
+    {
+        <text>: </text> <span class="text-primary">@sum_doc</span> <text> руб.</text>
+    }
+</h4>
 
 @if (Organizations.Count == 0)
 {
@@ -31,7 +41,7 @@ else
             </MudSelect>
         </div>
         <div class="col-md-6">
-            <MudSelect T="AddressOrganizationModelDB" Label="Адреса" MultiSelection="true" Disabled="@(CurrentOrganization is null || CurrentOrganization.Id == 0)" @bind-SelectedValues="SelectedAddresses" ToStringFunc="@converter">
+            <MudSelect T="AddressOrganizationModelDB" Label="Филиалы" MultiSelection="true" Disabled="@(CurrentOrganization is null || CurrentOrganization.Id == 0)" @bind-SelectedValues="SelectedAddresses" ToStringFunc="@converter">
                 @if (CurrentOrganization is not null)
                 {
                     foreach (AddressOrganizationModelDB add in CurrentOrganization.Addresses!)

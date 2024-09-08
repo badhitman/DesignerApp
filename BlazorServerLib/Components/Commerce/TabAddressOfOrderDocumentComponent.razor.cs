@@ -14,7 +14,6 @@ namespace BlazorWebLib.Components.Commerce;
 /// </summary>
 public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBaseModel
 {
-
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
@@ -44,6 +43,7 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
     TableEditTrigger editTrigger = TableEditTrigger.EditButton;
     List<OfferGoodModelDB>? allOffers;
     AddRowToOrderDocumentComponent? addingDomRef;
+    RowOfOrderDocumentModelDB? elementBeforeEdit;
 
     void DeleteRow(RowOfOrderDocumentModelDB row)
     {
@@ -79,7 +79,31 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
             DocumentUpdateHandler();
 
         StateHasChanged();
-        addingDomRef?.StateHasChangedCall();
+        addingDomRef!.StateHasChangedCall();
+    }
+
+    /// <summary>
+    /// Происходит до начала редактирования строки.
+    /// </summary>
+    void RowEditPreviewHandler(object element)
+        => elementBeforeEdit = GlobalTools.CreateDeepCopy((RowOfOrderDocumentModelDB)element);
+
+    /// <summary>
+    /// Происходит, когда изменения отменяются для редактируемой строки.
+    /// </summary>
+    private void RowEditCancelHandler(object element)
+    {
+        ((RowOfOrderDocumentModelDB)element).Quantity = elementBeforeEdit!.Quantity;
+        elementBeforeEdit = null;
+    }
+
+    /// <summary>
+    /// Происходит, когда изменения фиксируются для редактируемой строки.
+    /// </summary>
+    void RowEditCommitHandler(object element)
+    {
+        if (DocumentUpdateHandler is not null)
+            DocumentUpdateHandler();
     }
 
     /// <inheritdoc/>
@@ -114,35 +138,5 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
             if (allOffers.Count < res.Response.TotalRowsCount)
                 await LoadOffers(page_num + 1);
         }
-    }
-
-    private void BackupItem(object element)
-    {
-        //elementBeforeEdit = new()
-        //{
-        //    Sign = ((Element)element).Sign,
-        //    Name = ((Element)element).Name,
-        //    Molar = ((Element)element).Molar,
-        //    Position = ((Element)element).Position
-        //};
-        //AddEditionEvent($"RowEditPreview event: made a backup of Element {((Element)element).Name}");
-    }
-
-    private void ResetItemToOriginalValues(object element)
-    {
-        //((Element)element).Sign = elementBeforeEdit.Sign;
-        //((Element)element).Name = elementBeforeEdit.Name;
-        //((Element)element).Molar = elementBeforeEdit.Molar;
-        //((Element)element).Position = elementBeforeEdit.Position;
-        //AddEditionEvent($"RowEditCancel event: Editing of Element {((Element)element).Name} canceled");
-    }
-
-    void ItemHasBeenCommitted(object element)
-    {
-
-    }
-    void ItemHasBeenOnCommitEditClick()
-    {
-
     }
 }

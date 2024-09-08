@@ -9,12 +9,12 @@
 
 <h4>Help desk</h4>
 <MudTabs Outlined="true">
-    <MudTabPanel ToolTip="Ваши личные обращения в службу техподдержки" Text="Мои обращения" Icon="@Icons.Material.Filled.AllInbox">
+    <MudTabPanel ToolTip="Ваши личные заявки" Text="Мои заявки" Icon="@Icons.Material.Filled.AllInbox">
         <MyHelpdeskComponent />
     </MudTabPanel>
 
     <AuthorizeView Roles="@($"{string.Join(",", GlobalStaticConstants.Roles.AllHelpDeskRoles)},{GlobalStaticConstants.Roles.Admin}")">
-        <MudTabPanel ToolTip="Обслуживание входящих обращений" Text="Обращения клиентов" Icon="@Icons.Material.Filled.BugReport">
+        <MudTabPanel ToolTip="Обслуживание входящих заявок" Text="Заявки клиентов" Icon="@Icons.Material.Filled.BugReport">
             <MudPaper Class="ma-2" Elevation="3">
                 <HelpdeskJobComponent />
             </MudPaper>
@@ -23,7 +23,7 @@
 
     <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.HelpDeskTelegramBotRubricsManage},{GlobalStaticConstants.Roles.Admin}")">
         <Authorized>
-            <MudTabPanel ToolTip="Доска обращений" Text="Консоль" Icon="@Icons.Material.Filled.Apps">
+            <MudTabPanel ToolTip="Доска заявок" Text="Консоль" Icon="@Icons.Material.Filled.Apps">
                 <MudPaper Class="ma-2" Elevation="3">
                     <ConsoleHelpdeskComponent />
                 </MudPaper>

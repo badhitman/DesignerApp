@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using System.Collections.Generic;
 using MudBlazor;
 
 namespace BlazorWebLib.Components.Users;
@@ -26,7 +25,7 @@ public partial class RolesManageKitComponent : BlazorBusyComponentBaseModel
     /// RolesManageKit
     /// </summary>
     [Parameter, EditorRequired]
-    public required string[] RolesManageKit { get; set; }
+    public required IEnumerable<string> RolesManageKit { get; set; }
 
     /// <summary>
     /// User
