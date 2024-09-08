@@ -79,6 +79,6 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        SelectedOfferId = ActualOffers.First().Id;
+        SelectedOfferId = ActualOffers.FirstOrDefault()?.Id;
     }
 }

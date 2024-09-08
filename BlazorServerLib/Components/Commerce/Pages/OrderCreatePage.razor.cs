@@ -108,7 +108,8 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
 
             _prevSelectedAddresses = _qr
                 .Where(x => x.Rows is null || x.Rows.Count == 0)
-                .Select(Convert);
+                .Select(Convert)
+                .ToArray();
 
             if (_prevSelectedAddresses.Any())
             {
@@ -119,7 +120,8 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
 
             _prevSelectedAddresses = _qr
                 .Where(x => x.Rows is not null && x.Rows.Count != 0)
-                .Select(Convert);
+                .Select(Convert)
+                .ToArray();
 
             if (_prevSelectedAddresses.Any())
                 _visibleChangeAddresses = true;
@@ -130,9 +132,13 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
 
     void SubmitChangeAddresses()
     {
-        if (_prevSelectedAddresses is not null)
+        CurrentCart.AddressesTabs ??= [];
+        if (_prevSelectedAddresses is null)
+            CurrentCart.AddressesTabs.Clear();
+        else
             CurrentCart.AddressesTabs!.RemoveAll(x => _prevSelectedAddresses.Any(y => y.Id == x.AddressOrganizationId));
-        _selectedAddresses = _prevSelectedAddresses!;
+
+        _selectedAddresses = _prevSelectedAddresses;
         _prevSelectedAddresses = null;
         _visibleChangeAddresses = false;
         InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
