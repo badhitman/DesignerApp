@@ -1,0 +1,16 @@
+[Unit]
+Description=hd.app.service
+
+[Service]
+WorkingDirectory=/srv/services/HelpdeskService
+ExecStart=/usr/bin/dotnet /srv/services/HelpdeskService/HelpdeskService.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-hd-app
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

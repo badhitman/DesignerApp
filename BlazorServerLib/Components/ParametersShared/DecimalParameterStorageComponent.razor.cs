@@ -47,7 +47,7 @@ public partial class DecimalParameterStorageComponent : BlazorBusyComponentBaseM
         set
         {
             _decimalValue = value;
-            InvokeAsync(async () => { await StoreRepo.SaveParameter(_decimalValue, GlobalStaticConstants.CloudStorageMetadata.CommerceMinimalPriceDelivery); });
+            InvokeAsync(async () => { await StoreRepo.SaveParameter(_decimalValue, KeyStorage); });
         }
     }
 
@@ -56,7 +56,7 @@ public partial class DecimalParameterStorageComponent : BlazorBusyComponentBaseM
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseModel<decimal?> res = await StoreRepo.ReadParameter<decimal?>(GlobalStaticConstants.CloudStorageMetadata.CommerceMinimalPriceDelivery);
+        TResponseModel<decimal?> res = await StoreRepo.ReadParameter<decimal?>(KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         _decimalValue = res.Response ?? 0;

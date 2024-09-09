@@ -1,0 +1,16 @@
+[Unit]
+Description=api.app.service
+
+[Service]
+WorkingDirectory=/srv/services/ApiRestService/
+ExecStart=/usr/bin/dotnet /srv/services/ApiRestService/ApiRestService.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-api-app
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

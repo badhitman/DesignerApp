@@ -6,6 +6,8 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>dotnet-Telegram.Bot.Polling-4bacb3b0-aa49-457b-bfab-5d1dafe539ca</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileContext>.</DockerfileContext>
 	</PropertyGroup>
 
 	<ItemGroup>

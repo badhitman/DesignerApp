@@ -1,0 +1,16 @@
+[Unit]
+Description=bus.app.service
+
+[Service]
+WorkingDirectory=/srv/services/RemoteCallLib
+ExecStart=/usr/bin/dotnet /srv/services/RemoteCallLib/RemoteCallLib.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-bus-app
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

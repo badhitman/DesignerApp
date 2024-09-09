@@ -60,7 +60,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
     readonly Func<AddressOrganizationModelDB, string> converter = p => p.Name;
 
     IEnumerable<AddressOrganizationModelDB>? _prevSelectedAddresses;
-    IEnumerable<AddressOrganizationModelDB>? _selectedAddresses = [];
+    List<AddressOrganizationModelDB>? _selectedAddresses = [];
     IEnumerable<AddressOrganizationModelDB>? SelectedAddresses
     {
         get => _selectedAddresses ?? [];
@@ -89,7 +89,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
                         Organization = CurrentOrganization,
                     }
                 }));
-                _selectedAddresses = CurrentCart.AddressesTabs.Select(Convert);
+                _selectedAddresses = [.. CurrentCart.AddressesTabs.Select(Convert)];
                 InvokeAsync(async () => await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)));
             }
             static AddressOrganizationModelDB Convert(AddressForOrderModelDb x) => new()
@@ -116,7 +116,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
             if (_prevSelectedAddresses.Any())
             {
                 CurrentCart.AddressesTabs!.RemoveAll(x => _prevSelectedAddresses!.Any(y => y.Id == x.AddressOrganizationId));
-                _selectedAddresses = CurrentCart.AddressesTabs.Select(Convert);
+                _selectedAddresses = [.. CurrentCart.AddressesTabs.Select(Convert)];
                 InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
             }
 
@@ -159,9 +159,10 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         if (_prevSelectedAddresses is null)
             CurrentCart.AddressesTabs.Clear();
         else
-            CurrentCart.AddressesTabs!.RemoveAll(x => _prevSelectedAddresses.Any(y => y.Id == x.AddressOrganizationId));
+            CurrentCart.AddressesTabs!.RemoveAll(x => !_prevSelectedAddresses.Any(y => y.Id == x.AddressOrganizationId));
 
-        _selectedAddresses = _prevSelectedAddresses;
+        _selectedAddresses = [.. _prevSelectedAddresses];
+        _selectedAddresses.Clear();
         _prevSelectedAddresses = null;
         _visibleChangeAddresses = false;
         InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
@@ -178,12 +179,14 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         CurrentCart.Organization = prevCurrOrg;
         CurrentCart.OrganizationId = prevCurrOrg?.Id ?? 0;
         prevCurrOrg = null;
+        CurrentCart.AddressesTabs?.RemoveAll(x => !CurrentOrganization!.Addresses!.Any(y => y.Id == x.AddressOrganizationId));
         ResetAddresses();
         _visibleChangeOrganization = false;
     }
 
     async void DocumentUpdateAction()
     {
+        CurrentCart.AddressesTabs?.RemoveAll(x => !CurrentOrganization!.Addresses!.Any(y => y.Id == x.AddressOrganizationId));
         await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
     }
 
@@ -195,7 +198,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
 
     void ResetAddresses()
     {
-        SelectedAddresses = [];
+        _selectedAddresses?.Clear();
         InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
     }
 

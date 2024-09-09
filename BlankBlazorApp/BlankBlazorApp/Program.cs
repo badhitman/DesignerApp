@@ -13,6 +13,7 @@ using RemoteCallLib;
 using ServerLib;
 using SharedLib;
 using System.Globalization;
+using System.Reflection;
 using Transmission.Receives.web;
 
 // Early init of NLog to allow startup and exception logging, before host is built

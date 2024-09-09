@@ -27,6 +27,13 @@ public class AddressForOrderModelDb
     /// </summary>
     public int OrderDocumentId { get; set; }
 
+    /// <summary>
+    /// Адрес доставки (если не самовывоз)
+    /// </summary>
+    /// <remarks>
+    /// Если NULL - самовывоз
+    /// </remarks>
+    public int? DeliveryAddressId { get; set; }
 
     /// <summary>
     /// AddressOrganization

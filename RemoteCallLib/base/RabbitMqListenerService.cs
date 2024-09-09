@@ -46,6 +46,8 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
             { "x-expires", rabbitConf.Value.RemoteCallTimeoutMs }
         };
 
+        // Console.WriteLine(JsonConvert.SerializeObject(rabbitConf.Value));
+
         using (IServiceScope scope = servicesProvider.CreateScope())
         {
             receiveService = scope.ServiceProvider.GetServices<IResponseReceive<TRequest?, TResponse>>().First(o => o.GetType() == QueueType);

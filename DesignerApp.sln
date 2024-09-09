@@ -51,7 +51,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{A7D9597F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "systemd", "systemd", "{5B966126-26F6-4699-92C7-1F1A582A7EE3}"
 	ProjectSection(SolutionItems) = preProject
-		devops\etc\systemd\system\api.iq-s.pro.service = devops\etc\systemd\system\api.iq-s.pro.service
+		devops\etc\systemd\system\api.app.service = devops\etc\systemd\system\api.app.service
+		devops\etc\systemd\system\bus.app.service = devops\etc\systemd\system\bus.app.service
+		devops\etc\systemd\system\comm.app.service = devops\etc\systemd\system\comm.app.service
+		devops\etc\systemd\system\hd.app.service = devops\etc\systemd\system\hd.app.service
+		devops\etc\systemd\system\tg.app.service = devops\etc\systemd\system\tg.app.service
+		devops\etc\systemd\system\web.app.service = devops\etc\systemd\system\web.app.service
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "blank", "blank", "{72BC0AA4-50AF-4FB3-8214-ED2741EE3B4F}"

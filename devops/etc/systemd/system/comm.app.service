@@ -1,13 +1,13 @@
 [Unit]
-Description=api.iq-s.pro
+Description=comm.app.service
 
 [Service]
-WorkingDirectory=/srv/net6/api.iq-s.pro/www/
-ExecStart=/usr/bin/dotnet /srv/net6/api.iq-s.pro/www/ApiRestApp.dll
+WorkingDirectory=/srv/services/CommerceService
+ExecStart=/usr/bin/dotnet /srv/services/CommerceService/CommerceService.dll
 Restart=always
 RestartSec=10
 KillSignal=SIGINT
-SyslogIdentifier=dotnet-api-iq-s-pro
+SyslogIdentifier=dotnet-comm-app
 User=www-data
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false

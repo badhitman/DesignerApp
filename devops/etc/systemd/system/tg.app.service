@@ -1,0 +1,16 @@
+[Unit]
+Description=tg.app.service
+
+[Service]
+WorkingDirectory=/srv/services/Telegram.Bot.Polling
+ExecStart=/usr/bin/dotnet /srv/services/Telegram.Bot.Polling/Telegram.Bot.Polling.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-tg-app
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

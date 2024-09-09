@@ -25,21 +25,20 @@ public class AddressOrganizationDeleteReceive(IDbContextFactory<CommerceContext>
         TResponseModel<bool?> res = new() { Response = false };
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        OrderDocumentModelDB[] links_deliveries = await context
+
+        int count = await context
             .OrdersDocuments
-            .Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.AddressForOrderTabId == req))
-            .ToArrayAsync();
+            .CountAsync(x => context.AddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.AddressOrganizationId == req));
 
-        OrderDocumentModelDB[] links_documents = await context
+        if (count != 0)
+            res.AddError($"Адрес используется в заказах: {count} шт.");
+
+        count = await context
             .OrdersDocuments
-            .Where(x => context.AddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.AddressOrganizationId == req))
-            .ToArrayAsync();
+            .CountAsync(x => context.AddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.DeliveryAddressId == req));
 
-        if (links_deliveries.Length != 0)
-            res.AddError($"Адрес указан в доставке: {links_deliveries.Length} шт.");
-
-        if (links_documents.Length != 0)
-            res.AddError($"Адрес используется в заказах: {links_documents.Length} шт.");
+        if (count != 0)
+            res.AddError($"Адрес указан в доставке: {count} шт.");
 
         if (!res.Success())
             return res;
