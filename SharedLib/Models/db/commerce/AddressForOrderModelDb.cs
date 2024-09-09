@@ -39,16 +39,6 @@ public class AddressForOrderModelDb
     public int AddressOrganizationId { get; set; }
 
     /// <summary>
-    /// Цена доставки
-    /// </summary>
-    public double DeliveryPrice { get; set; }
-
-    /// <summary>
-    /// Статус доставки
-    /// </summary>
-    public HelpdeskIssueStepsEnum Status { get; set; }
-
-    /// <summary>
     /// Строки заказа
     /// </summary>
     public List<RowOfOrderDocumentModelDB>? Rows { get; set; }

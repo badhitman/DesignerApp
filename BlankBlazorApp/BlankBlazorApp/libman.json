@@ -21,6 +21,10 @@
     {
       "library": "bootstrap-icons@1.11.3",
       "destination": "wwwroot/lib/bootstrap-icons/"
+    },
+    {
+      "library": "ckeditor5@43.1.0",
+      "destination": "wwwroot/lib/ckeditor5/"
     }
   ]
 }

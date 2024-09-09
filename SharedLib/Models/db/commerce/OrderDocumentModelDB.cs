@@ -50,15 +50,11 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     /// Сумма заказа всего
     /// </summary>
     /// <returns></returns>
-    public (double for_goods, double for_delivery) TotalSumForRows()
+    public double TotalSumForRows()
     {
         if (AddressesTabs is null || AddressesTabs.Count == 0 || AddressesTabs.Any(x => x.Rows is null) || AddressesTabs.Any(x => x.Rows is null || x.Rows.Any(z => z.Offer is null)))
-            return (0, 0);
+            return 0;
 
-        double
-            for_goods = AddressesTabs.Sum(x => x.Rows!.Sum(y => y.Quantity * y.Offer!.Price)),
-            for_delivery = AddressesTabs.Sum(x => x.DeliveryPrice);
-
-        return (for_goods, for_delivery);
+        return AddressesTabs.Sum(x => x.Rows!.Sum(y => y.Quantity * y.Offer!.Price));
     }
 }

@@ -9,7 +9,7 @@
 
 <PageTitle>Вход</PageTitle>
 
-<h1>Вход</h1>
+<h2>Вход</h2>
 <StatusMessage Messages="@Messages" />
 <div class="row">
     <div class="col-md-4">
@@ -17,7 +17,6 @@
             <StatusMessage Messages="@result?.Messages" />
             <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                 <DataAnnotationsValidator />
-                <h2>Используйте локальную учетную запись для входа.</h2>
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
@@ -39,7 +38,7 @@
                 <div>
                     <button type="submit" class="w-100 btn btn-lg btn-primary">Вход</button>
                 </div>
-                <div>
+                <div class="mt-4">
                     <p>
                         <a href="Account/ForgotPassword">Забыли пароль?</a>
                     </p>

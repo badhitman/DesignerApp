@@ -36,8 +36,6 @@ public class DeliveryOrderUpdateReceive(IDbContextFactory<CommerceContext> comme
                 {
                     AddressOrganizationId = req.DeliveryAddressId,
                     OrderDocumentId = req.OrderDocumentId,
-                    Status = HelpdeskIssueStepsEnum.Created,
-                    DeliveryPrice = req.Price,
                 };
                 await context.AddAsync(dlr);
                 await context.SaveChangesAsync();                
@@ -45,9 +43,9 @@ public class DeliveryOrderUpdateReceive(IDbContextFactory<CommerceContext> comme
             }
             else
             {
-                await context.AddressesForOrders
-                    .Where(x => x.AddressOrganizationId == req.DeliveryAddressId && x.OrderDocumentId == req.OrderDocumentId)
-                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.DeliveryPrice, req.Price).SetProperty(p => p.Status, req.Status));
+                //await context.AddressesForOrders
+                //    .Where(x => x.AddressOrganizationId == req.DeliveryAddressId && x.OrderDocumentId == req.OrderDocumentId)
+                //    .ExecuteUpdateAsync(set => set.SetProperty(p => p.Status, req.Status));
             }
             res.Response = dlr.Id;
         }

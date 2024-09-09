@@ -25,7 +25,7 @@ public class DeliveryForOrderUpdateRequestModel
     public double Price { get; set; }
 
     /// <summary>
-    /// Подключить доставку к ордеру по указанному адресу доставки или отключить
+    /// Подключить доставку к заказу по указанному адресу доставки или отключить
     /// </summary>
     public bool SetAction { get; set; }
 

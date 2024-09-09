@@ -10,27 +10,27 @@
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="@(nameof(OrderDocumentModelDB.CreatedAtUTC))" T="OrderDocumentModelDB">Создан</MudTableSortLabel></MudTh>
         <MudTh>Информация</MudTh>
         <MudTh>Сумма</MudTh>
-        <MudTh>Доставка</MudTh>
+        @* <MudTh>Доставка</MudTh> *@
         <MudTh>Статус</MudTh>
     </HeaderContent>
     <RowTemplate>
-        @{
+        @* @{
             var sum_data = context.TotalSumForRows();
-        }
+        } *@
         <MudTd DataLabel="Создан"><a href="/order-document/@context.Id">@context.CreatedAtUTC</a></MudTd>
         <MudTd DataLabel="Информация">@context.Name</MudTd>
         <MudTd DataLabel="Сумма">
-            @sum_data.for_goods
+           @*  @sum_data.for_goods
             @if (sum_data.for_delivery > 0)
             {
                 <sup title="Доставка">+ доставка @sum_data.for_delivery (= @(sum_data.for_goods + sum_data.for_delivery))</sup>
-            }
+            } *@
         </MudTd>
-        <MudTd DataLabel="Доставка">@context.AddressesTabs?.Count(x => x.DeliveryPrice > 0)</MudTd>
+        @* <MudTd DataLabel="Доставка">@context.AddressesTabs?.Count(x => x.DeliveryPrice > 0)</MudTd> *@
         <MudTd DataLabel="Статус">@GetStatus(context)</MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText>Данные отсутсвуют</MudText>
+        <MudText>Данные отсутствуют</MudText>
     </NoRecordsContent>
     <LoadingContent>
         <MudText>Загрузка...</MudText>

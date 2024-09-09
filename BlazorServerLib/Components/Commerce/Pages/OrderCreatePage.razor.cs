@@ -76,7 +76,6 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
                 {
                     AddressOrganizationId = x.Id,
                     Rows = [],
-                    Status = HelpdeskIssueStepsEnum.Created,
                     OrderDocument = CurrentCart,
                     OrderDocumentId = CurrentCart.Id,
                     AddressOrganization = new()
