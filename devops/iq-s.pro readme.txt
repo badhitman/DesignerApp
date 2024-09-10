@@ -14,11 +14,11 @@ ufw enable
 
 # install .net8
 
-systemctl enable api.iq-s.pro
-systemctl start api.iq-s.pro
-journalctl -u api.iq-s.pro
+systemctl enable web.app
+systemctl start web.app
+journalctl -u web.app
 
-ln -s /etc/nginx/sites-available/api.iq-s.pro.conf /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/web.app /etc/nginx/sites-enabled/
 
 systemctl reload nginx
 
