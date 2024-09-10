@@ -16,6 +16,9 @@ namespace BlazorWebLib.Components.Commerce.Pages;
 public partial class OrderCreatePage : BlazorBusyComponentBaseModel
 {
     [Inject]
+    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
+
+    [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
 
     [Inject]
@@ -58,6 +61,13 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
     UserInfoMainModel user = default!;
     OrderDocumentModelDB CurrentCart = default!;
     readonly Func<AddressOrganizationModelDB, string> converter = p => p.Name;
+
+    bool _expanded;
+
+    private void OnExpandCollapseClick()
+    {
+        _expanded = !_expanded;
+    }
 
     IEnumerable<AddressOrganizationModelDB>? _prevSelectedAddresses;
     List<AddressOrganizationModelDB>? _selectedAddresses = [];
@@ -133,7 +143,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         }
     }
 
-    double SumOfDocument
+    decimal SumOfDocument
     {
         get
         {
@@ -188,6 +198,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
     {
         CurrentCart.AddressesTabs?.RemoveAll(x => !CurrentOrganization!.Addresses!.Any(y => y.Id == x.AddressOrganizationId));
         await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
+        StateHasChanged();
     }
 
     void CancelChangeOrganizations()
@@ -202,6 +213,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
     }
 
+    decimal _CommerceMinimalPriceDelivery;
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -222,9 +234,12 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         };
 
         IsBusyProgress = true;
+        TResponseModel<decimal?> res_storage = await StoreRepo.ReadParameter<decimal?>(GlobalStaticConstants.CloudStorageMetadata.CommerceMinimalPriceDelivery);
+        SnackbarRepo.ShowMessagesResponse(res_storage.Messages);
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>?> res = await CommerceRepo.OrganizationsSelect(req);
-        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
+        IsBusyProgress = false;
+        _CommerceMinimalPriceDelivery = res_storage.Response ?? 0;
         if (!res.Success() || res.Response?.Response is null || res.Response.Response.Count == 0)
             return;
         Organizations = res.Response.Response;

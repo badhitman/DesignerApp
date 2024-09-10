@@ -15,7 +15,7 @@ public class PaymentDocumentBaseModel : EntryModel
     /// <summary>
     /// Сумма оплаты
     /// </summary>
-    public double Amount { get; set; }
+    public decimal Amount { get; set; }
 
     /// <summary>
     /// Идентификатор документа из внешней системы (например 1С)

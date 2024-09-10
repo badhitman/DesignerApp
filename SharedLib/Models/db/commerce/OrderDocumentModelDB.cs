@@ -50,7 +50,7 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     /// Сумма заказа всего
     /// </summary>
     /// <returns></returns>
-    public double TotalSumForRows()
+    public decimal TotalSumForRows()
     {
         if (AddressesTabs is null || AddressesTabs.Count == 0 || AddressesTabs.Any(x => x.Rows is null) || AddressesTabs.Any(x => x.Rows is null || x.Rows.Any(z => z.Offer is null)))
             return 0;

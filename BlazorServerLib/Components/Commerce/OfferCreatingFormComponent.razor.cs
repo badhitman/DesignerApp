@@ -35,7 +35,7 @@ public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseModel
 
 
     UnitsOfMeasurementEnum UnitOffer { get; set; } = UnitsOfMeasurementEnum.None;
-    double priceOffer;
+    decimal priceOffer;
     uint multiplicityOffer;
     string? nameOffer;
 

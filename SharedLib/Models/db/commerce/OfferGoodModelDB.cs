@@ -31,7 +31,7 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// Цена за единицу <see cref="OfferUnit"/>
     /// </summary>
-    public double Price { get; set; }
+    public decimal Price { get; set; }
 
     /// <inheritdoc/>
     public static bool operator ==(OfferGoodModelDB off1, OfferGoodModelDB off2) => off1.Equals(off2);

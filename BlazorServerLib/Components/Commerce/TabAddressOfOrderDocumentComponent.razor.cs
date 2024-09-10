@@ -39,11 +39,33 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
     [Parameter]
     public Action? DocumentUpdateHandler { get; set; }
 
+    /// <summary>
+    /// CommerceMinimalPriceDelivery
+    /// </summary>
+    [Parameter]
+    public decimal CommerceMinimalPriceDelivery { get; set; }
+
 
     TableEditTrigger editTrigger = TableEditTrigger.EditButton;
     List<OfferGoodModelDB>? allOffers;
     AddRowToOrderDocumentComponent? addingDomRef;
     RowOfOrderDocumentModelDB? elementBeforeEdit;
+
+
+    AddressOrganizationModelDB _delivery  = new() { Address = "", Name = "Самовывоз", Contacts = "", ParentId = 0 };
+    AddressOrganizationModelDB SelectedDelivery
+    {
+        get => _delivery;
+        set
+        {
+            _delivery = value;
+            CurrentTab.DeliveryAddressId = _delivery.Id;
+            CurrentTab.DeliveryPrice = _delivery.Id == 0 ? 0 : CommerceMinimalPriceDelivery;
+
+            if (DocumentUpdateHandler is not null)
+                DocumentUpdateHandler();
+        }
+    }
 
     void DeleteRow(RowOfOrderDocumentModelDB row)
     {
