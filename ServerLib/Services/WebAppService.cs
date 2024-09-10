@@ -28,7 +28,7 @@ public class WebAppService(
     IWebRemoteTransmissionService webTransmissionRepo,
     ILogger<WebAppService> LoggerRepo)
 #pragma warning disable CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
-    : GetUserServiceAbstract(httpContextAccessor, userManager), IWebAppService
+    : GetUserServiceAbstract(httpContextAccessor, userManager, LoggerRepo), IWebAppService
 #pragma warning restore CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
 {
     #region Telegram

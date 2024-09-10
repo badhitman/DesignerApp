@@ -239,7 +239,7 @@ public partial class JournalConstructorService(
 
         if (user_id is null)
         {
-            res.AddError("HttpContext is null (текущий пользователь) не авторизован. info D485BA3C-081C-4E2F-954D-759A181DCE78");
+            res.AddError("HttpContext is null (текущий пользователь) не авторизован. info BF79D8C5-EDBF-4810-B83D-E56BF0186D30");
             return res;
         }
 

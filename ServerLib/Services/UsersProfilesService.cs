@@ -28,7 +28,7 @@ public class UsersProfilesService(
     IUserStore<ApplicationUser> userStore,
     IHttpContextAccessor httpContextAccessor,
     IWebRemoteTransmissionService webTransmissionRepo,
-    ILogger<UsersProfilesService> LoggerRepo) : GetUserServiceAbstract(httpContextAccessor, userManager), IUsersProfilesService
+    ILogger<UsersProfilesService> LoggerRepo) : GetUserServiceAbstract(httpContextAccessor, userManager, LoggerRepo), IUsersProfilesService
 {
 #pragma warning restore CS9107
     /// <inheritdoc/>

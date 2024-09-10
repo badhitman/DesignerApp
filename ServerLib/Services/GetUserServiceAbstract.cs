@@ -2,18 +2,19 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using IdentityLib;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using SharedLib;
+using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using IdentityLib;
+using SharedLib;
+using Microsoft.Extensions.Logging;
 
 namespace ServerLib;
 
 /// <summary>
 /// GetUserService
 /// </summary>
-public abstract class GetUserServiceAbstract(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager)
+public abstract class GetUserServiceAbstract(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, ILogger<GetUserServiceAbstract> LoggerRepo)
 {
     /// <summary>
     /// Read Identity user data.
@@ -26,6 +27,11 @@ public abstract class GetUserServiceAbstract(IHttpContextAccessor httpContextAcc
         string msg;
         if (string.IsNullOrWhiteSpace(userId))
         {
+            LoggerRepo.LogInformation($"IsAuthenticated:{httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated}");
+            LoggerRepo.LogInformation($"Name:{httpContextAccessor.HttpContext?.User.Identity?.Name}");
+            if (httpContextAccessor.HttpContext is not null)
+                LoggerRepo.LogInformation($"Claims:{string.Join(",", httpContextAccessor.HttpContext.User.Claims.Select(x => $"[{x.ValueType}:{x.Value}]"))}");
+
             string? user_id = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (user_id is null)
             {

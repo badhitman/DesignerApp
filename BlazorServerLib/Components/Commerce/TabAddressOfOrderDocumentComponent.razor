@@ -58,7 +58,7 @@
             @context!.Offer!.GetName
         </MudTd>
         <MudTd DataLabel="Price">
-            @context!.Offer!.Price руб.
+            @context!.Offer!.Price руб. (@($"{(context!.Offer!.Price / context!.Offer.Multiplicity)} р/{context.Goods!.BaseUnit.DescriptionInfo().ToLower()}"))
         </MudTd>
         <MudTd DataLabel="Quantity">
             @context!.Quantity
