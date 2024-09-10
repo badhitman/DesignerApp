@@ -45,6 +45,20 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
     AddRowToOrderDocumentComponent? addingDomRef;
     RowOfOrderDocumentModelDB? elementBeforeEdit;
 
+
+    AddressOrganizationModelDB? _delivery;
+    AddressOrganizationModelDB? SelectedDelivery
+    {
+        get => _delivery;
+        set
+        {
+            _delivery = value;
+            CurrentTab.DeliveryAddressId = _delivery?.Id;
+            if (DocumentUpdateHandler is not null)
+                DocumentUpdateHandler();
+        }
+    }
+
     void DeleteRow(RowOfOrderDocumentModelDB row)
     {
         CurrentTab.Rows ??= [];

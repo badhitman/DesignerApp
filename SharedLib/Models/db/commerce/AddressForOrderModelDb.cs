@@ -36,6 +36,11 @@ public class AddressForOrderModelDb
     public int? DeliveryAddressId { get; set; }
 
     /// <summary>
+    /// Стоимость доставки
+    /// </summary>
+    public double DeliveryPrice { get; set; }
+
+    /// <summary>
     /// AddressOrganization
     /// </summary>
     public AddressOrganizationModelDB? AddressOrganization { get; set; }

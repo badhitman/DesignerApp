@@ -6,18 +6,6 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-@{
-    double sum_doc = SumOfDocument;
-}
-
-<h4>
-    Новый заказ
-    @if (sum_doc > 0)
-    {
-        <text>: </text> <span class="text-primary">@sum_doc</span> <text> руб.</text>
-    }
-</h4>
-
 @if (Organizations.Count == 0)
 {
     <figure class="text-center">
@@ -31,6 +19,15 @@
 }
 else
 {
+    double sum_doc = SumOfDocument;
+    <h4>
+        Новый заказ
+        @if (sum_doc > 0)
+        {
+            <text>: </text> <span class="text-primary">@sum_doc</span> <text> руб.</text>
+        }
+    </h4>
+
     <div class="row">
         <div class="col-md-6">
             <MudSelect T="OrganizationModelDB" Label="Организация" MultiSelection="false" @bind-Value="@CurrentOrganization">
@@ -63,28 +60,35 @@ else
             </figcaption>
         </figure>
     }
-}
 
-@if (CurrentCart.OrganizationId > 0 && CurrentOrganization is not null && SelectedAddresses?.Any() == true)
-{
-    <div class="card mt-3">
-        <div class="card-body">
-            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-                @foreach (AddressOrganizationModelDB add in SelectedAddresses)
-                {
-                    AddressForOrderModelDb current_tab = CurrentCart.AddressesTabs!.First(x => x.AddressOrganizationId == add.Id);
-                    <MudTabPanel Text="@add.Name">
-                        <TabAddressOfOrderDocumentComponent CurrentTab="current_tab" DocumentUpdateHandler="DocumentUpdateAction" />
-                    </MudTabPanel>
-                }
-            </MudTabs>
-            <div class="mb-3 mt-4">
-                <label for="exampleFormControlInput1" class="form-label">Примечание</label>
-                <input @bind-value:event="oninput" @bind-value="CurrentCart.Name" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Название">
+    @if (CurrentCart.OrganizationId > 0 && CurrentOrganization is not null && SelectedAddresses?.Any() == true)
+    {
+        <div class="card mt-3">
+            <div class="card-body">
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                    @foreach (AddressOrganizationModelDB add in SelectedAddresses)
+                    {
+                        AddressForOrderModelDb current_tab = CurrentCart.AddressesTabs!.First(x => x.AddressOrganizationId == add.Id);
+                        <MudTabPanel Text="@add.Name">
+                            <TabAddressOfOrderDocumentComponent CurrentTab="current_tab" DocumentUpdateHandler="DocumentUpdateAction" />
+                        </MudTabPanel>
+                    }
+                    @if (CurrentCart.AddressesTabs?.Any(x => x.DeliveryAddressId.HasValue && x.DeliveryAddressId.Value > 0) == true)
+                    {
+                        <MudTabPanel Text="Доставка" Icon="@Icons.Material.Filled.DeliveryDining">
+                            доставка
+                        </MudTabPanel>
+                    }
+                </MudTabs>
+                <div class="mb-3 mt-4">
+                    <label for="exampleFormControlInput1" class="form-label">Примечание</label>
+                    <input @bind-value:event="oninput" @bind-value="CurrentCart.Name" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Название">
+                </div>
             </div>
         </div>
-    </div>
+    }
 }
+
 <MudDialog @bind-Visible="_visibleChangeOrganization" Options="_dialogOptions">
     <TitleContent>
         <MudText Typo="Typo.h6">

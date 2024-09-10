@@ -89,3 +89,10 @@
         <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
     </EditButtonContent>
 </MudTable>
+<hr />
+<MudSelect @bind-Value="SelectedDelivery" Label="Доставка" Variant="Variant.Outlined">
+    @foreach (AddressOrganizationModelDB add in CurrentTab.OrderDocument!.Organization!.Addresses!)
+    {
+        <MudSelectItem Value="@add" />
+    }
+</MudSelect>
