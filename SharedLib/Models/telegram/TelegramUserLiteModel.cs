@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// TelegramUserBaseModelDb
+/// TelegramUserLiteModel
 /// </summary>
 public class TelegramUserLiteModel
 {

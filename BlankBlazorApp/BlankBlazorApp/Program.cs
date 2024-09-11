@@ -1,20 +1,19 @@
-using BlankBlazorApp.Components;
-using BlazorLib;
-using DbcLib;
-using IdentityLib;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using BlankBlazorApp.Components;
+using Transmission.Receives.web;
+using System.Globalization;
 using MudBlazor.Services;
-using NLog;
-using NLog.Web;
 using RemoteCallLib;
+using IdentityLib;
 using ServerLib;
 using SharedLib;
-using System.Globalization;
-using System.Reflection;
-using Transmission.Receives.web;
+using BlazorLib;
+using NLog.Web;
+using DbcLib;
+using NLog;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();

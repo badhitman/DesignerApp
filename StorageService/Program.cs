@@ -5,6 +5,7 @@ using NLog.Extensions.Logging;
 using NLog.Web;
 using RemoteCallLib;
 using SharedLib;
+using StorageService;
 using Transmission.Receives.helpdesk;
 
 // Early init of NLog to allow startup and exception logging, before host is built

@@ -2,12 +2,12 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SharedLib;
+using DbcLib;
 
-namespace RemoteCallLib;
+namespace StorageService;
 
 /// <inheritdoc/>
 public class SerializeStorageService(IDbContextFactory<CloudParametersContext> cloudParametersDbFactory, ILogger<SerializeStorageService> loggerRepo) : ISerializeStorage
