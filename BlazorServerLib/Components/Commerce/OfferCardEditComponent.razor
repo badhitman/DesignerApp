@@ -12,7 +12,7 @@
                 }
             </MudSelect>
             <MudNumericField Disabled="IsBusyProgress" @bind-Value="editOffer.Multiplicity" Label="Кратность" Variant="Variant.Outlined" Immediate />
-            <MudNumericField Disabled="IsBusyProgress" @bind-Value="editOffer.Price" Label="Цена" Format="F1" Variant="Variant.Outlined" Immediate />
+            <MudNumericField Disabled="IsBusyProgress" @bind-Value="editOffer.Price" Label="Цена" Format="N2" Variant="Variant.Outlined" Immediate />
             <MudFab Disabled="(!CanSave || IsBusyProgress)" title="Сохранить изменения" OnClick="SaveOffer" StartIcon="@Icons.Material.Filled.Save" Color="@(CanSave ? Color.Info : Color.Default)" Size="Size.Small" Class="align-self-center" />
             @if (CanSave)
             {

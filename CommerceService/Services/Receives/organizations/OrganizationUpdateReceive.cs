@@ -37,14 +37,14 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
 
         if (req.Payload.Id < 1)
         {
-            OrganizationModelDB? duble = await _q
+            OrganizationModelDB? duple = await _q
                 .FirstOrDefaultAsync();
 
-            if (duble is not null)
+            if (duple is not null)
             {
                 IQueryable<UserOrganizationModelDB> sq = context
                     .OrganizationsUsers
-                    .Where(x => x.UserPersonIdentityId == req.SenderActionUserId && x.OrganizationId == duble.Id);
+                    .Where(x => x.UserPersonIdentityId == req.SenderActionUserId && x.OrganizationId == duple.Id);
 
                 if (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && req.SenderActionUserId != GlobalStaticConstants.Roles.System && sq.Any())
                 {
@@ -52,7 +52,7 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
                     {
                         LastAtUpdatedUTC = DateTime.UtcNow,
                         UserPersonIdentityId = req.SenderActionUserId,
-                        OrganizationId = duble.Id,
+                        OrganizationId = duple.Id,
                     });
                     await context.SaveChangesAsync();
                     res.AddSuccess($"Вы добавлены к управлению компанией");
@@ -73,16 +73,16 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
             req.Payload.NewKPP = req.Payload.KPP;
             req.Payload.LastAtUpdatedUTC = DateTime.UtcNow;
 
-            try
+            await context.AddAsync(req.Payload);
+            await context.SaveChangesAsync();
+            await context.AddAsync(new UserOrganizationModelDB()
             {
-                await context.AddAsync(req.Payload);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-
+                LastAtUpdatedUTC = DateTime.UtcNow,
+                UserPersonIdentityId = req.SenderActionUserId,
+                OrganizationId = req.Payload.Id,
+            });
+            await context.SaveChangesAsync();
+            res.AddSuccess($"Компания создана");
 
             res.Response = req.Payload.Id;
         }

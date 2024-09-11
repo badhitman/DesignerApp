@@ -47,16 +47,20 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
 
     IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentTab.Rows!.Any(y => y.OfferId == x.Id));
 
-    bool _expanded;
+    bool IsShowAddingOffer;
     int QuantityValue { get; set; } = 1;
-    private void OnExpandCollapseClick()
+    private void OnExpandAddingOffer()
     {
-        _expanded = !_expanded;
+        IsShowAddingOffer = !IsShowAddingOffer;
+        if(IsShowAddingOffer)
+        {
+            SelectedOffer = ActualOffers.FirstOrDefault();
+            _selectedOfferId = SelectedOffer?.Id;
+        }
     }
 
     void AddOffer()
     {
-        QuantityValue = 1;
         AddingOfferHandler(new OfferGoodActionModel()
         {
             Name = SelectedOffer!.Name,
@@ -69,11 +73,12 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
             GoodsId = SelectedOffer.GoodsId,
             Id = SelectedOffer.Id,
         });
-        AllOffers.RemoveAll(x => x.Id == SelectedOffer?.Id);
+        QuantityValue = 1;
+        //AllOffers.RemoveAll(x => x.Id == SelectedOffer?.Id);
 
         SelectedOffer = ActualOffers.FirstOrDefault();
         _selectedOfferId = SelectedOffer?.Id;
-        OnExpandCollapseClick();
+        OnExpandAddingOffer();
     }
 
     /// <inheritdoc/>

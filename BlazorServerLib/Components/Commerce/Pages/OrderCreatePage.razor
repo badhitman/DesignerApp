@@ -20,7 +20,6 @@
 else
 {
     decimal sum_doc = SumOfDocument;
-
     <h4>
         Новый заказ
         @if (sum_doc > 0)
@@ -28,7 +27,6 @@ else
             <text>: </text> <span class="text-primary">@sum_doc</span> <text> руб.</text>
         }
     </h4>
-
     <div class="row">
         <div class="col-md-6">
             <MudSelect T="OrganizationModelDB" Label="Организация" MultiSelection="false" @bind-Value="@CurrentOrganization">
