@@ -28,17 +28,17 @@ public class AddressOrganizationDeleteReceive(IDbContextFactory<CommerceContext>
 
         int count = await context
             .OrdersDocuments
-            .CountAsync(x => context.AddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.AddressOrganizationId == req));
+            .CountAsync(x => context.TabsAddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.AddressOrganizationId == req));
 
         if (count != 0)
             res.AddError($"Адрес используется в заказах: {count} шт.");
 
-        count = await context
-            .OrdersDocuments
-            .CountAsync(x => context.AddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.DeliveryAddressId == req));
+        //count = await context
+        //    .OrdersDocuments
+        //    .CountAsync(x => context.TabsAddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.DeliveryAddressId == req));
 
-        if (count != 0)
-            res.AddError($"Адрес указан в доставке: {count} шт.");
+        //if (count != 0)
+        //    res.AddError($"Адрес указан в доставке: {count} шт.");
 
         if (!res.Success())
             return res;

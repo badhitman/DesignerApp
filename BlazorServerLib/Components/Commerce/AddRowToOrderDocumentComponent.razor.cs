@@ -23,7 +23,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
     /// CurrentTab
     /// </summary>
     [Parameter, EditorRequired]
-    public required AddressForOrderModelDb CurrentTab { get; set; }
+    public required TabAddressForOrderModelDb CurrentTab { get; set; }
 
     /// <summary>
     /// AddingOfferHandler

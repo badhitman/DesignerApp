@@ -27,7 +27,7 @@ public class DeliveryOrderUpdateReceive(IDbContextFactory<CommerceContext> comme
 
         if (req.SetAction)
         {
-            AddressForOrderModelDb? dlr = await context.AddressesForOrders
+            TabAddressForOrderModelDb? dlr = await context.TabsAddressesForOrders
                 .FirstOrDefaultAsync(x => x.AddressOrganizationId == req.DeliveryAddressId && x.OrderDocumentId == req.OrderDocumentId);
 
             if (dlr is null)
@@ -51,7 +51,7 @@ public class DeliveryOrderUpdateReceive(IDbContextFactory<CommerceContext> comme
         }
         else
         {
-            res.Response = await context.AddressesForOrders
+            res.Response = await context.TabsAddressesForOrders
                 .Where(x => x.AddressOrganizationId == req.DeliveryAddressId && x.OrderDocumentId == req.OrderDocumentId)
                 .ExecuteDeleteAsync();
 

@@ -82,7 +82,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
             AddressOrganizationModelDB[] addresses = value is null ? [] : [.. value.Where(x => !CurrentCart.AddressesTabs.Any(y => y.AddressOrganizationId == x.Id))];
             if (addresses.Length != 0)
             {
-                CurrentCart.AddressesTabs.AddRange(addresses.Select(x => new AddressForOrderModelDb()
+                CurrentCart.AddressesTabs.AddRange(addresses.Select(x => new TabAddressForOrderModelDb()
                 {
                     AddressOrganizationId = x.Id,
                     Rows = [],
@@ -102,7 +102,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
                 _selectedAddresses = [.. CurrentCart.AddressesTabs.Select(Convert)];
                 InvokeAsync(async () => await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)));
             }
-            static AddressOrganizationModelDB Convert(AddressForOrderModelDb x) => new()
+            static AddressOrganizationModelDB Convert(TabAddressForOrderModelDb x) => new()
             {
                 Id = x.AddressOrganization!.Id,
                 Name = x.AddressOrganization.Name,
@@ -114,7 +114,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
             };
 
             // адреса/вкладки, которые пользователь хочет удалить
-            AddressForOrderModelDb[] _qr = CurrentCart
+            TabAddressForOrderModelDb[] _qr = CurrentCart
                 .AddressesTabs
                 .Where(x => value?.Any(y => y.Id == x.AddressOrganizationId) != true).ToArray();
 

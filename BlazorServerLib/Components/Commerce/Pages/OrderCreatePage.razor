@@ -19,21 +19,13 @@
 }
 else
 {
-    decimal sum_doc = SumOfDocument, sum_delivery = 0;
-    IEnumerable<AddressForOrderModelDb>? price_delivery = CurrentCart.AddressesTabs?.Where(x => x.DeliveryAddressId != null);//.Sum(x => x.DeliveryPrice)
+    decimal sum_doc = SumOfDocument;
+
     <h4>
         Новый заказ
         @if (sum_doc > 0)
         {
             <text>: </text> <span class="text-primary">@sum_doc</span> <text> руб.</text>
-        }
-        @if (price_delivery?.Any() == true)
-        {
-            sum_delivery = price_delivery.Sum(x => x.DeliveryPrice);
-            if (sum_delivery > 0)
-            {
-                <text>(доставка на сумму @sum_delivery руб. маршруты: @price_delivery.Count())</text>
-            }
         }
     </h4>
 
@@ -78,7 +70,7 @@ else
                 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                     @foreach (AddressOrganizationModelDB add in SelectedAddresses)
                     {
-                        AddressForOrderModelDb current_tab = CurrentCart.AddressesTabs!.First(x => x.AddressOrganizationId == add.Id);
+                        TabAddressForOrderModelDb current_tab = CurrentCart.AddressesTabs!.First(x => x.AddressOrganizationId == add.Id);
                         current_tab.OrderDocument = CurrentCart;
                         <MudTabPanel @key="@(add.Id)" Text="@add.Name">
                             <TabAddressOfOrderDocumentComponent CurrentTab="current_tab" DocumentUpdateHandler="DocumentUpdateAction" CommerceMinimalPriceDelivery="_CommerceMinimalPriceDelivery" />
@@ -89,23 +81,6 @@ else
                     <label for="exampleFormControlInput1" class="form-label">Примечание</label>
                     <input @bind-value:event="oninput" @bind-value="CurrentCart.Name" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Название">
                 </div>
-                <hr />
-                @if (CurrentCart.AddressesTabs?.Any(x => x.DeliveryAddressId.HasValue && x.DeliveryAddressId.Value > 0) == true)
-                {
-                    <MudPaper Class="pa-4">
-                        <MudStack Spacing="2">
-                            <MudButton OnClick="OnExpandCollapseClick">Доставка на сумму @sum_delivery руб. маршруты: @price_delivery?.Count()</MudButton>
-                            <MudCollapse Expanded="_expanded">
-                                <ul>
-                                    @foreach (AddressForOrderModelDb row_delivery in CurrentCart.AddressesTabs.Where(x => x.DeliveryAddressId.HasValue && x.DeliveryAddressId.Value > 0))
-                                    {
-                                        <li>@row_delivery.AddressOrganization?.ToString(): @row_delivery.DeliveryPrice руб.</li>
-                                    }
-                                </ul>
-                            </MudCollapse>
-                        </MudStack>
-                    </MudPaper>
-                }
             </div>
         </div>
     }

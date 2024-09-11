@@ -34,34 +34,20 @@ public partial class CommerceLayerContext : DbContext
     }
 
     /// <summary>
-    /// AttachmentsForOrders
+    /// Organizations
     /// </summary>
-    public DbSet<AttachmentForOrderModelDB> AttachmentsForOrders { get; set; }
+    public DbSet<OrganizationModelDB> Organizations { get; set; }
 
     /// <summary>
-    /// PaymentsDocuments
+    /// AddressesOrganizations
     /// </summary>
-    public DbSet<PaymentDocumentModelDb> PaymentsDocuments { get; set; }
+    public DbSet<AddressOrganizationModelDB> AddressesOrganizations { get; set; }
 
     /// <summary>
-    /// Адреса организаций в заказе
+    /// OrganizationsUsers
     /// </summary>
-    public DbSet<AddressForOrderModelDb> AddressesForOrders { get; set; }
+    public DbSet<UserOrganizationModelDB> OrganizationsUsers { get; set; }
 
-    /// <summary>
-    /// Строки заказов
-    /// </summary>
-    public DbSet<RowOfOrderDocumentModelDB> RowsOfOrdersDocuments { get; set; }
-
-    /// <summary>
-    /// Orders
-    /// </summary>
-    public DbSet<OrderDocumentModelDB> OrdersDocuments { get; set; }
-
-    /// <summary>
-    /// ProductsOffers
-    /// </summary>
-    public DbSet<OfferGoodModelDB> OffersGoods { get; set; }
 
     /// <summary>
     /// Товары
@@ -69,17 +55,34 @@ public partial class CommerceLayerContext : DbContext
     public DbSet<GoodsModelDB> Goods { get; set; }
 
     /// <summary>
-    /// Organizations
+    /// ProductsOffers
     /// </summary>
-    public DbSet<OrganizationModelDB> Organizations { get; set; }
+    public DbSet<OfferGoodModelDB> OffersGoods { get; set; }
+
 
     /// <summary>
-    /// OrganizationsUsers
+    /// Orders
     /// </summary>
-    public DbSet<UserOrganizationModelDB> OrganizationsUsers { get; set; }
+    public DbSet<OrderDocumentModelDB> OrdersDocuments { get; set; }
 
     /// <summary>
-    /// AddressesOrganizations
+    /// Адреса организаций в заказе
     /// </summary>
-    public DbSet<AddressOrganizationModelDB> AddressesOrganizations { get; set; }
+    public DbSet<TabAddressForOrderModelDb> TabsAddressesForOrders { get; set; }
+
+    /// <summary>
+    /// Строки заказов
+    /// </summary>
+    public DbSet<RowOfOrderDocumentModelDB> RowsOfOrdersDocuments { get; set; }
+
+
+    /// <summary>
+    /// PaymentsDocuments
+    /// </summary>
+    public DbSet<PaymentDocumentModelDb> PaymentsDocuments { get; set; }
+
+    /// <summary>
+    /// AttachmentsForOrders
+    /// </summary>
+    public DbSet<AttachmentForOrderModelDB> AttachmentsForOrders { get; set; }
 }

@@ -20,7 +20,7 @@ public class RowOfOrderDocumentModelDB
     /// <summary>
     /// AddressForOrderTab
     /// </summary>
-    public AddressForOrderModelDb? AddressForOrderTab { get; set; }
+    public TabAddressForOrderModelDb? AddressForOrderTab { get; set; }
     /// <summary>
     /// AddressForOrderTab
     /// </summary>

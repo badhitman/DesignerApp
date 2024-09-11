@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// Адрес организации в заказе
 /// </summary>
-public class AddressForOrderModelDb
+public class TabAddressForOrderModelDb
 {
     /// <summary>
     /// Идентификатор/Key
@@ -26,19 +26,6 @@ public class AddressForOrderModelDb
     /// OrderDocument
     /// </summary>
     public int OrderDocumentId { get; set; }
-
-    /// <summary>
-    /// Адрес доставки (если не самовывоз)
-    /// </summary>
-    /// <remarks>
-    /// Если NULL - самовывоз
-    /// </remarks>
-    public int? DeliveryAddressId { get; set; }
-
-    /// <summary>
-    /// Стоимость доставки
-    /// </summary>
-    public decimal DeliveryPrice { get; set; }
 
     /// <summary>
     /// AddressOrganization

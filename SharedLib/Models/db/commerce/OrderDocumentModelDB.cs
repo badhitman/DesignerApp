@@ -39,7 +39,7 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// AddressesTabs
     /// </summary>
-    public List<AddressForOrderModelDb>? AddressesTabs { get; set; }
+    public List<TabAddressForOrderModelDb>? AddressesTabs { get; set; }
 
     /// <summary>
     /// Вложения (файлы)
