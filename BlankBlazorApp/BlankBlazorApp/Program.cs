@@ -6,6 +6,7 @@ using BlankBlazorApp.Components;
 using Transmission.Receives.web;
 using System.Globalization;
 using MudBlazor.Services;
+using System.Reflection;
 using RemoteCallLib;
 using IdentityLib;
 using ServerLib;
