@@ -3,7 +3,7 @@ Description=web.app.service
 
 [Service]
 WorkingDirectory=/srv/services/BlankBlazorApp
-ExecStart=/usr/bin/dotnet /srv/services/BlankBlazorApp/BlankBlazorApp.dll
+ExecStart=/usr/bin/dotnet /srv/services/BlankBlazorApp/BlankBlazorApp.dll --urls "http://*:5005"
 Restart=always
 RestartSec=10
 KillSignal=SIGINT
