@@ -26,7 +26,7 @@ ln -s /etc/nginx/sites-available/iq-s.pro.conf /etc/nginx/sites-enabled/
 
 systemctl reload nginx
 
-
+sudo chown -R www-data:www-data /srv/services
 
 cd /srv/git
 rm -r DesignerApp
@@ -42,3 +42,6 @@ dotnet publish -c Release --output /srv/git/builds/StorageService /srv/git/Desig
 dotnet publish -c Release --output /srv/git/builds/Telegram.Bot.Polling /srv/git/DesignerApp/Telegram.Bot.Polling/Telegram.Bot.Polling.csproj
 rm -r /srv/debug
 mv /srv/git/builds/ /srv/debug
+
+
+sudo chown -R www-data:www-data /srv/services

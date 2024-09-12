@@ -19,9 +19,9 @@ public partial class CloudParametersLayerContext : DbContext
         : base(options)
     {
 #if DEBUG
-        Database.Migrate();
-#else
         Database.EnsureCreated();
+#else
+        Database.Migrate();
 #endif
     }
 
