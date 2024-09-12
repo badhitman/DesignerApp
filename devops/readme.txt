@@ -28,7 +28,6 @@ systemctl reload nginx
 
 
 apt-get update -y && upgrade -y && dist-upgrade -y && install git -y
-dotnet tool install -g Microsoft.Web.LibraryManager.Cli
 cd /srv/git
 rm -r DesignerApp
 rm -r HtmlGenerator
@@ -36,6 +35,8 @@ rm -r builds
 git clone https://github.com/badhitman/DesignerApp.git
 git clone https://github.com/badhitman/HtmlGenerator.git
 cd /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/
+dotnet tool install -g Microsoft.Web.LibraryManager.Cli
+dotnet workload restore
 libman restore
 dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
 dotnet publish -c Release --output /srv/git/builds/ApiRestService /srv/git/DesignerApp/ApiRestService/ApiRestService.csproj

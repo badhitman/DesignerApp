@@ -8,7 +8,6 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>.</DockerfileContext>
-		<PublishAot>True</PublishAot>
 	</PropertyGroup>
 
 	<ItemGroup>
