@@ -60,7 +60,7 @@ builder.ConfigureServices((context, services) =>
     services.AddOptions();
 
     string connectionIdentityString = context.Configuration.GetConnectionString("CloudParametersConnection") ?? throw new InvalidOperationException("Connection string 'CloudParametersConnection' not found.");
-    services.AddDbContextFactory<CloudParametersContext>(opt =>
+    services.AddDbContextFactory<StorageContext>(opt =>
     opt.UseSqlite(connectionIdentityString));
 
 
