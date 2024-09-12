@@ -10,6 +10,14 @@
 		<PublishTrimmed>False</PublishTrimmed>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <RunAOTCompilation>True</RunAOTCompilation>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <RunAOTCompilation>True</RunAOTCompilation>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\..\BlazorLib\BlazorLib.csproj" />
 	</ItemGroup>

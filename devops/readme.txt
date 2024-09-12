@@ -27,7 +27,7 @@ ln -s /etc/nginx/sites-available/iq-s.pro.conf /etc/nginx/sites-enabled/
 systemctl reload nginx
 
 
-apt-get update -y && upgrade -y && dist-upgrade -y
+apt-get update -y && upgrade -y && dist-upgrade -y && install git -y
 dotnet tool install -g Microsoft.Web.LibraryManager.Cli
 cd /srv/git
 rm -r DesignerApp
@@ -35,14 +35,14 @@ rm -r HtmlGenerator
 rm -r builds
 git clone https://github.com/badhitman/DesignerApp.git
 git clone https://github.com/badhitman/HtmlGenerator.git
+cd /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/
+libman restore
 dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
 dotnet publish -c Release --output /srv/git/builds/ApiRestService /srv/git/DesignerApp/ApiRestService/ApiRestService.csproj
 dotnet publish -c Release --output /srv/git/builds/CommerceService /srv/git/DesignerApp/CommerceService/CommerceService.csproj
 dotnet publish -c Release --output /srv/git/builds/HelpdeskService /srv/git/DesignerApp/HelpdeskService/HelpdeskService.csproj
 dotnet publish -c Release --output /srv/git/builds/StorageService /srv/git/DesignerApp/StorageService/StorageService.csproj
 dotnet publish -c Release --output /srv/git/builds/Telegram.Bot.Polling /srv/git/DesignerApp/Telegram.Bot.Polling/Telegram.Bot.Polling.csproj
-
-libman restore
 
 rm -r /srv/services
 mv /srv/git/builds/ /srv/services
