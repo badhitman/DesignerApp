@@ -18,11 +18,7 @@ public partial class LayerContext : DbContext
     public LayerContext(DbContextOptions options)
         : base(options)
     {
-#if DEBUG
-        Database.EnsureCreated();
-#else
         Database.Migrate();
-#endif
     }
 
     /// <inheritdoc/>

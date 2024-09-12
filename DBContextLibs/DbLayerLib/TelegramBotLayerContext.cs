@@ -18,11 +18,7 @@ public partial class TelegramBotLayerContext : DbContext
     public TelegramBotLayerContext(DbContextOptions options)
         : base(options)
     {
-#if DEBUG
-        Database.EnsureCreated();
-#else
         Database.Migrate();
-#endif
     }
 
     /// <inheritdoc/>

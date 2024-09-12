@@ -18,11 +18,7 @@ public partial class HelpdeskLayerContext : DbContext
     public HelpdeskLayerContext(DbContextOptions options)
         : base(options)
     {
-#if DEBUG
-        Database.EnsureCreated();
-#else
         Database.Migrate();
-#endif
     }
 
 
