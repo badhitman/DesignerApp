@@ -21,6 +21,7 @@
 		<PackageReference Include="NLog" Version="5.3.4" />
 		<PackageReference Include="NLog.Extensions.Logging" Version="5.3.13" />
 		<PackageReference Include="NLog.Web.AspNetCore" Version="5.3.13" />
+		<PackageReference Include="NLog.Database" Version="5.3.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
 		<PackageReference Include="RabbitMQ.Client" Version="6.8.1" />

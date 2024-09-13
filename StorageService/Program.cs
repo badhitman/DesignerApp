@@ -10,7 +10,7 @@ using Transmission.Receives.helpdesk;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-logger.Debug("init main");
+logger.Warn("init main");
 IHostBuilder builder = Host.CreateDefaultBuilder(args);
 
 // NLog: Setup NLog for Dependency injection

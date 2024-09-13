@@ -13,7 +13,7 @@ using NLog.Web;
 using NLog;
 
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-logger.Debug("init main");
+logger.Warn("init main");
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder
