@@ -65,3 +65,5 @@ systemctl start tg.app.service
 systemctl start api.app.service
 systemctl start hd.app.service
 systemctl start web.app.service
+
+journalctl -f -u web.app.service

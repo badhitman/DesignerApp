@@ -14,7 +14,7 @@
     <button @onclick="AddClaim" disabled="@(string.IsNullOrWhiteSpace(claimType) || string.IsNullOrWhiteSpace(claimValue))" class="btn btn-outline-secondary" type="button" id="button-addon2">Добавить</button>
 </div>
 
-@if (claims.Length == 0)
+@if (claims is null || claims.Length == 0)
 {
     <figure class="text-center">
         <blockquote class="blockquote">
@@ -47,14 +47,22 @@ else
     [Parameter, EditorRequired]
     public required string OwnerId { get; set; }
 
-    ClaimBaseModel[] claims = default!;
+    ClaimBaseModel[]? claims;
     IEnumerable<ResultMessage>? Messages;
     string? claimType;
     string? claimValue;
 
     protected override async Task OnInitializedAsync()
     {
-        claims = await UsersProfilesRepo.GetClaims(ClaimArea, OwnerId);
+        try
+        {
+            claims = await UsersProfilesRepo.GetClaims(ClaimArea, OwnerId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
     }
 
     async Task AddClaim()

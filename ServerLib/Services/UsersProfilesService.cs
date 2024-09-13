@@ -787,13 +787,16 @@ public class UsersProfilesService(
     /// <inheritdoc/>
     public async Task<ClaimBaseModel[]> GetClaims(ClaimAreasEnum claimArea, string ownerId)
     {
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        return claimArea switch
+        using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
+
+        ClaimBaseModel[] res = claimArea switch
         {
             ClaimAreasEnum.ForRole => await identityContext.RoleClaims.Where(x => x.RoleId == ownerId).Select(x => new ClaimBaseModel() { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue }).ToArrayAsync(),
             ClaimAreasEnum.ForUser => await identityContext.UserClaims.Where(x => x.UserId == ownerId).Select(x => new ClaimBaseModel() { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue }).ToArrayAsync(),
             _ => throw new NotImplementedException("error {61909910-B126-4204-8AE6-673E11D49BCD}")
         };
+
+        return res;
     }
 
     /// <inheritdoc/>
