@@ -45,17 +45,17 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<bool>> PaymentDocumentDelete(int req);
 
     /// <summary>
-    /// RowsForOrderDelete
+    /// Удалить строку заказа
     /// </summary>
     public Task<TResponseModel<bool>> RowsForOrderDelete(int[] req);
 
     /// <summary>
-    /// AttachmentForOrder
+    /// Прикрепить файл к заказу (счёт, акт и т.п.)
     /// </summary>
     public Task<TResponseModel<int>> AttachmentForOrder(AttachmentForOrderRequestModel att);
 
     /// <summary>
-    /// RowForOrderUpdate
+    /// Обновить строку заказа
     /// </summary>
     public Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB row);
 
@@ -70,7 +70,7 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(int[] orders_ids);
 
     /// <summary>
-    /// OrdersRead
+    /// Подбор (поиск по параметрам) заказов
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
 

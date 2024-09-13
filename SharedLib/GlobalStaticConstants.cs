@@ -465,6 +465,11 @@ public static partial class GlobalStaticConstants
         public const string PAYMENT_CONTROLLER_NAME = "payment";
 
         /// <summary>
+        /// Payments
+        /// </summary>
+        public const string PAYMENTS_CONTROLLER_NAME = "payments";
+
+        /// <summary>
         /// Row
         /// </summary>
         public const string ROW_CONTROLLER_NAME = "row";

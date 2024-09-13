@@ -11,20 +11,26 @@ namespace ApiRestService.Controllers;
 /// <summary>
 /// Платежи
 /// </summary>
-[Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog, Authorize]
+[Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog, Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsReadCommerce)}")]
 public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
 {
     /// <summary>
     /// Обновить/создать платёжный документ
     /// </summary>
-    [HttpPut($"/api/{GlobalStaticConstants.Routes.COMMERCE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PAYMENT_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}")]
+    /// <remarks>
+    /// Роль: <see cref="ExpressApiRolesEnum.PaymentsWriteCommerce"/>
+    /// </remarks>
+    [HttpPost($"/api/{GlobalStaticConstants.Routes.PAYMENTS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), LoggerLog, Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
     public async Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment)
         => await commRepo.PaymentDocumentUpdate(payment);
 
     /// <summary>
     /// Удалить платёжный документ
     /// </summary>
-    [HttpPut($"/api/{GlobalStaticConstants.Routes.COMMERCE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PAYMENT_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}")]
-    public async Task<TResponseModel<bool>> PaymentDocumentDelete(int req)
-        => await commRepo.PaymentDocumentDelete(req);
+    /// <remarks>
+    /// Роль: <see cref="ExpressApiRolesEnum.PaymentsWriteCommerce"/>
+    /// </remarks>
+    [HttpDelete($"/api/{GlobalStaticConstants.Routes.PAYMENTS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}/{{payment_id}}"), LoggerLog, Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
+    public async Task<TResponseModel<bool>> PaymentDocumentDelete([FromRoute] int payment_id)
+        => await commRepo.PaymentDocumentDelete(payment_id);
 }
