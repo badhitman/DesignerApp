@@ -1,10 +1,13 @@
-﻿@using BlazorLib.Components.Shared
-@using Microsoft.Extensions.Options
+﻿@using Microsoft.Extensions.Options
+@using BlazorLib.Components.Shared
+@using MudBlazor
 @using SharedLib
 
-@inject NavigationManager NavigatorRepo
-@inject IOptions<WebConfigModel> webConfig
+@inject ISerializeStorageRemoteTransmissionService StoreRepo
 @inject ITelegramRemoteTransmissionService tgRemoteCall
+@inject IOptions<WebConfigModel> webConfig
+@inject NavigationManager NavigatorRepo
+@inject ISnackbar SnackbarRepo
 
 <!DOCTYPE html>
 <html lang="ru" data-bs-theme="dark">
@@ -67,14 +70,13 @@
 </html>
 
 @code {
-    protected override async void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
         if (webConfig.Value.BaseUri is null)
             webConfig.Value.BaseUri = NavigatorRepo.BaseUri;
 
         if (ServiceProviderExtensions.SetRemoteConf?.Success() != true)
             ServiceProviderExtensions.SetRemoteConf = await tgRemoteCall.SetWebConfig(webConfig.Value);
-
-        base.OnInitialized();
     }
 }

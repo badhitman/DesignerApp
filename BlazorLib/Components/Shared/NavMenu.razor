@@ -1,10 +1,12 @@
 ﻿@implements IDisposable
 
+@inject ISerializeStorageRemoteTransmissionService StoreRepo
 @inject NavigationManager NavigationManager
+@inject ISnackbar SnackbarRepo
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">BlankBlazorApp</a>
+        <a class="navbar-brand" href="">@_textValue</a>
     </div>
 </div>
 
@@ -86,11 +88,17 @@
     public required NavMainMenuModel NavMainMenu { get; set; }
 
     private string? currentUrl;
+    string _textValue = "App";
 
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
+
+        TResponseModel<string?> res = await StoreRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.TitleMain);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        _textValue = res.Response ?? "App";
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

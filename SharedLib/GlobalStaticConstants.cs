@@ -65,6 +65,33 @@ public static partial class GlobalStaticConstants
     public static class CloudStorageMetadata
     {
         /// <summary>
+        /// HomePagePublic
+        /// </summary>
+        public static StorageCloudParameterModel HomePagePublic => new()
+        {
+            ApplicationName = Path.Combine(Routes.HOME_CONTROLLER_NAME, Routes.PAGE_CONTROLLER_NAME),
+            Name = Routes.PUBLIC_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// HomePagePrivate
+        /// </summary>
+        public static StorageCloudParameterModel HomePagePrivate => new()
+        {
+            ApplicationName = Path.Combine(Routes.HOME_CONTROLLER_NAME, Routes.PAGE_CONTROLLER_NAME),
+            Name = Routes.PRIVATE_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// TitleMain
+        /// </summary>
+        public static StorageCloudParameterModel TitleMain => new()
+        {
+            ApplicationName = Routes.MAIN_CONTROLLER_NAME,
+            Name = Routes.TITLE_CONTROLLER_NAME,
+        };
+
+        /// <summary>
         /// Минимальная цена доставки
         /// </summary>
         public static StorageCloudParameterModel CommerceMinimalPriceDelivery => new()
@@ -626,6 +653,36 @@ public static partial class GlobalStaticConstants
         /// main
         /// </summary>
         public const string MAIN_CONTROLLER_NAME = "main";
+
+        /// <summary>
+        /// Page
+        /// </summary>
+        public const string PAGE_CONTROLLER_NAME = "page";
+
+        /// <summary>
+        /// Home
+        /// </summary>
+        public const string HOME_CONTROLLER_NAME = "home";
+
+        /// <summary>
+        /// Authorize
+        /// </summary>
+        public const string AUTHORIZE_CONTROLLER_NAME = "authorize";
+
+        /// <summary>
+        /// Public
+        /// </summary>
+        public const string PUBLIC_CONTROLLER_NAME = "public";
+
+        /// <summary>
+        /// Private
+        /// </summary>
+        public const string PRIVATE_CONTROLLER_NAME = "private";
+
+        /// <summary>
+        /// Title
+        /// </summary>
+        public const string TITLE_CONTROLLER_NAME = "title";
 
         /// <summary>
         /// configuration

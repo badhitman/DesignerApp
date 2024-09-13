@@ -1,8 +1,41 @@
 ﻿@page "/"
+@inherits BlazorBusyComponentBaseModel
+
 @using BlazorWebLib.Components.Helpdesk.issue
+@using MudBlazor
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@ms
 
-Welcome to your new app.
+@code {
+    [Inject]
+    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
+
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
+
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+
+    UserInfoMainModel? user;
+
+    MarkupString ms => (MarkupString)(_textValue ?? "<h1>Hello, world!</h1> Welcome to your new app.");
+
+    string? _textValue;
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusyProgress = true;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo();
+
+        TResponseModel<string?> res = string.IsNullOrWhiteSpace(user?.Email)
+        ? await StoreRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.HomePagePublic)
+        : await StoreRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate);
+
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        _textValue = res.Response;
+    }
+}
