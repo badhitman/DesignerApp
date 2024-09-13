@@ -61,7 +61,7 @@ builder.ConfigureServices((context, services) =>
     string connectionIdentityString = context.Configuration.GetConnectionString("HelpdeskConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
     services.AddDbContextFactory<HelpdeskContext>(opt =>
     {
-        opt.UseSqlite(connectionIdentityString);
+        opt.UseNpgsql(connectionIdentityString);
 
 #if DEBUG
         opt.EnableSensitiveDataLogging(true);

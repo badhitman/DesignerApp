@@ -18,7 +18,11 @@ public partial class CloudParametersLayerContext : DbContext
     public CloudParametersLayerContext(DbContextOptions options)
         : base(options)
     {
+//#if DEBUG
+//        Database.EnsureCreated();
+//#else
         Database.Migrate();
+//#endif
     }
 
     /// <inheritdoc/>

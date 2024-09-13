@@ -67,7 +67,7 @@ builder.ConfigureServices((context, services) =>
     string connectionIdentityString = context.Configuration.GetConnectionString("TelegramBotConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
     services.AddDbContextFactory<TelegramBotContext>(opt =>
     {
-        opt.UseSqlite(connectionIdentityString);
+        opt.UseNpgsql(connectionIdentityString);
 
 #if DEBUG
         opt.EnableSensitiveDataLogging(true);

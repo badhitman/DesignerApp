@@ -22,7 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DBContextLibs\DbSqliteLib\DbSqliteLib.csproj" />
+		<ProjectReference Include="..\DBContextLibs\DbPostgreLib\DbPostgreLib.csproj" />
 		<ProjectReference Include="..\IdentityLib\IdentityLib.csproj" />
 		<ProjectReference Include="..\RemoteCallLib\RemoteCallLib.csproj" />
 	</ItemGroup>

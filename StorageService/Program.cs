@@ -61,7 +61,7 @@ builder.ConfigureServices((context, services) =>
 
     string connectionIdentityString = context.Configuration.GetConnectionString("CloudParametersConnection") ?? throw new InvalidOperationException("Connection string 'CloudParametersConnection' not found.");
     services.AddDbContextFactory<StorageContext>(opt =>
-    opt.UseSqlite(connectionIdentityString));
+    opt.UseNpgsql(connectionIdentityString));
 
 
     #region MQ Transmission (remote methods call)

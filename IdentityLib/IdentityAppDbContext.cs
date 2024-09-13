@@ -19,11 +19,11 @@ public class IdentityAppDbContext : IdentityDbContext<ApplicationUser, Applicati
     /// </summary>
     public IdentityAppDbContext(DbContextOptions<IdentityAppDbContext> options) : base(options)
     {
-#if DEBUG
+//#if DEBUG
+//        Database.EnsureCreated();
+//#else
         Database.Migrate();
-#else
-        Database.EnsureCreated();
-#endif
+//#endif
     }
 
     /// <summary>

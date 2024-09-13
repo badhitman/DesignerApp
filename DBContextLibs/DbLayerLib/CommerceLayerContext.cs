@@ -18,7 +18,11 @@ public partial class CommerceLayerContext : DbContext
     public CommerceLayerContext(DbContextOptions options)
         : base(options)
     {
+//#if DEBUG
+//        Database.EnsureCreated();
+//#else
         Database.Migrate();
+//#endif
     }
 
     /// <inheritdoc/>

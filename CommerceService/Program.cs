@@ -60,7 +60,7 @@ builder.Services.AddOptions();
 string connectionIdentityString = builder.Configuration.GetConnectionString("CommerceConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
 builder.Services.AddDbContextFactory<CommerceContext>(opt =>
 {
-    opt.UseSqlite(connectionIdentityString);
+    opt.UseNpgsql(connectionIdentityString);
 
 #if DEBUG
     opt.EnableSensitiveDataLogging(true);

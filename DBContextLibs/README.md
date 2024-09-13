@@ -49,11 +49,11 @@
 ```c#
 string connectionIdentityString = builder.Configuration.GetConnectionString("IdentityConnection") ?? throw new InvalidOperationException("Connection string 'IdentityConnection' not found.");
 builder.Services.AddDbContextFactory<IdentityAppDbContext>(opt =>
-    opt.UseSqlite(connectionIdentityString));
+    opt.UseNpgsql(connectionIdentityString));
 
 string connectionMainString = builder.Configuration.GetConnectionString("MainConnection") ?? throw new InvalidOperationException("Connection string 'MainConnection' not found.");
 builder.Services.AddDbContextFactory<MainDbAppContext>(opt =>
-    opt.UseSqlite(connectionMainString));
+    opt.UseNpgsql(connectionMainString));
 builder.Services.AddDbContext<MainDbAppContext>();
 ```
 > [!TIP]
