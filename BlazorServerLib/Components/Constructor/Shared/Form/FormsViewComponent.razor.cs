@@ -46,7 +46,8 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// Строка поиска
     /// </summary>
     protected string? searchString = null;
-    TPaginationResponseModel<FormConstructorModelDB> rest_data = new();
+
+    TPaginationResponseModel<FormConstructorModelDB>? rest_data;
 
     /// <summary>
     /// Открыть форму
@@ -123,6 +124,9 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     protected async Task<TableData<FormConstructorModelDB>> ServerReload(TableState state, CancellationToken token)
     {
+        if(rest_data is null)
+            throw new ArgumentNullException(nameof(rest_data));
+
         _table_state = state;
         await RestJson();
         return new TableData<FormConstructorModelDB>() { TotalItems = rest_data.TotalRowsCount, Items = rest_data.Response };

@@ -137,7 +137,7 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
             }
         };
         IsBusyProgress = true;
-        TResponseModel<TPaginationResponseModel<OfferGoodModelDB>?> res = await CommerceRepo.OffersSelect(req);
+        TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
         IsBusyProgress = false;
         if (res.Success() && res.Response?.Response is not null && res.Response.Response.Count != 0)
         {

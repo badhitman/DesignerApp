@@ -5,12 +5,12 @@
 namespace SharedLib;
 
 /// <summary>
-/// OrganizationsSelect
+/// Подбор организаций с параметризованным запросом-фильтром
 /// </summary>
 public class OrganizationsSelectRequestModel
 {
     /// <summary>
-    /// For UserIdentity Id
+    /// Идентификатор пользователя (Identity Id)
     /// </summary>
     public string? ForUserIdentityId { get; set; }
 
@@ -20,7 +20,7 @@ public class OrganizationsSelectRequestModel
     public DateTime? AfterDateUpdate { get; set; }
 
     /// <summary>
-    /// IncludeExternalData
+    /// Загрузить дополнительные данные (адреса) к объектам организаций
     /// </summary>
     public bool IncludeExternalData { get; set; }
 }

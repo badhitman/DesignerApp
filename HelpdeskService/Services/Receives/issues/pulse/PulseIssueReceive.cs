@@ -33,7 +33,7 @@ public class PulseIssueReceive(
             Response = false,
         };
 
-        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
         {
             SenderActionUserId = GlobalStaticConstants.Roles.System,
             Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },

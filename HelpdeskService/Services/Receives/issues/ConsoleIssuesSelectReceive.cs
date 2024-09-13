@@ -26,17 +26,6 @@ public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpd
         if (req.PageSize < 5)
             req.PageSize = 5;
 
-        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> res = new()
-        {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-            }
-        };
-
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         IQueryable<IssueHelpdeskModelDB> q = context
@@ -57,8 +46,6 @@ public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpd
         if (!string.IsNullOrWhiteSpace(req.Payload.FilterUserId))
             q = q.Where(x => x.AuthorIdentityUserId == req.Payload.FilterUserId || x.ExecutorIdentityUserId == req.Payload.FilterUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Payload.FilterUserId));
 
-        res.Response.TotalRowsCount = await q.CountAsync();
-
         IOrderedQueryable<IssueHelpdeskModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
             ? q.OrderBy(x => x.CreatedAt)
             : q.OrderByDescending(x => x.CreatedAt);
@@ -69,8 +56,17 @@ public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpd
             .Include(x => x.RubricIssue)
             .ToListAsync();
 
-        res.Response.Response = data.Select(x => IssueHelpdeskModel.Build(x)).ToList();
-
-        return res;
+        return new()
+        {
+            Response = new()
+            {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = [.. data.Select(x => IssueHelpdeskModel.Build(x))]
+            }
+        }; ;
     }
 }

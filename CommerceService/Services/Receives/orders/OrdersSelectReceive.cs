@@ -26,17 +26,6 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
         if (req.PageSize < 10)
             req.PageSize = 10;
 
-        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>?> res = new()
-        {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-            },
-        };
-
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         IQueryable<OrderDocumentModelDB> q = context
@@ -66,26 +55,31 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
         if (req.Payload.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate);
 
-        res.Response.TotalRowsCount = await q.CountAsync();
-
         IOrderedQueryable<OrderDocumentModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
            ? q.OrderBy(x => x.CreatedAtUTC)
            : q.OrderByDescending(x => x.CreatedAtUTC);
 
-        q = oq
+        IQueryable<OrderDocumentModelDB> pq = oq
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 
-        var inc_query = q
+        var inc_query = pq
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
             .ThenInclude(x => x.Goods);
 
-        res.Response.Response = req.Payload.Payload.IncludeExternalData
-            ? [.. await inc_query.ToArrayAsync()]
-            : [.. await q.ToArrayAsync()];
-
-        return res;
+        return new()
+        {
+            Response = new()
+            {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = req.Payload.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await q.ToArrayAsync()]
+            },
+        }; ;
     }
 }

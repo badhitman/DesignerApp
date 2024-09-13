@@ -9,13 +9,19 @@ namespace SharedLib;
 /// </summary>
 public class TResponseModel<T> : ResponseBaseModel
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Базовая модель ответа/результата на запрос
+    /// </summary>
     public TResponseModel() { }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Базовая модель ответа/результата на запрос
+    /// </summary>
     public TResponseModel(IEnumerable<ResultMessage> messages) { Messages = messages.ToList(); }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Полезная нагрузка ответа
+    /// </summary>
     public T? Response { get; set; }
 
     /// <inheritdoc/>

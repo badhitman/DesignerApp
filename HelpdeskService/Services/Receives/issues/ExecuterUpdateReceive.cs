@@ -27,7 +27,7 @@ public class ExecuterUpdateReceive(
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<bool> res = new();
 
-        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
         {
             SenderActionUserId = req.SenderActionUserId,
             Payload = new IssueReadRequestModel()

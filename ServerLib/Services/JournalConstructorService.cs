@@ -106,11 +106,9 @@ public partial class JournalConstructorService(
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<KeyValuePair<int, Dictionary<string, object>>>> SelectJournalPart(SelectJournalPartRequestModel req, int? projectId)
     {
-        TPaginationResponseModel<KeyValuePair<int, Dictionary<string, object>>> res = new();
-
         TResponseModel<DocumentSchemeConstructorModelDB[]?> find_doc = await FindDocumentSchemes(req.DocumentNameOrId, projectId);
         if (!find_doc.Success() || find_doc.Response is null || find_doc.Response.Length == 0 || find_doc.Response.Length > 1)
-            return res;
+            return new() { Response = [] };
 
         DocumentSchemeConstructorModelDB doc_db = find_doc.Response.Single();
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
@@ -119,7 +117,7 @@ public partial class JournalConstructorService(
             .Sessions
             .Where(x => x.OwnerId == doc_db.Id);
 
-        res.TotalRowsCount = await q.CountAsync();
+        int totalRowsCount = await q.CountAsync();
 
         q = q
             .OrderBy(x => x.Id)
@@ -205,31 +203,38 @@ public partial class JournalConstructorService(
             }
         }
 
-        res.Response = sessions_db
+        List<KeyValuePair<int, Dictionary<string, object>>> _response = sessions_db
             .Select(SessionConvert)
             .ToList();
 
         if (!string.IsNullOrWhiteSpace(req.SearchString))
-            res.Response = res.Response
+            _response = _response
                 .Where(x => x.Value.Any(y => y.Value.ToString()?.Contains(req.SearchString, StringComparison.OrdinalIgnoreCase) == true))
                 .ToList();
 
-        res.TotalRowsCount = res.Response.Count;
+        totalRowsCount = _response.Count;
 
         if (!string.IsNullOrWhiteSpace(req.SortBy))
         {
-            res.Response = req.SortingDirection == VerticalDirectionsEnum.Up
-                ? [.. res.Response.OrderBy(x => x.Value[req.SortBy])]
-                : [.. res.Response.OrderByDescending(x => x.Value[req.SortBy])];
+            _response = req.SortingDirection == VerticalDirectionsEnum.Up
+                ? [.. _response.OrderBy(x => x.Value[req.SortBy])]
+                : [.. _response.OrderByDescending(x => x.Value[req.SortBy])];
         }
 
-        res.Response = res.Response
+        _response = _response
             .OrderBy(x => x.Key)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
             .ToList();
 
-        return res;
+        return new()
+        {
+            Response = _response
+            .OrderBy(x => x.Key)
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize)
+            .ToList()
+        };
     }
 
     /// <inheritdoc/>

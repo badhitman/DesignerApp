@@ -118,7 +118,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
 
-        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> rest = await HelpdeskRepo
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> rest = await HelpdeskRepo
             .IssuesSelect(req);
 
         IsBusyProgress = false;

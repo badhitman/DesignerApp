@@ -39,10 +39,10 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseModel
             throw new ArgumentNullException(nameof(editGoods));
 
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.GoodUpdateReceive(editGoods);
+        TResponseModel<int> res = await CommerceRepo.GoodUpdateReceive(editGoods);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (res.Success() && res.Response.HasValue)
+        if (res.Success())
             CurrentGoods = GlobalTools.CreateDeepCopy(editGoods);
     }
 
@@ -50,7 +50,7 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseModel<GoodsModelDB[]?> res = await CommerceRepo.GoodsRead([GoodsId]);
+        TResponseModel<GoodsModelDB[]> res = await CommerceRepo.GoodsRead([GoodsId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success() && res.Response is not null && res.Response.Length != 0)

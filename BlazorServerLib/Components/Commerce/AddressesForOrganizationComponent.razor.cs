@@ -54,7 +54,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
             return;
 
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.AddressOrganizationUpdate(new AddressOrganizationBaseModel()
+        TResponseModel<int> res = await CommerceRepo.AddressOrganizationUpdate(new AddressOrganizationBaseModel()
         {
             Address = addingAddress!,
             Name = addingName!,
@@ -64,7 +64,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (!res.Success() || res.Response is null)
+        if (!res.Success())
             return;
 
         Organization.Addresses ??= [];
@@ -75,7 +75,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
             ParentId = SelectedRubric!.Id,
             OrganizationId = Organization.Id,
             Contacts = addingContacts,
-            Id = res.Response.Value,
+            Id = res.Response,
         });
 
         ToggleMode();

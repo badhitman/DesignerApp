@@ -7,18 +7,18 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// UserOrganizationModelDB
+/// Связь пользователя с организацией
 /// </summary>
 [Index(nameof(OrganizationId), nameof(UserPersonIdentityId), IsUnique = true)]
 public class UserOrganizationModelDB : PersonalEntrySwitchableUpdatedModel
 {
     /// <summary>
-    /// Organization
+    /// Организация
     /// </summary>
     public OrganizationModelDB? Organization { get; set; }
 
     /// <summary>
-    /// Organization
+    /// Организация
     /// </summary>
     public int OrganizationId { get; set; }
 }

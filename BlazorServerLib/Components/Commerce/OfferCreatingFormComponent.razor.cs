@@ -52,12 +52,12 @@ public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseModel
             Price = priceOffer,
         };
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.OfferUpdate(off);
+        TResponseModel<int> res = await CommerceRepo.OfferUpdate(off);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (res.Success() && res.Response.HasValue)
+        if (res.Success() && res.Response > 0)
         {
-            off.Id = res.Response.Value;
+            off.Id = res.Response;
             OfferCreatingHandler(off);
 
             UnitOffer = UnitsOfMeasurementEnum.None;

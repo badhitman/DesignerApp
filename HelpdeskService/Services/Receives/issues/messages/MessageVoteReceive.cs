@@ -39,7 +39,7 @@ public class MessageVoteReceive(
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IssueMessageHelpdeskModelDB msg_db = await context.IssuesMessages.FirstAsync(x => x.Id == req.Payload.MessageId);
 
-        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
             Payload = new() { IssueId = msg_db.IssueId, IncludeSubscribersOnly = true },

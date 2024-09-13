@@ -132,7 +132,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     async Task<List<RubricIssueHelpdeskLowModel>> RequestRubrics(int? parent_id = null)
     {
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null)

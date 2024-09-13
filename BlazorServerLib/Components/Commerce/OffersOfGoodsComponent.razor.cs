@@ -54,7 +54,7 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         IsBusyProgress = true;
-        TResponseModel<TPaginationResponseModel<OfferGoodModelDB>?> res = await CommerceRepo.OffersSelect(req);
+        TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 

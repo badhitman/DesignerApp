@@ -36,7 +36,7 @@ public class MessageUpdateOrCreateReceive(
         }
         req.Payload.MessageText = req.Payload.MessageText.Trim();
 
-        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
         {
             SenderActionUserId = req.SenderActionUserId,
             Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },

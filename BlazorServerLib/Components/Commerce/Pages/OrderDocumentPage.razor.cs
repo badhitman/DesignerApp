@@ -78,7 +78,7 @@ public partial class OrderDocumentPage : BlazorBusyComponentBaseModel
         };
 
         IsBusyProgress = true;
-        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>?> res = await CommerceRepo.OrdersSelect(req);
+        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommerceRepo.OrdersSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (!res.Success() || res.Response?.Response is null)
@@ -103,10 +103,10 @@ public partial class OrderDocumentPage : BlazorBusyComponentBaseModel
             };
 
             IsBusyProgress = true;
-            TResponseModel<int?> cart_new = await CommerceRepo.OrderUpdate(order);
+            TResponseModel<int> cart_new = await CommerceRepo.OrderUpdate(order);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(cart_new.Messages);
-            if (cart_new.Success() && cart_new.Response.HasValue)
+            if (cart_new.Success() && cart_new.Response != 0)
                 NavRepo.NavigateTo($"/order-document/{cart_new.Response}");
 
             return new TableData<OrderDocumentModelDB>() { TotalItems = 0, Items = [] };
@@ -136,7 +136,7 @@ public partial class OrderDocumentPage : BlazorBusyComponentBaseModel
                 SortingDirection = VerticalDirectionsEnum.Up,
             };
             IsBusyProgress = true;
-            TResponseModel<TPaginationResponseModel<OrganizationModelDB>?> res = await CommerceRepo.OrganizationsSelect(req);
+            TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(res.Messages);
         }

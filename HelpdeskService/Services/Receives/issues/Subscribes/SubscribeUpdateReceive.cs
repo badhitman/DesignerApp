@@ -38,7 +38,7 @@ public class SubscribeUpdateReceive(
             actor = rest.Response.First(x => x.UserId == req.SenderActionUserId),
             requested_user = rest.Response.First(x => x.UserId == req.Payload.UserId);
 
-        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
             Payload = new IssueReadRequestModel()

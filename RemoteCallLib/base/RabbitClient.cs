@@ -48,7 +48,7 @@ public class RabbitClient : IRabbitClient
     }
 
     /// <inheritdoc/>
-    public Task<TResponseModel<T?>> MqRemoteCall<T>(string queue, object? request = null)
+    public Task<TResponseModel<T>> MqRemoteCall<T>(string queue, object? request = null)
     {
         string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}";
 
@@ -59,7 +59,7 @@ public class RabbitClient : IRabbitClient
         properties = _channel.CreateBasicProperties();
         properties.ReplyTo = response_topic;
 
-        TResponseModel<T?> res = new();
+        TResponseModel<T> res = new();
         Stopwatch stopwatch = new();
         EventingBasicConsumer consumer = new(_channel);
 
@@ -74,7 +74,7 @@ public class RabbitClient : IRabbitClient
             string content = Encoding.UTF8.GetString(e.Body.ToArray());
             try
             {
-                res = JsonConvert.DeserializeObject<TResponseModel<T?>>(content)
+                res = JsonConvert.DeserializeObject<TResponseModel<T>>(content)
                     ?? throw new Exception("parse error {0CBCCD44-63C8-4E93-8349-11A8BE63B235}");
             }
             catch (Exception ex)

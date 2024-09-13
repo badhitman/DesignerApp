@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// PersonalEntrySwitchableUpdatedModel
+/// Авторские данные
 /// </summary>
 [Index(nameof(UserPersonIdentityId))]
 public class PersonalEntrySwitchableUpdatedModel
@@ -20,7 +20,7 @@ public class PersonalEntrySwitchableUpdatedModel
     public int Id { get; set; }
 
     /// <summary>
-    /// UserPersonIdentityId
+    /// Пользователь (Identity Id)
     /// </summary>
     public required string UserPersonIdentityId { get; set; }
 

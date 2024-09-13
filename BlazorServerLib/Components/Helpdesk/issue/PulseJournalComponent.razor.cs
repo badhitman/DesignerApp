@@ -28,7 +28,7 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
     private async Task<TableData<PulseViewModel>> ServerReload(TableState state, CancellationToken token)
     {
         IsBusyProgress = true;
-        TResponseModel<TPaginationResponseModel<PulseViewModel>?> rest = await HelpdeskRepo.PulseJournal(new TPaginationRequestModel<UserIssueModel>()
+        TResponseModel<TPaginationResponseModel<PulseViewModel>> rest = await HelpdeskRepo.PulseJournal(new TPaginationRequestModel<UserIssueModel>()
         {
             PageNum = state.Page,
             PageSize = state.PageSize,

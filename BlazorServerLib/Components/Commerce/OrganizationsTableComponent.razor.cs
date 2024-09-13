@@ -84,7 +84,7 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         IsBusyProgress = true;
-        TResponseModel<TPaginationResponseModel<OrganizationModelDB>?> res = await CommerceRepo.OrganizationsSelect(req);
+        TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 

@@ -94,7 +94,7 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
         };
 
         IsBusyProgress = true;
-        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>?> res = await CommerceRepo.OrdersSelect(req);
+        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommerceRepo.OrdersSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (!res.Success() || res.Response?.Response is null)

@@ -18,7 +18,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<List<RubricIssueHelpdeskLowModel>?>> RubricsList(RubricsListRequestModel req);
+    public Task<TResponseModel<List<RubricIssueHelpdeskLowModel>>> RubricsList(RubricsListRequestModel req);
 
     /// <summary>
     /// Создать тему для обращений
@@ -40,7 +40,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> IssuesSelect(TPaginationRequestModel<GetIssuesForUserRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TPaginationRequestModel<GetIssuesForUserRequestModel> req);
 
     /// <summary>
     /// Создать обращение
@@ -50,7 +50,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Прочитать данные обращения
     /// </summary>
-    public Task<TResponseModel<IssueHelpdeskModelDB?>> IssueRead(TAuthRequestModel<IssueReadRequestModel> req);
+    public Task<TResponseModel<IssueHelpdeskModelDB>> IssueRead(TAuthRequestModel<IssueReadRequestModel> req);
 
     /// <summary>
     /// Подписка на события в обращении (или отписка от событий)
@@ -80,12 +80,12 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Журнал событий в обращении
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<PulseViewModel>?>> PulseJournal(TPaginationRequestModel<UserIssueModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<PulseViewModel>>> PulseJournal(TPaginationRequestModel<UserIssueModel> req);
 
     /// <summary>
     /// Получить обращения
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req);
     #endregion
 
     #region message
@@ -102,6 +102,6 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Сообщения из обращения
     /// </summary>
-    public Task<TResponseModel<IssueMessageHelpdeskModelDB[]?>> MessagesList(TAuthRequestModel<int> req);
+    public Task<TResponseModel<IssueMessageHelpdeskModelDB[]>> MessagesList(TAuthRequestModel<int> req);
     #endregion
 }

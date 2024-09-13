@@ -54,7 +54,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
-        TResponseModel<IssueHelpdeskModelDB?> issue_res = await HelpdeskRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>() { Payload = new() { IssueId = Id }, SenderActionUserId = CurrentUser.UserId });
+        TResponseModel<IssueHelpdeskModelDB> issue_res = await HelpdeskRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>() { Payload = new() { IssueId = Id }, SenderActionUserId = CurrentUser.UserId });
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
         IssueSource = issue_res.Response;
 

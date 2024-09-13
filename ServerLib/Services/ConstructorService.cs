@@ -1310,7 +1310,6 @@ public partial class ConstructorService(
     public async Task<TPaginationResponseModel<FormConstructorModelDB>> SelectForms(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default)
     {
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
-        TPaginationResponseModel<FormConstructorModelDB> res = new(req);
 
         IQueryable<FormConstructorModelDB> q;
 
@@ -1330,15 +1329,15 @@ public partial class ConstructorService(
             .AsQueryable();
         }
 
-        res.TotalRowsCount = await q.CountAsync(cancellationToken: cancellationToken);
-        q = q.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
-        int[] ids = await q.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
+        IQueryable<FormConstructorModelDB> pq = q = q.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
-        res.Response = ids.Length != 0
-            ? await context_forms.Forms.Where(x => ids.Contains(x.Id)).Include(x => x.Fields).Include(x => x.FieldsDirectoriesLinks).ToListAsync(cancellationToken: cancellationToken)
-            : [];
-        return res;
+        int[] ids = await pq.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
+        return new(req)
+        {
+            TotalRowsCount = await q.CountAsync(cancellationToken: cancellationToken),
+            Response = ids.Length != 0 ? await context_forms.Forms.Where(x => ids.Contains(x.Id)).Include(x => x.Fields).Include(x => x.FieldsDirectoriesLinks).ToListAsync(cancellationToken: cancellationToken) : []
+        };
     }
 
     /// <inheritdoc/>
@@ -2160,7 +2159,6 @@ public partial class ConstructorService(
             req.PageSize = 10;
 
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
-        TPaginationResponseModel<DocumentSchemeConstructorModelDB> res = new(req);
 
         IQueryable<DocumentSchemeConstructorModelDB> query = context_forms
             .DocumentSchemes
@@ -2182,26 +2180,24 @@ public partial class ConstructorService(
                         .AsQueryable();
         }
 
-        //IQueryable<DocumentShemaModelDB> query =
-        //    (from _quest in context_forms.Documents.Where(x => x.ProjectId == projectId)
-        //     join _page in context_forms.DocumentsPages on _quest.Id equals _page.OwnerId
-        //     join _join_form in context_forms.DocumentsPagesJoinForms on _page.Id equals _join_form.OwnerId
-        //     join _form in context_forms.Forms on _join_form.FormId equals _form.Id
-        //     where string.IsNullOrWhiteSpace(req.SimpleRequest) || EF.Functions.Like(_form.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") || EF.Functions.Like(_quest.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%") || EF.Functions.Like(_page.Name.ToLower(), $"%{req.SimpleRequest.ToLower()}%")
-        //     group _quest by _quest into g
-        //     select g.Key)
-        //    .AsQueryable();
-
-        res.TotalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
-        query = query.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
+        int _totalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
+        query = query
+            .OrderBy(x => x.Name)
+            .Skip(req.PageSize * req.PageNum)
+            .Take(req.PageSize);
 
         int[] ids = await query.Select(x => x.Id).ToArrayAsync(cancellationToken: cancellationToken);
-        query = context_forms.DocumentSchemes.Include(x => x.Tabs).Where(x => ids.Contains(x.Id)).Include(x => x.Tabs).OrderBy(x => x.Name);
-        res.Response = ids.Length != 0
-            ? await query.ToListAsync(cancellationToken: cancellationToken)
-            : [];
+        query = context_forms.DocumentSchemes
+            .Where(x => ids.Contains(x.Id))
+            .Include(x => x.Tabs);
 
-        return res;
+        return new()
+        {
+            TotalRowsCount = _totalRowsCount,
+            Response = ids.Length != 0
+            ? await query.ToListAsync(cancellationToken: cancellationToken)
+            : []
+        };
     }
 
     /// <inheritdoc/>
@@ -3131,7 +3127,7 @@ public partial class ConstructorService(
             req.PageSize = 10;
 
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
-        TPaginationResponseModel<SessionOfDocumentDataModelDB> res = new(req);
+        
         IQueryable<SessionOfDocumentDataModelDB> query = context_forms
             .Sessions
             .Include(x => x.Owner)
@@ -3156,21 +3152,25 @@ public partial class ConstructorService(
 
             query = query.Where(expr);
         }
-        res.TotalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
+        int _totalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
         query = query.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
-        res.Response = await query.ToListAsync(cancellationToken: cancellationToken);
+        List<SessionOfDocumentDataModelDB> response = await query.ToListAsync(cancellationToken: cancellationToken);
 
-        if (res.Response.Count != 0)
+        if (response.Count != 0)
         {
-            string[] users_ids = res.Response.Select(x => x.AuthorUser).Distinct().ToArray();
+            string[] users_ids = response.Select(x => x.AuthorUser).Distinct().ToArray();
             using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
             ApplicationUser[] users_data = await identityContext.Users.Where(x => users_ids.Contains(x.Id)).ToArrayAsync(cancellationToken: cancellationToken);
 
-            res.Response.ForEach(x => { x.AuthorUser = users_data.FirstOrDefault(y => y.Id.Equals(x.AuthorUser))?.UserName ?? x.AuthorUser; });
+            response.ForEach(x => { x.AuthorUser = users_data.FirstOrDefault(y => y.Id.Equals(x.AuthorUser))?.UserName ?? x.AuthorUser; });
         }
 
-        return res;
+        return new(req)
+        {
+            TotalRowsCount = _totalRowsCount,
+            Response = response
+        };
     }
 
     /// <inheritdoc/>

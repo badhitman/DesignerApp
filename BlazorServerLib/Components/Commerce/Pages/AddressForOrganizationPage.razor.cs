@@ -48,7 +48,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseModel<AddressOrganizationModelDB[]?> res_address = await CommerceRepo
+        TResponseModel<AddressOrganizationModelDB[]> res_address = await CommerceRepo
             .AddressesOrganizationsRead([AddressForOrganization]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res_address.Messages);
@@ -92,7 +92,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
             return;
 
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.AddressOrganizationUpdate(new AddressOrganizationBaseModel()
+        TResponseModel<int> res = await CommerceRepo.AddressOrganizationUpdate(new AddressOrganizationBaseModel()
         {
             Address = AddressEdit.Address!,
             Name = AddressEdit.Name!,
@@ -102,7 +102,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (!res.Success() || res.Response is null)
+        if (!res.Success())
             return;
 
         AddressCurrent = GlobalTools.CreateDeepCopy(AddressEdit) ?? throw new Exception();

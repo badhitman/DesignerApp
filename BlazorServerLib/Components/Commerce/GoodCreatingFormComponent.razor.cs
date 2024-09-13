@@ -46,12 +46,12 @@ public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
         };
 
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.GoodUpdateReceive(new_obj);
+        TResponseModel<int> res = await CommerceRepo.GoodUpdateReceive(new_obj);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (res.Success() && res.Response.HasValue)
+        if (res.Success() && res.Response > 0)
         {
-            new_obj.Id = res.Response.Value;
+            new_obj.Id = res.Response;
             GoodCreatingHandler(new_obj);
 
             CreatingGoodsName = null;

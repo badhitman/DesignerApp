@@ -91,7 +91,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskLowModel>?> rest = await HelpdeskRepo.RubricsList(new () { Request = ownerRubricId, ContextName= ContextName });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>> rest = await HelpdeskRepo.RubricsList(new () { Request = ownerRubricId, ContextName= ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         CurrentRubrics = rest.Response;

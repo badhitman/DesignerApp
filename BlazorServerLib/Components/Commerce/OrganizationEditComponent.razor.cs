@@ -48,7 +48,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.OrganizationUpdate(req);
+        TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await ReadOrganization();
@@ -61,7 +61,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.OrganizationUpdate(req);
+        TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
@@ -80,7 +80,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
             return;
 
         IsBusyProgress = true;
-        TResponseModel<OrganizationModelDB[]?> res = await CommerceRepo.OrganizationsRead([OrganizationId.Value]);
+        TResponseModel<OrganizationModelDB[]> res = await CommerceRepo.OrganizationsRead([OrganizationId.Value]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         currentOrg = res.Response?.FirstOrDefault();

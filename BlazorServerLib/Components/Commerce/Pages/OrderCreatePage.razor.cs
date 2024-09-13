@@ -236,7 +236,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<decimal?> res_storage = await StoreRepo.ReadParameter<decimal?>(GlobalStaticConstants.CloudStorageMetadata.CommerceMinimalPriceDelivery);
         SnackbarRepo.ShowMessagesResponse(res_storage.Messages);
-        TResponseModel<TPaginationResponseModel<OrganizationModelDB>?> res = await CommerceRepo.OrganizationsSelect(req);
+        TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;
         _CommerceMinimalPriceDelivery = res_storage.Response ?? 0;

@@ -46,7 +46,7 @@ public partial class GoodsManageComponent : BlazorBusyComponentBaseModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         IsBusyProgress = true;
-        TResponseModel<TPaginationResponseModel<GoodsModelDB>?> res = await CommerceRepo.GoodsSelect(req);
+        TResponseModel<TPaginationResponseModel<GoodsModelDB>> res = await CommerceRepo.GoodsSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 

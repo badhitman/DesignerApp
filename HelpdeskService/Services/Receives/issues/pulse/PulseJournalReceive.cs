@@ -37,7 +37,7 @@ public class PulseJournalReceive(
 
         UserInfoModel actor = rest.Response[0];
 
-        TResponseModel<IssueHelpdeskModelDB?> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
             Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },

@@ -33,18 +33,18 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseModel
 
     bool CanSave =>
         editOffer.IsDisabled != CurrentOffer.IsDisabled ||
-        editOffer.Name != CurrentOffer.Name || 
-        editOffer.Price != CurrentOffer.Price || 
-        editOffer.Multiplicity != CurrentOffer.Multiplicity || 
+        editOffer.Name != CurrentOffer.Name ||
+        editOffer.Price != CurrentOffer.Price ||
+        editOffer.Multiplicity != CurrentOffer.Multiplicity ||
         editOffer.OfferUnit != CurrentOffer.OfferUnit;
 
     async Task SaveOffer()
     {
         IsBusyProgress = true;
-        TResponseModel<int?> res = await CommerceRepo.OfferUpdate(editOffer);
+        TResponseModel<int> res = await CommerceRepo.OfferUpdate(editOffer);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (res.Success() && res.Response.HasValue)
+        if (res.Success() && res.Response > 0)
             CurrentOffer = GlobalTools.CreateDeepCopy(editOffer)!;
     }
 
@@ -52,7 +52,7 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseModel<OfferGoodModelDB[]?> res = await CommerceRepo.OffersRead([OfferId]);
+        TResponseModel<OfferGoodModelDB[]> res = await CommerceRepo.OffersRead([OfferId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         CurrentOffer = res.Response!.Single();

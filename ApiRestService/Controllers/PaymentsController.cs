@@ -18,13 +18,13 @@ public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : C
     /// Обновить/создать платёжный документ
     /// </summary>
     [HttpPut($"/api/{GlobalStaticConstants.Routes.COMMERCE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PAYMENT_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}")]
-    public async Task<TResponseModel<int?>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment)
+    public async Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment)
         => await commRepo.PaymentDocumentUpdate(payment);
 
     /// <summary>
     /// Удалить платёжный документ
     /// </summary>
     [HttpPut($"/api/{GlobalStaticConstants.Routes.COMMERCE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PAYMENT_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}")]
-    public async Task<TResponseModel<bool?>> PaymentDocumentDelete(int req)
+    public async Task<TResponseModel<bool>> PaymentDocumentDelete(int req)
         => await commRepo.PaymentDocumentDelete(req);
 }

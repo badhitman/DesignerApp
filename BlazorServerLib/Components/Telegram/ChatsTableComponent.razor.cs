@@ -78,7 +78,7 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
 
         string[] users_ids_identity = [.. users_res.Response.Select(x => x.UserId)];
         IsBusyProgress = true;
-        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?> issues_users_res = await HelpdeskRepo
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> issues_users_res = await HelpdeskRepo
                     .IssuesSelect(new()
                     {
                         Payload = new()

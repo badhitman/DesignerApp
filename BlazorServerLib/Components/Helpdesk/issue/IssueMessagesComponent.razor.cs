@@ -63,7 +63,7 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
     public async Task ReloadMessages()
     {
         IsBusyProgress = true;
-        TResponseModel<IssueMessageHelpdeskModelDB[]?> messages_rest = await HelpdeskRepo.MessagesList(new()
+        TResponseModel<IssueMessageHelpdeskModelDB[]> messages_rest = await HelpdeskRepo.MessagesList(new()
         {
             Payload = Issue.Id,
             SenderActionUserId = CurrentUser.UserId,
