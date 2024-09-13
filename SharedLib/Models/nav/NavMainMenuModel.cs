@@ -12,7 +12,7 @@ public class NavMainMenuModel
     /// <summary>
     /// Элементы меню
     /// </summary>
-    public required NavItemModel[] NavMenuItems { get; set; }
+    public NavItemModel[] NavMenuItems { get; set; } = default!;
 
     /// <summary>
     /// Элементы меню (нижнего/второстепенного/дополнительного)

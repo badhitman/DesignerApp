@@ -17,7 +17,7 @@ public class NavItemModel
     /// <summary>
     /// Ссылка/href для NavLink
     /// </summary>
-    public required string HrefNav {  get; set; }
+    public string HrefNav { get; set; } = default!;
 
     /// <summary>
     /// AuthorizeView -> Roles
@@ -27,5 +27,5 @@ public class NavItemModel
     /// <summary>
     /// Текст пункта меню
     /// </summary>
-    public required string Title { get; set; }
+    public string Title { get; set; } = default!;
 }
