@@ -32,7 +32,7 @@
                     <MudFab Disabled="@(stepNum >= Steps.Count - (IsLarge ? 4 : 6))" OnClick="() => { stepNum++; }" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.KeyboardArrowRight" Size="Size.Small" />
                 </div>
 
-                @foreach (HelpdeskIssueStepsEnum s in Steps.Skip(stepNum).Take(IsLarge ? 4 : 6))
+                @foreach (HelpdeskIssueStepsEnum s in Steps.Order().Skip(stepNum).Take(IsLarge ? 4 : 6))
                 {
                     <div @key="@s.ToString()" class="col-12 col-md-@(IsLarge ? "3" : "2")">
                         <ConsoleSegmentColumnComponent StepIssue="s" IsLarge="IsLarge" UserFilter="@FilterUserId" />

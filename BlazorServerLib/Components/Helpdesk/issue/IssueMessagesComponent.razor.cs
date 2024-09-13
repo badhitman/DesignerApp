@@ -54,7 +54,7 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
             ? messages
             : [.. messages.Where(x => x.MessageText.Contains(searchStringQuery, StringComparison.OrdinalIgnoreCase))];
 
-        return Task.FromResult(new TableData<IssueMessageHelpdeskModelDB>() { TotalItems = _messages.Length, Items = _messages.Skip(state.PageSize * state.Page).Take(state.PageSize) });
+        return Task.FromResult(new TableData<IssueMessageHelpdeskModelDB>() { TotalItems = _messages.Length, Items = _messages.OrderBy(x => x.Id).Skip(state.PageSize * state.Page).Take(state.PageSize) });
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
         StateHasChanged();
     }
 
-/// <inheritdoc/>
+    /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await ReloadMessages();

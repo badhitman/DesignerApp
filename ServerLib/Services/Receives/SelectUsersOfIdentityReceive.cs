@@ -45,7 +45,7 @@ public class SelectUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext
             PageSize = req.PageSize,
             SortBy = req.SortBy,
             SortingDirection = req.SortingDirection,
-            Response = [..await q
+            Response = [..await q.OrderBy(x => x.Id)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
             .Select(x => new UserInfoModel()

@@ -62,6 +62,9 @@ public partial class IndexPage : BlazorBusyComponentBaseModel
 
     private async Task SaveAsync()
     {
+        if (CurrentUser is null)
+            throw new ArgumentNullException(nameof(CurrentUser));
+
         Messages = [];
         IsBusyProgress = true;
         ResponseBaseModel rest = await UsersProfilesRepo.UpdateFirstLastNamesUser(CurrentUser.UserId, firstName, lastName);
@@ -71,9 +74,6 @@ public partial class IndexPage : BlazorBusyComponentBaseModel
         {
             CurrentUser.GivenName = firstName;
             CurrentUser.Surname = lastName;
-
-            // AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-
         }
     }
 }

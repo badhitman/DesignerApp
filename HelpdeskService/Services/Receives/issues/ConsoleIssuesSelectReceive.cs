@@ -59,11 +59,11 @@ public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpd
 
         res.Response.TotalRowsCount = await q.CountAsync();
 
-        q = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<IssueHelpdeskModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
             ? q.OrderBy(x => x.CreatedAt)
             : q.OrderByDescending(x => x.CreatedAt);
 
-        List<IssueHelpdeskModelDB> data = await q
+        List<IssueHelpdeskModelDB> data = await oq
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
             .Include(x => x.RubricIssue)

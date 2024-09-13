@@ -1,12 +1,16 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
 <div class="hstack">
-    <span title="Рубрика: @Issues[0].RubricIssue!.Name" class="badge text-bg-info m-1">@Issues[0].Name</span>
+    @{
+        var qcr = Issues.OrderBy(x => x.Id);
+        var cr = qcr.First();
+    }
+    <span title="Рубрика: @cr.RubricIssue!.Name" class="badge text-bg-info m-1">@cr.Name</span>
     @if (Issues.Length > 1)
     {
         if (IsExpand)
         {
-            foreach (IssueHelpdeskModel iss in Issues.Skip(1))
+            foreach (IssueHelpdeskModel iss in qcr.Skip(1))
             {
                 <span title="Рубрика: @iss.RubricIssue!.Name" class="badge text-bg-info mx-1">@iss.Name</span>
             }

@@ -401,7 +401,7 @@ public class WebAppService(
         }
 
         int total = query.Count();
-        query = query.Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        query = query.OrderBy(x => x.Id).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
 
         TelegramUserModelDb[] users_tg = await query.ToArrayAsync();
         if (users_tg.Length == 0)

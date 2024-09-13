@@ -59,9 +59,9 @@ mv /srv/git/builds/ /srv/services
 sudo chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services
 
+systemctl start bus.app.service
 systemctl start comm.app.service
-systemctl start web.app.service
 systemctl start tg.app.service
 systemctl start api.app.service
-systemctl start bus.app.service
 systemctl start hd.app.service
+systemctl start web.app.service

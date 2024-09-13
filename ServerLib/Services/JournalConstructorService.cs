@@ -122,6 +122,7 @@ public partial class JournalConstructorService(
         res.TotalRowsCount = await q.CountAsync();
 
         q = q
+            .OrderBy(x => x.Id)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 
@@ -223,6 +224,7 @@ public partial class JournalConstructorService(
         }
 
         res.Response = res.Response
+            .OrderBy(x => x.Key)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
             .ToList();

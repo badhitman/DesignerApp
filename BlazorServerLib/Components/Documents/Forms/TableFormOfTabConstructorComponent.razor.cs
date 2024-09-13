@@ -50,7 +50,7 @@ public partial class TableFormOfTabConstructorComponent : FormBaseCore
         // Get the total count
 
         // Get the paged data
-        List<KeyValuePair<uint, ValueDataForSessionOfDocumentModelDB[]>> pagedData = rows.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
+        List<KeyValuePair<uint, ValueDataForSessionOfDocumentModelDB[]>> pagedData = rows.OrderBy(x => x.Key).Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
         // Return the data
         return Task.FromResult(new TableData<KeyValuePair<uint, Dictionary<string, object>>>() { TotalItems = rows.Length, Items = [] });
     }

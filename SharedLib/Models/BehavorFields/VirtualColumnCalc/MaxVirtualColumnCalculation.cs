@@ -22,9 +22,9 @@ public class MaxVirtualColumnCalculation : VirtualColumnCalculationAbstraction
             return 0;
 
         calk_cells ??= row_cells_data.Select(x => x.Key).ToList();
-
-        double res = row_cells_data[calk_cells.First()];
-        foreach (string cv in calk_cells.Skip(1))
+        IOrderedEnumerable<string> oq = calk_cells.Order();
+        double res = row_cells_data[oq.First()];
+        foreach (string cv in oq.Skip(1))
             res = double.Max(res, row_cells_data[row_cells_data.Keys.First(x => x.Equals(cv, StringComparison.OrdinalIgnoreCase))]);
 
         return res;

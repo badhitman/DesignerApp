@@ -52,7 +52,7 @@ public class PulseJournalReceive(
             .PulseEvents
             .Where(x => x.IssueId == req.Payload.IssueId);
 
-        q = req.SortingDirection == VerticalDirectionsEnum.Down
+        IOrderedQueryable<PulseIssueModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Down
             ? q.OrderByDescending(x => x.CreatedAt)
             : q.OrderBy(x => x.CreatedAt);
 
@@ -63,7 +63,7 @@ public class PulseJournalReceive(
             PageSize = req.PageSize,
             SortBy = req.SortBy,
             SortingDirection = req.SortingDirection,
-            Response = await q
+            Response = await oq
             .Skip(req.PageSize * req.PageNum)
             .Take(req.PageSize)
             .Select(x => new PulseViewModel()

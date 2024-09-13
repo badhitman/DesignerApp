@@ -68,6 +68,9 @@ public class IdentityTools(IDbContextFactory<IdentityAppDbContext> identityDbFac
         }
         else
         {
+            IdentityUserClaim<string> fe;
+            IOrderedEnumerable<IdentityUserClaim<string>> qo = claims_bd.OrderBy(x => x.Id);
+
             if (claims_bd.Length == 0)
             {
                 await identityContext.AddAsync(new IdentityUserClaim<string>()
@@ -80,19 +83,25 @@ public class IdentityTools(IDbContextFactory<IdentityAppDbContext> identityDbFac
             }
             else if (claims_bd.Length > 1)
             {
-                claims_ids = [.. claims_bd.Skip(1).Select(x => x.Id)];
+                fe = qo.First();
+                claims_ids = [.. qo.Skip(1).Select(x => x.Id)];
                 res = 0 != await identityContext.UserClaims.Where(x => claims_ids.Contains(x.Id)).ExecuteDeleteAsync() || res;
             }
-            else if (claims_bd[0].ClaimValue != app_user.FirstName)
+            else
             {
-                res = 0 != await identityContext
-                    .UserClaims
-                    .Where(x => x.Id == claims_bd[0].Id)
-                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.ClaimValue, app_user.FirstName)) || res;
+                fe = qo.First();
+                if (fe.ClaimValue != app_user.FirstName)
+                {
+                    res = 0 != await identityContext
+                                        .UserClaims
+                                        .Where(x => x.Id == fe.Id)
+                                        .ExecuteUpdateAsync(set => set.SetProperty(p => p.ClaimValue, app_user.FirstName)) || res;
+                }
             }
         }
 
         claims_bd = await identityContext.UserClaims.Where(x => x.ClaimType == ClaimTypes.Surname && x.UserId == app_user.Id).ToArrayAsync();
+        IOrderedEnumerable<IdentityUserClaim<string>> oq = claims_bd.OrderBy(x => x.Id);
         if (string.IsNullOrWhiteSpace(app_user.FirstName))
         {
             if (claims_bd.Length != 0)
@@ -115,14 +124,14 @@ public class IdentityTools(IDbContextFactory<IdentityAppDbContext> identityDbFac
             }
             else if (claims_bd.Length > 1)
             {
-                claims_ids = [.. claims_bd.Skip(1).Select(x => x.Id)];
+                claims_ids = [.. oq.Skip(1).Select(x => x.Id)];
                 res = 0 != await identityContext.UserClaims.Where(x => claims_ids.Contains(x.Id)).ExecuteDeleteAsync() || res;
             }
             else if (claims_bd[0].ClaimValue != app_user.FirstName)
             {
                 res = 0 != await identityContext
                     .UserClaims
-                    .Where(x => x.Id == claims_bd[0].Id)
+                    .Where(x => x.Id == oq.First().Id)
                     .ExecuteUpdateAsync(set => set.SetProperty(p => p.ClaimValue, app_user.LastName)) || res;
             }
         }

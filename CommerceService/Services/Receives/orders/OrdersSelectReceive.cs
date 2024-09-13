@@ -68,11 +68,11 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
 
         res.Response.TotalRowsCount = await q.CountAsync();
 
-        q = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<OrderDocumentModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
            ? q.OrderBy(x => x.CreatedAtUTC)
            : q.OrderByDescending(x => x.CreatedAtUTC);
 
-        q = q
+        q = oq
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 

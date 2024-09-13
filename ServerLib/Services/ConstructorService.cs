@@ -3157,7 +3157,7 @@ public partial class ConstructorService(
             query = query.Where(expr);
         }
         res.TotalRowsCount = await query.CountAsync(cancellationToken: cancellationToken);
-        query = query.Skip(req.PageSize * req.PageNum).Take(req.PageSize);
+        query = query.OrderBy(x => x.Id).Skip(req.PageSize * req.PageNum).Take(req.PageSize);
 
         res.Response = await query.ToListAsync(cancellationToken: cancellationToken);
 

@@ -678,7 +678,7 @@ public class UsersProfilesService(
             q = q.Where(x => EF.Functions.Like(x.NormalizedName, $"%{roleManager.KeyNormalizer.NormalizeName(req.FindQuery)}%") || x.Id == req.FindQuery);
 
         int total = q.Count();
-        q = q.Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        q = q.OrderBy(x => x.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
         var roles = await
             q.Select(x => new
             {
@@ -735,7 +735,7 @@ public class UsersProfilesService(
             q = q.Where(x => EF.Functions.Like(x.NormalizedEmail, $"%{userManager.KeyNormalizer.NormalizeEmail(req.FindQuery)}%") || EF.Functions.Like(x.NormalizedFirstNameUpper, $"%{upp_query}%") || EF.Functions.Like(x.NormalizedLastNameUpper, $"%{upp_query}%") || x.Id == req.FindQuery);
         }
         int total = q.Count();
-        q = q.Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        q = q.OrderBy(x => x.UserName).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
         var users = await q
             .Select(x => new
             {
