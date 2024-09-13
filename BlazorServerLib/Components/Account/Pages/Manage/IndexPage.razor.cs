@@ -24,7 +24,7 @@ public partial class IndexPage : BlazorBusyComponentBaseModel
     [Inject]
     IWebRemoteTransmissionService webRepo { get; set; } = default!;
 
-    UserInfoModel CurrentUser = default!;
+    UserInfoModel? CurrentUser;
 
     string? username;
     string? firstName;
@@ -32,7 +32,7 @@ public partial class IndexPage : BlazorBusyComponentBaseModel
 
     List<ResultMessage> Messages = [];
 
-    bool IsEdited => firstName != CurrentUser.GivenName || lastName != CurrentUser.Surname;
+    bool IsEdited => CurrentUser is not null && (firstName != CurrentUser.GivenName || lastName != CurrentUser.Surname);
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
