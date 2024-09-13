@@ -1,0 +1,30 @@
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @FakeGov 
+////////////////////////////////////////////////
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SharedLib;
+
+namespace ApiRestService.Controllers;
+
+/// <summary>
+/// Платежи
+/// </summary>
+[Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog, Authorize]
+public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
+{
+    /// <summary>
+    /// Обновить/создать платёжный документ
+    /// </summary>
+    [HttpPut($"/api/{GlobalStaticConstants.Routes.COMMERCE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PAYMENT_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}")]
+    public async Task<TResponseModel<int?>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment)
+        => await commRepo.PaymentDocumentUpdate(payment);
+
+    /// <summary>
+    /// Удалить платёжный документ
+    /// </summary>
+    [HttpPut($"/api/{GlobalStaticConstants.Routes.COMMERCE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PAYMENT_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}")]
+    public async Task<TResponseModel<bool?>> PaymentDocumentDelete(int req)
+        => await commRepo.PaymentDocumentDelete(req);
+}

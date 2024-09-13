@@ -35,8 +35,8 @@ rm -r builds
 git clone https://github.com/badhitman/DesignerApp.git
 git clone https://github.com/badhitman/HtmlGenerator.git
 
-dotnet publish -c Release --output /srv/git/builds/StorageService /srv/git/DesignerApp/StorageService/StorageService.csproj
 dotnet publish -c Release --output /srv/git/builds/ApiRestService /srv/git/DesignerApp/ApiRestService/ApiRestService.csproj
+dotnet publish -c Release --output /srv/git/builds/StorageService /srv/git/DesignerApp/StorageService/StorageService.csproj
 dotnet publish -c Release --output /srv/git/builds/CommerceService /srv/git/DesignerApp/CommerceService/CommerceService.csproj
 dotnet publish -c Release --output /srv/git/builds/HelpdeskService /srv/git/DesignerApp/HelpdeskService/HelpdeskService.csproj
 dotnet publish -c Release --output /srv/git/builds/Telegram.Bot.Polling /srv/git/DesignerApp/Telegram.Bot.Polling/Telegram.Bot.Polling.csproj
@@ -66,4 +66,4 @@ systemctl start api.app.service
 systemctl start hd.app.service
 systemctl start web.app.service
 
-journalctl -f -u web.app.service
+journalctl -f -u api.app.service

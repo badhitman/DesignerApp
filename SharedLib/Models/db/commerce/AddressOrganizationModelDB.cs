@@ -4,13 +4,11 @@
 
 namespace SharedLib;
 
-/// <summary>
-/// AddressOrganizationModelDB
-/// </summary>
+/// <inheritdoc/>
 public class AddressOrganizationModelDB : AddressOrganizationBaseModel
 {
     /// <summary>
-    /// Organization
+    /// Организация
     /// </summary>
     public OrganizationModelDB? Organization { get; set; }
 }

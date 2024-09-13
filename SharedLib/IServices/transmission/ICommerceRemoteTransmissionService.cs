@@ -10,7 +10,7 @@ namespace SharedLib;
 public interface ICommerceRemoteTransmissionService
 {
     /// <summary>
-    /// OrderUpdate
+    /// Обновить/создать платёжный документ
     /// </summary>
     public Task<TResponseModel<int?>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment);
 
@@ -30,7 +30,7 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<GoodsModelDB[]?>> GoodsRead(int[] ids);
 
     /// <summary>
-    /// AddressesOrganizationsRead
+    /// Прочитать данные адресов организаций по их идентификаторам
     /// </summary>
     public Task<TResponseModel<AddressOrganizationModelDB[]?>> AddressesOrganizationsRead(int[] ids);
 
@@ -40,7 +40,7 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<bool?>> AttachmentDeleteFromOrder(int req);
 
     /// <summary>
-    /// PaymentDocumentDelete
+    /// Удалить платёжный документ
     /// </summary>
     public Task<TResponseModel<bool?>> PaymentDocumentDelete(int req);
 
@@ -90,7 +90,7 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>?>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req);
 
     /// <summary>
-    /// OrganizationsSelect
+    /// Подбор организаций с параметрами запроса
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>?>> OrganizationsSelect(TPaginationRequestModel<OrganizationsSelectRequestModel> req);
 
@@ -100,19 +100,22 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<int?>> OfferUpdate(OfferGoodModelDB offer);
 
     /// <summary>
-    /// OrganizationUpdate
+    /// Обновление параметров организации. Юридические параметры не меняются, а формируется запрос на изменение, которое должна подтвердить сторонняя система
     /// </summary>
     public Task<TResponseModel<int?>> OrganizationUpdate(TAuthRequestModel<OrganizationModelDB> org);
 
     /// <summary>
-    /// OrganizationSetLegal
+    /// Установить реквизиты организации (+ сброс запроса редактирования)
     /// </summary>
+    /// <remarks>
+    /// Если организация находиться в статусе запроса изменения реквизитов - этот признак обнуляется.
+    /// </remarks>
     public Task<TResponseModel<bool?>> OrganizationSetLegal(OrganizationModelDB org);
 
     /// <summary>
-    /// OrganizationsRead
+    /// Прочитать данные организаций по их идентификаторам
     /// </summary>
-    public Task<TResponseModel<OrganizationModelDB[]?>> OrganizationsRead(int[] org);
+    public Task<TResponseModel<OrganizationModelDB[]?>> OrganizationsRead(int[] organizations_ids);
 
     /// <summary>
     /// Удалить адрес организации

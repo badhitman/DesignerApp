@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// Organization
+/// Организация
 /// </summary>
 public class OrganizationModelDB : OrganizationLegalModel
 {

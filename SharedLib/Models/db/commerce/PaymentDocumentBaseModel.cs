@@ -5,11 +5,13 @@
 namespace SharedLib;
 
 /// <summary>
-/// PaymentDocumentBaseModel
+/// Платёжный документ
 /// </summary>
 public class PaymentDocumentBaseModel : EntryModel
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Название
+    /// </summary>
     public override required string Name { get; set; }
 
     /// <summary>
@@ -23,7 +25,7 @@ public class PaymentDocumentBaseModel : EntryModel
     public required string ExternalDocumentId { get; set; }
 
     /// <summary>
-    /// OrderDocument
+    /// Документ-заказ
     /// </summary>
     public int OrderDocumentId { get; set; }
 }

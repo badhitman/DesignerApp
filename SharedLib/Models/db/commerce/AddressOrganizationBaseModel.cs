@@ -7,11 +7,13 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// AddressOrganizationBaseModel
+/// Адрес организации
 /// </summary>
 public class AddressOrganizationBaseModel : EntryModel
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Название
+    /// </summary>
     public override required string Name { get; set; }
 
     /// <summary>
@@ -20,19 +22,19 @@ public class AddressOrganizationBaseModel : EntryModel
     public required int ParentId { get; set; }
 
     /// <summary>
-    /// Address
+    /// Адрес
     /// </summary>
     [Required]
     public required string Address { get; set; }
 
     /// <summary>
-    /// Contacts
+    /// Контакты
     /// </summary>
     [Required]
     public string? Contacts { get; set; }
 
     /// <summary>
-    /// Organization
+    /// Организация
     /// </summary>
     public int OrganizationId { get; set; }
 
