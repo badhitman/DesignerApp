@@ -29,18 +29,11 @@ public partial class InputRichTextComponent : InputTextArea
         InvokeAsync(async () => await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.setValue", UID, value ?? ""));
     }
 
-    bool _reRendered;
-
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
             await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.init", UID, ReadOnly, DotNetObjectReference.Create(this));
-        else if(!_reRendered)
-        {
-            _reRendered = true;
-            await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.init", UID, ReadOnly, DotNetObjectReference.Create(this));
-        }
         else
             await JsRuntimeRepo.InvokeVoidAsync("CKEditorInterop.isReadOnly", UID, ReadOnly);
     }
