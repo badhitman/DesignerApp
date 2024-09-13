@@ -89,8 +89,14 @@ builder.Services.AddSwaggerGen(options =>
               options.SwaggerDoc("v1", new OpenApiInfo
               {
                   Version = "v1",
-                  Title = "tools - Rest/API",
-                  Contact = new OpenApiContact { Email = "ru.usa@mail.ru" }
+                  Title = "tools - REST API",
+                  Description = "”далЄнный RESTful доступ к <a href='https://github.com/badhitman/DesignerApp'>https://github.com/badhitman/DesignerApp</a>",
+                  Contact = new OpenApiContact
+                  {
+                      Email = "ru.usa@mail.ru",
+                      Url = new("https://github.com/badhitman"),
+                      Name = "badhitman"
+                  }
               });
 
               options.UseInlineDefinitionsForEnums();

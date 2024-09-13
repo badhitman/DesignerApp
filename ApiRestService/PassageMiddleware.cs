@@ -62,7 +62,9 @@ public class PassageMiddleware
 
         if (perm is null)
         {
-            await _http_context.SignOutAsync();
+            if (_http_context.User.Identity?.IsAuthenticated == true)
+                await _http_context.SignOutAsync();
+
             return;
         }
         string user_name = perm.User ?? $"for user not set name (key: {perm.Secret})";

@@ -12,7 +12,7 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://github.com/badhitman/DesignerApp" target="_blank">About</a>
+            <a href="@GetRootDomain()" title="Документация" target="_blank">API</a>
         </div>
 
         <article class="content px-4">
@@ -64,14 +64,24 @@
 </div>
 
 <div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
+    Произошла необработанная ошибка.
+    <a href="" class="reload">Перезагрузить</a>
     <a class="dismiss">🗙</a>
 </div>
 
 @code {
+    [Inject]
+    NavigationManager NavRepo { get; set; } = default!;
+
+
     [CascadingParameter, EditorRequired]
     public required NavMainMenuModel NavMainMenu { get; set; }
 
     private bool _isDarkMode = true;
+
+    string GetRootDomain()
+    {
+        Uri _uri = new(NavRepo.BaseUri);
+        return $"{_uri.Scheme}://api.{_uri.Authority}/swagger/";
+    }
 }
