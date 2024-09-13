@@ -11,6 +11,7 @@ using RemoteCallLib;
 using SharedLib;
 using NLog.Web;
 using NLog;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Warn("init main");
@@ -71,6 +72,14 @@ builder.Services
 builder.Services
     .AddControllers(options => options.Filters.Add(typeof(LoggerActionFilter)))
     .AddNewtonsoftJson(options => { options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore; options.SerializerSettings.Converters.Add(new StringEnumConverter() { }); });
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+        options =>
+        {
+            options.LoginPath = new PathString("/auth/login");
+            options.AccessDeniedPath = new PathString("/auth/denied");
+        });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
