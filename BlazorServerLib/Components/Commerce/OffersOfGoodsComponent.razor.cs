@@ -30,6 +30,7 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
 
     private MudTable<OfferGoodModelDB> table = default!;
 
+
     async void CreateOfferAction(OfferGoodModelDB sender)
     {
         await table.ReloadServerData();
@@ -44,9 +45,9 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
     {
         TPaginationRequestModel<OffersSelectRequestModel> req = new()
         {
-            Payload = new() 
-            { 
-                GoodFilter = CurrentGoods.Id 
+            Payload = new()
+            {
+                GoodFilter = CurrentGoods.Id
             },
             PageNum = state.Page,
             PageSize = state.PageSize,

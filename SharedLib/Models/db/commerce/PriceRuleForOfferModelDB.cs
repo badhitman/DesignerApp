@@ -41,4 +41,18 @@ public class PriceRuleForOfferModelDB : EntrySwitchableUpdatedModel
     /// По умолчанию FALSE - учитывается количество локальной (одной) вкладки для одного адреса. Если TRUE - тогда количество учитывается в документе всего.
     /// </remarks>
     public bool JointAggregateForOrderDocument { get; set; }
+
+    /// <inheritdoc/>
+    public static PriceRuleForOfferModelDB Build(string name, int quantity, decimal price, bool joint, int offer_id)
+    {
+        return new PriceRuleForOfferModelDB()
+        {
+            Name = name,
+            CreatedAtUTC = DateTime.UtcNow,
+            JointAggregateForOrderDocument = joint,
+            OfferId = offer_id,
+            PriceRule = price,
+            QuantityRule = (uint)quantity,
+        };
+    }
 }

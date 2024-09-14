@@ -96,6 +96,10 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<OfferGoodModelDB[]>(GlobalStaticConstants.TransmissionQueues.OfferReadCommerceReceive, ids);
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<PriceRuleForOfferModelDB[]>> PricesRulesGetForOffers(int[] ids)
+        => await rabbitClient.MqRemoteCall<PriceRuleForOfferModelDB[]>(GlobalStaticConstants.TransmissionQueues.PricesRulesGetForOfferCommerceReceive, ids);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OrderDocumentModelDB>>(GlobalStaticConstants.TransmissionQueues.OrdersSelectCommerceReceive, req);
 
@@ -106,4 +110,12 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.PaymentDocumentUpdateCommerceReceive, payment);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> PriceRuleUpdate(PriceRuleForOfferModelDB price_rule)
+        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.PriceRuleUpdateCommerceReceive, price_rule);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> PriceRuleDelete(int id)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.PriceRuleDeleteCommerceReceive, id);
 }

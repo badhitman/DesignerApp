@@ -12,7 +12,7 @@ namespace Transmission.Receives.telegram;
 /// <summary>
 /// Найти чаты пользователей
 /// </summary>
-public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
+public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory, ILogger<ChatsFindForUserTelegramReceive> logger)
     : IResponseReceive<long[]?, ChatTelegramModelDB[]?>
 {
     /// <inheritdoc/>
@@ -26,7 +26,7 @@ public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContex
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
 
         int[] users_ids = await context.Users.Where(x => chats_ids.Contains(x.UserTelegramId)).Select(x => x.Id).ToArrayAsync();
-
+        logger.LogInformation($"call {GetType().Name}: {string.Join(",", chats_ids)};");
         IQueryable<ChatTelegramModelDB> q = users_ids.Length == 0
             ? context.Chats.Where(x => chats_ids.Contains(x.ChatTelegramId))
             : context.Chats.Where(x => chats_ids.Contains(x.ChatTelegramId) || context.JoinsUsersToChats.Any(y => y.ChatId == x.Id && users_ids.Contains(y.UserId)));

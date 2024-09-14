@@ -1,0 +1,59 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+<sup @onclick="() => IsExpandPanel = !IsExpandPanel" title="правила ценообразования" class="bi bi-calculator text-primary"></sup>
+
+@if (IsExpandPanel)
+{
+    <div class="offcanvas offcanvas-end show" tabindex="-1" id="offcanvasRight">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Ценообразование</h5>
+            <button @onclick="() => IsExpandPanel = !IsExpandPanel" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            @if (rules.Length == 0)
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Ни одного правила ценообразования.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Создайте <cite title="укажите количество для правила и цену">первое правило</cite>
+                    </figcaption>
+                </figure>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (PriceRuleForOfferModelDB pr in rules.OrderBy(x => x.QuantityRule))
+                    {
+                        <PriceRuleElementComponent @key="@($"price-rule-{pr.Id}")" PriceRule="pr" OwnerComponent="this" />
+                    }
+                </div>
+            }
+            <hr />
+            <div @onfocus="() => RulesViewsComponents.ForEach(component => component.IsActive = false)" class="card">
+                <div class="card-body">
+                    <MudTextField @bind-Value="TextValue" Label="Имя" Variant="Variant.Outlined" @onfocus="() => RulesViewsComponents.ForEach(component => component.IsActive = false)"></MudTextField>
+                    <div class="hstack gap-3 mb-3">
+                        <MudNumericField @bind-Value="QuantityAddingRule" Label="Количество" Variant="Variant.Outlined" Min="2" @onfocus="() => RulesViewsComponents.ForEach(component => component.IsActive = false)" />
+                        <MudNumericField Immediate @bind-Value="PriceAddingRule" Label="Цена" Variant="Variant.Outlined" @onfocus="() => RulesViewsComponents.ForEach(component => component.IsActive = false)" />
+                    </div>
+                    <MudCheckBox @bind-Value="CrossCalculationCheckBox" title="Сквозной расчёт количества во всём документе" UncheckedColor="Color.Tertiary" Label="Сквозной расчёт" @onfocus="() => RulesViewsComponents.ForEach(component => component.IsActive = false)"></MudCheckBox>
+                    <MudButton OnClick="async () => { await SaveRule(PriceRuleForOfferModelDB.Build(TextValue ?? string.Empty, QuantityAddingRule, PriceAddingRule, CrossCalculationCheckBox, OfferGood.Id)); }" Disabled="@(PriceAddingRule == 0 || rules.Any(x => x.QuantityRule == QuantityAddingRule))" Class="my-3" Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true">Создать</MudButton>
+                    @if (CrossCalculationCheckBox)
+                    {
+                        <code>Сквозной расчёт количества для правила ценообразования.</code>
+                        <span class="form-text">
+                            По умолчанию для применения правила установки цены учитывается количество одной таблицы (вкладка адреса организации в заказе).
+                            Если же для правила установлен признак <code>сквозного расчёта</code>, тогда количество товара будет считаться во всём документе (во всех вкладках/адресах), а не в одной локальной таблице/вкладке.
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div @onclick="() => IsExpandPanel = !IsExpandPanel" class="offcanvas-backdrop fade show"></div>
+}

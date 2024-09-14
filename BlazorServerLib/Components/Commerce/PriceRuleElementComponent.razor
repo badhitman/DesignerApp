@@ -1,0 +1,24 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<div @onclick="() => OwnerComponent.SetActive(PriceRule.Id)" class="list-group-item list-group-item-action @(IsActive ? " active" : "")" aria-current="true">
+    <div style="cursor: pointer" class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1 me-auto">@($">={PriceRule.QuantityRule} {PriceRule.Offer?.OfferUnit.DescriptionInfo().ToLower()}: {PriceRule.PriceRule} руб")</h5>
+        @if (IsActive)
+        {
+            if (InitDelete)
+            {
+                <i @onclick="DeleteRule" title="Подтвердить удаление" class="bi bi-trash-fill me-2 text-danger"></i>
+                <i @onclick="() => InitDelete = false" title="Отмена удаления" class="bi bi-x-square"></i>
+            }
+            else
+            {
+                <i @onclick="async ()=>{ PriceRule.IsDisabled = !PriceRule.IsDisabled; await SaveRule(); }" title="Отключить правило без удаления" class="bi bi-lightbulb-@(PriceRule.IsDisabled ? "off" : "fill") me-2"></i>
+                <i @onclick="() => InitDelete = true" title="Удалить правило" class="bi bi-trash3"></i>
+            }
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(PriceRule.Name))
+    {
+        <p class="mb-1">@PriceRule.Name</p>
+    }
+</div>

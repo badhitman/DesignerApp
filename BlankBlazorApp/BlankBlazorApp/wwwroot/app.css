@@ -58,3 +58,7 @@ h1:focus {
     background-color: #373740;
     border-bottom: #373740 solid;
 }
+
+mark, .mark {
+    color: black;
+}

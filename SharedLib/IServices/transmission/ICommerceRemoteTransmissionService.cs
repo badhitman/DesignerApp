@@ -10,6 +10,16 @@ namespace SharedLib;
 public interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// Удалить ценообразование
+    /// </summary>
+    public Task<TResponseModel<bool>> PriceRuleDelete(int id);
+
+    /// <summary>
+    /// Обновить/создать правило ценообразования
+    /// </summary>
+    public Task<TResponseModel<int>> PriceRuleUpdate(PriceRuleForOfferModelDB price_rule);
+
+    /// <summary>
     /// Обновить/создать платёжный документ
     /// </summary>
     public Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment);
@@ -18,6 +28,11 @@ public interface ICommerceRemoteTransmissionService
     /// OrderUpdate
     /// </summary>
     public Task<TResponseModel<int>> OrderUpdate(OrderDocumentModelDB order);
+
+    /// <summary>
+    /// PricesRulesGetForOffers
+    /// </summary>
+    public Task<TResponseModel<PriceRuleForOfferModelDB[]>> PricesRulesGetForOffers(int[] ids);
 
     /// <summary>
     /// OffersRead

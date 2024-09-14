@@ -2,9 +2,14 @@
 @inherits BlazorBusyComponentBaseModel
 
 <style>
-    sup.bi-calculator {
+    td.mud-table-cell sup.bi, i.bi {
         cursor: pointer;
+        color: brown;
     }
+
+    /* sup.bi:hover, i.bi:hover {
+            color: green;
+        } */
 </style>
 
 <MudPaper Class="pa-4 mt-3">
@@ -30,7 +35,7 @@
             <MudTd DataLabel="Goods"> <a href="/offer-card/@context.Id">@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</a> </MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Price">
-                @context.Price <PriceRuleForOfferComponent OfferGood="context" />
+                @context.Price <PricesRulesForOfferComponent OfferGood="context" />
             </MudTd>
             <MudTd DataLabel="Multiplicity">@context.Multiplicity</MudTd>
             <MudTd DataLabel="OfferUnit">@context.OfferUnit.DescriptionInfo()</MudTd>

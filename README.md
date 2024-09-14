@@ -1,27 +1,21 @@
-## Blazor NET.8 TelegramBot HelpDesk 
-#### + [web forms constructor](CONSTRUCTOR.md)
+## Blazor NET.8 + Telegram Bot + СЭД/HelpDesk/ServiceDesk 
 
 - **Blazor NET.8**[^4] + **TelegramBot**[^5]: подойдёт как стартовый кейс web решения с поддержкой **Telegram бота**.
-
-- Базы данных (по умолчанию) [SQLite](https://github.com/badhitman/DesignerApp/tree/main/DBContextLibs#sqlite-установлен-по-умолчанию): миграции отсутствуют, поскольку изначально не понятно какая в итоге СУБД будет выбрана[^10]. Для переключения с **SQLite** на [PostgreSQL](https://github.com/badhitman/DesignerApp/tree/main/DBContextLibs#postgresql) или [MySQL](https://github.com/badhitman/DesignerApp/tree/main/DBContextLibs#mysql): потребуется отредактировать зависимости проектов[^6]. После того как определились с используемой СУБД (*или оставили как есть*: **SQLIte**) - можно использовать миграции [^10]. Если после обновления ветки у вас возникли ошибки уровня БД, то, вероятно, сменилась схема базы. Если вы не ведёте миграции самостоятельно, тогда при каждом изменении схемы БД старую (текущую) базу требуется удалить вручную (СУБД по умолчанию: SqLite) и создать заново [(команды подготовлены)](https://github.com/badhitman/DesignerApp/blob/main/DBContextLibs/DbSqliteLib/migrations.md) (для других контекстов команды находятся в  папках, соответствующих нужной СУБД, + Identity имеет собственный контекст). После выхода в релиз задействуются полноценные миграции. Всего 5 контекстов БД: `IdentityAppDbContext`, `MainDbAppContext`, `StorageContext`, `HelpdeskContext`, `TelegramBotContext`.
 
 - Связь между службами реализована через RabbitMQ[^1] в режиме `запрос-ответ`: при отправке сообщения в очередь, отправитель дожидается ответ (в границах таймаута) и возвращает результат вызывающему. При использовании вызова такой команды удалённого сервиса проходит так, как если бы это был обычный `await` запрос к базе данных или rest/api.![rabbitmq](img/rabbitmq-queues-demo.png)
 
 - Установлен/используется пакет [MudBlazor 7](https://github.com/MudBlazor/MudBlazor/)
 
-- HelpDesk [система оказания консультаций](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) и обратной связи. Пользовательский доступ возможен прямо из Telegram (WebApp) без ввода логина/пароля и вообще регистрации.
+- ServiceDesk/HelpDesk [система оказания консультаций](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) и обратной связи. Пользовательский доступ возможен прямо из Telegram (WebApp) без ввода логина/пароля и вообще регистрации.
 
-> [!IMPORTANT]
-> В принципе служба *TelegramBot* могла бы использовать прямой доступ к сервисам как это делает `BlazorWebApp` (достаточно установить зависимость от `ServerLib`), тогда `RemoteCallLib` становится бесполезным и его можно даже удалить (+ заменить зависимости сервисов на серверные). Но в данной реализации *Telegram* бот не связан с серверной инфраструктурой (нет доступа ни к БД сервера ни даже к его DI сервисам), а только отправляет запросы в RabbitMQ и получает ответы в виде `public class TResponseModel<TResponse> : ResponseBaseModel`, который поддерживает наличие статусных сообщений.
-
-Зависимости решения между проектами (в режиме СУБД SQLite):
+Зависимости решения между проектами:
 
 ```mermaid
 ---
 title: Структура (зависимости) проектов в решении
 ---
 classDiagram
-note for DbSqliteLib "Если используется другая СУБД, тогда
+note for DbPostgreLib "Если используется другая СУБД, тогда
 указатели  от [ServerLib] [Telegram.Bot.Polling], [HelpdeskService] и [RemoteCallLib]
 должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]"
     SharedLib <|-- CodegeneratorLib
@@ -29,24 +23,24 @@ note for DbSqliteLib "Если используется другая СУБД, �
     SharedLib <|-- DbLayerLib
     SharedLib : Общие модели
     IdentityLib <|-- ServerLib
-    DbSqliteLib <|-- ServerLib
+    DbPostgreLib <|-- ServerLib
     RemoteCallLib <|-- ServerLib
     RemoteCallLib <|-- CommerceService
     RemoteCallLib <|-- ApiRestService
     CodegeneratorLib <|-- BlazorLib
     HtmlGenerator <|-- CodegeneratorLib
-    DbLayerLib <|-- DbSqliteLib
+    DbLayerLib <|-- DbPostgreLib
     DbLayerLib <|-- DbPostgreLib
     DbLayerLib <|-- DbMySQLLib
-	DbSqliteLib <|-- RemoteCallLib
+	DbPostgreLib <|-- RemoteCallLib
     BlankBlazorApp_Client  <|-- BlankBlazorApp
 	BlazorWebLib  <|-- BlankBlazorApp
 	ServerLib  <|-- BlankBlazorApp
     RemoteCallLib <|-- Telegram_Bot_Polling
-	DbSqliteLib <|-- Telegram_Bot_Polling
+	DbPostgreLib <|-- Telegram_Bot_Polling
     RemoteCallLib <|-- StorageService
     RemoteCallLib <|-- HelpdeskService
-	DbSqliteLib <|-- HelpdeskService
+	DbPostgreLib <|-- HelpdeskService
     BlazorLib <|-- BlazorWebLib
     BlazorLib <|-- BlankBlazorApp_Client
     	
@@ -65,8 +59,8 @@ note for DbSqliteLib "Если используется другая СУБД, �
     class BlazorLib{
         Blazor UI Компоненты
     }
-    class DbSqliteLib{
-        SQLite (по умолчанию)
+    class DbPostgreLib{
+        PSG
     }
     class DbPostgreLib{
         PostgreSQL
@@ -226,5 +220,3 @@ else
 [^8]: Служба Telegram бота для каждого входящего сообщения [проверяет статус пользователя через вызов удалённой команды](https://github.com/badhitman/DesignerApp/blob/main/Telegram.Bot.Polling/Services/UpdateHandler.cs#L53), которую в данном случае обрабатывает Web сервер Blzaor.
 
 [^9]: [Бот ищет по имени нужного обработчика. Если не находит, то использует базовый](https://github.com/badhitman/DesignerApp/blob/main/Telegram.Bot.Polling/Services/UpdateHandler.cs#L131).
-
-[^10]: Если SQLite подходит, то можно сразу формировать миграции для контекстов: `IdentityAppDbContext` (отдельный контекст для **Microsoft.AspNetCore.Identity**) и `MainDbAppContext`.
