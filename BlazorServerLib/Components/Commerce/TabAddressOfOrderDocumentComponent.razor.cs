@@ -39,12 +39,6 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
     [Parameter]
     public Action? DocumentUpdateHandler { get; set; }
 
-    /// <summary>
-    /// CommerceMinimalPriceDelivery
-    /// </summary>
-    [Parameter]
-    public decimal CommerceMinimalPriceDelivery { get; set; }
-
 
     TableEditTrigger editTrigger = TableEditTrigger.EditButton;
     List<OfferGoodModelDB>? allOffers;

@@ -59,6 +59,12 @@ public partial class CommerceLayerContext : DbContext
     /// </summary>
     public DbSet<OfferGoodModelDB> OffersGoods { get; set; }
 
+    /// <summary>
+    /// Правила формирования цены
+    /// </summary>
+    public DbSet<PriceRuleForOfferModelDB> PricesRules { get; set; }
+
+
 
     /// <summary>
     /// Orders

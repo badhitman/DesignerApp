@@ -92,15 +92,6 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
-        /// Минимальная цена доставки
-        /// </summary>
-        public static StorageCloudParameterModel CommerceMinimalPriceDelivery => new()
-        {
-            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = Path.Combine(Routes.DELIVERY_CONTROLLER_NAME, Routes.DEFAULT_CONTROLLER_NAME, Routes.PRICE_CONTROLLER_NAME),
-        };
-
-        /// <summary>
         /// Отображение отключённых рубрик
         /// </summary>
         public static StorageCloudParameterModel ParameterShowDisabledRubrics => new()
@@ -157,6 +148,17 @@ public static partial class GlobalStaticConstants
             ApplicationName = Path.Combine(Routes.HELPDESK_CONTROLLER_NAME, Routes.CONSOLE_CONTROLLER_NAME),
             Name = Path.Combine(Routes.FILTER_CONTROLLER_NAME, user_id),
         };
+
+        /// <summary>
+        /// Уведомления в Telegram пользователю о событиях в его документах
+        /// </summary>
+        public static StorageCloudParameterModel NotificationTelegramForIssueUser(string user_id)
+            => new()
+            {
+                ApplicationName = HelpdeskNotificationsTelegramAppName,
+                Name = Routes.USER_CONTROLLER_NAME,
+                PrefixPropertyName = user_id,
+            };
 
         /// <summary>
         /// Фильтр консоли по пользователю

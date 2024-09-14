@@ -9,7 +9,7 @@ using SharedLib;
 namespace ApiRestService.Controllers;
 
 /// <summary>
-/// Доставка
+/// Заказы
 /// </summary>
 [Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
 public class OrdersController(ICommerceRemoteTransmissionService commRepo) : ControllerBase

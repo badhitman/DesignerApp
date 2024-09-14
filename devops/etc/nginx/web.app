@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name site www.site;
+    server_name my-site.ru www.my-site.ru;
     return 301 https://$host$request_uri;
 	large_client_header_buffers 4 128k;
 }
@@ -8,13 +8,13 @@ server {
 server {
 	listen 443 ssl;
 	listen [::]:443 ssl;
-	ssl_certificate /etc/ssl/boxter-cdek/boxter-cdek.crt;
-	ssl_certificate_key /etc/ssl/boxter-cdek/boxter-cdek.key;
+	server_name my-site.ru www.my-site.ru;
+	ssl_certificate /etc/ssl/my-site/my-site.crt;
+	ssl_certificate_key /etc/ssl/my-site/my-site.key;
 	large_client_header_buffers 4 128k;
 
-	server_name site www.site;
-	access_log /var/log/nginx/nginx.web.site.access.log;
-	error_log /var/log/nginx/nginx.web.site.error.log;
+	access_log /var/log/nginx/nginx.web.my-site.ru.access.log;
+	error_log /var/log/nginx/nginx.web.my-site.ru.error.log;
 
 	add_header X-Content-Type-Options "nosniff";
 

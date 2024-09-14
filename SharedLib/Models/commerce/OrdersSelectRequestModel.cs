@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// OrdersSelectRequestModel
+/// Запрос подбора заказов (поиск по параметрам)
 /// </summary>
 public class OrdersSelectRequestModel
 {
@@ -15,22 +15,22 @@ public class OrdersSelectRequestModel
     public DateTime? AfterDateUpdate { get; set; }
 
     /// <summary>
-    /// AddressForOrganization
+    /// Фильтр по адресам организаций (вкладки в заказах)
     /// </summary>
     public int? AddressForOrganizationFilter { get; set; }
 
     /// <summary>
-    /// OrganizationFilter
+    /// Фильтр по организации
     /// </summary>
     public int? OrganizationFilter { get; set; }
 
     /// <summary>
-    /// GoodsFilter
+    /// Фильтр по номенклатуре
     /// </summary>
     public int? GoodsFilter { get; set; }
 
     /// <summary>
-    /// OfferFilter
+    /// Фильтр по коммерческому предложению
     /// </summary>
     public int? OfferFilter { get; set; }
 
@@ -43,7 +43,13 @@ public class OrdersSelectRequestModel
     public bool? IsCartFilter { get; set; }
 
     /// <summary>
-    /// IncludeExternalData
+    /// Загрузить дополнительные данные для заказов
     /// </summary>
-    public bool IncludeExternalData {  get; set; }
+    /// <remarks>
+    /// .Include(x => x.AddressesTabs)
+    /// .ThenInclude(x => x.Rows)
+    /// .ThenInclude(x => x.Offer)
+    /// .ThenInclude(x => x.Goods)
+    /// </remarks>
+    public bool IncludeExternalData { get; set; }
 }

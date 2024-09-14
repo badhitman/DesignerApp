@@ -213,7 +213,6 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
     }
 
-    decimal _CommerceMinimalPriceDelivery;
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -234,12 +233,10 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         };
 
         IsBusyProgress = true;
-        TResponseModel<decimal?> res_storage = await StoreRepo.ReadParameter<decimal?>(GlobalStaticConstants.CloudStorageMetadata.CommerceMinimalPriceDelivery);
-        SnackbarRepo.ShowMessagesResponse(res_storage.Messages);
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;
-        _CommerceMinimalPriceDelivery = res_storage.Response ?? 0;
+
         if (!res.Success() || res.Response?.Response is null || res.Response.Response.Count == 0)
             return;
         Organizations = res.Response.Response;

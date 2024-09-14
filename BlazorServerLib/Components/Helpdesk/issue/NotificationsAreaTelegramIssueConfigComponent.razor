@@ -27,9 +27,7 @@
         else
         {
             <CascadingValue Value="chatsTelegram">
-                <NotificationTelegramIssueConfigComponent ApplicationName="@GlobalStaticConstants.HelpdeskNotificationsTelegramAppName"
-                                                          Name="@($"{GlobalStaticConstants.Routes.USER_CONTROLLER_NAME}")"
-                                                          PrefixPropertyName="@Issue.AuthorIdentityUserId"
+                <NotificationTelegramIssueConfigComponent KeyStorage="GlobalStaticConstants.CloudStorageMetadata.NotificationTelegramForIssueUser(Issue.AuthorIdentityUserId)"
                                                           Title="Групповой чат или персональный"
                                                           Hint="Правило переадресации для сообщений от клиента" />
             </CascadingValue>

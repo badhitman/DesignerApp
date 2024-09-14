@@ -18,11 +18,11 @@ public partial class LayerContext : DbContext
     public LayerContext(DbContextOptions options)
         : base(options)
     {
-//#if DEBUG
-//        Database.EnsureCreated();
-//#else
+        //#if DEBUG
+        //        Database.EnsureCreated();
+        //#else
         Database.Migrate();
-//#endif
+        //#endif
     }
 
     /// <inheritdoc/>
@@ -32,6 +32,4 @@ public partial class LayerContext : DbContext
         options.LogTo(Console.WriteLine);
 #endif
     }
-
-    
 }

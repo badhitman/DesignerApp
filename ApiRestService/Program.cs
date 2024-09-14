@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////
-// © https://github.com/badhitman - @FakeGov 
+// В© https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
 using Newtonsoft.Json.Converters;
@@ -45,7 +45,7 @@ if (Directory.Exists(secretPath))
     foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
         builder.Configuration.AddJsonFile(Path.GetFullPath(secret), optional: true, reloadOnChange: true);
 else
-    logger.Warn("Секреты не найдены");
+    logger.Warn("РЎРµРєСЂРµС‚С‹ РЅРµ РЅР°Р№РґРµРЅС‹");
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
@@ -90,7 +90,7 @@ builder.Services.AddSwaggerGen(options =>
               {
                   Version = "v1",
                   Title = "tools - REST API",
-                  Description = "Удалённый RESTful доступ к <a href='https://github.com/badhitman/DesignerApp'>https://github.com/badhitman/DesignerApp</a>",
+                  Description = "РЈРґР°Р»С‘РЅРЅС‹Р№ RESTful РґРѕСЃС‚СѓРї Рє <a href='https://github.com/badhitman/DesignerApp'>https://github.com/badhitman/DesignerApp</a>",
                   Contact = new OpenApiContact
                   {
                       Email = "ru.usa@mail.ru",

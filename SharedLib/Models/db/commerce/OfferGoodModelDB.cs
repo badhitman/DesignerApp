@@ -33,6 +33,11 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// </summary>
     public decimal Price { get; set; }
 
+    /// <summary>
+    /// Правила ценообразования
+    /// </summary>
+    public List<PriceRuleForOfferModelDB>? PricesRules { get; set; }
+
     /// <inheritdoc/>
     public static bool operator ==(OfferGoodModelDB off1, OfferGoodModelDB off2) => off1.Equals(off2);
 

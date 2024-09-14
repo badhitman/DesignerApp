@@ -63,7 +63,7 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 
-        var inc_query = pq
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = pq
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows!)
             .ThenInclude(x => x.Offer!)

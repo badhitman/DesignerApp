@@ -1,6 +1,12 @@
 ﻿@using MudBlazor
 @inherits BlazorBusyComponentBaseModel
 
+<style>
+    sup.bi-calculator {
+        cursor: pointer;
+    }
+</style>
+
 <MudPaper Class="pa-4 mt-3">
     <MudStack Spacing="2">
         <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Отмена" : "Создать")</MudButton>
@@ -23,12 +29,14 @@
         <RowTemplate>
             <MudTd DataLabel="Goods"> <a href="/offer-card/@context.Id">@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</a> </MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Price">@context.Price</MudTd>
+            <MudTd DataLabel="Price">
+                @context.Price <PriceRuleForOfferComponent OfferGood="context" />
+            </MudTd>
             <MudTd DataLabel="Multiplicity">@context.Multiplicity</MudTd>
             <MudTd DataLabel="OfferUnit">@context.OfferUnit.DescriptionInfo()</MudTd>
         </RowTemplate>
         <NoRecordsContent>
-            <MudText>Данные отсутсвуют</MudText>
+            <MudText>Данные отсутствуют</MudText>
         </NoRecordsContent>
         <LoadingContent>
             <MudText>Загрузка...</MudText>

@@ -37,34 +37,8 @@ public partial class NotificationTelegramIssueConfigComponent : BlazorBusyCompon
     /// Имя приложения, которое обращается к службе облачного хранения параметров
     /// </summary>
     [Parameter, EditorRequired]
-    public required string ApplicationName { get; set; }
+    public required StorageCloudParameterModel KeyStorage { get; set; }
 
-    /// <summary>
-    /// Имя параметра
-    /// </summary>
-    [Parameter, EditorRequired]
-    public required string Name { get; set; }
-
-    /// <summary>
-    /// Префикс имени (опционально)
-    /// </summary>
-    [Parameter]
-    public string? PrefixPropertyName { get; set; }
-
-    /// <summary>
-    /// Связанный PK строки базы данных (опционально)
-    /// </summary>
-    [Parameter]
-    public int? OwnerPrimaryKey { get; set; }
-
-
-    StorageCloudParameterModel KeyStorage => new()
-    {
-        ApplicationName = ApplicationName,
-        Name = Name,
-        OwnerPrimaryKey = OwnerPrimaryKey,
-        PrefixPropertyName = PrefixPropertyName,
-    };
 
     long initValue;
 
