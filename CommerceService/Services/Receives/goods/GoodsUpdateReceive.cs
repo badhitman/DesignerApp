@@ -43,7 +43,7 @@ public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
 
             await context.AddAsync(goods_db);
             await context.SaveChangesAsync();
-            res.AddSuccess("Товар добавлен");
+            res.AddSuccess("Номенклатура создана");
             res.Response = goods_db.Id;
             return res;
         }

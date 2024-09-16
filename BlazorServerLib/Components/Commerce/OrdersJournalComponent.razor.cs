@@ -26,15 +26,6 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
 
 
     /// <summary>
-    /// Получить корзины клиента
-    /// </summary>
-    /// <remarks>
-    /// Заказы, у которых не указан связанная заявка в HelpDesk считается не оформленным заказом, а предварительным (корзина)
-    /// </remarks>
-    [Parameter]
-    public bool? CartFilter { get; set; }
-
-    /// <summary>
     /// OrganizationFilter
     /// </summary>
     [Parameter]
@@ -84,7 +75,6 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
                 Payload = new()
                 {
                     IncludeExternalData = true,
-                    IsCartFilter = CartFilter,
                     OrganizationFilter = OrganizationFilter,
                     AddressForOrganizationFilter = AddressForOrganization,
                     GoodsFilter = GoodsFilter,

@@ -1,0 +1,27 @@
+version: "3"
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=debug
+      - RABBITMQ_DEFAULT_PASS=debug
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  postgres:
+    image: postgres
+    hostname: postgres
+    environment:
+      POSTGRES_USER: "pg-user"
+      POSTGRES_PASSWORD: "pg-pass"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432

@@ -31,14 +31,14 @@
         @if (IsEditMode)
         {
             <CascadingValue Value="RubricSelectAction">
-                <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" ParentRubric="0"  StartRubric="IssueSource?.RubricIssueId" />
+                <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" ParentRubric="0" StartRubric="IssueSource?.RubricIssueId" />
             </CascadingValue>
             <hr />
             <InputRichTextComponent @bind-Value="DescriptionIssueEdit" ReadOnly="IsBusyProgress" />
         }
         else
         {
-            <span><b>Рубрика:</b> "@Issue.RubricIssue!.Name"</span>
+            <span><b>Рубрика:</b> "@(Issue.RubricIssue?.Name ?? "- не указано -")"</span>
             <hr />
             @DescriptionHtml
         }

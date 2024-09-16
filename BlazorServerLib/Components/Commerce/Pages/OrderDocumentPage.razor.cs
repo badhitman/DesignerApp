@@ -67,7 +67,6 @@ public partial class OrderDocumentPage : BlazorBusyComponentBaseModel
                 SenderActionUserId = user.UserId,
                 Payload = new()
                 {
-                    IsCartFilter = true,
                     IncludeExternalData = false,
                 }
             },

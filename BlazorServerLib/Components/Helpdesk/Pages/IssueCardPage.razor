@@ -1,5 +1,6 @@
 ﻿@page "/issue-card/{Id:int}"
 
+@using BlazorWebLib.Components.Commerce
 @using BlazorWebLib.Components.Helpdesk.issue
 @using MudBlazor
 
@@ -13,7 +14,6 @@
 }
 else
 {
-
     <div class="container-fluid">
         <div class="row">
             @if (IssueSource is null)
@@ -43,6 +43,12 @@ else
                                                 <MudTabPanel Text="Хроника">
                                                     <PulseJournalComponent />
                                                 </MudTabPanel>
+                                                @if (OrdersJournal is not null && OrdersJournal.Length != 0)
+                                                {
+                                                    <MudTabPanel Text="@($"Заказ{(OrdersJournal.Length == 1 ? "" : "ы")}")">
+                                                        <OrdersListComponent Orders="OrdersJournal" />
+                                                    </MudTabPanel>
+                                                }
                                             </MudTabs>
                                         </div>
                                         <div><IssueMessagesComponent /></div>

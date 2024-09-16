@@ -1,0 +1,27 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@using MudBlazor
+
+@if (Orders.Length == 1)
+{
+    <OrderDocumentObjectComponent Document="Orders.First()" />
+}
+else
+{
+    <TabSetComponent IsSilent="true">
+        @foreach (OrderDocumentModelDB doc in Orders)
+        {
+            <TabComponent Tooltip="@($"#{doc.Organization!.Id}: {doc.Organization!.Name}")" Title="@doc.Organization!.Name" SystemName="@doc.Organization!.Id.ToString()">
+                <OrderDocumentObjectComponent Document="doc" />
+            </TabComponent>
+        }
+    </TabSetComponent>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public required OrderDocumentModelDB[] Orders { get; set; }
+
+
+
+}

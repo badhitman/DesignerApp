@@ -7,11 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// Правило ценообразования для торгового предложения
+/// Правило ценообразования для торгового предложения (для расчёта скидки по документу)
 /// </summary>
-/// <remarks>
-/// Для расчёта скидки стоимости по вкладке (если <see cref="JointAggregateForOrderDocument"/> == false) или в общем по документу (если <see cref="JointAggregateForOrderDocument"/> == true)
-/// </remarks>
 [Index(nameof(OfferId), nameof(QuantityRule), IsUnique = true)]
 public class PriceRuleForOfferModelDB : EntrySwitchableUpdatedModel
 {
@@ -34,22 +31,13 @@ public class PriceRuleForOfferModelDB : EntrySwitchableUpdatedModel
     /// </summary>
     public decimal PriceRule { get; set; }
 
-    /// <summary>
-    /// Общая агрегация количества по всему документу.
-    /// </summary>
-    /// <remarks>
-    /// По умолчанию FALSE - учитывается количество локальной (одной) вкладки для одного адреса. Если TRUE - тогда количество учитывается в документе всего.
-    /// </remarks>
-    public bool JointAggregateForOrderDocument { get; set; }
-
     /// <inheritdoc/>
-    public static PriceRuleForOfferModelDB Build(string name, int quantity, decimal price, bool joint, int offer_id)
+    public static PriceRuleForOfferModelDB Build(string name, int quantity, decimal price, int offer_id)
     {
         return new PriceRuleForOfferModelDB()
         {
             Name = name,
             CreatedAtUTC = DateTime.UtcNow,
-            JointAggregateForOrderDocument = joint,
             OfferId = offer_id,
             PriceRule = price,
             QuantityRule = (uint)quantity,

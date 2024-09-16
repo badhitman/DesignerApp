@@ -54,7 +54,6 @@ public class PriceRuleUpdateReceive(IDbContextFactory<CommerceContext> commerceD
                 .SetProperty(p => p.Name, req.Name)
                 .SetProperty(p => p.PriceRule, req.PriceRule)
                 .SetProperty(p => p.QuantityRule, req.QuantityRule)
-                .SetProperty(p => p.JointAggregateForOrderDocument, req.JointAggregateForOrderDocument)
                 .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow));
 
         res.AddSuccess("Правило ценообразования обновлено");

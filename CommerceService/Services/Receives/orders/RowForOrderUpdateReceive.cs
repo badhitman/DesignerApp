@@ -34,7 +34,7 @@ public class RowForOrderUpdateReceive(IDbContextFactory<CommerceContext> commerc
         {
             await context.AddAsync(req);
             await context.SaveChangesAsync();
-            res.AddSuccess("Товар добавлен");
+            res.AddSuccess("Товар добавлен к заказу");
             res.Response = req.Id;
             return res;
         }

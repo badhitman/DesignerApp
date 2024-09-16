@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+
 namespace SharedLib;
 
 /// <summary>
@@ -18,6 +19,11 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     /// Идентификатор документа из внешней системы (например 1С)
     /// </summary>
     public string? ExternalDocumentId { get; set; }
+
+    /// <summary>
+    /// Дополнительная информация
+    /// </summary>
+    public string? Information { get; set; }
 
     /// <summary>
     /// Заявка, связанная с заказом.
@@ -45,6 +51,26 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     /// Вложения (файлы)
     /// </summary>
     public List<AttachmentForOrderModelDB>? Attachments { get; set; }
+
+    /// <summary>
+    /// Подготовить объект заказа для записи в БД
+    /// </summary>
+    public void PrepareForSave()
+    {
+        Organization = null;
+        AddressesTabs?.ForEach(x =>
+        {
+            //x.OrderDocument = null;
+            x.AddressOrganization = null;
+
+            x.Rows?.ForEach(y =>
+            {
+                y.OrderDocument = this;
+                y.Goods = null;
+                y.Offer = null;
+            });
+        });
+    }
 
     /// <summary>
     /// Сумма заказа всего

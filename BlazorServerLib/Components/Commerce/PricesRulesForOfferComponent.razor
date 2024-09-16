@@ -40,16 +40,7 @@
                         <MudNumericField @bind-Value="QuantityAddingRule" Label="Количество" Variant="Variant.Outlined" Min="2" @onfocus="() => RulesViewsComponents.ForEach(component => component.IsActive = false)" />
                         <MudNumericField Immediate @bind-Value="PriceAddingRule" Label="Цена" Variant="Variant.Outlined" @onfocus="() => RulesViewsComponents.ForEach(component => component.IsActive = false)" />
                     </div>
-                    <MudCheckBox @bind-Value="CrossCalculationCheckBox" title="Сквозной расчёт количества во всём документе" UncheckedColor="Color.Tertiary" Label="Сквозной расчёт" @onfocus="() => RulesViewsComponents.ForEach(component => component.IsActive = false)"></MudCheckBox>
-                    <MudButton OnClick="async () => { await SaveRule(PriceRuleForOfferModelDB.Build(TextValue ?? string.Empty, QuantityAddingRule, PriceAddingRule, CrossCalculationCheckBox, OfferGood.Id)); }" Disabled="@(PriceAddingRule == 0 || rules.Any(x => x.QuantityRule == QuantityAddingRule))" Class="my-3" Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true">Создать</MudButton>
-                    @if (CrossCalculationCheckBox)
-                    {
-                        <code>Сквозной расчёт количества для правила ценообразования.</code>
-                        <span class="form-text">
-                            По умолчанию для применения правила установки цены учитывается количество одной таблицы (вкладка адреса организации в заказе).
-                            Если же для правила установлен признак <code>сквозного расчёта</code>, тогда количество товара будет считаться во всём документе (во всех вкладках/адресах), а не в одной локальной таблице/вкладке.
-                        </span>
-                    }
+                    <MudButton OnClick="async () => { await SaveRule(PriceRuleForOfferModelDB.Build(TextValue ?? string.Empty, QuantityAddingRule, PriceAddingRule, OfferGood.Id)); }" Disabled="@(PriceAddingRule == 0 || rules.Any(x => x.QuantityRule == QuantityAddingRule))" Class="my-3" Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true">Создать</MudButton>
                 </div>
             </div>
         </div>

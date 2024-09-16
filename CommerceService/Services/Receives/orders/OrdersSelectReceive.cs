@@ -47,10 +47,8 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
         if (req.Payload.Payload.GoodsFilter.HasValue && req.Payload.Payload.GoodsFilter.Value != 0)
             q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.GoodsId == req.Payload.Payload.GoodsFilter));
 
-        if (req.Payload.Payload.IsCartFilter == true)
-            q = q.Where(x => x.HelpdeskId == null || x.HelpdeskId == 0);
-        else if (req.Payload.Payload.IsCartFilter == false)
-            q = q.Where(x => x.HelpdeskId != null && x.HelpdeskId > 0);
+        if (req.Payload.Payload.IssueId is not null && req.Payload.Payload.IssueId > 0)
+            q = q.Where(x => x.HelpdeskId == req.Payload.Payload.IssueId);
 
         if (req.Payload.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate);
@@ -64,6 +62,7 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
             .Take(req.PageSize);
 
         Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = pq
+            .Include(x => x.Organization)
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows!)
             .ThenInclude(x => x.Offer!)

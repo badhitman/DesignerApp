@@ -143,33 +143,33 @@ using (IServiceScope ss = app.Services.CreateScope())
         await context_seed.SaveChangesAsync();
     }
 
-    if (!await context_seed.Issues.AnyAsync())
-    {
-        int[] rubric_ids = [.. demo_rubrics.Select(x => x.Id)];
-        List<HelpdeskIssueStepsEnum> Steps = [.. Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>()];
+    //if (!await context_seed.Issues.AnyAsync())
+    //{
+    //    int[] rubric_ids = [.. demo_rubrics.Select(x => x.Id)];
+    //    List<HelpdeskIssueStepsEnum> Steps = [.. Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>()];
 
-        List<IssueHelpdeskModelDB> issues = [];
-        Random random = new();
-        uint issues_demo_count = 1;
-        foreach (HelpdeskIssueStepsEnum st in Steps)
-        {
-            int size = random.Next(3, 30);
-            for (int i = 0; i < size; i++)
-            {
-                issues.Add(new()
-                {
-                    AuthorIdentityUserId = "",
-                    Name = $"Тест {issues_demo_count++}",
-                    NormalizedNameUpper = $"ТЕСТ {issues_demo_count}",
-                    RubricIssueId = rubric_ids[random.Next(0, rubric_ids.Length)],
-                    Description = $"Доброго дня. Это demo описание {issues_demo_count}",
-                    StepIssue = st,
-                });
-            }
-        }
-        await context_seed.AddRangeAsync(issues);
-        await context_seed.SaveChangesAsync();
-    }
+    //    List<IssueHelpdeskModelDB> issues = [];
+    //    Random random = new();
+    //    uint issues_demo_count = 1;
+    //    foreach (HelpdeskIssueStepsEnum st in Steps)
+    //    {
+    //        int size = random.Next(3, 30);
+    //        for (int i = 0; i < size; i++)
+    //        {
+    //            issues.Add(new()
+    //            {
+    //                AuthorIdentityUserId = "",
+    //                Name = $"Тест {issues_demo_count++}",
+    //                NormalizedNameUpper = $"ТЕСТ {issues_demo_count}",
+    //                RubricIssueId = rubric_ids[random.Next(0, rubric_ids.Length)],
+    //                Description = $"Доброго дня. Это demo описание {issues_demo_count}",
+    //                StepIssue = st,
+    //            });
+    //        }
+    //    }
+    //    await context_seed.AddRangeAsync(issues);
+    //    await context_seed.SaveChangesAsync();
+    //}
 #endif
 #endif
 }

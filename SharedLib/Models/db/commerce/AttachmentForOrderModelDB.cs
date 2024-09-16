@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// AttachmentForOrderModelDB
+/// Файл, прикреплённый к документу заказа
 /// </summary>
 public class AttachmentForOrderModelDB : EntryModel
 {

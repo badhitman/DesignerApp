@@ -31,21 +31,31 @@ dotnet publish -c Release --output /srv/git/builds/CommerceService /srv/git/Desi
 dotnet publish -c Release --output /srv/git/builds/HelpdeskService /srv/git/DesignerApp/HelpdeskService/HelpdeskService.csproj
 dotnet publish -c Release --output /srv/git/builds/Telegram.Bot.Polling /srv/git/DesignerApp/Telegram.Bot.Polling/Telegram.Bot.Polling.csproj
 
-#  *** этот билд требует значительной мощьности сервера. на стоковом сервере не соберЄтс€ (ресурсоЄмкий процесс, который веро€тно не сможет корректно завершитьс€)
+#  *** этот билд требует значительной мощьности железа. на стоковом сервере не соберЄтс€ (ресурсоЄмкий процесс, который веро€тно не сможет корректно завершитьс€)
 #  cd /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/
 #  dotnet tool install -g Microsoft.Web.LibraryManager.Cli
 #  dotnet workload restore
 #  libman restore
 #  dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
-#  *** поэтому € его отдельно собираю локально и отправл€ю через sftp, после чего распаковываю
+#  *** поэтому € его отдельно собираю локально, отправл€ю через sftp, распаковываю и продолжаю дальше буд-то команды корректно отработали
 
-systemctl stop comm.app.service web.app.service tg.app.service api.app.service bus.app.service hd.app.service
+systemctl stop comm.app.service
+systemctl stop web.app.service
+systemctl stop tg.app.service
+systemctl stop api.app.service
+systemctl stop bus.app.service
+systemctl stop hd.app.service
 
 rm -r /srv/services
 mv /srv/git/builds/ /srv/services
 sudo chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services
 
-systemctl start bus.app.service comm.app.service tg.app.service api.app.service hd.app.service web.app.service
+systemctl start bus.app.service
+systemctl start comm.app.service
+systemctl start tg.app.service
+systemctl start api.app.service
+systemctl start hd.app.service
+systemctl start web.app.service
 
 journalctl -f -u web.app.service

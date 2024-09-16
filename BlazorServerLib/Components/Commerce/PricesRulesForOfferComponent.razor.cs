@@ -39,7 +39,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
     decimal PriceAddingRule { get; set; }
 
     string? TextValue { get; set; }
-    bool CrossCalculationCheckBox { get; set; }
+    
 
     /// <inheritdoc/>
     public List<PriceRuleElementComponent> RulesViewsComponents { get; set; } = [];
@@ -51,7 +51,6 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
         RulesViewsComponents.ForEach(component => component.IsActive = component.PriceRule.Id == rule_id);
         QuantityAddingRule = 2;
         PriceAddingRule = 0;
-        CrossCalculationCheckBox = false;
         StateHasChanged();
     }
 
@@ -61,7 +60,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(rule);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        LoggerRepo.LogWarning($"Правило изменено");
+        LoggerRepo.LogWarning("Правило изменено");
         await ReloadRules();
     }
 

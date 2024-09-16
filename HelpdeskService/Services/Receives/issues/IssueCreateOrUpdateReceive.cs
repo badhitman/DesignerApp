@@ -13,6 +13,7 @@ namespace Transmission.Receives.helpdesk;
 /// Create (or update) Issue: Рубрика, тема и описание
 /// </summary>
 public class IssueCreateOrUpdateReceive(
+    ILogger<IssueCreateOrUpdateReceive> loggerRepo,
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IHelpdeskRemoteTransmissionService helpdeskRemoteRepo,
     ITelegramRemoteTransmissionService telegramRemoteRepo,
@@ -48,24 +49,29 @@ public class IssueCreateOrUpdateReceive(
 
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await StorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         ModesSelectRubricsEnum _current_mode_rubric = res_ModeSelectingRubrics.Response ?? ModesSelectRubricsEnum.AllowWithoutRubric;
-        string[] sub_rubrics = await context
-            .RubricsForIssues
-            .Where(x => x.ParentRubricId == issue_upd.Payload.RubricId)
-            .Select(x => x.Name)
-            .ToArrayAsync();
-
-        if (sub_rubrics.Length != 0)
+        if (_current_mode_rubric != ModesSelectRubricsEnum.AllowWithoutRubric)
         {
-            res.AddError($"Требуется выбрать все подрубрики: {string.Join(",", sub_rubrics)};");
-            return res;
+            string[] sub_rubrics = await context
+                        .RubricsForIssues
+                        .Where(x => x.ParentRubricId == issue_upd.Payload.RubricId)
+                        .Select(x => x.Name)
+                        .ToArrayAsync();
+
+            if (_current_mode_rubric != ModesSelectRubricsEnum.SelectAny && sub_rubrics.Length != 0)
+            {
+                res.AddError($"Требуется выбрать все подрубрики: {string.Join(",", sub_rubrics)};");
+                return res;
+            }
         }
+
+        issue_upd.Payload.Description = issue_upd.Payload.Description?.Replace("\n", "<br/>");
 
         if (issue_upd.Payload.Id < 1)
         {
             issue = new()
             {
                 AuthorIdentityUserId = issue_upd.SenderActionUserId,
-                Name = issue_upd.Payload.Name,
+                Name = issue_upd.Payload.Name.Trim(),
                 Description = issue_upd.Payload.Description,
                 RubricIssueId = issue_upd.Payload.RubricId,
                 NormalizedNameUpper = normalizedNameUpper,
@@ -82,8 +88,18 @@ public class IssueCreateOrUpdateReceive(
             SubscriberIssueHelpdeskModelDB my_subscr = new() { Issue = issue, UserId = issue_upd.SenderActionUserId };
             issue.Subscribers = [my_subscr];
 
-            await context.AddAsync(issue);
-            await context.SaveChangesAsync();
+            try
+            {
+                await context.AddAsync(issue);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                loggerRepo.LogError(ex, $"Не удалось создать заявку для заказа");
+                res.Messages.InjectException(ex);
+                return res;
+            }
+
             msg = "Обращение успешно создано";
             res.AddSuccess(msg);
             res.Response = issue.Id;

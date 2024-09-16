@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Newtonsoft.Json;
 
 namespace BlazorWebLib.Components.Commerce.Pages;
 
@@ -15,9 +16,6 @@ namespace BlazorWebLib.Components.Commerce.Pages;
 /// </summary>
 public partial class OrderCreatePage : BlazorBusyComponentBaseModel
 {
-    [Inject]
-    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
-
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
 
@@ -37,6 +35,10 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
     bool _visibleChangeAddresses;
     bool _visibleChangeOrganization;
     readonly DialogOptions _dialogOptions = new() { FullWidth = true };
+
+    UserInfoMainModel user = default!;
+    OrderDocumentModelDB CurrentCart = default!;
+    readonly Func<AddressOrganizationModelDB, string> converter = p => p.Name;
 
     List<OrganizationModelDB> Organizations { get; set; } = [];
     OrganizationModelDB? prevCurrOrg;
@@ -58,16 +60,6 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         }
     }
 
-    UserInfoMainModel user = default!;
-    OrderDocumentModelDB CurrentCart = default!;
-    readonly Func<AddressOrganizationModelDB, string> converter = p => p.Name;
-
-    bool _expanded;
-
-    private void OnExpandCollapseClick()
-    {
-        _expanded = !_expanded;
-    }
 
     IEnumerable<AddressOrganizationModelDB>? _prevSelectedAddresses;
     List<AddressOrganizationModelDB>? _selectedAddresses = [];
@@ -143,6 +135,66 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         }
     }
 
+    RowOfOrderDocumentModelDB[] AllRows = default!;
+
+    /// <summary>
+    /// Сгруппировано по OfferId
+    /// </summary>
+    List<IGrouping<int, RowOfOrderDocumentModelDB>> GroupingRows { get; set; } = default!;
+    Dictionary<int, PriceRuleForOfferModelDB[]?> RulesCache = [];
+    readonly Dictionary<int, decimal> DiscountsDetected = [];
+
+    async Task UpdateCachePriceRules()
+    {
+        if (CurrentCart.AddressesTabs is null)
+        {
+            AllRows = [];
+            return;
+        }
+
+        AllRows = [.. CurrentCart.AddressesTabs?.Where(x => x.Rows is not null).SelectMany(x => x.Rows!)];
+        GroupingRows = AllRows.GroupBy(x => x.OfferId).ToList();
+        List<int> offers_load = [.. GroupingRows.Where(dc => !RulesCache.ContainsKey(dc.Key)).Select(x => x.Key).Distinct()];
+
+        if (offers_load.Count == 0)
+            return;
+
+        IsBusyProgress = true;
+        TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([.. offers_load]);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        offers_load.ForEach(x => RulesCache.Add(x, res.Response?.Where(y => x == y.OfferId && !y.IsDisabled).ToArray()));
+
+        StateHasChanged();
+    }
+
+    void CalculateDiscounts()
+    {
+        string json_dump_discounts_before = JsonConvert.SerializeObject(DiscountsDetected);
+        DiscountsDetected.Clear();
+        foreach (IGrouping<int, RowOfOrderDocumentModelDB> node in GroupingRows)
+        {
+            int qnt = node.Sum(y => y.Quantity); // всего количество в заказе
+            if (qnt <= 1 || !RulesCache.TryGetValue(node.Key, out PriceRuleForOfferModelDB[]? _rules) || _rules?.Any() != true)
+                continue;
+
+            decimal base_price = node.First().Offer!.Price;
+            PriceRuleForOfferModelDB? find_rule = null;
+            DiscountsDetected.Add(node.Key, 0);
+            for (int i = 2; i <= qnt; i++)
+            {
+                find_rule = _rules.FirstOrDefault(x => x.QuantityRule == i) ?? find_rule;
+                if (find_rule is null)
+                    continue;
+
+                DiscountsDetected[node.Key] += base_price - find_rule.PriceRule;
+            }
+        }
+        string json_dump_discounts_after = JsonConvert.SerializeObject(DiscountsDetected);
+        if (json_dump_discounts_before != json_dump_discounts_after)
+            StateHasChanged();
+    }
+
     decimal SumOfDocument
     {
         get
@@ -213,6 +265,42 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
     }
 
+    async Task OrderDocumentSend()
+    {
+        if (CurrentCart.AddressesTabs?.Any(x => x.Rows is null || x.Rows.Count == 0) == true)
+        {
+            SnackbarRepo.Error("Присутствуют адреса без номенклатуры заказа. Исключите пустую вкладку или заполните её данными");
+            return;
+        }
+
+        IsBusyProgress = true;
+        StateHasChanged();
+        TResponseModel<int> rest = await CommerceRepo.OrderUpdate(CurrentCart);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (rest.Success())
+        {
+            CurrentCart.Information = CurrentCart.Information?.Trim();
+            CurrentCart = new()
+            {
+                AuthorIdentityUserId = user.UserId,
+                Name = "Новый заказ",
+            };
+            await StorageRepo
+            .SaveParameter<OrderDocumentModelDB?>(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            await UpdateCachePriceRules();
+            CalculateDiscounts();
+        }
+    }
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -268,5 +356,8 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
                 .AddressesTabs
                 .Select(x => CurrentOrganization!.Addresses!.First(y => y.Id == x.AddressOrganizationId))];
         }
+
+        await UpdateCachePriceRules();
+        CalculateDiscounts();
     }
 }
