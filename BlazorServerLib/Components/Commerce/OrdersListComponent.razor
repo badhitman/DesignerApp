@@ -1,8 +1,4 @@
-﻿@inherits BlazorBusyComponentBaseModel
-
-@using MudBlazor
-
-@if (Orders.Length == 1)
+﻿@if (Orders.Length == 1)
 {
     <OrderDocumentObjectComponent Document="Orders.First()" />
 }
@@ -21,7 +17,4 @@ else
 @code {
     [Parameter, EditorRequired]
     public required OrderDocumentModelDB[] Orders { get; set; }
-
-
-
 }

@@ -4,17 +4,17 @@
 
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using Newtonsoft.Json;
 
-namespace BlazorWebLib.Components.Commerce.Pages;
+namespace BlazorWebLib.Components.Commerce;
 
 /// <summary>
-/// OrderCreatePage
+/// OrderCreateComponent
 /// </summary>
-public partial class OrderCreatePage : BlazorBusyComponentBaseModel
+public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
@@ -189,7 +189,11 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
 
                 DiscountsDetected[node.Key] += base_price - find_rule.PriceRule;
             }
+
+            if (DiscountsDetected[node.Key] == 0)
+                DiscountsDetected.Remove(node.Key);
         }
+
         string json_dump_discounts_after = JsonConvert.SerializeObject(DiscountsDetected);
         if (json_dump_discounts_before != json_dump_discounts_after)
             StateHasChanged();
@@ -265,7 +269,7 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
     }
 
-    async Task OrderDocumentSend()
+    async Task OrderDocumentSendAsync()
     {
         if (CurrentCart.AddressesTabs?.Any(x => x.Rows is null || x.Rows.Count == 0) == true)
         {
@@ -274,12 +278,12 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        StateHasChanged();
+        await Task.Delay(1);
         TResponseModel<int> rest = await CommerceRepo.OrderUpdate(CurrentCart);
-        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
         {
+            TResponseModel<OrderDocumentModelDB[]> doc = await CommerceRepo.OrdersRead([rest.Response]);
             CurrentCart.Information = CurrentCart.Information?.Trim();
             CurrentCart = new()
             {
@@ -288,7 +292,11 @@ public partial class OrderCreatePage : BlazorBusyComponentBaseModel
             };
             await StorageRepo
             .SaveParameter<OrderDocumentModelDB?>(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
+
+            NavRepo.NavigateTo($"/issue-card/{doc.Response!.First().HelpdeskId}");
         }
+        IsBusyProgress = false;
+        StateHasChanged();
     }
 
     /// <inheritdoc/>

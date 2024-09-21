@@ -46,6 +46,7 @@ public class PriceRuleUpdateReceive(IDbContextFactory<CommerceContext> commerceD
             res.AddSuccess("Создано новое правило ценообразования");
         }
         else
+        {
             await context
                 .PricesRules
                 .Where(x => x.Id == req.Id)
@@ -56,7 +57,8 @@ public class PriceRuleUpdateReceive(IDbContextFactory<CommerceContext> commerceD
                 .SetProperty(p => p.QuantityRule, req.QuantityRule)
                 .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow));
 
-        res.AddSuccess("Правило ценообразования обновлено");
+            res.AddSuccess("Правило ценообразования обновлено");
+        }
 
         return res;
     }

@@ -1,4 +1,32 @@
-﻿<h3>OrderDocumentObjectComponent</h3>
+﻿@foreach (TabAddressForOrderModelDb at in Document.AddressesTabs!)
+{
+    <div class="card mt-3">
+        <div class="card-header">
+            @(at.AddressOrganization!.Name)
+        </div>
+        <div class="card-body">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Наименование</th>
+                        <th scope="col">Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (RowOfOrderDocumentModelDB row in at.Rows!)
+                    {
+                        <tr>
+                            <th scope="row">@row.Id</th>
+                            <td>@row.Offer!.GetName (цена: @row.Offer.Price)</td>
+                            <td>@row.Quantity @row.Offer.OfferUnit.DescriptionInfo().ToLower()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter, EditorRequired]

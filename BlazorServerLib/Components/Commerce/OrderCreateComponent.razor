@@ -1,0 +1,159 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+@if (IsBusyProgress)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Отправка <cite title="Дождитесь загрузки">заказа</cite>
+        </figcaption>
+    </figure>
+}
+else
+{
+    if (Organizations.Count == 0)
+    {
+        <figure class="text-center">
+            <blockquote class="blockquote">
+                <p>У вас нет ни одной организации.</p>
+            </blockquote>
+            <figcaption class="blockquote-footer">
+                Добавьте компанию.
+            </figcaption>
+        </figure>
+    }
+    else
+    {
+        decimal sum_doc = SumOfDocument;
+        <h4>
+            Новый заказ
+            @if (sum_doc > 0)
+            {
+                <text>: </text> <span class="text-primary">@sum_doc</span> <text> руб.</text>
+            }
+        </h4>
+        <div class="row">
+            <div class="col-md-6">
+                <MudSelect T="OrganizationModelDB" Label="Организация" MultiSelection="false" @bind-Value="@CurrentOrganization">
+                    @foreach (OrganizationModelDB org_el in Organizations)
+                    {
+                        <MudSelectItem Disabled="org_el.IsDisabled" T="OrganizationModelDB" Value="@org_el">@org_el.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div class="col-md-6">
+                <MudSelect T="AddressOrganizationModelDB" Label="Филиалы" MultiSelection="true" Disabled="@(CurrentOrganization is null || CurrentOrganization.Id == 0)" @bind-SelectedValues="SelectedAddresses" ToStringFunc="@converter">
+                    @if (CurrentOrganization is not null)
+                    {
+                        foreach (AddressOrganizationModelDB add in CurrentOrganization.Addresses!)
+                        {
+                            <MudSelectItem T="AddressOrganizationModelDB" Value="@add">@add.Name</MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+            </div>
+        </div>
+
+        @if (SelectedAddresses?.Any() != true)
+        {
+            <figure class="text-center mt-5">
+                <blockquote class="blockquote">
+                    <p>Не выбраны адреса.</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    Укажите адреса организации <cite title="доставку вы сможете настроить на вкладках выбранных адресов">для заказа</cite>
+                </figcaption>
+            </figure>
+        }
+
+        @if (CurrentCart.OrganizationId > 0 && CurrentOrganization is not null && SelectedAddresses?.Any() == true)
+        {
+            <div class="card mt-3">
+                <div class="card-body">
+                    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                        @foreach (AddressOrganizationModelDB add in SelectedAddresses)
+                        {
+                            TabAddressForOrderModelDb current_tab = CurrentCart.AddressesTabs!.First(x => x.AddressOrganizationId == add.Id);
+                            current_tab.OrderDocument = CurrentCart;
+                            <MudTabPanel @key="@(add.Id)" Text="@add.Name">
+                                <TabAddressOfOrderDocumentComponent CurrentTab="current_tab" DocumentUpdateHandler="DocumentUpdateAction" />
+                            </MudTabPanel>
+                        }
+                    </MudTabs>
+                    <div class="mb-3 mt-4">
+                        <label for="exampleFormControlInput1" class="form-label">Примечание</label>
+                        <input @bind-value:event="oninput" @bind-value="CurrentCart.Name" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Название">
+                    </div>
+                    @if (DiscountsDetected.Count != 0)
+                    {
+                        CurrentCart.Information = "Предусмотрена скидка:\n";
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                Скидки
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                @foreach (KeyValuePair<int, decimal> dd in DiscountsDetected)
+                                {
+                                    RowOfOrderDocumentModelDB control_obj = AllRows.First(x => x.Offer!.Id == dd.Key);
+                                    string title = control_obj.Offer!.Name;
+                                    if (string.IsNullOrWhiteSpace(title))
+                                    {
+                                        title = control_obj.Goods!.Name;
+                                    }
+                                    CurrentCart.Information += $"[{title}: {dd.Value} руб.];\n";
+                                    <li class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">
+                                                @title
+                                            </h5>
+                                            <small>@dd.Value <code>руб.</code></small>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    <div class="d-grid gap-2">
+                        <button disabled="@IsBusyProgress" @onclick="OrderDocumentSendAsync" class="btn btn-primary" type="button">@(IsBusyProgress ? "Обработка запроса ..." : "Отправить заказ в работу")</button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
+<MudDialog @bind-Visible="_visibleChangeOrganization" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Изменение организации
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <p>При смене организации корзина будет очищена. Подтверждаете?</p>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SubmitChangeOrganizations" Class="px-10">Подтвердить</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CancelChangeOrganizations" Class="px-10">Отмена</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @bind-Visible="_visibleChangeAddresses" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Исключение адреса из заказа
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <p>При исключении адреса - его строки данных будут удалены. Подтверждаете?</p>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SubmitChangeAddresses" Class="px-10">Подтвердить</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CancelChangeAddresses" Class="px-10">Отмена</MudButton>
+    </DialogActions>
+</MudDialog>

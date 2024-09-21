@@ -38,7 +38,7 @@ dotnet publish -c Release --output /srv/git/builds/Telegram.Bot.Polling /srv/git
 #  dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
 #  *** поэтому € его отдельно собираю локально, отправл€ю через sftp, распаковываю и продолжаю дальше буд-то команды корректно отработали
 
-systemctl stop comm.app.service web.app.service tg.app.service api.app.service bus.app.service hd.app.service
+systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service hd.app.service
 
 rm -r /srv/services
 mv /srv/git/builds/ /srv/services

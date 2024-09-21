@@ -64,6 +64,8 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
         Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = pq
             .Include(x => x.Organization)
             .Include(x => x.AddressesTabs!)
+            .ThenInclude(x => x.AddressOrganization)
+            .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
             .ThenInclude(x => x.Goods);
