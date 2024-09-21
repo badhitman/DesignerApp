@@ -153,7 +153,7 @@ else
             <AddressesForOrganizationComponent Organization="currentOrg" />
         </MudTabPanel>
         <MudTabPanel Disabled="@(OrganizationId <= 0)" Text="Заказы">
-            <OrdersJournalComponent CartFilter="false" OrganizationFilter="currentOrg.Id" />
+            <OrdersJournalComponent OrganizationFilter="currentOrg.Id" />
         </MudTabPanel>
     </MudTabs>
 

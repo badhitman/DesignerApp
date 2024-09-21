@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using static MudBlazor.Colors;
 
 namespace BlazorWebLib.Components.Helpdesk.Pages;
 
