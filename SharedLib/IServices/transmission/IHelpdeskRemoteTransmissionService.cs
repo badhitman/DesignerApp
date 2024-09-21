@@ -50,7 +50,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Прочитать данные обращения
     /// </summary>
-    public Task<TResponseModel<IssueHelpdeskModelDB>> IssueRead(TAuthRequestModel<IssueReadRequestModel> req);
+    public Task<TResponseModel<IssueHelpdeskModelDB[]>> IssuesRead(TAuthRequestModel<IssuesReadRequestModel> req);
 
     /// <summary>
     /// Подписка на события в обращении (или отписка от событий)

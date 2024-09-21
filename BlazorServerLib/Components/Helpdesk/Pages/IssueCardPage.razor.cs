@@ -85,8 +85,8 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
         TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommRepo.OrdersSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        OrdersJournal = res.Response is null 
-            ? null 
+        OrdersJournal = res.Response is null
+            ? null
             : [.. res.Response.Response];
     }
 
@@ -101,9 +101,9 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     async Task ReadIssue()
     {
         IsBusyProgress = true;
-        TResponseModel<IssueHelpdeskModelDB> issue_res = await HelpdeskRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>() { Payload = new() { IssueId = Id }, SenderActionUserId = CurrentUser.UserId });
+        TResponseModel<IssueHelpdeskModelDB[]> issue_res = await HelpdeskRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>() { Payload = new() { IssuesIds = [Id] }, SenderActionUserId = CurrentUser.UserId });
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
-        IssueSource = issue_res.Response;
+        IssueSource = issue_res.Response?.FirstOrDefault();
         IsBusyProgress = false;
     }
 

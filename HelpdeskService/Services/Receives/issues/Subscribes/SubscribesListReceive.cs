@@ -31,16 +31,16 @@ public class SubscribesListReceive(
 
         UserInfoModel actor = rest.Response[0];
 
-        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
-            Payload = new() { IssueId = req.Payload, IncludeSubscribersOnly = true },
+            Payload = new() { IssuesIds = [req.Payload], IncludeSubscribersOnly = true },
         });
 
-        if (!issue_data.Success() || issue_data.Response is null)
-            return new() { Messages = issue_data.Messages };
+        if (!issues_data.Success() || issues_data.Response is null)
+            return new() { Messages = issues_data.Messages };
 
-        res.Response = [.. issue_data.Response.Subscribers];
+        res.Response = [.. issues_data.Response.SelectMany(x => x.Subscribers!)];
         return res;
     }
 }

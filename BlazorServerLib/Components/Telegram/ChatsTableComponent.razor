@@ -13,7 +13,7 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Чаты TelegramBot`а</MudText>
         <MudSpacer />
-        <MudTextField title="без учёта регистра = регистронезависимый поиск" T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Поиск по: Title, Username, FirstName, LastName" Adornment="Adornment.Start" Immediate="true"
+        <MudTextField title="без учёта регистра = регистро-независимый поиск" T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Поиск по: Title, Username, FirstName, LastName" Adornment="Adornment.Start" Immediate="true"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
@@ -65,7 +65,7 @@
                         </span>
                     }
                 }
-                @if (issues is not null)
+                @if (issues is not null && issues.Length != 0)
                 {
                     <IssuesForChatComponent Issues="issues" />
                 }

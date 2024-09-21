@@ -35,16 +35,16 @@ public class MessagesListReceive(
 
         UserInfoModel actor = rest.Response[0];
 
-        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
-            Payload = new() { IssueId = req.Payload, IncludeSubscribersOnly = true },
+            Payload = new() { IssuesIds = [req.Payload], IncludeSubscribersOnly = true },
         });
 
-        if (!issue_data.Success() || issue_data.Response is null)
-            return new() { Messages = issue_data.Messages };
+        if (!issues_data.Success() || issues_data.Response is null)
+            return new() { Messages = issues_data.Messages };
 
-        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
+        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(role_actor => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(hd_role => hd_role == role_actor)) != true && !issues_data.Response.All(c => actor.UserId == c.AuthorIdentityUserId))
         {
             res.AddError("У вас не достаточно прав");
             return res;
@@ -52,10 +52,12 @@ public class MessagesListReceive(
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
+        int[] issues_ids = issues_data.Response.Select(i => i.Id).ToArray();
+
         res.Response = await context
             .IssuesMessages
             .Include(x => x.Votes)
-            .Where(x => x.IssueId == issue_data.Response.Id)
+            .Where(x => issues_ids.Any(y => y == x.IssueId))
             .ToArrayAsync();
 
         return res;

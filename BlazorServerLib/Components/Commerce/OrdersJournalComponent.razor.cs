@@ -11,57 +11,57 @@ using SharedLib;
 namespace BlazorWebLib.Components.Commerce;
 
 /// <summary>
-/// OrdersJournalComponent
+/// Журнал заказов
 /// </summary>
 public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    AuthenticationStateProvider AuthRepo { get; set; } = default!;
+    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
     [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+
+    [Inject]
+    AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
 
     /// <summary>
-    /// OrganizationFilter
+    /// Фильтр по организации
     /// </summary>
     [Parameter]
     public int? OrganizationFilter { get; set; }
 
     /// <summary>
-    /// GoodsFilter
+    /// Фильтр по адресу организации
+    /// </summary>
+    [Parameter]
+    public int AddressForOrganization { get; set; } = default!;
+
+    /// <summary>
+    /// Фильтр по номенклатуре
     /// </summary>
     [Parameter]
     public int? GoodsFilter { get; set; }
 
     /// <summary>
-    /// OfferFilter
+    /// Фильтр по торговому/коммерческому предложению
     /// </summary>
     [Parameter]
     public int? OfferFilter { get; set; }
 
-    /// <summary>
-    /// AddressForOrganization
-    /// </summary>
-    [Parameter]
-    public int AddressForOrganization { get; set; } = default!;
 
+    List<OrderDocumentModelDB> documentsPartData = [];
+    UserInfoMainModel CurrentSessionUser = default!;
 
-    UserInfoMainModel user = default!;
-
-
-    string GetStatus(OrderDocumentModelDB doc)
+    async Task UpdateCacheIssues()
     {
-        return "не зарегистрирован";
+
     }
 
-    /// <summary>
-    /// Here we simulate getting the paged, filtered and ordered data from the server
-    /// </summary>
-    private async Task<TableData<OrderDocumentModelDB>> ServerReload(TableState state, CancellationToken token)
+    async Task<TableData<OrderDocumentModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req = new()
         {
@@ -71,7 +71,7 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
             Payload = new()
             {
-                SenderActionUserId = user.UserId,
+                SenderActionUserId = CurrentSessionUser.UserId,
                 Payload = new()
                 {
                     IncludeExternalData = true,
@@ -90,7 +90,13 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
         if (!res.Success() || res.Response?.Response is null)
             return new TableData<OrderDocumentModelDB>() { TotalItems = 0, Items = [] };
 
-        return new TableData<OrderDocumentModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+        documentsPartData = res.Response.Response;
+
+        return new TableData<OrderDocumentModelDB>()
+        {
+            TotalItems = res.Response.TotalRowsCount,
+            Items = documentsPartData
+        };
     }
 
     /// <inheritdoc/>
@@ -99,6 +105,6 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
         IsBusyProgress = false;
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        CurrentSessionUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 }

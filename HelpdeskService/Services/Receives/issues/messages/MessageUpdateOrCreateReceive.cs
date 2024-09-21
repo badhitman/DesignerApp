@@ -36,14 +36,14 @@ public class MessageUpdateOrCreateReceive(
         }
         req.Payload.MessageText = req.Payload.MessageText.Trim();
 
-        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = req.SenderActionUserId,
-            Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },
+            Payload = new() { IssuesIds = [req.Payload.IssueId], IncludeSubscribersOnly = true },
         });
 
-        if (!issue_data.Success() || issue_data.Response is null)
-            return new() { Messages = issue_data.Messages };
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
+            return new() { Messages = issues_data.Messages };
 
         TResponseModel<UserInfoModel[]?> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
             ? new() { Response = [UserInfoModel.BuildSystem()] }
@@ -54,20 +54,20 @@ public class MessageUpdateOrCreateReceive(
 
         UserInfoModel actor = rest.Response[0];
 
-        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
+        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && !issues_data.Response.All(iss => actor.UserId == iss.AuthorIdentityUserId))
         {
             res.AddError("У вас не достаточно прав");
             return res;
         }
-
-        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Response.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
+        IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
         {
             await helpdeskTransmissionRepo.SubscribeUpdate(new()
             {
                 SenderActionUserId = GlobalStaticConstants.Roles.System,
                 Payload = new()
                 {
-                    IssueId = issue_data.Response.Id,
+                    IssueId = issue_data.Id,
                     SetValue = true,
                     UserId = actor.UserId,
                     IsSilent = false,
@@ -103,10 +103,10 @@ public class MessageUpdateOrCreateReceive(
                     SenderActionUserId = req.SenderActionUserId,
                     Payload = new()
                     {
-                        IssueId = issue_data.Response.Id,
+                        IssueId = issue_data.Id,
                         PulseType = PulseIssuesTypesEnum.Messages,
                         Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
-                        Description = $"Пользователь `{actor.UserName}` добавил комментарий в обращение #{issue_data.Response.Id} '{issue_data.Response.Name}'",
+                        Description = $"Пользователь `{actor.UserName}` добавил комментарий в обращение #{issue_data.Id} '{issue_data.Name}'",
                     }
                 });
 
@@ -158,7 +158,7 @@ public class MessageUpdateOrCreateReceive(
                     SenderActionUserId = req.SenderActionUserId,
                     Payload = new()
                     {
-                        IssueId = issue_data.Response.Id,
+                        IssueId = issue_data.Id,
                         PulseType = PulseIssuesTypesEnum.Messages,
                         Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
                         Description = $"Пользователь `{actor.UserName}` изменил комментарий #{msg_db.Id}.",

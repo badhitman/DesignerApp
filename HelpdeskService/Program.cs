@@ -86,7 +86,7 @@ builder.ConfigureServices((context, services) =>
     .RegisterMqListener<MessageVoteReceive, TAuthRequestModel<VoteIssueRequestModel>?, bool?>()
     .RegisterMqListener<MessageUpdateOrCreateReceive, TAuthRequestModel<IssueMessageHelpdeskBaseModel>?, int?>()
     .RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>()
-    .RegisterMqListener<IssueReadReceive, TAuthRequestModel<IssueReadRequestModel>?, IssueHelpdeskModelDB?>()
+    .RegisterMqListener<IssuesReadReceive, TAuthRequestModel<IssuesReadRequestModel>?, IssueHelpdeskModelDB[]?>()
     .RegisterMqListener<RubricReadReceive, int?, List<RubricIssueHelpdeskModelDB>?>()
     .RegisterMqListener<SubscribeUpdateReceive, TAuthRequestModel<SubscribeUpdateRequestModel>?, bool?>()
     .RegisterMqListener<SubscribesListReceive, TAuthRequestModel<int>?, SubscriberIssueHelpdeskModelDB[]?>()

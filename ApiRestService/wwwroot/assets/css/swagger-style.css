@@ -1,0 +1,15 @@
+html, body, #swagger-ui, .swagger-ui {
+    height: 100%;
+}
+
+html, #swagger-ui, .swagger-ui {
+    height: 100%;
+}
+
+body, #swagger-ui, .swagger-ui {
+    min-height: 100%;
+}
+
+.swagger-container {
+    background-color: #c7c7c7 !important;
+}

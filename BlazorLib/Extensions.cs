@@ -1,6 +1,8 @@
-﻿using SharedLib;
-using MudBlazor;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Components;
 using System.Security.Claims;
+using SharedLib;
+using MudBlazor;
 
 namespace BlazorLib;
 
@@ -36,7 +38,7 @@ public static class Extensions
             TelegramId = telegram_id,
             Surname = surName,
             UserName = userName,
-            Roles = [..roles],
+            Roles = [.. roles],
             GivenName = givenName,
             Claims = [.. principal.Claims.Where(x => x.Type != ClaimTypes.Role).Select(x => new EntryAltModel() { Id = x.Type, Name = x.Value })],
         };
@@ -76,5 +78,45 @@ public static class Extensions
             SortDirection.Ascending => VerticalDirectionsEnum.Up,
             _ => VerticalDirectionsEnum.Up
         };
+    }
+
+    /// <summary>
+    /// ReloadPage
+    /// </summary>
+    public static void ReloadPage(this NavigationManager manager)
+    {
+        manager.NavigateTo(manager.Uri, true);
+    }
+
+    /// <summary>
+    /// TryGetQueryString
+    /// </summary>
+    public static bool TryGetQueryString<T>(this NavigationManager navManager, string key, out T? value)
+    {
+        Uri uri = navManager.ToAbsoluteUri(navManager.Uri);
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(key, out Microsoft.Extensions.Primitives.StringValues valueFromQueryString))
+        {
+            if (typeof(T) == typeof(int) && int.TryParse(valueFromQueryString, out var valueAsInt))
+            {
+                value = (T)(object)valueAsInt;
+                return true;
+            }
+
+            if (typeof(T) == typeof(string))
+            {
+                value = (T)(object)valueFromQueryString.ToString();
+                return true;
+            }
+
+            if (typeof(T) == typeof(decimal) && decimal.TryParse(valueFromQueryString, out var valueAsDecimal))
+            {
+                value = (T)(object)valueAsDecimal;
+                return true;
+            }
+        }
+
+        value = default;
+        return false;
     }
 }

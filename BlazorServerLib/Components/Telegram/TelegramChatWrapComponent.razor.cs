@@ -63,7 +63,7 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
             foreach (var fileBrowser in loadedFiles)
             {
                 ms = new();
-                await fileBrowser.OpenReadStream().CopyToAsync(ms);
+                await fileBrowser.OpenReadStream(maxAllowedSize: 1024 * 18 * 1024).CopyToAsync(ms);
                 req.Files.Add(new() { ContentType = fileBrowser.ContentType, Name = fileBrowser.Name, Data = ms.ToArray() });
                 await ms.DisposeAsync();
             }

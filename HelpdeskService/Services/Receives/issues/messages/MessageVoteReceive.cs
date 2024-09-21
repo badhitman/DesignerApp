@@ -2,10 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -39,29 +39,29 @@ public class MessageVoteReceive(
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IssueMessageHelpdeskModelDB msg_db = await context.IssuesMessages.FirstAsync(x => x.Id == req.Payload.MessageId);
 
-        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
-            Payload = new() { IssueId = msg_db.IssueId, IncludeSubscribersOnly = true },
+            Payload = new() { IssuesIds = [msg_db.IssueId], IncludeSubscribersOnly = true },
         });
 
-        if (!issue_data.Success() || issue_data.Response is null)
-            return new() { Messages = issue_data.Messages };
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length != 1)
+            return new() { Messages = issues_data.Messages };
 
-        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
+        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && !issues_data.Response.All(iss => actor.UserId == iss.AuthorIdentityUserId))
         {
             res.AddError("У вас не достаточно прав");
             return res;
         }
-
-        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Response.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
+        var issue_data = issues_data.Response.Single();
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
         {
             await helpdeskTransmissionRepo.SubscribeUpdate(new()
             {
                 SenderActionUserId = GlobalStaticConstants.Roles.System,
                 Payload = new()
                 {
-                    IssueId = issue_data.Response.Id,
+                    IssueId = issue_data.Id,
                     SetValue = true,
                     UserId = actor.UserId,
                     IsSilent = false,
@@ -79,7 +79,7 @@ public class MessageVoteReceive(
         {
             if (!vote_db_key.HasValue)
             {
-                VoteHelpdeskModelDB vote_db = new() { IdentityUserId = actor.UserId, IssueId = issue_data.Response.Id, MessageId = msg_db.Id };
+                VoteHelpdeskModelDB vote_db = new() { IdentityUserId = actor.UserId, IssueId = issue_data.Id, MessageId = msg_db.Id };
                 await context.AddAsync(vote_db);
                 await context.SaveChangesAsync();
 
@@ -89,7 +89,7 @@ public class MessageVoteReceive(
                     SenderActionUserId = req.SenderActionUserId,
                     Payload = new()
                     {
-                        IssueId = issue_data.Response.Id,
+                        IssueId = issue_data.Id,
                         PulseType = PulseIssuesTypesEnum.Vote,
                         Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
                         Description = $"Пользователь `{actor.UserName}` проголосовал за сообщение #{msg_db.Id}",
@@ -116,7 +116,7 @@ public class MessageVoteReceive(
                     SenderActionUserId = req.SenderActionUserId,
                     Payload = new()
                     {
-                        IssueId = issue_data.Response.Id,
+                        IssueId = issue_data.Id,
                         PulseType = PulseIssuesTypesEnum.Vote,
                         Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
                         Description = $"Пользователь `{actor.UserName}` удалил свой голос за сообщение #{msg_db.Id}",

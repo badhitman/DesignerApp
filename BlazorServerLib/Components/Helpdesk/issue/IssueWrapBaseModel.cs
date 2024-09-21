@@ -20,6 +20,9 @@ public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
     [Inject]
     internal IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
+    [Inject]
+    internal NavigationManager NavRepo { get; set; } = default!;
+
 
     /// <summary>
     /// CurrentUser

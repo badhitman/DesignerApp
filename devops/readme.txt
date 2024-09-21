@@ -12,6 +12,9 @@ ufw enable
 
 # our .net8
 
+chown -R www-data:www-data /root/.vs-debugger
+chmod -R 777 /root/.vs-debugger
+
 ln -s /etc/nginx/sites-available/web.app /etc/nginx/sites-enabled/
 ln -s /etc/nginx/sites-available/api.app /etc/nginx/sites-enabled/
 
@@ -42,9 +45,9 @@ systemctl stop web.app.service comm.app.service tg.app.service api.app.service b
 
 rm -r /srv/services
 mv /srv/git/builds/ /srv/services
-sudo chown -R www-data:www-data /srv/services
+chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services
 
-systemctl start bus.app.service comm.app.service tg.app.service api.app.service hd.app.service web.app.service
+systemctl start web.app.service bus.app.service comm.app.service tg.app.service api.app.service hd.app.service
 
 journalctl -f -u web.app.service

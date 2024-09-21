@@ -5,14 +5,14 @@
 namespace SharedLib;
 
 /// <summary>
-/// Получить данные обращения/инцидента
+/// Получить данные обращений/инцидентов
 /// </summary>
-public class IssueReadRequestModel
+public class IssuesReadRequestModel
 {
     /// <summary>
-    /// Обращение/инцидент
+    /// Обращения/инциденты
     /// </summary>
-    public required int IssueId {  get; set; }
+    public required int[] IssuesIds {  get; set; }
 
     /// <summary>
     /// Без дополнительных данных. Если true - то <c>попутные</c> данные (рубрики и сообщения) не будут загружаться к ответу

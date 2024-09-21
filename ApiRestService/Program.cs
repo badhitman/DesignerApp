@@ -109,12 +109,12 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddSwaggerGenNewtonsoftSupport();
 
 WebApplication app = builder.Build();
-
+app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("v1/swagger.json", "tools - Rest/API");
-
+    options.InjectStylesheet("/assets/css/swagger-style.css");
     options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
 });
 

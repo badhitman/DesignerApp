@@ -37,14 +37,14 @@ public class PulseJournalReceive(
 
         UserInfoModel actor = rest.Response[0];
 
-        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
-            Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },
+            Payload = new() { IssuesIds = [req.Payload.IssueId], IncludeSubscribersOnly = true },
         });
 
-        if (!issue_data.Success() || issue_data.Response is null)
-            return new() { Messages = issue_data.Messages };
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
+            return new() { Messages = issues_data.Messages };
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 

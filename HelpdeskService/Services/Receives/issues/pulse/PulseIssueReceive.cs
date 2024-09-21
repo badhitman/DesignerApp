@@ -33,14 +33,14 @@ public class PulseIssueReceive(
             Response = false,
         };
 
-        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = GlobalStaticConstants.Roles.System,
-            Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },
+            Payload = new() { IssuesIds = [req.Payload.IssueId], IncludeSubscribersOnly = true },
         });
 
-        if (!issue_data.Success() || issue_data.Response is null)
-            return new() { Messages = issue_data.Messages };
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length != 0)
+            return new() { Messages = issues_data.Messages };
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         await context.AddAsync(new PulseIssueModelDB()
@@ -59,12 +59,12 @@ public class PulseIssueReceive(
             return res;
         else if ((req.Payload.PulseType == PulseIssuesTypesEnum.Messages || req.Payload.PulseType == PulseIssuesTypesEnum.Subscribes) && req.Payload.Tag != GlobalStaticConstants.Routes.ADD_ACTION_NAME)
             return res;
-
-        List<string> users_ids = [issue_data.Response.AuthorIdentityUserId];
-        if (!string.IsNullOrWhiteSpace(issue_data.Response.ExecutorIdentityUserId))
-            users_ids.Add(issue_data.Response.ExecutorIdentityUserId);
-        if (issue_data.Response.Subscribers is not null && issue_data.Response.Subscribers.Count != 0)
-            users_ids.AddRange(issue_data.Response.Subscribers.Where(x => !x.IsSilent).Select(x => x.UserId));
+        IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
+        List<string> users_ids = [issue_data.AuthorIdentityUserId];
+        if (!string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId))
+            users_ids.Add(issue_data.ExecutorIdentityUserId);
+        if (issue_data.Subscribers is not null && issue_data.Subscribers.Count != 0)
+            users_ids.AddRange(issue_data.Subscribers.Where(x => !x.IsSilent).Select(x => x.UserId));
 
         users_ids = [.. users_ids.Distinct()];
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([.. users_ids]);

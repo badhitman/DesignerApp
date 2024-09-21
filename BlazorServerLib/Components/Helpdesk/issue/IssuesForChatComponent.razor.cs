@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using BlazorLib;
 using SharedLib;
 
@@ -13,6 +14,9 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 /// </summary>
 public partial class IssuesForChatComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    ILogger<IssuesForChatComponent> LoggerRepo { get; set; } = default!;
+
     /// <summary>
     /// Issues
     /// </summary>

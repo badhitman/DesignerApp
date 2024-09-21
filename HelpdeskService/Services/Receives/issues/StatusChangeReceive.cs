@@ -36,18 +36,20 @@ public class StatusChangeReceive(
 
         UserInfoModel actor = rest.Response[0];
 
-        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
-            Payload = new() { IssueId = req.Payload.IssueId, IncludeSubscribersOnly = true },
+            Payload = new() { IssuesIds = [req.Payload.IssueId], IncludeSubscribersOnly = true },
         });
 
-        if (!issue_data.Success() || issue_data.Response is null)
-            return new() { Messages = issue_data.Messages };
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
+            return new() { Messages = issues_data.Messages };
+
+        var issue_data = issues_data.Response.Single();
 
         if (!actor.IsAdmin &&
-            issue_data.Response.AuthorIdentityUserId != actor.UserId &&
-            issue_data.Response.ExecutorIdentityUserId != actor.UserId &&
+            issue_data.AuthorIdentityUserId != actor.UserId &&
+            issue_data.ExecutorIdentityUserId != actor.UserId &&
             actor.UserId != GlobalStaticConstants.Roles.System &&
             actor.UserId != GlobalStaticConstants.Roles.HelpDeskTelegramBotManager)
         {
@@ -55,14 +57,14 @@ public class StatusChangeReceive(
             return res;
         }
 
-        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Response.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
         {
             await helpdeskTransmissionRepo.SubscribeUpdate(new()
             {
                 SenderActionUserId = GlobalStaticConstants.Roles.System,
                 Payload = new()
                 {
-                    IssueId = issue_data.Response.Id,
+                    IssueId = issue_data.Id,
                     SetValue = true,
                     UserId = actor.UserId,
                     IsSilent = false,
@@ -72,24 +74,24 @@ public class StatusChangeReceive(
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        if (issue_data.Response.StepIssue == req.Payload.Step)
+        if (issue_data.StepIssue == req.Payload.Step)
             res.AddInfo("Статус уже установлен");
         else
         {
             if (string.IsNullOrWhiteSpace(
-                issue_data.Response.ExecutorIdentityUserId) && 
-                req.Payload.Step >= HelpdeskIssueStepsEnum.Progress && 
+                issue_data.ExecutorIdentityUserId) &&
+                req.Payload.Step >= HelpdeskIssueStepsEnum.Progress &&
                 req.Payload.Step != HelpdeskIssueStepsEnum.Canceled)
             {
                 res.AddError("Для перевода обращения в работу нужно сначала указать исполнителя");
                 return res;
             }
 
-            string msg = $"Статус успешно изменён с `{issue_data.Response.StepIssue}` на `{req.Payload.Step}`";
+            string msg = $"Статус успешно изменён с `{issue_data.StepIssue}` на `{req.Payload.Step}`";
 
             await context
                 .Issues
-                .Where(x => x.Id == issue_data.Response.Id)
+                .Where(x => x.Id == issue_data.Id)
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.StepIssue, req.Payload.Step));
 
             res.AddSuccess(msg);
@@ -99,7 +101,7 @@ public class StatusChangeReceive(
                 SenderActionUserId = req.SenderActionUserId,
                 Payload = new()
                 {
-                    IssueId = issue_data.Response.Id,
+                    IssueId = issue_data.Id,
                     PulseType = PulseIssuesTypesEnum.Status,
                     Tag = req.Payload.Step.DescriptionInfo(),
                     Description = msg,

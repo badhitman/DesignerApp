@@ -38,20 +38,20 @@ public class SubscribeUpdateReceive(
             actor = rest.Response.First(x => x.UserId == req.SenderActionUserId),
             requested_user = rest.Response.First(x => x.UserId == req.Payload.UserId);
 
-        TResponseModel<IssueHelpdeskModelDB> issue_data = await helpdeskTransmissionRepo.IssueRead(new TAuthRequestModel<IssueReadRequestModel>()
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
-            Payload = new IssueReadRequestModel()
+            Payload = new IssuesReadRequestModel()
             {
-                IssueId = req.Payload.IssueId,
+                IssuesIds = [req.Payload.IssueId],
                 IncludeSubscribersOnly = true,
             },
         });
 
-        if (!issue_data.Success() || issue_data.Response is null)
-            return new() { Messages = issue_data.Messages };
-
-        if (actor.UserId != GlobalStaticConstants.Roles.System && !actor.IsAdmin && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.Response.AuthorIdentityUserId)
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
+            return new() { Messages = issues_data.Messages };
+        IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
+        if (actor.UserId != GlobalStaticConstants.Roles.System && !actor.IsAdmin && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && actor.UserId != issue_data.AuthorIdentityUserId)
         {
             res.AddError("У вас не достаточно прав для выполнения этой операции");
             return res;
@@ -61,7 +61,7 @@ public class SubscribeUpdateReceive(
 
         var sdb = await context
              .SubscribersOfIssues
-             .Where(x => x.IssueId == issue_data.Response.Id && x.UserId == requested_user.UserId)
+             .Where(x => x.IssueId == issue_data.Id && x.UserId == requested_user.UserId)
              .Select(x => new { x.Id, x.IsSilent })
              .FirstOrDefaultAsync();
 
@@ -71,7 +71,7 @@ public class SubscribeUpdateReceive(
             if (sdb is null)
             {
                 msg = "Подписка успешно добавлена";
-                await context.SubscribersOfIssues.AddAsync(new() { UserId = requested_user.UserId, IssueId = issue_data.Response.Id, IsSilent = req.Payload.IsSilent });
+                await context.SubscribersOfIssues.AddAsync(new() { UserId = requested_user.UserId, IssueId = issue_data.Id, IsSilent = req.Payload.IsSilent });
                 await context.SaveChangesAsync();
                 res.AddSuccess(msg);
 
@@ -81,7 +81,7 @@ public class SubscribeUpdateReceive(
                         SenderActionUserId = req.SenderActionUserId,
                         Payload = new()
                         {
-                            IssueId = issue_data.Response.Id,
+                            IssueId = issue_data.Id,
                             PulseType = PulseIssuesTypesEnum.Subscribes,
                             Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
                             Description = $"Пользователь `{requested_user.UserName}` добавлен в подписчики",
@@ -108,7 +108,7 @@ public class SubscribeUpdateReceive(
                             SenderActionUserId = req.SenderActionUserId,
                             Payload = new()
                             {
-                                IssueId = issue_data.Response.Id,
+                                IssueId = issue_data.Id,
                                 PulseType = PulseIssuesTypesEnum.Subscribes,
                                 Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
                                 Description = msg,
@@ -135,7 +135,7 @@ public class SubscribeUpdateReceive(
                         SenderActionUserId = req.SenderActionUserId,
                         Payload = new()
                         {
-                            IssueId = issue_data.Response.Id,
+                            IssueId = issue_data.Id,
                             PulseType = PulseIssuesTypesEnum.Subscribes,
                             Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
                             Description = $"Пользователь `{requested_user.UserName}` удалён из подписок",
