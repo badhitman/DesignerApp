@@ -26,16 +26,6 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo) : Con
 
 
     /// <summary>
-    /// Обновить (или: создать, удалить) доставку
-    /// </summary>
-    /// <remarks>
-    /// Роль: <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
-    /// </remarks>
-    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDERS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DELIVERY_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
-    public async Task<TResponseModel<int>> DeliveryOrderUpdate(DeliveryForOrderUpdateRequestModel delivery)
-        => await commRepo.DeliveryOrderUpdate(delivery);
-
-    /// <summary>
     /// Прикрепить файл к заказу (счёт, акт и т.п.)
     /// </summary>
     /// <remarks>

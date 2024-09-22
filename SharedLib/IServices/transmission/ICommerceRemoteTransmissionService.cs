@@ -75,11 +75,6 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB row);
 
     /// <summary>
-    /// DeliveryOrderUpdate
-    /// </summary>
-    public Task<TResponseModel<int>> DeliveryOrderUpdate(DeliveryForOrderUpdateRequestModel delivery);
-
-    /// <summary>
     /// OrdersRead
     /// </summary>
     public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(int[] orders_ids);

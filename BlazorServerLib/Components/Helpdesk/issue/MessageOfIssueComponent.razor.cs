@@ -34,9 +34,9 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
 
     bool IsInitDelete;
 
-     Task TryDelete()
+    Task TryDelete()
     {
-        if(!IsInitDelete)
+        if (!IsInitDelete)
         {
             IsInitDelete = true;
             //return;
@@ -128,7 +128,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
 
         textMessage = Message?.MessageText;
 
-        if(Message?.AuthorUserId == GlobalStaticConstants.Roles.System)
+        if (Message?.AuthorUserId == GlobalStaticConstants.Roles.System)
             _currentType = AuthorsTypesEnum.System;
         else if (Message?.AuthorUserId == CurrentUser.UserId)
             _currentType = AuthorsTypesEnum.My;

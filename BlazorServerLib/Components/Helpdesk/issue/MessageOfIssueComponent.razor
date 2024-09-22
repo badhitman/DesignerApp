@@ -27,15 +27,15 @@
             }
             <InputRichTextComponent @bind-Value="textMessage" ReadOnly="IsBusyProgress" />
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
-                @if (Message is not null && Message.Id > 0)
-                {
-                    if (IsInitDelete)
-                    {
-                        <button @onclick="()=>IsInitDelete = false" disabled="@IsBusyProgress" class="btn btn-outline-info btn-sm" type="button">Не удалять</button>
-                    }
+                @* @if (Message is not null && Message.Id > 0)
+            {
+            if (IsInitDelete)
+            {
+            <button @onclick="()=>IsInitDelete = false" disabled="@IsBusyProgress" class="btn btn-outline-info btn-sm" type="button">Не удалять</button>
+            }
 
-                    <button @onclick="TryDelete" disabled="@IsBusyProgress" class="btn btn@(IsInitDelete ? "" : "-outline")-danger btn-sm" type="button">@(IsInitDelete ? "Подтвердить удаление" : "Удалить сообщение")</button>
-                }
+            <button @onclick="TryDelete" disabled="@IsBusyProgress" class="btn btn@(IsInitDelete ? "" : "-outline")-danger btn-sm" type="button">@(IsInitDelete ? "Подтвердить удаление" : "Удалить сообщение")</button>
+            } *@
 
                 <button @onclick="SaveMessage" disabled="@(!canSave || IsBusyProgress)" class="btn btn-@(!canSave ? "outline-secondary" : "success") me-md-2 btn-sm" type="button">@(IsCreatingNewMessage ? "Отправить" : "Сохранить")</button>
                 <button @onclick="Cancel" disabled="@IsBusyProgress" class="btn btn-primary btn-sm" type="button">Отмена</button>

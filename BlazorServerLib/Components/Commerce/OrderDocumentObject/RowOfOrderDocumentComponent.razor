@@ -8,12 +8,12 @@
     <td>
         <div class="hstack q-volume">
             <div class="p-2">@Row.Quantity @Row.Offer.OfferUnit.DescriptionInfo().ToLower()</div>
-            @if (Issue.StepIssue == HelpdeskIssueStepsEnum.Created)
+            @* @if (Issue.StepIssue == HelpdeskIssueStepsEnum.Created)
             {
                 <i class="bi bi-plus-circle"></i>
                 <i class="bi bi-dash-circle-dotted mx-1"></i>
                 <i class="bi bi-trash"></i>
-            }
+            } *@
         </div>
     </td>
     <td>@(Row.Quantity * Row.Offer.Price)</td>
