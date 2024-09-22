@@ -18,7 +18,8 @@ public interface ISerializeStorage
     /// <typeparam name="T">Тип сохраняемых данных (сериализируемый)</typeparam>
     /// <param name="obj">Данные для сохранения</param>
     /// <param name="set">Метаданные</param>
-    public Task Save<T>(T obj, StorageCloudParameterModel set);
+    /// <param name="trimHistory">Удалить предыдущие значения (очистить историю значений)</param>
+    public Task Save<T>(T obj, StorageCloudParameterModel set, bool trimHistory = false);
 
     /// <summary>
     /// Прочитать значение параметра. null - если значения нет
@@ -39,7 +40,7 @@ public interface ISerializeStorage
     /// <summary>
     /// FlushParameter
     /// </summary>
-    public Task<TResponseModel<int?>> FlushParameter(StorageCloudParameterModelDB storage);
+    public Task<TResponseModel<int?>> FlushParameter(StorageCloudParameterModelDB storage, bool trimHistory = false);
 
     /// <summary>
     /// Прочитать значение параметра. null - если значения нет

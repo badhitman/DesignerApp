@@ -52,7 +52,7 @@ public class SerializeStorageService(IDbContextFactory<StorageContext> cloudPara
     }
 
     /// <inheritdoc/>
-    public async Task Save<T>(T obj, StorageCloudParameterModel set)
+    public async Task Save<T>(T obj, StorageCloudParameterModel set, bool trimHistory = false)
     {
         if (obj is null)
             throw new ArgumentNullException(nameof(obj));
@@ -66,14 +66,15 @@ public class SerializeStorageService(IDbContextFactory<StorageContext> cloudPara
             OwnerPrimaryKey = set.OwnerPrimaryKey,
             PrefixPropertyName = set.PrefixPropertyName,
         };
-        ResponseBaseModel res = await FlushParameter(_set);
+        ResponseBaseModel res = await FlushParameter(_set, trimHistory);
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> FlushParameter(StorageCloudParameterModelDB _set)
+    public async Task<TResponseModel<int?>> FlushParameter(StorageCloudParameterModelDB _set, bool trimHistory = false)
     {
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         TResponseModel<int?> res = new();
+        _set.Id = 0;
         await context.AddAsync(_set);
         bool success;
         Random rnd = new();
@@ -91,7 +92,7 @@ public class SerializeStorageService(IDbContextFactory<StorageContext> cloudPara
             {
                 res.AddInfo($"Попытка записи [{i}]: {ex.Message}");
                 _set.CreatedAt = DateTime.UtcNow;
-                await Task.Delay(TimeSpan.FromMilliseconds(rnd.Next(400, 700)));
+                await Task.Delay(TimeSpan.FromMilliseconds(rnd.Next(100, 300)));
             }
 
             if (success)
@@ -103,8 +104,14 @@ public class SerializeStorageService(IDbContextFactory<StorageContext> cloudPara
                  .Where(x => x.TypeName == _set.TypeName && x.ApplicationName == _set.ApplicationName && x.Name == _set.Name && x.OwnerPrimaryKey == _set.OwnerPrimaryKey && x.PrefixPropertyName == _set.PrefixPropertyName)
                  .AsQueryable();
 
-        int history_count = await qf.CountAsync();
-        if (history_count > 150)
+        if (trimHistory)
+        {
+            await context
+                .CloudProperties
+                .Where(x => x.Id != _set.Id)
+                .ExecuteDeleteAsync();
+        }
+        else if (await qf.CountAsync() > 50)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -121,7 +128,7 @@ public class SerializeStorageService(IDbContextFactory<StorageContext> cloudPara
                 catch (Exception ex)
                 {
                     res.AddInfo($"Попытка записи [{i}]: {ex.Message}");
-                    await Task.Delay(TimeSpan.FromMilliseconds(rnd.Next(400, 700)));
+                    await Task.Delay(TimeSpan.FromMilliseconds(rnd.Next(100, 300)));
                 }
 
                 if (success)

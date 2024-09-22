@@ -31,6 +31,6 @@ public class SaveParameterReceive(ISerializeStorage serializeStorageRepo)
             TypeName = req.TypeName,
         };
 
-        return await serializeStorageRepo.FlushParameter(store_db);
+        return await serializeStorageRepo.FlushParameter(store_db, req.TrimHistory);
     }
 }

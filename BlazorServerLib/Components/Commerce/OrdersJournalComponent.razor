@@ -15,8 +15,8 @@
     <RowTemplate>
         <MudTd DataLabel="Создан"><a href="/issue-card/@context.HelpdeskId">@context.CreatedAtUTC</a></MudTd>
         <MudTd DataLabel="Информация">@context.Name</MudTd>
-        <MudTd DataLabel="Сумма">*</MudTd>
-        <MudTd DataLabel="Статус">*</MudTd>
+        <MudTd DataLabel="Сумма">@context.TotalSumForRows()</MudTd>
+        <MudTd DataLabel="Статус">@IssuesCacheDump.FirstOrDefault(x => x.Id == context.HelpdeskId)!.StepIssue.DescriptionInfo()</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>

@@ -11,4 +11,9 @@ public class StorageCloudParameterPayloadModel : StorageCloudParameterReadModel
     /// Данные (сериализованные)
     /// </summary>
     public required string SerializedDataJson { get; set; }
+
+    /// <summary>
+    /// Удалить все предыдущие значения (очистить историю)
+    /// </summary>
+    public bool TrimHistory { get; set; }
 }

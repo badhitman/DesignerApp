@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using System.Collections.Generic;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -55,10 +56,27 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
 
     List<OrderDocumentModelDB> documentsPartData = [];
     UserInfoMainModel CurrentSessionUser = default!;
+    readonly List<IssueHelpdeskModelDB> IssuesCacheDump = [];
 
     async Task UpdateCacheIssues()
     {
+        IEnumerable<int> q = documentsPartData
+            .Where(x => x.HelpdeskId.HasValue && x.HelpdeskId.Value > 0)
+            .Select(x => x.HelpdeskId!.Value);
 
+        if (!q.Any())
+            return;
+
+        TResponseModel<IssueHelpdeskModelDB[]> res = await HelpdeskRepo.IssuesRead(new()
+        {
+            SenderActionUserId = CurrentSessionUser.UserId,
+            Payload = new()
+            {
+                IssuesIds = [.. q],
+            }
+        });
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        IssuesCacheDump.AddRange(res.Response!);
     }
 
     async Task<TableData<OrderDocumentModelDB>> ServerReload(TableState state, CancellationToken token)
@@ -91,7 +109,7 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
             return new TableData<OrderDocumentModelDB>() { TotalItems = 0, Items = [] };
 
         documentsPartData = res.Response.Response;
-
+        await UpdateCacheIssues();
         return new TableData<OrderDocumentModelDB>()
         {
             TotalItems = res.Response.TotalRowsCount,
