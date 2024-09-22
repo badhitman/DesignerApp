@@ -20,14 +20,26 @@ window.BoundingClientRect = (() => {
             if (_d.length == 0)
                 return 0;
 
-            return _d.height();
+            let height = _d.height();
+            if (isNaN(height)) {
+                console.error(JSON.stringify(height));
+                return 0;
+            }
+
+            return height;
         },
         Width(id) {
             var _d = $(`#${id}`);
             if (_d.length == 0)
                 return 0;
 
-            return _d.width();
+            let width = _d.width();
+            if (isNaN(width)) {
+                console.error(JSON.stringify(width));
+                return 0;
+            }
+
+            return width;
         },
         X(id) {
             var _d = $(`#${id}`);
@@ -35,6 +47,11 @@ window.BoundingClientRect = (() => {
                 return 0;
 
             var _p = _d.position();
+            let left = _p.left();
+            if (isNaN(left)) {
+                console.error(JSON.stringify(left));
+                return 0;
+            }
 
             return _p.left;
         },
@@ -44,6 +61,11 @@ window.BoundingClientRect = (() => {
                 return 0;
 
             var _p = _d.position();
+            let top = _p.top();
+            if (isNaN(top)) {
+                console.error(JSON.stringify(top));
+                return 0;
+            }
 
             return _p.top;
         }

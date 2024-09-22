@@ -37,11 +37,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "devops", "devops", "{3A274B5F-119F-42F2-8196-25F7ABADDFBD}"
+	ProjectSection(SolutionItems) = preProject
+		devops\docker-compose.yml = devops\docker-compose.yml
+		devops\readme.txt = devops\readme.txt
+		devops\pg_backup.txt = devops\pg_backup.txt
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "etc", "etc", "{9C0D49D9-C7B9-4960-AF82-361448F4965A}"
-	ProjectSection(SolutionItems) = preProject
-		devops\readme.txt = devops\readme.txt
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{A7D9597F-4160-4A52-ADBD-078CFB815FA7}"
 	ProjectSection(SolutionItems) = preProject

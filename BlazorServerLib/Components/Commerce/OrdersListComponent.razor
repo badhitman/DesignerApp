@@ -1,4 +1,7 @@
-﻿<style>
+﻿@using BlazorWebLib.Components.Commerce.OrderDocumentObject
+@inherits BlazorBusyComponentBaseModel
+
+<style>
     .q-volume i {
         cursor: pointer;
     }
@@ -18,11 +21,4 @@ else
             </TabComponent>
         }
     </TabSetComponent>
-}
-
-@code {
-    [Parameter, EditorRequired]
-    public required OrderDocumentModelDB[] Orders { get; set; }
-
-    
 }

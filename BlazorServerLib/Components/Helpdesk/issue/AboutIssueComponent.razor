@@ -38,10 +38,10 @@
             </dd>
 
             <dt>Создан:</dt>
-            <dd>@Issue.CreatedAt</dd>
+            <dd>@Issue.CreatedAt.ToLocalTime().ToString()</dd>
 
             <dt>Обновлён:</dt>
-            <dd>@Issue.LastUpdateAt</dd>
+            <dd>@Issue.LastUpdateAt.ToLocalTime().ToString()</dd>
         </dl>
     </div>
 </div>

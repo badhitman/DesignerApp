@@ -1,0 +1,10 @@
+docker exec -t srv_postgres_1 pg_dump -c -U dev commerce | gzip > /srv/db-backups/dump_commerce_`date +%Y-%m-%d"_"%H_%M_%S`.sql.gz
+docker exec -t srv_postgres_1 pg_dump -c -U dev HelpDesk | gzip > /srv/db-backups/dump_HelpDesk_`date +%Y-%m-%d"_"%H_%M_%S`.sql.gz
+docker exec -t srv_postgres_1 pg_dump -c -U dev StorageCloud | gzip > /srv/db-backups/dump_StorageCloud_`date +%Y-%m-%d"_"%H_%M_%S`.sql.gz
+docker exec -t srv_postgres_1 pg_dump -c -U dev TelegramBot | gzip > /srv/db-backups/dump_TelegramBot_`date +%Y-%m-%d"_"%H_%M_%S`.sql.gz
+
+
+0 */1 * * * docker exec -t srv_postgres_1 pg_dump -c -U dev commerce | gzip > /srv/db-backups/dump_commerce_`date +%Y-%m-%d"_"%H_%M_%S`.sql.gz
+0 */2 * * * docker exec -t srv_postgres_1 pg_dump -c -U dev HelpDesk | gzip > /srv/db-backups/dump_HelpDesk_`date +%Y-%m-%d"_"%H_%M_%S`.sql.gz
+0 */3 * * * docker exec -t srv_postgres_1 pg_dump -c -U dev StorageCloud | gzip > /srv/db-backups/dump_StorageCloud_`date +%Y-%m-%d"_"%H_%M_%S`.sql.gz
+0 */4 * * * docker exec -t srv_postgres_1 pg_dump -c -U dev TelegramBot | gzip > /srv/db-backups/dump_TelegramBot_`date +%Y-%m-%d"_"%H_%M_%S`.sql.gz

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// IssueTelegramModelDB
+/// IssueHelpdeskModelDB
 /// </summary>
 [Index(nameof(AuthorIdentityUserId), nameof(ExecutorIdentityUserId), nameof(LastUpdateAt))]
 public class IssueHelpdeskModelDB : IssueHelpdeskModel

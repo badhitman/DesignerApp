@@ -4,7 +4,7 @@
 
 <MudTable @ref="TableRef" ServerData="ServerReload" Dense="true" Hover="true" Loading="IsBusyProgress">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Диалоги</MudText>
+        <MudText Typo="Typo.h6">Заявки</MudText>
         <MudSpacer />
         <MudTextField T="string" Clearable="true" ValueChanged="@(s => OnSearch(s))" title="Без учёта регистра" Placeholder="Поиск по теме обращения и имени рубрики" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -24,7 +24,7 @@
         }
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Создан"><a href="@($"/issue-card/{context.Id}")">@context.CreatedAt.ToShortDateString()<sup>@context.CreatedAt.ToShortTimeString()</sup></a></MudTd>
+        <MudTd DataLabel="Создан"><a href="@($"/issue-card/{context.Id}")">@context.CreatedAt.ToLocalTime()<sup>@context.CreatedAt.ToLocalTime().ToShortTimeString()</sup></a></MudTd>
         <MudTd DataLabel="Статус">@context.StepIssue.DescriptionInfo()</MudTd>
         <MudTd DataLabel="Тема">@context.Name</MudTd>
         <MudTd DataLabel="Рубрика">@context.RubricIssue?.Name</MudTd>

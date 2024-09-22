@@ -1,0 +1,28 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+@foreach (TabAddressForOrderModelDb at in Document.AddressesTabs!)
+{
+    <div class="card mt-3">
+        <div class="card-header">
+            @(at.AddressOrganization!.Name)
+        </div>
+        <div class="card-body">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Наименование</th>
+                        <th scope="col">Цена</th>
+                        <th scope="col">Количество</th>
+                        <th scope="col">Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (RowOfOrderDocumentModelDB row in at.Rows!)
+                    {
+                        <RowOfOrderDocumentComponent Row="row" />
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

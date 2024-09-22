@@ -14,7 +14,11 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Read issue - of context user
 /// </summary>
-public class IssuesReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IWebRemoteTransmissionService webTransmissionRepo, IMemoryCache cache)
+public class IssuesReadReceive(
+    ILogger<IssuesReadReceive> LoggerRepo,
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
+    IWebRemoteTransmissionService webTransmissionRepo,
+    IMemoryCache cache)
     : IResponseReceive<TAuthRequestModel<IssuesReadRequestModel>?, IssueHelpdeskModelDB[]?>
 {
     /// <inheritdoc/>
@@ -27,7 +31,7 @@ public class IssuesReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<IssueHelpdeskModelDB[]?> res = new();
-        string mem_key = $"{QueueName}-{string.Join(";", req.Payload.IssuesIds)}/{req.Payload.IncludeSubscribersOnly}";
+        string mem_key = $"{QueueName}-{string.Join(";", req.Payload.IssuesIds)}/{req.Payload.IncludeSubscribersOnly}({req.SenderActionUserId})";
         if (cache.TryGetValue(mem_key, out IssueHelpdeskModelDB[]? hd))
         {
             res.Response = hd;
@@ -41,30 +45,34 @@ public class IssuesReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
             : await q.Include(x => x.RubricIssue).Include(x => x.Messages).Where(x => req.Payload.IssuesIds.Any(y => y == x.Id)).ToArrayAsync();
 
         if (issues_db is null || issues_db.Length == 0)
+        {
+            LoggerRepo.LogError($"Обращение не найдено: {mem_key}");
             return new()
             {
                 Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Обращение не найдено или у вас нет к нему доступа" }]
             };
+        }
 
         if (req.SenderActionUserId == GlobalStaticConstants.Roles.System || issues_db.All(x => x.ExecutorIdentityUserId == req.SenderActionUserId) || issues_db.All(x => x.AuthorIdentityUserId == req.SenderActionUserId) || issues_db.All(x => x.Subscribers!.Any(x => x.UserId == req.SenderActionUserId)))
             return new() { Response = issues_db };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
+        TResponseModel<UserInfoModel[]?> rest_user_date = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        if (!rest_user_date.Success() || rest_user_date.Response is null || rest_user_date.Response.Length != 1)
+        {
+            LoggerRepo.LogError($"Пользователь не найден: {req.SenderActionUserId}");
+            return new() { Messages = rest_user_date.Messages };
+        }
 
-
-        if (!rest.Response[0].IsAdmin && rest.Response[0].Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true)
+        if (!rest_user_date.Response[0].IsAdmin && rest_user_date.Response[0].Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true)
+        {
+            LoggerRepo.LogError($"Для получения обращений не достаточно прав: {mem_key}");
             return new()
             {
                 Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Обращение не найдено или у вас нет к нему доступа" }]
             };
+        }
 
         cache.Set(mem_key, issues_db, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
-
-        return new()
-        {
-            Response = issues_db
-        };
+        return new() { Response = issues_db };
     }
 }

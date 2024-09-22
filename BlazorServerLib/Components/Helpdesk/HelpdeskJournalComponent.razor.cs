@@ -89,8 +89,9 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
         if (!_current_user.Success() || _current_user.Response is null)
         {
             IsBusyProgress = false;
+            _current_user.AddError($"Ошибка чтения данных пользователя [{UserIdentityId}]");
             SnackbarRepo.ShowMessagesResponse(_current_user.Messages);
-            throw new Exception();
+            throw new Exception($"Ошибка чтения данных пользователя [{UserIdentityId}]");
         }
 
         IsBusyProgress = false;

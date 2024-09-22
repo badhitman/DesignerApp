@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using Newtonsoft.Json;
+using System.Numerics;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -13,6 +15,7 @@ namespace Transmission.Receives.helpdesk;
 /// PulseJournalReceive - of context user
 /// </summary>
 public class PulseJournalReceive(
+    ILogger<PulseJournalReceive> LoggerRepo,
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
@@ -37,6 +40,8 @@ public class PulseJournalReceive(
 
         UserInfoModel actor = rest.Response[0];
 
+        LoggerRepo.LogDebug($"Запрос журнала активности пользователем: {JsonConvert.SerializeObject(actor)}");
+
         TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
@@ -44,8 +49,10 @@ public class PulseJournalReceive(
         });
 
         if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
+        {
+            LoggerRepo.LogWarning($"Запрос журнала активности пользователем {actor.UserId} - отклонён");
             return new() { Messages = issues_data.Messages };
-
+        }
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         IQueryable<PulseIssueModelDB> q = context
