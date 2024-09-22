@@ -39,7 +39,7 @@ public class PulseIssueReceive(
             Payload = new() { IssuesIds = [req.Payload.IssueId], IncludeSubscribersOnly = true },
         });
 
-        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length != 0)
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
             return new() { Messages = issues_data.Messages };
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();

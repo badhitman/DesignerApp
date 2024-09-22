@@ -7,6 +7,7 @@ using BlazorLib;
 using MudBlazor;
 using SharedLib;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -15,6 +16,12 @@ namespace BlazorWebLib.Components.Helpdesk;
 /// </summary>
 public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    ILogger<HelpdeskJournalComponent> LoggerRepo { get; set; } = default!;
+
+    [Inject]
+    NavigationManager NavRepo { get; set; } = default!;
+
     [Inject]
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
@@ -91,7 +98,8 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
             IsBusyProgress = false;
             _current_user.AddError($"Ошибка чтения данных пользователя [{UserIdentityId}]");
             SnackbarRepo.ShowMessagesResponse(_current_user.Messages);
-            throw new Exception($"Ошибка чтения данных пользователя [{UserIdentityId}]");
+            LoggerRepo.LogError($"Ошибка чтения данных пользователя [{UserIdentityId}]");
+            return;
         }
 
         IsBusyProgress = false;
