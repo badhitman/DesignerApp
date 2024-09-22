@@ -1,6 +1,7 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
 @using MudBlazor
+@using System.Globalization
 
 <MudTable @ref="TableRef" ServerData="ServerReload" Dense="true" Hover="true" Loading="IsBusyProgress">
     <ToolBarContent>
@@ -24,7 +25,11 @@
         }
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Создан"><a href="@($"/issue-card/{context.Id}")">@context.CreatedAt.ToLocalTime()<sup>@context.CreatedAt.ToLocalTime().ToShortTimeString()</sup></a></MudTd>
+        <MudTd DataLabel="Создан">
+            <a href="@($"/issue-card/{context.Id}")">
+                @context.CreatedAt.GetMsk().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))<sup>@context.CreatedAt.GetMsk().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
+            </a>
+        </MudTd>
         <MudTd DataLabel="Статус">@context.StepIssue.DescriptionInfo()</MudTd>
         <MudTd DataLabel="Тема">@context.Name</MudTd>
         <MudTd DataLabel="Рубрика">@context.RubricIssue?.Name</MudTd>

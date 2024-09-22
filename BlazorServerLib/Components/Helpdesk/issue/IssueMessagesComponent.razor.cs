@@ -22,7 +22,7 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
 
     private IEnumerable<IssueMessageHelpdeskModelDB> Elements = [];
 
-    MudTable<IssueMessageHelpdeskModelDB> tableRef = default!;
+    MudTable<IssueMessageHelpdeskModelDB>? tableRef;
 
     /// <summary>
     /// Добавляется новое сообщение
@@ -36,7 +36,8 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
         set
         {
             _searchStringQuery = value;
-            InvokeAsync(tableRef.ReloadServerData);
+            if (tableRef is not null)
+                InvokeAsync(tableRef.ReloadServerData);
         }
     }
 
@@ -78,7 +79,7 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
 
         string[] users_for_adding = Issue
             .Messages
-            .Where(x => !UsersIdentityDump.Any(y => y.UserId == x.AuthorUserId))
+            .Where(x => x.AuthorUserId != GlobalStaticConstants.Roles.System && !UsersIdentityDump.Any(y => y.UserId == x.AuthorUserId))
             .Select(x => x.AuthorUserId)
             .ToArray();
 
@@ -89,7 +90,8 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
             if (users_data_identity.Response is not null && users_data_identity.Response.Length != 0)
                 UsersIdentityDump.AddRange(users_data_identity.Response);
         }
-
+        if (tableRef is not null)
+            await tableRef.ReloadServerData();
         StateHasChanged();
     }
 
