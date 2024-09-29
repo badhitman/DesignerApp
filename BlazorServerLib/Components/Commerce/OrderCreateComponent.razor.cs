@@ -326,7 +326,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
             TResponseModel<OrderDocumentModelDB[]> doc = await CommerceRepo.OrdersRead([rest.Response]);
             CurrentCart.Information = CurrentCart.Information?.Trim();
             CurrentCart = OrderDocumentModelDB.NewEmpty(user.UserId);
-            
+
             await StorageRepo
             .SaveParameter<OrderDocumentModelDB?>(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
 
@@ -355,6 +355,13 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
         user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
+        await OrganizationReset();
+        await UpdateCachePriceRules();
+        CalculateDiscounts();
+    }
+
+    async Task OrganizationReset()
+    {
         TPaginationRequestModel<OrganizationsSelectRequestModel> req = new()
         {
             Payload = new()
@@ -406,8 +413,5 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
                 .AddressesTabs
                 .Select(x => CurrentOrganization!.Addresses!.First(y => y.Id == x.AddressOrganizationId))];
         }
-
-        await UpdateCachePriceRules();
-        CalculateDiscounts();
     }
 }
