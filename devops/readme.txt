@@ -42,19 +42,16 @@ dotnet publish -c Debug --output /srv/git/builds/Telegram.Bot.Polling /srv/git/D
 #  dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
 #  *** поэтому € его отдельно собираю локально, отправл€ю через sftp, распаковываю и продолжаю дальше буд-то команды корректно отработали
 
-
-
-
 systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service hd.app.service
 
 cd /srv/services/
 rm -r /srv/services/*
-mv /srv/sftp-bridge/StorageService /srv/services/StorageService
-mv /srv/sftp-bridge/ApiRestService /srv/services/ApiRestService
-mv /srv/sftp-bridge/CommerceService /srv/services/CommerceService
-mv /srv/sftp-bridge/HelpdeskService /srv/services/HelpdeskService
-mv /srv/sftp-bridge/Telegram.Bot.Polling /srv/services/Telegram.Bot.Polling
-mv /srv/sftp-bridge/BlankBlazorApp /srv/services/BlankBlazorApp
+mv /srv/git/builds/StorageService /srv/services/StorageService
+mv /srv/git/builds/ApiRestService /srv/services/ApiRestService
+mv /srv/git/builds/CommerceService /srv/services/CommerceService
+mv /srv/git/builds/HelpdeskService /srv/services/HelpdeskService
+mv /srv/git/builds/Telegram.Bot.Polling /srv/services/Telegram.Bot.Polling
+mv /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
 
 chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services

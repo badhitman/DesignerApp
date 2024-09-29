@@ -55,11 +55,11 @@ public partial class CKEditorParameterStorageComponent : BlazorBusyComponentBase
 
     async Task StoreData()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        //IsBusyProgress = true;
+        //await Task.Delay(1);
         await StoreRepo.SaveParameter(_textValue, KeyStorage);
-        IsBusyProgress = false;
-        StateHasChanged();
+        //IsBusyProgress = false;
+        //StateHasChanged();
     }
 
     /// <inheritdoc/>

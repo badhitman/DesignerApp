@@ -37,14 +37,14 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
     readonly DialogOptions _dialogOptions = new() { FullWidth = true };
 
     UserInfoMainModel user = default!;
-    OrderDocumentModelDB CurrentCart = default!;
+    OrderDocumentModelDB? CurrentCart;
     readonly Func<AddressOrganizationModelDB, string> converter = p => p.Name;
 
     List<OrganizationModelDB> Organizations { get; set; } = [];
     OrganizationModelDB? prevCurrOrg;
     OrganizationModelDB? CurrentOrganization
     {
-        get => CurrentCart.Organization;
+        get => CurrentCart?.Organization;
         set
         {
             if (SelectedAddresses?.Any() == true)
@@ -53,6 +53,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
                 prevCurrOrg = value;
                 return;
             }
+
+            if (CurrentCart is null)
+                throw new ArgumentNullException(nameof(CurrentCart), GetType().FullName);
 
             CurrentCart.Organization = value;
             CurrentCart.OrganizationId = value?.Id ?? 0;
@@ -70,7 +73,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         get => _selectedAddresses ?? [];
         set
         {
-            if (_prevSelectedAddresses is not null)
+            if (_prevSelectedAddresses is not null || CurrentCart is null)
                 return;
 
             CurrentCart.AddressesTabs ??= [];
@@ -157,6 +160,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
 
     async Task UpdateCachePriceRules()
     {
+        if (CurrentCart is null)
+            throw new ArgumentNullException(nameof(CurrentCart), GetType().FullName);
+
         if (CurrentCart.AddressesTabs is null)
         {
             AllRows = [];
@@ -218,6 +224,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
     {
         get
         {
+            if (CurrentCart is null)
+                throw new ArgumentNullException(nameof(CurrentCart), GetType().FullName);
+
             if (CurrentCart.AddressesTabs is null || CurrentCart.AddressesTabs.Count == 0)
                 return 0;
 
@@ -236,6 +245,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
 
     async Task SubmitChangeAddresses()
     {
+        if (CurrentCart is null)
+            throw new ArgumentNullException(nameof(CurrentCart), GetType().FullName);
+
         CurrentCart.AddressesTabs ??= [];
         if (_prevSelectedAddresses is null || !_prevSelectedAddresses.Any())
             CurrentCart.AddressesTabs.Clear();
@@ -259,6 +271,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
 
     void SubmitChangeOrganizations()
     {
+        if (CurrentCart is null)
+            throw new ArgumentNullException(nameof(CurrentCart), GetType().FullName);
+
         CurrentCart.Organization = prevCurrOrg;
         CurrentCart.OrganizationId = prevCurrOrg?.Id ?? 0;
         prevCurrOrg = null;
@@ -269,6 +284,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
 
     async void DocumentUpdateAction()
     {
+        if (CurrentCart is null)
+            throw new ArgumentNullException(nameof(CurrentCart), GetType().FullName);
+
         CurrentCart.AddressesTabs?.RemoveAll(x => !CurrentOrganization!.Addresses!.Any(y => y.Id == x.AddressOrganizationId));
         await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
         StateHasChanged();
@@ -288,6 +306,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
 
     async Task OrderDocumentSendAsync()
     {
+        if (CurrentCart is null)
+            throw new ArgumentNullException(nameof(CurrentCart), GetType().FullName);
+
         if (CurrentCart.AddressesTabs?.Any(x => x.Rows is null || x.Rows.Count == 0) == true)
         {
             SnackbarRepo.Error("Присутствуют адреса без номенклатуры заказа. Исключите пустую вкладку или заполните её данными");
@@ -304,11 +325,8 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         {
             TResponseModel<OrderDocumentModelDB[]> doc = await CommerceRepo.OrdersRead([rest.Response]);
             CurrentCart.Information = CurrentCart.Information?.Trim();
-            CurrentCart = new()
-            {
-                AuthorIdentityUserId = user.UserId,
-                Name = "Новый заказ",
-            };
+            CurrentCart = OrderDocumentModelDB.NewEmpty(user.UserId);
+            
             await StorageRepo
             .SaveParameter<OrderDocumentModelDB?>(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
 
@@ -324,7 +342,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (!firstRender && CurrentCart is not null)
         {
             await UpdateCachePriceRules();
             CalculateDiscounts();

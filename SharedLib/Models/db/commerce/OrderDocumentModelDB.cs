@@ -10,6 +10,12 @@ namespace SharedLib;
 /// </summary>
 public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
 {
+    /// <inheritdoc/>
+    public static OrderDocumentModelDB NewEmpty(string authorIdentityUserId)
+    {
+        return new() { AuthorIdentityUserId = authorIdentityUserId, Name = "Новый" };
+    }
+
     /// <summary>
     /// IdentityUserId
     /// </summary>
