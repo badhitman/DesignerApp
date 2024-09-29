@@ -42,6 +42,7 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
     async Task SaveChange()
     {
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<bool> res = await HelpdeskRepo
             .StatusChange(new()
             {
@@ -65,6 +66,5 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
     protected override void OnInitialized()
     {
         IssueStep = Issue.StepIssue;
-        base.OnInitialized();
     }
 }

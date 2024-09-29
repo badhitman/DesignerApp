@@ -23,6 +23,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
     public async Task<TResponseModel<int?>> ResponseHandleAction(OrderDocumentModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
@@ -67,7 +68,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             }
             catch (Exception ex)
             {
-                loggerRepo.LogError(ex, $"Не удалось создать заявку-заказ: {JsonConvert.SerializeObject(req)}");
+                loggerRepo.LogError(ex, $"Не удалось создать заявку-заказ: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
                 res.Messages.InjectException(ex);
                 return res;
             }

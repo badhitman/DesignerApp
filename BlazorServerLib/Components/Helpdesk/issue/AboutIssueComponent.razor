@@ -1,5 +1,5 @@
 ﻿@using System.Globalization
-@attribute [Authorize]
+
 @inherits IssueWrapBaseModel
 
 <div class="card">
@@ -37,12 +37,20 @@
             <dd>
                 <ExecutorIssueComponent />
             </dd>
-
+            @{
+                CultureInfo ci = CultureInfo.GetCultureInfo("ru-RU");
+                DateTime dc = Issue.CreatedAt.GetMsk();
+                DateTime du = Issue.LastUpdateAt.GetMsk();
+            }
             <dt>Создан:</dt>
-            <dd>@Issue.CreatedAt.GetMsk().ToString("f", CultureInfo.GetCultureInfo("ru-RU"))</dd>
+            <dd>
+                @dc.ToString("d", ci) <sup>@dc.ToString("t", ci)</sup>
+            </dd>
 
             <dt>Обновлён:</dt>
-            <dd>@Issue.LastUpdateAt.GetMsk().ToString("f", CultureInfo.GetCultureInfo("ru-RU"))</dd>
+            <dd>
+                @du.ToString("d", ci) <sup>@du.ToString("t", ci)</sup>
+            </dd>
         </dl>
     </div>
 </div>

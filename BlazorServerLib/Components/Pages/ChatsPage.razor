@@ -1,0 +1,7 @@
+﻿@page "/help-desk/chats"
+@using BlazorWebLib.Components.Telegram
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.HelpDeskTelegramBotChatsManage},{GlobalStaticConstants.Roles.Admin}")]
+
+<ChatsTableComponent />

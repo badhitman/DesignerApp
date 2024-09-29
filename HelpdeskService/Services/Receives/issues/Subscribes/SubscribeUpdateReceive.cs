@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -13,7 +14,8 @@ namespace Transmission.Receives.helpdesk;
 /// Subscribe update - of context user
 /// </summary>
 public class SubscribeUpdateReceive(
-    IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory, 
+    ILogger<SubscribeUpdateReceive> loggerRepo,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<SubscribeUpdateRequestModel>?, bool?>
@@ -25,6 +27,7 @@ public class SubscribeUpdateReceive(
     public async Task<TResponseModel<bool?>> ResponseHandleAction(TAuthRequestModel<SubscribeUpdateRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<bool?> res = new() { Response = false };
 
         string[] users_ids = [req.SenderActionUserId, req.Payload.UserId];

@@ -60,6 +60,7 @@ builder.ConfigureServices((context, services) =>
     .Configure<BotConfiguration>(context.Configuration.GetSection(BotConfiguration.Configuration))
     ;
 
+    services.AddMemoryCache();
     services.AddSingleton<WebConfigModel>();
     services.AddOptions();
 

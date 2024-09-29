@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using BlazorLib;
 using MudBlazor;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorWebLib.Components;
 
@@ -25,7 +26,6 @@ public abstract class LazySelectorComponent<TRow> : BlazorBusyComponentBaseModel
     /// </summary>
     [Inject]
     protected IJSRuntime JS { get; set; } = default!;
-
 
     /// <summary>
     /// IsReadOnly
@@ -134,7 +134,15 @@ public abstract class LazySelectorComponent<TRow> : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        HeightToggleBtn = await JS.InvokeAsync<int>("BoundingClientRect.Height", toggleBtnId);
+        try
+        {
+            HeightToggleBtn = await JS.InvokeAsync<int>("BoundingClientRect.Height", toggleBtnId);
+        }
+        catch
+        {
+
+            return;
+        }
 
         if (SetHeightCard is not null)
         {

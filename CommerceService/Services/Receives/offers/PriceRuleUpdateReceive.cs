@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -12,7 +13,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// PriceRuleUpdateReceive
 /// </summary>
-public class PriceRuleUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class PriceRuleUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PriceRuleUpdateReceive> loggerRepo)
     : IResponseReceive<PriceRuleForOfferModelDB?, int?>
 {
     /// <inheritdoc/>
@@ -22,7 +23,7 @@ public class PriceRuleUpdateReceive(IDbContextFactory<CommerceContext> commerceD
     public async Task<TResponseModel<int?>> ResponseHandleAction(PriceRuleForOfferModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         req.Name = req.Name.Trim();

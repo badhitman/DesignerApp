@@ -28,8 +28,8 @@ rm -r *
 git clone https://github.com/badhitman/DesignerApp.git
 git clone https://github.com/badhitman/HtmlGenerator.git
 
-dotnet publish -c Debug --output /srv/git/builds/ApiRestService /srv/git/DesignerApp/ApiRestService/ApiRestService.csproj
 dotnet publish -c Debug --output /srv/git/builds/StorageService /srv/git/DesignerApp/StorageService/StorageService.csproj
+dotnet publish -c Debug --output /srv/git/builds/ApiRestService /srv/git/DesignerApp/ApiRestService/ApiRestService.csproj
 dotnet publish -c Debug --output /srv/git/builds/CommerceService /srv/git/DesignerApp/CommerceService/CommerceService.csproj
 dotnet publish -c Debug --output /srv/git/builds/HelpdeskService /srv/git/DesignerApp/HelpdeskService/HelpdeskService.csproj
 dotnet publish -c Debug --output /srv/git/builds/Telegram.Bot.Polling /srv/git/DesignerApp/Telegram.Bot.Polling/Telegram.Bot.Polling.csproj
@@ -42,10 +42,20 @@ dotnet publish -c Debug --output /srv/git/builds/Telegram.Bot.Polling /srv/git/D
 #  dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
 #  *** поэтому € его отдельно собираю локально, отправл€ю через sftp, распаковываю и продолжаю дальше буд-то команды корректно отработали
 
+
+
+
 systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service hd.app.service
 
-rm -r /srv/services
-mv /srv/git/builds/ /srv/services
+cd /srv/services/
+rm -r /srv/services/*
+mv /srv/sftp-bridge/StorageService /srv/services/StorageService
+mv /srv/sftp-bridge/ApiRestService /srv/services/ApiRestService
+mv /srv/sftp-bridge/CommerceService /srv/services/CommerceService
+mv /srv/sftp-bridge/HelpdeskService /srv/services/HelpdeskService
+mv /srv/sftp-bridge/Telegram.Bot.Polling /srv/services/Telegram.Bot.Polling
+mv /srv/sftp-bridge/BlankBlazorApp /srv/services/BlankBlazorApp
+
 chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services
 

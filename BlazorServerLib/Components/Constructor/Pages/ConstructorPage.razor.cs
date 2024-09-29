@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Constructor.Pages;
 public partial class ConstructorPage : BlazorBusyComponentBaseModel
 {
     [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
+    AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
     [Inject]
     IConstructorService ConstructorRepo { get; set; } = default!;
@@ -48,7 +48,7 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         await ReadCurrentMainProject();

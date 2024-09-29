@@ -8,18 +8,20 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <MudRadioGroup Disabled="IsBusyProgress" @bind-Value="SelectedOption">
-                <MudRadio Value="@UsersAreasHelpdeskEnum.Executor">Я исполнитель</MudRadio>
-                <MudRadio Value="@UsersAreasHelpdeskEnum.Subscriber">Я подписчик</MudRadio>
-                <MudRadio Value="@UsersAreasHelpdeskEnum.Main">Все</MudRadio>
+            <MudRadioGroup T="UsersAreasHelpdeskEnum?" Disabled="IsBusyProgress" @bind-Value="SelectedOption">
+                <MudRadio T="UsersAreasHelpdeskEnum?" Value="@UsersAreasHelpdeskEnum.Executor">Я исполнитель</MudRadio>
+                <MudRadio T="UsersAreasHelpdeskEnum?" Value="@UsersAreasHelpdeskEnum.Subscriber">Я подписчик</MudRadio>
+                <MudRadio T="UsersAreasHelpdeskEnum?" Value="@UsersAreasHelpdeskEnum.Main">Все</MudRadio>
+                <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
+                    <Authorized>
+                        <MudRadio T="UsersAreasHelpdeskEnum?" Value="null">root</MudRadio>
+                    </Authorized>
+                </AuthorizeView>
             </MudRadioGroup>
         </div>
     </div>
 </nav>
-@if(IsBusyProgress)
-{
-    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
-}
+
 <div class="card">
     <div class="card-body">
         <CascadingValue Value="SetTab">
@@ -41,8 +43,8 @@
 @code {
     HelpdeskJournalComponent _tab = default!;
 
-    UsersAreasHelpdeskEnum _selectedOption = UsersAreasHelpdeskEnum.Executor;
-    public UsersAreasHelpdeskEnum SelectedOption
+    UsersAreasHelpdeskEnum? _selectedOption = UsersAreasHelpdeskEnum.Executor;
+    public UsersAreasHelpdeskEnum? SelectedOption
     {
         get => _selectedOption;
         set
@@ -50,9 +52,18 @@
             _selectedOption = value;
             _tab.SetArea(value);
             IsBusyProgress = true;
-            InvokeAsync(async () => { await _tab.TableRef.ReloadServerData(); IsBusyProgress = false; _tab.StateHasChangedCall(); });
+            InvokeAsync(UpdateState);
         }
     }
+
+    async Task UpdateState()
+    {
+        await _tab.TableRef.ReloadServerData();
+        IsBusyProgress = false;
+        _tab.StateHasChangedCall();
+        StateHasChanged();
+    }
+
     void SetTab(HelpdeskJournalComponent page)
     {
         _tab = page;

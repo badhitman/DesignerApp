@@ -1,4 +1,10 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
 
 <label class="form-label">@Label</label>
 <InputRichTextComponent @bind-Value="TextValue" @ref="_currentTemplateInputRichText_ref" ReadOnly="IsBusyProgress" />

@@ -2,17 +2,18 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
 /// CreateIssueTheme
 /// </summary>
-public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, ILogger<RubricCreateOrUpdateReceive> loggerRepo)
     : IResponseReceive<RubricIssueHelpdeskModelDB?, int?>
 {
     /// <inheritdoc/>
@@ -22,6 +23,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
     public async Task<TResponseModel<int?>> ResponseHandleAction(RubricIssueHelpdeskModelDB? rubric)
     {
         ArgumentNullException.ThrowIfNull(rubric);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(rubric)}");
         TResponseModel<int?> res = new();
         rubric.Name = rubric.Name.Trim();
         if (string.IsNullOrEmpty(rubric.Name))

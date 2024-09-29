@@ -3,17 +3,19 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using IdentityLib;
 using SharedLib;
-using Microsoft.AspNetCore.Identity;
 
 namespace Transmission.Receives.web;
 
 /// <summary>
 /// SetRoleForUserReceive
 /// </summary>
-public class SetRoleForUserReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory)
+public class SetRoleForUserReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, ILogger<SetRoleForUserReceive> _logger)
     : IResponseReceive<SetRoleFoeUserRequestModel?, string[]?>
 {
     /// <inheritdoc/>
@@ -23,12 +25,9 @@ public class SetRoleForUserReceive(IDbContextFactory<IdentityAppDbContext> ident
     public async Task<TResponseModel<string[]?>> ResponseHandleAction(SetRoleFoeUserRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-
+        _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<string[]?> res = new();
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
-
-        //IQueryable<IdentityUserRole<string>> v = identityContext
-        //    .UserRoles.AsQueryable();
 
         IQueryable<ApplicationRole> q = identityContext
             .UserRoles

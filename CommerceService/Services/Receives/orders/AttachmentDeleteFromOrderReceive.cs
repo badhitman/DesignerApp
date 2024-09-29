@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -12,7 +13,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// AttachmentDeleteFromOrderReceive
 /// </summary>
-public class AttachmentDeleteFromOrderReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class AttachmentDeleteFromOrderReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<AttachmentDeleteFromOrderReceive> loggerRepo)
     : IResponseReceive<int?, bool?>
 {
     /// <inheritdoc/>
@@ -22,6 +23,7 @@ public class AttachmentDeleteFromOrderReceive(IDbContextFactory<CommerceContext>
     public async Task<TResponseModel<bool?>> ResponseHandleAction(int? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         return new()
         {

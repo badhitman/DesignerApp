@@ -2,4 +2,12 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-<MudTextField HelperText="@HelperText" @bind-Value="TextValue" Immediate Label="@Label" Variant="Variant.Outlined"></MudTextField>
+<div class="hstack gap-3">
+    <MudTextField HelperText="@HelperText" @bind-Value="TextValue" Immediate Label="@Label" Variant="Variant.Outlined"></MudTextField>
+    @if (IsBusyProgress)
+    {
+        <div class="spinner-grow" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    }
+</div>

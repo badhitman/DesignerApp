@@ -4,6 +4,7 @@
 
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 
@@ -15,6 +16,7 @@ namespace Transmission.Receives.helpdesk;
 public class StatusChangeReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
+    ILogger<StatusChangeReceive> LoggerRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<StatusChangeRequestModel>?, bool>
 {
@@ -25,6 +27,7 @@ public class StatusChangeReceive(
     public async Task<TResponseModel<bool>> ResponseHandleAction(TAuthRequestModel<StatusChangeRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        LoggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<bool> res = new()
         {
             Response = false,
@@ -45,7 +48,7 @@ public class StatusChangeReceive(
         if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
             return new() { Messages = issues_data.Messages };
 
-        var issue_data = issues_data.Response.Single();
+        IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
 
         if (!actor.IsAdmin &&
             issue_data.AuthorIdentityUserId != actor.UserId &&
@@ -78,8 +81,7 @@ public class StatusChangeReceive(
             res.AddInfo("Статус уже установлен");
         else
         {
-            if (string.IsNullOrWhiteSpace(
-                issue_data.ExecutorIdentityUserId) &&
+            if (string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId) &&
                 req.Payload.Step >= HelpdeskIssueStepsEnum.Progress &&
                 req.Payload.Step != HelpdeskIssueStepsEnum.Canceled)
             {

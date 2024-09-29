@@ -303,7 +303,7 @@ public class UsersProfilesService(
         string callbackUrl = $"{baseAddress}?userId={userId}&email={newEmail}&code={code}";
         await emailSender.SendConfirmationLinkAsync(user.ApplicationUser, newEmail, HtmlEncoder.Default.Encode(callbackUrl));
 
-        return ResponseBaseModel.CreateSuccess("Ссылка для подтверждения изменения отправлено на ваш E-mail. Пожалуйста, проверьте свою электронную почту.");
+        return ResponseBaseModel.CreateSuccess("Письмо с ссылкой для подтверждения изменения отправлено на ваш E-mail. Пожалуйста, проверьте свою электронную почту.");
     }
 
     /// <inheritdoc/>

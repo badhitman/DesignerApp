@@ -1,4 +1,5 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
 
 @foreach (TabAddressForOrderModelDb at in Document.AddressesTabs!)
 {
@@ -12,7 +13,7 @@
                     <tr>
                         <th scope="col">Наименование</th>
                         <th scope="col">Цена</th>
-                        <th scope="col">Количество</th>
+                        <th scope="col">Кол-во</th>
                         <th scope="col">Сумма</th>
                     </tr>
                 </thead>
@@ -25,4 +26,13 @@
             </table>
         </div>
     </div>
+}
+<MudButton Class="mt-3" OnClick="OrderToCart" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Скопировать заказ в корзину</MudButton>
+@if (Issue.StepIssue == HelpdeskIssueStepsEnum.Created)
+{
+    <MudButton Class="mt-3" OnClick="OrderNull" Variant="Variant.Outlined" Color="Color.Secondary" FullWidth="true">Отмена заказа</MudButton>
+}
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="my-7" />
 }

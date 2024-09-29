@@ -58,7 +58,7 @@
         <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text="Ссылки" ToolTip="Доступ к заполнению данными документов (в т.ч. анонимные пользователи)">
             <SessionsViewComponent />
         </MudTabPanel>
-        <AuthorizeView Roles="admin,manufacture">
+        <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.Admin},manufacture")">
             <Authorized>
                 <MudTabPanel Disabled="@(MainProject is null || IsBusyProgress)" Text=".NET" BadgeData='"C#"' BadgeColor="Color.Primary" ToolTip="Генерация кодовой базы C# .NET">
                     <ManufactureComponent @ref="manufacture_ref" />

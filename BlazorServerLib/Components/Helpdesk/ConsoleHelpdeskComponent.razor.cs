@@ -42,6 +42,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         stepNum = 0;
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<int> res = await storageRepo.SaveParameter(FilterUserId, CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId));
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -61,6 +62,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         stepNum = 0;
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<int> res = await storageRepo.SaveParameter(IsLarge, KeyStorageSizeColumns);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -73,6 +75,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<bool> res = await storageRepo.ReadParameter<bool>(KeyStorageSizeColumns);
         TResponseModel<string?> current_filter_user_res = await storageRepo.ReadParameter<string>(CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId));
         IsBusyProgress = false;

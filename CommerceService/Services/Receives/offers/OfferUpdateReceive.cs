@@ -6,13 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using Newtonsoft.Json;
 
 namespace Transmission.Receives.commerce;
 
 /// <summary>
 /// OfferUpdateReceive
 /// </summary>
-public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OfferUpdateReceive> loggerRepo)
     : IResponseReceive<OfferGoodModelDB?, int?>
 {
     /// <inheritdoc/>
@@ -22,6 +23,7 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
     public async Task<TResponseModel<int?>> ResponseHandleAction(OfferGoodModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         DateTime dtu = DateTime.UtcNow;

@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -12,7 +13,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// PaymentDocumentUpdateReceive
 /// </summary>
-public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PaymentDocumentUpdateReceive> loggerRepo)
     : IResponseReceive<PaymentDocumentBaseModel?, int?>
 {
     /// <inheritdoc/>
@@ -22,6 +23,7 @@ public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> com
     public async Task<TResponseModel<int?>> ResponseHandleAction(PaymentDocumentBaseModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         DateTime dtu = DateTime.UtcNow;

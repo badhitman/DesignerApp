@@ -20,6 +20,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+
     /// <summary>
     /// Card title
     /// </summary>
@@ -30,7 +31,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     /// KeyStorage
     /// </summary>
     [Parameter, EditorRequired]
-    public required StorageCloudParameterModel KeyStorage {  get; set; }
+    public required StorageCloudParameterModel KeyStorage { get; set; }
 
     /// <summary>
     /// CArd subtitle
@@ -80,6 +81,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
         SelectedChat = selected;
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<int> rest = await StorageRepo.SaveParameter(selected?.ChatTelegramId, KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

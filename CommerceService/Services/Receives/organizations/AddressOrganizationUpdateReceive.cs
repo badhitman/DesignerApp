@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -12,7 +13,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// AddressOrganizationUpdateReceive
 /// </summary>
-public class AddressOrganizationUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class AddressOrganizationUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<AddressOrganizationUpdateReceive> loggerRepo)
     : IResponseReceive<AddressOrganizationBaseModel?, int?>
 {
     /// <inheritdoc/>
@@ -22,6 +23,7 @@ public class AddressOrganizationUpdateReceive(IDbContextFactory<CommerceContext>
     public async Task<TResponseModel<int?>> ResponseHandleAction(AddressOrganizationBaseModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int?> res = new();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 

@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -10,18 +11,23 @@ using DbcLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// AttachmentForOrderReceive
+/// Прикрепить файл к заказу (счёт, акт и т.п.)
 /// </summary>
-public class AttachmentForOrderReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class AttachmentForOrderReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<AttachmentForOrderReceive> loggerRepo)
     : IResponseReceive<AttachmentForOrderRequestModel?, int?>
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Прикрепить файл к заказу (счёт, акт и т.п.)
+    /// </summary>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.AttachmentAddToOrderCommerceReceive;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Прикрепить файл к заказу (счёт, акт и т.п.)
+    /// </summary>
     public async Task<TResponseModel<int?>> ResponseHandleAction(AttachmentForOrderRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         AttachmentForOrderModelDB? file_db = await context.AttachmentsForOrders.FirstOrDefaultAsync(x => x.FilePoint == req.FilePoint);

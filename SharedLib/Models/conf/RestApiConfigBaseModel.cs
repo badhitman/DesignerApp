@@ -10,7 +10,7 @@ namespace SharedLib;
 public class RestApiConfigBaseModel
 {
     /// <summary>
-    /// Пользователи и их права (для удалённого доступа к сервру)
+    /// Пользователи и их права (для удалённого доступа к серверу)
     /// </summary>
     public ExpressUserPermissionModel[]? Permissions { get; set; }
 }

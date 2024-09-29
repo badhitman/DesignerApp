@@ -24,7 +24,6 @@ builder
 string curr_dir = Directory.GetCurrentDirectory();
 builder.Configuration.SetBasePath(curr_dir);
 
-
 builder.Configuration.SetBasePath(curr_dir);
 if (Path.Exists(Path.Combine(curr_dir, "appsettings.json")))
     builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);

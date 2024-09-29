@@ -6,13 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using Newtonsoft.Json;
 
 namespace Transmission.Receives.commerce;
 
 /// <summary>
 /// Organization update or create
 /// </summary>
-public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OrganizationUpdateReceive> loggerRepo)
     : IResponseReceive<TAuthRequestModel<OrganizationModelDB>?, int?>
 {
     /// <inheritdoc/>
@@ -22,6 +23,7 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
     public async Task<TResponseModel<int?>> ResponseHandleAction(TAuthRequestModel<OrganizationModelDB>? req)
     {
         ArgumentNullException.ThrowIfNull(req?.Payload);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<int?> res = new() { Response = 0 };
         (bool IsValid, List<System.ComponentModel.DataAnnotations.ValidationResult> ValidationResults) = GlobalTools.ValidateObject(req.Payload);
         if (!IsValid)

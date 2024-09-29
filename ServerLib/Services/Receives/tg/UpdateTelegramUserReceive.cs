@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 
@@ -21,6 +22,7 @@ public class UpdateTelegramUserReceive(IWebAppService tgWebRepo, ILogger<UpdateT
     public async Task<TResponseModel<CheckTelegramUserAuthModel?>> ResponseHandleAction(CheckTelegramUserHandleModel? user)
     {
         TResponseModel<CheckTelegramUserAuthModel?> res = new();
+        _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(user, GlobalStaticConstants.JsonSerializerSettings)}");
         string msg;
         if (user is null)
         {

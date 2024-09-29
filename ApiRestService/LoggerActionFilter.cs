@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Collections.ObjectModel;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using Newtonsoft.Json;
@@ -9,26 +8,20 @@ using SharedLib;
 
 namespace ApiRestService;
 
-/// <summary>
-/// 
-/// </summary>
+/// <inheritdoc/>
 public class LoggerActionFilter : IActionFilter
 {
     readonly ILogger _logger;
     ReadOnlyDictionary<string, object?>? actionArguments;
     string project_name;
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc/>
     public LoggerActionFilter(ILoggerFactory loggerFactory)
     {
         project_name ??= Assembly.GetCallingAssembly().GetName().Name ?? "asp_action";
         _logger = loggerFactory.CreateLogger(project_name);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc/>
     public void OnActionExecuted(ActionExecutedContext context)
     {
         ControllerActionDescriptor? cad = context.ActionDescriptor as ControllerActionDescriptor;
@@ -36,8 +29,6 @@ public class LoggerActionFilter : IActionFilter
         // Пропускаем логирование для отмеченных Nolog
         if (context.Controller.GetType().GetTypeInfo().IsDefined(typeof(LoggerNologAttribute)) || cad?.MethodInfo.IsDefined(typeof(LoggerNologAttribute)) == true)
             return;
-
-        JsonSerializerSettings jss = new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
 
         string pars = string.Empty;
 
@@ -50,7 +41,7 @@ public class LoggerActionFilter : IActionFilter
 
             Dictionary<string, object?> pf = actionArguments.Where(x => x.Value is not CancellationToken && !fs.Contains(x.Key)).ToDictionary(x => x.Key, x => x.Value);
 
-            pars = JsonConvert.SerializeObject(pf, Formatting.None, jss);
+            pars = JsonConvert.SerializeObject(pf, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings);
         }
 
         string msg = $"{context.HttpContext.Request.Path}|{pars}";
@@ -64,9 +55,7 @@ public class LoggerActionFilter : IActionFilter
             _logger.LogError("{msg}|{ex}", msg, context.Exception.Message.Replace('\n', ' '));
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc/>
     public void OnActionExecuting(ActionExecutingContext context)
     {
         if (context.Controller.GetType().GetTypeInfo().IsDefined(typeof(LoggerNologAttribute)) || (context.ActionDescriptor is ControllerActionDescriptor cad && cad.MethodInfo.IsDefined(typeof(LoggerNologAttribute))))

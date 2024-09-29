@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -12,7 +13,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// Organization set legal
 /// </summary>
-public class OrganizationSetLegalReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class OrganizationSetLegalReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OrganizationSetLegalReceive> loggerRepo)
     : IResponseReceive<OrganizationLegalModel?, bool?>
 {
     /// <inheritdoc/>
@@ -22,6 +23,7 @@ public class OrganizationSetLegalReceive(IDbContextFactory<CommerceContext> comm
     public async Task<TResponseModel<bool?>> ResponseHandleAction(OrganizationLegalModel? org)
     {
         ArgumentNullException.ThrowIfNull(org);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(org)}");
         TResponseModel<bool?> res = new() { Response = false };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         OrganizationModelDB? org_db = await context.Organizations.FirstOrDefaultAsync(x => x.Id == org.Id);

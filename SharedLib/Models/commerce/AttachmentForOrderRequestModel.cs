@@ -10,17 +10,17 @@ namespace SharedLib;
 public class AttachmentForOrderRequestModel
 {
     /// <summary>
-    /// FileName
+    /// Имя файла
     /// </summary>
     public required string FileName { get; set; }
 
     /// <summary>
-    /// FilePoint
+    /// Идентификатор файла, который используется для чтения данных из хранилища
     /// </summary>
     public required string FilePoint { get; set; }
 
     /// <summary>
-    /// FileSize
+    /// Размер файла
     /// </summary>
     public required long FileSize { get; set; }
 

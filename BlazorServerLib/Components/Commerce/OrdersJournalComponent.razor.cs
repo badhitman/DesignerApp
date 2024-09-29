@@ -76,7 +76,8 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
             }
         });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        IssuesCacheDump.AddRange(res.Response!);
+        if (res.Response is not null)
+            IssuesCacheDump.AddRange(res.Response);
     }
 
     async Task<TableData<OrderDocumentModelDB>> ServerReload(TableState state, CancellationToken token)

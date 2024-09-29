@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 
@@ -21,6 +22,7 @@ public class TelegramJoinAccountConfirmReceive(IWebAppService tgWebRepo, ILogger
     public async Task<TResponseModel<object?>> ResponseHandleAction(TelegramJoinAccountConfirmModel? confirm)
     {
         TResponseModel<object?> res = new();
+        _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(confirm, GlobalStaticConstants.JsonSerializerSettings)}");
         string msg;
         if (confirm is null)
         {

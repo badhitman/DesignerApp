@@ -32,7 +32,7 @@
             <MudTh>Ед. изм.</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Goods"> <a href="/offer-card/@context.Id">@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</a> </MudTd>
+            <MudTd DataLabel="Goods"> <a href="/goods/offer-card/@context.Id">@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</a> </MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Price">
                 @context.Price <PricesRulesForOfferComponent OfferGood="context" />

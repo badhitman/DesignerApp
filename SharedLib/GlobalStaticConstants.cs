@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Newtonsoft.Json;
+
 namespace SharedLib;
 
 /// <summary>
@@ -9,6 +11,25 @@ namespace SharedLib;
 /// </summary>
 public static partial class GlobalStaticConstants
 {
+    /// <summary>
+    /// JsonSerializerSettings
+    /// </summary>
+    public static JsonSerializerSettings JsonSerializerSettings => new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+
+
+    static string? _initSalt;
+    /// <summary>
+    /// InitSalt
+    /// </summary>
+    public static string InitSalt
+    {
+        get
+        {
+            _initSalt ??= Guid.NewGuid().ToString();
+            return _initSalt;
+        }
+    }
+
     /// <summary>
     /// Fake Host
     /// </summary>
@@ -297,13 +318,17 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string AddressOrganizationUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.ADDRESS_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Обновление номенклатуры
+        /// </summary>
         public readonly static string GoodsUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string OrderUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Прикрепить файл к заказу (счёт, акт и т.п.)
+        /// </summary>
         public readonly static string AttachmentAddToOrderCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.ATTACHMENT_ACTION_NAME, Routes.ADD_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -339,7 +364,9 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string AddressOrganizationDeleteCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORGANIZATIONS_CONTROLLER_NAME, Routes.ADDRESS_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Удалить оффер
+        /// </summary>
         public readonly static string OfferDeleteCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.OFFER_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -756,6 +783,16 @@ public static partial class GlobalStaticConstants
         /// File
         /// </summary>
         public const string FILE_CONTROLLER_NAME = "file";
+
+        /// <summary>
+        /// Files
+        /// </summary>
+        public const string FILES_CONTROLLER_NAME = "files";
+
+        /// <summary>
+        /// Mongo
+        /// </summary>
+        public const string MONGO_CONTROLLER_NAME = "mongo";
 
         /// <summary>
         /// Chat

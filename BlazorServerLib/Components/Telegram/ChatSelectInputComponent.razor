@@ -1,4 +1,10 @@
-﻿@inherits LazySelectorComponent<ChatTelegramModelDB>
+﻿@using MudBlazor
+@inherits LazySelectorComponent<ChatTelegramModelDB>
+
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
 
 <div id="@toggleBtnId" class="input-group mb-3">
     <button disabled="@(IsBusyProgress)" @onclick="EditToggle" class="btn btn-outline-secondary dropdown-toggle @ShowIfEditing" type="button" data-bs-toggle="dropdown" data-meta="@yToggleBtn" aria-expanded="@IsEditing">Изменить</button>

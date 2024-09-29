@@ -55,7 +55,7 @@ builder.ConfigureServices((context, services) =>
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
     ;
-
+    services.AddMemoryCache();
     services.AddSingleton<WebConfigModel>();
     services.AddOptions();
 

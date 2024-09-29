@@ -22,7 +22,6 @@ public class PricesRulesGetForOffersReceive(IDbContextFactory<CommerceContext> c
     public async Task<TResponseModel<PriceRuleForOfferModelDB[]?>> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-
         TResponseModel<PriceRuleForOfferModelDB[]?> res = new();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         return new TResponseModel<PriceRuleForOfferModelDB[]?>()

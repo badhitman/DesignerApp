@@ -6,19 +6,24 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Services;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using Telegram.Bot;
 using SharedLib;
 using DbcLib;
-using Telegram.Bot.Polling;
 
 namespace Transmission.Receives.telegram;
 
 /// <summary>
 /// Отправить сообщение пользователю через TelegramBot SendTextMessageTelegramBotModel
 /// </summary>
-public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbContextFactory<TelegramBotContext> tgDbFactory, IWebRemoteTransmissionService webRemoteCall, StoreTelegramService storeTgRepo, ILogger<SendTextMessageTelegramReceive> _logger)
+public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
+    IDbContextFactory<TelegramBotContext> tgDbFactory,
+    IWebRemoteTransmissionService webRemoteCall,
+    StoreTelegramService storeTgRepo,
+    ILogger<SendTextMessageTelegramReceive> _logger)
     : IResponseReceive<SendTextMessageTelegramBotModel?, MessageComplexIdsModel?>
 {
     /// <inheritdoc/>
@@ -28,6 +33,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
     public async Task<TResponseModel<MessageComplexIdsModel?>> ResponseHandleAction(SendTextMessageTelegramBotModel? message)
     {
         ArgumentNullException.ThrowIfNull(message);
+        _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(message)}");
         TResponseModel<MessageComplexIdsModel?> res = new();
         string msg;
         if (string.IsNullOrWhiteSpace(message.Message))
@@ -47,12 +53,10 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient, IDbCo
             res.AddWarning(msg);
         }
 
-
         IReplyMarkup? replyKB = message.ReplyKeyboard is null
             ? null
             : new InlineKeyboardMarkup(message.ReplyKeyboard
             .Select(x => x.Select(y => InlineKeyboardButton.WithCallbackData(y.Title, y.Data))));
-
 
         Message sender_msg;
         try

@@ -6,12 +6,22 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace StorageService;
 
 /// <inheritdoc/>
-public class SerializeStorageService(IDbContextFactory<StorageContext> cloudParametersDbFactory, ILogger<SerializeStorageService> loggerRepo) : ISerializeStorage
+public class SerializeStorageService(
+    IDbContextFactory<StorageContext> cloudParametersDbFactory,
+    IMemoryCache cache,
+    ILogger<SerializeStorageService> loggerRepo) : ISerializeStorage
 {
+#if DEBUG
+    static readonly TimeSpan _ts = TimeSpan.FromSeconds(50);
+#else
+    static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
+#endif
+
     /// <inheritdoc/>
     public async Task<T?[]> Find<T>(RequestStorageCloudParameterModel req)
     {
@@ -28,6 +38,10 @@ public class SerializeStorageService(IDbContextFactory<StorageContext> cloudPara
     /// <inheritdoc/>
     public async Task<T?> Read<T>(StorageCloudParameterModel req)
     {
+        string mem_key = $"{req.Name}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
+        if (cache.TryGetValue(mem_key, out T? sd))
+            return sd;
+
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         string _tn = typeof(T).FullName ?? throw new Exception();
 
@@ -67,6 +81,11 @@ public class SerializeStorageService(IDbContextFactory<StorageContext> cloudPara
             PrefixPropertyName = set.PrefixPropertyName,
         };
         ResponseBaseModel res = await FlushParameter(_set, trimHistory);
+        if (res.Success())
+        {
+            string mem_key = $"{set.Name}/{set.OwnerPrimaryKey}/{set.PrefixPropertyName}/{set.ApplicationName}";
+            cache.Set(mem_key, obj, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
+        }
     }
 
     /// <inheritdoc/>
@@ -142,8 +161,15 @@ public class SerializeStorageService(IDbContextFactory<StorageContext> cloudPara
     /// <inheritdoc/>
     public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageCloudParameterModel req)
     {
-        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        string mem_key = $"{req.Name}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
         TResponseModel<StorageCloudParameterPayloadModel?> res = new();
+        if (cache.TryGetValue(mem_key, out StorageCloudParameterPayloadModel? sd))
+        {
+            res.Response = sd;
+            return res;
+        }
+
+        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         StorageCloudParameterModelDB? parameter_db = await context
             .CloudProperties
             .OrderByDescending(x => x.CreatedAt)
@@ -165,6 +191,8 @@ public class SerializeStorageService(IDbContextFactory<StorageContext> cloudPara
             };
         else
             res.AddWarning($"Параметр не найден");
+
+        cache.Set(mem_key, res.Response, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
 
         return res;
     }
