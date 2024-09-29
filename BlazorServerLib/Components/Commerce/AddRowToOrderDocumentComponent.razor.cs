@@ -52,12 +52,14 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
     private void OnExpandAddingOffer()
     {
         IsShowAddingOffer = !IsShowAddingOffer;
-        if(IsShowAddingOffer)
+        if (IsShowAddingOffer)
         {
             SelectedOffer = ActualOffers.FirstOrDefault();
             _selectedOfferId = SelectedOffer?.Id;
         }
     }
+
+    IEnumerable<IGrouping<GoodsModelDB?, OfferGoodModelDB>> OffersNodes => ActualOffers.GroupBy(x => x.Goods);
 
     void AddOffer()
     {
@@ -74,7 +76,6 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
             Id = SelectedOffer.Id,
         });
         QuantityValue = 1;
-        //AllOffers.RemoveAll(x => x.Id == SelectedOffer?.Id);
 
         SelectedOffer = ActualOffers.FirstOrDefault();
         _selectedOfferId = SelectedOffer?.Id;

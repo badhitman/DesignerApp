@@ -9,6 +9,7 @@ using RemoteCallLib;
 using Telegram.Bot;
 using SharedLib;
 using DbcLib;
+using Newtonsoft.Json;
 
 namespace Transmission.Receives.telegram;
 
@@ -16,7 +17,8 @@ namespace Transmission.Receives.telegram;
 /// Переслать сообщение пользователю через TelegramBot ForwardMessageTelegramReceive
 /// </summary>
 public class ForwardMessageTelegramReceive(
-    ITelegramBotClient _botClient,
+    ITelegramBotClient _botClient, 
+    ILogger<ForwardMessageTelegramReceive> loggerRepo,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
     StoreTelegramService storeTgRepo)
     : IResponseReceive<ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>
@@ -28,6 +30,7 @@ public class ForwardMessageTelegramReceive(
     public async Task<TResponseModel<MessageComplexIdsModel?>> ResponseHandleAction(ForwardMessageTelegramBotModel? message)
     {
         ArgumentNullException.ThrowIfNull(message);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(message)}");
         TResponseModel<MessageComplexIdsModel?> res = new();
         Message sender_msg;
         try

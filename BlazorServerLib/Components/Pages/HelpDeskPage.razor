@@ -19,34 +19,4 @@
             </MudPaper>
         </MudTabPanel>
     </AuthorizeView>
-
-    <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.HelpDeskTelegramBotRubricsManage},{GlobalStaticConstants.Roles.Admin}")">
-        <Authorized>
-            <MudTabPanel ToolTip="Доска заявок" Text="Консоль" Icon="@Icons.Material.Filled.Apps">
-                <MudPaper Class="ma-2" Elevation="3">
-                    <ConsoleHelpdeskComponent />
-                </MudPaper>
-            </MudTabPanel>
-        </Authorized>
-    </AuthorizeView>
-
-    <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.HelpDeskTelegramBotChatsManage},{GlobalStaticConstants.Roles.Admin}")">
-        <Authorized>
-            <MudTabPanel ToolTip="TelegramBot чаты" Text="Чаты" Icon="@Icons.Custom.Brands.Telegram">
-                <MudPaper Class="ma-2" Elevation="3">
-                    <ChatsTableComponent />
-                </MudPaper>
-            </MudTabPanel>
-        </Authorized>
-    </AuthorizeView>
-
-    <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
-        <Authorized>
-            <MudTabPanel ToolTip="Управление настройками" Text="Инструменты" Icon="@Icons.Material.Filled.Build">
-                <MudPaper Class="ma-2" Elevation="3">
-                    <ParametersHelpdeskComponent />
-                </MudPaper>
-            </MudTabPanel>
-        </Authorized>
-    </AuthorizeView>
 </MudTabs>

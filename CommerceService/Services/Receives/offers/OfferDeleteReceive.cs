@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -10,35 +11,55 @@ using DbcLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// OfferDeleteReceive
+/// Удалить оффер
 /// </summary>
-public class OfferDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class OfferDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OfferDeleteReceive> loggerRepo)
     : IResponseReceive<int?, bool?>
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Удалить оффер
+    /// </summary>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OfferDeleteCommerceReceive;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Удалить оффер
+    /// </summary>
     public async Task<TResponseModel<bool?>> ResponseHandleAction(int? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<bool?> res = new() { Response = false };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        OrderDocumentModelDB[] links = await context
+        int lc = await context
             .OrdersDocuments
             .Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.OfferId == req))
-            .ToArrayAsync();
+            .CountAsync();
 
-        if (links.Length != 0)
-            res.AddError($"Предложение используется в заказах: {links.Length} шт.");
-
-        if (!res.Success())
+        string msg;
+        if (lc != 0)
+        {
+            msg = $"Оффер не может быть удалён т.к. используется в заказах: {lc} шт.";
+            res.AddError(msg);
+            loggerRepo.LogError(msg);
             return res;
+        }
 
-        await context.OffersGoods.Where(x => x.Id == req).ExecuteDeleteAsync();
-        res.AddSuccess("Команда успешно выполнена");
-        res.Response = true;
+        res.Response = await context.OffersGoods.Where(x => x.Id == req).ExecuteDeleteAsync() > 0;
+
+        if (res.Response == true)
+        {
+            msg = "Команда успешно выполнена";
+            res.AddSuccess(msg);
+            loggerRepo.LogInformation($"{msg}. Оффер #{req} удалён");
+        }
+        else
+        {
+            msg = $"Оффер #{req} отсутствует в БД. Возможн, он был удалён ранее";
+            res.AddInfo(msg);
+            loggerRepo.LogWarning($"{msg}. Оффер #{req} удалён");
+        }
+
         return res;
     }
 }

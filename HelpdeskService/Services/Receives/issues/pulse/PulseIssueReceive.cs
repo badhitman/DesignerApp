@@ -4,6 +4,7 @@
 
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 
@@ -17,6 +18,7 @@ namespace Transmission.Receives.helpdesk;
 /// </remarks>
 public class PulseIssueReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
+    ILogger<PulseIssueReceive> loggerRepo,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<PulseIssueBaseModel>?, bool>
@@ -28,6 +30,7 @@ public class PulseIssueReceive(
     public async Task<TResponseModel<bool>> ResponseHandleAction(TAuthRequestModel<PulseIssueBaseModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<bool> res = new()
         {
             Response = false,

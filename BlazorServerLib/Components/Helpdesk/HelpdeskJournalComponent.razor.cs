@@ -48,7 +48,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     /// UserArea
     /// </summary>
     [Parameter, EditorRequired]
-    public required UsersAreasHelpdeskEnum UserArea { get; set; }
+    public required UsersAreasHelpdeskEnum? UserArea { get; set; }
 
     /// <summary>
     /// UserIdentityId
@@ -66,7 +66,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// SetArea
     /// </summary>
-    public void SetArea(UsersAreasHelpdeskEnum set)
+    public void SetArea(UsersAreasHelpdeskEnum? set)
     {
         UserArea = set;
     }
@@ -84,7 +84,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     {
         SetTab(this);
         IsBusyProgress = true;
-
+        await Task.Delay(1);
         if(string.IsNullOrWhiteSpace(UserIdentityId))
         {
             AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
@@ -95,10 +95,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
         TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync(UserIdentityId);
         if (!_current_user.Success() || _current_user.Response is null)
         {
-            IsBusyProgress = false;
-            _current_user.AddError($"Ошибка чтения данных пользователя [{UserIdentityId}]");
-            SnackbarRepo.ShowMessagesResponse(_current_user.Messages);
-            LoggerRepo.LogError($"Ошибка чтения данных пользователя [{UserIdentityId}]");
+            NavRepo.ReloadPage();
             return;
         }
 
@@ -112,6 +109,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     private async Task<TableData<IssueHelpdeskModel>> ServerReload(TableState state, CancellationToken token)
     {
         IsBusyProgress = true;
+        await Task.Delay(1, token);
         TPaginationRequestModel<GetIssuesForUserRequestModel> req = new()
         {
             Payload = new()
@@ -147,6 +145,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
             return;
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentity(_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

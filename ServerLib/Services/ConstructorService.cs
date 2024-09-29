@@ -3274,7 +3274,7 @@ public partial class ConstructorService(
         context_forms.Remove(session_db);
         await context_forms.SaveChangesAsync(cancellationToken);
 
-        string json_string = JsonConvert.SerializeObject(session_db, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+        string json_string = JsonConvert.SerializeObject(session_db, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings);
         logger.LogWarning($"удаление сессии: {json_string}");
 
         return ResponseBaseModel.CreateSuccess($"Сессия #{session_id} успешно удалена из БД");

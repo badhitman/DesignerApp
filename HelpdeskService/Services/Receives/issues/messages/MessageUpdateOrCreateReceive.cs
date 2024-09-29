@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using Newtonsoft.Json;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -15,6 +16,7 @@ namespace Transmission.Receives.helpdesk;
 public class MessageUpdateOrCreateReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
+    ILogger<MessageUpdateOrCreateReceive> loggerRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<IssueMessageHelpdeskBaseModel>?, int?>
 {
@@ -27,6 +29,7 @@ public class MessageUpdateOrCreateReceive(
     public async Task<TResponseModel<int?>> ResponseHandleAction(TAuthRequestModel<IssueMessageHelpdeskBaseModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<int?> res = new();
 
         if (string.IsNullOrWhiteSpace(req.Payload.MessageText))

@@ -19,11 +19,11 @@
             <MudTh>Ед.изм.</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Имя"><a href="/goods-card/@context.Id">@context.Name</a></MudTd>
+            <MudTd DataLabel="Имя"><a href="/goods/card/@context.Id">@context.Name</a></MudTd>
             <MudTd DataLabel="Ед.изм.">@context.BaseUnit.DescriptionInfo()</MudTd>
         </RowTemplate>
         <NoRecordsContent>
-            <MudText>Данные отсутсвуют</MudText>
+            <MudText>Данные отсутствуют</MudText>
         </NoRecordsContent>
         <LoadingContent>
             <MudText>Загрузка...</MudText>

@@ -74,7 +74,7 @@ public class RabbitClient : IRabbitClient
             string content = Encoding.UTF8.GetString(e.Body.ToArray());
             try
             {
-                res = JsonConvert.DeserializeObject<TResponseModel<T>>(content)
+                res = JsonConvert.DeserializeObject<TResponseModel<T>>(content, GlobalStaticConstants.JsonSerializerSettings)
                     ?? throw new Exception("parse error {0CBCCD44-63C8-4E93-8349-11A8BE63B235}");
             }
             catch (Exception ex)
@@ -114,7 +114,7 @@ public class RabbitClient : IRabbitClient
         string request_payload_json = "";
         try
         {
-            request_payload_json = JsonConvert.SerializeObject(request, Formatting.Indented, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            request_payload_json = JsonConvert.SerializeObject(request, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings);
         }
         catch (Exception ex)
         {
@@ -139,6 +139,7 @@ public class RabbitClient : IRabbitClient
         }
         catch (OperationCanceledException)
         {
+            //res.AddInfo("Обработка запроса прервана: OperationCanceledException");
             loggerRepo.LogDebug($"response for {response_topic}");
         }
         catch (Exception ex)
@@ -150,7 +151,7 @@ public class RabbitClient : IRabbitClient
         if (stopwatch.IsRunning)
         {
             stopwatch.Stop();
-            res.AddError($"Прервано по таймауту: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
+            res.AddInfo($"Elapsed: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
         }
 
         return Task.FromResult(res);

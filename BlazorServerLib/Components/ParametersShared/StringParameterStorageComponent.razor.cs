@@ -47,8 +47,17 @@ public partial class StringParameterStorageComponent : BlazorBusyComponentBaseMo
         set
         {
             _textValue = value;
-            InvokeAsync(async () => { await StoreRepo.SaveParameter(_textValue, KeyStorage); });
+            InvokeAsync(StoreData);
         }
+    }
+
+    async Task StoreData()
+    {
+        IsBusyProgress = true;
+        await Task.Delay(1);
+        await StoreRepo.SaveParameter(_textValue, KeyStorage);
+        IsBusyProgress = false;
+        StateHasChanged();
     }
 
     /// <inheritdoc/>

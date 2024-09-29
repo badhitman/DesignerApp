@@ -1,4 +1,5 @@
 ﻿@using MudBlazor
+@using System.Globalization
 @inherits BlazorBusyComponentBaseModel
 
 <MudTable Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true">
@@ -13,10 +14,30 @@
         <MudTh>Статус</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Создан"><a href="/issue-card/@context.HelpdeskId">@context.CreatedAtUTC</a></MudTd>
+        @{
+            IssueHelpdeskModelDB? hd_doc = IssuesCacheDump.FirstOrDefault(x => x.Id == context.HelpdeskId);
+        }
+        <MudTd DataLabel="Создан">
+            @{
+                DateTime msk_dt = context.CreatedAtUTC.GetMsk();
+                CultureInfo cultureInfo = new CultureInfo("ru-RU");
+            }
+            @if (hd_doc is null)
+            {
+                <span>
+                    @msk_dt.ToString("d", cultureInfo) <sup>@msk_dt.ToString("t", cultureInfo)</sup>
+                </span>
+            }
+            else
+            {
+                <a href="/issue-card/@context.HelpdeskId">
+                    @msk_dt.ToString("d", cultureInfo) <sup>@msk_dt.ToString("t", cultureInfo)</sup>
+                </a>
+            }
+        </MudTd>
         <MudTd DataLabel="Информация">@context.Name</MudTd>
         <MudTd DataLabel="Сумма">@context.TotalSumForRows()</MudTd>
-        <MudTd DataLabel="Статус">@IssuesCacheDump.FirstOrDefault(x => x.Id == context.HelpdeskId)!.StepIssue.DescriptionInfo()</MudTd>
+        <MudTd DataLabel="Статус">@hd_doc?.StepIssue.DescriptionInfo()</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>

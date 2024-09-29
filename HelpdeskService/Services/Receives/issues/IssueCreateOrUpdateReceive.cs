@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using Newtonsoft.Json;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -28,6 +29,7 @@ public class IssueCreateOrUpdateReceive(
     public async Task<TResponseModel<int>> ResponseHandleAction(TAuthRequestModel<IssueUpdateRequestModel>? issue_upd)
     {
         ArgumentNullException.ThrowIfNull(issue_upd);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(issue_upd)}");
         TResponseModel<int> res = new() { Response = 0 };
 
         TResponseModel<UserInfoModel[]?> users_rest = await webTransmissionRepo.GetUsersIdentity([issue_upd.SenderActionUserId]);

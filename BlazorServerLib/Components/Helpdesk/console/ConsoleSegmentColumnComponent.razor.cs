@@ -63,6 +63,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
     async Task LoadData()
     {
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> res = await HelpdeskRepo.ConsoleIssuesSelect(new TPaginationRequestModel<ConsoleIssuesRequestModel>
         {
             PageNum = pageNum,
@@ -92,7 +93,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(!firstRender && _luf != UserFilter)
+        if (!firstRender && _luf != UserFilter)
         {
             pageNum = 0;
             Issues.Clear();

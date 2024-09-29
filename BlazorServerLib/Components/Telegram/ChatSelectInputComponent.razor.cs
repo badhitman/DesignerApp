@@ -28,6 +28,7 @@ public partial class ChatSelectInputComponent : LazySelectorComponent<ChatTelegr
     public override async Task LoadPartData()
     {
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?> rest = await TelegramRepo
             .ChatsSelect(new()
             {
@@ -61,6 +62,7 @@ public partial class ChatSelectInputComponent : LazySelectorComponent<ChatTelegr
         }
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<ChatTelegramModelDB[]?> rest = await TelegramRepo.ChatsReadTelegram([SelectedChat]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

@@ -2,18 +2,19 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
 /// Сдвинуть рубрику
 /// </summary>
-public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, ILogger<RubricMoveReceive> loggerRepo)
     : IResponseReceive<RowMoveModel?, bool?>
 {
     /// <inheritdoc/>
@@ -23,6 +24,7 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
     public async Task<TResponseModel<bool?>> ResponseHandleAction(RowMoveModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<bool?> res = new();
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();

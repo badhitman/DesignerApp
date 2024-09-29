@@ -2,6 +2,11 @@
 
 @inherits BlazorBusyComponentBaseModel
 
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+
 <div class="hstack">
     <h5 class="card-title">@StepIssue.DescriptionInfo()</h5>
     @if (IsLarge)

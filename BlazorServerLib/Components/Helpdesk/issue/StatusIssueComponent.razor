@@ -4,32 +4,30 @@
 
 @if (IsBusyProgress)
 {
-    <MudProgressCircular Indeterminate="true" />
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
 }
-else
-{
-    <MudSelect ReadOnly="@(!CanEdit)" @bind-Value="IssueStep" T="HelpdeskIssueStepsEnum" Label="Статус" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-        @foreach (HelpdeskIssueStepsEnum step in Steps())
-        {
-            <MudSelectItem Class="@(step == Issue.StepIssue ? "text-success fw-bold" : "")" T="HelpdeskIssueStepsEnum" Value="@step">
-                @step.DescriptionInfo()
-            </MudSelectItem>
-        }
-    </MudSelect>
 
-    @if (IssueStep != Issue.StepIssue)
+<MudSelect ReadOnly="@(!CanEdit || IsBusyProgress)" @bind-Value="IssueStep" T="HelpdeskIssueStepsEnum" Label="Статус" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (HelpdeskIssueStepsEnum step in Steps())
     {
-        <figure class="text-center">
-            <blockquote class="blockquote">
-                <p>Изменение статуса.</p>
-            </blockquote>
-            <figcaption class="blockquote-footer">
-                Подтверждаете <cite>смену состояния?</cite>
-            </figcaption>
-        </figure>
-        <div class="d-grid gap-2">
-            <button @onclick="SaveChange" class="btn btn-outline-primary" type="button">Подтвердить</button>
-            <button @onclick="() => IssueStep = Issue.StepIssue" class="btn btn-outline-info" type="button">Отмена</button>
-        </div>
+        <MudSelectItem Class="@(step == Issue.StepIssue ? "text-success fw-bold" : "")" T="HelpdeskIssueStepsEnum" Value="@step">
+            @step.DescriptionInfo()
+        </MudSelectItem>
     }
+</MudSelect>
+
+@if (IssueStep != Issue.StepIssue)
+{
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <p>Изменение статуса.</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Подтверждаете <cite>смену состояния?</cite>
+        </figcaption>
+    </figure>
+    <div class="d-grid gap-2">
+        <button disabled="@(!CanEdit || IsBusyProgress)" @onclick="SaveChange" class="btn btn-outline-primary" type="button">Подтвердить</button>
+        <button disabled="@(!CanEdit || IsBusyProgress)" @onclick="() => IssueStep = Issue.StepIssue" class="btn btn-outline-info" type="button">Отмена</button>
+    </div>
 }

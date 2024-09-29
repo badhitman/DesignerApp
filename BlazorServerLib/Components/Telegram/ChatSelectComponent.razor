@@ -9,6 +9,11 @@
     }
 </style>
 
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+
 <div class="card my-2">
     <div class="card-body" style="@(heightCard > 0 ?  $"min-height:{(int)heightCard}px;" : "")">
         <h5 class="card-title">@Title</h5>

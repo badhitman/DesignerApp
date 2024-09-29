@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -12,7 +13,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// PaymentDocumentDeleteReceive
 /// </summary>
-public class PaymentDocumentDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class PaymentDocumentDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PaymentDocumentDeleteReceive> loggerRepo)
     : IResponseReceive<int?, bool?>
 {
     /// <inheritdoc/>
@@ -22,6 +23,7 @@ public class PaymentDocumentDeleteReceive(IDbContextFactory<CommerceContext> com
     public async Task<TResponseModel<bool?>> ResponseHandleAction(int? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<bool?> res = new();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         DateTime dtu = DateTime.UtcNow;

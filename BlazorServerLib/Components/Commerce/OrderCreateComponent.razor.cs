@@ -60,7 +60,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         }
     }
 
-
+    /// <summary>
+    /// Предварительный набор адресов, который пользователь должен утвердить/подтвердить.
+    /// </summary>
     IEnumerable<AddressOrganizationModelDB>? _prevSelectedAddresses;
     List<AddressOrganizationModelDB>? _selectedAddresses = [];
     IEnumerable<AddressOrganizationModelDB>? SelectedAddresses
@@ -68,6 +70,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         get => _selectedAddresses ?? [];
         set
         {
+            if (_prevSelectedAddresses is not null)
+                return;
+
             CurrentCart.AddressesTabs ??= [];
 
             // адреса/вкладки, которые следует добавить
@@ -111,27 +116,33 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
                 .Where(x => value?.Any(y => y.Id == x.AddressOrganizationId) != true).ToArray();
 
             // адреса/вкладки, которые можно свободно удалить (без строк)
-            _prevSelectedAddresses = _qr
-                .Where(x => x.Rows is null || x.Rows.Count == 0)
-                .Select(Convert)
-                .ToArray();
-            if (_prevSelectedAddresses.Any())
+            AddressOrganizationModelDB[] _prev = _qr
+                 .Where(x => x.Rows is null || x.Rows.Count == 0)
+                 .Select(Convert)
+                 .ToArray();
+            if (_prev.Length != 0)
             {
-                CurrentCart.AddressesTabs!.RemoveAll(x => _prevSelectedAddresses!.Any(y => y.Id == x.AddressOrganizationId));
+                CurrentCart.AddressesTabs!.RemoveAll(x => _prev.Any(y => y.Id == x.AddressOrganizationId));
                 _selectedAddresses = [.. CurrentCart.AddressesTabs.Select(Convert)];
                 InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
             }
 
             // адреса/вкладки, которые имеют строки: требуют подтверждения у пользователя
-            _prevSelectedAddresses = _qr
+            _prev = _qr
                 .Where(x => x.Rows is not null && x.Rows.Count != 0)
                 .Select(Convert)
                 .ToArray();
 
-            if (_prevSelectedAddresses.Any())
+            if (_prev.Length != 0)
+            {
+                _prevSelectedAddresses = value;
                 _visibleChangeAddresses = true;
+            }
             else
+            {
                 _prevSelectedAddresses = null;
+                _selectedAddresses = [.. value];
+            }
         }
     }
 
@@ -160,6 +171,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
             return;
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([.. offers_load]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -170,6 +182,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
 
     void CalculateDiscounts()
     {
+        if (GroupingRows.Any(x => x.Any(y => y.Offer is null)))
+            return;
+
         string json_dump_discounts_before = JsonConvert.SerializeObject(DiscountsDetected);
         DiscountsDetected.Clear();
         foreach (IGrouping<int, RowOfOrderDocumentModelDB> node in GroupingRows)
@@ -219,19 +234,21 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    void SubmitChangeAddresses()
+    async Task SubmitChangeAddresses()
     {
         CurrentCart.AddressesTabs ??= [];
-        if (_prevSelectedAddresses is null)
+        if (_prevSelectedAddresses is null || !_prevSelectedAddresses.Any())
             CurrentCart.AddressesTabs.Clear();
         else
-            CurrentCart.AddressesTabs!.RemoveAll(x => !_prevSelectedAddresses.Any(y => y.Id == x.AddressOrganizationId));
+            CurrentCart.AddressesTabs.RemoveAll(x => !_prevSelectedAddresses.Any(y => y.Id == x.AddressOrganizationId));
 
         _selectedAddresses = [.. _prevSelectedAddresses];
-        _selectedAddresses.Clear();
         _prevSelectedAddresses = null;
         _visibleChangeAddresses = false;
-        InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId)); });
+        IsBusyProgress = true;
+        await Task.Delay(1);
+        await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
+        IsBusyProgress = false;
     }
 
     void CancelChangeAddresses()
@@ -277,9 +294,11 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
             return;
         }
 
+        CurrentCart.PrepareForSave();
         IsBusyProgress = true;
         await Task.Delay(1);
         TResponseModel<int> rest = await CommerceRepo.OrderUpdate(CurrentCart);
+
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
         {
@@ -295,8 +314,11 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
 
             NavRepo.NavigateTo($"/issue-card/{doc.Response!.First().HelpdeskId}");
         }
-        IsBusyProgress = false;
-        StateHasChanged();
+        else
+        {
+            IsBusyProgress = false;
+            StateHasChanged();
+        }
     }
 
     /// <inheritdoc/>
@@ -329,6 +351,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         };
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;
@@ -338,6 +361,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         Organizations = res.Response.Response;
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<OrderDocumentModelDB?> current_cart = await StorageRepo
             .ReadParameter<OrderDocumentModelDB>(GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
         IsBusyProgress = false;

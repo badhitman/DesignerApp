@@ -72,7 +72,8 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
                 q = q.Where(x => req.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId));
                 break;
             default:
-                q = q.Where(x => req.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId) || req.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.IdentityUsersIds.Contains(y.UserId)));
+                if (req.Payload.UserArea is not null)
+                    q = q.Where(x => req.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId) || req.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.IdentityUsersIds.Contains(y.UserId)));
                 break;
         }
 

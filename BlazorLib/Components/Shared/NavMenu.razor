@@ -19,7 +19,7 @@
             if (string.IsNullOrWhiteSpace(nav_item.AuthorizeViewRoles))
             {
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll?NavLinkMatch.All: NavLinkMatch.Prefix)">
+                    <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll ? NavLinkMatch.All : NavLinkMatch.Prefix)">
                         <span aria-hidden="true"></span> @nav_item.Title
                     </NavLink>
                 </div>
@@ -29,7 +29,7 @@
                 <AuthorizeView>
                     <Authorized>
                         <div class="nav-item px-3">
-                            <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll?NavLinkMatch.All: NavLinkMatch.Prefix)">
+                            <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll ? NavLinkMatch.All : NavLinkMatch.Prefix)">
                                 <span aria-hidden="true"></span> @nav_item.Title
                             </NavLink>
                         </div>
@@ -41,7 +41,7 @@
                 <AuthorizeView Roles="@nav_item.AuthorizeViewRoles">
                     <Authorized>
                         <div class="nav-item px-3">
-                            <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll?NavLinkMatch.All: NavLinkMatch.Prefix)">
+                            <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll ? NavLinkMatch.All : NavLinkMatch.Prefix)">
                                 <span aria-hidden="true"></span> @nav_item.Title
                             </NavLink>
                         </div>

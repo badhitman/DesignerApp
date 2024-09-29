@@ -4,16 +4,7 @@
 
 @if (IsBusyProgress)
 {
-    <figure class="text-center">
-        <blockquote class="blockquote">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </blockquote>
-        <figcaption class="blockquote-footer">
-            Отправка <cite title="Дождитесь загрузки">заказа</cite>
-        </figcaption>
-    </figure>
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
 }
 else
 {

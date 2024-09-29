@@ -176,7 +176,7 @@ public static partial class GlobalTools
         if (obj is null)
             return default;
 
-        string json_raw = JsonConvert.SerializeObject(obj, Formatting.None, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+        string json_raw = JsonConvert.SerializeObject(obj, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings);
         return JsonConvert.DeserializeObject<T>(json_raw);
 
         //using MemoryStream ms = new();

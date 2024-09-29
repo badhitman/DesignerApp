@@ -39,8 +39,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "devops", "devops", "{3A274B5F-119F-42F2-8196-25F7ABADDFBD}"
 	ProjectSection(SolutionItems) = preProject
 		devops\docker-compose.yml = devops\docker-compose.yml
-		devops\readme.txt = devops\readme.txt
 		devops\pg_backup.txt = devops\pg_backup.txt
+		devops\readme.txt = devops\readme.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "etc", "etc", "{9C0D49D9-C7B9-4960-AF82-361448F4965A}"
@@ -85,6 +85,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "secrets", "secrets", "{AC94
 	ProjectSection(SolutionItems) = preProject
 		..\secrets\connections-strings.Development.json = ..\secrets\connections-strings.Development.json
 		..\secrets\email-conf.Development.json = ..\secrets\email-conf.Development.json
+		..\secrets\mongo-conf.json = ..\secrets\mongo-conf.json
 		..\secrets\rabbitmq-conf.Development.json = ..\secrets\rabbitmq-conf.Development.json
 		..\secrets\telegram-bot.Development.json = ..\secrets\telegram-bot.Development.json
 	EndProjectSection

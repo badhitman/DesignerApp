@@ -82,6 +82,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
             }
         };
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommRepo.OrdersSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -93,6 +94,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     async Task ReadSessionUser()
     {
         IsBusyProgress = true;
+        await Task.Delay(1);
         AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
         IsBusyProgress = false;
@@ -101,6 +103,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     async Task ReadIssue()
     {
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<IssueHelpdeskModelDB[]> issue_res = await HelpdeskRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>() { Payload = new() { IssuesIds = [Id] }, SenderActionUserId = CurrentUser.UserId });
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
         IssueSource = issue_res.Response?.FirstOrDefault();
@@ -124,9 +127,10 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
 
         users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x))];
         if (users_ids.Count != 0)
-
             users_ids = users_ids.Distinct().ToList();
+
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<UserInfoModel[]?> users_data_identity = await WebRemoteRepo.GetUsersIdentity([.. users_ids]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(users_data_identity.Messages);

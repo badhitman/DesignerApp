@@ -38,18 +38,18 @@ public class IssuesReadReceive(
             return res;
         }
 
-        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-        IIncludableQueryable<IssueHelpdeskModelDB, List<SubscriberIssueHelpdeskModelDB>?> q = context.Issues.Include(x => x.Subscribers);
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();        
+        IIncludableQueryable<IssueHelpdeskModelDB, List<SubscriberIssueHelpdeskModelDB>?> q = context.Issues.Where(x => req.Payload.IssuesIds.Any(y => y == x.Id)).Include(x => x.Subscribers);
         IssueHelpdeskModelDB[]? issues_db = req.Payload.IncludeSubscribersOnly
-            ? await q.Where(x => req.Payload.IssuesIds.Any(y => y == x.Id)).ToArrayAsync()
-            : await q.Include(x => x.RubricIssue).Include(x => x.Messages).Where(x => req.Payload.IssuesIds.Any(y => y == x.Id)).ToArrayAsync();
+            ? await q.ToArrayAsync()
+            : await q.Include(x => x.RubricIssue).Include(x => x.Messages).ToArrayAsync();
 
         if (issues_db is null || issues_db.Length == 0)
         {
             LoggerRepo.LogError($"Обращение не найдено: {mem_key}");
             return new()
             {
-                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Обращение не найдено или у вас нет к нему доступа" }]
+                Messages = [new() { TypeMessage = ResultTypesEnum.Warning, Text = "Обращение не найдено или у вас нет к нему доступа" }]
             };
         }
 

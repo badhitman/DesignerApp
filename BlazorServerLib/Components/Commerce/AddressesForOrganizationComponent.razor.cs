@@ -84,17 +84,17 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await UpdateCacheRubricies();
+        await UpdateCacheRubrics();
     }
 
     string? _last_request;
-    async Task UpdateCacheRubricies()
+    async Task UpdateCacheRubrics()
     {
         Organization.Addresses ??= [];
         int[] added_rubrics = [..Organization
             .Addresses
             .Where(x => !RubriciesCached.ContainsKey(x.ParentId))
-            .Select(x=>x.ParentId)];
+            .Select(x => x.ParentId).Distinct()];
 
         if (added_rubrics.Length != 0)
         {

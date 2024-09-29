@@ -17,9 +17,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.8" />
-		<PackageReference Include="MongoDB.Driver.Core" Version="2.29.0" />
-		<PackageReference Include="MongoDB.Driver.GridFS" Version="2.29.0" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.8" />		
 		<PackageReference Include="NLog" Version="5.3.4" />
 		<PackageReference Include="NLog.Extensions.Logging" Version="5.3.13" />
 		<PackageReference Include="NLog.Database" Version="5.3.4" />

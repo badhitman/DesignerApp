@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -10,30 +11,40 @@ using DbcLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// GoodsUpdateReceive
+/// Обновление номенклатуры
 /// </summary>
-public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<GoodsUpdateReceive> loggerRepo)
     : IResponseReceive<GoodsModelDB?, int?>
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Обновление номенклатуры
+    /// </summary>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsUpdateCommerceReceive;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Обновление номенклатуры
+    /// </summary>
     public async Task<TResponseModel<int?>> ResponseHandleAction(GoodsModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        req.Name = req.Name.Trim();
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        string msg, about = $"'{req.Name}' /{req.BaseUnit}";
+        GoodsModelDB? goods_db = await context.Goods.FirstOrDefaultAsync(x => x.Name == req.Name && x.BaseUnit == req.BaseUnit && x.Id != req.Id);
+        if (goods_db is not null)
+        {
+            msg = $"Ошибка создания Номенклатуры {about}. Такой объект уже существует #{goods_db.Id}. Требуется уникальное сочетание имени и единицы измерения";
+            loggerRepo.LogWarning(msg);
+            res.AddError(msg);
+            return res;
+        }
         DateTime dtu = DateTime.UtcNow;
+
         if (req.Id < 1)
         {
-            if (await context.Goods.AnyAsync(x => x.Name == req.Name && x.BaseUnit == req.BaseUnit))
-            {
-                res.AddError("Такая номенклатура уже существует");
-                return res;
-            }
-
-            GoodsModelDB goods_db = new()
+            goods_db = new()
             {
                 Name = req.Name,
                 BaseUnit = req.BaseUnit,
@@ -43,14 +54,10 @@ public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
 
             await context.AddAsync(goods_db);
             await context.SaveChangesAsync();
-            res.AddSuccess("Номенклатура создана");
+            msg = $"Номенклатура {about} создана #{goods_db.Id}";
+            loggerRepo.LogInformation(msg);
+            res.AddSuccess(msg);
             res.Response = goods_db.Id;
-            return res;
-        }
-
-        if (await context.Goods.AnyAsync(x => x.Id != req.Id && x.Name == req.Name && x.BaseUnit == req.BaseUnit))
-        {
-            res.AddError("Такая номенклатура уже существует. Измените название или единицу измерения.");
             return res;
         }
 
@@ -62,7 +69,9 @@ public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
-        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
+        msg = $"Обновление номенклатуры {about} выполнено";
+        loggerRepo.LogInformation(msg);
+        res.AddSuccess(msg);
         return res;
     }
 }

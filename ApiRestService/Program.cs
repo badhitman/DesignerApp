@@ -12,6 +12,7 @@ using SharedLib;
 using NLog.Web;
 using NLog;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MongoDB.Driver;
 
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Warn("init main");
@@ -52,10 +53,14 @@ builder.Configuration.AddCommandLine(args);
 
 builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
+.Configure<MongoConfigModel>(builder.Configuration.GetSection("MongoDB"))
 ;
 builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
 builder.Services.AddAuthorization();
+
+MongoConfigModel _jo = builder.Configuration.GetSection("MongoDB").Get<MongoConfigModel>()!;
+builder.Services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.FilesSystemName));
 
 // Add services to the container.
 #region MQ Transmission (remote methods call)

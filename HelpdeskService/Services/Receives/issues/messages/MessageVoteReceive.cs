@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using Newtonsoft.Json;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -14,6 +15,7 @@ namespace Transmission.Receives.helpdesk;
 /// </summary>
 public class MessageVoteReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
+    ILogger<MessageVoteReceive> loggerRepo,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<VoteIssueRequestModel>?, bool?>
@@ -26,7 +28,7 @@ public class MessageVoteReceive(
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<bool?> res = new();
-
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<UserInfoModel[]?> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
             ? new() { Response = [UserInfoModel.BuildSystem()] }
             : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);

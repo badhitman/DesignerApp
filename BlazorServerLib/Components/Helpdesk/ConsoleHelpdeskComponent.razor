@@ -1,6 +1,6 @@
 ﻿@using BlazorWebLib.Components.Helpdesk.console
-@using MudBlazor
 @using BlazorWebLib.Components
+@using MudBlazor
 
 @inherits BlazorBusyComponentBaseModel
 
@@ -9,10 +9,15 @@
         cursor: pointer;
     }
 
-        .size-console-change span.text-secondary:hover {
-            text-decoration: underline dotted;
-        }
+    .size-console-change span.text-secondary:hover {
+        text-decoration: underline dotted;
+    }
 </style>
+
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
 
 <div class="card">
     <div class="card-body">

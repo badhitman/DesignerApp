@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
@@ -14,6 +15,7 @@ namespace Transmission.Receives.helpdesk;
 /// </summary>
 public class ExecuterUpdateReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
+    ILogger<ExecuterUpdateReceive> loggerRepo,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<UserIssueModel>?, bool>
@@ -25,6 +27,7 @@ public class ExecuterUpdateReceive(
     public async Task<TResponseModel<bool>> ResponseHandleAction(TAuthRequestModel<UserIssueModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<bool> res = new();
 
         TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()

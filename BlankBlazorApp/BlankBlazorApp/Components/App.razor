@@ -17,11 +17,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/lib/bootstrap-icons/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/lib/jqueryui/jquery-ui.min.css" />
-    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="/js/ckeditor5/ckeditor5.css" />
+    <link rel="stylesheet" href="/lib/bootstrap-icons/font/bootstrap-icons.min.css?version=@GlobalStaticConstants.InitSalt">
+    <link rel="stylesheet" href="/lib/jqueryui/jquery-ui.min.css?version=@GlobalStaticConstants.InitSalt" />
+    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css?version=@GlobalStaticConstants.InitSalt" />
+    <link rel="stylesheet" href="app.css?version=@GlobalStaticConstants.InitSalt" />
+    <link rel="stylesheet" href="/js/ckeditor5/ckeditor5.css?version=@GlobalStaticConstants.InitSalt" />
     <link rel="stylesheet" href="BlankBlazorApp.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <script type="text/javascript">
@@ -45,17 +45,17 @@
 
 <body>
     <Routes />
-    <script src="/lib/jquery/jquery.min.js"></script>
-    <script src="/lib/jqueryui/jquery-ui.min.js"></script>
-    <script src="/js/ckeditor5/ckeditor.js"></script>
-    @* <script src="/lib/ckeditor5/ckeditor.js"></script> *@
-    <script src="/js/CKEditorInterop.js"></script>
+    <script src="/lib/jquery/jquery.min.js?version=@GlobalStaticConstants.InitSalt"></script>
+    <script src="/lib/jqueryui/jquery-ui.min.js?version=@GlobalStaticConstants.InitSalt"></script>
+    <script src="/js/ckeditor5/ckeditor.js?version=@GlobalStaticConstants.InitSalt"></script>
+    @* <script src="/lib/ckeditor5/ckeditor.js?version=@GlobalStaticConstants.InitSalt"></script> *@
+    <script src="/js/CKEditorInterop.js?version=@GlobalStaticConstants.InitSalt"></script>
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     @* <script src="https://www.google.com/recaptcha/api.js" async defer></script> *@
-    <script src="/js/scriptLoader.js"></script>
-    <script src="/js/JsOfReCAPTCHA.js"></script>
-    <script src="/js/site.js"></script>
+    <script src="/js/scriptLoader.js?version=@GlobalStaticConstants.InitSalt"></script>
+    <script src="/js/JsOfReCAPTCHA.js?version=@GlobalStaticConstants.InitSalt"></script>
+    <script src="/js/site.js?version=@GlobalStaticConstants.InitSalt"></script>
     <script>
         window.onBlazorReady = () => {
             $(document).tooltip({
@@ -70,7 +70,6 @@
 </html>
 
 @code {
-
     protected override async Task OnInitializedAsync()
     {
         if (webConfig.Value.BaseUri is null)

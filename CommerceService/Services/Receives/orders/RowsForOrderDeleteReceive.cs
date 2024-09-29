@@ -6,13 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using Newtonsoft.Json;
 
 namespace Transmission.Receives.commerce;
 
 /// <summary>
 /// RowsForOrderDeleteReceive
 /// </summary>
-public class RowsForOrderDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class RowsForOrderDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<RowsForOrderDeleteReceive> loggerRepo)
     : IResponseReceive<int[]?, bool?>
 {
     /// <inheritdoc/>
@@ -22,6 +23,7 @@ public class RowsForOrderDeleteReceive(IDbContextFactory<CommerceContext> commer
     public async Task<TResponseModel<bool?>> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<bool?> res = new() { Response = true };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 

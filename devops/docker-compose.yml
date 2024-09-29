@@ -25,3 +25,14 @@ services:
       - ./postgres:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=dev
+      - MONGO_INITDB_ROOT_PASSWORD=dev
+    volumes:
+      - ./mongodb:/var/lib/mongodb/data
+    ports:
+      - 27017:27017

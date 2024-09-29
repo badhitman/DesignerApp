@@ -13,9 +13,7 @@ namespace SharedLib;
 public static class DateTimeExtensions
 {
     /// <summary>
-    /// Создает новый объект System.DateTime, который имеет то же количество тактов,
-    /// что и указанный System.DateTime, но обозначается как местное время, всеобщее
-    /// координированное время (UTC) или ни то, ни другое, как указано указанным значением System.DateTimeKind.
+    /// GetMsk
     /// </summary>
     public static DateTime GetMsk(this DateTime dateTime) 
         => TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById("Europe/Moscow"));
