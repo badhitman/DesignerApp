@@ -47,7 +47,7 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
     {
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<ModesSelectRubricsEnum?>(SelectedOption, GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
+        TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<ModesSelectRubricsEnum?>(SelectedOption, GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics, true);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         StateHasChanged();
@@ -57,7 +57,7 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
     {
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<bool?>(ShowDisabledRubrics, GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics);
+        TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<bool?>(ShowDisabledRubrics, GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics, true);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         StateHasChanged();

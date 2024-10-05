@@ -42,6 +42,9 @@ public class OrganizationSetLegalReceive(IDbContextFactory<CommerceContext> comm
         org_db.INN = org.INN;
         org_db.NewINN = null;
 
+        org_db.LegalAddress = org.LegalAddress;
+        org_db.NewLegalAddress = null;
+
         org_db.OGRN = org.OGRN;
         org_db.NewOGRN = null;
 

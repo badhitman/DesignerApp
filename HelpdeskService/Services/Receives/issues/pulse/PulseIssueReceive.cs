@@ -2,11 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -20,14 +20,15 @@ public class PulseIssueReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     ILogger<PulseIssueReceive> loggerRepo,
     IWebRemoteTransmissionService webTransmissionRepo,
+    ITelegramRemoteTransmissionService tgRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
-    : IResponseReceive<TAuthRequestModel<PulseIssueBaseModel>?, bool>
+    : IResponseReceive<PulseRequestModel?, bool>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PulseIssuePushHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> ResponseHandleAction(TAuthRequestModel<PulseIssueBaseModel>? req)
+    public async Task<TResponseModel<bool>> ResponseHandleAction(PulseRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
@@ -39,7 +40,7 @@ public class PulseIssueReceive(
         TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = GlobalStaticConstants.Roles.System,
-            Payload = new() { IssuesIds = [req.Payload.IssueId], IncludeSubscribersOnly = true },
+            Payload = new() { IssuesIds = [req.Payload.Payload.IssueId], IncludeSubscribersOnly = true },
         });
 
         if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
@@ -48,19 +49,19 @@ public class PulseIssueReceive(
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         await context.AddAsync(new PulseIssueModelDB()
         {
-            AuthorUserIdentityId = req.SenderActionUserId,
-            Description = req.Payload.Description,
+            AuthorUserIdentityId = req.Payload.SenderActionUserId,
+            Description = req.Payload.Payload.Description,
             CreatedAt = DateTime.UtcNow,
-            IssueId = req.Payload.IssueId,
-            PulseType = req.Payload.PulseType,
-            Tag = req.Payload.Tag,
+            IssueId = req.Payload.Payload.IssueId,
+            PulseType = req.Payload.Payload.PulseType,
+            Tag = req.Payload.Payload.Tag,
         });
         await context.SaveChangesAsync();
         res.Response = true;
 
-        if (req.Payload.PulseType != PulseIssuesTypesEnum.Messages && req.Payload.PulseType != PulseIssuesTypesEnum.Status && req.Payload.PulseType != PulseIssuesTypesEnum.Subscribes)
+        if (req.Payload.Payload.PulseType != PulseIssuesTypesEnum.Messages && req.Payload.Payload.PulseType != PulseIssuesTypesEnum.Status && req.Payload.Payload.PulseType != PulseIssuesTypesEnum.Subscribes)
             return res;
-        else if ((req.Payload.PulseType == PulseIssuesTypesEnum.Messages || req.Payload.PulseType == PulseIssuesTypesEnum.Subscribes) && req.Payload.Tag != GlobalStaticConstants.Routes.ADD_ACTION_NAME)
+        else if ((req.Payload.Payload.PulseType == PulseIssuesTypesEnum.Messages || req.Payload.Payload.PulseType == PulseIssuesTypesEnum.Subscribes) && req.Payload.Payload.Tag != GlobalStaticConstants.Routes.ADD_ACTION_NAME)
             return res;
         IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
         List<string> users_ids = [issue_data.AuthorIdentityUserId];
@@ -74,8 +75,24 @@ public class PulseIssueReceive(
         if (!rest.Success() || rest.Response is null || rest.Response.Length != users_ids.Count)
             return new() { Messages = rest.Messages };
 
-        foreach (UserInfoModel user in rest.Response)
-            await webTransmissionRepo.SendEmail(new() { Email = user.Email!, Subject = $"Уведомление: {req.Payload.PulseType.DescriptionInfo()}", TextMessage = req.Payload.Description });
+        if (!req.IsMuteEmail || !req.IsMuteTelegram)
+            foreach (UserInfoModel user in rest.Response)
+            {
+                string _subj = $"Уведомление: {req.Payload.Payload.PulseType.DescriptionInfo()}";
+                if (!req.IsMuteEmail)
+                    await webTransmissionRepo.SendEmail(new() { Email = user.Email!, Subject = _subj, TextMessage = req.Payload.Payload.Description });
+
+                if (user.TelegramId.HasValue && !req.IsMuteTelegram)
+                {
+                    SendTextMessageTelegramBotModel tg_req = new()
+                    {
+                        From = _subj,
+                        Message = req.Payload.Payload.Description,
+                        UserTelegramId = user.TelegramId.Value
+                    };
+                    await tgRepo.SendTextMessageTelegram(tg_req);
+                }
+            }
 
         return res;
     }

@@ -47,13 +47,24 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         UserInfoMainModel me = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
-        if ((string.IsNullOrWhiteSpace(UserId) || _filterUser != me.UserId) && !me.IsAdmin && me.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true)
+
+        if (string.IsNullOrWhiteSpace(UserId))
         {
-            _filterUser = me.UserId;
-            current_user = me;
+            if (me.IsAdmin)
+                _filterUser = UserId;
+            else
+            {
+                _filterUser = me.UserId;
+                current_user = me;
+            }
         }
         else
-            _filterUser = UserId;
+        {
+            if (me.IsAdmin || me.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) == true)
+                _filterUser = UserId;
+            else
+                _filterUser = me.UserId;
+        }
 
         if (UserId == me.UserId)
             current_user = me;

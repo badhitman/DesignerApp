@@ -15,7 +15,11 @@ else
 {
     if (!IsEditMode)
     {
-        <MudButton OnClick="ToggleMode" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Создать новое обращение</MudButton>
+        <MudButton Href="/create-order" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mb-2">Новый заказ</MudButton>
+        @if (_showCreateIssue)
+        {
+            <MudButton OnClick="ToggleMode" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Новое обращение</MudButton>
+        }
     }
     else
     {

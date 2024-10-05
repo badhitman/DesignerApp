@@ -270,7 +270,7 @@ public class WebAppService(
         identityContext.Remove(act);
         await identityContext.SaveChangesAsync();
         //
-        appUserDb.ChatTelegramId = req.TelegramUser.TelegramId;
+        appUserDb.ChatTelegramId = req.TelegramId;
         identityContext.Update(appUserDb);
         await identityContext.SaveChangesAsync();
 
@@ -278,12 +278,12 @@ public class WebAppService(
         string msg;
 
         List<ApplicationUser> other_joins = await identityContext.Users
-            .Where(x => x.ChatTelegramId == req.TelegramUser.TelegramId && x.Id != appUserDb.Id)
+            .Where(x => x.ChatTelegramId == req.TelegramId && x.Id != appUserDb.Id)
             .ToListAsync();
 
         if (MailAddress.TryCreate(appUserDb.Email, out _))
         {
-            msg = $"Аккаунт Telegram {req.TelegramUser} подключился к учётной записи сайта воспользовавшись токеном из вашего профиля: <u><b>{act.GuidToken}</b></u>!<br/><br/>";
+            msg = $"Аккаунт Telegram {req.TelegramId} подключился к учётной записи сайта воспользовавшись токеном из вашего профиля: <u><b>{act.GuidToken}</b></u>!<br/><br/>";
 
             msg += "Если это были не вы, то зайдите в профиль на сайте и удалите связь с Telegram.<br />";
 
@@ -303,7 +303,7 @@ public class WebAppService(
         TResponseModel<MessageComplexIdsModel?> tgCall = await tgRemoteRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
         {
             Message = $"Ваш Telegram аккаунт привязан к учётной записи '{appUserDb.Email}' сайта {webConfig.Value.ClearBaseUri}",
-            UserTelegramId = req.TelegramUser.TelegramId,
+            UserTelegramId = req.TelegramId,
             From = "уведомление",
         });
         if (!tgCall.Success())
@@ -414,21 +414,27 @@ public class WebAppService(
             .Select(x => new { x.Id, x.Email, x.ChatTelegramId })
             .ToArrayAsync();
 
-        TelegramUserViewModel identity_get(TelegramUserModelDb ctx)
+        TelegramUserViewModel? identity_get(TelegramUserModelDb ctx)
         {
-            var id_data = users_identity_data.First(x => x.ChatTelegramId == ctx.TelegramId);
+            var id_data = users_identity_data.FirstOrDefault(x => x.ChatTelegramId == ctx.TelegramId);
+
+            if (id_data is null)
+                return null;
+
             return TelegramUserViewModel.Build(ctx, id_data.Id, id_data?.Email);
         }
 
+#pragma warning disable CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
         return new()
         {
-            Response = users_tg.Select(identity_get).ToList(),
+            Response = users_tg.Select(identity_get).Where(x => x is not null).ToList(),
             TotalRowsCount = total,
             PageNum = req.PageNum,
             PageSize = req.PageSize,
             SortBy = req.SortBy,
             SortingDirection = req.SortingDirection
         };
+#pragma warning restore CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
     }
 
     /// <inheritdoc/>

@@ -3,6 +3,8 @@
 ////////////////////////////////////////////////
 
 using BlazorLib;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.issue;
@@ -12,6 +14,12 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 /// </summary>
 public partial class StatusIssueComponent : IssueWrapBaseModel
 {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+
+    UserInfoMainModel user = default!;
+
     HelpdeskIssueStepsEnum IssueStep { get; set; }
 
     List<HelpdeskIssueStepsEnum> Steps()
@@ -63,8 +71,10 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         IssueStep = Issue.StepIssue;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 }

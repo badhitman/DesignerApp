@@ -7,13 +7,19 @@ using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using System.Globalization;
 
 namespace Transmission.Receives.commerce;
 
 /// <summary>
 /// OrderUpdateReceive
 /// </summary>
-public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OrderUpdateReceive> loggerRepo, IHelpdeskRemoteTransmissionService hdRepo)
+public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory,
+    ILogger<OrderUpdateReceive> loggerRepo,
+    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo,
+    IWebRemoteTransmissionService webTransmissionRepo,
+    ITelegramRemoteTransmissionService tgRepo,
+    IHelpdeskRemoteTransmissionService hdRepo)
     : IResponseReceive<OrderDocumentModelDB?, int?>
 {
     /// <inheritdoc/>
@@ -26,11 +32,23 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        TResponseModel<UserInfoModel[]?> actor = await webTransmissionRepo.GetUsersIdentity([req.AuthorIdentityUserId]);
 
+        if (!actor.Success() || actor.Response is null || actor.Response.Length == 0)
+        {
+            res.AddRangeMessages(actor.Messages);
+            return res;
+        }
+        string msg;
         DateTime dtu = DateTime.UtcNow;
+        req.CreatedAtUTC = dtu;
+        req.LastAtUpdatedUTC = dtu;
+
         req.PrepareForSave();
         if (req.Id < 1)
         {
+            TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);
+
             using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context.Database.BeginTransaction();
             try
             {
@@ -44,7 +62,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                     Payload = new()
                     {
                         Name = req.Name,
-                        RubricId = null,
+                        RubricId = res_RubricIssueForCreateOrder.Response,
                         Description = $"Новый заказ.\n{req.Information}".Trim(),
                     },
                 };
@@ -63,7 +81,47 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 await context.SaveChangesAsync();
 
                 transaction.Commit();
-                res.AddSuccess("Заказ создан");
+                CultureInfo cultureInfo = new("ru-RU");
+
+                TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                string subject_email = "Создан новый заказ";
+                TResponseModel<string?> CommerceNewOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification);
+                if (CommerceNewOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
+                    subject_email = CommerceNewOrderSubjectNotification.Response;
+
+                DateTime _dt = DateTime.UtcNow.GetMsk();
+                string _about_order = $"'{req.Name}' {_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
+                string ReplaceTags(string raw)
+                {
+                    return raw.Replace(GlobalStaticConstants.OrderDocumentName, req.Name)
+                    .Replace(GlobalStaticConstants.OrderDocumentDate, $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}")
+                    .Replace(GlobalStaticConstants.OrderStatusInfo, HelpdeskIssueStepsEnum.Created.DescriptionInfo())
+                    .Replace(GlobalStaticConstants.OrderLinkAddress, $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{req.HelpdeskId}'>{_about_order}</a>")
+                    .Replace(GlobalStaticConstants.HostAddress, $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
+                }
+
+                subject_email = ReplaceTags(subject_email);
+
+                res.AddSuccess(subject_email);
+                msg = $"<p>Заказ <b>'{issue_new.Payload.Name}' от [{_dt}]</b> успешно создан.</p>" +
+                        $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
+                string msg_for_tg = msg.Replace("<p>", "").Replace("</p>", "");
+
+                TResponseModel<string?> CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification);
+                if (CommerceNewOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotification.Response))
+                    msg = CommerceNewOrderBodyNotification.Response;
+                msg = ReplaceTags(msg);
+
+                TResponseModel<string?> CommerceNewOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram);
+                if (CommerceNewOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationTelegram.Response))
+                    msg_for_tg = CommerceNewOrderBodyNotificationTelegram.Response;
+                msg_for_tg = ReplaceTags(msg_for_tg);
+
+                if (actor.Response[0].TelegramId.HasValue)
+                    await tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value });
+                loggerRepo.LogInformation(msg_for_tg);
+                await webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg });
+
                 return res;
             }
             catch (Exception ex)
@@ -74,6 +132,19 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             }
         }
 
+        OrderDocumentModelDB? order_document = await context.OrdersDocuments.FirstOrDefaultAsync(x => x.Id == req.Id);
+        if (order_document is null)
+        {
+            res.AddError($"Документ #{req.Id} не найден");
+            return res;
+        }
+
+        if (order_document.Name == req.Name && order_document.IsDisabled == req.IsDisabled)
+        {
+            res.AddInfo($"Документ #{req.Id} не требует обновления");
+            return res;
+        }
+
         res.Response = await context.OrdersDocuments
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set
@@ -82,6 +153,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
         res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
+
         return res;
     }
 }

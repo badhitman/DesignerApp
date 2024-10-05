@@ -14,7 +14,7 @@ namespace Transmission.Receives.helpdesk;
 /// Subscribe update - of context user
 /// </summary>
 public class SubscribeUpdateReceive(
-    IDbContextFactory<HelpdeskContext> helpdeskDbFactory, 
+    IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     ILogger<SubscribeUpdateReceive> loggerRepo,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
@@ -68,6 +68,7 @@ public class SubscribeUpdateReceive(
              .Select(x => new { x.Id, x.IsSilent })
              .FirstOrDefaultAsync();
 
+        PulseRequestModel p_req;
         string msg;
         if (req.Payload.SetValue)
         {
@@ -79,17 +80,24 @@ public class SubscribeUpdateReceive(
                 res.AddSuccess(msg);
 
                 if (req.SenderActionUserId != GlobalStaticConstants.Roles.System)
-                    await helpdeskTransmissionRepo.PulsePush(new()
+                {
+                    p_req = new()
                     {
-                        SenderActionUserId = req.SenderActionUserId,
                         Payload = new()
                         {
-                            IssueId = issue_data.Id,
-                            PulseType = PulseIssuesTypesEnum.Subscribes,
-                            Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
-                            Description = $"Пользователь `{requested_user.UserName}` добавлен в подписчики",
+                            SenderActionUserId = req.SenderActionUserId,
+                            Payload = new()
+                            {
+                                IssueId = issue_data.Id,
+                                PulseType = PulseIssuesTypesEnum.Subscribes,
+                                Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
+                                Description = $"Пользователь `{requested_user.UserName}` добавлен в подписчики",
+                            }
                         }
-                    });
+                    };
+
+                    await helpdeskTransmissionRepo.PulsePush(p_req);
+                }
             }
             else
             {
@@ -106,17 +114,24 @@ public class SubscribeUpdateReceive(
                     res.AddSuccess(msg);
 
                     if (req.SenderActionUserId != GlobalStaticConstants.Roles.System)
-                        await helpdeskTransmissionRepo.PulsePush(new()
+                    {
+                        p_req = new()
                         {
-                            SenderActionUserId = req.SenderActionUserId,
                             Payload = new()
                             {
-                                IssueId = issue_data.Id,
-                                PulseType = PulseIssuesTypesEnum.Subscribes,
-                                Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
-                                Description = msg,
+                                SenderActionUserId = req.SenderActionUserId,
+                                Payload = new()
+                                {
+                                    IssueId = issue_data.Id,
+                                    PulseType = PulseIssuesTypesEnum.Subscribes,
+                                    Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
+                                    Description = msg,
+                                }
                             }
-                        });
+                        };
+
+                        await helpdeskTransmissionRepo.PulsePush(p_req);
+                    }
                 }
             }
         }
@@ -133,17 +148,24 @@ public class SubscribeUpdateReceive(
                 res.AddSuccess(msg);
 
                 if (req.SenderActionUserId != GlobalStaticConstants.Roles.System)
-                    await helpdeskTransmissionRepo.PulsePush(new()
+                {
+                    p_req = new()
                     {
-                        SenderActionUserId = req.SenderActionUserId,
                         Payload = new()
                         {
-                            IssueId = issue_data.Id,
-                            PulseType = PulseIssuesTypesEnum.Subscribes,
-                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
-                            Description = $"Пользователь `{requested_user.UserName}` удалён из подписок",
+                            SenderActionUserId = req.SenderActionUserId,
+                            Payload = new()
+                            {
+                                IssueId = issue_data.Id,
+                                PulseType = PulseIssuesTypesEnum.Subscribes,
+                                Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                                Description = $"Пользователь `{requested_user.UserName}` удалён из подписок",
+                            }
                         }
-                    });
+                    };
+
+                    await helpdeskTransmissionRepo.PulsePush(p_req);
+                }
             }
         }
         res.Response = true;

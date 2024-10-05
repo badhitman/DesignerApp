@@ -1,6 +1,6 @@
 ﻿@page "/goods"
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager}")]
+@attribute [Authorize]
 <PageTitle>Номенклатура</PageTitle>
 <GoodsManageComponent />

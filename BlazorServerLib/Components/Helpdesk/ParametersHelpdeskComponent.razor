@@ -1,3 +1,4 @@
+@using BlazorWebLib.Components.ParametersShared
 @using BlazorWebLib.Components.Telegram
 @using BlazorWebLib.Components.Users
 @using MudBlazor
@@ -27,7 +28,107 @@
         <TelegramConfigComponent />
     </MudTabPanel>
     <MudTabPanel ToolTip="Права пользователей" Text="Доступ">
-        <UsersTableComponent HideClaimsColumn="true" HideRolesColumn="true" RolesManageKit="@GlobalStaticConstants.Roles.AllHelpDeskRoles.Union([GlobalStaticConstants.Roles.CommerceManager, GlobalStaticConstants.Roles.CommerceClient])" />
+        <UsersTableComponent HideClaimsColumn="true" HideRolesColumn="true" RolesManageKit="@GlobalStaticConstants.Roles.AllHelpDeskRoles.Union([GlobalStaticConstants.Roles.CommerceManager])" />
+    </MudTabPanel>
+    <MudTabPanel Text="Шаблоны уведомлений">
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Email">
+                <div class="card my-3">
+                    <div class="card-body">
+                        <p class="text-warning">Учитывайте особенности парсера Email</p>
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Новый заказ</h6>
+                                <p class="card-text">
+                                    <StringParameterStorageComponent Label="Тема письма" HelperText="Subject Email" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification" />
+                                    <hr />
+                                    <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification" HelperText="Текст Email при создании заказа" />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
+                                <p class="card-text">
+                                    <StringParameterStorageComponent Label="Тема письма" HelperText="Subject Email" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification" />
+                                    <hr />
+                                    <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification" HelperText="Текст Email при изменении статуса заказа" />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Новое сообщение</h6>
+                                <p class="card-text">
+                                    <StringParameterStorageComponent Label="Тема письма" HelperText="Subject Email" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderSubjectNotification" />
+                                    <hr />
+                                    <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification" HelperText="Текст Email при появлении нового сообщения в заказе" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </MudTabPanel>
+            <MudTabPanel Text="Telegram">
+                <div class="card my-3">
+                    <div class="card-body">
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Новый заказ</h6>
+                                <p class="text-warning">Синтаксис должен соответствовать <a href="https://core.telegram.org/api/entities">TelegramBot API</a> </p>
+                                <p class="card-text">
+                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram" HelperText="Текст TelegramBot уведомления при создании заказа" />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
+                                <p class="card-text">
+                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram" HelperText="Текст TelegramBot уведомления при изменении статуса заказа" />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Новое сообщение</h6>
+                                <p class="card-text">
+                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram" HelperText="Текст TelegramBot уведомления при добавлении комментария к заказу" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </MudTabPanel>
+        </MudTabs>
+        <hr class="my-3" />
+        <div class="alert alert-primary" role="alert">
+            <p>Допустимы следующие выражения:</p>
+            <dl class="row">
+                <dt class="col-sm-3">@GlobalStaticConstants.OrderDocumentName</dt>
+                <dd class="col-sm-9">Название документа.</dd>
+
+                <dt class="col-sm-3">@GlobalStaticConstants.OrderDocumentDate</dt>
+                <dd class="col-sm-9">
+                    <p>Дата документа.</p>
+                </dd>
+
+                <dt class="col-sm-3">@GlobalStaticConstants.OrderStatusInfo</dt>
+                <dd class="col-sm-9">
+                    <p>Статус заказа</p>
+                </dd>
+
+                <dt class="col-sm-3">@GlobalStaticConstants.OrderLinkAddress</dt>
+                <dd class="col-sm-9">
+                    <p>Ссылка на заказ</p>
+                </dd>
+
+                <dt class="col-sm-3">@GlobalStaticConstants.HostAddress</dt>
+                <dd class="col-sm-9">
+                    <p>Адрес сайта</p>
+                </dd>
+            </dl>
+        </div>
     </MudTabPanel>
     <MudTabPanel ToolTip="Другие параметры" Text="Разное">
         <OtherParametersHelpdeskComponent />

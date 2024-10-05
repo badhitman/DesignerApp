@@ -50,7 +50,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     /// Title
     /// </summary>
     [Parameter]
-    public string Title { get; set; } = "Рубрика/категория обращения:";
+    public string Title { get; set; } = "Рубрика/категория обращения";
 
     /// <summary>
     /// ContextName
@@ -58,6 +58,12 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     [Parameter]
     public string? ContextName { get; set; }
 
+
+#if DEBUG
+    static bool IsDebug = true;
+#else
+    static bool IsDebug = false;
+#endif
 
     RubricSelectorComponent? childSelector;
 
@@ -75,7 +81,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
             _selectedRubricId = value;
             if (childSelector is not null)
                 InvokeAsync(async () => await childSelector.OwnerRubricSet(_selectedRubricId));
-            SelectRubricsHandle(_selectedRubricId > 0 ? CurrentRubrics!.First(x => x.Id == _selectedRubricId) : null);
+            SelectRubricsHandle(_selectedRubricId > 0 ? CurrentRubrics?.FirstOrDefault(x => x.Id == _selectedRubricId) : null);
         }
     }
 
@@ -84,35 +90,44 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     /// </summary>
     public async Task OwnerRubricSet(int ownerRubricId)
     {
-        if(ParentRubric != ownerRubricId)
+        if (ParentRubric != ownerRubricId)
         {
             ParentRubric = ownerRubricId;
             _selectedRubricId = 0;
         }
 
         IsBusyProgress = true;
-        TResponseModel<List<RubricIssueHelpdeskLowModel>> rest = await HelpdeskRepo.RubricsList(new () { Request = ownerRubricId, ContextName= ContextName });
+        TResponseModel<List<RubricIssueHelpdeskLowModel>> rest = await HelpdeskRepo.RubricsList(new() { Request = ownerRubricId, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         CurrentRubrics = rest.Response;
     }
 
     /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
+    public async Task SetRubric(int rubric_id, List<RubricIssueHelpdeskModelDB>? set_rubricMetadataShadow)
     {
-        await OwnerRubricSet(ParentRubric);
-        if (ParentRubric == 0 && StartRubric is not null && StartRubric.HasValue)
+        _selectedRubricId = rubric_id;
+
+        if (set_rubricMetadataShadow is not null)
+            RubricMetadataShadow = set_rubricMetadataShadow;
+        else
         {
             IsBusyProgress = true;
-            TResponseModel<List<RubricIssueHelpdeskModelDB>?> dump_rubric = await HelpdeskRepo.RubricRead(StartRubric.Value);
+            await Task.Delay(1);
+            TResponseModel<List<RubricIssueHelpdeskModelDB>?> dump_rubric = await HelpdeskRepo.RubricRead(rubric_id);
             RubricMetadataShadow = dump_rubric.Response;
             SnackbarRepo.ShowMessagesResponse(dump_rubric.Messages);
             IsBusyProgress = false;
-            _selectedRubricId = RubricMetadataShadow?.LastOrDefault()?.Id ?? 0;
         }
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await OwnerRubricSet(ParentRubric);
+        if (ParentRubric == 0 && StartRubric.HasValue)
+            await SetRubric(StartRubric.Value, RubricMetadataShadow);
         else if (RubricMetadataShadow is not null && RubricMetadataShadow.Count != 0)
-        {
             _selectedRubricId = RubricMetadataShadow?.LastOrDefault()?.Id ?? 0;
-        }
     }
 }

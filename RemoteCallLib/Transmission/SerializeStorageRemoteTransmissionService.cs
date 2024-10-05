@@ -59,13 +59,14 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> SaveParameter<T>(T payload_query, StorageCloudParameterModel store)
+    public async Task<TResponseModel<int>> SaveParameter<T>(T payload_query, StorageCloudParameterModel store, bool trim)
     {
         if (payload_query is null)
             throw new ArgumentNullException(nameof(payload_query));
 
         StorageCloudParameterPayloadModel set_req = new()
         {
+            TrimHistory = trim,
             ApplicationName = store.ApplicationName,
             Name = store.Name,
             SerializedDataJson = JsonConvert.SerializeObject(payload_query, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings),

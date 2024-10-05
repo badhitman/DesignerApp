@@ -150,7 +150,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
             await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB()
             {
                 ChatId = message.UserTelegramId,
-                Message = ex.Message,
+                Message = $"{ex.Message}\n\n{JsonConvert.SerializeObject(message)}",
                 ExceptionTypeName = ex.GetType().FullName
             });
             await context.SaveChangesAsync();

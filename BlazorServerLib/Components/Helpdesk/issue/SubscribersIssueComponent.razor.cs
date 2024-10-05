@@ -2,11 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
-using SharedLib;
 using System.Net.Mail;
-using static MudBlazor.Colors;
+using BlazorLib;
+using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.issue;
 
@@ -29,6 +28,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             throw new Exception();
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         UserInfoModel? user_by_email = await UsersProfilesRepo.FindByEmailAsync(addingSubscriber);
         IsBusyProgress = false;
         if (user_by_email is null)
@@ -41,6 +41,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             UsersIdentityDump.Add(user_by_email);
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<bool> add_subscriber_res = await HelpdeskRepo.SubscribeUpdate(new()
         {
             SenderActionUserId = CurrentUser.UserId,
@@ -58,6 +59,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
 
         addingSubscriber = null;
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<SubscriberIssueHelpdeskModelDB[]?> reload_subscribers_list = await HelpdeskRepo.SubscribesList(new() { Payload = Issue.Id, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(reload_subscribers_list.Messages);
@@ -84,6 +86,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         };
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<bool> rest = await HelpdeskRepo.SubscribeUpdate(req);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -111,6 +114,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         };
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<bool> rest = await HelpdeskRepo.SubscribeUpdate(req);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

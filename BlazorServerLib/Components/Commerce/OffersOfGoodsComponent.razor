@@ -6,36 +6,48 @@
         cursor: pointer;
         color: brown;
     }
-
-    /* sup.bi:hover, i.bi:hover {
-            color: green;
-        } */
 </style>
 
 <MudPaper Class="pa-4 mt-3">
     <MudStack Spacing="2">
-        <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Отмена" : "Создать")</MudButton>
-        <MudCollapse Expanded="_expanded">
-            <OfferCreatingFormComponent OfferCreatingHandler="CreateOfferAction" CurrentGoods="CurrentGoods" />
-        </MudCollapse>
+        @if (user.IsAdmin)
+        {
+            <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Отмена" : "Создать")</MudButton>
+            <MudCollapse Expanded="_expanded">
+                <OfferCreatingFormComponent OfferCreatingHandler="CreateOfferAction" CurrentGoods="CurrentGoods" />
+            </MudCollapse>
+        }
     </MudStack>
     <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Offers</MudText>
+            @* <MudText Typo="Typo.h6">Offers</MudText> *@
             <MudSpacer />
         </ToolBarContent>
         <HeaderContent>
-            <MudTh>Товар</MudTh>
-            <MudTh>Имя</MudTh>
-            <MudTh>Цена</MudTh>
+            <MudTh>Номенклатура</MudTh>
+            <MudTh>Название</MudTh>
+            <MudTh>Цена/Стоимость</MudTh>
             <MudTh>Кратность</MudTh>
             <MudTh>Ед. изм.</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Goods"> <a href="/goods/offer-card/@context.Id">@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</a> </MudTd>
+            <MudTd DataLabel="Goods">
+                @if (user.IsAdmin)
+                {
+                    <a href="/goods/offer-card/@context.Id">@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</a>
+                }
+                else
+                {
+                    <span>@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</span>
+                }
+            </MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Price">
-                @context.Price <PricesRulesForOfferComponent OfferGood="context" />
+                @($"{context.Price}/{Math.Round(context.Price / context.Multiplicity, 2)}")
+                @if (user.IsAdmin)
+                {
+                    <PricesRulesForOfferComponent OfferGood="context" />
+                }
             </MudTd>
             <MudTd DataLabel="Multiplicity">@context.Multiplicity</MudTd>
             <MudTd DataLabel="OfferUnit">@context.OfferUnit.DescriptionInfo()</MudTd>

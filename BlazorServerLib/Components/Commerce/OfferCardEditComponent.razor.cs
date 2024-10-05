@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -18,8 +19,12 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseModel
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
     [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+    [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+    UserInfoMainModel user = default!;
 
     /// <summary>
     /// OfferId
@@ -52,6 +57,8 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
         TResponseModel<OfferGoodModelDB[]> res = await CommerceRepo.OffersRead([OfferId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

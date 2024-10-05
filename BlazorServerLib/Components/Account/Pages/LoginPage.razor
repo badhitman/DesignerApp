@@ -81,13 +81,13 @@
     private string? ReturnUrl { get; set; }
 
     [SupplyParameterFromForm]
-#if DEMO
-    private UserAuthorizationModel Input { get; set; } = new() { Password = "Qwerty123!" };
-    bool IsDebug = true;
-#else
+// #if DEMO
+//     private UserAuthorizationModel Input { get; set; } = new() { Password = "Qwerty123!" };
+//     bool IsDebug = true;
+// #else
     private UserAuthorizationModel Input { get; set; } = new();
     bool IsDebug = false;
-#endif
+//#endif
 
     /// <summary>
     /// This doesn't count login failures towards account lockout

@@ -3,16 +3,15 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
-namespace BlazorWebLib.Components.ParametersShared;
+namespace BlazorLib;
 
 /// <summary>
-/// StringParameterStorageComponent
+/// StringParameterStorageBaseComponent
 /// </summary>
-public partial class StringParameterStorageComponent : BlazorBusyComponentBaseModel
+public class StringParameterStorageBaseComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
@@ -41,7 +40,10 @@ public partial class StringParameterStorageComponent : BlazorBusyComponentBaseMo
 
 
     string? _textValue;
-    string? TextValue
+    /// <summary>
+    /// TextValue
+    /// </summary>
+    protected string? TextValue
     {
         get => _textValue;
         set
@@ -55,7 +57,7 @@ public partial class StringParameterStorageComponent : BlazorBusyComponentBaseMo
     {
         IsBusyProgress = true;
         await Task.Delay(1);
-        await StoreRepo.SaveParameter(_textValue, KeyStorage);
+        await StoreRepo.SaveParameter(_textValue, KeyStorage, false);
         IsBusyProgress = false;
         StateHasChanged();
     }

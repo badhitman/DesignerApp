@@ -8,17 +8,18 @@
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortLabel="@(nameof(OrganizationModelDB.Name))" T="OrganizationModelDB">Название</MudTableSortLabel></MudTh>
-        <MudTh>Связь</MudTh>
-        <MudTh>Адрес</MudTh>
-        <MudTh>ИНН/КПП/ОГРН</MudTh>
-        <MudTh>Банк</MudTh>
+        <MudTh>Контакты</MudTh>
+        <MudTh>Юр.Адрес</MudTh>
+        <MudTh>ИНН/ОГРН</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Название"><a href="/organization-edit/@(context.Id)">@context.Name</a></MudTd>
-        <MudTd DataLabel="Связь">@($"{context.Phone} {context.Email}".Trim())</MudTd>
-        <MudTd DataLabel="Адрес">@context.LegalAddress</MudTd>
-        <MudTd DataLabel="ИНН/КПП/ОГРН">@($"{context.INN}/{context.KPP}/{context.OGRN}")</MudTd>
-        <MudTd DataLabel="Банк">@($"{context.BankName} (БИК:{context.BankBIC}). к/с: {context.CorrespondentAccount}")</MudTd>
+        <MudTd DataLabel="Контакты">
+            @context.Phone
+            <code class="ms-2">@context.Email</code>
+        </MudTd>
+        <MudTd DataLabel="Юр.Адрес">@context.LegalAddress</MudTd>
+        <MudTd DataLabel="ИНН/ОГРН">@($"{context.INN}/{context.OGRN}")</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>

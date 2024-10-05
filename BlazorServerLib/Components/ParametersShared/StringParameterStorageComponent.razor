@@ -1,9 +1,9 @@
 ﻿@using MudBlazor
 
-@inherits BlazorBusyComponentBaseModel
+@inherits StringParameterStorageBaseComponent
 
 <div class="hstack gap-3">
-    <MudTextField HelperText="@HelperText" @bind-Value="TextValue" Immediate Label="@Label" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField  HelperText="@HelperText" @bind-Value="TextValue" Immediate Label="@Label" Variant="Variant.Outlined"></MudTextField>
     @if (IsBusyProgress)
     {
         <div class="spinner-grow" role="status">

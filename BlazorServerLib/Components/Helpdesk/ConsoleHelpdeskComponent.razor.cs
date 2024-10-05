@@ -43,13 +43,13 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> res = await storageRepo.SaveParameter(FilterUserId, CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId));
+        TResponseModel<int> res = await storageRepo.SaveParameter(FilterUserId, CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId), false);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         StateHasChanged();
     }
 
-    StorageCloudParameterModel KeyStorageSizeColumns => new()
+    StorageCloudParameterModel SizeColumnsKeyStorage => new()
     {
         ApplicationName = Path.Combine(Routes.CONSOLE_CONTROLLER_NAME, Routes.HELPDESK_CONTROLLER_NAME),
         Name = Routes.SIZE_CONTROLLER_NAME,
@@ -63,7 +63,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> res = await storageRepo.SaveParameter(IsLarge, KeyStorageSizeColumns);
+        TResponseModel<int> res = await storageRepo.SaveParameter(IsLarge, SizeColumnsKeyStorage, true);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
@@ -76,7 +76,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<bool> res = await storageRepo.ReadParameter<bool>(KeyStorageSizeColumns);
+        TResponseModel<bool> res = await storageRepo.ReadParameter<bool>(SizeColumnsKeyStorage);
         TResponseModel<string?> current_filter_user_res = await storageRepo.ReadParameter<string>(CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId));
         IsBusyProgress = false;
 

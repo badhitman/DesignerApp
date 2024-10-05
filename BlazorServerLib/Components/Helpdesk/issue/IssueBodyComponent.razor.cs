@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using SharedLib;
 using BlazorLib;
 
@@ -17,10 +16,11 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
     [Inject]
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
 
+
     /// <summary>
     /// IssueSource
     /// </summary>
-    [Parameter,CascadingParameter]
+    [Parameter, CascadingParameter]
     public IssueHelpdeskModelDB? IssueSource { get; set; }
 
     bool CanSave =>
@@ -46,6 +46,8 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
     bool ShowDisabledRubrics;
     bool IsEditMode { get; set; }
     RubricIssueHelpdeskLowModel? SelectedRubric;
+    RubricSelectorComponent? rubricSelector_ref;
+    List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow;
 
     void RubricSelectAction(RubricIssueHelpdeskLowModel? selectedRubric)
     {
@@ -69,7 +71,7 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
             throw new ArgumentNullException(nameof(NameIssueEdit));
 
         IsBusyProgress = true;
-        
+
         TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new()
         {
             SenderActionUserId = CurrentUser.UserId,
@@ -93,9 +95,27 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
         IsEditMode = false;
     }
 
-    void EditToggle()
+    async Task EditToggle()
     {
         IsEditMode = !IsEditMode;
+        await Task.Delay(1);
+        if (rubricSelector_ref is not null && Issue.RubricIssueId is not null)
+        {
+            IsBusyProgress = true;
+            await Task.Delay(1);
+            TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(Issue.RubricIssueId.Value);
+            IsBusyProgress = false;
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+            RubricMetadataShadow = res.Response;
+            if (RubricMetadataShadow is not null && RubricMetadataShadow.Count != 0)
+            {
+                RubricIssueHelpdeskModelDB current_element = RubricMetadataShadow.Last();
+
+                await rubricSelector_ref.OwnerRubricSet(current_element.ParentRubricId ?? 0);
+                await rubricSelector_ref.SetRubric(current_element.Id, RubricMetadataShadow);
+                rubricSelector_ref.StateHasChangedCall();
+            }
+        }
     }
 
     /// <inheritdoc/>

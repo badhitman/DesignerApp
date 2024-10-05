@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using System.Globalization;
 
 namespace BlazorWebLib.Components.Helpdesk.console;
 
@@ -19,6 +20,9 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
+
+    [Inject]
+    ICommerceRemoteTransmissionService commRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -39,6 +43,8 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
     [Parameter]
     public string? UserFilter { get; set; }
 
+
+    static CultureInfo cultureInfo = new("ru-RU");
 
     string? _searchQuery;
     string? SearchQuery
@@ -77,16 +83,44 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
                 ProjectId = 0,
             }
         });
-
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-
         if (res.Response?.Response is not null && res.Response.Response.Count != 0)
         {
             totalCount = res.Response.TotalRowsCount;
             Issues.AddRange(res.Response.Response);
             pageNum++;
         }
+        await UpdateOrdersCache();
+    }
+
+    Dictionary<int, OrderDocumentModelDB?> OrdersCache = [];
+    async Task UpdateOrdersCache()
+    {
+        int[] issues_ids = Issues.Where(x => !OrdersCache.ContainsKey(x.Id)).Select(x => x.Id).ToArray();
+        if (issues_ids.Length == 0)
+            return;
+
+        IsBusyProgress = true;
+        TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req = new()
+        {
+            Payload = new()
+            {
+                Payload = new()
+                {
+                    IssueIds = issues_ids,
+                    IncludeExternalData = true
+                },
+                SenderActionUserId = "",
+            }
+        };
+        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> rest = await commRepo.OrdersSelect(req);
+        if (rest.Success() && rest.Response is not null && rest.Response.Response.Count != 0)
+        {
+            foreach (OrderDocumentModelDB ro in rest.Response.Response)
+                OrdersCache.Add(ro.HelpdeskId!.Value, ro);
+        }
+        IsBusyProgress = false;
     }
 
     string? _luf;

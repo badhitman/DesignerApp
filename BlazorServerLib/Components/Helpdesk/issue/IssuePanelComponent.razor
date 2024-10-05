@@ -2,7 +2,15 @@
 @attribute [Authorize]
 
 <div class="vstack gap-3">
-    <div class="px-1"><StatusIssueComponent /></div>
-    <div class="px-1"><SubscribersIssueComponent /></div>
+    <div class="px-1">
+        <CascadingValue Value="@(user.IsAdmin)">
+            <StatusIssueComponent />
+        </CascadingValue>
+    </div>
+    <AuthorizeView Roles="@($"{string.Join(",",GlobalStaticConstants.Roles.AllHelpDeskRoles)},{GlobalStaticConstants.Roles.Admin}")">
+        <Authorized>
+            <div class="px-1"><SubscribersIssueComponent /></div>
+        </Authorized>
+    </AuthorizeView>
     <div class="px-1"><AboutIssueComponent /></div>
 </div>

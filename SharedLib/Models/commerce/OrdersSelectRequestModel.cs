@@ -49,5 +49,5 @@ public class OrdersSelectRequestModel
     /// <summary>
     /// Заказы для заявки из СДЭК
     /// </summary>
-    public int? IssueId { get; set; }
+    public int[]? IssueIds { get; set; }
 }

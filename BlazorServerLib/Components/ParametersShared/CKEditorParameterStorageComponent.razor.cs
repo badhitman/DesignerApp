@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -57,7 +57,7 @@ public partial class CKEditorParameterStorageComponent : BlazorBusyComponentBase
     {
         //IsBusyProgress = true;
         //await Task.Delay(1);
-        await StoreRepo.SaveParameter(_textValue, KeyStorage);
+        await StoreRepo.SaveParameter(_textValue, KeyStorage, true);
         //IsBusyProgress = false;
         //StateHasChanged();
     }

@@ -2,11 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
+
 namespace SharedLib;
 
 /// <summary>
 /// IssueHelpdeskModel
 /// </summary>
+[Index(nameof(LastUpdateAt)), Index(nameof(CreatedAt))]
 public class IssueHelpdeskModel : EntryDescriptionModel
 {
     /// <summary>

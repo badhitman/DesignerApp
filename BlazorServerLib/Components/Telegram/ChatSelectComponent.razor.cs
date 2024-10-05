@@ -82,7 +82,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> rest = await StorageRepo.SaveParameter(selected?.ChatTelegramId, KeyStorage);
+        TResponseModel<int> rest = await StorageRepo.SaveParameter(selected?.ChatTelegramId, KeyStorage, false);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         StateHasChanged();

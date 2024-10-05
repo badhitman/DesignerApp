@@ -47,8 +47,8 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
         if (req.Payload.Payload.GoodsFilter.HasValue && req.Payload.Payload.GoodsFilter.Value != 0)
             q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.GoodsId == req.Payload.Payload.GoodsFilter));
 
-        if (req.Payload.Payload.IssueId is not null && req.Payload.Payload.IssueId > 0)
-            q = q.Where(x => x.HelpdeskId == req.Payload.Payload.IssueId);
+        if (req.Payload.Payload.IssueIds is not null && req.Payload.Payload.IssueIds.Length != 0)
+            q = q.Where(x => req.Payload.Payload.IssueIds.Any(y => y == x.HelpdeskId));
 
         if (req.Payload.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate);
@@ -62,6 +62,7 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
             .Take(req.PageSize);
 
         Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = pq
+            .Include(x => x.Attachments)
             .Include(x => x.Organization)
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.AddressOrganization)

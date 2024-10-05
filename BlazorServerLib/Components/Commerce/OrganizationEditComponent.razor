@@ -131,9 +131,10 @@ else
                             }
                         </div>
                     </div>
-
-                    <MudSwitch @bind-Value="editOrg.IsDisabled" Label="Отключение" Color="Color.Success" />
-
+                    @if (user.IsAdmin)
+                    {
+                        <MudSwitch @bind-Value="editOrg.IsDisabled" Label="Отключение" Color="Color.Success" />
+                    }
                     <div class="d-grid gap-2">
                         <button title="Сохранить изменения" @onclick="SaveOrganization" disabled="@(currentOrg.Equals(editOrg) || !GlobalTools.ValidateObject(editOrg).IsValid)" class="btn btn-@(currentOrg.Equals(editOrg) ? "outline-primary" : "success")" type="button">Сохранить</button>
                         @if (!currentOrg.Equals(editOrg))
@@ -144,6 +145,11 @@ else
                         @if (editOrg.HasRequestToChange && currentOrg.Equals(editOrg))
                         {
                             <button title="Отказ от изменений юридических реквизитов" @onclick="CancelEditRequestOrganization" class="btn btn-primary" type="button">Аннулировать запрос изменений</button>
+                        }
+
+                        @if (user.IsAdmin && editOrg.HasRequestToChange)
+                        {
+                            <button title="" @onclick="ConfirmChangeOrganization" class="btn btn-primary" type="button">Подтвердить изменения</button>
                         }
                     </div>
                 </div>

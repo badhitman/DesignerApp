@@ -2,18 +2,32 @@
 @using MudBlazor
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager}")]
+@attribute [Authorize]
 
 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
     <MudTabPanel Text="Параметры">
         <GoodsEditComponent GoodsId="GoodsId" />
     </MudTabPanel>
-    <MudTabPanel Text="Заказы">
-        <OrdersJournalComponent GoodsFilter="GoodsId" />
-    </MudTabPanel>
+    @if (user.IsAdmin)
+    {
+        <MudTabPanel Text="Заказы">
+            <OrdersJournalComponent GoodsFilter="GoodsId" />
+        </MudTabPanel>
+    }
 </MudTabs>
 
 @code {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+    UserInfoMainModel user = default!;
+
     [Parameter]
     public int GoodsId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+    }
 }

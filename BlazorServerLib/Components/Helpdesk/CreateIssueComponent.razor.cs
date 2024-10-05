@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
@@ -49,7 +48,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
 
     string? Name;
     string? Description;
-
+    bool _showCreateIssue;
     bool IsEditMode { get; set; } = false;
 
     ModesSelectRubricsEnum ModeSelectingRubrics;
@@ -85,6 +84,8 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
+        TResponseModel<bool?> res_ShowCreatingIssue = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue);
+        _showCreateIssue = res_ShowCreatingIssue.Success() && res_ShowCreatingIssue.Response == true;
         TResponseModel<bool?> res = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics);
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         IsBusyProgress = false;

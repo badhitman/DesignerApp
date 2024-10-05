@@ -48,6 +48,13 @@ public class AttachmentForOrderReceive(IDbContextFactory<CommerceContext> commer
             res.AddSuccess("Файл добавлен");
             return res;
         }
+        else
+            await context
+                .AttachmentsForOrders
+                .Where(x => x.FilePoint == req.FilePoint)
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.FileSize, req.FileSize)
+                .SetProperty(p => p.Name, req.FileName));
 
         res.AddWarning("Файл уже в системе");
 

@@ -7,6 +7,7 @@ using RemoteCallLib;
 using SharedLib;
 using DbcLib;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -17,11 +18,15 @@ public class MessageUpdateOrCreateReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
     ILogger<MessageUpdateOrCreateReceive> loggerRepo,
+    ICommerceRemoteTransmissionService commRepo,
+    ITelegramRemoteTransmissionService tgRepo,
+    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<IssueMessageHelpdeskBaseModel>?, int?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessageOfIssueUpdateHelpdeskReceive;
+    static CultureInfo cultureInfo = new("ru-RU");
 
     /// <summary>
     /// Сообщение в обращение
@@ -83,6 +88,7 @@ public class MessageUpdateOrCreateReceive(
         IssueReadMarkerHelpdeskModelDB? my_marker;
         DateTime dtn = DateTime.UtcNow;
         string msg;
+        PulseRequestModel p_req;
         if (req.Payload.Id < 1)
         {
             msg_db = new()
@@ -101,17 +107,24 @@ public class MessageUpdateOrCreateReceive(
             res.Response = msg_db.Id;
             if (actor.UserId != GlobalStaticConstants.Roles.System)
             {
-                await helpdeskTransmissionRepo.PulsePush(new()
+                p_req = new()
                 {
-                    SenderActionUserId = req.SenderActionUserId,
                     Payload = new()
                     {
-                        IssueId = issue_data.Id,
-                        PulseType = PulseIssuesTypesEnum.Messages,
-                        Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
-                        Description = $"Пользователь `{actor.UserName}` добавил комментарий в обращение #{issue_data.Id} '{issue_data.Name}'",
-                    }
-                });
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Id,
+                            PulseType = PulseIssuesTypesEnum.Messages,
+                            Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
+                            Description = $"Пользователь `{actor.UserName}` добавил комментарий в обращение #{issue_data.Id} '{issue_data.Name}'",
+                        },
+                        SenderActionUserId = req.SenderActionUserId,
+                    },
+                    IsMuteEmail = true,
+                    IsMuteTelegram = true,
+                };
+
+                await helpdeskTransmissionRepo.PulsePush(p_req);
 
                 my_marker = await context.IssueReadMarkers.FirstOrDefaultAsync(x => x.IssueId == req.Payload.IssueId && x.UserIdentityId == actor.UserId);
                 if (my_marker is null)
@@ -136,6 +149,80 @@ public class MessageUpdateOrCreateReceive(
                     .IssueReadMarkers
                     .Where(x => x.IssueId == req.Payload.IssueId && x.Id != my_marker.Id)
                     .ExecuteDeleteAsync();
+
+                TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req_docs = new()
+                {
+                    PageNum = 0,
+                    PageSize = int.MaxValue,
+                    Payload = new()
+                    {
+                        Payload = new()
+                        {
+                            IssueIds = [issue_data.Id],
+                        },
+                        SenderActionUserId = ""
+                    }
+                };
+
+                TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> find_orders = await commRepo.OrdersSelect(req_docs);
+                if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Response.Count != 0)
+                {
+                    TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                    OrderDocumentModelDB order_obj = find_orders.Response.Response[0];
+                    string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetMsk().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetMsk().ToString("t", cultureInfo)}";
+
+                    string ReplaceTags(string raw)
+                    {
+                        return raw.Replace(GlobalStaticConstants.OrderDocumentName, order_obj.Name)
+                        .Replace(GlobalStaticConstants.OrderDocumentDate, $"{order_obj.CreatedAtUTC.GetMsk().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetMsk().ToString("t", cultureInfo)}")
+                        .Replace(GlobalStaticConstants.OrderStatusInfo, issue_data.StepIssue.DescriptionInfo())
+                        .Replace(GlobalStaticConstants.OrderLinkAddress, $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}'>{_about_order}</a>")
+                        .Replace(GlobalStaticConstants.HostAddress, $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
+                    }
+
+                    string subject_email = "Новое сообщение";
+                    TResponseModel<string?> CommerceNewMessageOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderSubjectNotification);
+                    if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
+                        subject_email = CommerceNewMessageOrderSubjectNotification.Response;
+                    subject_email = ReplaceTags(subject_email);
+
+                    msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetMsk()}]: Новое сообщение.</p>" +
+                                        $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
+
+                    string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
+
+                    TResponseModel<string?> CommerceNewMessageOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification);
+                    if (CommerceNewMessageOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
+                        msg = CommerceNewMessageOrderBodyNotification.Response;
+                    msg = ReplaceTags(msg);
+
+                    TResponseModel<string?> CommerceNewMessageOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram);
+                    if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
+                        tg_message = CommerceNewMessageOrderBodyNotificationTelegram.Response;
+                    tg_message = ReplaceTags(tg_message);
+
+                    IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
+
+                    string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
+                    TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
+                    if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
+                    {
+                        foreach (UserInfoModel u in users_notify.Response)
+                        {
+                            if (u.TelegramId.HasValue)
+                            {
+                                TResponseModel<MessageComplexIdsModel?> tgs_res = await tgRepo.SendTextMessageTelegram(new()
+                                {
+                                    Message = tg_message,
+                                    UserTelegramId = u.TelegramId!.Value
+                                });
+                            }
+                            loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
+                            await webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg });
+                        }
+                    }
+                }
+
             }
             else
                 await context
@@ -156,24 +243,31 @@ public class MessageUpdateOrCreateReceive(
             }
             else
             {
-                await helpdeskTransmissionRepo.PulsePush(new()
-                {
-                    SenderActionUserId = req.SenderActionUserId,
-                    Payload = new()
-                    {
-                        IssueId = issue_data.Id,
-                        PulseType = PulseIssuesTypesEnum.Messages,
-                        Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
-                        Description = $"Пользователь `{actor.UserName}` изменил комментарий #{msg_db.Id}.",
-                    }
-                });
-
                 res.Response = await context
                     .IssuesMessages
                     .Where(x => x.Id == msg_db.Id)
                     .ExecuteUpdateAsync(set => set
                     .SetProperty(p => p.MessageText, req.Payload.MessageText)
                     .SetProperty(p => p.LastUpdateAt, dtn));
+
+                p_req = new()
+                {
+                    Payload = new()
+                    {
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Id,
+                            PulseType = PulseIssuesTypesEnum.Messages,
+                            Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
+                            Description = $"Пользователь `{actor.UserName}` изменил комментарий #{msg_db.Id}.",
+                        },
+                        SenderActionUserId = req.SenderActionUserId,
+                    },
+                    IsMuteEmail = true,
+                    IsMuteTelegram = true,
+                };
+
+                await helpdeskTransmissionRepo.PulsePush(p_req);
 
                 msg = "Сообщение успешно обновлено";
                 res.AddSuccess(msg);

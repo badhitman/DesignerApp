@@ -1,0 +1,12 @@
+﻿@inherits StringParameterStorageBaseComponent
+
+<div class="my-3">
+    <label for="formControlTextarea@(KeyStorage.ToString())" class="form-label">@Label</label>
+    <textarea @oninput="HandleOnChange" class="form-control" id="formControlTextarea@(KeyStorage.ToString())" rows="@(RowsSize)">@TextValue</textarea>
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <div class="form-text">
+            @HelperText
+        </div>
+    }
+</div>

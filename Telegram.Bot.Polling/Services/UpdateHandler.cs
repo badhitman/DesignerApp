@@ -1,10 +1,10 @@
-using ServerLib;
-using SharedLib;
+using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
+using ServerLib;
+using SharedLib;
 
 namespace Telegram.Bot.Services;
 
@@ -55,6 +55,62 @@ public class UpdateHandler(
         string messageText = message.Text?.Trim() ?? message.Caption?.Trim() ?? "Вложения";
         if (message.From is null || (string.IsNullOrWhiteSpace(messageText) && string.IsNullOrEmpty(message.Caption) && message.Audio is null && message.Contact is null && message.Document is null && message.Photo is null && message.Video is null && message.Voice is null))
             return;
+        string msg;
+        if (message.Chat.Type == ChatType.Private)
+        {
+            ResponseBaseModel? check_token = null;
+            if (messageText.StartsWith("/start ") && Guid.TryParse(messageText[7..], out _))
+            {
+                messageText = messageText[7..];
+                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramId = message.From.Id, Token = messageText.Trim() });
+            }
+            else if (Guid.TryParse(messageText.Trim(), out _))
+                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramId = message.From.Id, Token = messageText.Trim() });
+
+            if (check_token is not null)
+            {
+                if (!check_token.Success())
+                {
+                    msg = $"Ошибка проверки токена: {check_token.Message()}. Начать заново /start";
+                    Message msg_s = await botClient.SendTextMessageAsync(
+                                    chatId: message.Chat.Id,
+                                    text: msg,
+                                    parseMode: ParseMode.Html,
+                                    replyMarkup: new ReplyKeyboardRemove(),
+                                    cancellationToken: cancellationToken);
+#if DEBUG
+                    await botClient.EditMessageTextAsync(
+                        chatId: msg_s.Chat.Id,
+                        messageId: msg_s.MessageId,
+                        text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
+                        parseMode: ParseMode.Html,
+                        cancellationToken: cancellationToken);
+#endif
+                }
+                else
+                {
+                    msg = $"Токен успешно проверен";
+                    Message msg_s = await botClient.SendTextMessageAsync(
+                                    chatId: message.Chat,
+                                    text: msg,
+                                    parseMode: ParseMode.Html,
+                                    replyMarkup: new ReplyKeyboardRemove(),
+                                    cancellationToken: cancellationToken);
+
+#if DEBUG
+                    await botClient.EditMessageTextAsync(
+                        chatId: msg_s.Chat.Id,
+                        messageId: msg_s.MessageId,
+                        text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
+                        parseMode: ParseMode.Html,
+                        cancellationToken: cancellationToken);
+#endif
+
+                }
+
+                return;
+            }
+        }
 
         TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
 
@@ -127,61 +183,6 @@ public class UpdateHandler(
     {
         string msg;
         uc.DialogTelegramTypeHandler ??= typeof(DefaultTelegramDialogHandle).FullName;
-        if (eventType == MessagesTypesEnum.TextMessage)
-        {
-            ResponseBaseModel? check_token = null;
-            if (messageText.StartsWith("/start ") && Guid.TryParse(messageText[7..], out _))
-            {
-                messageText = messageText[7..];
-                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramUser = uc, Token = messageText.Trim() });
-            }
-            else if (Guid.TryParse(messageText.Trim(), out _))
-                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramUser = uc, Token = messageText.Trim() });
-
-            if (check_token is not null)
-            {
-                if (!check_token.Success())
-                {
-                    msg = $"Ошибка проверки токена: {check_token.Message()}. Начать заново /start";
-                    Message msg_s = await botClient.SendTextMessageAsync(
-                                    chatId: chatId,
-                                    text: msg,
-                                    parseMode: ParseMode.Html,
-                                    replyMarkup: new ReplyKeyboardRemove(),
-                                    cancellationToken: cancellationToken);
-#if DEBUG
-                    await botClient.EditMessageTextAsync(
-                        chatId: msg_s.Chat.Id,
-                        messageId: msg_s.MessageId,
-                        text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
-                        parseMode: ParseMode.Html,
-                        cancellationToken: cancellationToken);
-#endif
-                }
-                else
-                {
-                    msg = $"Токен успешно проверен";
-                    Message msg_s = await botClient.SendTextMessageAsync(
-                                    chatId: chatId,
-                                    text: msg,
-                                    parseMode: ParseMode.Html,
-                                    replyMarkup: new ReplyKeyboardRemove(),
-                                    cancellationToken: cancellationToken);
-
-#if DEBUG
-                    await botClient.EditMessageTextAsync(
-                        chatId: msg_s.Chat.Id,
-                        messageId: msg_s.MessageId,
-                        text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
-                        parseMode: ParseMode.Html,
-                        cancellationToken: cancellationToken);
-#endif
-
-                }
-
-                return;
-            }
-        }
 
         TResponseModel<bool?> res_IsCommandModeTelegramBot = await serializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterIsCommandModeTelegramBot);
 

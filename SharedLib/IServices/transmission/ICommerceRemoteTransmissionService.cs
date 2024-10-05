@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// GetFileOrder
+    /// </summary>
+    public Task<TResponseModel<byte[]>> GetFileOrder(string id);
+
+    /// <summary>
     /// Удалить ценообразование
     /// </summary>
     public Task<TResponseModel<bool>> PriceRuleDelete(int id);

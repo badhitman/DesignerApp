@@ -56,6 +56,6 @@ mv /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
 chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services
 
-systemctl start web.app.service bus.app.service comm.app.service tg.app.service api.app.service hd.app.service
+systemctl start comm.app.service web.app.service bus.app.service tg.app.service api.app.service hd.app.service
 
 journalctl -f -u web.app.service

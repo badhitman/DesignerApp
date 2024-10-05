@@ -7,6 +7,7 @@ using BlazorLib;
 using MudBlazor;
 using SharedLib;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -15,6 +16,9 @@ namespace BlazorWebLib.Components.Commerce;
 /// </summary>
 public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
@@ -32,6 +36,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
     public required OfferGoodModelDB OfferGood { get; set; }
 
 
+    UserInfoMainModel user = default!;
     bool IsExpandPanel;
     PriceRuleForOfferModelDB[] rules = default!;
     
@@ -80,6 +85,10 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
+
         await ReloadRules();
     }
 }

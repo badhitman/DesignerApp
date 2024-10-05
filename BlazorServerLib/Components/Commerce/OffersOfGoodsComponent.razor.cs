@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -14,6 +15,9 @@ namespace BlazorWebLib.Components.Commerce;
 /// </summary>
 public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
@@ -29,7 +33,7 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
 
 
     private MudTable<OfferGoodModelDB> table = default!;
-
+    UserInfoMainModel user = default!;
 
     async void CreateOfferAction(OfferGoodModelDB sender)
     {
@@ -63,6 +67,13 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
             return new TableData<OfferGoodModelDB>() { TotalItems = 0, Items = [] };
 
         return new TableData<OfferGoodModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnParametersSetAsync()
+    {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 
     bool _expanded;

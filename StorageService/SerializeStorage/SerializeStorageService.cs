@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
 using Microsoft.Extensions.Caching.Memory;
+using Amazon.Runtime.Internal.Util;
 
 namespace StorageService;
 
@@ -103,6 +104,8 @@ public class SerializeStorageService(
             try
             {
                 await context.SaveChangesAsync();
+                string mem_key = $"{_set.Name}/{_set.OwnerPrimaryKey}/{_set.PrefixPropertyName}/{_set.ApplicationName}";
+                cache.Remove(mem_key);
                 success = true;
                 res.AddSuccess($"Данные успешно сохранены{(i > 0 ? $" (на попытке [{i}])" : "")}: {_set.ApplicationName}/{_set.Name}");
                 res.Response = _set.Id;
@@ -125,8 +128,7 @@ public class SerializeStorageService(
 
         if (trimHistory)
         {
-            await context
-                .CloudProperties
+            await qf
                 .Where(x => x.Id != _set.Id)
                 .ExecuteDeleteAsync();
         }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using static MudBlazor.Colors;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -48,10 +49,53 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await ReadOrganization();
+    }
+
+    async Task ConfirmChangeOrganization()
+    {
+        if (editOrg is null)
+            throw new ArgumentNullException(nameof(editOrg));
+
+        OrganizationModelDB req = GlobalTools.CreateDeepCopy(editOrg)!;
+
+        if (!string.IsNullOrWhiteSpace(editOrg.NewBankBIC))
+            req.BankBIC = editOrg.NewBankBIC;
+
+        if (!string.IsNullOrWhiteSpace(editOrg.NewBankName))
+            req.BankName = editOrg.NewBankName;
+
+        if (!string.IsNullOrWhiteSpace(editOrg.NewINN))
+            req.INN = editOrg.NewINN;
+
+        if (!string.IsNullOrWhiteSpace(editOrg.NewOGRN))
+            req.OGRN = editOrg.NewOGRN;
+
+        if (!string.IsNullOrWhiteSpace(editOrg.NewCorrespondentAccount))
+            req.CorrespondentAccount = editOrg.NewCorrespondentAccount;
+
+        if (!string.IsNullOrWhiteSpace(editOrg.NewLegalAddress))
+            req.LegalAddress = editOrg.NewLegalAddress;
+
+        if (!string.IsNullOrWhiteSpace(editOrg.NewCurrentAccount))
+            req.CurrentAccount = editOrg.NewCurrentAccount;
+
+        if (!string.IsNullOrWhiteSpace(editOrg.NewKPP))
+            req.KPP = editOrg.NewKPP;
+
+        if (!string.IsNullOrWhiteSpace(editOrg.NewName))
+            req.Name = editOrg.NewName;
+
+        IsBusyProgress = true;
+        await Task.Delay(1);
+        TResponseModel<bool> res = await CommerceRepo.OrganizationSetLegal(req);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        NavigationRepo.ReloadPage();
     }
 
     async Task SaveOrganization()
@@ -61,6 +105,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -80,6 +125,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
             return;
 
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<OrganizationModelDB[]> res = await CommerceRepo.OrganizationsRead([OrganizationId.Value]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

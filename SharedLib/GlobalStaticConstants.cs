@@ -79,6 +79,30 @@ public static partial class GlobalStaticConstants
     /// </summary>
     public const string TransmissionQueueNamePrefix = "Transmission.Receives";
 
+    /// <summary>
+    /// OrderDocumentName
+    /// </summary>
+    public const string OrderDocumentName = "[OrderDocumentName]";
+
+    /// <summary>
+    /// OrderDocumentDate
+    /// </summary>
+    public const string OrderDocumentDate = "[OrderDocumentDate]";
+
+    /// <summary>
+    /// OrderStatusInfo
+    /// </summary>
+    public const string OrderStatusInfo = "[OrderStatusInfo]";
+
+    /// <summary>
+    /// HostAddress
+    /// </summary>
+    public const string HostAddress = "[HostAddress]";
+
+    /// <summary>
+    /// OrderLinkAddress
+    /// </summary>
+    public const string OrderLinkAddress = "[OrderLinkAddress]";
 
     /// <summary>
     /// Cloud storage metadata
@@ -140,6 +164,24 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
+        /// Отображать кнопку создания обращения
+        /// </summary>
+        public static StorageCloudParameterModel ShowCreatingIssue => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.ADD_ACTION_NAME),
+        };
+
+        /// <summary>
+        /// RubricIssueForCreateOrder
+        /// </summary>
+        public static StorageCloudParameterModel RubricIssueForCreateOrder => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            Name = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.RUBRIC_CONTROLLER_NAME),
+        };
+
+        /// <summary>
         /// Уведомления Telegram о созданных заявках
         /// </summary>
         public static StorageCloudParameterModel HelpdeskNotificationTelegramForCreateIssue => new()
@@ -158,6 +200,102 @@ public static partial class GlobalStaticConstants
             Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.GLOBAL_CONTROLLER_NAME,
         };
+
+        #region commerce notifications
+        /// <summary>
+        /// Тема уведомления при создании нового заказа
+        /// </summary>
+        public static StorageCloudParameterModel CommerceNewOrderSubjectNotification => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
+            PrefixPropertyName = Routes.SUBJECT_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// Текст уведомления при создании нового заказа
+        /// </summary>
+        public static StorageCloudParameterModel CommerceNewOrderBodyNotification => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
+            PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+        };
+
+
+        /// <summary>
+        /// Тема уведомления при изменении статуса заказа
+        /// </summary>
+        public static StorageCloudParameterModel CommerceStatusChangeOrderSubjectNotification => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.SUBJECT_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// Текст уведомления при изменении статуса заказа
+        /// </summary>
+        public static StorageCloudParameterModel CommerceStatusChangeOrderBodyNotification => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+        };
+
+
+        /// <summary>
+        /// Тема уведомления при добавлении комментария к заказу
+        /// </summary>
+        public static StorageCloudParameterModel CommerceNewMessageOrderSubjectNotification => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}",
+            PrefixPropertyName = Routes.SUBJECT_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// Текст уведомления при добавлении комментария к заказу
+        /// </summary>
+        public static StorageCloudParameterModel CommerceNewMessageOrderBodyNotification => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}",
+            PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+        };
+
+
+
+        /// <summary>
+        /// TELEGRAM: Текст уведомления при создании нового заказа
+        /// </summary>
+        public static StorageCloudParameterModel CommerceNewOrderBodyNotificationTelegram => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// TELEGRAM: Текст уведомления при изменении статуса заказа
+        /// </summary>
+        public static StorageCloudParameterModel CommerceStatusChangeOrderBodyNotificationTelegram => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// TELEGRAM: Текст уведомления при добавлении комментария к заказу
+        /// </summary>
+        public static StorageCloudParameterModel CommerceNewMessageOrderBodyNotificationTelegram => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+        };
+        #endregion
 
         /// <summary>
         /// Фильтр консоли по пользователю
@@ -261,6 +399,9 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string ReadFileTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.FILE_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string ReadFileCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.FILE_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string ChatsReadTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, Routes.CHATS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
@@ -493,6 +634,16 @@ public static partial class GlobalStaticConstants
         /// Order
         /// </summary>
         public const string ORDER_CONTROLLER_NAME = "order";
+
+        /// <summary>
+        /// Subject
+        /// </summary>
+        public const string SUBJECT_CONTROLLER_NAME = "subject";
+
+        /// <summary>
+        /// Body
+        /// </summary>
+        public const string BODY_CONTROLLER_NAME = "body";
 
         /// <summary>
         /// Payment
@@ -832,6 +983,11 @@ public static partial class GlobalStaticConstants
         public const string ADD_ACTION_NAME = "add";
 
         /// <summary>
+        /// Allow
+        /// </summary>
+        public const string ALLOW_ACTION_NAME = "allow";
+
+        /// <summary>
         /// update
         /// </summary>
         public const string UPDATE_ACTION_NAME = "update";
@@ -1020,11 +1176,6 @@ public static partial class GlobalStaticConstants
         /// CommerceManager
         /// </summary>
         public const string CommerceManager = "CommerceManager";
-
-        /// <summary>
-        /// CommerceClient
-        /// </summary>
-        public const string CommerceClient = "CommerceClient";
         #endregion
     }
 

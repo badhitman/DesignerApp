@@ -76,9 +76,9 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
                 Payload = new()
                 {
                     IncludeExternalData = true,
-                    IssueId = IssueSource.Id,
+                    IssueIds = [IssueSource.Id],
                 },
-                SenderActionUserId = CurrentUser.UserId,
+                SenderActionUserId = "",
             }
         };
         IsBusyProgress = true;

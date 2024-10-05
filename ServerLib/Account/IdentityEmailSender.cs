@@ -17,7 +17,7 @@ public sealed class IdentityEmailSender(IMailProviderService emailSender) : IEma
     /// <inheritdoc/>
 
     public Task SendPasswordResetLinkAsync(ApplicationUser user, string email, string resetLink) =>
-        emailSender.SendEmailAsync(email, "Сброс пароля", $"Пожалуйста, сбросьте пароль до <a href='{resetLink}'>кликнув по ссылке</a>.");
+        emailSender.SendEmailAsync(email, "Сброс пароля", $"Для сброса пароля - <a href='{resetLink}'>кликните по ссылке</a>.");
     /// <inheritdoc/>
 
     public Task SendPasswordResetCodeAsync(ApplicationUser user, string email, string resetCode) =>

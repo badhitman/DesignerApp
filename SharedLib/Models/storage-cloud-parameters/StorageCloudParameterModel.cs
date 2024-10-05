@@ -25,4 +25,10 @@ public class StorageCloudParameterModel : RequestStorageCloudParameterModel
     /// Связанный PK строки базы данных (опционально)
     /// </summary>
     public int? OwnerPrimaryKey { get; set; }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{PrefixPropertyName}{OwnerPrimaryKey}{Name}{ApplicationName}";
+    }
 }

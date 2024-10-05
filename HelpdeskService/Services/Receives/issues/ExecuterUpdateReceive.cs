@@ -106,17 +106,22 @@ public class ExecuterUpdateReceive(
                 msg = $"Исполнитель `{users_rest.Response.First(x => x.UserId == issue_data.ExecutorIdentityUserId).UserName}` успешно откреплён от обращения";
                 res.AddSuccess(msg);
 
-                await helpdeskTransmissionRepo.PulsePush(new()
+                PulseRequestModel p_req = new()
                 {
-                    SenderActionUserId = req.SenderActionUserId,
                     Payload = new()
                     {
-                        IssueId = issue_data.Id,
-                        PulseType = PulseIssuesTypesEnum.Executor,
-                        Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
-                        Description = msg,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Id,
+                            PulseType = PulseIssuesTypesEnum.Executor,
+                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                            Description = msg,
+                        },
+                        SenderActionUserId = req.SenderActionUserId
                     }
-                });
+                };
+
+                await helpdeskTransmissionRepo.PulsePush(p_req);
             }
         }
         else
@@ -127,36 +132,47 @@ public class ExecuterUpdateReceive(
             {
                 // msg = $"Исполнитель обращения успешно установлен: {requested_user!.UserName}";
                 msg = "Исполнитель обращения успешно";
-
+                PulseRequestModel p_req;
                 if (string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId))
                 {
                     msg += $": установлен `{requested_user?.UserName}`";
-                    await helpdeskTransmissionRepo.PulsePush(new()
+                    p_req = new()
                     {
-                        SenderActionUserId = req.SenderActionUserId,
                         Payload = new()
                         {
-                            IssueId = issue_data.Id,
-                            PulseType = PulseIssuesTypesEnum.Executor,
-                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
-                            Description = msg,
+                            Payload = new()
+                            {
+                                IssueId = issue_data.Id,
+                                PulseType = PulseIssuesTypesEnum.Executor,
+                                Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                                Description = msg,
+                            },
+                            SenderActionUserId = req.SenderActionUserId
                         }
-                    });
+                    };
+
+                    await helpdeskTransmissionRepo.PulsePush(p_req);
                 }
                 else
                 {
                     msg += $": изменён `{users_rest.Response.FirstOrDefault(x => x.UserId == issue_data.ExecutorIdentityUserId)}` в `{requested_user?.UserName}`";
-                    await helpdeskTransmissionRepo.PulsePush(new()
+
+                    p_req = new()
                     {
-                        SenderActionUserId = req.SenderActionUserId,
                         Payload = new()
                         {
-                            IssueId = issue_data.Id,
-                            PulseType = PulseIssuesTypesEnum.Executor,
-                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
-                            Description = msg,
+                            Payload = new()
+                            {
+                                IssueId = issue_data.Id,
+                                PulseType = PulseIssuesTypesEnum.Executor,
+                                Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                                Description = msg,
+                            },
+                            SenderActionUserId = req.SenderActionUserId
                         }
-                    });
+                    };
+
+                    await helpdeskTransmissionRepo.PulsePush(p_req);
                 }
 
                 await context

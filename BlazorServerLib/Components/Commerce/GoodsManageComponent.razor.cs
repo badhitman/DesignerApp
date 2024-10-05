@@ -21,6 +21,11 @@ public partial class GoodsManageComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+
+    UserInfoMainModel user = default!;
 
     bool _expanded;
     MudTable<GoodsModelDB> tableRef = default!;
@@ -54,6 +59,13 @@ public partial class GoodsManageComponent : BlazorBusyComponentBaseModel
             return new TableData<GoodsModelDB>() { TotalItems = 0, Items = [] };
 
         return new TableData<GoodsModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 
     private void OnExpandCollapseClick()

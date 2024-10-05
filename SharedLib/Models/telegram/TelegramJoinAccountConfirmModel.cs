@@ -10,8 +10,6 @@ public class TelegramJoinAccountConfirmModel
     /// <inheritdoc/>
     public required string Token { get; set; }
 
-    /// <summary>
-    /// TelegramUser
-    /// </summary>
-    public required TelegramUserBaseModel TelegramUser { get; set; }
+    /// <inheritdoc/>
+    public required long TelegramId { get; set; }
 }

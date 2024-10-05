@@ -1,4 +1,5 @@
 ﻿@using MudBlazor
+@using System.Globalization
 @inherits IssueWrapBaseModel
 
 <MudTable Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
@@ -14,7 +15,11 @@
         <MudTh>Инфо</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Создан">@context.CreatedAt</MudTd>
+        <MudTd DataLabel="Создан">
+            <span data-cd="@context.CreatedAt">
+                @context.CreatedAt.GetMsk().ToString("d", CultureInfo.GetCultureInfo("ru-RU")) <sup>@context.CreatedAt.GetMsk().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
+            </span>
+        </MudTd>
         <MudTd DataLabel="Тип">@(UsersIdentityDump.FirstOrDefault(x => x.UserId == context.AuthorUserIdentityId)?.UserName ?? context.AuthorUserIdentityId)</MudTd>
         <MudTd DataLabel="Тип">@context.PulseType</MudTd>
         <MudTd DataLabel="Признак">@context.Tag</MudTd>

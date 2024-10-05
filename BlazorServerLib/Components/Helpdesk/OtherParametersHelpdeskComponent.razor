@@ -1,8 +1,44 @@
 @using BlazorWebLib.Components.ParametersShared
 @using BlazorWebLib.Components.Commerce
+@using MudBlazor
 
-<StringParameterStorageComponent Label="Заголовок" HelperText="Текст в левом верхнем углу" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.TitleMain" />
-<hr />
-<CKEditorParameterStorageComponent Label="Home PUBLIC" HelperText="Публичная страница для НЕ авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePublic" />
-<hr />
-<CKEditorParameterStorageComponent Label="Home PRIVATE" HelperText="Страница для авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate" />
+@inherits BlazorBusyComponentBaseModel
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Home">
+        <StringParameterStorageComponent Label="Заголовок" HelperText="Текст в левом верхнем углу" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.TitleMain" />
+        <hr />
+        <CKEditorParameterStorageComponent Label="Home PUBLIC" HelperText="Публичная страница для НЕ авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePublic" />
+        <hr />
+        <CKEditorParameterStorageComponent Label="Home PRIVATE" HelperText="Страница для авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate" />
+    </MudTabPanel>    
+    <MudTabPanel Text="Другое">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item my-2">
+                <h6 class="card-subtitle mb-2 text-body-secondary">Ручное создание обращений-заявок в СЭД</h6>
+                <div class="hstack gap-3">
+                    <MudSwitch @bind-Value="ShowCreateIssue" ThumbIcon="@(ShowCreateIssue == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowCreateIssue == true ? Color.Success : Color.Error)">Создание заявок</MudSwitch>
+                    <span class="text-info">
+                        @(ShowCreateIssue == true ? "Кнопка создания обращения активна" : "Ручное создание обращений отключено")
+                    </span>
+                </div>
+                <div class="form-text">
+                    Создание заявок для заказов включено всегда (его отключить нельзя)
+                </div>
+            </li>
+            <li class="list-group-item my-2">
+                <h6 class="card-subtitle mb-2 text-body-secondary">Рубрика заказа</h6>
+                <div class="vstack gap-3">
+                    <CascadingValue Value="RubricSelectAction">
+                        <CascadingValue Value="RubricMetadataShadow">
+                            <RubricSelectorComponent @ref="ref_rubric" Title="" ModeSelectingRubrics="ModesSelectRubricsEnum.AllowWithoutRubric" ShowDisabledRubrics="true" ParentRubric="0" StartRubric="_RubricIssueForCreateOrder" />
+                        </CascadingValue>
+                    </CascadingValue>
+                </div>
+                <div class="form-text">
+                    Автоматическое назначение рубрики
+                </div>
+            </li>
+        </ul>
+    </MudTabPanel>
+</MudTabs>

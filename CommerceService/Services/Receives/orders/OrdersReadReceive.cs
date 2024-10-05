@@ -36,6 +36,7 @@ public class OrdersReadReceive(IDbContextFactory<CommerceContext> commerceDbFact
             .ThenInclude(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
             .ThenInclude(x => x.Goods)
+            .Include(x=>x.Attachments)
             .ToArrayAsync();
 
         return res;

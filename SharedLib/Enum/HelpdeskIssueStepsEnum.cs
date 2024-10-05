@@ -42,9 +42,9 @@ public enum HelpdeskIssueStepsEnum
     Check = 50,
 
     /// <summary>
-    /// Готово
+    /// Выполнен
     /// </summary>
-    [Description("Готово")]
+    [Description("Выполнен")]
     Done = 60,
 
     /// <summary>

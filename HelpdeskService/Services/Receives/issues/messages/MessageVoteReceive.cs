@@ -76,7 +76,7 @@ public class MessageVoteReceive(
             .Where(x => x.MessageId == msg_db.Id && x.IdentityUserId == req.SenderActionUserId)
             .Select(x => x.Id)
             .FirstOrDefaultAsync();
-
+        PulseRequestModel p_req;
         if (req.Payload.SetStatus)
         {
             if (!vote_db_key.HasValue)
@@ -86,17 +86,22 @@ public class MessageVoteReceive(
                 await context.SaveChangesAsync();
 
                 res.AddSuccess("Ваш голос учтён");
-                await helpdeskTransmissionRepo.PulsePush(new()
+                p_req = new()
                 {
-                    SenderActionUserId = req.SenderActionUserId,
                     Payload = new()
                     {
-                        IssueId = issue_data.Id,
-                        PulseType = PulseIssuesTypesEnum.Vote,
-                        Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
-                        Description = $"Пользователь `{actor.UserName}` проголосовал за сообщение #{msg_db.Id}",
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Id,
+                            PulseType = PulseIssuesTypesEnum.Vote,
+                            Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
+                            Description = $"Пользователь `{actor.UserName}` проголосовал за сообщение #{msg_db.Id}",
+                        }
                     }
-                });
+                };
+
+                await helpdeskTransmissionRepo.PulsePush(p_req);
             }
             else
                 res.AddInfo("Вы уже проголосовали");
@@ -113,17 +118,22 @@ public class MessageVoteReceive(
                     .ExecuteDeleteAsync();
 
                 res.AddInfo("Ваш голос удалён");
-                await helpdeskTransmissionRepo.PulsePush(new()
+                p_req = new()
                 {
-                    SenderActionUserId = req.SenderActionUserId,
                     Payload = new()
                     {
-                        IssueId = issue_data.Id,
-                        PulseType = PulseIssuesTypesEnum.Vote,
-                        Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
-                        Description = $"Пользователь `{actor.UserName}` удалил свой голос за сообщение #{msg_db.Id}",
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Id,
+                            PulseType = PulseIssuesTypesEnum.Vote,
+                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                            Description = $"Пользователь `{actor.UserName}` удалил свой голос за сообщение #{msg_db.Id}",
+                        }
                     }
-                });
+                };
+
+                await helpdeskTransmissionRepo.PulsePush(p_req);
             }
         }
 

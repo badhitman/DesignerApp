@@ -21,18 +21,22 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
 
     async void SendMessageTelegramAction(SendTextMessageTelegramBotModel msg)
     {
-        IsBusyProgress = true;
-        TResponseModel<bool> send_pulse = await HelpdeskRepo.PulsePush(new()
+        PulseRequestModel req_pulse = new()
         {
             Payload = new()
             {
-                Description = $"Отправил сообщение в Telegram: user-tg#{msg.UserTelegramId}",
-                IssueId = Issue.Id,
-                PulseType = PulseIssuesTypesEnum.Messages,
-                Tag = GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME,
-            },
-            SenderActionUserId = CurrentUser.UserId,
-        });
+                Payload = new()
+                {
+                    Description = $"Отправил сообщение в Telegram: user-tg#{msg.UserTelegramId}",
+                    IssueId = Issue.Id,
+                    PulseType = PulseIssuesTypesEnum.Messages,
+                    Tag = GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME,
+                },
+                SenderActionUserId = CurrentUser.UserId
+            }
+        };
+        IsBusyProgress = true;
+        TResponseModel<bool> send_pulse = await HelpdeskRepo.PulsePush(req_pulse);
         TResponseModel<int> add_msg_system = await HelpdeskRepo.MessageCreateOrUpdate(new()
         {
             SenderActionUserId = GlobalStaticConstants.Roles.System,

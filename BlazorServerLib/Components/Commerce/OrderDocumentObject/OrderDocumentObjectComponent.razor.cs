@@ -2,11 +2,12 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Commerce.OrderDocumentObject;
 
@@ -33,6 +34,10 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
     [Inject]
     AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
+    [Inject]
+    IJSRuntime JsRuntimeRepo { get; set; } = default!;
+
+
 
     /// <summary>
     /// Document
@@ -48,6 +53,54 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
 
 
     UserInfoMainModel user = default!;
+
+    AttachmentForOrderModelDB? _selectedFile;
+    void FileManage(AttachmentForOrderModelDB _f)
+    {
+        isInitDelete = false;
+        _selectedFile = _f;
+    }
+
+    async Task DownloadFile()
+    {
+        isInitDelete = false;
+        if (_selectedFile is null)
+            return;
+
+        TResponseModel<byte[]> downloadSource = await CommRepo.GetFileOrder(_selectedFile.FilePoint);
+        if (downloadSource.Success() && downloadSource.Response is not null)
+        {
+            MemoryStream ms = new(downloadSource.Response);
+            using DotNetStreamReference streamRef = new(stream: ms);
+            await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", _selectedFile.Name, streamRef);
+        }
+    }
+
+    bool isInitDelete;
+    async Task TryDelete()
+    {
+        if (_selectedFile is null || Document.Attachments is null)
+            return;
+
+        if (!isInitDelete)
+        {
+            isInitDelete = true;
+            return;
+        }
+
+        TResponseModel<bool> del_res = await CommRepo.AttachmentDeleteFromOrder(_selectedFile.Id);
+
+        if (del_res.Success() && del_res.Response == true)
+            Document.Attachments.RemoveAll(x => x.Id == _selectedFile.Id);
+
+        isInitDelete = false;
+    }
+
+    void closeFileManager()
+    {
+        _selectedFile = null;
+        isInitDelete = false;
+    }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -89,8 +142,8 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> res = await StorageRepo.SaveParameter(doc, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
-        
+        TResponseModel<int> res = await StorageRepo.SaveParameter(doc, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true);
+
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         SnackbarRepo.Add("Содержимое документа отправлено в корзину для формирования нового заказа", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
 

@@ -43,15 +43,20 @@ else
                                                         <OrdersListComponent Orders="OrdersJournal" />
                                                     </MudTabPanel>
                                                 }
-                                                <MudTabPanel Text="Заявка">
-                                                    <IssueBodyComponent />
+                                                @if (CurrentUser.IsAdmin)
+                                                {
+                                                    <MudTabPanel Text="Заявка">
+                                                        <IssueBodyComponent />
+                                                    </MudTabPanel>
+                                                }
+                                                <MudTabPanel Text="Сообщения">
+                                                    <IssueMessagesComponent />
                                                 </MudTabPanel>
                                                 <MudTabPanel Text="Хроника">
                                                     <PulseJournalComponent />
                                                 </MudTabPanel>
                                             </MudTabs>
                                         </div>
-                                        <div><IssueMessagesComponent /></div>
                                         @if (UsersIdentityDump.Any(x => x.TelegramId.HasValue))
                                         {
                                             <div><ChatsTelegramIssueComponent /></div>

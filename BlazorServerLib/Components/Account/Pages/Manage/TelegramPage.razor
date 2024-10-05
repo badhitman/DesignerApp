@@ -1,5 +1,5 @@
 ﻿@page "/Account/Manage/Telegram"
-@attribute [Authorize(Roles = GlobalStaticConstants.Roles.Admin)]
+@attribute [Authorize]
 
 @inject ITelegramRemoteTransmissionService TelegramRemoteRepo
 @inject IUsersProfilesService UsersManageRepo

@@ -19,6 +19,7 @@ public class IssueCreateOrUpdateReceive(
     IHelpdeskRemoteTransmissionService helpdeskRemoteRepo,
     ITelegramRemoteTransmissionService telegramRemoteRepo,
     ISerializeStorageRemoteTransmissionService StorageRepo,
+    ICommerceRemoteTransmissionService commRepo,
     IWebRemoteTransmissionService webTransmissionRepo)
     : IResponseReceive<TAuthRequestModel<IssueUpdateRequestModel>?, int>
 {
@@ -48,7 +49,7 @@ public class IssueCreateOrUpdateReceive(
         DateTime dtn = DateTime.UtcNow;
         string msg;
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-
+        PulseRequestModel p_req;
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await StorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         ModesSelectRubricsEnum _current_mode_rubric = res_ModeSelectingRubrics.Response ?? ModesSelectRubricsEnum.AllowWithoutRubric;
         if (_current_mode_rubric != ModesSelectRubricsEnum.AllowWithoutRubric)
@@ -105,18 +106,24 @@ public class IssueCreateOrUpdateReceive(
             msg = "Обращение успешно создано";
             res.AddSuccess(msg);
             res.Response = issue.Id;
-
-            await helpdeskRemoteRepo.PulsePush(new()
+            p_req = new()
             {
-                SenderActionUserId = issue_upd.SenderActionUserId,
                 Payload = new()
                 {
-                    IssueId = issue.Id,
-                    PulseType = PulseIssuesTypesEnum.Status,
-                    Tag = issue.StepIssue.DescriptionInfo(),
-                    Description = msg,
-                }
-            });
+                    Payload = new()
+                    {
+                        IssueId = issue.Id,
+                        PulseType = PulseIssuesTypesEnum.Status,
+                        Tag = issue.StepIssue.DescriptionInfo(),
+                        Description = msg,
+                    },
+                    SenderActionUserId = GlobalStaticConstants.Roles.System,
+                },
+                IsMuteEmail = true,
+                IsMuteTelegram = true,
+            };
+
+            await helpdeskRemoteRepo.PulsePush(p_req);
 
             await helpdeskRemoteRepo.MessageCreateOrUpdate(new()
             {
@@ -133,7 +140,7 @@ public class IssueCreateOrUpdateReceive(
             {
                 await telegramRemoteRepo.SendTextMessageTelegram(new()
                 {
-                    Message = $"Создана новая заявка: #{issue.Id} {issue.Name}. Автор: {actor}",
+                    Message = $"Создана новая заявка: #{issue.Id} '{issue.Name}'. Автор: {actor}",
                     From = "уведомление",
                     UserTelegramId = helpdesk_user_redirect_telegram_for_issue_rest.Response.Value,
                 });
@@ -161,19 +168,47 @@ public class IssueCreateOrUpdateReceive(
                                 .SetProperty(b => b.Name, issue_upd.Payload.Name)
                                 .SetProperty(b => b.LastUpdateAt, DateTime.UtcNow));
 
-                msg = "Обращение успешно обновлено";
-                res.AddSuccess(msg);
-                await helpdeskRemoteRepo.PulsePush(new()
+                TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req_comm = new()
                 {
-                    SenderActionUserId = issue_upd.SenderActionUserId,
+                    PageNum = 0,
+                    PageSize = int.MaxValue,
                     Payload = new()
                     {
-                        IssueId = issue.Id,
-                        PulseType = PulseIssuesTypesEnum.Main,
-                        Tag = GlobalStaticConstants.Routes.UPDATE_ACTION_NAME,
-                        Description = msg,
+                        Payload = new()
+                        {
+                            IncludeExternalData = true,
+                            IssueIds = [issue_upd.Payload.Id],
+                        },
+                        SenderActionUserId = actor.UserId,
                     }
-                });
+                };
+
+                TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> comm_res = await commRepo.OrdersSelect(req_comm);
+                TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                msg = $"Документ (#{issue_upd.Payload.Id}) обновлён.";
+                if (comm_res.Success() && comm_res.Response?.Response is not null && comm_res.Response.Response.Count != 0)
+                {
+                    msg += $". Заказ: [{string.Join(";", comm_res.Response.Response.Select(x => $"(№{x.Id} - {x.CreatedAtUTC.GetMsk()})"))}]";
+                }
+                msg += $". /<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/";
+                res.AddSuccess(msg);
+
+                p_req = new()
+                {
+                    Payload = new()
+                    {
+                        Payload = new()
+                        {
+                            IssueId = issue.Id,
+                            PulseType = PulseIssuesTypesEnum.Main,
+                            Tag = GlobalStaticConstants.Routes.UPDATE_ACTION_NAME,
+                            Description = msg,
+                        },
+                        SenderActionUserId = issue_upd.SenderActionUserId,
+                    }
+                };
+
+                await helpdeskRemoteRepo.PulsePush(p_req);
 
                 if (issue_upd.SenderActionUserId != GlobalStaticConstants.Roles.System && issue.Subscribers?.Any(x => x.UserId == issue_upd.SenderActionUserId) != true)
                 {

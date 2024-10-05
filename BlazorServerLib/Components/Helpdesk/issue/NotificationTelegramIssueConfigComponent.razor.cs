@@ -49,7 +49,7 @@ public partial class NotificationTelegramIssueConfigComponent : BlazorBusyCompon
     async Task SaveConfig()
     {
         IsBusyProgress = true;
-        TResponseModel<int> rest = await StorageRepo.SaveParameter(SelectedChatSet.ChatTelegramId, KeyStorage);
+        TResponseModel<int> rest = await StorageRepo.SaveParameter(SelectedChatSet.ChatTelegramId, KeyStorage, false);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         IsBusyProgress = false;
         initValue = SelectedChatSet.ChatTelegramId;

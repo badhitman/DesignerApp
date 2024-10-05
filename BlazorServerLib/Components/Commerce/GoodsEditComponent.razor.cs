@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -14,6 +15,9 @@ namespace BlazorWebLib.Components.Commerce;
 /// </summary>
 public partial class GoodsEditComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
@@ -28,6 +32,7 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseModel
     public required int GoodsId { get; set; }
 
 
+    UserInfoMainModel user = default!;
     GoodsModelDB? CurrentGoods;
     GoodsModelDB? editGoods;
 
@@ -50,6 +55,8 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
         TResponseModel<GoodsModelDB[]> res = await CommerceRepo.GoodsRead([GoodsId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

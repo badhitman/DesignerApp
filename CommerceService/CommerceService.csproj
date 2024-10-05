@@ -11,6 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="MongoDB.Driver" Version="2.29.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
 			<PrivateAssets>all</PrivateAssets>
@@ -19,9 +20,9 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.8" />		
 		<PackageReference Include="NLog" Version="5.3.4" />
-		<PackageReference Include="NLog.Extensions.Logging" Version="5.3.13" />
+		<PackageReference Include="NLog.Extensions.Logging" Version="5.3.14" />
 		<PackageReference Include="NLog.Database" Version="5.3.4" />
-		<PackageReference Include="NLog.Web.AspNetCore" Version="5.3.13" />
+		<PackageReference Include="NLog.Web.AspNetCore" Version="5.3.14" />
 	</ItemGroup>
 
 	<ItemGroup>

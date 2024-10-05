@@ -22,7 +22,7 @@ public interface ISerializeStorageRemoteTransmissionService
     /// <summary>
     /// Сохранить параметр
     /// </summary>
-    public Task<TResponseModel<int>> SaveParameter<T>(T payload_query, StorageCloudParameterModel store);
+    public Task<TResponseModel<int>> SaveParameter<T>(T payload_query, StorageCloudParameterModel store, bool trim);
 
     /// <summary>
     /// Найти/подобрать значения параметров (со всей историей значений)

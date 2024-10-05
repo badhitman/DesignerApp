@@ -15,22 +15,17 @@ namespace ApiRestService;
 /// <summary>
 /// Обработчик сессии
 /// </summary>
-public class PassageMiddleware
+/// <remarks>
+/// Конструктор
+/// </remarks>
+public class PassageMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
+    private readonly RequestDelegate _next = next;
     HttpContext? _http_context;
     RestApiConfigBaseModel? _conf;
 
     /// <summary>
-    /// Конструктор
-    /// </summary>
-    public PassageMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
-    /// <summary>
-    /// Конвеер
+    /// Конвейер
     /// </summary>
     public async Task Invoke(HttpContext http_context, ILogger<PassageMiddleware> _logger, IOptions<RestApiConfigBaseModel> conf)
     {

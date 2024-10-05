@@ -49,14 +49,21 @@ public class OrganizationModelDB : OrganizationLegalModel
     /// <summary>
     /// Находится ли объект в режиме запроса изменений реквизитов
     /// </summary>
-    public bool HasRequestToChange =>
-        (!string.IsNullOrWhiteSpace(NewName) && NewName != Name) ||
-        (!string.IsNullOrWhiteSpace(NewBankBIC) && NewBankBIC != BankBIC) ||
-        (!string.IsNullOrWhiteSpace(NewBankName) && NewBankName != BankName) ||
-        (!string.IsNullOrWhiteSpace(NewCorrespondentAccount) && NewCorrespondentAccount != CorrespondentAccount) ||
-        (!string.IsNullOrWhiteSpace(NewCurrentAccount) && NewCurrentAccount != CurrentAccount) ||
-        (!string.IsNullOrWhiteSpace(NewINN) && NewINN != INN) ||
-        (!string.IsNullOrWhiteSpace(NewKPP) && NewKPP != KPP);
+    public bool HasRequestToChange
+    {
+        get
+        {
+            return
+                !string.IsNullOrWhiteSpace(NewName) ||
+                !string.IsNullOrWhiteSpace(NewBankBIC) ||
+                !string.IsNullOrWhiteSpace(NewBankName) ||
+                !string.IsNullOrWhiteSpace(NewLegalAddress) ||
+                !string.IsNullOrWhiteSpace(NewCorrespondentAccount) ||
+                !string.IsNullOrWhiteSpace(NewCurrentAccount) ||
+                !string.IsNullOrWhiteSpace(NewINN) ||
+                !string.IsNullOrWhiteSpace(NewKPP);
+        }
+    }
 
     /// <summary>
     /// Users

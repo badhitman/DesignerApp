@@ -114,4 +114,8 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> PriceRuleDelete(int id)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.PriceRuleDeleteCommerceReceive, id);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<byte[]>> GetFileOrder(string id)
+        => await rabbitClient.MqRemoteCall<byte[]>(GlobalStaticConstants.TransmissionQueues.ReadFileCommerceReceive, id);
 }

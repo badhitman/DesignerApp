@@ -4,7 +4,7 @@
 
 @if (ParentRubric == 0)
 {
-    <MudText>@Title:</MudText>
+    <MudText>@Title</MudText>
 }
 @if (IsBusyProgress)
 {
@@ -32,13 +32,13 @@ else
             }
             @foreach (RubricIssueHelpdeskLowModel rubric in CurrentRubrics!.Where(x => ShowDisabledRubrics || !x.IsDisabled))
             {
-                <option disabled="@rubric.IsDisabled" value="@rubric.Id">@rubric.Name</option>
+                <option disabled="@rubric.IsDisabled" value="@rubric.Id">@rubric.Name @(IsDebug ? $" #{rubric.Id}" : "")</option>
             }
         </select>
     }
     @if (SelectedRubricId != 0)
     {
-        <CascadingValue Value="@(RubricMetadataShadow?.OrderBy(x => x.Id).Take(RubricMetadataShadow.Count - 1).ToList())">
+        <CascadingValue Value="@(RubricMetadataShadow?.Take(RubricMetadataShadow.Count - 1).ToList())">
             <RubricSelectorComponent ModeSelectingRubrics="ModeSelectingRubrics" ShowDisabledRubrics="ShowDisabledRubrics" @ref="childSelector" ParentRubric="SelectedRubricId" />
         </CascadingValue>
     }
