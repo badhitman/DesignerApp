@@ -209,7 +209,7 @@ public static partial class GlobalStaticConstants
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
-            PrefixPropertyName = Routes.SUBJECT_CONTROLLER_NAME,
+            PrefixPropertyName = Routes.SUBJECT_CONTROLLER_NAME
         };
 
         /// <summary>
@@ -226,21 +226,23 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Тема уведомления при изменении статуса заказа
         /// </summary>
-        public static StorageCloudParameterModel CommerceStatusChangeOrderSubjectNotification => new()
+        public static StorageCloudParameterModel CommerceStatusChangeOrderSubjectNotification(HelpdeskIssueStepsEnum stage) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.SUBJECT_CONTROLLER_NAME,
+            OwnerPrimaryKey = (int)stage
         };
 
         /// <summary>
         /// Текст уведомления при изменении статуса заказа
         /// </summary>
-        public static StorageCloudParameterModel CommerceStatusChangeOrderBodyNotification => new()
+        public static StorageCloudParameterModel CommerceStatusChangeOrderBodyNotification(HelpdeskIssueStepsEnum stage) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+            OwnerPrimaryKey = (int)stage
         };
 
 
@@ -279,11 +281,12 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// TELEGRAM: Текст уведомления при изменении статуса заказа
         /// </summary>
-        public static StorageCloudParameterModel CommerceStatusChangeOrderBodyNotificationTelegram => new()
+        public static StorageCloudParameterModel CommerceStatusChangeOrderBodyNotificationTelegram(HelpdeskIssueStepsEnum stepEnum) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+            OwnerPrimaryKey = (int)stepEnum
         };
 
         /// <summary>

@@ -7,7 +7,7 @@ namespace BlazorLib.Components.Shared.tabs;
 /// <summary>
 /// Tab component
 /// </summary>
-public partial class TabComponent : ComponentBase, ITab
+public partial class TabComponent : BlazorBusyComponentBaseModel, ITab
 {
     [Inject]
     NavigationManager NavigationManager { get; set; } = default!;

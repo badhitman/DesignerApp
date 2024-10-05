@@ -161,7 +161,7 @@ public class StatusChangeReceive(
                 }
 
                 string subject_email = "Изменение статуса документа";
-                TResponseModel<string?> CommerceStatusChangeOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification);
+                TResponseModel<string?> CommerceStatusChangeOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(issue_data.StepIssue));
                 if (CommerceStatusChangeOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderSubjectNotification.Response))
                     subject_email = CommerceStatusChangeOrderSubjectNotification.Response;
                 subject_email = ReplaceTags(subject_email);
@@ -171,12 +171,12 @@ public class StatusChangeReceive(
 
                 string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
 
-                TResponseModel<string?> CommerceStatusChangeOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification);
+                TResponseModel<string?> CommerceStatusChangeOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(issue_data.StepIssue));
                 if (CommerceStatusChangeOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
                     msg = CommerceStatusChangeOrderBodyNotification.Response;
                 msg = ReplaceTags(msg);
 
-                TResponseModel<string?> CommerceStatusChangeOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram);
+                TResponseModel<string?> CommerceStatusChangeOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(issue_data.StepIssue));
                 if (CommerceStatusChangeOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationTelegram.Response))
                     tg_message = CommerceStatusChangeOrderBodyNotificationTelegram.Response;
                 tg_message = ReplaceTags(tg_message);

@@ -6,7 +6,7 @@
 @attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.HelpDeskTelegramBotManager},{GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit}")]
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-<MudTabs Style="overflow: overlay;" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+<MudTabs Style="overflow: auto;" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
     <MudTabPanel Text="Рубрики">
         <RubricsParametersComponent />
     </MudTabPanel>
@@ -46,16 +46,50 @@
                                 </p>
                             </div>
                         </div>
+
+                        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                            @foreach (HelpdeskIssueStepsEnum stepEnum in Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>())
+                            {
+                                <MudTabPanel Text="@stepEnum.DescriptionInfo()">
+                                    @{
+                                        StorageCloudParameterModel _kss = GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(stepEnum),
+                                        _ksb = GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(stepEnum);
+                                    }
+                                    <div class="card my-3">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
+                                            <p class="card-text">
+                                                <StringParameterStorageComponent Label="Тема письма" HelperText="Subject Email" KeyStorage="_kss" />
+                                                <hr />
+                                                <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="_ksb" HelperText="Текст Email при изменении статуса заказа" />
+                                            </p>
+                                        </div>
+                                    </div>
+                                </MudTabPanel>
+                            }
+                        </MudTabs>
+
+                        @* <TabSetComponent AsPills="true" IsSilent="true">
+                        @foreach (HelpdeskIssueStepsEnum stepEnum in Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>())
+                        {
+                        StorageCloudParameterModel _kss = GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(stepEnum),
+                        _ksb = GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(stepEnum);
+
+                        <TabComponent OnClickHandle="(com) => com.StateHasChangedCall()" SystemName="@stepEnum.ToString()" Title="@stepEnum.DescriptionInfo()">
                         <div class="card my-3">
-                            <div class="card-body">
-                                <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
-                                <p class="card-text">
-                                    <StringParameterStorageComponent Label="Тема письма" HelperText="Subject Email" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification" />
-                                    <hr />
-                                    <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification" HelperText="Текст Email при изменении статуса заказа" />
-                                </p>
-                            </div>
+                        <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
+                        <p class="card-text">
+                        <StringParameterStorageComponent Label="Тема письма" HelperText="Subject Email" KeyStorage="_kss" />
+                        <hr />
+                        <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="_ksb" HelperText="Текст Email при изменении статуса заказа" />
+                        </p>
                         </div>
+                        </div>
+                        </TabComponent>
+                        }
+                        </TabSetComponent> *@
+
                         <div class="card my-3">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-body-secondary">Новое сообщение</h6>
@@ -81,14 +115,21 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="card my-3">
-                            <div class="card-body">
-                                <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
-                                <p class="card-text">
-                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram" HelperText="Текст TelegramBot уведомления при изменении статуса заказа" />
-                                </p>
-                            </div>
-                        </div>
+                        <TabSetComponent AsPills="true" IsSilent="true">
+                            @foreach (HelpdeskIssueStepsEnum stepEnum in Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>())
+                            {
+                                <TabComponent SystemName="@stepEnum.ToString()" Title="@stepEnum.DescriptionInfo()">
+                                    <div class="card my-3">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
+                                            <p class="card-text">
+                                                <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(stepEnum)" HelperText="Текст TelegramBot уведомления при изменении статуса заказа" />
+                                            </p>
+                                        </div>
+                                    </div>
+                                </TabComponent>
+                            }
+                        </TabSetComponent>
                         <div class="card my-3">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-body-secondary">Новое сообщение</h6>
