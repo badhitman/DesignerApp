@@ -664,6 +664,11 @@ public static partial class GlobalStaticConstants
         public const string ROW_CONTROLLER_NAME = "row";
 
         /// <summary>
+        /// Stage
+        /// </summary>
+        public const string STAGE_CONTROLLER_NAME = "stage";
+
+        /// <summary>
         /// Rows
         /// </summary>
         public const string ROWS_CONTROLLER_NAME = "rows";

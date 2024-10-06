@@ -77,8 +77,11 @@ public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpd
                 break;
         }
 
+        q = req.SortingDirection == VerticalDirectionsEnum.Up
+            ? q.OrderBy(x => x.CreatedAt)
+            : q.OrderByDescending(x => x.CreatedAt);
+
         var inc = q
-            .OrderBy(x => x.CreatedAt)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
             .Include(x => x.RubricIssue);

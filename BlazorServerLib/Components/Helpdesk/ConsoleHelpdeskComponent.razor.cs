@@ -65,7 +65,8 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         await Task.Delay(1);
         TResponseModel<int> res = await storageRepo.SaveParameter(IsLarge, SizeColumnsKeyStorage, true);
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
     /// <inheritdoc/>

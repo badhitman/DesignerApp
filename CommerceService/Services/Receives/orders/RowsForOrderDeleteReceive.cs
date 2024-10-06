@@ -33,6 +33,12 @@ public class RowsForOrderDeleteReceive(IDbContextFactory<CommerceContext> commer
             .Select(x => x.Id)
             .ToArrayAsync();
 
+        if (orders_ids.Length == 0)
+        {
+            res.AddError($"Документы не найдены");
+            return res;
+        }
+
         DateTime dtu = DateTime.UtcNow;
 
         await context.OrdersDocuments

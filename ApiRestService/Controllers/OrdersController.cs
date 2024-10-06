@@ -8,7 +8,6 @@ using MongoDB.Driver.GridFS;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using SharedLib;
-using System.Text;
 
 namespace ApiRestService.Controllers;
 
@@ -21,7 +20,7 @@ namespace ApiRestService.Controllers;
 #else
 [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
 #endif
-public class OrdersController(ICommerceRemoteTransmissionService commRepo, IMongoDatabase mongoFs) : ControllerBase
+public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelpdeskRemoteTransmissionService hdRepo, IMongoDatabase mongoFs) : ControllerBase
 {
     /// <summary>
     /// Подбор (поиск по параметрам) заказов
@@ -39,8 +38,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IMong
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDERS_CONTROLLER_NAME}/{{OrderId}}/{GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME}-{GlobalStaticConstants.Routes.ADD_ACTION_NAME}")]
-
+    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME}/{{OrderId}}/{GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME}-{GlobalStaticConstants.Routes.ADD_ACTION_NAME}")]
 #if DEBUG
     [AllowAnonymous]
 #else
@@ -96,7 +94,96 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IMong
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDERS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.ROW_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
+    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.ROW_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
+#if DEBUG
+    [AllowAnonymous]
+#else
+    [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
+#endif
     public async Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB row)
         => await commRepo.RowForOrderUpdate(row);
+
+    /// <summary>
+    /// Удалить строки из заказа
+    /// </summary>
+    /// <param name="rows_ids">Идентификаторы строк, которые следует удалить</param>
+    /// <remarks>
+    /// Роль: <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
+    /// </remarks>
+#if DEBUG
+    [AllowAnonymous]
+#else
+    [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
+#endif
+    [HttpDelete($"/api/{GlobalStaticConstants.Routes.ORDERS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.ROW_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}"), Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
+    public async Task<TResponseModel<bool>> RowForOrderDelete([FromBody] int[] rows_ids)
+        => await commRepo.RowsForOrderDelete(rows_ids);
+
+    /// <summary>
+    /// Установить статус заказа
+    /// </summary>
+    /// <param name="OrderId">Идентификатор заказа</param>
+    /// <param name="Step">Статус заказа, который нужно установить</param>
+    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME}/{{OrderId}}/{GlobalStaticConstants.Routes.STAGE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}/{{Step}}"), Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
+#if DEBUG
+    [AllowAnonymous]
+#else
+    [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
+#endif
+    public async Task<TResponseModel<bool>> OrderStageSet([FromRoute] int OrderId, [FromRoute] HelpdeskIssueStepsEnum Step)
+    {
+        TResponseModel<OrderDocumentModelDB[]> call = await commRepo.OrdersRead([OrderId]);
+        TResponseModel<bool> response = new() { Response = false };
+        if (!call.Success())
+        {
+            response.AddRangeMessages(call.Messages);
+            return response;
+        }
+        else if (call.Response?.Length != 1)
+        {
+            response.AddError($"Заказ #{OrderId} не найден или у вас не достаточно прав для выполнения команды");
+            return response;
+        }
+
+        OrderDocumentModelDB order_doc = call.Response.Single();
+
+        if (order_doc.HelpdeskId.HasValue != true)
+        {
+            response.AddError($"Заказ #{OrderId} не найден или у вас не достаточно прав для выполнения команды");
+            return response;
+        }
+
+        TAuthRequestModel<IssuesReadRequestModel> req_hd = new()
+        {
+            SenderActionUserId = GlobalStaticConstants.Roles.System,
+            Payload = new()
+            {
+                IssuesIds = [order_doc.HelpdeskId.Value]
+            }
+        };
+        TResponseModel<IssueHelpdeskModelDB[]> find_helpdesk = await hdRepo.IssuesRead(req_hd);
+        if (!find_helpdesk.Success() || find_helpdesk.Response is null || find_helpdesk.Response.Length != 1)
+        {
+            response.AddRangeMessages(find_helpdesk.Messages);
+            return response;
+        }
+        IssueHelpdeskModelDB hd_obj = find_helpdesk.Response.Single();
+        if (hd_obj.StepIssue == Step)
+        {
+            response.AddInfo("Статус уже установлен!");
+            return response;
+        }
+        TAuthRequestModel<StatusChangeRequestModel> status_change_req = new()
+        {
+            SenderActionUserId = GlobalStaticConstants.Roles.System,
+            Payload = new()
+            {
+                IssueId = hd_obj.Id,
+                Step = Step,
+            }
+        };
+        TResponseModel<bool> update_final = await hdRepo.StatusChange(status_change_req);
+        response.AddRangeMessages(update_final.Messages);
+        return response;
+    }
 }
