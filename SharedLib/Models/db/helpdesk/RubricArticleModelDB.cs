@@ -12,7 +12,7 @@ public class RubricArticleModelDB : RubricArticleMiddleModel
     /// <summary>
     /// Обращения в рубрике
     /// </summary>
-    public List<StorageArticleModelDB>? Issues { get; set; }
+    public List<RubricArticleJoinModelDB>? ArticlesJoins { get; set; }
 
     /// <summary>
     /// Владелец (вышестоящая рубрика)

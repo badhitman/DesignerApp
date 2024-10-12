@@ -109,4 +109,9 @@ public partial class HelpdeskLayerContext : DbContext
     /// Рубрики для статей
     /// </summary>
     public DbSet<RubricArticleModelDB> RubricsForArticles { get; set; }
+
+    /// <summary>
+    /// RubricsArticles
+    /// </summary>
+    public DbSet<RubricArticleJoinModelDB> RubricsArticlesJoins { get; set; }
 }

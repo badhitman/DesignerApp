@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-
 using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib;
@@ -13,6 +12,11 @@ namespace SharedLib;
 [Index(nameof(CreatedAtUTC)), Index(nameof(UpdatedAtUTC)), Index(nameof(AuthorIdentityId))]
 public class StorageArticleModelDB : EntryDescriptionModel
 {
+    /// <summary>
+    /// Рубрики
+    /// </summary>
+    public List<RubricArticleJoinModelDB>? RubricsJoins { get; set; }
+
     /// <summary>
     /// CreatedAtUTC
     /// </summary>

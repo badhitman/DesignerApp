@@ -21,6 +21,17 @@
             </div>
         </MudPaper>
     </MudTabPanel>
+    <MudTabPanel ToolTip="CMS" Text="Статьи" Icon="@Icons.Material.Filled.Article">
+        <MudPaper Class="ma-2" Elevation="3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Категории</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Категории статей</h6>
+                    <RubricsManageComponent ContextName="@GlobalStaticConstants.Routes.ARTICLES_CONTROLLER_NAME" />
+                </div>
+            </div>
+        </MudPaper>
+    </MudTabPanel>
     <MudTabPanel Text="HelpDesk">
         <ChatsRouteSetComponent />
     </MudTabPanel>

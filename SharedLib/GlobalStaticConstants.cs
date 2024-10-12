@@ -651,6 +651,11 @@ public static partial class GlobalStaticConstants
         public const string ADDRESS_CONTROLLER_NAME = "address";
 
         /// <summary>
+        /// Articles
+        /// </summary>
+        public const string ARTICLES_CONTROLLER_NAME = "articles";
+
+        /// <summary>
         /// Goods
         /// </summary>
         public const string GOODS_CONTROLLER_NAME = "goods";
