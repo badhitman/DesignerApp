@@ -13,7 +13,7 @@ namespace Transmission.Receives.helpdesk;
 /// Получить рубрики, вложенные в рубрику (если не указано, то root перечень)
 /// </summary>
 public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<RubricsListRequestModel?, RubricIssueHelpdeskLowModel[]?>
+    : IResponseReceive<RubricsListRequestModel?, RubricBaseModel[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive;
@@ -23,17 +23,17 @@ public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFac
     /// </summary>
     /// <param name="req">OwnerId: вышестоящая рубрика.</param>
     /// <returns>Рубрики, подчинённые <c>OwnerId</c></returns>
-    public async Task<TResponseModel<RubricIssueHelpdeskLowModel[]?>> ResponseHandleAction(RubricsListRequestModel? req)
+    public async Task<TResponseModel<RubricBaseModel[]?>> ResponseHandleAction(RubricsListRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<RubricIssueHelpdeskLowModel[]?> res = new();
+        TResponseModel<RubricBaseModel[]?> res = new();
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        IQueryable<RubricIssueHelpdeskLowModel> q = context
+        IQueryable<RubricBaseModel> q = context
             .RubricsForIssues
             .Where(x => x.ProjectId == req.ProjectId && x.ContextName == req.ContextName)
-            .Select(x => new RubricIssueHelpdeskLowModel()
+            .Select(x => new RubricBaseModel()
             {
                 Name = x.Name,
                 Description = x.Description,

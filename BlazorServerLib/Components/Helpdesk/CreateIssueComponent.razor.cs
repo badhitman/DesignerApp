@@ -53,7 +53,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
 
     ModesSelectRubricsEnum ModeSelectingRubrics;
     bool ShowDisabledRubrics;
-    RubricIssueHelpdeskLowModel? SelectedRubric;
+    RubricBaseModel? SelectedRubric;
 
     async Task CreateIssue()
     {
@@ -98,7 +98,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
         ModeSelectingRubrics = res_ModeSelectingRubrics.Response.Value;
     }
 
-    void RubricSelectAction(RubricIssueHelpdeskLowModel? selectedRubric)
+    void RubricSelectAction(RubricBaseModel? selectedRubric)
     {
         SelectedRubric = selectedRubric;
         StateHasChanged();

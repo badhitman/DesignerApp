@@ -42,7 +42,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
         AddressEdit.ParentId != AddressCurrent.ParentId) &&
         SelectedRubric is not null;
 
-    RubricIssueHelpdeskLowModel? SelectedRubric;
+    RubricBaseModel? SelectedRubric;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -61,7 +61,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
         if (res_rubric.Success() && res_rubric.Response is not null && res_rubric.Response.Count != 0)
         {
             RubricIssueHelpdeskModelDB r = res_rubric.Response.First();
-            SelectedRubric = new RubricIssueHelpdeskLowModel()
+            SelectedRubric = new RubricBaseModel()
             {
                 Name = r.Name,
                 Description = r.Description,
@@ -108,7 +108,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
         AddressCurrent = GlobalTools.CreateDeepCopy(AddressEdit) ?? throw new Exception();
     }
 
-    void RubricSelectAction(RubricIssueHelpdeskLowModel? selectedRubric)
+    void RubricSelectAction(RubricBaseModel? selectedRubric)
     {
         SelectedRubric = selectedRubric;
         AddressEdit.ParentId = selectedRubric?.Id ?? 0;

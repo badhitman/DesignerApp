@@ -45,11 +45,11 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
     ModesSelectRubricsEnum ModeSelectingRubrics;
     bool ShowDisabledRubrics;
     bool IsEditMode { get; set; }
-    RubricIssueHelpdeskLowModel? SelectedRubric;
+    RubricBaseModel? SelectedRubric;
     RubricSelectorComponent? rubricSelector_ref;
     List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow;
 
-    void RubricSelectAction(RubricIssueHelpdeskLowModel? selectedRubric)
+    void RubricSelectAction(RubricBaseModel? selectedRubric)
     {
         SelectedRubric = selectedRubric;
         RubricIssueEdit = SelectedRubric?.Id;

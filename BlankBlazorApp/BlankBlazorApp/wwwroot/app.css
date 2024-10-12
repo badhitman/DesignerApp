@@ -74,3 +74,7 @@ main > div.top-row {
     margin-right: auto;
     width: 50%;
 }
+
+.tox-tinymce .tox-editor-container .tox-editor-header .tox-promotion {
+    display: none;
+}

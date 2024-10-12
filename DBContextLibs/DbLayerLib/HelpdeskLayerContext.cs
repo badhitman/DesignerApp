@@ -18,11 +18,11 @@ public partial class HelpdeskLayerContext : DbContext
     public HelpdeskLayerContext(DbContextOptions options)
         : base(options)
     {
-//#if DEBUG
-//        Database.EnsureCreated();
-//#else
+        //#if DEBUG
+        //        Database.EnsureCreated();
+        //#else
         Database.Migrate();
-//#endif
+        //#endif
     }
 
 
@@ -94,4 +94,19 @@ public partial class HelpdeskLayerContext : DbContext
     /// Ответы на пересланные запросы от пользователей
     /// </summary>
     public DbSet<AnswerToForwardModelDB> AnswersToForwards { get; set; }
+
+    /// <summary>
+    /// Articles
+    /// </summary>
+    public DbSet<StorageArticleModelDB> Articles { get; set; }
+
+    /// <summary>
+    /// Articles Tags
+    /// </summary>
+    public DbSet<ArticleTagModelDB> ArticlesTags { get; set; }
+
+    /// <summary>
+    /// Рубрики для статей
+    /// </summary>
+    public DbSet<RubricArticleModelDB> RubricsForArticles { get; set; }
 }

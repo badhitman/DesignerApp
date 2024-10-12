@@ -64,23 +64,6 @@ public partial class TinyMCEComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    /*
-    //string _content = "";
-    string? Content
-    {
-        get => _textValue;
-        set
-        {
-            if (value == "")
-                return;
-
-            bool nu = _textValue != value;
-            _textValue = value;
-            //if (nu)
-            //    InvokeAsync(StoreData);
-        }
-    }*/
-
     async Task StoreData()
     {
         //IsBusyProgress = true;

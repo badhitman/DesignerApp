@@ -31,7 +31,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required TreeItemData<RubricIssueHelpdeskLowModel> Item { get; set; }
+    public required TreeItemData<RubricBaseModel> Item { get; set; }
 
     /// <summary>
     /// Имя контекста
@@ -40,7 +40,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
     public string? ContextName { get; set; }
 
 
-    RubricIssueHelpdeskLowModel ItemModel = default!;
+    RubricBaseModel ItemModel = default!;
 
     string? rubricName;
 
@@ -65,7 +65,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        ItemModel = new RubricIssueHelpdeskBaseModelDB()
+        ItemModel = new RubricIssueHelpdeskMiddleModel()
         {
             Name = "",
             ParentRubricId = Item.Value?.ParentRubricId,

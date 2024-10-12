@@ -27,7 +27,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required Action<RubricIssueHelpdeskLowModel> ItemUpdateHandle { get; set; }
+    public required Action<RubricBaseModel> ItemUpdateHandle { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -40,7 +40,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     bool IsRenameMode;
 
-    RubricIssueHelpdeskLowModel? ItemModel;
+    RubricBaseModel? ItemModel;
 
     string? itemSystemName;
 

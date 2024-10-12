@@ -10,12 +10,12 @@ namespace BlazorLib;
 /// <summary>
 /// Tree Item Data Rubric
 /// </summary>
-public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskLowModel?>
+public class TreeItemDataRubricModel : TreeItemData<RubricBaseModel?>
 {
     /// <summary>
     /// Tree Item Data Rubric
     /// </summary>
-    public TreeItemDataRubricModel(RubricIssueHelpdeskLowModel entry, string icon) : base(entry)
+    public TreeItemDataRubricModel(RubricBaseModel entry, string icon) : base(entry)
     {
         Text = entry.Name;
         Icon = icon;
@@ -40,20 +40,20 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskLowModel?
 
 
     /// <inheritdoc/>
-    public static bool operator ==(TreeItemDataRubricModel? e1, TreeItemData<RubricIssueHelpdeskLowModel?> e2)
+    public static bool operator ==(TreeItemDataRubricModel? e1, TreeItemData<RubricBaseModel?> e2)
         => (e1 is null && e2 is null) || e1?.Value == e2?.Value;
 
     /// <inheritdoc/>
-    public static bool operator !=(TreeItemDataRubricModel? e1, TreeItemData<RubricIssueHelpdeskLowModel?> e2)
+    public static bool operator !=(TreeItemDataRubricModel? e1, TreeItemData<RubricBaseModel?> e2)
         => e1?.Value != e2?.Value;
 
 
     /// <inheritdoc/>
-    public static bool operator ==(TreeItemData<RubricIssueHelpdeskLowModel?> e1, TreeItemDataRubricModel? e2)
+    public static bool operator ==(TreeItemData<RubricBaseModel?> e1, TreeItemDataRubricModel? e2)
         => (e1 is null && e2 is null) || e1?.Value == e2?.Value;
 
     /// <inheritdoc/>
-    public static bool operator !=(TreeItemData<RubricIssueHelpdeskLowModel?> e2, TreeItemDataRubricModel? e1)
+    public static bool operator !=(TreeItemData<RubricBaseModel?> e2, TreeItemDataRubricModel? e1)
         => e1?.Value != e2?.Value;
 
 
@@ -65,7 +65,7 @@ public class TreeItemDataRubricModel : TreeItemData<RubricIssueHelpdeskLowModel?
 
         if (obj is TreeItemDataRubricModel _e)
             return Value == _e.Value;
-        else if (obj is TreeItemData<RubricIssueHelpdeskLowModel?> _v)
+        else if (obj is TreeItemData<RubricBaseModel?> _v)
             return Value == _v.Value;
 
         return base.Equals(obj);

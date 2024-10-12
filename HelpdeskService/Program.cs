@@ -79,7 +79,7 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<ICommerceRemoteTransmissionService, TransmissionCommerceService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     // 
-    services.RegisterMqListener<RubricsListReceive, RubricsListRequestModel?, RubricIssueHelpdeskLowModel[]?>()
+    services.RegisterMqListener<RubricsListReceive, RubricsListRequestModel?, RubricBaseModel[]?>()
     .RegisterMqListener<RubricCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>()
     .RegisterMqListener<IssuesForUserSelectReceive, TPaginationRequestModel<GetIssuesForUserRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>()
     .RegisterMqListener<IssueCreateOrUpdateReceive, TAuthRequestModel<IssueUpdateRequestModel>?, int>()

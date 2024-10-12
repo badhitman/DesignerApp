@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// Рубрики для обращений
+/// RubricLayerModel
 /// </summary>
-public class RubricIssueHelpdeskBaseModelDB : RubricIssueHelpdeskLowModel
+public class RubricLayerModel : RubricBaseModel
 {
     /// <summary>
     /// Имя контекста для разделения различных селекторов независимо друг от друга
@@ -21,7 +21,4 @@ public class RubricIssueHelpdeskBaseModelDB : RubricIssueHelpdeskLowModel
     /// ToUpper
     /// </summary>
     public string? NormalizedNameUpper { get; set; }
-
-    /// <inheritdoc/>
-    public List<RubricIssueHelpdeskModelDB>? NestedRubrics { get; set; }
 }
