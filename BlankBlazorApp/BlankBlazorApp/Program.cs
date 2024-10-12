@@ -93,7 +93,7 @@ builder.Services.AddDbContextFactory<MainDbAppContext>(opt =>
     opt.UseNpgsql(connectionMainString));
 builder.Services.AddMemoryCache();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
+builder.Services.AddControllers();
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<ApplicationRole>()
     .AddRoleManager<RoleManager<ApplicationRole>>()
@@ -181,6 +181,13 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.UseAuthentication();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Map("/cloud-fs/read", ma => ma.UseMiddleware<ReadCloudFileMiddleware>());
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

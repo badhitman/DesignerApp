@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// GoodsSelectRequestModel
+/// Подбор номенклатуры
 /// </summary>
 public class GoodsSelectRequestModel
 {

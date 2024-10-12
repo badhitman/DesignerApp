@@ -10,7 +10,7 @@ namespace SharedLib;
 /// RequestStorageCloudParameterModel
 /// </summary>
 [Index(nameof(ApplicationName), nameof(Name))]
-public class RequestStorageCloudParameterModel
+public class RequestStorageBaseModel
 {
     /// <summary>
     /// Имя приложения, которое обращается к службе облачного хранения параметров

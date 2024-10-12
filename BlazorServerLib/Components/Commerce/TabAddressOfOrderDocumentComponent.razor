@@ -55,7 +55,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">
-            @context!.Offer!.GetName
+            @context!.Offer!.GetName()
         </MudTd>
         <MudTd DataLabel="Price">
             @context!.Offer!.Price руб. (@($"{Math.Round(context!.Offer!.Price / context!.Offer.Multiplicity, 2)} р/{context.Goods!.BaseUnit.DescriptionInfo().ToLower()}"))
@@ -70,7 +70,7 @@
     </RowTemplate>
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
-            @context?.Offer?.GetName
+            @context?.Offer?.GetName()
         </MudTd>
         <MudTd DataLabel="Price">
             @(context.Offer!.Price)

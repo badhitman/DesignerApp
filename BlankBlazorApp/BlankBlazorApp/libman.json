@@ -25,6 +25,14 @@
     {
       "library": "ckeditor5@43.1.0",
       "destination": "wwwroot/lib/ckeditor5/"
+    },
+    {
+      "library": "tinymce@7.4.0",
+      "destination": "wwwroot/lib/tinymce/"
+    },
+    {
+      "library": "ckeditor5@43.2.0",
+      "destination": "wwwroot/lib/ckeditor5/"
     }
   ]
 }

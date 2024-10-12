@@ -51,7 +51,7 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
         {
             Payload = new()
             {
-                GoodFilter = CurrentGoods.Id
+                GoodsFilter = [CurrentGoods.Id]
             },
             PageNum = state.Page,
             PageSize = state.PageSize,

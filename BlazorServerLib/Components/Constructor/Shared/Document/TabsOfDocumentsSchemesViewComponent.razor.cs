@@ -171,6 +171,9 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
     /// <inheritdoc/>
     public void RemoveTab(int id)
     {
+        if (id == int.MinValue)
+            return;
+
         TabOfDocumentSchemeConstructorModelDB? tabView = DocumentScheme.Tabs!.SingleOrDefault((t) => Equals(t.Id, id));
         if (tabView is not null)
         {
@@ -179,5 +182,11 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
         }
     }
     /// <inheritdoc/>
-    protected void CloseTabCallback(MudTabPanel panel) => RemoveTab((int)panel.ID);
+    protected void CloseTabCallback(MudTabPanel panel)
+    {
+        if (panel.ID is null)
+            return;
+
+        RemoveTab((int)panel.ID);
+    }
 }

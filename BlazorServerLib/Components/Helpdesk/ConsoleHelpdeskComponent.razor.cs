@@ -49,7 +49,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         StateHasChanged();
     }
 
-    StorageCloudParameterModel SizeColumnsKeyStorage => new()
+    StorageMetadataModel SizeColumnsKeyStorage => new()
     {
         ApplicationName = Path.Combine(Routes.CONSOLE_CONTROLLER_NAME, Routes.HELPDESK_CONTROLLER_NAME),
         Name = Routes.SIZE_CONTROLLER_NAME,

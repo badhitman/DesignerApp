@@ -24,7 +24,7 @@ public class SerializeStorageService(
 #endif
 
     /// <inheritdoc/>
-    public async Task<T?[]> Find<T>(RequestStorageCloudParameterModel req)
+    public async Task<T?[]> Find<T>(RequestStorageBaseModel req)
     {
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         string _tn = typeof(T).FullName ?? throw new Exception();
@@ -37,7 +37,7 @@ public class SerializeStorageService(
     }
 
     /// <inheritdoc/>
-    public async Task<T?> Read<T>(StorageCloudParameterModel req)
+    public async Task<T?> Read<T>(StorageMetadataModel req)
     {
         string mem_key = $"{req.Name}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
         if (cache.TryGetValue(mem_key, out T? sd))
@@ -67,7 +67,7 @@ public class SerializeStorageService(
     }
 
     /// <inheritdoc/>
-    public async Task Save<T>(T obj, StorageCloudParameterModel set, bool trimHistory = false)
+    public async Task Save<T>(T obj, StorageMetadataModel set, bool trimHistory = false)
     {
         if (obj is null)
             throw new ArgumentNullException(nameof(obj));
@@ -161,7 +161,7 @@ public class SerializeStorageService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageCloudParameterModel req)
+    public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageMetadataModel req)
     {
         string mem_key = $"{req.Name}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
         TResponseModel<StorageCloudParameterPayloadModel?> res = new();
@@ -200,7 +200,7 @@ public class SerializeStorageService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<FoundParameterModel[]?>> Find(RequestStorageCloudParameterModel req)
+    public async Task<TResponseModel<FoundParameterModel[]?>> Find(RequestStorageBaseModel req)
     {
         TResponseModel<FoundParameterModel[]?> res = new();
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();

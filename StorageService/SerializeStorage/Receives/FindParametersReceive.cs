@@ -5,19 +5,19 @@
 using RemoteCallLib;
 using SharedLib;
 
-namespace Transmission.Receives.helpdesk;
+namespace Transmission.Receives.storage;
 
 /// <summary>
 /// Find parameters
 /// </summary>
 public class FindParametersReceive(ISerializeStorage serializeStorageRepo)
-    : IResponseReceive<RequestStorageCloudParameterModel?, FoundParameterModel[]?>
+    : IResponseReceive<RequestStorageBaseModel?, FoundParameterModel[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FindCloudParameterReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<FoundParameterModel[]?>> ResponseHandleAction(RequestStorageCloudParameterModel? request)
+    public async Task<TResponseModel<FoundParameterModel[]?>> ResponseHandleAction(RequestStorageBaseModel? request)
     {
         ArgumentNullException.ThrowIfNull(request);
         return await serializeStorageRepo.Find(request);

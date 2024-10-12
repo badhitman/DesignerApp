@@ -5,16 +5,16 @@
 namespace SharedLib;
 
 /// <summary>
-/// OfferGoodModelDB
+/// Торговое предложение
 /// </summary>
 public class OfferGoodModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
-    /// Goods
+    /// Номенклатура
     /// </summary>
     public GoodsModelDB? Goods { get; set; }
     /// <summary>
-    /// Good
+    /// GoodsId
     /// </summary>
     public int GoodsId { get; set; }
 
@@ -57,7 +57,7 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// GetName
     /// </summary>
-    public string GetName => string.IsNullOrWhiteSpace(Name)
+    public string GetName() => string.IsNullOrWhiteSpace(Name)
         ? $"{Goods?.Name} [{OfferUnit.DescriptionInfo().ToLower()}] (x{Multiplicity} {Goods?.BaseUnit.DescriptionInfo().ToLower()})"
         : Name;
 

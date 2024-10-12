@@ -49,7 +49,7 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     public int OrganizationId { get; set; }
 
     /// <summary>
-    /// AddressesTabs
+    /// Адреса доставки
     /// </summary>
     public List<TabAddressForOrderModelDb>? AddressesTabs { get; set; }
 

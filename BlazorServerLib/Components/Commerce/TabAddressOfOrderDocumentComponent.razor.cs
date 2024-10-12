@@ -126,9 +126,6 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
             SortBy = nameof(OfferGoodModelDB.Name),
             SortingDirection = VerticalDirectionsEnum.Up,
             Payload = new()
-            {
-                GoodFilter = 0,
-            }
         };
         IsBusyProgress = true;
         TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);

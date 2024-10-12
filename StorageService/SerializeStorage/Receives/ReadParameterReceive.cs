@@ -5,19 +5,19 @@
 using RemoteCallLib;
 using SharedLib;
 
-namespace Transmission.Receives.helpdesk;
+namespace Transmission.Receives.storage;
 
 /// <summary>
 /// Read parameter
 /// </summary>
 public class ReadParameterReceive(ISerializeStorage serializeStorageRepo)
-    : IResponseReceive<StorageCloudParameterModel?, StorageCloudParameterPayloadModel?>
+    : IResponseReceive<StorageMetadataModel?, StorageCloudParameterPayloadModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadCloudParameterReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ResponseHandleAction(StorageCloudParameterModel? request)
+    public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ResponseHandleAction(StorageMetadataModel? request)
     {
         ArgumentNullException.ThrowIfNull(request);
 

@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <inheritdoc/>
-public class StorageCloudParameterReadModel : StorageCloudParameterModel
+public class StorageCloudParameterReadModel : StorageMetadataModel
 {
     /// <summary>
     /// Тип сериализуемого параметра

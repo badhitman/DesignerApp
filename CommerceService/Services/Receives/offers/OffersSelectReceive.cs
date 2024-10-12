@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using System.Linq;
 
 namespace Transmission.Receives.commerce;
 
@@ -32,8 +33,8 @@ public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
             .OffersGoods
             .AsQueryable();
 
-        if (req.Payload.GoodFilter.HasValue && req.Payload.GoodFilter.Value > 0)
-            q = q.Where(x => x.GoodsId == req.Payload.GoodFilter);
+        if (req.Payload.GoodsFilter is not null && req.Payload.GoodsFilter.Length != 0)
+            q = q.Where(x => req.Payload.GoodsFilter.Any(y => y == x.GoodsId));
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);

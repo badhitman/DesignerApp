@@ -1,12 +1,13 @@
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using RemoteCallLib;
 using SharedLib;
 using StorageService;
-using Transmission.Receives.helpdesk;
+using Transmission.Receives.storage;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -55,6 +56,9 @@ builder.ConfigureServices((context, services) =>
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
     ;
+    MongoConfigModel _jo = context.Configuration.GetSection("MongoDB").Get<MongoConfigModel>()!;
+    services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.FilesSystemName));
+
     services.AddMemoryCache();
     services.AddSingleton<WebConfigModel>();
     services.AddOptions();
@@ -71,9 +75,12 @@ builder.ConfigureServices((context, services) =>
 
     services.AddScoped<ISerializeStorage, SerializeStorageService>();
     ////
-    services.RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>()
-    .RegisterMqListener<ReadParameterReceive, StorageCloudParameterModel?, StorageCloudParameterPayloadModel?>()
-    .RegisterMqListener<FindParametersReceive, RequestStorageCloudParameterModel?, FoundParameterModel[]?>();
+    services
+    .RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>()
+    .RegisterMqListener<SaveFileReceive, StorageImageMetadataModel?, StorageFileModelDB?>()
+    .RegisterMqListener<ReadFileReceive, int?, StorageFileResponseModel?>()
+    .RegisterMqListener<ReadParameterReceive, StorageMetadataModel?, StorageCloudParameterPayloadModel?>()
+    .RegisterMqListener<FindParametersReceive, RequestStorageBaseModel?, FoundParameterModel[]?>();
     //
     #endregion
 

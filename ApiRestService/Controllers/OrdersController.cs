@@ -62,7 +62,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
 #endif
         }
 
-        IGridFSBucket gridFS = new GridFSBucket(mongoFs);
+        GridFSBucket gridFS = new(mongoFs);
 
         if (uploadedFile != null)
         {
@@ -71,7 +71,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
                 _file_name = $"без имени: {DateTime.UtcNow}";
 
             // путь к папке Files
-            string path = Path.Combine(GlobalStaticConstants.Routes.FILES_CONTROLLER_NAME, GlobalStaticConstants.Routes.MONGO_CONTROLLER_NAME, GlobalStaticConstants.Routes.ORDERS_CONTROLLER_NAME, OrderId.ToString(), _file_name);
+            //string path = Path.Combine(GlobalStaticConstants.Routes.FILES_CONTROLLER_NAME, GlobalStaticConstants.Routes.MONGO_CONTROLLER_NAME, GlobalStaticConstants.Routes.ORDERS_CONTROLLER_NAME, OrderId.ToString(), _file_name);
 
             using Stream stream = uploadedFile.OpenReadStream();
             ObjectId _uf = await gridFS.UploadFromStreamAsync(_file_name, stream);

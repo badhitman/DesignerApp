@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Typed storage cloud parameter
 /// </summary>
-public class TStorageCloudParameterModel<T> : StorageCloudParameterModel
+public class TStorageCloudParameterModel<T> : StorageMetadataModel
 {
     /// <summary>
     /// Payload

@@ -63,7 +63,7 @@ public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
     public int? OwnerPrimaryKey { get; set; }
 
 
-    StorageCloudParameterModel KeyStorage => new()
+    StorageMetadataModel KeyStorage => new()
     {
         ApplicationName = ApplicationName,
         Name = Name,

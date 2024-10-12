@@ -7,14 +7,10 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// Хранимый облачный параметр
+/// StorageMetadataModel
 /// </summary>
-/// <remarks>
-/// Приложения могут хранить любые параметры в общем микро-сервисе.
-/// Они могут сохранять и извлекать (запрашивать) любые сериализуемые данные
-/// </remarks>
 [Index(nameof(PrefixPropertyName), nameof(OwnerPrimaryKey))]
-public class StorageCloudParameterModel : RequestStorageCloudParameterModel
+public class StorageMetadataModel : RequestStorageBaseModel
 {
     /// <summary>
     /// Префикс имени (опционально)
@@ -29,6 +25,6 @@ public class StorageCloudParameterModel : RequestStorageCloudParameterModel
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{PrefixPropertyName}{OwnerPrimaryKey}{Name}{ApplicationName}";
+        return $"{PrefixPropertyName}/{OwnerPrimaryKey}/{Name}/{ApplicationName}";
     }
 }

@@ -18,11 +18,11 @@ public partial class CloudParametersLayerContext : DbContext
     public CloudParametersLayerContext(DbContextOptions options)
         : base(options)
     {
-//#if DEBUG
-//        Database.EnsureCreated();
-//#else
+        //#if DEBUG
+        //        Database.EnsureCreated();
+        //#else
         Database.Migrate();
-//#endif
+        //#endif
     }
 
     /// <inheritdoc/>
@@ -37,4 +37,14 @@ public partial class CloudParametersLayerContext : DbContext
     /// Параметры
     /// </summary>
     public DbSet<StorageCloudParameterModelDB> CloudProperties { get; set; }
+
+    /// <summary>
+    /// Файлы
+    /// </summary>
+    public DbSet<StorageFileModelDB> CloudFiles { get; set; }
+
+    /// <summary>
+    /// Тэги файлов
+    /// </summary>
+    public DbSet<FileTagModelDB> FilesTags { get; set; }
 }

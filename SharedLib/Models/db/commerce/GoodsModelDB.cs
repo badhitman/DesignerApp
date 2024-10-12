@@ -5,17 +5,17 @@
 namespace SharedLib;
 
 /// <summary>
-/// Товар
+/// Номенклатура
 /// </summary>
 public class GoodsModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
-    /// Базовая единица измерения
+    /// Базовая единица измерения `Номенклатуры`
     /// </summary>
     public UnitsOfMeasurementEnum BaseUnit { get; set; } = UnitsOfMeasurementEnum.Thing;
 
     /// <summary>
-    /// Offers (of products)
+    /// Торговые предложения по Номенклатуре
     /// </summary>
     public List<OfferGoodModelDB>? Offers { get; set; }
 

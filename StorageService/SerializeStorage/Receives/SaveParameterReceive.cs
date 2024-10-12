@@ -5,7 +5,7 @@
 using RemoteCallLib;
 using SharedLib;
 
-namespace Transmission.Receives.helpdesk;
+namespace Transmission.Receives.storage;
 
 /// <summary>
 /// Save parameter

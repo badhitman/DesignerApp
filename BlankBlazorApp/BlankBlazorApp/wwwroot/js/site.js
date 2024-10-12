@@ -13,6 +13,18 @@
 ////        options.messages['unlike'] = options.message;
 ////    });
 
+function SetDotNetHelper(dotNetHelper) {
+    window.dotNetHelper = dotNetHelper;
+}
+
+function js_upload_handler(blobInfo, success, failure, progress) {
+    console.log(JSON.stringify(blobInfo));
+    window.dotNetHelper.invokeMethodAsync('UploadHandler', blobInfo.base64(), blobInfo.filename())
+        .then((data) => {
+            success(data);
+        });
+}
+
 window.BoundingClientRect = (() => {
     return {
         Height(id) {

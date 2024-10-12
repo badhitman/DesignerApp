@@ -31,7 +31,7 @@ public partial class CKEditorParameterStorageComponent : BlazorBusyComponentBase
     /// KeyStorage
     /// </summary>
     [Parameter, EditorRequired]
-    public required StorageCloudParameterModel KeyStorage { get; set; }
+    public required StorageMetadataModel KeyStorage { get; set; }
 
     /// <summary>
     /// HelperText

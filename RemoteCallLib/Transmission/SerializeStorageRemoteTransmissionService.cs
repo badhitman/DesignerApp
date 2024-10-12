@@ -13,7 +13,7 @@ namespace RemoteCallLib;
 public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClient) : ISerializeStorageRemoteTransmissionService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<T?>> ReadParameter<T>(StorageCloudParameterModel req)
+    public async Task<TResponseModel<T?>> ReadParameter<T>(StorageMetadataModel req)
     {
         TResponseModel<StorageCloudParameterPayloadModel?> response_payload = await rabbitClient.MqRemoteCall<StorageCloudParameterPayloadModel?>(GlobalStaticConstants.TransmissionQueues.ReadCloudParameterReceive, req);
         TResponseModel<T?> res = new();
@@ -24,17 +24,14 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
         }
 
         if (response_payload.Response is null)
-        {
-            //res.AddError("Получен пустой ответ");
             return res;
-        }
 
         res.Response = JsonConvert.DeserializeObject<T>(response_payload.Response.SerializedDataJson);
         return res;
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<T?[]?>> FindParameters<T>(RequestStorageCloudParameterModel req)
+    public async Task<TResponseModel<T?[]?>> FindParameters<T>(RequestStorageBaseModel req)
     {
         TResponseModel<FoundParameterModel[]?> response_payload = await rabbitClient.MqRemoteCall<FoundParameterModel[]?>(GlobalStaticConstants.TransmissionQueues.FindCloudParameterReceive, req);
         TResponseModel<T?[]?> res = new();
@@ -45,10 +42,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
         }
 
         if (response_payload.Response is null)
-        {
-            //res.AddError("Получен пустой ответ");
             return res;
-        }
 
         res.Response = response_payload
             .Response
@@ -59,7 +53,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> SaveParameter<T>(T payload_query, StorageCloudParameterModel store, bool trim)
+    public async Task<TResponseModel<int>> SaveParameter<T>(T payload_query, StorageMetadataModel store, bool trim)
     {
         if (payload_query is null)
             throw new ArgumentNullException(nameof(payload_query));
@@ -77,4 +71,12 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
 
         return await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.SaveCloudParameterReceive, set_req);
     }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<StorageFileModelDB>> SaveFile(StorageImageMetadataModel? req)
+        => await rabbitClient.MqRemoteCall<StorageFileModelDB>(GlobalStaticConstants.TransmissionQueues.SaveFileReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<StorageFileResponseModel>> ReadFile(int? req)
+        => await rabbitClient.MqRemoteCall<StorageFileResponseModel>(GlobalStaticConstants.TransmissionQueues.ReadFileReceive, req);
 }

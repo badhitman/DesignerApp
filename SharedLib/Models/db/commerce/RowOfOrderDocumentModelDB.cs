@@ -18,7 +18,7 @@ public class RowOfOrderDocumentModelDB
     public int Id { get; set; }
 
     /// <summary>
-    /// AddressForOrderTab
+    /// Адрес доставки (из документа заказа)
     /// </summary>
     public TabAddressForOrderModelDb? AddressForOrderTab { get; set; }
     /// <summary>
@@ -37,7 +37,7 @@ public class RowOfOrderDocumentModelDB
     public int? OrderDocumentId { get; set; }
 
     /// <summary>
-    /// Offer
+    /// Торговое предложение
     /// </summary>
     public OfferGoodModelDB? Offer { get; set; }
 
@@ -47,7 +47,7 @@ public class RowOfOrderDocumentModelDB
     public int OfferId { get; set; }
 
     /// <summary>
-    /// Goods
+    /// Номенклатура
     /// </summary>
     public GoodsModelDB? Goods { get; set; }
 
@@ -57,7 +57,7 @@ public class RowOfOrderDocumentModelDB
     public int GoodsId { get; set; }
 
     /// <summary>
-    /// Quantity
+    /// Количество
     /// </summary>
     public int Quantity { get; set; }
 }

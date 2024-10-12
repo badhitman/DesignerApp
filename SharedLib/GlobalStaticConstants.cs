@@ -112,7 +112,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// HomePagePublic
         /// </summary>
-        public static StorageCloudParameterModel HomePagePublic => new()
+        public static StorageMetadataModel HomePagePublic => new()
         {
             ApplicationName = Path.Combine(Routes.HOME_CONTROLLER_NAME, Routes.PAGE_CONTROLLER_NAME),
             Name = Routes.PUBLIC_CONTROLLER_NAME,
@@ -121,7 +121,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// HomePagePrivate
         /// </summary>
-        public static StorageCloudParameterModel HomePagePrivate => new()
+        public static StorageMetadataModel HomePagePrivate => new()
         {
             ApplicationName = Path.Combine(Routes.HOME_CONTROLLER_NAME, Routes.PAGE_CONTROLLER_NAME),
             Name = Routes.PRIVATE_CONTROLLER_NAME,
@@ -130,7 +130,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// TitleMain
         /// </summary>
-        public static StorageCloudParameterModel TitleMain => new()
+        public static StorageMetadataModel TitleMain => new()
         {
             ApplicationName = Routes.MAIN_CONTROLLER_NAME,
             Name = Routes.TITLE_CONTROLLER_NAME,
@@ -139,7 +139,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Отображение отключённых рубрик
         /// </summary>
-        public static StorageCloudParameterModel ParameterShowDisabledRubrics => new()
+        public static StorageMetadataModel ParameterShowDisabledRubrics => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.SHOW_ACTION_NAME}-{Routes.DISABLED_CONTROLLER_NAME}"),
@@ -148,7 +148,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Режим выбора рубрик в заявках
         /// </summary>
-        public static StorageCloudParameterModel ModeSelectingRubrics => new()
+        public static StorageMetadataModel ModeSelectingRubrics => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"),
@@ -157,7 +157,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Включение командного режима боту
         /// </summary>
-        public static StorageCloudParameterModel ParameterIsCommandModeTelegramBot => new()
+        public static StorageMetadataModel ParameterIsCommandModeTelegramBot => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.TELEGRAM_CONTROLLER_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.MODE_CONTROLLER_NAME),
@@ -166,7 +166,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Отображать кнопку создания обращения
         /// </summary>
-        public static StorageCloudParameterModel ShowCreatingIssue => new()
+        public static StorageMetadataModel ShowCreatingIssue => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.ADD_ACTION_NAME),
@@ -175,7 +175,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// RubricIssueForCreateOrder
         /// </summary>
-        public static StorageCloudParameterModel RubricIssueForCreateOrder => new()
+        public static StorageMetadataModel RubricIssueForCreateOrder => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.RUBRIC_CONTROLLER_NAME),
@@ -184,7 +184,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Уведомления Telegram о созданных заявках
         /// </summary>
-        public static StorageCloudParameterModel HelpdeskNotificationTelegramForCreateIssue => new()
+        public static StorageMetadataModel HelpdeskNotificationTelegramForCreateIssue => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}",
@@ -194,7 +194,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Настройка пересылки входящих сообщений в TelegramBot: глобально для пользователей на которых нет персональных подписок
         /// </summary>
-        public static StorageCloudParameterModel HelpdeskNotificationTelegramGlobalForIncomingMessage => new()
+        public static StorageMetadataModel HelpdeskNotificationTelegramGlobalForIncomingMessage => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}",
@@ -205,7 +205,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Тема уведомления при создании нового заказа
         /// </summary>
-        public static StorageCloudParameterModel CommerceNewOrderSubjectNotification => new()
+        public static StorageMetadataModel CommerceNewOrderSubjectNotification => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
@@ -215,7 +215,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Текст уведомления при создании нового заказа
         /// </summary>
-        public static StorageCloudParameterModel CommerceNewOrderBodyNotification => new()
+        public static StorageMetadataModel CommerceNewOrderBodyNotification => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
@@ -226,7 +226,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Тема уведомления при изменении статуса заказа
         /// </summary>
-        public static StorageCloudParameterModel CommerceStatusChangeOrderSubjectNotification(HelpdeskIssueStepsEnum stage) => new()
+        public static StorageMetadataModel CommerceStatusChangeOrderSubjectNotification(HelpdeskIssueStepsEnum stage) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
@@ -237,7 +237,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Текст уведомления при изменении статуса заказа
         /// </summary>
-        public static StorageCloudParameterModel CommerceStatusChangeOrderBodyNotification(HelpdeskIssueStepsEnum stage) => new()
+        public static StorageMetadataModel CommerceStatusChangeOrderBodyNotification(HelpdeskIssueStepsEnum stage) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
@@ -249,7 +249,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Тема уведомления при добавлении комментария к заказу
         /// </summary>
-        public static StorageCloudParameterModel CommerceNewMessageOrderSubjectNotification => new()
+        public static StorageMetadataModel CommerceNewMessageOrderSubjectNotification => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}",
@@ -259,7 +259,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Текст уведомления при добавлении комментария к заказу
         /// </summary>
-        public static StorageCloudParameterModel CommerceNewMessageOrderBodyNotification => new()
+        public static StorageMetadataModel CommerceNewMessageOrderBodyNotification => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}",
@@ -271,7 +271,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// TELEGRAM: Текст уведомления при создании нового заказа
         /// </summary>
-        public static StorageCloudParameterModel CommerceNewOrderBodyNotificationTelegram => new()
+        public static StorageMetadataModel CommerceNewOrderBodyNotificationTelegram => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
@@ -281,7 +281,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// TELEGRAM: Текст уведомления при изменении статуса заказа
         /// </summary>
-        public static StorageCloudParameterModel CommerceStatusChangeOrderBodyNotificationTelegram(HelpdeskIssueStepsEnum stepEnum) => new()
+        public static StorageMetadataModel CommerceStatusChangeOrderBodyNotificationTelegram(HelpdeskIssueStepsEnum stepEnum) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
@@ -292,7 +292,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// TELEGRAM: Текст уведомления при добавлении комментария к заказу
         /// </summary>
-        public static StorageCloudParameterModel CommerceNewMessageOrderBodyNotificationTelegram => new()
+        public static StorageMetadataModel CommerceNewMessageOrderBodyNotificationTelegram => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
@@ -305,7 +305,7 @@ public static partial class GlobalStaticConstants
         /// </summary>
         /// <param name="user_id"></param>
         /// <returns></returns>
-        public static StorageCloudParameterModel ConsoleFilterForUser(string user_id) => new()
+        public static StorageMetadataModel ConsoleFilterForUser(string user_id) => new()
         {
             ApplicationName = Path.Combine(Routes.HELPDESK_CONTROLLER_NAME, Routes.CONSOLE_CONTROLLER_NAME),
             Name = Path.Combine(Routes.FILTER_CONTROLLER_NAME, user_id),
@@ -314,7 +314,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Уведомления в Telegram пользователю о событиях в его документах
         /// </summary>
-        public static StorageCloudParameterModel NotificationTelegramForIssueUser(string user_id)
+        public static StorageMetadataModel NotificationTelegramForIssueUser(string user_id)
             => new()
             {
                 ApplicationName = HelpdeskNotificationsTelegramAppName,
@@ -327,7 +327,7 @@ public static partial class GlobalStaticConstants
         /// </summary>
         /// <param name="user_id"></param>
         /// <returns></returns>
-        public static StorageCloudParameterModel OrderCartForUser(string user_id) => new()
+        public static StorageMetadataModel OrderCartForUser(string user_id) => new()
         {
             ApplicationName = Path.Combine(Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME),
             Name = Path.Combine(Routes.CART_CONTROLLER_NAME, user_id),
@@ -336,7 +336,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Переадресация для пользователя
         /// </summary>
-        public static StorageCloudParameterModel HelpdeskNotificationsTelegramForUser(long chat_id) => new()
+        public static StorageMetadataModel HelpdeskNotificationsTelegramForUser(long chat_id) => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}/{Routes.USER_CONTROLLER_NAME}",
@@ -581,6 +581,12 @@ public static partial class GlobalStaticConstants
         public readonly static string SaveCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.SET_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string SaveFileReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.FILE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string ReadFileReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.FILE_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string ReadCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -677,6 +683,11 @@ public static partial class GlobalStaticConstants
         /// Offer
         /// </summary>
         public const string OFFER_CONTROLLER_NAME = "offer";
+
+        /// <summary>
+        /// Offers
+        /// </summary>
+        public const string OFFERS_CONTROLLER_NAME = "offers";
 
         /// <summary>
         /// Notifications

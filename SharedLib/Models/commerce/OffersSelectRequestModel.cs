@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// OffersSelectRequestModel
+/// Подбор торговых предложений (поиск по параметрам)
 /// </summary>
 public class OffersSelectRequestModel
 {
@@ -15,7 +15,7 @@ public class OffersSelectRequestModel
     public DateTime? AfterDateUpdate { get; set; }
 
     /// <summary>
-    /// GoodFilter
+    /// Идентификатор Номенклатуры
     /// </summary>
-    public int? GoodFilter { get; set; }
+    public int[]? GoodsFilter { get; set; }
 }
