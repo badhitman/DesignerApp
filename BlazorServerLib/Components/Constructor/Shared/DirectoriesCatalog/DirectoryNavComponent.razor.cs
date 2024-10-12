@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using static SharedLib.GlobalStaticConstants;
 
 namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 
@@ -44,7 +45,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     /// Current Template InputRichText ref
     /// </summary>
     protected InputRichTextComponent? _currentTemplateInputRichText_ref;
-
+    string images_upload_url = default!;
+    Dictionary<string, object> editorConf = default!;
 
     EntryModel[] allDirectories = default!;
 
@@ -214,6 +216,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        images_upload_url = $"/TinyMCEditor/UploadImage/{Routes.CONSTRUCTOR_CONTROLLER_NAME}/{Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.DEFAULT_CONTROLLER_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
+        editorConf = TinyMCEditorConf(images_upload_url);
         await ReloadDirectories();
     }
 }

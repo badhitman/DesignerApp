@@ -1,3 +1,8 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<TinyMCE.Blazor.Editor ScriptSrc="@ScriptSrc" Conf="@editorConf" />
+<label class="form-label">@Label</label>
+<TinyMCE.Blazor.Editor @bind-Value="TextValue" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="ReadOnly" />
+@if (!string.IsNullOrWhiteSpace(HelperText))
+{//@bind-Text="Content"
+    <div class="form-text">@HelperText</div>
+}

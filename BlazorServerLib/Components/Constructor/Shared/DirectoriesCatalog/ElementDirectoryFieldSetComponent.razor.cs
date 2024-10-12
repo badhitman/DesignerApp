@@ -8,6 +8,7 @@ using BlazorLib;
 using MudBlazor;
 using SharedLib;
 using static MudBlazor.CategoryTypes;
+using static SharedLib.GlobalStaticConstants;
 
 namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 
@@ -53,15 +54,19 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     EntryDescriptionModel? ElementObjectOrign;
     EntryDescriptionModel? ElementObjectEdit;
 
-
-    /// <summary>
-    /// Current Template InputRichText ref
-    /// </summary>
-    protected InputRichTextComponent? _currentTemplateInputRichText_ref;
+    string images_upload_url = default!;
+    Dictionary<string, object> editorConf = default!;
 
     /// <inheritdoc/>
     protected bool IsEdited => ElementObjectOrign is not null && !ElementObjectOrign.Equals(ElementObjectEdit);
 
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        images_upload_url = $"/TinyMCEditor/UploadImage/{Routes.CONSTRUCTOR_CONTROLLER_NAME}/{Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.SET_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
+        editorConf = TinyMCEditorConf(images_upload_url);
+        await base.OnInitializedAsync();
+    }
 
     /// <inheritdoc/>
     protected async Task UpdateElementOfDirectory()
@@ -110,7 +115,6 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     void RsetEdit()
     {
         ElementObjectEdit = GlobalTools.CreateDeepCopy(ElementObjectOrign);
-        _currentTemplateInputRichText_ref?.SetValue(ElementObjectEdit?.Description);
     }
 
     /// <summary>

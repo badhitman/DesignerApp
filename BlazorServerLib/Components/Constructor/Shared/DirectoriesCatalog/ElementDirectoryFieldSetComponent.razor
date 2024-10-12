@@ -19,7 +19,7 @@
                 <button @onclick="EditToggle" class="btn btn@(IsEdited ? "" : "-outline")-secondary" type="button" id="button-addon1">Закрыть</button>
             </div>
 
-            <InputRichTextComponent @bind-Value="ElementObjectEdit.Description" @ref="_currentTemplateInputRichText_ref" ReadOnly="IsBusyProgress" />
+            <TinyMCE.Blazor.Editor Value="@ElementObjectEdit.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="IsBusyProgress" />
         </div>
     </div>
 }

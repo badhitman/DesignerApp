@@ -8,10 +8,11 @@
     <MudTabPanel Text="Home">
         <StringParameterStorageComponent Label="Заголовок" HelperText="Текст в левом верхнем углу" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.TitleMain" />
         <hr />
-        <CKEditorParameterStorageComponent Label="Home PUBLIC" HelperText="Публичная страница для НЕ авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePublic" />
+
+        <TinyMCEComponent Label="Home PUBLIC" HelperText="Публичная страница для НЕ авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePublic" />
         <hr />
-        <CKEditorParameterStorageComponent Label="Home PRIVATE" HelperText="Страница для авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate" />
-    </MudTabPanel>    
+        <TinyMCEComponent Label="Home PRIVATE" HelperText="Страница для авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate" />
+    </MudTabPanel>
     <MudTabPanel Text="Другое">
         <ul class="list-group list-group-flush">
             <li class="list-group-item my-2">

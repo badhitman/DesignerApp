@@ -15,12 +15,15 @@ namespace BlankBlazorApp.Controllers;
 [ApiController]
 public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService storeRepo) : ControllerBase
 {
-    [HttpPost("/TinyMCEditor/UploadImage/{AppNameStorage}/{NameStorage}/{PrefixStorage}/{OwnerKey:int?}")]
+    /// <summary>
+    /// Upload Image
+    /// </summary>
+    [HttpPost("/TinyMCEditor/UploadImage/{AppNameStorage}/{NameStorage}")]
     public async Task<IActionResult> UploadImage(
         [FromRoute] string AppNameStorage,
         [FromRoute] string NameStorage,
-        [FromRoute] string? PrefixStorage,
-        [FromRoute] int? OwnerKey,
+        [FromQuery] string? PrefixStorage,
+        [FromQuery] int? OwnerKey,
         IFormFile file)
     {
         System.Security.Claims.ClaimsPrincipal user = HttpContext.User;

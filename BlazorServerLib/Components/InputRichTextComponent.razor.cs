@@ -16,9 +16,11 @@ public partial class InputRichTextComponent : InputTextArea
     [Inject]
     IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
+
     /// <inheritdoc/>
     [Parameter]
     public bool ReadOnly { get; set; } = false;
+
 
     /// <inheritdoc/>
     public readonly string UID = $"CKEditor_{Guid.NewGuid().ToString().ToLower().Replace("-", "")}";

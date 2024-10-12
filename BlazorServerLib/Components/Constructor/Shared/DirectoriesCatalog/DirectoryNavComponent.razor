@@ -38,7 +38,7 @@
             <button disabled="@(IsBusyProgress || !GlobalTools.ValidateObject(directoryObject).IsValid)" @onclick="CreateDirectory" class="btn btn-outline-success" type="button">@GetTitleForButtonCreate</button>
             <button @onclick="CancelCreatingDirectory" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
         </div>
-        <InputRichTextComponent @bind-Value="Description" @ref="_currentTemplateInputRichText_ref" ReadOnly="IsBusyProgress" />
+        <TinyMCE.Blazor.Editor Value="@Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="IsBusyProgress" />
     </div>
 }
 else if (DirectoryNavState == DirectoryNavStatesEnum.Rename)

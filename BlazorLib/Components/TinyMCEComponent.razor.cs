@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components;
@@ -13,8 +14,26 @@ namespace BlazorLib.Components;
 public partial class TinyMCEComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
+    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
+
+    [Inject]
+    ISnackbar SnackbarRepo { get; set; } = default!;
+
+    [Inject]
     NavigationManager NavRepo { get; set; } = default!;
 
+
+    /// <summary>
+    /// ReadOnly
+    /// </summary>
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    /// <summary>
+    /// Label
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
 
     /// <summary>
     /// KeyStorage
@@ -22,28 +41,67 @@ public partial class TinyMCEComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required StorageMetadataModel KeyStorage { get; set; }
 
+    /// <summary>
+    /// HelperText
+    /// </summary>
+    [Parameter]
+    public string? HelperText { get; set; }
+
 
     string images_upload_url = default!;
-    string? ScriptSrc = "/lib/tinymce/tinymce.min.js";
-
     Dictionary<string, object> editorConf = default!;
 
-    /// <inheritdoc/>
-    protected override void OnInitialized()
+    string? _textValue;
+    string? TextValue
     {
-        images_upload_url = $"/TinyMCEditor/UploadImage/{KeyStorage.ApplicationName}/{KeyStorage.Name}/{KeyStorage.PrefixPropertyName}/{KeyStorage.OwnerPrimaryKey}";
-
-        editorConf = new()
+        get => _textValue;
+        set
         {
-            { "menubar", true },
-            { "plugins", "autolink media link image code emoticons table" },
-            { "toolbar", "undo redo | styleselect styles | forecolor | bold italic underline | table | alignleft aligncenter alignright alignjustify | outdent indent | link image paste | code" },
-            { "images_upload_credentials", true },
-            { "paste_data_images", true },
-            { "width", "100%" },
-            { "automatic_uploads", true },
-            { "file_picker_types", "file image media" },
-            { "images_reuse_filename", true },
-            { "images_upload_url", images_upload_url } };
+            bool nu = _textValue != value;
+            _textValue = value;
+            if (nu)
+                InvokeAsync(StoreData);
+        }
+    }
+
+    /*
+    //string _content = "";
+    string? Content
+    {
+        get => _textValue;
+        set
+        {
+            if (value == "")
+                return;
+
+            bool nu = _textValue != value;
+            _textValue = value;
+            //if (nu)
+            //    InvokeAsync(StoreData);
+        }
+    }*/
+
+    async Task StoreData()
+    {
+        //IsBusyProgress = true;
+        //await Task.Delay(1);
+        await StoreRepo.SaveParameter(_textValue, KeyStorage, true);
+        //IsBusyProgress = false;
+        //StateHasChanged();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        images_upload_url = $"/TinyMCEditor/UploadImage/{KeyStorage.ApplicationName.Replace("\\", "_").Replace("/", "_")}/{KeyStorage.Name.Replace("\\", "_").Replace("/", "_")}?{nameof(KeyStorage.PrefixPropertyName)}={KeyStorage.PrefixPropertyName}&{nameof(KeyStorage.OwnerPrimaryKey)}={KeyStorage.OwnerPrimaryKey}";
+        editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
+
+        IsBusyProgress = true;
+        TResponseModel<string?> res = await StoreRepo.ReadParameter<string?>(KeyStorage);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        _textValue = res.Response;
+        IsBusyProgress = false;
+
+        await base.OnInitializedAsync();
     }
 }

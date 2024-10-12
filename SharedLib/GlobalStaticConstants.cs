@@ -12,6 +12,27 @@ namespace SharedLib;
 public static partial class GlobalStaticConstants
 {
     /// <summary>
+    /// TinyMCEditorConf
+    /// </summary>
+    public static Dictionary<string, object> TinyMCEditorConf(string images_upload_url) => new()
+        {
+            { "menubar", true },
+            { "plugins", "autolink media link image code emoticons table" },
+            { "toolbar", "undo redo | styleselect styles | forecolor | bold italic underline | table | alignleft aligncenter alignright alignjustify | outdent indent | link image paste | code" },
+            { "images_upload_credentials", true },
+            { "paste_data_images", true },
+            { "width", "100%" },
+            { "automatic_uploads", true },
+            { "file_picker_types", "file image media" },
+            { "images_reuse_filename", true },
+            { "images_upload_url", images_upload_url } };
+
+    /// <summary>
+    /// ScriptSrc
+    /// </summary>
+    public static readonly string TinyMCEditorScriptSrc = "/lib/tinymce/tinymce.min.js";
+
+    /// <summary>
     /// JsonSerializerSettings
     /// </summary>
     public static JsonSerializerSettings JsonSerializerSettings => new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
@@ -735,6 +756,11 @@ public static partial class GlobalStaticConstants
         public const string COMMAND_CONTROLLER_NAME = "command";
 
         /// <summary>
+        /// Directory
+        /// </summary>
+        public const string DIRECTORY_CONTROLLER_NAME = "directory";
+
+        /// <summary>
         /// Filter
         /// </summary>
         public const string FILTER_CONTROLLER_NAME = "filter";
@@ -923,6 +949,11 @@ public static partial class GlobalStaticConstants
         /// Console
         /// </summary>
         public const string CONSOLE_CONTROLLER_NAME = "console";
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public const string CONSTRUCTOR_CONTROLLER_NAME = "constructor";
 
         /// <summary>
         /// Size

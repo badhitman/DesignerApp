@@ -65,6 +65,7 @@ mark, .mark {
 
 main > div.top-row {
     background-color: #212528;
+    z-index: 1;
 }
 
 .center {
