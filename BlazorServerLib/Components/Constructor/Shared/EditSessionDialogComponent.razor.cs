@@ -29,7 +29,8 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [Inject]
-    protected IConstructorService ConstructorRepo { get; set; } = default!;
+    protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
 
     /// <inheritdoc/>
     [CascadingParameter]

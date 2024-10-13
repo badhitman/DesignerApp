@@ -8,6 +8,7 @@ using BlazorLib;
 using MudBlazor;
 using SharedLib;
 using BlazorWebLib.Components.Constructor.Pages;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Form;
 
@@ -20,7 +21,10 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -33,10 +37,8 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
 
+    UserInfoMainModel user = default!;
 
     /// <inheritdoc/>
     protected bool CanSave => !string.IsNullOrWhiteSpace(field_creating_field_ref?.FieldName);
@@ -105,22 +107,26 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         if (_field_master is FieldFormAkaDirectoryConstructorModelDB directory_field)
         {
-            rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(new FieldFormAkaDirectoryConstructorModelDB()
+            rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(new()
             {
-                Description = directory_field.Description,
-                DirectoryId = directory_field.DirectoryId,
-                Hint = directory_field.Hint,
-                Name = directory_field.Name,
-                Required = directory_field.Required,
-                OwnerId = Form.Id,
-                Id = directory_field.Id,
-                IsMultiSelect = directory_field.IsMultiSelect,
+                Payload = new FieldFormAkaDirectoryConstructorModelDB()
+                {
+                    Description = directory_field.Description,
+                    DirectoryId = directory_field.DirectoryId,
+                    Hint = directory_field.Hint,
+                    Name = directory_field.Name,
+                    Required = directory_field.Required,
+                    OwnerId = Form.Id,
+                    Id = directory_field.Id,
+                    IsMultiSelect = directory_field.IsMultiSelect,
+                },
+                SenderActionUserId = user.UserId
             });
         }
         else if (_field_master is FieldFormConstructorModelDB standard_field)
         {
             standard_field.OwnerId = Form.Id;
-            rest = await ConstructorRepo.FormFieldUpdateOrCreate(standard_field);
+            rest = await ConstructorRepo.FormFieldUpdateOrCreate(new() { Payload = standard_field, SenderActionUserId = user.UserId });
         }
         else
         {
@@ -207,5 +213,14 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
 
         StateHasChanged();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
+        await base.OnInitializedAsync();
     }
 }

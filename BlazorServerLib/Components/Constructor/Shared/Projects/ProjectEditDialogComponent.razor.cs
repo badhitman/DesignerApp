@@ -19,7 +19,8 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
 
     /// <inheritdoc/>
     [CascadingParameter]
@@ -71,7 +72,7 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         if (projectObject.Id < 1)
         {
-            TResponseModel<int> res = await ConstructorRepo.CreateProject(projectObject, CurrentUser.UserId);
+            TResponseModel<int> res = await ConstructorRepo.CreateProject(new() { Project = projectObject, UserId = CurrentUser.UserId });
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(res.Messages);
             if (res.Success())

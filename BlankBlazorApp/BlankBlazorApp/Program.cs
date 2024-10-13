@@ -14,11 +14,9 @@ using BlazorLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
-using System.Reflection;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-logger.Warn("init main");
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // NLog: Setup NLog for Dependency injection
@@ -43,28 +41,51 @@ builder.Services.AddAuthentication(options =>
     .AddIdentityCookies();
 
 IWebHostEnvironment env = builder.Environment;
-
+logger.Warn($"init main: {env.EnvironmentName}");
 string curr_dir = Directory.GetCurrentDirectory();
 builder.Configuration.SetBasePath(curr_dir);
-if (Path.Exists(Path.Combine(curr_dir, "appsettings.json")))
-    builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+string path_load = Path.Combine(curr_dir, "appsettings.json");
+if (Path.Exists(path_load))
+{
+    logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
+    builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+}
 
-if (Path.Exists(Path.Combine(curr_dir, $"appsettings.{env.EnvironmentName}.json")))
-    builder.Configuration.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+path_load = Path.Combine(curr_dir, $"appsettings.{env.EnvironmentName}.json");
+if (Path.Exists(path_load))
+{
+    logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
+    builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+}
 
-if (Path.Exists(Path.Combine(curr_dir, $"bottom-menu.json")))
-    builder.Configuration.AddJsonFile($"bottom-menu.json", optional: true, reloadOnChange: true);
+path_load = Path.Combine(curr_dir, $"bottom-menu.json");
+if (Path.Exists(path_load))
+{
+    logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
+    builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+}
 
-if (Path.Exists(Path.Combine(curr_dir, $"bottom-menu.{env.EnvironmentName}.json")))
-    builder.Configuration.AddJsonFile($"bottom-menu.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+path_load = Path.Combine(curr_dir, $"bottom-menu.{env.EnvironmentName}.json");
+if (Path.Exists(path_load))
+{
+    logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
+    builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+}
 
 // Secrets
 string secretPath = Path.Combine("..", "secrets");
 for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
     secretPath = Path.Combine("..", secretPath);
+
 if (Directory.Exists(secretPath))
+{
     foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
-        builder.Configuration.AddJsonFile(Path.GetFullPath(secret), optional: true, reloadOnChange: true);
+    {
+        path_load = Path.GetFullPath(secret);
+        logger.Warn($"!secret load: {path_load}");
+        builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+    }
+}
 else
     logger.Warn("Секреты не найдены");
 
@@ -147,6 +168,7 @@ builder.Services
     .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
     .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
+    .AddScoped<IConstructorRemoteTransmissionService, TransmissionConstructorService>()
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
 //
 builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserAuthModel?>()

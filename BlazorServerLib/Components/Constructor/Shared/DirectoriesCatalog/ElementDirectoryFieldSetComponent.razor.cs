@@ -21,7 +21,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -74,7 +74,8 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
         ArgumentNullException.ThrowIfNull(ElementObjectEdit);
 
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.UpdateElementOfDirectory(ElementObjectEdit);
+        await Task.Delay(1);
+        ResponseBaseModel rest = await ConstructorRepo.UpdateElementOfDirectory(new() { Payload = ElementObjectEdit, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -107,7 +108,8 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
         }
 
         IsBusyProgress = true;
-        ElementObjectOrign = await ConstructorRepo.GetElementOfDirectory(ElementObject.Id);
+        TResponseModel<EntryDescriptionModel> res = await ConstructorRepo.GetElementOfDirectory(ElementObject.Id);
+        ElementObjectOrign = res.Response ?? throw new Exception();
         ElementObjectEdit = GlobalTools.CreateDeepCopy(ElementObjectOrign);
         IsBusyProgress = false;
     }
@@ -152,7 +154,8 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     {
         IsEdit = false;
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.UpMoveElementOfDirectory(ElementObject.Id);
+        await Task.Delay(1);
+        ResponseBaseModel rest = await ConstructorRepo.UpMoveElementOfDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
         if (!rest.Success())
         {
@@ -167,7 +170,8 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     {
         IsEdit = false;
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.DownMoveElementOfDirectory(ElementObject.Id);
+        await Task.Delay(1);
+        ResponseBaseModel rest = await ConstructorRepo.DownMoveElementOfDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
         if (!rest.Success())
         {
@@ -182,7 +186,8 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     protected async Task DeleteElementOfDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.DeleteElementFromDirectory(ElementObject.Id);
+        await Task.Delay(1);
+        ResponseBaseModel rest = await ConstructorRepo.DeleteElementFromDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())

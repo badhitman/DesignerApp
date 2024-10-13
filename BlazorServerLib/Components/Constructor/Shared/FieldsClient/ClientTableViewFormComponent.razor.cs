@@ -23,7 +23,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -64,10 +64,10 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     protected bool TableCalculationKit { get; set; } = false;
-    
+
     /// <inheritdoc/>
     protected TableCalculationKitComponent? _table_kit_ref;
-    
+
     /// <inheritdoc/>
     protected void OpenEditRowAction(uint row_num)
     {
@@ -130,7 +130,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             SessionId = SessionDocument.Id
         };
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await ConstructorRepo.AddRowToTable(row_obj);
+        await Task.Delay(1);
+        TResponseModel<int> rest = await ConstructorRepo.AddRowToTable(row_obj);
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -170,7 +171,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         }
         IsBusyProgress = true;
         TResponseModel<SessionOfDocumentDataModelDB> rest = string.IsNullOrWhiteSpace(SessionDocument.SessionToken)
-        ? await ConstructorRepo.GetSessionDocument(SessionDocument.Id)
+        ? await ConstructorRepo.GetSessionDocument(new() { SessionId = SessionDocument.Id, IncludeExtra = false })
         : await ConstructorRepo.GetSessionDocumentData(SessionDocument.SessionToken);
         IsBusyProgress = false;
 

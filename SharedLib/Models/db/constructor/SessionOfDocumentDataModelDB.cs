@@ -28,7 +28,7 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneab
     /// <summary>
     /// Project
     /// </summary>
-    public ProjectConstructorModelDB? Project { get; set; }
+    public ProjectModelDb? Project { get; set; }
 
     /// <summary>
     /// Project
@@ -95,9 +95,9 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneab
             return SessionStatus == SessionsStatusesEnum.InProgress && Guid.TryParse(SessionToken, out Guid _guid) && _guid != Guid.Empty && (DeadlineDate.HasValue && DeadlineDate.Value >= DateTime.Now);
 
         if (Project is null)
-            return user.Roles?.Any(x => x.Equals("admin", StringComparison.OrdinalIgnoreCase)) == true;
+            return user.Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase)) == true;
 
-        return user.UserId.Equals(Project.OwnerUserId) || user.Roles?.Any(x => x.Equals("admin", StringComparison.OrdinalIgnoreCase)) == true;
+        return user.UserId.Equals(Project.OwnerUserId) || user.Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase)) == true;
     }
 
     /// <summary>

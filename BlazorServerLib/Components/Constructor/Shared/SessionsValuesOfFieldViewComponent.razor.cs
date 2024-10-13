@@ -18,7 +18,8 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
 
     /// <summary>
     /// Форма

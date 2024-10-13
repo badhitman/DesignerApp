@@ -2,9 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Documents.Forms;
@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Documents.Forms;
 public partial class FormOfTabConstructorComponent : FormBaseModel
 {
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -243,7 +243,8 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
             throw new Exception();
 
         IsBusyProgress = true;
-        TResponseModel<ValueDataForSessionOfDocumentModelDB[]> res = await ConstructorRepo.SaveSessionForm(DocumentKey.Value, Join.Id, SessionValues);
+        await Task.Delay(1);
+        TResponseModel<ValueDataForSessionOfDocumentModelDB[]> res = await ConstructorRepo.SaveSessionForm(new() { JoinFormToTab = Join.Id, SessionId = DocumentKey.Value, SessionValues = SessionValues });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;
 

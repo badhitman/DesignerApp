@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Documents;
 public partial class DocumentEditConstructorComponent : DocumentEditBaseComponent
 {
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -42,7 +42,7 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
 
         if (schemes?.Length == 1 && DocumentKey > 0)
         {
-            TResponseModel<SessionOfDocumentDataModelDB> session_data = await ConstructorRepo.GetSessionDocument(DocumentKey.Value, true);
+            TResponseModel<SessionOfDocumentDataModelDB> session_data = await ConstructorRepo.GetSessionDocument(new() { SessionId = DocumentKey.Value });
             SnackbarRepo.ShowMessagesResponse(session_data.Messages);
             session = session_data.Response;
         }

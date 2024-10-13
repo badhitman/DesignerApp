@@ -22,7 +22,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -31,7 +31,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-        
+
     /// <summary>
     /// имя типа данных: формы
     /// </summary>
@@ -92,7 +92,9 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             throw new Exception("Проект не выбран.");
 
         IsBusyProgress = true;
-        rest_data = await ConstructorRepo.SelectForms(SimplePaginationRequestModel.Build(searchString, _table_state.PageSize, _table_state.Page), ParentFormsPage.MainProject.Id);
+        await Task.Delay(1);
+        TResponseModel<TPaginationResponseModel<FormConstructorModelDB>> res = await ConstructorRepo.SelectForms(new() { Request = SimplePaginationRequestModel.Build(searchString, _table_state.PageSize, _table_state.Page), ProjectId = ParentFormsPage.MainProject.Id });
+        rest_data = res.Response;
         IsBusyProgress = false;
     }
 
@@ -124,7 +126,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     protected async Task<TableData<FormConstructorModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-        if(rest_data is null)
+        if (rest_data is null)
             throw new ArgumentNullException(nameof(rest_data));
 
         _table_state = state;

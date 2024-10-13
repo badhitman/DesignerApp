@@ -19,10 +19,11 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     [Inject]
     IUsersProfilesService UserProfilesManage { get; set; } = default!;
+
 
     /// <summary>
     /// Project Id
@@ -53,13 +54,13 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
             SnackbarRepo.Add($"Пользователь с Email '{emailForAddMember}' не найден", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
         else
         {
-            ResponseBaseModel adding_member = await ConstructorRepo.AddMemberToProject(ProjectView.Id, user_info.UserId);
+            ResponseBaseModel adding_member = await ConstructorRepo.AddMembersToProject(new() { ProjectId = ProjectView.Id, UsersIds = [user_info.UserId] });
             SnackbarRepo.ShowMessagesResponse(adding_member.Messages);
         }
         IsBusyProgress = false;
         emailForAddMember = null;
-
-        ProjectView.Members = new(await ConstructorRepo.GetMembersOfProject(ProjectView.Id));
+        TResponseModel<EntryAltModel[]> members_rest = await ConstructorRepo.GetMembersOfProject(ProjectView.Id);
+        ProjectView.Members = new(members_rest.Response ?? throw new Exception());
 
         await ProjectsList.ReloadListProjects();
         ProjectsList.StateHasChangedCall();
@@ -71,11 +72,11 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
             throw new Exception();
 
         IsBusyProgress = true;
-        ResponseBaseModel res = await ConstructorRepo.DeleteMemberFromProject(ProjectView.Id, chip.Value.Id);
+        ResponseBaseModel res = await ConstructorRepo.DeleteMembersFromProject(new() { ProjectId = ProjectView.Id, UsersIds = [chip.Value.Id] });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-
-        ProjectView.Members = new(await ConstructorRepo.GetMembersOfProject(ProjectView.Id));
+        TResponseModel<EntryAltModel[]> rest_members = await ConstructorRepo.GetMembersOfProject(ProjectView.Id);
+        ProjectView.Members = new(rest_members.Response ?? throw new Exception());
 
         await ProjectsList.ReloadListProjects();
         ProjectsList.StateHasChangedCall();

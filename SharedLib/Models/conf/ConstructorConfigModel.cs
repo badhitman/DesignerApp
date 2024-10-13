@@ -7,10 +7,15 @@ namespace SharedLib;
 /// <summary>
 /// Серверные конфигурации
 /// </summary>
-public class ServerConstructorConfigModel : ServerConfigModel
+public class ConstructorConfigModel
 {
     /// <summary>
     /// Срок жизни создаваемой сессии документа (в минутах)
     /// </summary>
     public int TimeActualityDocumentSessionMinutes { get; set; }
+
+    /// <summary>
+    /// WebConfig
+    /// </summary>
+    public WebConfigModel? WebConfig {  get; set; }
 }

@@ -11,6 +11,7 @@ using NLog.Web;
 using DbcLib;
 using NLog;
 using MongoDB.Driver;
+using DbLayerLib;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -60,7 +61,7 @@ builder.Services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.Fi
 builder.Services.AddSingleton<WebConfigModel>();
 builder.Services.AddOptions();
 
-string connectionIdentityString = builder.Configuration.GetConnectionString("CommerceConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
+string connectionIdentityString = builder.Configuration.GetConnectionString("CommerceConnection") ?? throw new InvalidOperationException("Connection string 'CommerceConnection' not found.");
 builder.Services.AddDbContextFactory<CommerceContext>(opt =>
 {
     opt.UseNpgsql(connectionIdentityString);

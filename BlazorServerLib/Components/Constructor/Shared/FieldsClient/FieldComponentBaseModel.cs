@@ -21,7 +21,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
 
     /// <inheritdoc/>
     [Inject]
-    protected IConstructorService ConstructorRepo { get; set; } = default!;
+    protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>

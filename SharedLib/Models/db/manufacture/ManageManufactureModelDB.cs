@@ -19,7 +19,7 @@ public class ManageManufactureModelDB : CodeGeneratorConfigModel, ICloneable
     /// <summary>
     /// Проект
     /// </summary>
-    public ProjectConstructorModelDB? Project { get; set; }
+    public ProjectModelDb? Project { get; set; }
     /// <summary>
     /// FK: Проект
     /// </summary>

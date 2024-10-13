@@ -22,3 +22,8 @@ Update-Database -Context TelegramBotContext -Project DbPostgreLib -StartupProjec
 Add-Migration CommerceContext006 -Context CommerceContext -Project DbPostgreLib -StartupProject CommerceService
 Update-Database -Context CommerceContext -Project DbPostgreLib -StartupProject CommerceService
 ```
+
+```
+Add-Migration ConstructorContext002 -Context ConstructorContext -Project DbPostgreLib -StartupProject ConstructorService
+Update-Database -Context ConstructorContext -Project DbPostgreLib -StartupProject ConstructorService
+```

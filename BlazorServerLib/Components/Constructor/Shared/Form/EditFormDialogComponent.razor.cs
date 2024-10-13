@@ -8,6 +8,7 @@ using MudBlazor;
 using SharedLib;
 using BlazorWebLib.Components.Constructor.Pages;
 using BlazorLib.Components.Shared.tabs;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Form;
 
@@ -20,7 +21,10 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
     [CascadingParameter]
@@ -36,9 +40,8 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-    /// <inheritdoc/>
-    [Parameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
+
+    UserInfoMainModel user = default!;
 
     TabSetComponent tab_set_ref = default!;
 
@@ -67,7 +70,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected async Task SaveForm()
     {
         IsBusyProgress = true;
-        TResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.FormUpdateOrCreate(FormEditObject);
+        TResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.FormUpdateOrCreate(new() { Payload = FormEditObject, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
@@ -87,8 +90,12 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
         ResetForm();
+        await base.OnInitializedAsync();
     }
 }

@@ -18,7 +18,8 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
 
     /// <summary>
     /// DocumentScheme page

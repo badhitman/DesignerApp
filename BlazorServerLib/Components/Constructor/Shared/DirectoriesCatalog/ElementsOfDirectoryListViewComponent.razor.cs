@@ -20,11 +20,13 @@ public partial class ElementsOfDirectoryListViewComponent : BlazorBusyComponentB
 
     /// <inheritdoc/>
     [Inject]
-    protected IConstructorService ConstructorRepo { get; set; } = default!;
+    protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required int SelectedDirectoryId { get; set; }
+
 
     /// <inheritdoc/>
     public List<EntryModel>? EntriesElements { get; set; }

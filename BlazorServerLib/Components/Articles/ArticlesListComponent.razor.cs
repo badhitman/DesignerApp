@@ -2,11 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Articles;
 
@@ -29,10 +29,8 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
 
 
     UserInfoMainModel user = default!;
-    private IEnumerable<ArticleModelDB> pagedData = [];
     private MudTable<ArticleModelDB> table = default!;
 
-    private int totalItems;
     private string? searchString = null;
     readonly List<UserInfoModel> usersDump = [];
 
@@ -41,7 +39,6 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
     /// </summary>
     private async Task<TableData<ArticleModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-
         IsBusyProgress = true;
         await Task.Delay(1, token);
         TPaginationRequestModel<SelectArticlesRequestModel> req = new()
@@ -66,7 +63,7 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
 
         // Forward the provided token to methods which support it
         List<ArticleModelDB> data = rest.Response!.Response!;
-        await UpdateUsersData(rest.Response.Response!.SelectMany(x => new string?[] { x.AuthorIdentityId }).ToArray());
+        await UpdateUsersData(rest.Response.Response!.Select(x => x.AuthorIdentityId).ToArray());
         // Return the data
         return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
     }

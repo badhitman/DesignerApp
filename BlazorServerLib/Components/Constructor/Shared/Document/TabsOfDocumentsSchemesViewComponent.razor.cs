@@ -21,7 +21,8 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
 
     /// <inheritdoc/>
     [Inject]
-    protected IConstructorService ConstructorRepo { get; set; } = default!;
+    protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -61,13 +62,15 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        TPaginationResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.SelectForms(AltSimplePaginationRequestModel.Build(null, int.MaxValue, 0, true), ParentFormsPage.MainProject.Id);
+        await Task.Delay(1);
+        TResponseModel<TPaginationResponseModel<FormConstructorModelDB>> rest = await ConstructorRepo.SelectForms(new() { ProjectId = ParentFormsPage.MainProject.Id, Request = AltSimplePaginationRequestModel.Build(null, int.MaxValue, 0, true) });
+
         IsBusyProgress = false;
 
         if (rest.Response is null)
             throw new Exception($"Ошибка 973D18EE-ED49-442D-B12B-CDC5A32C8A51 rest.Content.Elements is null");
 
-        AllForms = rest.Response;
+        AllForms = rest.Response.Response;
     }
 
     /// <inheritdoc/>

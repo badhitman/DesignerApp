@@ -47,22 +47,22 @@ public interface IConstructorService
     /// <summary>
     /// Получить проекты
     /// </summary>
-    public Task<ProjectViewModel[]> GetProjects(string for_user_id, string? name_filter = null);
+    public Task<ProjectViewModel[]> GetProjectsForUser(GetProjectsForUserRequestModel req);
 
     /// <summary>
-    /// Прочитать данные проекта
+    /// Прочитать данные проектов
     /// </summary>
-    public Task<ProjectConstructorModelDB?> ReadProject(int project_id);
+    public Task<ProjectModelDb[]> ReadProjects(int[] projects_ids);
 
     /// <summary>
     /// Создать проект
     /// </summary>
-    public Task<TResponseModel<int>> CreateProject(ProjectViewModel project, string owner_user_id);
+    public Task<TResponseModel<int>> CreateProject(CreateProjectRequestModel req);
 
     /// <summary>
-    /// Установить проекту признак <paramref name="is_deleted"/> <c>IsDeleted</c> .
+    /// Установить проекту признак <paramref name="req"/> <c>Marker</c> .
     /// </summary>
-    public Task<ResponseBaseModel> SetMarkerDeleteProject(int project_id, bool is_deleted);
+    public Task<ResponseBaseModel> SetMarkerDeleteProject(SetMarkerProjectRequestModel req);
 
     /// <summary>
     /// Обновить проект
@@ -72,12 +72,12 @@ public interface IConstructorService
     /// <summary>
     /// Добавить участника к проекту
     /// </summary>
-    public Task<ResponseBaseModel> AddMemberToProject(int project_id, string member_user_id);
+    public Task<ResponseBaseModel> AddMemberToProject(UsersProjectModel req);
 
     /// <summary>
     /// Исключить участника из проекта
     /// </summary>
-    public Task<ResponseBaseModel> DeleteMemberFromProject(int project_id, string member_user_id);
+    public Task<ResponseBaseModel> DeleteMembersFromProject(UsersProjectModel req);
 
     /// <summary>
     /// Получить участников проекта (за исключением владельца, который хранится в самом проекте)
@@ -87,7 +87,7 @@ public interface IConstructorService
     /// <summary>
     /// Установить проект как основной/используемый для пользователя.
     /// </summary>
-    public Task<ResponseBaseModel> SetProjectAsMain(int project_id, string user_id);
+    public Task<ResponseBaseModel> SetProjectAsMain(UserProjectModel req);
 
     /// <summary>
     /// Получить текущий основной/используемый проект
@@ -102,7 +102,7 @@ public interface IConstructorService
     /// Пользователи с ролью ADMIN имеют полный доступ ко всем проектам.
     /// Владельцы имеют полный доступ к своим проектам, а простые участники проектов зависят от статуса проекта (выкл/вкл)
     /// </remarks>
-    public Task<ResponseBaseModel> CanEditProject(int project_id, string? user_id = null);
+    public Task<ResponseBaseModel> CanEditProject(UserProjectModel req);
 
     /////////////// Перечисления.
     // Простейший тип данных поля формы, который можно в в последствии использовать в конструкторе форм при добавлении/редактировании полей
@@ -116,7 +116,7 @@ public interface IConstructorService
     /// <summary>
     /// Получить справочники/списки для проекта
     /// </summary>
-    public Task<TResponseStrictModel<EntryModel[]>> GetDirectories(int project_id, string? name_filter = null, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<EntryModel[]>> GetDirectories(ProjectFindModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить справочник (список/перечисление)
@@ -126,12 +126,12 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/Создать справочник
     /// </summary>
-    public Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(EntryConstructedModel _dir, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(TAuthRequestModel<EntryConstructedModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить справочник/список (со всеми элементами и связями)
     /// </summary>
-    public Task<ResponseBaseModel> DeleteDirectory(int directory_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteDirectory(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
     #region элементы справочникв/списков
     /// <summary>
@@ -142,12 +142,12 @@ public interface IConstructorService
     /// <summary>
     /// Создать элемент справочника
     /// </summary>
-    public Task<TResponseStrictModel<int>> CreateElementForDirectory(OwnedNameModel element, CancellationToken cancellationToken = default);
+    public Task<TResponseStrictModel<int>> CreateElementForDirectory(TAuthRequestModel<OwnedNameModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить элемент справочника
     /// </summary>
-    public Task<ResponseBaseModel> UpdateElementOfDirectory(EntryDescriptionModel element, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> UpdateElementOfDirectory(TAuthRequestModel<EntryDescriptionModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить элемент справочника/перечисления/списка
@@ -157,17 +157,17 @@ public interface IConstructorService
     /// <summary>
     /// Удалить элемент справочника/списка
     /// </summary>
-    public Task<ResponseBaseModel> DeleteElementFromDirectory(int element_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteElementFromDirectory(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сдвинуть выше элемент справочника/списка
     /// </summary>
-    public Task<ResponseBaseModel> UpMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> UpMoveElementOfDirectory(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сдвинуть ниже элемент справочника/списка
     /// </summary>
-    public Task<ResponseBaseModel> DownMoveElementOfDirectory(int element_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DownMoveElementOfDirectory(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Нормализовать индексы сортировки элементов справочника.
@@ -183,7 +183,7 @@ public interface IConstructorService
     /// <summary>
     /// Подобрать формы
     /// </summary>
-    public Task<TPaginationResponseModel<FormConstructorModelDB>> SelectForms(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default);
+    public Task<TPaginationResponseModel<FormConstructorModelDB>> SelectForms(SelectFormsModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить форму
@@ -193,23 +193,25 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/создать форму (имя, описание, `признак таблицы`)
     /// </summary>
-    public Task<TResponseModel<FormConstructorModelDB>> FormUpdateOrCreate(FormBaseConstructorModel form, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> FormUpdateOrCreate(TAuthRequestModel<FormBaseConstructorModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить форму
     /// </summary>
-    public Task<ResponseBaseModel> FormDelete(int form_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormDelete(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
+
     #region поля форм    
     /// <summary>
     /// Сдвинуть поле формы (простой тип)
     /// </summary>
-    public Task<TResponseModel<FormConstructorModelDB>> FieldFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> FieldFormMove(TAuthRequestModel<MoveObjectModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сдвинуть поле формы (тип: список/справочник)
     /// </summary>
-    public Task<TResponseModel<FormConstructorModelDB>> FieldDirectoryFormMove(int field_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<FormConstructorModelDB>> FieldDirectoryFormMove(TAuthRequestModel<MoveObjectModel> req, CancellationToken cancellationToken = default);
+
 
     /// <summary>
     /// Проверить сортировку и нормализовать в случае рассинхрона
@@ -219,22 +221,22 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/создать поле формы (простой тип)
     /// </summary>
-    public Task<ResponseBaseModel> FormFieldUpdateOrCreate(FieldFormBaseConstructorModel form_field, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormBaseConstructorModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить поле формы (простой тип)
     /// </summary>
-    public Task<ResponseBaseModel> FormFieldDelete(int form_field_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldDelete(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/создать поле формы (тип: справочник/список)
     /// </summary>
-    public Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(FieldFormAkaDirectoryConstructorModelDB field_directory, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(TAuthRequestModel<FieldFormAkaDirectoryConstructorModelDB> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить поле формы (тип: справочник/список)
     /// </summary>
-    public Task<ResponseBaseModel> FormFieldDirectoryDelete(int field_directory_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldDirectoryDelete(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
 
     /////////////// Документ. Описывается/настраивается конечный результат, который будет использоваться.
@@ -245,12 +247,12 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/создать схему документа
     /// </summary>
-    public Task<TResponseModel<DocumentSchemeConstructorModelDB>> UpdateOrCreateDocumentScheme(EntryConstructedModel documentScheme, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<DocumentSchemeConstructorModelDB>> UpdateOrCreateDocumentScheme(TAuthRequestModel<EntryConstructedModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Запрос схем документов
     /// </summary>
-    public Task<TPaginationResponseModel<DocumentSchemeConstructorModelDB>> RequestDocumentsSchemes(SimplePaginationRequestModel req, int projectId, CancellationToken cancellationToken = default);
+    public Task<TPaginationResponseModel<DocumentSchemeConstructorModelDB>> RequestDocumentsSchemes(RequestDocumentsSchemesModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить схему документа
@@ -260,19 +262,19 @@ public interface IConstructorService
     /// <summary>
     /// Удалить схему документа
     /// </summary>
-    public Task<ResponseBaseModel> DeleteDocumentScheme(int questionnaire_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteDocumentScheme(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
     // табы/вкладки схожи по смыслу табов/вкладок в Excel. Т.е. обычная группировка разных рабочих пространств со своим именем 
     #region табы документов
     /// <summary>
     /// Обновить/создать таб/вкладку схемы документа
     /// </summary>
-    public Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> CreateOrUpdateTabOfDocumentScheme(EntryDescriptionOwnedModel questionnaire_page, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> CreateOrUpdateTabOfDocumentScheme(TAuthRequestModel<EntryDescriptionOwnedModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Перемещение страницы опроса/анкеты (сортировка страниц внутри опроса/анкеты)
     /// </summary>
-    public Task<TResponseModel<DocumentSchemeConstructorModelDB>> MoveTabOfDocumentScheme(int questionnaire_page_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<DocumentSchemeConstructorModelDB>> MoveTabOfDocumentScheme(TAuthRequestModel<MoveObjectModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить страницу анкеты/опроса
@@ -282,7 +284,7 @@ public interface IConstructorService
     /// <summary>
     /// Удалить страницу опроса/анкеты
     /// </summary>
-    public Task<ResponseBaseModel> DeleteTabOfDocumentScheme(int questionnaire_page_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteTabOfDocumentScheme(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
     #region структура/схема таба/вкладки: формы, порядок и настройки поведения    
     /// <summary>
@@ -293,17 +295,17 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/создать связь [таба/вкладки схемы документа] с [формой]
     /// </summary>
-    public Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(FormToTabJoinConstructorModelDB page_join_form, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TAuthRequestModel<FormToTabJoinConstructorModelDB> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сдвинуть связь [таба/вкладки схемы документа] с [формой] (изменение сортировки/последовательности)
     /// </summary>
-    public Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> MoveTabDocumentSchemeJoinForm(int questionnaire_page_join_form_id, VerticalDirectionsEnum direct, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> MoveTabDocumentSchemeJoinForm(TAuthRequestModel<MoveObjectModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить связь [таба/вкладки схемы документа] с [формой] 
     /// </summary>
-    public Task<ResponseBaseModel> DeleteTabDocumentSchemeJoinForm(int questionnaire_page_join_form_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteTabDocumentSchemeJoinForm(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
 
     /////////////// Пользовательский/публичный доступ к возможностям заполнения документа данными
@@ -314,17 +316,17 @@ public interface IConstructorService
     /// <summary>
     /// Сохранить данные формы документа из сессии
     /// </summary>
-    public Task<TResponseModel<ValueDataForSessionOfDocumentModelDB[]>> SaveSessionForm(int sessionId, int join_form_to_tab, IEnumerable<ValueDataForSessionOfDocumentModelDB> sessionValues);
+    public Task<TResponseModel<ValueDataForSessionOfDocumentModelDB[]>> SaveSessionForm(SaveConstructorSessionRequestModel req);
 
     /// <summary>
     /// Установить статус сессии (от менеджера)
     /// </summary>
-    public Task<ResponseBaseModel> SetStatusSessionDocument(int id_session, SessionsStatusesEnum status, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> SetStatusSessionDocument(SessionStatusModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить сессию
     /// </summary>
-    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocument(int id_session, bool skip_include = false, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<SessionOfDocumentDataModelDB>> GetSessionDocument(SessionGetModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить (или создать) сессию опроса/анкеты

@@ -18,7 +18,7 @@
                         <div class="col-12">
                             <label for="inputName4" class="form-label">Название</label>
                             <input @bind-value="DocumentNameOrigin" @bind-value:event="oninput" type="text" class="form-control" id="inputName4" readonly="@(!ParentFormsPage.CanEditProject)">
-                        </div>                        
+                        </div>
                         <div class="col-12">
                             <div class="mb-3">
                                 <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
@@ -43,10 +43,8 @@
                     </form>
                 </TabComponent>
                 <TabComponent IsDisabled="@(DocumentScheme.Id < 1)" Tooltip="Состав опроса/анкеты" Title="Страницы" SystemName="@DocumentScheme.Id.ToString()">
-                    <CascadingValue Value="CurrentUser">
-                        <CascadingValue Value="ParentFormsPage">
-                            <TabsOfDocumentsSchemesViewComponent @ref="pages_questionnaires_view_ref" DocumentScheme="DocumentScheme" />
-                        </CascadingValue>
+                    <CascadingValue Value="ParentFormsPage">
+                        <TabsOfDocumentsSchemesViewComponent @ref="pages_questionnaires_view_ref" DocumentScheme="DocumentScheme" />
                     </CascadingValue>
                 </TabComponent>
             </TabSetComponent>

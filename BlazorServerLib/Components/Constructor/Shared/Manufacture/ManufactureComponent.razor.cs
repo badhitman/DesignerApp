@@ -22,7 +22,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
@@ -74,7 +74,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Текущий проект
     /// </summary>
-    public ProjectConstructorModelDB CurrentProject { get; private set; } = default!;
+    public ProjectModelDb CurrentProject { get; private set; } = default!;
     /// <summary>
     /// Manufacture
     /// </summary>
@@ -103,8 +103,10 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     public async Task ReloadProjectData()
     {
         IsBusyProgress = true;
-        ProjectConstructorModelDB? rest_project = await ConstructorRepo.ReadProject(ParentFormsPage.MainProject!.Id);
-        CurrentProject = rest_project ?? throw new Exception();
+        await Task.Delay(1);
+        var call = await ConstructorRepo.ProjectsRead([ParentFormsPage.MainProject!.Id]);
+        ProjectModelDb[] rest_project = call.Response ?? throw new Exception();
+        CurrentProject = rest_project.Single();
 
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         user = state.User.ReadCurrentUserInfo() ?? throw new Exception();

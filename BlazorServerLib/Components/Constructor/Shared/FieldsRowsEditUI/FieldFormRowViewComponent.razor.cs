@@ -8,6 +8,7 @@ using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 using BlazorLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.FieldsRowsEditUI;
 
@@ -23,7 +24,10 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -50,10 +54,8 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required Action<FormConstructorModelDB?> ReloadFieldsHandler { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
 
+    UserInfoMainModel user = default!;
 
     FieldFormBaseLowConstructorModel _field_master = default!;
 
@@ -312,7 +314,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 SortIndex = sf.SortIndex,
                 TypeField = sf.TypeField
             };
-            rest = await ConstructorRepo.FormFieldUpdateOrCreate(req);
+            rest = await ConstructorRepo.FormFieldUpdateOrCreate(new() { Payload = req, SenderActionUserId = user.UserId });
             act = () => { ((FieldFormConstructorModelDB)Field).Update(sf); };
         }
         else if (_field_master is FieldFormAkaDirectoryConstructorModelDB df)
@@ -330,7 +332,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
                 SortIndex = df.SortIndex,
                 IsMultiSelect = df.IsMultiSelect,
             };
-            rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(req);
+            rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(new() { Payload = req, SenderActionUserId = user.UserId });
             _field_master.Update(req);
             act = () => { ((FieldFormAkaDirectoryConstructorModelDB)Field).Update(df); };
         }
@@ -429,10 +431,13 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
         SetFieldAction(Field);
-        base.OnInitialized();
+        await base.OnInitializedAsync();
     }
 
     void ChildUpdates()
@@ -451,9 +456,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         ResponseBaseModel rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await ConstructorRepo.FormFieldDelete(sf.Id);
+            rest = await ConstructorRepo.FormFieldDelete(new() { Payload = sf.Id, SenderActionUserId = user.UserId });
         else if (_field_master is FieldFormAkaDirectoryConstructorModelDB df)
-            rest = await ConstructorRepo.FormFieldDirectoryDelete(df.Id);
+            rest = await ConstructorRepo.FormFieldDirectoryDelete(new() { Payload = df.Id, SenderActionUserId = user.UserId });
         else
         {
             SnackbarRepo.Add($"{_field_master.GetType().FullName}. ошибка 1BCDEFB4-55F5-4A5A-BA61-3EAD2E9063D2", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -524,9 +529,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await ConstructorRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Up);
+            rest = await ConstructorRepo.FieldFormMove(new() { Payload = new() { Id = sf.Id, Direct = VerticalDirectionsEnum.Up }, SenderActionUserId = user.UserId });
         else if (_field_master is FieldFormAkaDirectoryConstructorModelDB df)
-            rest = await ConstructorRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Up);
+            rest = await ConstructorRepo.FieldDirectoryFormMove(new() { Payload = new() { Id = df.Id, Direct = VerticalDirectionsEnum.Up }, SenderActionUserId = user.UserId });
         else
         {
             SnackbarRepo.Add("ошибка 591195A4-959D-4CDD-9410-F8984F790CBE", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -561,9 +566,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = true;
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await ConstructorRepo.FieldFormMove(sf.Id, VerticalDirectionsEnum.Down);
+            rest = await ConstructorRepo.FieldFormMove(new() { Payload = new() { Id = sf.Id, Direct = VerticalDirectionsEnum.Down }, SenderActionUserId = user.UserId });
         else if (_field_master is FieldFormAkaDirectoryConstructorModelDB df)
-            rest = await ConstructorRepo.FieldDirectoryFormMove(df.Id, VerticalDirectionsEnum.Down);
+            rest = await ConstructorRepo.FieldDirectoryFormMove(new() { Payload = new() { Id = df.Id, Direct = VerticalDirectionsEnum.Down }, SenderActionUserId = user.UserId });
         else
         {
             SnackbarRepo.Add("ошибка 8768E090-BE63-4FE4-A693-7E24ED1A1876", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);

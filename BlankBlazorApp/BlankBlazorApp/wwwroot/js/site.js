@@ -33,8 +33,7 @@ window.BoundingClientRect = (() => {
                 return 0;
 
             let height = _d.height();
-            console.warn(JSON.stringify(height));
-
+            // console.warn(JSON.stringify(height));
             if (isNaN(height)) {
                 return 0;
             }

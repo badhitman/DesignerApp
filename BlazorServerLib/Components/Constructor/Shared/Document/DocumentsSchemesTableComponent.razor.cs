@@ -25,7 +25,8 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     [Inject]
-    protected IConstructorService ConstructorRepo { get; set; } = default!;
+    protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -49,7 +50,8 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
     protected async Task DeleteDocument(int questionnaire_id)
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.DeleteDocumentScheme(questionnaire_id);
+        await Task.Delay(1);
+        ResponseBaseModel rest = await ConstructorRepo.DeleteDocumentScheme(new() { Payload = questionnaire_id, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -73,8 +75,10 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
 
         SimplePaginationRequestModel req = new();
         IsBusyProgress = true;
-        data = await ConstructorRepo.RequestDocumentsSchemes(req, ParentFormsPage.MainProject.Id, token);
+        await Task.Delay(1);
+        TResponseModel<TPaginationResponseModel<DocumentSchemeConstructorModelDB>> rest = await ConstructorRepo.RequestDocumentsSchemes(new() { RequestPayload = req, ProjectId = ParentFormsPage.MainProject.Id }, token);
         IsBusyProgress = false;
+        data = rest.Response ?? throw new Exception();
 
         if (data.Response is null)
         {

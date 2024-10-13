@@ -14,10 +14,11 @@ namespace BlazorWebLib.Components.Constructor.Shared.Projects;
 public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     [Inject]
     IDialogService DialogService { get; set; } = default!;
+
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -44,7 +45,9 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
     public async Task ReloadListProjects()
     {
         IsBusyProgress = true;
-        ProjectsOfUser = await ConstructorRepo.GetProjects(CurrentUser.UserId);
+        await Task.Delay(1);
+        TResponseModel<ProjectViewModel[]> res_pr = await ConstructorRepo.GetProjectsForUser(new() { UserId = CurrentUser.UserId });
+        ProjectsOfUser = res_pr.Response ?? throw new Exception();
         IsBusyProgress = false;
     }
 

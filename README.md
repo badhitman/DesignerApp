@@ -73,6 +73,9 @@ note for DbPostgreLib "Если используется другая СУБД, 
     class StorageService{
         @Микросервис
     }
+    class ConstructorService{
+        @Микросервис
+    }
     class HtmlGenerator{
         Внешний репозиторий
     }

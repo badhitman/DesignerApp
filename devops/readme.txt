@@ -32,6 +32,7 @@ dotnet publish -c Debug --output /srv/git/builds/StorageService /srv/git/Designe
 dotnet publish -c Debug --output /srv/git/builds/ApiRestService /srv/git/DesignerApp/ApiRestService/ApiRestService.csproj
 dotnet publish -c Debug --output /srv/git/builds/CommerceService /srv/git/DesignerApp/CommerceService/CommerceService.csproj
 dotnet publish -c Debug --output /srv/git/builds/HelpdeskService /srv/git/DesignerApp/HelpdeskService/HelpdeskService.csproj
+dotnet publish -c Debug --output /srv/git/builds/ConstructorService /srv/git/DesignerApp/ConstructorService/ConstructorService.csproj
 dotnet publish -c Debug --output /srv/git/builds/Telegram.Bot.Polling /srv/git/DesignerApp/Telegram.Bot.Polling/Telegram.Bot.Polling.csproj
 
 #  *** этот билд требует значительной мощьности железа. на стоковом сервере не соберЄтс€ (ресурсоЄмкий процесс, который веро€тно не сможет корректно завершитьс€)
@@ -42,7 +43,7 @@ dotnet publish -c Debug --output /srv/git/builds/Telegram.Bot.Polling /srv/git/D
 #  dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
 #  *** поэтому € его отдельно собираю локально, отправл€ю через sftp, распаковываю и продолжаю дальше буд-то команды корректно отработали
 
-systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service hd.app.service
+systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service hd.app.service constructor.app.service
 
 cd /srv/services/
 rm -r /srv/services/*
@@ -50,12 +51,13 @@ mv /srv/git/builds/StorageService /srv/services/StorageService
 mv /srv/git/builds/ApiRestService /srv/services/ApiRestService
 mv /srv/git/builds/CommerceService /srv/services/CommerceService
 mv /srv/git/builds/HelpdeskService /srv/services/HelpdeskService
+mv /srv/git/builds/ConstructorService /srv/services/ConstructorService
 mv /srv/git/builds/Telegram.Bot.Polling /srv/services/Telegram.Bot.Polling
 mv /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
 
 chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services
 
-systemctl start comm.app.service web.app.service bus.app.service tg.app.service api.app.service hd.app.service
+systemctl start comm.app.service web.app.service bus.app.service tg.app.service api.app.service hd.app.service constructor.app.service
 
 journalctl -f -u web.app.service

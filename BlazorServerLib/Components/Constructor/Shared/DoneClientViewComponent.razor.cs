@@ -20,7 +20,8 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [Inject]
-    protected IConstructorService ConstructorRepo { get; set; } = default!;
+    protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
 
     /// <inheritdoc/>
     [CascadingParameter]
@@ -29,6 +30,7 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     [CascadingParameter]
     public required bool InUse { get; set; }
+
 
     bool InitSend = false;
 

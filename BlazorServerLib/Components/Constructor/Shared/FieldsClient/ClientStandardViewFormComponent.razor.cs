@@ -15,11 +15,12 @@ namespace BlazorWebLib.Components.Constructor.Shared.FieldsClient;
 public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter]
     public string? Title { get; set; }
+
 
     /// <summary>
     /// Номер строки таблицы данных (0 - если форма обычная, а не не таблица/многострочная)
@@ -55,7 +56,9 @@ public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseMo
         if (Form.FieldsDirectoriesLinks is not null && Form.FieldsDirectoriesLinks.Count != 0)
         {
             IsBusyProgress = true;
-            Directories = await ConstructorRepo.ReadDirectories(Form.FieldsDirectoriesLinks.Select(x => x.DirectoryId).Distinct());
+            await Task.Delay(1);
+            var res = await ConstructorRepo.ReadDirectories([.. Form.FieldsDirectoriesLinks.Select(x => x.DirectoryId).Distinct()]);
+            Directories = res.Response ?? throw new Exception();
             IsBusyProgress = false;
         }
 

@@ -5,6 +5,7 @@
 using BlazorLib;
 using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
 using SharedLib;
@@ -17,13 +18,16 @@ namespace BlazorWebLib.Components.Constructor.Shared.Document;
 public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+    [Inject]
     ILogger<TabOfDocumentMainViewComponent> LoggerRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -62,19 +66,15 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     [CascadingParameter, EditorRequired]
     public required bool InUse { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter]
-    public UserInfoModel? CurrentUser { get; set; }
 
+    UserInfoMainModel user = default!;
 
     /// <inheritdoc/>
     protected async Task DeleteJoinForm()
     {
-        if (CurrentUser is null)
-            throw new Exception("CurrentUser is null");
-
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.DeleteTabDocumentSchemeJoinForm(PageJoinForm.Id);
+        await Task.Delay(1);
+        ResponseBaseModel rest = await ConstructorRepo.DeleteTabDocumentSchemeJoinForm(new() { Payload = PageJoinForm.Id, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -129,11 +129,9 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected async Task DocumentPageJoinFormMove(VerticalDirectionsEnum direct)
     {
-        if (CurrentUser is null)
-            throw new Exception("CurrentUser is null");
-
         IsBusyProgress = true;
-        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabDocumentSchemeJoinForm(PageJoinForm.Id, direct);
+        await Task.Delay(1);
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabDocumentSchemeJoinForm(new() { Payload = new() { Id = PageJoinForm.Id, Direct = direct }, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -149,10 +147,6 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected async Task SaveJoinForm()
     {
-        if (CurrentUser is null)
-            throw new Exception("CurrentUser is null");
-
-        IsBusyProgress = true;
         FormToTabJoinConstructorModelDB req = new()
         {
             Description = PageJoinForm.Description,
@@ -164,7 +158,10 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
             ShowTitle = PageJoinForm.ShowTitle,
             SortIndex = PageJoinForm.SortIndex
         };
-        ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(req);
+
+        IsBusyProgress = true;
+        await Task.Delay(1);
+        ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new() { Payload = req, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -194,6 +191,9 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
         _join_name_origin = PageJoinForm.Name;
         _join_set_title_origin = PageJoinForm.ShowTitle == true;
         _is_table_origin = PageJoinForm.IsTable;

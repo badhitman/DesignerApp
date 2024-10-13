@@ -22,7 +22,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
 
     /// <inheritdoc/>
     [Inject]
-    protected IConstructorService ConstructorRepo { get; set; } = default!;
+    protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -70,7 +70,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
         get => Field.IsMultiSelect;
         private set
         {
-            Field.IsMultiSelect = value;            
+            Field.IsMultiSelect = value;
             StateHasChangedHandler(Field);
         }
     }
@@ -86,10 +86,11 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     protected override async Task OnInitializedAsync()
     {
         IsBusyProgress = true;
-        TResponseStrictModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(Form.ProjectId);
+        await Task.Delay(1);
+        TResponseModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(new() { ProjectId = Form.ProjectId });
         IsBusyProgress = false;
 
-        Entries = rest.Response;
+        Entries = rest.Response ?? throw new Exception();
         StateHasChanged();
     }
 }

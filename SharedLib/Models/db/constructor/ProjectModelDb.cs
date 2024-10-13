@@ -7,11 +7,16 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// Project (for constructor)
+/// Project (for context)
 /// </summary>
 [Index(nameof(OwnerUserId))]
-public class ProjectConstructorModelDB : EntryDescriptionSwitchableModel
+public class ProjectModelDb : EntryDescriptionSwitchableModel
 {
+    /// <summary>
+    /// Имя контекста. по умолчанию: null (null or empty or spice) - используется для конструктора
+    /// </summary>
+    public string? ContextName { get; set; }
+
     /// <summary>
     ///  Owner user (of Identity)
     /// </summary>
@@ -53,7 +58,7 @@ public class ProjectConstructorModelDB : EntryDescriptionSwitchableModel
     /// </summary>
     public bool CanEdit(UserInfoModel userInfoModel)
     {
-        return !IsDisabled || OwnerUserId.Equals(userInfoModel.UserId) || userInfoModel.Roles?.Any(x => x.Equals("admin", StringComparison.OrdinalIgnoreCase)) == true;
+        return !IsDisabled || OwnerUserId.Equals(userInfoModel.UserId) || userInfoModel.Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase)) == true;
     }
 
     /// <summary>

@@ -2,9 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Constructor.Pages;
@@ -15,7 +14,7 @@ namespace BlazorWebLib.Components.Constructor.Pages;
 public partial class DocumentClientViewPage : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SharedLib;
 
-namespace DbLayerLib;
+namespace DbcLib;
 
 /// <summary>
 /// LayerContext
@@ -14,17 +14,28 @@ public partial class ConstructorLayerContext : DbContext
     public ConstructorLayerContext(DbContextOptions options)
         : base(options)
     {
-//#if DEBUG
-//        Database.EnsureCreated();
-//#else
+        //#if DEBUG
+        //        Database.EnsureCreated();
+        //#else
         Database.Migrate();
-//#endif
+        //#endif
     }
 
     /// <summary>
+    /// Projects
+    /// </summary>
+    public DbSet<ManageManufactureModelDB> Manufactures { get; set; }
+
+    /// <summary>
+    /// Системные имена
+    /// </summary>
+    public DbSet<ManufactureSystemNameModelDB> SystemNamesManufactures { get; set; }
+
+    #region snapshots
+    /// <summary>
     /// Снапшоты, которые формируются при каждом удачном скачивании/генерации кода к проекту
     /// </summary>
-    public DbSet<ProjectSnapshotModelDB> SnapshotsProjects { get; set; }
+    public DbSet<ProjectSnapshotModelDB> ProjectsSnapshots { get; set; }
 
     /// <summary>
     /// Перечисления
@@ -65,27 +76,13 @@ public partial class ConstructorLayerContext : DbContext
     /// FieldsSnapshots
     /// </summary>
     public DbSet<BaseFieldModel> FieldsSnapshots { get; set; }
+    #endregion
 
-    /// <summary>
-    /// Внешние связи форм с другими проектами
-    /// </summary>
-    public DbSet<FormOuterLinkModelDB> FormsOuterJoins { get; set; }
-
-    /// <summary>
-    /// Внешние связи перечислений с другими проектами
-    /// </summary>
-    public DbSet<DirectoryOuterLinkModelDB> DirectoriesOuterJoins { get; set; }
-
-    /// <summary>
-    /// Внешние связи документов с другими проектами
-    /// </summary>
-    public DbSet<DocumentOuterLinkModelDB> DocumentsOuterJoins { get; set; }
-
-
+    #region projects
     /// <summary>
     /// Projects
     /// </summary>
-    public DbSet<ProjectConstructorModelDB> Projects { get; set; }
+    public DbSet<ProjectModelDb> Projects { get; set; }
 
     /// <summary>
     /// Members of projects
@@ -97,8 +94,9 @@ public partial class ConstructorLayerContext : DbContext
     /// </summary>
     /// <remarks>Какой проект для какого пользователя установлен в роли основного/используемого</remarks>
     public DbSet<ProjectUseConstructorModelDb> ProjectsUse { get; set; }
+    #endregion
 
-
+    #region directories
     /// <summary>
     /// Справочники/списки
     /// </summary>
@@ -108,8 +106,9 @@ public partial class ConstructorLayerContext : DbContext
     /// Элементы справочников/списков
     /// </summary>
     public DbSet<ElementOfDirectoryConstructorModelDB> ElementsOfDirectories { get; set; }
+    #endregion
 
-
+    #region forms
     /// <summary>
     /// Формы
     /// </summary>
@@ -124,8 +123,9 @@ public partial class ConstructorLayerContext : DbContext
     /// Связи форм со списками/справочниками
     /// </summary>
     public DbSet<FieldFormAkaDirectoryConstructorModelDB> LinksDirectoriesToForms { get; set; }
+    #endregion
 
-
+    #region schemes
     /// <summary>
     /// Схемы документов
     /// </summary>
@@ -140,8 +140,26 @@ public partial class ConstructorLayerContext : DbContext
     /// Связи форм с табами/вкладками документов
     /// </summary>
     public DbSet<FormToTabJoinConstructorModelDB> TabsJoinsForms { get; set; }
+    #endregion
 
+    #region outer-joins
+    /// <summary>
+    /// Внешние связи форм с другими проектами
+    /// </summary>
+    public DbSet<FormOuterLinkModelDB> FormsOuterJoins { get; set; }
 
+    /// <summary>
+    /// Внешние связи перечислений с другими проектами
+    /// </summary>
+    public DbSet<DirectoryOuterLinkModelDB> DirectoriesOuterJoins { get; set; }
+
+    /// <summary>
+    /// Внешние связи документов с другими проектами
+    /// </summary>
+    public DbSet<DocumentOuterLinkModelDB> DocumentsOuterJoins { get; set; }
+    #endregion
+
+    #region public sessions
     /// <summary>
     /// Сессии/ссылки для заполнения документов данными
     /// </summary>
@@ -151,4 +169,5 @@ public partial class ConstructorLayerContext : DbContext
     /// Значения/данные документов
     /// </summary>
     public DbSet<ValueDataForSessionOfDocumentModelDB> ValuesSessions { get; set; }
+    #endregion
 }

@@ -3,7 +3,7 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table" Loading="IsBusyProgress">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Статьи</MudText>
         <MudSpacer />
@@ -27,12 +27,16 @@
         <MudTd DataLabel="Tags">@context.Tags?.Count</MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <MudText>Данные отсутствуют</MudText>
     </NoRecordsContent>
     <LoadingContent>
-        <MudText>Loading...</MudText>
+        <MudText>Загрузка...</MudText>
     </LoadingContent>
     <PagerContent>
         <MudTablePager />
     </PagerContent>
 </MudTable>
+
+<div class="d-grid gap-2 mt-2">
+    <a class="btn btn-primary" href="/articles/edit-card/0" role="button">Создать новый материал</a>
+</div>

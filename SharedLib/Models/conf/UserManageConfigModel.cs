@@ -32,7 +32,7 @@ public class UserManageConfigModel
     public bool UserAuthorizationIsAllowed(string userEmail)
     {
         return MailAddress.TryCreate(userEmail, out _) &&
-            (DenyAuthorization?.IsDeny != true || UpdatesUsersRoles?.Any(x => x.EmailUser.Equals(userEmail) && x.SetRoles?.Any(y => y.Equals("admin", StringComparison.OrdinalIgnoreCase) || y.Equals("administrator", StringComparison.OrdinalIgnoreCase)) == true) == true);
+            (DenyAuthorization?.IsDeny != true || UpdatesUsersRoles?.Any(x => x.EmailUser.Equals(userEmail) && x.SetRoles?.Any(y => y.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase) || y.Equals("administrator", StringComparison.OrdinalIgnoreCase)) == true) == true);
     }
 
     /// <summary>
@@ -41,6 +41,6 @@ public class UserManageConfigModel
     public bool UserRegistrationIsAllowed(string userEmail)
     {
         return MailAddress.TryCreate(userEmail, out _) &&
-            (DenyRegistration?.IsDeny != true || UpdatesUsersRoles?.Any(x => x.EmailUser.Equals(userEmail) && x.SetRoles?.Any(y => y.Equals("admin", StringComparison.OrdinalIgnoreCase) || y.Equals("administrator", StringComparison.OrdinalIgnoreCase)) == true) == true);
+            (DenyRegistration?.IsDeny != true || UpdatesUsersRoles?.Any(x => x.EmailUser.Equals(userEmail) && x.SetRoles?.Any(y => y.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase) || y.Equals("administrator", StringComparison.OrdinalIgnoreCase)) == true) == true);
     }
 }

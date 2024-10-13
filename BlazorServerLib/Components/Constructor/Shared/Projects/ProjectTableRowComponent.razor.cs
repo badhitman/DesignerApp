@@ -22,7 +22,7 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -67,7 +67,7 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     protected async Task DeleteProject()
     {
         IsBusyProgress = true;
-        ResponseBaseModel res = await ConstructorRepo.SetMarkerDeleteProject(ProjectRow.Id, !ProjectRow.IsDisabled);
+        ResponseBaseModel res = await ConstructorRepo.SetMarkerDeleteProject(new() { ProjectId = ProjectRow.Id, Marker = !ProjectRow.IsDisabled });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await ParentProjectsList.ReloadListProjects();
@@ -78,7 +78,7 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     protected async Task SetMainProjectHandle()
     {
         IsBusyProgress = true;
-        ResponseBaseModel res = await ConstructorRepo.SetProjectAsMain(ProjectRow.Id, CurrentUser.UserId);
+        ResponseBaseModel res = await ConstructorRepo.SetProjectAsMain(new() { ProjectId = ProjectRow.Id, UserId = CurrentUser.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success())

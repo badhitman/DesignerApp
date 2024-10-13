@@ -15,7 +15,7 @@ public class EntryConstructedModel : EntryDescriptionModel
     /// <summary>
     /// Project
     /// </summary>
-    public ProjectConstructorModelDB? Project { get; set; }
+    public ProjectModelDb? Project { get; set; }
 
     /// <summary>
     /// Project

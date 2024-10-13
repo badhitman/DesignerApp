@@ -23,7 +23,7 @@ public class DirectoryOuterLinkModelDB
     public int FormId { get; set; }
 
     /// <inheritdoc/>
-    public ProjectConstructorModelDB? Project { get; set; }
+    public ProjectModelDb? Project { get; set; }
 
     /// <inheritdoc/>
     public int ProjectId { get; set; }

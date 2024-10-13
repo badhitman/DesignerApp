@@ -12,7 +12,7 @@ public class EntryConstructedSwitchableModel : EntryDescriptionSwitchableModel
     /// <summary>
     /// Project
     /// </summary>
-    public ProjectConstructorModelDB? Project { get; set; }
+    public ProjectModelDb? Project { get; set; }
 
     /// <summary>
     /// Project

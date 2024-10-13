@@ -26,7 +26,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     [Inject]
     IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
@@ -90,7 +90,9 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             ProjectId = ParentFormsPage.MainProject.Id
         };
         IsBusyProgress = true;
-        TPaginationResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.RequestSessionsDocuments(req);
+        await Task.Delay(1, token);
+        TResponseModel<TPaginationResponseModel<SessionOfDocumentDataModelDB>> res_sd = await ConstructorRepo.RequestSessionsDocuments(req);
+        TPaginationResponseModel<SessionOfDocumentDataModelDB> rest = res_sd.Response ?? throw new Exception();
         IsBusyProgress = false;
 
         if (rest.Response is null)
@@ -109,7 +111,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     protected async Task EditSession(SessionOfDocumentDataModelDB session)
     {
         IsBusyProgress = true;
-        TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocument(session.Id);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocument(new() { SessionId = session.Id, IncludeExtra = false });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -212,7 +214,9 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран основной/используемый проект");
 
         IsBusyProgress = true;
-        TPaginationResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.RequestDocumentsSchemes(new() { PageNum = 0, PageSize = 1000 }, ParentFormsPage.MainProject.Id);
+        await Task.Delay(1);
+        var ds_res = await ConstructorRepo.RequestDocumentsSchemes(new() { RequestPayload = new() { PageNum = 0, PageSize = 1000 }, ProjectId = ParentFormsPage.MainProject.Id });
+        TPaginationResponseModel<DocumentSchemeConstructorModelDB> rest = ds_res.Response ?? throw new Exception();
         IsBusyProgress = false;
 
         if (rest.Response is null)

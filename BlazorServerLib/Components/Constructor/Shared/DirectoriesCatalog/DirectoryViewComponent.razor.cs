@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 
@@ -20,7 +21,10 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -33,6 +37,8 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required UserInfoModel CurrentUser { get; set; }
 
+
+    UserInfoMainModel user = default!;
 
     /// <inheritdoc/>
     protected ElementsOfDirectoryListViewComponent elementsListOfDirectoryView_ref = default!;
@@ -55,7 +61,8 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         }
 
         IsBusyProgress = true;
-        TResponseStrictModel<int> rest = await ConstructorRepo.CreateElementForDirectory(createNewElementForDict);
+        await Task.Delay(1);
+        TResponseModel<int> rest = await ConstructorRepo.CreateElementForDirectory(new() { Payload = createNewElementForDict, SenderActionUserId = user.UserId }); // (new() { Payload = createNewElementForDict, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
         if (directoryNav_ref is not null)
@@ -80,5 +87,14 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         createNewElementForDict = OwnedNameModel.BuildEmpty(selectedDirectoryId);
         await elementsListOfDirectoryView_ref.ReloadElements(selectedDirectoryId, true);
         StateHasChanged();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
+        await base.OnInitializedAsync();
     }
 }

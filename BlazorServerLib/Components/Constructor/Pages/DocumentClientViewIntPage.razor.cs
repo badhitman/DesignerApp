@@ -16,7 +16,7 @@ public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseModel
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -36,7 +36,7 @@ public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseModel
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
-        TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocument(DocumentId);
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocument(new() { SessionId = DocumentId, IncludeExtra = false });
         IsBusyProgress = false;
 
         if (rest.Response is null)

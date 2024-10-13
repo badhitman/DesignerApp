@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Document;
 
@@ -16,10 +17,13 @@ namespace BlazorWebLib.Components.Constructor.Shared.Document;
 public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
+    [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -80,10 +84,8 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter]
-    public UserInfoModel? CurrentUser { get; set; }
 
+    UserInfoMainModel user = default!;
 
     int _selectedFormForAdding;
     /// <summary>
@@ -149,11 +151,9 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     protected async Task MoveRow(VerticalDirectionsEnum direct)
     {
-        if (CurrentUser is null)
-            throw new Exception("CurrentUser is null");
-
         IsBusyProgress = true;
-        TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabOfDocumentScheme(DocumentPage.Id, direct);
+        await Task.Delay(1);
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabOfDocumentScheme(new() { Payload = new() { Id = DocumentPage.Id, Direct = direct }, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -177,16 +177,14 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     protected async Task Delete()
     {
-        if (CurrentUser is null)
-            throw new Exception("CurrentUser is null");
-
         if (!IsInitDelete)
         {
             IsInitDelete = true;
             return;
         }
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.DeleteTabOfDocumentScheme(DocumentPage.Id);
+        await Task.Delay(1);
+        ResponseBaseModel rest = await ConstructorRepo.DeleteTabOfDocumentScheme(new() { Payload = DocumentPage.Id, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -217,15 +215,17 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     protected async Task AddFormToPage()
     {
-        if (CurrentUser is null)
-            throw new Exception("CurrentUser is null");
-
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new FormToTabJoinConstructorModelDB()
+        await Task.Delay(1);
+        ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new()
         {
-            FormId = SelectedFormForAdding,
-            TabId = DocumentPage.Id,
-            Name = addingFormToTabPageName,
+            Payload = new FormToTabJoinConstructorModelDB()
+            {
+                FormId = SelectedFormForAdding,
+                TabId = DocumentPage.Id,
+                Name = addingFormToTabPageName,
+            },
+            SenderActionUserId = user.UserId
         });
         IsBusyProgress = false;
 
@@ -246,11 +246,9 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// </summary>
     protected async Task SavePage()
     {
-        if (CurrentUser is null)
-            throw new Exception("CurrentUser is null");
-
         IsBusyProgress = true;
-        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.CreateOrUpdateTabOfDocumentScheme(new EntryDescriptionOwnedModel() { Id = DocumentPage.Id, OwnerId = DocumentPage.OwnerId, Name = DocumentPage.Name, Description = DocumentPage.Description });
+        await Task.Delay(1);
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.CreateOrUpdateTabOfDocumentScheme(new() { Payload = new EntryDescriptionOwnedModel() { Id = DocumentPage.Id, OwnerId = DocumentPage.OwnerId, Name = DocumentPage.Name, Description = DocumentPage.Description }, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -306,6 +304,9 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
         await ReloadPage();
         NameOrigin = DocumentPage.Name;
         DescriptionOrigin = DocumentPage.Description;

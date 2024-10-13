@@ -15,6 +15,7 @@ namespace Transmission.Receives.commerce;
 /// OrderUpdateReceive
 /// </summary>
 public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory,
+    WebConfigModel _webConf,
     ILogger<OrderUpdateReceive> loggerRepo,
     ISerializeStorageRemoteTransmissionService StorageTransmissionRepo,
     IWebRemoteTransmissionService webTransmissionRepo,
@@ -83,7 +84,13 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 transaction.Commit();
                 CultureInfo cultureInfo = new("ru-RU");
 
-                TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
+                {
+                    TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                    _webConf.BaseUri = wc.Response?.ClearBaseUri;
+                }
+
+
                 string subject_email = "Создан новый заказ";
                 TResponseModel<string?> CommerceNewOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification);
                 if (CommerceNewOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
@@ -96,15 +103,15 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                     return raw.Replace(GlobalStaticConstants.OrderDocumentName, req.Name)
                     .Replace(GlobalStaticConstants.OrderDocumentDate, $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}")
                     .Replace(GlobalStaticConstants.OrderStatusInfo, HelpdeskIssueStepsEnum.Created.DescriptionInfo())
-                    .Replace(GlobalStaticConstants.OrderLinkAddress, $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{req.HelpdeskId}'>{_about_order}</a>")
-                    .Replace(GlobalStaticConstants.HostAddress, $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
+                    .Replace(GlobalStaticConstants.OrderLinkAddress, $"<a href='{_webConf.BaseUri}/issue-card/{req.HelpdeskId}'>{_about_order}</a>")
+                    .Replace(GlobalStaticConstants.HostAddress, $"<a href='{_webConf.BaseUri}'>{_webConf.BaseUri}</a>");
                 }
 
                 subject_email = ReplaceTags(subject_email);
 
                 res.AddSuccess(subject_email);
                 msg = $"<p>Заказ <b>'{issue_new.Payload.Name}' от [{_dt}]</b> успешно создан.</p>" +
-                        $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
+                        $"<p>/<a href='{_webConf.ClearBaseUri}'>{_webConf.ClearBaseUri}</a>/</p>";
                 string msg_for_tg = msg.Replace("<p>", "").Replace("</p>", "");
 
                 TResponseModel<string?> CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification);

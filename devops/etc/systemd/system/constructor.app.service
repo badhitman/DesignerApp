@@ -1,0 +1,16 @@
+[Unit]
+Description=web.app.service
+
+[Service]
+WorkingDirectory=/srv/services/CommerceService
+ExecStart=/usr/bin/dotnet /srv/services/CommerceService/CommerceService.dll --urls "http://*:5005"
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-constructor-app
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Development
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

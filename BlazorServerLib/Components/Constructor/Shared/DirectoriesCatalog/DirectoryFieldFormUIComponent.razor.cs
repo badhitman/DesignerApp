@@ -16,7 +16,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
 {
     /// <inheritdoc/>
     [Inject]
-    IConstructorService ConstructorRepo { get; set; } = default!;
+    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -69,11 +69,13 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
-        TResponseStrictModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(Form.ProjectId);
+        IsBusyProgress = true;        
+        TResponseModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(new() { ProjectId = Form.ProjectId });
         IsBusyProgress = false;
         StateHasChangedHandler(FieldObject, GetType());
 
+        if (rest.Response is null)
+            throw new Exception();
         Entries = rest.Response;
     }
 }
