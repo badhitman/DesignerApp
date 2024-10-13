@@ -2,11 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
+
 namespace SharedLib;
 
 /// <summary>
 /// ArticleTagModelDB
 /// </summary>
+[Index(nameof(NormalizedNameUpper))]
 public class ArticleTagModelDB : EntryModel
 {
     /// <summary>
@@ -17,4 +20,9 @@ public class ArticleTagModelDB : EntryModel
     /// Owner Article (FK)
     /// </summary>
     public int OwnerArticleId { get; set; }
+
+    /// <summary>
+    /// NormalizedNameUpper
+    /// </summary>
+    public string NormalizedNameUpper { get; set; } = default!;
 }

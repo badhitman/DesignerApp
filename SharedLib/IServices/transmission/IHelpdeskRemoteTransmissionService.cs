@@ -14,6 +14,18 @@ public interface IHelpdeskRemoteTransmissionService
     /// </summary>
     public Task<TResponseModel<bool?>> TelegramMessageIncoming(TelegramIncomingMessageModel req);
 
+    #region articles
+    /// <summary>
+    /// Получить статьи 
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<ArticleModelDB>>> ArticlesSelect(TPaginationRequestModel<SelectArticlesRequestModel> req);
+
+    /// <summary>
+    /// Создать (обновить) статью
+    /// </summary>
+    public Task<TResponseModel<int?>> ArticleCreateOrUpdate(ArticleModelDB article);
+    #endregion
+
     #region rubric
     /// <summary>
     /// Получить темы обращений

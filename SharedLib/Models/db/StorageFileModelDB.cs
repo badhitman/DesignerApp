@@ -8,8 +8,14 @@ namespace SharedLib;
 
 /// <inheritdoc/>
 [Index(nameof(ReferrerMain))]
+[Index(nameof(NormalizedNameUpper))]
 public class StorageFileModelDB : StorageFileMiddleModel
 {
+    /// <summary>
+    /// ToUpper
+    /// </summary>
+    public string? NormalizedNameUpper { get; set; }
+
     /// <summary>
     /// FileLength
     /// </summary>

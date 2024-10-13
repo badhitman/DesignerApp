@@ -10,7 +10,7 @@ namespace SharedLib;
 public class SelectArticlesRequestModel : SelectRequestBaseModel
 {
     /// <summary>
-    /// Загрузить данные по тэгам
+    /// Загрузить данные по тэгам и рубрикам
     /// </summary>
-    public bool IncludeTags { get; set; }
+    public bool IncludeExternal { get; set; }
 }

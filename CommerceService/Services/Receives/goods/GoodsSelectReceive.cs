@@ -34,7 +34,11 @@ public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFac
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
-
+                
+         IOrderedQueryable<GoodsModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+           ? q.OrderBy(x => x.CreatedAtUTC)
+           : q.OrderByDescending(x => x.CreatedAtUTC);
+         
         return new()
         {
             Response = new()
@@ -44,7 +48,7 @@ public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = await q.CountAsync(),
-                Response = [.. await q.OrderBy(x => x.LastAtUpdatedUTC).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
+                Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
             }
         }; ;
     }

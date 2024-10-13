@@ -26,15 +26,32 @@ public class ArticleCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> hel
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(article)}");
         TResponseModel<int?> res = new();
         article.Name = article.Name.Trim();
-        if (string.IsNullOrEmpty(article.Name))
+        if (string.IsNullOrWhiteSpace(article.Name))
         {
-            res.AddError("Объект должен иметь имя");
+            res.AddError("Статья должна иметь название");
             return res;
         }
         article.NormalizedNameUpper = article.Name.ToUpper();
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        res.Response = article.Id;
+        if (article.Id < 1)
+        {
+            article.Id = 0;
+            article.CreatedAtUTC = DateTime.UtcNow;
+
+            await context.AddAsync(article);
+            await context.SaveChangesAsync();
+            res.Response = article.Id;
+            return res;
+        }
+        DateTime dtu = DateTime.UtcNow;
+        res.Response = await context.Articles
+            .Where(a => a.Id == article.Id)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.UpdatedAtUTC, dtu)
+            .SetProperty(p => p.Name, article.Name)
+            .SetProperty(p => p.Description, article.Description)
+            .SetProperty(p => p.NormalizedNameUpper, article.NormalizedNameUpper));
 
         return res;
     }

@@ -26,7 +26,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(rubric)}");
         TResponseModel<int?> res = new();
         rubric.Name = rubric.Name.Trim();
-        if (string.IsNullOrEmpty(rubric.Name))
+        if (string.IsNullOrWhiteSpace(rubric.Name))
         {
             res.AddError("Объект должен иметь имя");
             return res;

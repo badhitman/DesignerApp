@@ -13,6 +13,16 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
     public async Task<TResponseModel<bool?>> TelegramMessageIncoming(TelegramIncomingMessageModel req)
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.IncomingTelegramMessageHelpdeskReceive, req);
 
+    #region articles
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<ArticleModelDB>>> ArticlesSelect(TPaginationRequestModel<SelectArticlesRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<ArticleModelDB>>(GlobalStaticConstants.TransmissionQueues.ArticlesSelectHelpdeskReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> ArticleCreateOrUpdate(ArticleModelDB article)
+        => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.ArticleUpdateHelpdeskReceive, article);
+    #endregion
+
     #region rubric
     /// <inheritdoc/>
     public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricRead(int rubricId)

@@ -36,18 +36,25 @@ public class ArticlesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
         {
             req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
+            //q = q.Where(x => x.NormalizedNameUpper != null && x.NormalizedNameUpper.Contains(req.Payload.SearchQuery));
 
-            //q = from issue_element in q
-            //    join rubric_element in context.RubricsForIssues on issue_element.RubricIssueId equals rubric_element.Id
-            //    into grp_rubrics
-            //    from c in grp_rubrics.DefaultIfEmpty()
-            //    where issue_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || c.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)
-            //    select issue_element;
+            q = from article_element in q 
+                join rj_element in context.RubricsArticlesJoins on article_element.Id equals rj_element.ArticleId into outer_rj
+                from rj_item in outer_rj.DefaultIfEmpty()
+                join rubric_element in context.RubricsForIssues on rj_item.RubricId equals rubric_element.Id into outer_rubric
+                from rubric_item in outer_rubric.DefaultIfEmpty()
+                where article_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || rubric_item.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)
+                select article_element;
+
         }
 
-        var inc = q
-            .Skip(req.PageNum * req.PageSize)
-            .Take(req.PageSize)
+        var oq = req.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.UpdatedAtUTC).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
+          : q.OrderByDescending(x => x.UpdatedAtUTC).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+
+
+        var inc = oq
+            .Include(x => x.RubricsJoins)
             .Include(x => x.Tags);
 
         return new()
@@ -59,7 +66,7 @@ public class ArticlesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = await q.CountAsync(),
-                Response = [.. req.Payload.IncludeTags ? await inc.Include(x => x.Tags).ToListAsync() : await inc.ToListAsync()]
+                Response = [.. req.Payload.IncludeExternal ? await inc.ToListAsync() : await oq.ToListAsync()]
             }
         };
     }

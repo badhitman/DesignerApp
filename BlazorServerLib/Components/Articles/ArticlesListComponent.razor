@@ -1,7 +1,37 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using MudBlazor
 
-<h3>ArticlesListComponent</h3>
+@inherits BlazorBusyComponentBaseModel
 
-@code {
-
-}
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Статьи</MudText>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Поиск по названию, тегу или рубрике" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="Updated" T="ArticleModelDB">Updated</MudTableSortLabel></MudTh>
+        <MudTh>Created</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Author</MudTh>
+        <MudTh>Rubrics</MudTh>
+        <MudTh>Tags</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Updated">@context.UpdatedAtUTC</MudTd>
+        <MudTd DataLabel="Created">@context.CreatedAtUTC</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Author">@context.AuthorIdentityId</MudTd>
+        <MudTd DataLabel="Rubrics">@context.RubricsJoins?.Count</MudTd>
+        <MudTd DataLabel="Tags">@context.Tags?.Count</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
