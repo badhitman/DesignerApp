@@ -36,22 +36,21 @@ public class ArticlesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
         {
             req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
-            //q = q.Where(x => x.NormalizedNameUpper != null && x.NormalizedNameUpper.Contains(req.Payload.SearchQuery));
 
-            q = from article_element in q 
+            q = from article_element in q
                 join rj_element in context.RubricsArticlesJoins on article_element.Id equals rj_element.ArticleId into outer_rj
                 from rj_item in outer_rj.DefaultIfEmpty()
                 join rubric_element in context.RubricsForIssues on rj_item.RubricId equals rubric_element.Id into outer_rubric
                 from rubric_item in outer_rubric.DefaultIfEmpty()
-                where article_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || rubric_item.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)
+                join tag_element in context.ArticlesTags on article_element.Id equals tag_element.Id into outer_tag
+                from tag_item in outer_tag.DefaultIfEmpty()
+                where article_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || tag_item.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || rubric_item.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)
                 select article_element;
-
         }
 
         var oq = req.SortingDirection == VerticalDirectionsEnum.Up
           ? q.OrderBy(x => x.UpdatedAtUTC).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
           : q.OrderByDescending(x => x.UpdatedAtUTC).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
-
 
         var inc = oq
             .Include(x => x.RubricsJoins)

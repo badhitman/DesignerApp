@@ -41,6 +41,7 @@ public class SaveFileReceive(IMongoDatabase mongoFs, IDbContextFactory<StorageCo
             ApplicationName = req.ApplicationName,
             AuthorIdentityId = req.AuthorUserIdentity,
             FileName = _file_name,
+            NormalizedFileNameUpper = _file_name.ToUpper(),
             ContentType = req.ContentType,
             Name = req.Name,
             PointId = _uf.ToString(),
