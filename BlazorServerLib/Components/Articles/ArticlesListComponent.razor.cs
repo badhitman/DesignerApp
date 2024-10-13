@@ -24,6 +24,9 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
     [Inject]
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
+    [Inject]
+    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+
 
     UserInfoMainModel user = default!;
     private IEnumerable<ArticleModelDB> pagedData = [];
@@ -31,12 +34,13 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
 
     private int totalItems;
     private string? searchString = null;
+    readonly List<UserInfoModel> usersDump = [];
 
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
     private async Task<TableData<ArticleModelDB>> ServerReload(TableState state, CancellationToken token)
-    {//public Task<TResponseModel<List<ArticleModelDB>>> ArticlesSelect(SelectArticlesRequestModel req);
+    {
 
         IsBusyProgress = true;
         await Task.Delay(1, token);
@@ -58,15 +62,29 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
             .ArticlesSelect(req);
 
         IsBusyProgress = false;
-        //SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
-        //// Forward the provided token to methods which support it
-        //List<ArticleModelDB> data = rest.Response!.Response!;
-        //await UpdateUsersData(rest.Response.Response!.SelectMany(x => new string?[] { x.AuthorIdentityUserId, x.ExecutorIdentityUserId }).ToArray());
-        //// Return the data
-        //return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
+        // Forward the provided token to methods which support it
+        List<ArticleModelDB> data = rest.Response!.Response!;
+        await UpdateUsersData(rest.Response.Response!.SelectMany(x => new string?[] { x.AuthorIdentityId }).ToArray());
+        // Return the data
+        return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
+    }
 
-        return new TableData<ArticleModelDB>() { TotalItems = totalItems, Items = pagedData };
+    async Task UpdateUsersData(string?[] users_ids)
+    {
+        string[] _ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x) && !usersDump.Any(y => y.UserId == x))];
+        if (_ids.Length == 0)
+            return;
+
+        IsBusyProgress = true;
+        await Task.Delay(1);
+        TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentity(_ids);
+        IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (res.Response is null)
+            return;
+        usersDump.AddRange(res.Response);
     }
 
     private void OnSearch(string text)

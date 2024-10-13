@@ -1,4 +1,5 @@
 ﻿@using MudBlazor
+@using System.Globalization
 
 @inherits BlazorBusyComponentBaseModel
 
@@ -18,10 +19,10 @@
         <MudTh>Tags</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Updated">@context.UpdatedAtUTC</MudTd>
-        <MudTd DataLabel="Created">@context.CreatedAtUTC</MudTd>
+        <MudTd DataLabel="Updated">@context.UpdatedAtUTC.GetMsk().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))</MudTd>
+        <MudTd DataLabel="Created">@context.CreatedAtUTC.GetMsk().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))</MudTd>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Author">@context.AuthorIdentityId</MudTd>
+        <MudTd DataLabel="Author">@(usersDump.FirstOrDefault(x => x.UserId == context.AuthorIdentityId)?.UserName ?? context.AuthorIdentityId)</MudTd>
         <MudTd DataLabel="Rubrics">@context.RubricsJoins?.Count</MudTd>
         <MudTd DataLabel="Tags">@context.Tags?.Count</MudTd>
     </RowTemplate>
