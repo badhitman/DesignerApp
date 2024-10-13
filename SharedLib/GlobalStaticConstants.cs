@@ -544,6 +544,9 @@ public static partial class GlobalStaticConstants
         public readonly static string RubricForIssuesUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.RUBRIC_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string ArticleUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ARTICLE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string RubricsForIssuesListHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRIC_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.LIST_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -657,6 +660,11 @@ public static partial class GlobalStaticConstants
         /// Articles
         /// </summary>
         public const string ARTICLES_CONTROLLER_NAME = "articles";
+
+        /// <summary>
+        /// Article
+        /// </summary>
+        public const string ARTICLE_CONTROLLER_NAME = "article";
 
         /// <summary>
         /// Goods

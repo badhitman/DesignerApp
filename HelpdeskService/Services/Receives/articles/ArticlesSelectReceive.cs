@@ -35,7 +35,7 @@ public class ArticlesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
 
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
         {
-            //req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
+            req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
 
             //q = from issue_element in q
             //    join rubric_element in context.RubricsForIssues on issue_element.RubricIssueId equals rubric_element.Id
@@ -49,7 +49,6 @@ public class ArticlesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDb
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize)
             .Include(x => x.Tags);
-
 
         return new()
         {

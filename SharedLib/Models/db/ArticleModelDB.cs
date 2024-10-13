@@ -16,6 +16,21 @@ public class ArticleModelDB : EntryDescriptionModel
     public int ProjectId { get; set; }
 
     /// <summary>
+    /// Сортировка
+    /// </summary>
+    public uint SortIndex { get; set; }
+
+    /// <summary>
+    /// ToUpper
+    /// </summary>
+    public string? NormalizedNameUpper { get; set; }
+
+    /// <summary>
+    /// IsDisabled
+    /// </summary>
+    public bool IsDisabled { get; set; }
+
+    /// <summary>
     /// Рубрики
     /// </summary>
     public List<RubricArticleJoinModelDB>? RubricsJoins { get; set; }
