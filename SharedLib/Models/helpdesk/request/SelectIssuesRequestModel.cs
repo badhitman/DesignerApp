@@ -2,31 +2,13 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using System.ComponentModel.DataAnnotations;
-
 namespace SharedLib;
 
 /// <summary>
-/// GetIssuesForUsersRequestModel
+/// SelectIssuesRequestModel
 /// </summary>
-public class GetIssuesForUserRequestModel
+public class SelectIssuesRequestModel : SelectRequestBaseModel
 {
-    /// <summary>
-    /// IdentityUserId
-    /// </summary>
-    [Required]
-    public required string[] IdentityUsersIds { get; set; }
-
-    /// <summary>
-    /// ProjectId
-    /// </summary>
-    public int ProjectId { get; set; }
-
-    /// <summary>
-    /// Строка поиска
-    /// </summary>
-    public string? SearchQuery { get; set; }
-
     /// <summary>
     /// Автор, Исполнитель, Подписчик или Main (= Исполнитель||Подписчик)
     /// </summary>

@@ -15,6 +15,11 @@ public class RubricIssueHelpdeskModelDB : RubricIssueHelpdeskMiddleModel
     public List<IssueHelpdeskModelDB>? Issues { get; set; }
 
     /// <summary>
+    /// ArticlesJoins
+    /// </summary>
+    public List<RubricArticleJoinModelDB>? ArticlesJoins { get; set; }
+
+    /// <summary>
     /// Владелец (вышестоящая рубрика)
     /// </summary>
     public RubricIssueHelpdeskModelDB? ParentRubric { get; set; }

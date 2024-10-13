@@ -10,8 +10,11 @@ namespace SharedLib;
 /// StorageArticleModelDB
 /// </summary>
 [Index(nameof(CreatedAtUTC)), Index(nameof(UpdatedAtUTC)), Index(nameof(AuthorIdentityId))]
-public class StorageArticleModelDB : EntryDescriptionModel
+public class ArticleModelDB : EntryDescriptionModel
 {
+    /// <inheritdoc/>
+    public int ProjectId { get; set; }
+
     /// <summary>
     /// Рубрики
     /// </summary>

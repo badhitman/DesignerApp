@@ -10,16 +10,16 @@ using DbcLib;
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// IssuesForUserSelectReceive
+/// IssuesSelectReceive
 /// </summary>
-public class IssuesForUserSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<TPaginationRequestModel<GetIssuesForUserRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>
+public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+    : IResponseReceive<TPaginationRequestModel<SelectIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ResponseHandleAction(TPaginationRequestModel<GetIssuesForUserRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ResponseHandleAction(TPaginationRequestModel<SelectIssuesRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 

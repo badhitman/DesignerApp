@@ -12,7 +12,7 @@ public class ArticleTagModelDB : EntryModel
     /// <summary>
     /// Owner Article
     /// </summary>
-    public StorageArticleModelDB? OwnerArticle { get; set; }
+    public ArticleModelDB? OwnerArticle { get; set; }
     /// <summary>
     /// Owner Article (FK)
     /// </summary>

@@ -110,7 +110,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     {
         IsBusyProgress = true;
         await Task.Delay(1, token);
-        TPaginationRequestModel<GetIssuesForUserRequestModel> req = new()
+        TPaginationRequestModel<SelectIssuesRequestModel> req = new()
         {
             Payload = new()
             {

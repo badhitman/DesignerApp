@@ -25,7 +25,6 @@ public partial class HelpdeskLayerContext : DbContext
         //#endif
     }
 
-
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
@@ -98,17 +97,12 @@ public partial class HelpdeskLayerContext : DbContext
     /// <summary>
     /// Articles
     /// </summary>
-    public DbSet<StorageArticleModelDB> Articles { get; set; }
+    public DbSet<ArticleModelDB> Articles { get; set; }
 
     /// <summary>
     /// Articles Tags
     /// </summary>
     public DbSet<ArticleTagModelDB> ArticlesTags { get; set; }
-
-    /// <summary>
-    /// Рубрики для статей
-    /// </summary>
-    public DbSet<RubricArticleModelDB> RubricsForArticles { get; set; }
 
     /// <summary>
     /// RubricsArticles
