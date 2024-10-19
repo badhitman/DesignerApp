@@ -1,6 +1,11 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-@if (!ModesForHideSelector.Contains(DirectoryNavState))
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+
+@if (!IsBusyProgress && !ModesForHideSelector.Contains(DirectoryNavState))
 {
     <div class="input-group me-4">
         <span class="input-group-text">Справочник</span>

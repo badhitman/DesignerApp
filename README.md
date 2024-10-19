@@ -107,34 +107,34 @@ note for DbPostgreLib "Если используется другая СУБД, 
 Пример того как может быть настроено в VS:
 ![пример состава и порядка запуска проектов](./img/csproj-set-demo.png)
 
-#### TelegramBot
-[Telegram.Bot.Polling](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling) - сохраняет все входящие сообщения и позволяет в последствии работать с чатами HelpDesk или другим сервисам решения.
+#### [Telegram.Bot.Polling](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling) 
+- сохраняет все входящие сообщения и позволяет в последствии работать с чатами HelpDesk или другим сервисам решения.
 - В оригинальном исполнении `Worker Service`[^5].
 - Ответы на входящие Telegram сообщения обрабатывает реализация интерфейса `ITelegramDialogService`[^7]. Пользователям можно индивидуально устанавливать имя автоответчика[^2]. Это касается как простых текстовых `Message`, так и `CallbackQuery`.
 - Через RabbitMQ служба получает команды от внешних систем, выполняет их, а результат возвращает ответом отправителю (*например команда*: отправка сообщения Telegram клиенту от имени бота)[^1].
 - Для обеспечения работы HelpDesk предусмотрен [командный режим работы бота](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService#%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%BD%D1%8B%D0%B9-%D1%80%D0%B5%D0%B6%D0%B8%D0%BC-telegrambot). В этом режиме простые текстовые сообщения в бота не обрабатываются автоответчиком (равно как и отправка файлов, документов и т.п.). Сообщения сохраняются, но ответ не формируется если это не команда или **CallbackQuery**. Команды в TelegramBot начинаются с косой черты (/). Таким образом в командном режиме бот будет пытаться выполнить/бработать входящее сообщение только если текст сообщения является командой: начинается с косой черты (/) либо в случае если это **CallbackQuery**, а в остальных случаях клиент будет в свободной форме вести чат с ботом, а операторы HelpDesk должны будут ему отвечать от имени бота через WEB интерфейс.
 
-#### WEB: BlazorWebApp
-[BlankBlazorApp](https://github.com/badhitman/DesignerApp/tree/main/BlankBlazorApp/BlankBlazorApp) - Blazor вэб сервер.
+#### [BlankBlazorApp](https://github.com/badhitman/DesignerApp/tree/main/BlankBlazorApp/BlankBlazorApp)
+- Blazor вэб сервер.
 - Рендеринг: `InteractiveServerRenderMode(prerender: false)`
 - Авторизация типовая `Microsoft.AspNetCore.Identity`.
 - В Frontend добавлен базовый функционал для работы с Пользователями, Ролями, Claims и Telegram[^4]. 
 - Служба равно как и другие службы использует RabbitMQ для обслуживания входящих команд, на которые она зарегистрировала свои обработчики[^1]. Кроме того, Web служба обрабатывает запросы для Identity. У Identity свой автономный контекст БД.
 
-#### Helpdesk
-[HelpdeskService](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) - система документоооборота со своим собственным контекстом: `HelpdeskContext`.
+#### [HelpdeskService](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) 
+- система документоооборота со своим собственным контекстом: `HelpdeskContext`.
 
-#### StorageService
-[StorageService](https://github.com/badhitman/DesignerApp/tree/main/StorageService) - общее пространство хранения параметров со своим контекстом: `StorageContext`. Позволяет разным службам обращаться к параметрам друг друга. Например в Web интерфейсе HelpDesk можно изменить режим работы TelegramBot (бот читает этот параметр при каждом входящем сообщении).
+#### [StorageService](https://github.com/badhitman/DesignerApp/tree/main/StorageService)
+- общее пространство хранения параметров со своим контекстом: `StorageContext`. Позволяет разным службам обращаться к параметрам друг друга. Например в Web интерфейсе HelpDesk можно изменить режим работы TelegramBot (бот читает этот параметр при каждом входящем сообщении).
 
-#### Коммерция
-[CommerceService](https://github.com/badhitman/DesignerApp/tree/main/CommerceService) - подсистема формирования заказов.
+#### [CommerceService](https://github.com/badhitman/DesignerApp/tree/main/CommerceService)
+- подсистема формирования заказов.
 
-#### API
-[ApiRestService](https://github.com/badhitman/DesignerApp/tree/main/ApiRestService) - внешний доступ к системе.
+#### [ApiRestService](https://github.com/badhitman/DesignerApp/tree/main/ApiRestService)
+- внешний доступ к системе.
 
-#### Конструктор
-[ConstructorService](https://github.com/badhitman/DesignerApp/tree/main/ConstructorService) - решение по создания форм и документов.
+#### [ConstructorService](https://github.com/badhitman/DesignerApp/tree/main/ConstructorService)
+- решение по создания форм и документов.
 
 > все службы должны быть настроены, запущены вместе и соединены общим RabbitMQ. В противном случае в MQ очередях будут копиться запросы без ответов и функционал местами будет недоступен если ответственная служба не будет обрабатывать запросы.
 

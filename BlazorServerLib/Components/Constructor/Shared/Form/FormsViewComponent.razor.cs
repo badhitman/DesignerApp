@@ -79,7 +79,9 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
-        => await RestJson();
+    {
+        await RestJson();
+    }
 
 
     TableState? _table_state;
