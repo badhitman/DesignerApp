@@ -121,10 +121,14 @@ note for DbPostgreLib "Если используется другая СУБД, 
 - Служба равно как и другие службы использует RabbitMQ для обслуживания входящих команд, на которые она зарегистрировала свои обработчики[^1]. Кроме того, Web служба обрабатывает запросы для Identity. У Identity свой автономный контекст БД.
 
 #### [HelpdeskService](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) 
-- система документоооборота со своим собственным контекстом: `HelpdeskContext`.
+- система документооборота со своим собственным контекстом: `HelpdeskContext`.
+- Смена статуса документу. Исполнитель. SLA. Базовый набор работы с документами.
+- Готовый инструмент обработки обращений в формате HelpDesk\ServiceDesk.
+- используется сервисом `CommerceService` для 'ведения заказа'.
 
 #### [StorageService](https://github.com/badhitman/DesignerApp/tree/main/StorageService)
 - общее пространство хранения параметров со своим контекстом: `StorageContext`. Позволяет разным службам обращаться к параметрам друг друга. Например в Web интерфейсе HelpDesk можно изменить режим работы TelegramBot (бот читает этот параметр при каждом входящем сообщении).
+- обслуживает функционал хранения файлов: MongoDB.Driver.GridFS
 
 #### [CommerceService](https://github.com/badhitman/DesignerApp/tree/main/CommerceService)
 - подсистема формирования заказов.
