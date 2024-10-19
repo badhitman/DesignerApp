@@ -110,7 +110,6 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
         {
             { x => x.DocumentScheme, document_scheme },
             { x => x.ParentFormsPage, ParentFormsPage },
-            { x => x.CurrentUser, CurrentUser },
         };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };

@@ -115,10 +115,10 @@ public static partial class GlobalTools
     /// <summary>
     /// Валидация модели объекта
     /// </summary>
-    public static (bool IsValid, List<ValidationResult> ValidationResults) ValidateObject(object object_for_validate)
+    public static ValidateReportModel ValidateObject(object object_for_validate)
     {
         List<ValidationResult> validationResults = [];
-        return (IsValid: Validator.TryValidateObject(object_for_validate, new ValidationContext(object_for_validate), validationResults, true), ValidationResults: validationResults);
+        return new ValidateReportModel(Validator.TryValidateObject(object_for_validate, new ValidationContext(object_for_validate), validationResults, true), validationResults);
     }
 
     /// <summary>
@@ -392,4 +392,20 @@ public static partial class GlobalTools
 
     [GeneratedRegex("(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z0-9])", RegexOptions.Compiled)]
     private static partial Regex MyPascalToKebabCaseRegex();
+}
+
+/// <summary>
+/// ValidateReportModel
+/// </summary>
+public record struct ValidateReportModel(bool IsValid, List<ValidationResult> ValidationResults)
+{
+    /// <inheritdoc/>
+    public static implicit operator (bool IsValid, List<ValidationResult> ValidationResults)(ValidateReportModel value)
+    {
+        return (value.IsValid, value.ValidationResults);
+    }
+
+    /// <inheritdoc/>
+    public static implicit operator ValidateReportModel((bool IsValid, List<ValidationResult> ValidationResults) value) 
+        => new(value.IsValid, value.ValidationResults);
 }

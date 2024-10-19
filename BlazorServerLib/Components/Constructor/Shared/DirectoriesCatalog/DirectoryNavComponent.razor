@@ -1,4 +1,5 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using System.ComponentModel.DataAnnotations
+@inherits BlazorBusyComponentBaseModel
 
 @if (IsBusyProgress)
 {
@@ -36,15 +37,25 @@
 
 @if (DirectoryNavState == DirectoryNavStatesEnum.Create)
 {
+    ValidateReportModel ValidateReport = GlobalTools.ValidateObject(directoryObject);
     <div class="vstack gap-3">
         <div class="input-group">
             <span class="input-group-text">новый справочник/список:</span>
             <input @bind-value="directoryObject.Name" @bind-value:event="oninput" type="text" class="form-control" size="100" placeholder="Имя справочника" disabled="@IsBusyProgress">
-            <button disabled="@(IsBusyProgress || !GlobalTools.ValidateObject(directoryObject).IsValid)" @onclick="CreateDirectory" class="btn btn-outline-success" type="button">@GetTitleForButtonCreate</button>
+            <button disabled="@(IsBusyProgress || !ValidateReport.IsValid)" @onclick="CreateDirectory" class="btn btn-outline-success" type="button">@GetTitleForButtonCreate</button>
             <button @onclick="CancelCreatingDirectory" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
         </div>
         <TinyMCE.Blazor.Editor Value="@Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="IsBusyProgress" />
     </div>
+    @if (!string.IsNullOrEmpty(directoryObject.Name) && !ValidateReport.IsValid )
+    {
+        <div class="alert alert-warning mt-3" role="alert">
+            @foreach (ValidationResult re in ValidateReport.ValidationResults)
+            {
+                <i>@re.ErrorMessage</i>
+            }
+        </div>
+    }
 }
 else if (DirectoryNavState == DirectoryNavStatesEnum.Rename)
 {
