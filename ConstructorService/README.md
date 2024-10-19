@@ -1,14 +1,8 @@
 ## WEB Конструктор документов (схемы данных).
-> развитие базового шаблона '*Blazor NET.8 + TelegramBot*' из ветки [main](https://github.com/badhitman/DesignerApp/tree/main). Другими словами - встроенная поддержка TelegramBot и другие нюансы решения исходной ветки.
 
 Для сборки потребуется ещё один репозиторий [HtmlGenerator](https://github.com/badhitman/HtmlGenerator), который используется для генерации исходников Blazor компонент.
 
-> [!WARNING]
-> Миграции EF Core пока что не используются. При каждом изменении схемы БД старая (текущая) база удаляется вручную (СУБД по умолчанию: SqLite) и создаётся [заново двумя командами](https://github.com/badhitman/DesignerApp/blob/main/DBContextLibs/DbSqliteLib/migrations.md). Чистая БД (после пересоздания) благодаря [символам условной компиляции](https://github.com/badhitman/DesignerApp/blob/constructor/ServerLib/ServerLib.csproj#L11) [заполняется DEMO данными](https://github.com/badhitman/DesignerApp/blob/a73c30fd2a44fcebaf66d3a58f16aa46e113947a/ServerLib/Services/ConstructorService.cs#L634). После выхода в релиз 'включатся' и миграции по всем СУБД: [SQLite](https://github.com/badhitman/DesignerApp/tree/constructor/DBContextLibs/DbSqliteLib), [MySQL](https://github.com/badhitman/DesignerApp/tree/constructor/DBContextLibs/DbMySQLLib), [PostgreSQL](https://github.com/badhitman/DesignerApp/tree/constructor/DBContextLibs/DbPostgreLib).
-
 Web решение для конструирования документов, справочников и т.п. Создание схемы документов и структуры моделей без необходимости программировать. Для созданных схем документов есть возможность формировать публичные ссылки/сессии, что бы внешние клиенты могли заполнять ваши документы своими данными (в т.ч. анонимным пользователям). Что-то на подобие web-форм или опросников. У документа есть вкладки/табы для удобной группировки форм внутри документа (как табы/вкладки в Excel).
-
-... исходные файлы ветки [main](https://github.com/badhitman/DesignerApp/tree/main) не редактировались. добавлено [разного UI Blazor](https://github.com/badhitman/DesignerApp/tree/constructor/BlazorServerLib/Components/Constructor). А так же [немного](https://github.com/badhitman/DesignerApp/blob/constructor/DBContextLibs/DbLayerLib/ConstructorLayerContext.cs) [БД](https://github.com/badhitman/DesignerApp/tree/constructor/SharedLib/Models/db/constructor) для [соответствующих](https://github.com/badhitman/DesignerApp/blob/constructor/SharedLib/IServices/main/IConstructorService.cs) [сервисов](https://github.com/badhitman/DesignerApp/blob/constructor/SharedLib/IServices/GeneratorCSharpService.cs).
 
 ### Проекты
 ![проекты](./img/projects-list-page.png)
