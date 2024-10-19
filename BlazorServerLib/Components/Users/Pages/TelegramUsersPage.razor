@@ -30,13 +30,20 @@
                     {
                         <span class="bi bi-robot text-danger-emphasis"> TelegramBot</span>
                     }
-                    else if(context.TelegramId != default)
+                    else if (context.TelegramId != default)
                     {
-                       <TelegramSendMessageComponent TelegramId="@context.TelegramId" /> 
-                    }                    
+                        <TelegramSendMessageComponent TelegramId="@context.TelegramId" />
+                    }
                     @if (!string.IsNullOrEmpty(context.Email))
                     {
-                        <a href="mailto:@context.Email" class="ms-2">@context.Email</a>
+                        if (!MailAddress.TryCreate(context.Email, out MailAddress? resMail) || resMail.Host.Equals(GlobalStaticConstants.FakeHost) == true)
+                        {
+                            <span class="font-monospace" title="@GlobalStaticConstants.FakeHost">отсутствует</span>
+                        }
+                        else
+                        {
+                            <a href="mailto:@context.Email" class="ms-2">@context.Email</a>
+                        }
                         <RemoveTelegramJoinComponent TelegramUserId="context.TelegramId" />
                     }
                 </div>

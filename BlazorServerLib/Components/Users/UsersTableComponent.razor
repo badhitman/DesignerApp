@@ -23,10 +23,10 @@
                 }
                 <div class="hstack">
                     <div class="px-2">
-                        @if (MailAddress.TryCreate(context.Email, out MailAddress? resMail) && resMail.Host.Equals(GlobalStaticConstants.FakeHost) == true)
+                        @if (!MailAddress.TryCreate(context.Email, out MailAddress? resMail) || resMail.Host.Equals(GlobalStaticConstants.FakeHost) == true)
                         {
                             isFakeEmail = true;
-                            <span class="font-monospace" title="@GlobalStaticConstants.FakeHost">отсутствует</span>
+                            <span class="font-monospace" title="@GlobalStaticConstants.FakeHost">no-email</span>
                         }
                         else
                         {
