@@ -7,11 +7,12 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using static SharedLib.GlobalStaticConstants;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Projects;
 
 /// <summary>
-/// ProjectEditDialog
+/// ProjectEditDialogComponent
 /// </summary>
 public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
 {
@@ -35,14 +36,18 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required ProjectsListComponent ParentListProjects { get; set; }
 
-
     /// <inheritdoc/>
     [Parameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
+    public required UserInfoMainModel CurrentUser { get; set; }
+
+
+    string images_upload_url = default!;
+    Dictionary<string, object> editorConf = default!;
+
 
     /// <inheritdoc/>
     protected bool CanSave => !string.IsNullOrWhiteSpace(projectObject.Name) && (!ProjectForEdit.Equals(projectObject) || ProjectForEdit.Id < 1);
@@ -61,6 +66,8 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     protected override void OnInitialized()
     {
         ResetForm();
+        images_upload_url = $"/TinyMCEditor/UploadImage/{Routes.PROJECTS_CONTROLLER_NAME}/{Routes.CONFIGURATION_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.DESCRIPTION_CONTROLLER_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={projectObject.Id}";
+        editorConf = TinyMCEditorConf(images_upload_url);
     }
 
     /// <inheritdoc/>

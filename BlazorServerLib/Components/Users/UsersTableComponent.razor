@@ -1,4 +1,5 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using System.Net.Mail
+@inherits BlazorBusyComponentBaseModel
 
 <h3>Пользователи @(RoleInfo is null ? "" : $"в роли: {RoleInfo.Name}")</h3>
 
@@ -18,10 +19,19 @@
             <TemplateColumn Title="Email">
                 @{
                     string lock_user_css_link = LinkCssClass(context);
+                    bool isFakeEmail = false;
                 }
                 <div class="hstack">
                     <div class="px-2">
-                        <NavLink class="@lock_user_css_link" href="@($"/Users/Profiles/view-{context.UserId}")">@($"{context.Email}{(context.UserName?.Equals(context.Email) == true ? "" : $"(user name: {context.UserName})")}")</NavLink>
+                        @if (MailAddress.TryCreate(context.Email, out MailAddress? resMail) && resMail.Host.Equals(GlobalStaticConstants.FakeHost) == true)
+                        {
+                            isFakeEmail = true;
+                            <span class="font-monospace" title="@GlobalStaticConstants.FakeHost">отсутствует</span>
+                        }
+                        else
+                        {
+                            <NavLink class="@lock_user_css_link" href="@($"/Users/Profiles/view-{context.UserId}")">@($"{context.Email}{(context.UserName?.Equals(context.Email) == true ? "" : $"(user name: {context.UserName})")}")</NavLink>
+                        }
                     </div>
                     @if (context.AccessFailedCount > 0)
                     {
@@ -36,7 +46,10 @@
                             </span>
                         </div>
                     }
-                    <span class="bi bi-envelope-@(context.EmailConfirmed ? "check-fill text-success" : "x text-warning") mx-1" title="email @(context.EmailConfirmed ? "" : "НЕ")подтверждён"></span>
+                    @if (!isFakeEmail)
+                    {
+                        <span class="bi bi-envelope-@(context.EmailConfirmed ? "check-fill text-success" : "x text-warning") mx-1" title="email @(context.EmailConfirmed ? "" : "НЕ")подтверждён"></span>
+                    }
                     @if (context.TelegramId.HasValue)
                     {
                         <TelegramSendMessageComponent TelegramId="context.TelegramId.Value" />

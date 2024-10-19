@@ -77,25 +77,25 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             await table.ReloadServerData();
     }
 
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
-    {
-        await RestJson();
-    }
+    ///// <inheritdoc/>
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    await RestJson();
+    //}
 
 
     TableState? _table_state;
     async Task RestJson()
     {
-        if (_table_state is null)
-            return;
+        //if (_table_state is null)
+        //    return;
 
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Проект не выбран.");
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<TPaginationResponseModel<FormConstructorModelDB>> res = await ConstructorRepo.SelectForms(new() { Request = SimplePaginationRequestModel.Build(searchString, _table_state.PageSize, _table_state.Page), ProjectId = ParentFormsPage.MainProject.Id });
+        TResponseModel<TPaginationResponseModel<FormConstructorModelDB>> res = await ConstructorRepo.SelectForms(new() { Request = SimplePaginationRequestModel.Build(searchString, _table_state?.PageSize ?? 10, _table_state?.Page ?? 0), ProjectId = ParentFormsPage.MainProject.Id });
         rest_data = res.Response;
         IsBusyProgress = false;
     }
@@ -128,12 +128,16 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     protected async Task<TableData<FormConstructorModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-        if (rest_data is null)
-            throw new ArgumentNullException(nameof(rest_data));
+        bool _init = rest_data is null;
+        if (_init)
+            await RestJson();
 
         _table_state = state;
-        await RestJson();
-        return new TableData<FormConstructorModelDB>() { TotalItems = rest_data.TotalRowsCount, Items = rest_data.Response };
+
+        if (!_init)
+            await RestJson();
+
+        return new TableData<FormConstructorModelDB>() { TotalItems = rest_data!.TotalRowsCount, Items = rest_data.Response };
     }
 
     /// <inheritdoc/>

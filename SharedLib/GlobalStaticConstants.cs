@@ -1212,6 +1212,11 @@ public static partial class GlobalStaticConstants
         public const string CONFIGURATION_CONTROLLER_NAME = "configuration";
 
         /// <summary>
+        /// Description
+        /// </summary>
+        public const string DESCRIPTION_CONTROLLER_NAME = "description";
+
+        /// <summary>
         /// Account
         /// </summary>
         public const string ACCOUNT_CONTROLLER_NAME = "account";

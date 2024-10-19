@@ -19,8 +19,8 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
-    [Inject]
-    IManufactureService ManufactureRepo { get; set; } = default!;
+    //[Inject]
+    //IManufactureService ManufactureRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>
@@ -70,19 +70,19 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
             throw new Exception();
 
         IsBusyProgress = true;
-        ResponseBaseModel res = await ManufactureRepo
-            .SetOrDeleteSystemName(new UpdateSystemNameModel()
-            {
-                TypeDataId = Item.Value.Id,
-                SystemName = itemSystemName,
-                TypeDataName = Item.Value.Tag,
-                Qualification = ItemModel.Qualification,
-                ManufactureId = ManufactureParentView.Manufacture.Id,
-            });
+        //ResponseBaseModel res = await ManufactureRepo
+        //    .SetOrDeleteSystemName(new UpdateSystemNameModel()
+        //    {
+        //        TypeDataId = Item.Value.Id,
+        //        SystemName = itemSystemName,
+        //        TypeDataName = Item.Value.Tag,
+        //        Qualification = ItemModel.Qualification,
+        //        ManufactureId = ManufactureParentView.Manufacture.Id,
+        //    });
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        //SnackbarRepo.ShowMessagesResponse(res.Messages);
 
-        if (res.Success())
+        /*if (res.Success())
         {
             //await ParentFormsPage.GetSystemNames();
             //ItemModel.SystemName = itemSystemName;
@@ -97,7 +97,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
             //}
 
             //ManufactureParentView.StateHasChangedCall();
-        }
+        }*/
     }
 
     /// <inheritdoc/>

@@ -27,8 +27,8 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
-    [Inject]
-    IManufactureService ManufactureRepo { get; set; } = default!;
+    //[Inject]
+    //IManufactureService ManufactureRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Inject]
@@ -75,10 +75,11 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     /// Текущий проект
     /// </summary>
     public ProjectModelDb CurrentProject { get; private set; } = default!;
+    
     /// <summary>
     /// Manufacture
     /// </summary>
-    public ManageManufactureModelDB Manufacture { get; private set; } = default!;
+    public ManageManufactureModelDB? Manufacture { get; private set; }
 
     TResponseModel<Stream>? downloadSource;
     readonly List<string> _errors = [];
@@ -111,10 +112,10 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
-        TResponseModel<ManageManufactureModelDB> rest_manufacture = await ManufactureRepo.ReadManufactureConfig(ParentFormsPage.MainProject.Id, user.UserId);
-        if (!rest_manufacture.Success())
-            SnackbarRepo.ShowMessagesResponse(rest_manufacture.Messages);
-        Manufacture = rest_manufacture.Response ?? throw new Exception();
+        //TResponseModel<ManageManufactureModelDB> rest_manufacture = await ManufactureRepo.ReadManufactureConfig(ParentFormsPage.MainProject.Id, user.UserId);
+        //if (!rest_manufacture.Success())
+        //    SnackbarRepo.ShowMessagesResponse(rest_manufacture.Messages);
+        //Manufacture = rest_manufacture.Response ?? throw new Exception();
         IsBusyProgress = false;
     }
 
@@ -123,6 +124,9 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
         ArgumentNullException.ThrowIfNull(CurrentProject.Directories);
         ArgumentNullException.ThrowIfNull(CurrentProject.Documents);
         ArgumentNullException.ThrowIfNull(ParentFormsPage.MainProject);
+
+        if (Manufacture is null)
+            throw new Exception();
 
         CodeGeneratorConfigModel conf_gen = Manufacture;
         GeneratorCSharpService gen = new(conf_gen, ParentFormsPage.MainProject);
@@ -159,7 +163,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        await ManufactureRepo.CreateSnapshot(struct_project, ParentFormsPage.MainProject.Id, Guid.NewGuid().ToString());
+        //await ManufactureRepo.CreateSnapshot(struct_project, ParentFormsPage.MainProject.Id, Guid.NewGuid().ToString());
 
         downloadSource = await gen.GetZipArchive(struct_project);
         if (!downloadSource.Success())

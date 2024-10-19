@@ -89,6 +89,7 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     protected async Task SetMainProjectHandle()
     {
         IsBusyProgress = true;
+        await Task.Delay(1);
         ResponseBaseModel res = await ConstructorRepo.SetProjectAsMain(new() { ProjectId = ProjectRow.Id, UserId = CurrentUser.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
