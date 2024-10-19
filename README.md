@@ -38,6 +38,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
     RemoteCallLib <|-- Telegram_Bot_Polling
 	DbPostgreLib <|-- Telegram_Bot_Polling
     RemoteCallLib <|-- StorageService
+    RemoteCallLib <|-- ConstructorService
     RemoteCallLib <|-- HelpdeskService
 	DbPostgreLib <|-- HelpdeskService
     BlazorLib <|-- BlazorWebLib
