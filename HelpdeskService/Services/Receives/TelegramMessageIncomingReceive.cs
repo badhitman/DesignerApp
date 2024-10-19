@@ -80,8 +80,11 @@ public class TelegramMessageIncomingReceive(
             }
         }
 
+        if (req.Chat?.Type != ChatsTypesTelegramEnum.Private)
+            return res;
+
         TResponseModel<long?> helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(GlobalStaticConstants.CloudStorageMetadata.HelpdeskNotificationsTelegramForUser(req.From!.UserTelegramId));
-        if (req.Chat?.Type == ChatsTypesTelegramEnum.Private && helpdesk_user_redirect_telegram_for_issue_rest.Success() && helpdesk_user_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_user_redirect_telegram_for_issue_rest.Response != 0)
+        if (helpdesk_user_redirect_telegram_for_issue_rest.Success() && helpdesk_user_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_user_redirect_telegram_for_issue_rest.Response != 0)
         {
             TResponseModel<MessageComplexIdsModel?> forward_res = await tgRepo.ForwardMessage(new()
             {

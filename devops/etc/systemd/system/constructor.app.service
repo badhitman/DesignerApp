@@ -2,8 +2,8 @@
 Description=web.app.service
 
 [Service]
-WorkingDirectory=/srv/services/CommerceService
-ExecStart=/usr/bin/dotnet /srv/services/CommerceService/CommerceService.dll --urls "http://*:5005"
+WorkingDirectory=/srv/services/ConstructorService
+ExecStart=/usr/bin/dotnet /srv/services/ConstructorService/ConstructorService.dll
 Restart=always
 RestartSec=10
 KillSignal=SIGINT
