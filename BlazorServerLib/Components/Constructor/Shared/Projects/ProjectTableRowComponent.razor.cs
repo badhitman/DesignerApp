@@ -5,6 +5,7 @@
 using BlazorLib;
 using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using SharedLib;
 
@@ -24,6 +25,9 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
 
     /// <summary>
     /// Проект
@@ -41,12 +45,19 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
+
+    UserInfoMainModel CurrentUser { get; set; } = default!;
 
 
     bool IsMyProject => CurrentUser.UserId.Equals(ProjectRow.OwnerUserId);
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        await base.OnInitializedAsync();
+    }
 
     /// <inheritdoc/>
     protected async Task EditProject()

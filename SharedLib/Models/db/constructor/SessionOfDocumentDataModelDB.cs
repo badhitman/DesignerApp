@@ -63,7 +63,7 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneab
     /// <summary>
     /// Дата создания
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Последнее обновление данных опроса/анкеты (последняя активность по вводу значений)
@@ -92,7 +92,7 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneab
     public bool CanMakeData(UserInfoModel? user = null)
     {
         if (user is null)
-            return SessionStatus == SessionsStatusesEnum.InProgress && Guid.TryParse(SessionToken, out Guid _guid) && _guid != Guid.Empty && (DeadlineDate.HasValue && DeadlineDate.Value >= DateTime.Now);
+            return SessionStatus == SessionsStatusesEnum.InProgress && Guid.TryParse(SessionToken, out Guid _guid) && _guid != Guid.Empty && (DeadlineDate.HasValue && DeadlineDate.Value >= DateTime.UtcNow);
 
         if (Project is null)
             return user.Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase)) == true;

@@ -27,11 +27,6 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     [Inject]
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
-
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
-
     /// <summary>
     /// Родительская страница форм
     /// </summary>
@@ -45,7 +40,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     public required Action<int> SelectedDirectoryChangeHandler { get; set; }
 
 
-    UserInfoMainModel user = default!;
+    UserInfoMainModel CurrentUser = default!;
 
     /// <summary>
     /// Current Template InputRichText ref
@@ -126,7 +121,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     protected async Task DeleteSelectedDirectory()
     {
         IsBusyProgress = true;
-        ResponseBaseModel rest = await ConstructorRepo.DeleteDirectory(new() { Payload = SelectedDirectoryId, SenderActionUserId = user.UserId });
+        ResponseBaseModel rest = await ConstructorRepo.DeleteDirectory(new() { Payload = SelectedDirectoryId, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
@@ -147,7 +142,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
-        TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new() { Payload = new() { Name = directoryObject.Name, ProjectId = ParentFormsPage.MainProject.Id, Description = Description }, SenderActionUserId = user.UserId });
+        TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new() { Payload = new() { Name = directoryObject.Name, ProjectId = ParentFormsPage.MainProject.Id, Description = Description }, SenderActionUserId = CurrentUser.UserId });
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
         {
@@ -184,7 +179,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new() { Payload = EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id, Description), SenderActionUserId = user.UserId });
+        TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new() { Payload = EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id, Description), SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
@@ -239,7 +234,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         images_upload_url = $"/TinyMCEditor/UploadImage/{Routes.CONSTRUCTOR_CONTROLLER_NAME}/{Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.DEFAULT_CONTROLLER_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
         editorConf = TinyMCEditorConf(images_upload_url);

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Document;
 
@@ -15,6 +16,9 @@ namespace BlazorWebLib.Components.Constructor.Shared.Document;
 /// </summary>
 public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     /// <inheritdoc/>
     [Inject]
     protected IDialogService DialogServiceRepo { get; set; } = default!;
@@ -32,9 +36,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
+    UserInfoMainModel CurrentUser = default!;
 
 
     MudTable<DocumentSchemeConstructorModelDB>? table;
@@ -45,6 +47,14 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     protected static MarkupString Descr(string? html) => (MarkupString)(html ?? "");
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        await base.OnInitializedAsync();
+    }
 
     /// <inheritdoc/>
     protected async Task DeleteDocument(int questionnaire_id)

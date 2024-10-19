@@ -83,10 +83,10 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
             if (!session_origin.DeadlineDate.HasValue || Session.SessionStatus >= SessionsStatusesEnum.Sended)
                 return _res;
 
-            if (session_origin.DeadlineDate.Value < DateTime.Now)
-                _res += $": просрочен [{(DateTime.Now - session_origin.DeadlineDate.Value):%d}] дней";
-            else if (session_origin.DeadlineDate.Value > DateTime.Now)
-                _res += $": осталось {(session_origin.DeadlineDate.Value - DateTime.Now):%d} дней";
+            if (session_origin.DeadlineDate.Value < DateTime.UtcNow)
+                _res += $": просрочен [{(DateTime.UtcNow - session_origin.DeadlineDate.Value):%d}] дней";
+            else if (session_origin.DeadlineDate.Value > DateTime.UtcNow)
+                _res += $": осталось {(session_origin.DeadlineDate.Value - DateTime.UtcNow):%d} дней";
 
             return _res;
         }

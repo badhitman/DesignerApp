@@ -13,17 +13,17 @@
     }
     else if (FileElement is PhotoMessageTelegramModelDB ph)
     {
-        fileName = $"Photo-{DateTime.Now}";
+        fileName = $"Photo-{DateTime.UtcNow}";
         <i class="bi bi-file-image"> (w:@ph.Width h:@ph.Height) - <u @onclick="DownloadFile" title="Скачать файл">@(ph.FileSize is null ? "" : GlobalTools.SizeDataAsString(ph.FileSize.Value))</u></i>
     }
     else if (FileElement is VoiceTelegramModelDB vct)
     {
-        fileName = $"Voice-{DateTime.Now}";
+        fileName = $"Voice-{DateTime.UtcNow}";
         <i class="bi bi-voicemail"> @vct.MimeType (@vct.Duration sec) - <u @onclick="DownloadFile" title="Скачать файл">@(vct.FileSize is null ? "" : GlobalTools.SizeDataAsString(vct.FileSize.Value))</u></i>
     }
     else if (FileElement is VideoTelegramModelDB vdt)
     {
-        fileName = $"Video-{DateTime.Now}";
+        fileName = $"Video-{DateTime.UtcNow}";
         <i class="bi bi-camera-reels"> @vdt.FileName (w:@vdt.Width h:@vdt.Height @vdt.Duration sec) - <u @onclick="DownloadFile" title="Скачать файл">@(vdt.FileSize is null ? "" : GlobalTools.SizeDataAsString(vdt.FileSize.Value))</u></i>
     }
 </div>

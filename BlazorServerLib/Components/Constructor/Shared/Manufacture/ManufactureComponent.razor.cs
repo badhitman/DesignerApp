@@ -168,7 +168,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
             return;
         }
         ArgumentNullException.ThrowIfNull(downloadSource.Response);
-        string fileName = $"project-{CurrentProject.Id}-codebase-{DateTime.Now}.zip";
+        string fileName = $"project-{CurrentProject.Id}-codebase-{DateTime.UtcNow}.zip";
 
         using DotNetStreamReference streamRef = new(stream: downloadSource.Response);
         await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);

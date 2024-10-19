@@ -84,19 +84,19 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
 
         if (res.Success())
         {
-            await ParentFormsPage.GetSystemNames();
-            ItemModel.SystemName = itemSystemName;
-            if (!string.IsNullOrWhiteSpace(ItemModel.SystemName))
-            {
-                int i = ParentFormsPage.SystemNamesManufacture.FindIndex(x => x.TypeDataId == ItemModel.Value!.Id && x.TypeDataName == ItemModel.Value!.Tag && x.Qualification == ItemModel.Qualification);
+            //await ParentFormsPage.GetSystemNames();
+            //ItemModel.SystemName = itemSystemName;
+            //if (!string.IsNullOrWhiteSpace(ItemModel.SystemName))
+            //{
+            //    int i = ParentFormsPage.SystemNamesManufacture.FindIndex(x => x.TypeDataId == ItemModel.Value!.Id && x.TypeDataName == ItemModel.Value!.Tag && x.Qualification == ItemModel.Qualification);
 
-                if (i < 0)
-                    throw new Exception($"[{nameof(ItemModel.SystemName)}:{ItemModel.SystemName}]\n{JsonConvert.SerializeObject(ParentFormsPage.SystemNamesManufacture)}");
+            //    if (i < 0)
+            //        throw new Exception($"[{nameof(ItemModel.SystemName)}:{ItemModel.SystemName}]\n{JsonConvert.SerializeObject(ParentFormsPage.SystemNamesManufacture)}");
 
-                ParentFormsPage.SystemNamesManufacture[i].SystemName = itemSystemName;
-            }
+            //    ParentFormsPage.SystemNamesManufacture[i].SystemName = itemSystemName;
+            //}
 
-            ManufactureParentView.StateHasChangedCall();
+            //ManufactureParentView.StateHasChangedCall();
         }
     }
 

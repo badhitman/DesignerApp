@@ -119,7 +119,7 @@ public class GeneratorCSharpService(CodeGeneratorConfigModel conf, MainProjectVi
         using StreamWriter writer = new(readmeEntry.Open(), Encoding.UTF8);
         await writer.WriteLineAsync($"Генератор C# комплекта - ver: {app_version} (by © https://github.com/badhitman - @FakeGov)");
         await writer.WriteLineAsync($"'{project.Name}' `{conf.Namespace}`");
-        await writer.WriteLineAsync($"============ {DateTime.Now} ============");
+        await writer.WriteLineAsync($"============ {DateTime.UtcNow} ============");
         await writer.WriteLineAsync();
         //
         foreach (string row_line in stat)

@@ -9,6 +9,7 @@ using MudBlazor;
 using SharedLib;
 using static MudBlazor.CategoryTypes;
 using static SharedLib.GlobalStaticConstants;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 
@@ -17,6 +18,9 @@ namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 /// </summary>
 public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    AuthenticationStateProvider authRepo { get; set; } = default!;
+
     [Inject]
     ISnackbar SnackbarRepo { get; set; } = default!;
 
@@ -46,11 +50,8 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
 
-
+    UserInfoMainModel CurrentUser { get; set; } = default!;
     EntryDescriptionModel? ElementObjectOrign;
     EntryDescriptionModel? ElementObjectEdit;
 
@@ -63,6 +64,9 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+
         images_upload_url = $"/TinyMCEditor/UploadImage/{Routes.CONSTRUCTOR_CONTROLLER_NAME}/{Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.SET_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
         editorConf = TinyMCEditorConf(images_upload_url);
         await base.OnInitializedAsync();

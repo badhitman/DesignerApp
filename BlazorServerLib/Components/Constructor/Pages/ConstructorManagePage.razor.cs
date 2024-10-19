@@ -11,8 +11,10 @@ using SharedLib;
 
 namespace BlazorWebLib.Components.Constructor.Pages;
 
-/// <inheritdoc/>
-public partial class ConstructorPage : BlazorBusyComponentBaseModel
+/// <summary>
+/// ConstructorManagePage
+/// </summary>
+public partial class ConstructorManagePage : BlazorBusyComponentBaseModel
 {
     [Inject]
     AuthenticationStateProvider AuthRepo { get; set; } = default!;
@@ -27,7 +29,7 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     //IManufactureService ManufactureRepo { get; set; } = default!;
 
 
-    ManufactureComponent? manufacture_ref = default!;
+    // ManufactureComponent? manufacture_ref = default!;
 
 
     /// <inheritdoc/>
@@ -73,6 +75,7 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
 
     }
 
+    ///// <inheritdoc/>
     //public async Task GetSystemNames()
     //{
     //    IsBusyProgress = true;

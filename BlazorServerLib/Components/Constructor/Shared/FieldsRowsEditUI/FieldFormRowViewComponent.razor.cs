@@ -228,7 +228,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
             case SessionsStatusesEnum.Sended:
                 return "На проверке";
             default:
-                if (deadline_date > DateTime.Now)
+                if (deadline_date > DateTime.UtcNow)
                     return $"В работе до {deadline_date}";
                 else
                     return "Просрочен";

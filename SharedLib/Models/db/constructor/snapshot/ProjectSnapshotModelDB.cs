@@ -13,7 +13,7 @@ public class ProjectSnapshotModelDB : EntryConstructedModel
     public required string UserId { get; set; }
 
     /// <inheritdoc/>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Token

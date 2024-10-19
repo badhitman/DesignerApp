@@ -33,12 +33,8 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoModel CurrentUser { get; set; }
 
-
-    UserInfoMainModel user = default!;
+    UserInfoMainModel CurrentUser = default!;
 
     /// <inheritdoc/>
     protected ElementsOfDirectoryListViewComponent elementsListOfDirectoryView_ref = default!;
@@ -62,7 +58,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> rest = await ConstructorRepo.CreateElementForDirectory(new() { Payload = createNewElementForDict, SenderActionUserId = user.UserId }); // (new() { Payload = createNewElementForDict, SenderActionUserId = user.UserId });
+        TResponseModel<int> rest = await ConstructorRepo.CreateElementForDirectory(new() { Payload = createNewElementForDict, SenderActionUserId = CurrentUser.UserId }); // (new() { Payload = createNewElementForDict, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
         if (directoryNav_ref is not null)
@@ -93,7 +89,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         await base.OnInitializedAsync();
     }

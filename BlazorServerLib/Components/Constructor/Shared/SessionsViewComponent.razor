@@ -77,7 +77,7 @@
                                 </NavLink>
                             </MudChip>
                         }
-                        else if (context.DeadlineDate <= DateTime.Now)
+                        else if (context.DeadlineDate <= DateTime.UtcNow)
                         {
                             <div class="hstack">
                                 <div>

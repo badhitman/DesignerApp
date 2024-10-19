@@ -100,7 +100,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{90
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageService", "StorageService\StorageService.csproj", "{05B73FB3-FCCC-4C41-9F80-FEED9D73CF43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstructorService", "ConstructorService\ConstructorService.csproj", "{96B0DA02-8148-4F5D-B98C-D12F9B595166}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConstructorService", "ConstructorService\ConstructorService.csproj", "{96B0DA02-8148-4F5D-B98C-D12F9B595166}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
