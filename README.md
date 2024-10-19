@@ -59,8 +59,8 @@ note for DbPostgreLib "Если используется другая СУБД, 
     class BlazorLib{
         Blazor UI Компоненты
     }
-    class DbPostgreLib{
-        PSG
+    class DbSqliteLib{
+        Sqlite
     }
     class DbPostgreLib{
         PostgreSQL
