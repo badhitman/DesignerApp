@@ -29,7 +29,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
     CodegeneratorLib <|-- BlazorLib
     HtmlGenerator <|-- CodegeneratorLib
     DbLayerLib <|-- DbPostgreLib
-    DbLayerLib <|-- DbPostgreLib
+    DbLayerLib <|-- DbSqliteLib
     DbLayerLib <|-- DbMySQLLib
 	DbPostgreLib <|-- RemoteCallLib
     BlankBlazorApp_Client  <|-- BlankBlazorApp
