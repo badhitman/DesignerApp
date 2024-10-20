@@ -105,6 +105,7 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
             ProjectVersionStamp = SessionDocument.Project.SchemeLastUpdated,
         };
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.SetValueFieldSessionDocumentData(req);
         IsBusyProgress = false;
 

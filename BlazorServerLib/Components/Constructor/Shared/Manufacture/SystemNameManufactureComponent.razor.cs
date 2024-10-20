@@ -64,7 +64,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected MarkupString InformationMS => (MarkupString)Information;
 
-    async Task SaveSystemName()
+    Task SaveSystemName()
     {
         if (Item.Value?.Tag is null)
             throw new Exception();
@@ -98,6 +98,8 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
 
             //ManufactureParentView.StateHasChangedCall();
         }*/
+
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc/>

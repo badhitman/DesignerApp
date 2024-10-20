@@ -67,11 +67,14 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     public required bool InUse { get; set; }
 
 
-    UserInfoMainModel user = default!;
+    UserInfoMainModel? user;
 
     /// <inheritdoc/>
     protected async Task DeleteJoinForm()
     {
+        if (user is null)
+            throw new ArgumentNullException(nameof(user));
+
         IsBusyProgress = true;
         await Task.Delay(1);
         ResponseBaseModel rest = await ConstructorRepo.DeleteTabDocumentSchemeJoinForm(new() { Payload = PageJoinForm.Id, SenderActionUserId = user.UserId });
@@ -129,6 +132,9 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected async Task DocumentPageJoinFormMove(VerticalDirectionsEnum direct)
     {
+        if (user is null)
+            throw new ArgumentNullException(nameof(user));
+
         IsBusyProgress = true;
         await Task.Delay(1);
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabDocumentSchemeJoinForm(new() { Payload = new() { Id = PageJoinForm.Id, Direct = direct }, SenderActionUserId = user.UserId });
@@ -147,6 +153,9 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected async Task SaveJoinForm()
     {
+        if(user is null)
+            throw new ArgumentNullException(nameof(user));
+
         FormToTabJoinConstructorModelDB req = new()
         {
             Description = PageJoinForm.Description,
@@ -192,7 +201,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        user = state.User.ReadCurrentUserInfo();
 
         _join_name_origin = PageJoinForm.Name;
         _join_set_title_origin = PageJoinForm.ShowTitle == true;

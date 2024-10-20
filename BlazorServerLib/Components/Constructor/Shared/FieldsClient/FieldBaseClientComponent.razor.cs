@@ -20,7 +20,21 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
     VirtualColumnCalculationAbstraction? _calculation_service;
     CommandAsEntryModel? _md;
     /// <inheritdoc/>
-    public string AboutCalculationFieldValue => $"{CalculationsAsEntries?.FirstOrDefault(x => x.Id == Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Parameter)?.ToString())?.Name ?? "ошибка 99A9A8C3-4748-45BD-B4C9-A34BA6C13ECF"}: {Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
+    public string AboutCalculationFieldValue
+    {
+        get
+        {
+            CommandEntryModel? md = CalculationsAsEntries?.FirstOrDefault(EqualCommand);
+            return $"{md?.Name ?? "ошибка 99A9A8C3-4748-45BD-B4C9-A34BA6C13ECF"}: {Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor)}";
+        }
+    }
+
+    bool EqualCommand(CommandEntryModel comm)
+    {
+        object? ext = Field.GetValueObjectOfMetadata(MetadataExtensionsFormFieldsEnum.Descriptor);
+        return comm.Id == ext?.ToString();
+    }
+
     string? CalculateFieldValue
     {
         get

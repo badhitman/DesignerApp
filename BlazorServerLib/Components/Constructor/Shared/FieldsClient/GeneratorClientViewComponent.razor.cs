@@ -22,6 +22,7 @@ public partial class GeneratorClientViewComponent : FieldComponentBaseModel
     [Parameter, EditorRequired]
     public bool ReadOnly { get; set; }
 
+
     IEnumerable<string> Elements = [];
     string? _selectedElement;
     /// <inheritdoc/>
