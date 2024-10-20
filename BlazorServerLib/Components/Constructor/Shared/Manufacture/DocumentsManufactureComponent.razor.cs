@@ -61,6 +61,9 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
     /// </summary>
     public void ReloadTree()
     {
+        if (ManufactureParentView.ParentFormsPage.SystemNamesManufacture is null)
+            return;
+
         TreeItemDataModel FieldToTreeItem(FieldFormBaseLowConstructorModel field, int doc_id, int tab_id, int form_id)
         {
             EntryTagModel et = new()

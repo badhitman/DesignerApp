@@ -66,7 +66,7 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     protected override void OnInitialized()
     {
         ResetForm();
-        images_upload_url = $"/TinyMCEditor/UploadImage/{Routes.PROJECTS_CONTROLLER_NAME}/{Routes.CONFIGURATION_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.DESCRIPTION_CONTROLLER_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={projectObject.Id}";
+        images_upload_url = $"{TinyMCEditorUploadImage}{Routes.PROJECTS_CONTROLLER_NAME}/{Routes.CONFIGURATION_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.DESCRIPTION_CONTROLLER_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={projectObject.Id}";
         editorConf = TinyMCEditorConf(images_upload_url);
     }
 

@@ -18,7 +18,7 @@ public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService s
     /// <summary>
     /// Upload Image
     /// </summary>
-    [HttpPost("/TinyMCEditor/UploadImage/{AppNameStorage}/{NameStorage}")]
+    [HttpPost($"{GlobalStaticConstants.TinyMCEditorUploadImage}{{AppNameStorage}}/{{NameStorage}}")]
     public async Task<IActionResult> UploadImage(
         [FromRoute] string AppNameStorage,
         [FromRoute] string NameStorage,

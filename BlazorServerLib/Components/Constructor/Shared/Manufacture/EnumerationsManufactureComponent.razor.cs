@@ -31,6 +31,9 @@ public partial class EnumerationsManufactureComponent : BlazorBusyComponentBaseM
     /// </summary>
     public void ReloadTree()
     {
+        if (ManufactureParentView.ParentFormsPage.SystemNamesManufacture is null)
+            return;
+
         ArgumentNullException.ThrowIfNull(ManufactureParentView.CurrentProject.Directories);
         TreeItems.Clear();
         ManufactureParentView

@@ -57,6 +57,11 @@ public static partial class GlobalStaticConstants
     public const string FakeHost = "fake.null";
 
     /// <summary>
+    /// TinyMCEditorUploadImage
+    /// </summary>
+    public const string TinyMCEditorUploadImage = "/TinyMCEditor/UploadImage/";
+
+    /// <summary>
     /// Identity.StatusMessage
     /// </summary>
     public const string StatusCookieName = "Identity.StatusMessage";

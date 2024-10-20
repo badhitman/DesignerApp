@@ -76,7 +76,7 @@ public partial class TinyMCEComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        images_upload_url = $"/TinyMCEditor/UploadImage/{KeyStorage.ApplicationName.Replace("\\", "_").Replace("/", "_")}/{KeyStorage.Name.Replace("\\", "_").Replace("/", "_")}?{nameof(KeyStorage.PrefixPropertyName)}={KeyStorage.PrefixPropertyName}&{nameof(KeyStorage.OwnerPrimaryKey)}={KeyStorage.OwnerPrimaryKey}";
+        images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{KeyStorage.ApplicationName.Replace("\\", "_").Replace("/", "_")}/{KeyStorage.Name.Replace("\\", "_").Replace("/", "_")}?{nameof(KeyStorage.PrefixPropertyName)}={KeyStorage.PrefixPropertyName}&{nameof(KeyStorage.OwnerPrimaryKey)}={KeyStorage.OwnerPrimaryKey}";
         editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
 
         IsBusyProgress = true;

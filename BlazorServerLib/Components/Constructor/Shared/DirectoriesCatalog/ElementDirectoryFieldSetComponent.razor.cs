@@ -67,7 +67,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
-        images_upload_url = $"/TinyMCEditor/UploadImage/{Routes.CONSTRUCTOR_CONTROLLER_NAME}/{Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.SET_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
+        images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{Routes.CONSTRUCTOR_CONTROLLER_NAME}/{Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.SET_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
         editorConf = TinyMCEditorConf(images_upload_url);
         await base.OnInitializedAsync();
     }

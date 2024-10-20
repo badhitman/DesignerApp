@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using static SharedLib.GlobalStaticConstants;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
@@ -181,10 +180,10 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new() 
-        { 
-            Payload = EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id, Description), 
-            SenderActionUserId = CurrentUser.UserId 
+        TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new()
+        {
+            Payload = EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id, Description),
+            SenderActionUserId = CurrentUser.UserId
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -243,8 +242,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
-        images_upload_url = $"/TinyMCEditor/UploadImage/{Routes.CONSTRUCTOR_CONTROLLER_NAME}/{Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.DEFAULT_CONTROLLER_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
-        editorConf = TinyMCEditorConf(images_upload_url);
+        images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{GlobalStaticConstants.Routes.CONSTRUCTOR_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
+        editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
         await ReloadDirectories();
     }
 }

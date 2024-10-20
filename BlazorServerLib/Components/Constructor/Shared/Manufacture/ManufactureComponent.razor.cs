@@ -121,6 +121,9 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
     async Task Download()
     {
+        if(ParentFormsPage.SystemNamesManufacture is null)
+            return;
+
         ArgumentNullException.ThrowIfNull(CurrentProject.Directories);
         ArgumentNullException.ThrowIfNull(CurrentProject.Documents);
         ArgumentNullException.ThrowIfNull(ParentFormsPage.MainProject);

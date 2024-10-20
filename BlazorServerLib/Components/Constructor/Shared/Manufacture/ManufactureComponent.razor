@@ -21,7 +21,7 @@
     </CascadingValue>
 
     <div class="d-grid gap-2">
-        <button disabled="@(_errors.Any() || Manufacture is null)" @onclick="Download" class="btn btn-primary" type="button">Скачать C# .NET</button>
+        <button disabled="@(_errors.Any() || Manufacture is null || ParentFormsPage.SystemNamesManufacture is null)" @onclick="Download" class="btn btn-primary" type="button">Скачать C# .NET</button>
     </div>
     <ul class="list-group">
         @foreach (string e in _errors)
