@@ -13,7 +13,7 @@
                     <div class="col-12 mb-3">
                         <label for="@(_currentTemplateInputRichText?.UID)" class="form-label">Описание</label>
                         <InputRichTextComponent @bind-Value="projectObject.Description" @ref="_currentTemplateInputRichText" />
-                        @* <TinyMCE.Blazor.Editor Value="@projectObject.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="IsBusyProgress" /> *@
+                        @* <TinyMCE.Blazor.Editor @bind-Value="@projectObject.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="IsBusyProgress" /> *@
                     </div>
                     @if (projectObject.Id > 0)
                     {

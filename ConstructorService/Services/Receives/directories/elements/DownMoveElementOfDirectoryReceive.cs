@@ -20,7 +20,7 @@ public class DownMoveElementOfDirectoryReceive(IConstructorService conService)
     public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.DeleteElementFromDirectory(payload);
+        ResponseBaseModel res = await conService.DownMoveElementOfDirectory(payload);
         return new()
         {
             Messages = res.Messages,

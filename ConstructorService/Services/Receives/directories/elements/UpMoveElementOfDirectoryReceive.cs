@@ -20,7 +20,7 @@ public class UpMoveElementOfDirectoryReceive(IConstructorService conService)
     public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.DeleteElementFromDirectory(payload);
+        ResponseBaseModel res = await conService.UpMoveElementOfDirectory(payload);
         return new()
         {
             Messages = res.Messages,

@@ -18,8 +18,8 @@
                         <a class="navbar-brand">Элементы списка</a>
                         <div class="d-flex">
                             <input @bind-value="createNewElementForDict.Name" @bind-value:event="oninput" class="form-control me-2" type="text" placeholder="Название элемента" size="40">
-                            <button @onclick="AddElementIntoDirectory" disabled="@(!GlobalTools.ValidateObject(createNewElementForDict).IsValid)" class="btn btn-outline-primary" type="button">Добавить</button>
-                        </div>
+                            <button @onclick="AddElementIntoDirectory" disabled="@(string.IsNullOrWhiteSpace(createNewElementForDict.Name))" class="btn btn-outline-primary" type="button">Добавить</button>
+                        </div>                        
                     }
                     else
                     {

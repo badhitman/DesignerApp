@@ -102,19 +102,21 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
 
     bool IsEdit = false;
     async Task EditToggle()
-    {
-        IsEdit = !IsEdit;
-        if (!IsEdit)
+    {        
+        if (IsEdit)
         {
             ElementObjectOrign = null;
             ElementObjectEdit = null;
+            IsEdit = false;
             return;
         }
-
+        
         IsBusyProgress = true;
+        await Task.Delay(1);
         TResponseModel<EntryDescriptionModel> res = await ConstructorRepo.GetElementOfDirectory(ElementObject.Id);
         ElementObjectOrign = res.Response ?? throw new Exception();
         ElementObjectEdit = GlobalTools.CreateDeepCopy(ElementObjectOrign);
+        IsEdit = true;
         IsBusyProgress = false;
     }
 

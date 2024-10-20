@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using System.Security.Claims;
 using SharedLib;
 using MudBlazor;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlazorLib;
 
@@ -68,6 +69,10 @@ public static class Extensions
     /// <inheritdoc/>
     public static void Error(this ISnackbar SnackbarRepo, string message)
         => SnackbarRepo.Add(message, Severity.Error, opt => opt.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
+
+    /// <inheritdoc/>
+    public static void Error(this ISnackbar SnackbarRepo, List<ValidationResult> ValidationResults)
+        => ValidationResults.ForEach(x => SnackbarRepo.Add(x.ErrorMessage ?? "-error-", Severity.Error, opt => opt.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow));
 
     /// <inheritdoc/>
     public static VerticalDirectionsEnum GetVerticalDirection(this SortDirection sort_direction)

@@ -8,6 +8,7 @@ using BlazorLib;
 using SharedLib;
 using MudBlazor;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Collections.Generic;
 
 namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 
@@ -50,31 +51,39 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
         if (createNewElementForDict.OwnerId < 1)
             throw new Exception("Не выбран справочник/список");
 
+        ValidateReportModel validate_obj = GlobalTools.ValidateObject(createNewElementForDict);
+        if (!validate_obj.IsValid)
+        {
+            SnackbarRepo.Error(validate_obj.ValidationResults);
+            return;
+        }
+
+        IsBusyProgress = true;
+        await Task.Delay(1);
+        TResponseModel<int> rest = await ConstructorRepo.CreateElementForDirectory(new() { Payload = createNewElementForDict, SenderActionUserId = CurrentUser.UserId }); // (new() { Payload = createNewElementForDict, SenderActionUserId = user.UserId });
+        createNewElementForDict = OwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
+        IsBusyProgress = false;
+        StateHasChanged();
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+
         if (directoryNav_ref is not null)
         {
             directoryNav_ref.IsBusyProgress = true;
             directoryNav_ref.StateHasChangedCall();
         }
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
-        TResponseModel<int> rest = await ConstructorRepo.CreateElementForDirectory(new() { Payload = createNewElementForDict, SenderActionUserId = CurrentUser.UserId }); // (new() { Payload = createNewElementForDict, SenderActionUserId = user.UserId });
-        IsBusyProgress = false;
-
-        if (directoryNav_ref is not null)
-        {
-            directoryNav_ref.IsBusyProgress = false;
-            directoryNav_ref.StateHasChangedCall();
-        }
-
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        createNewElementForDict = OwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
         if (rest.Success())
             await elementsListOfDirectoryView_ref.ReloadElements(directoryNav_ref?.SelectedDirectoryId, true);
         else
         {
             await ParentFormsPage.ReadCurrentMainProject();
             ParentFormsPage.StateHasChangedCall();
+        }
+
+        if (directoryNav_ref is not null)
+        {
+            directoryNav_ref.IsBusyProgress = false;
+            directoryNav_ref.StateHasChangedCall();
         }
     }
 

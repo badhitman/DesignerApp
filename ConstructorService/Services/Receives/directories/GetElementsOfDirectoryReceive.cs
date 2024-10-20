@@ -20,10 +20,11 @@ public class GetElementsOfDirectoryReceive(IConstructorService conService)
     public async Task<TResponseModel<List<EntryModel>?>> ResponseHandleAction(int? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.GetElementsOfDirectory(payload.Value);
+        TResponseModel<List<EntryModel>> res = await conService.GetElementsOfDirectory(payload.Value);
         return new()
         {
             Messages = res.Messages,
+            Response = res.Response,
         };
     }
 }

@@ -45,7 +45,7 @@
             <button disabled="@(IsBusyProgress || !ValidateReport.IsValid)" @onclick="CreateDirectory" class="btn btn-outline-success" type="button">@GetTitleForButtonCreate</button>
             <button @onclick="CancelCreatingDirectory" class="btn btn-outline-secondary" type="button" disabled="@IsBusyProgress">Отмена</button>
         </div>
-        <TinyMCE.Blazor.Editor Value="@Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="IsBusyProgress" />
+        <TinyMCE.Blazor.Editor @bind-Value="@Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="IsBusyProgress" />
     </div>
     @if (!string.IsNullOrEmpty(directoryObject.Name) && !ValidateReport.IsValid )
     {

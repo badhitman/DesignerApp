@@ -27,6 +27,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     [Inject]
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
+
     /// <summary>
     /// Родительская страница форм
     /// </summary>
@@ -114,6 +115,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     void InitRenameDirectory()
     {
         directoryObject = allDirectories.First(x => x.Id == SelectedDirectoryId);
+        Description = selectedDirectory?.Description;
         DirectoryNavState = DirectoryNavStatesEnum.Rename;
     }
 
@@ -174,15 +176,19 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task SaveRenameDirectory()
     {
-        if (ParentFormsPage.MainProject is null)
+        if (selectedDirectory is null || ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран текущий/основной проект");
 
         IsBusyProgress = true;
         await Task.Delay(1);
-        TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new() { Payload = EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id, Description), SenderActionUserId = CurrentUser.UserId });
+        TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new() 
+        { 
+            Payload = EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id, Description), 
+            SenderActionUserId = CurrentUser.UserId 
+        });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
-
+        selectedDirectory.Description = Description;
         if (!rest.Success())
         {
             await ParentFormsPage.ReadCurrentMainProject();
