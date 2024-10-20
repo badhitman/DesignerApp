@@ -9,7 +9,7 @@ Update-Database -Context StorageContext -Project DbPostgreLib -StartupProject St
 ```
 
 ```
-Add-Migration HelpdeskPostgreContext009 -Context HelpdeskContext -Project DbPostgreLib -StartupProject HelpdeskService
+Add-Migration HelpdeskPostgreContext010 -Context HelpdeskContext -Project DbPostgreLib -StartupProject HelpdeskService
 Update-Database -Context HelpdeskContext -Project DbPostgreLib -StartupProject HelpdeskService
 ```
 

@@ -28,7 +28,7 @@ public static partial class GlobalStaticConstants
             { "images_upload_url", images_upload_url } };
 
     /// <summary>
-    /// ScriptSrc
+    /// /lib/tinymce/tinymce.min.js
     /// </summary>
     public static readonly string TinyMCEditorScriptSrc = "/lib/tinymce/tinymce.min.js";
 
@@ -735,6 +735,9 @@ public static partial class GlobalStaticConstants
         public readonly static string ArticleUpdateHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ARTICLE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string TagArticleSetReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.TAG_CONTROLLER_NAME}-of-{Routes.ARTICLE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string RubricsForIssuesListHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRIC_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.LIST_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -752,6 +755,12 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string ArticlesSelectHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ARTICLES_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string TagsOfArticlesSelectReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.TAGS_CONTROLLER_NAME}-of-{Routes.ARTICLES_CONTROLLER_NAME}", Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string ArticlesReadReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, Routes.ARTICLES_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string ConsoleIssuesSelectHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.CONSOLE_CONTROLLER_NAME}", Routes.SELECT_ACTION_NAME);
@@ -848,6 +857,16 @@ public static partial class GlobalStaticConstants
         /// Articles
         /// </summary>
         public const string ARTICLES_CONTROLLER_NAME = "articles";
+
+        /// <summary>
+        /// Tags
+        /// </summary>
+        public const string TAGS_CONTROLLER_NAME = "tags";
+
+        /// <summary>
+        /// Tag
+        /// </summary>
+        public const string TAG_CONTROLLER_NAME = "tag";
 
         /// <summary>
         /// Article

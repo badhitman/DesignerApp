@@ -1,0 +1,28 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<div class="card mt-2">
+    <div class="card-body">
+        <h5 class="card-title">Теги</h5>
+        <MudStack Justify="@Justify.Center" Class="mud-width-full">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudAutocomplete @bind-Value="TagAdding" SearchFunc="Search" Dense="true" Clearable="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="9">
+                    <MudChipSet T="ArticleTagModelDB"
+                                CheckMark="false"
+                                AllClosable="@true"                                
+                                OnClose="@OnChipClosed">
+                        @for (int i = 0; i < Article.Tags!.Count; i++)
+                        {
+                            int _ix = i;
+                            ArticleTagModelDB _el = Article.Tags![_ix];
+                            <MudChip Variant="@Variant.Text" Value="@_el" Text="@_el.Name" />
+                        }
+                    </MudChipSet>
+                </MudItem>
+            </MudGrid>
+        </MudStack>
+    </div>
+</div>

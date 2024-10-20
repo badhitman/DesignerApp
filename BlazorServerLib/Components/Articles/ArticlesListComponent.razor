@@ -19,7 +19,7 @@
         <MudTh>Tags</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Updated">@context.UpdatedAtUTC.GetMsk().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))</MudTd>
+        <MudTd DataLabel="Updated"> <a href="/articles/edit-card/@(context.Id)">@context.LastUpdatedAtUTC?.GetMsk().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))</a> </MudTd>
         <MudTd DataLabel="Created">@context.CreatedAtUTC.GetMsk().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))</MudTd>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Author">@(usersDump.FirstOrDefault(x => x.UserId == context.AuthorIdentityId)?.UserName ?? context.AuthorIdentityId)</MudTd>

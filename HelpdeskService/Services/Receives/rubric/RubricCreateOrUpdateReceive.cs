@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
+using System.Text.RegularExpressions;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -25,7 +26,8 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
         ArgumentNullException.ThrowIfNull(rubric);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(rubric)}");
         TResponseModel<int?> res = new();
-        rubric.Name = rubric.Name.Trim();
+        Regex rx = new(@"\s+", RegexOptions.Compiled);
+        rubric.Name = rx.Replace(rubric.Name.Trim(), " ");
         if (string.IsNullOrWhiteSpace(rubric.Name))
         {
             res.AddError("Объект должен иметь имя");

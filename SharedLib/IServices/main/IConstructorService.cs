@@ -9,8 +9,7 @@ namespace SharedLib;
 /// </summary>
 public interface IConstructorService
 {
-    #region public   
-
+    #region public
     /// <summary>
     /// Получить сессию
     /// </summary>

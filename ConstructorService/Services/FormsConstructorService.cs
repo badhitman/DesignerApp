@@ -404,7 +404,7 @@ public partial class FormsConstructorService(
     public async Task<TResponseModel<int>> CreateProject(CreateProjectRequestModel req)
     {
         TResponseModel<int> res = new();
-        req.Project.Name = req.Project.Name.Trim();
+        req.Project.Name = MyRegexSpices().Replace(req.Project.Name.Trim(), " ");
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(req.Project);
         if (!IsValid)
@@ -479,7 +479,7 @@ public partial class FormsConstructorService(
             return ResponseBaseModel.CreateError(ValidationResults);
 
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
-        project.Name = project.Name.Trim();
+        project.Name = MyRegexSpices().Replace(project.Name.Trim(), " ");
         string upName = project.Name.ToUpper();
         ProjectModelDb? projectDb = await context_forms
             .Projects
@@ -1441,7 +1441,7 @@ public partial class FormsConstructorService(
     {
         TResponseModel<FormConstructorModelDB> res = new();
 
-        req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name, " ").Trim();
+        req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name.Trim(), " ");
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(req.Payload);
         if (!IsValid)
         {
@@ -1709,7 +1709,7 @@ public partial class FormsConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormConstructorModelDB> req, CancellationToken cancellationToken = default)
     {
-        req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name, " ").Trim();
+        req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name.Trim(), " ");
         req.Payload.MetadataValueType = req.Payload.MetadataValueType?.Trim();
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(req.Payload);
@@ -1881,7 +1881,7 @@ public partial class FormsConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(TAuthRequestModel<FieldFormAkaDirectoryConstructorModelDB> req, CancellationToken cancellationToken = default)
     {
-        req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name, " ").Trim();
+        req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name.Trim(), " ");
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(req.Payload);
         if (!IsValid)
@@ -2492,7 +2492,7 @@ public partial class FormsConstructorService(
     {
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> res = new();
 
-        req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name, " ").Trim();
+        req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name.Trim(), " ");
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(req.Payload);
         if (!IsValid)

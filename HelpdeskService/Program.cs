@@ -6,6 +6,7 @@ using SharedLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
+using HelpdeskService;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -55,6 +56,8 @@ builder.ConfigureServices((context, services) =>
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
     ;
 
+    services.AddScoped<IArticlesService, ArticlesService>();
+
     services.AddSingleton<WebConfigModel>();
     services.AddOptions();
 
@@ -81,12 +84,15 @@ builder.ConfigureServices((context, services) =>
     // 
     services.RegisterMqListener<RubricsListReceive, RubricsListRequestModel?, RubricBaseModel[]?>()
     .RegisterMqListener<RubricCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>()
+    .RegisterMqListener<TagsOfArticlesSelectReceive, string?, string[]?>()
     .RegisterMqListener<IssuesSelectReceive, TPaginationRequestModel<SelectIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>()
     .RegisterMqListener<ArticlesSelectReceive, TPaginationRequestModel<SelectArticlesRequestModel>?, TPaginationResponseModel<ArticleModelDB>?>()
     .RegisterMqListener<IssueCreateOrUpdateReceive, TAuthRequestModel<IssueUpdateRequestModel>?, int>()
     .RegisterMqListener<MessageVoteReceive, TAuthRequestModel<VoteIssueRequestModel>?, bool?>()
     .RegisterMqListener<MessageUpdateOrCreateReceive, TAuthRequestModel<IssueMessageHelpdeskBaseModel>?, int?>()
     .RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>()
+    .RegisterMqListener<TagArticleSetReceive, TagArticleSetModel?, EntryModel[]?>()
+    .RegisterMqListener<ArticlesReadReceive, int[]?, ArticleModelDB[]?>()
     .RegisterMqListener<ArticleCreateOrUpdateReceive, ArticleModelDB?, int?>()
     .RegisterMqListener<IssuesReadReceive, TAuthRequestModel<IssuesReadRequestModel>?, IssueHelpdeskModelDB[]?>()
     .RegisterMqListener<RubricReadReceive, int?, List<RubricIssueHelpdeskModelDB>?>()

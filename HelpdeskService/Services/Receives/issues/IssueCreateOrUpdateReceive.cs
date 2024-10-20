@@ -7,6 +7,7 @@ using RemoteCallLib;
 using SharedLib;
 using DbcLib;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -42,7 +43,9 @@ public class IssueCreateOrUpdateReceive(
         issue_upd.Payload.Description = issue_upd.Payload.Description?.Trim();
         string? normalizedDescriptionUpper = issue_upd.Payload.Description?.ToUpper();
 
-        issue_upd.Payload.Name = issue_upd.Payload.Name.Trim();
+        Regex rx = new(@"\s+", RegexOptions.Compiled);
+        issue_upd.Payload.Name = rx.Replace(issue_upd.Payload.Name.Trim(), " ");
+
         string normalizedNameUpper = issue_upd.Payload.Name.ToUpper();
 
         IssueHelpdeskModelDB issue;

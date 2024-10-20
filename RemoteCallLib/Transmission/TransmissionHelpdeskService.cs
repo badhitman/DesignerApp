@@ -15,12 +15,24 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
 
     #region articles
     /// <inheritdoc/>
+    public async Task<TResponseModel<EntryModel[]?>> TagArticleSet(TagArticleSetModel req)
+        => await rabbitClient.MqRemoteCall<EntryModel[]?>(GlobalStaticConstants.TransmissionQueues.TagArticleSetReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string[]?>> TagsOfArticlesSelect(string? req)
+        => await rabbitClient.MqRemoteCall<string[]?>(GlobalStaticConstants.TransmissionQueues.TagsOfArticlesSelectReceive, req);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<ArticleModelDB>>> ArticlesSelect(TPaginationRequestModel<SelectArticlesRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<ArticleModelDB>>(GlobalStaticConstants.TransmissionQueues.ArticlesSelectHelpdeskReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> ArticleCreateOrUpdate(ArticleModelDB article)
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.ArticleUpdateHelpdeskReceive, article);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<ArticleModelDB[]>> ArticlesRead(int[] req)
+        => await rabbitClient.MqRemoteCall<ArticleModelDB[]>(GlobalStaticConstants.TransmissionQueues.ArticlesReadReceive, req);
     #endregion
 
     #region rubric

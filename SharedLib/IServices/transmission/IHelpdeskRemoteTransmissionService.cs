@@ -16,7 +16,17 @@ public interface IHelpdeskRemoteTransmissionService
 
     #region articles
     /// <summary>
+    /// TagArticleSet
+    /// </summary>
+    public Task<TResponseModel<EntryModel[]?>> TagArticleSet(TagArticleSetModel req);
+
+    /// <summary>
     /// Получить статьи 
+    /// </summary>
+    public Task<TResponseModel<ArticleModelDB[]>> ArticlesRead(int[] req);
+
+    /// <summary>
+    /// Подобрать статьи 
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<ArticleModelDB>>> ArticlesSelect(TPaginationRequestModel<SelectArticlesRequestModel> req);
 
@@ -24,6 +34,11 @@ public interface IHelpdeskRemoteTransmissionService
     /// Создать (обновить) статью
     /// </summary>
     public Task<TResponseModel<int?>> ArticleCreateOrUpdate(ArticleModelDB article);
+
+    /// <summary>
+    /// TagsOfArticlesSelect
+    /// </summary>
+    public Task<TResponseModel<string[]?>> TagsOfArticlesSelect(string? req);
     #endregion
 
     #region rubric

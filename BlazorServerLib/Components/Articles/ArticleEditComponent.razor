@@ -1,5 +1,41 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
 
-<h3>ArticleEditPage: @ArticleId</h3>
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Информация">
+        <div class="mb-3">
+            <label for="artInputName" class="form-label">Название</label>
+            <input @bind-value="editArticle.Name" @bind-value:event="oninput" type="text" class="form-control" id="artInputName">
+        </div>
 
-<TinyMCE.Blazor.Editor @bind-Value="TextValue" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(ArticleId < 1)" />
+        @if (ArticleId < 1)
+        {
+            <figure class="text-center">
+                <blockquote class="blockquote">
+                    <p>Объект не записан.</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    Сохраните <cite title="после сохранения объекта станут доступны его остальные параметры">материал</cite>
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            <TinyMCE.Blazor.Editor @bind-Value="editArticle.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(ArticleId < 1)" />
+            <hr />
+            <TagsForArticlesComponent Article="orignArticle" />
+        }
+
+        <div class="d-grid gap-2 mt-3">
+            <button @onclick="SaveArticle" disabled="@((!IsEdited && editArticle.Id > 0) || string.IsNullOrWhiteSpace(editArticle.Name))" class="btn btn-@(string.IsNullOrWhiteSpace(editArticle.Name) ? "-outline-secondary" : "primary")" type="button">@(string.IsNullOrWhiteSpace(editArticle.Name) ? "Укажите название..." : "Записать")</button>
+        </div>
+    </MudTabPanel>
+    <MudTabPanel Disabled="@(ArticleId < 1 || IsEdited)" Text="Категории">
+        <MudText>Content Two</MudText>
+    </MudTabPanel>
+    <MudTabPanel Disabled="@(ArticleId < 1 || IsEdited)" Text="Файлы">
+        <MudText>Content Three</MudText>
+    </MudTabPanel>
+</MudTabs>
+
+

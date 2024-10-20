@@ -9,6 +9,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using RemoteCallLib;
 using SharedLib;
+using System.Text.RegularExpressions;
 
 namespace Transmission.Receives.storage;
 
@@ -28,8 +29,8 @@ public class SaveFileReceive(IMongoDatabase mongoFs, IDbContextFactory<StorageCo
 
         TResponseModel<StorageFileModelDB?> res = new();
         GridFSBucket gridFS = new(mongoFs);
-
-        string _file_name = req.FileName;
+        Regex rx = new(@"\s+", RegexOptions.Compiled);
+        string _file_name = rx.Replace(req.FileName.Trim(), " ");
         if (string.IsNullOrWhiteSpace(_file_name))
             _file_name = $"без имени: {DateTime.UtcNow}";
 
