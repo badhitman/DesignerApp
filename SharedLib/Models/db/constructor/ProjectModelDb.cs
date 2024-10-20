@@ -9,9 +9,14 @@ namespace SharedLib;
 /// <summary>
 /// Project (for context)
 /// </summary>
-[Index(nameof(OwnerUserId))]
+[Index(nameof(OwnerUserId)), Index(nameof(NormalizedUpperName)), Index(nameof(ContextName))]
 public class ProjectModelDb : EntryDescriptionSwitchableModel
 {
+    /// <summary>
+    /// NormalizedUpperName
+    /// </summary>
+    public required string NormalizedUpperName { get; set; }
+
     /// <summary>
     /// Имя контекста. по умолчанию: null (null or empty or spice) - используется для конструктора
     /// </summary>
@@ -59,17 +64,5 @@ public class ProjectModelDb : EntryDescriptionSwitchableModel
     public bool CanEdit(UserInfoModel userInfoModel)
     {
         return !IsDisabled || OwnerUserId.Equals(userInfoModel.UserId) || userInfoModel.Roles?.Any(x => x.Equals(GlobalStaticConstants.Roles.Admin, StringComparison.OrdinalIgnoreCase)) == true;
-    }
-
-    /// <summary>
-    /// Reload
-    /// </summary>
-    public void Reload(ProjectViewModel project)
-    {
-        Name = project.Name;
-        Description = project.Description;
-        Id = project.Id;
-        IsDisabled = project.IsDisabled;
-        OwnerUserId = project.OwnerUserId;
     }
 }

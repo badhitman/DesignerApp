@@ -19,7 +19,7 @@
                     {
                         <div class="form-check" title="Деактивация проекта блокирует работы по нему для соучастников">
                             <input disabled="@(!CurrentUser.UserId.Equals(ProjectForEdit.OwnerUserId))" class="form-check-input" type="checkbox" value="" id="flexCheckIsDeleted" @bind="projectObject.IsDisabled">
-                            <label class="form-check-label" for="flexCheckIsDeleted">
+                            <label class="form-check-label text-@(projectObject.IsDisabled ? "secondary" : "success")" for="flexCheckIsDeleted">
                                 @(projectObject.IsDisabled ? "Выключен. Включить?" : "Активен. Выключить?")
                             </label>
                         </div>

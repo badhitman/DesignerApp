@@ -404,6 +404,7 @@ public partial class FormsConstructorService(
     public async Task<TResponseModel<int>> CreateProject(CreateProjectRequestModel req)
     {
         TResponseModel<int> res = new();
+        req.Project.Name = req.Project.Name.Trim();
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(req.Project);
         if (!IsValid)
@@ -411,7 +412,6 @@ public partial class FormsConstructorService(
             res.Messages.InjectException(ValidationResults);
             return res;
         }
-
         TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity([req.UserId]);
         if (!restUsers.Success())
             throw new Exception(restUsers.Message());
@@ -437,6 +437,7 @@ public partial class FormsConstructorService(
         projectDb = new()
         {
             Name = req.Project.Name,
+            NormalizedUpperName = req.Project.Name.ToUpper(),
             OwnerUserId = userDb.UserId,
             Description = req.Project.Description,
             IsDisabled = req.Project.IsDisabled,
@@ -478,13 +479,14 @@ public partial class FormsConstructorService(
             return ResponseBaseModel.CreateError(ValidationResults);
 
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
-
+        project.Name = project.Name.Trim();
+        string upName = project.Name.ToUpper();
         ProjectModelDb? projectDb = await context_forms
             .Projects
-            .FirstOrDefaultAsync(x => x.Id != project.Id && x.Name.ToUpper() == project.Name.ToUpper());
+            .FirstOrDefaultAsync(x => x.Id != project.Id && x.NormalizedUpperName == upName);
 
         if (projectDb is not null)
-            return ResponseBaseModel.CreateError($"Проект должен иметь уникальное имя и код. Похожий проект есть в БД: #{projectDb.Id} '{projectDb.Name}'");
+            return ResponseBaseModel.CreateError($"Проект должен иметь уникальное имя. Похожий проект есть в БД: #{projectDb.Id} '{projectDb.Name}'");
 
         projectDb = await context_forms
             .Projects
@@ -493,12 +495,17 @@ public partial class FormsConstructorService(
         if (projectDb is null)
             return ResponseBaseModel.CreateError($"Проект #{project.Id} не найден в БД");
 
-        if (project.Name == projectDb.Name && project.Description == projectDb.Description)
+        if (project.Name == projectDb.Name && project.Description == projectDb.Description && project.IsDisabled == projectDb.IsDisabled)
             return ResponseBaseModel.CreateInfo("Объект не изменён");
 
-        projectDb.Reload(project);
+        await context_forms
+            .Projects.Where(x => x.Id == project.Id)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.IsDisabled, project.IsDisabled)
+            .SetProperty(p => p.Description, project.Description)
+            .SetProperty(p => p.NormalizedUpperName, upName)
+            .SetProperty(p => p.Name, project.Name));
 
-        context_forms.Update(projectDb);
         await context_forms.SaveChangesAsync();
 
         return ResponseBaseModel.CreateSuccess("Проект обновлён");
@@ -676,7 +683,7 @@ public partial class FormsConstructorService(
         ProjectUseConstructorModelDb? project_use = null;
         if (!await context_forms.Projects.AnyAsync(x => x.OwnerUserId == user_id) && !await context_forms.MembersOfProjects.AnyAsync(x => x.UserId == user_id))
         {
-            project = new() { Name = "По умолчанию", OwnerUserId = user_id };
+            project = new() { Name = "По умолчанию", OwnerUserId = user_id, NormalizedUpperName = "ПО УМОЛЧАНИЮ" };
             await context_forms.AddAsync(project);
             try
             {
