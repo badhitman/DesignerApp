@@ -114,7 +114,7 @@ builder.Services
     .RegisterMqListener<FormFieldDirectoryDeleteReceive, TAuthRequestModel<int>?, object?>()
     .RegisterMqListener<FormFieldDirectoryUpdateOrCreateReceive, TAuthRequestModel<FieldFormAkaDirectoryConstructorModelDB>?, object?>()
     .RegisterMqListener<FormFieldDeleteReceive, TAuthRequestModel<int>?, object?>()
-    .RegisterMqListener<FormFieldUpdateOrCreateReceive, TAuthRequestModel<FieldFormBaseConstructorModel>?, object?>()
+    .RegisterMqListener<FormFieldUpdateOrCreateReceive, TAuthRequestModel<FieldFormConstructorModelDB>?, object?>()
     .RegisterMqListener<FieldDirectoryFormMoveReceive, TAuthRequestModel<MoveObjectModel>?, FormConstructorModelDB?>()
     .RegisterMqListener<FieldFormMoveReceive, TAuthRequestModel<MoveObjectModel>?, FormConstructorModelDB?>()
     .RegisterMqListener<FormDeleteReceive, TAuthRequestModel<int>?, object?>()

@@ -105,6 +105,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         }
         ResponseBaseModel rest;
         IsBusyProgress = true;
+        await Task.Delay(1);
         if (_field_master is FieldFormAkaDirectoryConstructorModelDB directory_field)
         {
             rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(new()
@@ -177,10 +178,13 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
             }
             else
             {
-                directory_field.Required = _field_master.Required;
-                directory_field.Name = _field_master.Name;
+                _field_master.Update(directory_field);
+
+                //_field_master.Required = directory_field.Required;
+                //_field_master.Name = directory_field.Name;
+                //((FieldFormAkaDirectoryConstructorModelDB)_field_master).IsMultiSelect = directory_field.IsMultiSelect;
             }
-            _field_master = directory_field;
+            //_field_master = directory_field;
         }
         else if (_sender is FieldFormConstructorModelDB standard_field)
         {
@@ -200,10 +204,10 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
             }
             else
             {
-                standard_field.Required = _field_master.Required;
-                standard_field.Name = _field_master.Name;
+                _field_master.Required = standard_field.Required;
+                _field_master.Name = standard_field.Name;
             }
-            _field_master = standard_field;
+            //_field_master = standard_field;
         }
         else
         {

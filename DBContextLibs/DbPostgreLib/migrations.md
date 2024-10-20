@@ -24,6 +24,6 @@ Update-Database -Context CommerceContext -Project DbPostgreLib -StartupProject C
 ```
 
 ```
-Add-Migration ConstructorContext003 -Context ConstructorContext -Project DbPostgreLib -StartupProject ConstructorService
+Add-Migration ConstructorContext004 -Context ConstructorContext -Project DbPostgreLib -StartupProject ConstructorService
 Update-Database -Context ConstructorContext -Project DbPostgreLib -StartupProject ConstructorService
 ```

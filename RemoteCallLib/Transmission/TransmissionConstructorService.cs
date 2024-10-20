@@ -161,7 +161,7 @@ public class TransmissionConstructorService(IRabbitClient rabbitClient) : IConst
      => await rabbitClient.MqRemoteCall<FormConstructorModelDB>(GlobalStaticConstants.TransmissionQueues.FieldDirectoryFormMoveReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object>> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormBaseConstructorModel> req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<object>> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormConstructorModelDB> req, CancellationToken cancellationToken = default)
      => await rabbitClient.MqRemoteCall<object>(GlobalStaticConstants.TransmissionQueues.FormFieldUpdateOrCreateReceive, req);
 
     /// <inheritdoc/>

@@ -221,7 +221,7 @@ public interface IConstructorService
     /// <summary>
     /// Обновить/создать поле формы (простой тип)
     /// </summary>
-    public Task<ResponseBaseModel> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormBaseConstructorModel> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormConstructorModelDB> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить поле формы (простой тип)

@@ -1450,11 +1450,10 @@ public partial class FormsConstructorService(
         }
 
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
-#pragma warning disable CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
+
         FormConstructorModelDB? form_db = await context_forms
             .Forms
-            .FirstOrDefaultAsync(x => x.Id != req.Payload.Id && x.ProjectId == req.Payload.ProjectId && x.Name.ToUpper() == req.Payload.Name.ToUpper(), cancellationToken: cancellationToken);
-#pragma warning restore CA1862 // Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
+            .FirstOrDefaultAsync(x => x.Id != req.Payload.Id && x.ProjectId == req.Payload.ProjectId && x.NormalizedUpperName == req.Payload.Name.ToUpper(), cancellationToken: cancellationToken);
 
         string msg;
         if (form_db is not null)
@@ -1514,7 +1513,8 @@ public partial class FormsConstructorService(
         }
         else
         {
-            form_db.Name = req.Payload.Name;
+            form_db.Name = req.Payload.Name.Trim();
+            form_db.NormalizedUpperName = form_db.Name.Trim().ToUpper();
             form_db.Description = req.Payload.Description;
             form_db.Css = req.Payload.Css;
             form_db.AddRowButtonTitle = req.Payload.AddRowButtonTitle;
@@ -1707,7 +1707,7 @@ public partial class FormsConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormBaseConstructorModel> req, CancellationToken cancellationToken = default)
+    public async Task<ResponseBaseModel> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormConstructorModelDB> req, CancellationToken cancellationToken = default)
     {
         req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name, " ").Trim();
         req.Payload.MetadataValueType = req.Payload.MetadataValueType?.Trim();

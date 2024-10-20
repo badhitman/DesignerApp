@@ -10,9 +10,14 @@ namespace SharedLib;
 /// <summary>
 /// Форма
 /// </summary>
-[Index(nameof(Name), nameof(ProjectId), IsUnique = true)]
+[Index(nameof(Name), nameof(ProjectId), IsUnique = true), Index(nameof(NormalizedUpperName))]
 public class FormConstructorModelDB : FormBaseConstructorModel
-{   
+{
+    /// <summary>
+    /// NormalizedUpperName
+    /// </summary>
+    public required string NormalizedUpperName { get; set; }
+
     /// <summary>
     /// Поля формы
     /// </summary>
@@ -65,13 +70,14 @@ public class FormConstructorModelDB : FormBaseConstructorModel
 
     /// <inheritdoc/>
     public static FormConstructorModelDB BuildEmpty(int projectId)
-        => new() { Name = "", ProjectId = projectId };
+        => new() { Name = "", ProjectId = projectId, NormalizedUpperName = "" };
 
     /// <inheritdoc/>
     public static FormConstructorModelDB Build(FormConstructorModelDB other)
         => new()
         {
-            Name = other.Name,
+            Name = other.Name.Trim(),
+            NormalizedUpperName = other.Name.Trim().ToUpper(),
             Description = other.Description,
             Css = other.Css,
             AddRowButtonTitle = other.AddRowButtonTitle,
@@ -91,12 +97,15 @@ public class FormConstructorModelDB : FormBaseConstructorModel
         return new()
         {
             Id = other.Id,
-            Name = other.Name,
+            Name = other.Name.Trim(),
+            NormalizedUpperName = other.Name.Trim().ToUpper(),
             Description = other.Description,
             Css = other.Css,
             AddRowButtonTitle = other.AddRowButtonTitle,
             ProjectId = other.ProjectId,
             Project = other.Project,
+            Fields = [],
+            FieldsDirectoriesLinks = [],
         };
     }
 
@@ -106,7 +115,8 @@ public class FormConstructorModelDB : FormBaseConstructorModel
     public FormConstructorModelDB Reload(FormConstructorModelDB other)
     {
         Id = other.Id;
-        Name = other.Name;
+        Name = other.Name.Trim();
+        NormalizedUpperName = other.Name.Trim().ToUpper();
         Description = other.Description;
         Css = other.Css;
         AddRowButtonTitle = other.AddRowButtonTitle;
