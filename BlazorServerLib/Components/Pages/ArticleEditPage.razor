@@ -1,33 +1,14 @@
 ﻿@page "/articles/edit-card/{ArticleId:int}"
+@page "/articles/edit-card/"
+
+@using BlazorWebLib.Components.Articles
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize]
 
-<h3>ArticleEditPage: @ArticleId</h3>
-
-<TinyMCE.Blazor.Editor @bind-Value="TextValue" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(ArticleId < 1)" />
+<ArticleEditComponent ArticleId="ArticleId ?? 0" />
 
 @code {
     [Parameter]
-    public int ArticleId { get; set; }
-
-    string images_upload_url = default!;
-    Dictionary<string, object> editorConf = default!;
-
-    string? _textValue;
-    string? TextValue
-    {
-        get => _textValue;
-        set
-        {
-            bool nu = _textValue != value;
-            _textValue = value;
-        }
-    }
-
-    protected override void OnInitialized()
-    {
-        images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{GlobalStaticConstants.Routes.ARTICLE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.BODY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={GlobalStaticConstants.Routes.IMAGE_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={ArticleId}";
-        editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
-    }
+    public int? ArticleId { get; set; }
 }

@@ -1,0 +1,5 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<h3>ArticleEditPage: @ArticleId</h3>
+
+<TinyMCE.Blazor.Editor @bind-Value="TextValue" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(ArticleId < 1)" />
