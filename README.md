@@ -6,7 +6,7 @@
 - Подсистема электронной коммерции: на базе СЭД функционирует простой учёт заказов.
 - WEB-Конструктор схем данных (формы, документы).
 - Интерфейс rest API (swagger) для внешних информационных систем.
-- ui пакеты: [MudBlazor 7](https://github.com/MudBlazor/MudBlazor/) и два WYSIWYG: CKEditor и TinyMCE. Важно: CKEditor не поддерживает вставку картинок, а TinyMCE имеет такую поддержу (в т.ч. локальное хранение файлов в MongoDB)
+- ui пакеты: [MudBlazor 7](https://github.com/MudBlazor/MudBlazor/) и два WYSIWYG: [CKEditor](https://ckeditor.com/) и [TinyMCE](https://www.tiny.cloud/). Важно: **CKEditor** не поддерживает вставку картинок, а **TinyMCE** имеет такую поддержу (в т.ч. локальное хранение файлов в MongoDB)
 
 Зависимости решения между проектами:
 
