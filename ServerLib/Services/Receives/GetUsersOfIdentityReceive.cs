@@ -11,11 +11,9 @@ using SharedLib;
 namespace Transmission.Receives.web;
 
 /// <summary>
-/// Find user identity - receive
+/// Получить пользователей из Identity по их идентификаторам
 /// </summary>
-public class GetUsersOfIdentityReceive(
-    IDbContextFactory<IdentityAppDbContext> identityDbFactory,
-    IMemoryCache cache)
+public class GetUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, IMemoryCache cache)
     : IResponseReceive<string[]?, UserInfoModel[]?>
 {
     /// <inheritdoc/>

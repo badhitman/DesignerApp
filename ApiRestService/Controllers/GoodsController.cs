@@ -25,7 +25,10 @@ public class GoodsController(ICommerceRemoteTransmissionService commRepo) : Cont
     /// <remarks>
     /// Роли: <see cref="ExpressApiRolesEnum.OrdersReadCommerce"/>, <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-    [HttpPut($"/api/{GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}"), LoggerNolog]
+    [HttpPut($"/api/{GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}")]
+#if !DEBUG
+    [LoggerNolog]
+#endif
     public async Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>>> OrdersSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
         => await commRepo.GoodsSelect(req);
 
@@ -35,7 +38,10 @@ public class GoodsController(ICommerceRemoteTransmissionService commRepo) : Cont
     /// <remarks>
     /// Роли: <see cref="ExpressApiRolesEnum.OrdersReadCommerce"/>, <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-    [HttpPut($"/api/{GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.READ_ACTION_NAME}"), LoggerNolog]
+    [HttpPut($"/api/{GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.READ_ACTION_NAME}")]
+#if !DEBUG
+    [LoggerNolog]
+#endif
     public async Task<TResponseModel<GoodsModelDB[]>> GoodsRead(int[] req)
         => await commRepo.GoodsRead(req);
 }

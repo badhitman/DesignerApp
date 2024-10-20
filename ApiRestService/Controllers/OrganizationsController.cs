@@ -11,7 +11,12 @@ namespace ApiRestService.Controllers;
 /// <summary>
 /// Организации
 /// </summary>
-[Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog, Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrganizationsReadCommerce)},{nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce)}")]
+[Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute))]
+#if DEBUG
+[AllowAnonymous]
+#else
+[Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrganizationsReadCommerce)},{nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce)}"), LoggerNolog]
+#endif
 public class OrganizationsController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
 {
     /// <summary>
@@ -52,7 +57,12 @@ public class OrganizationsController(ICommerceRemoteTransmissionService commRepo
     /// Роль: <see cref="ExpressApiRolesEnum.OrganizationsWriteCommerce"/>.
     /// Если организация находиться в статусе запроса изменения реквизитов - этот признак обнуляется.
     /// </remarks>
-    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORGANIZATIONS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LEGAL_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce)}"), LoggerLog]
+    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORGANIZATIONS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LEGAL_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), LoggerLog]
+#if DEBUG
+    [AllowAnonymous]
+#else
+[Authorize(Roles = nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce))]
+#endif
     public async Task<TResponseModel<bool>> OrganizationSetLegal(OrganizationModelDB org)
         => await commRepo.OrganizationSetLegal(org);
 
@@ -62,7 +72,12 @@ public class OrganizationsController(ICommerceRemoteTransmissionService commRepo
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.OrganizationsWriteCommerce"/>
     /// </remarks>
-    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORGANIZATIONS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce)}"), LoggerLog]
+    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORGANIZATIONS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), LoggerLog]
+#if DEBUG
+    [AllowAnonymous]
+#else
+[Authorize(Roles = nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce))]
+#endif
     public async Task<TResponseModel<int>> OrganizationUpdate(OrganizationModelDB org)
         => await commRepo.OrganizationUpdate(new() { Payload = org, SenderActionUserId = GlobalStaticConstants.Roles.System });
 
@@ -72,7 +87,12 @@ public class OrganizationsController(ICommerceRemoteTransmissionService commRepo
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.OrganizationsWriteCommerce"/>
     /// </remarks>
-    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORGANIZATIONS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce)}"), LoggerLog]
+    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORGANIZATIONS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), LoggerLog]
+#if DEBUG
+    [AllowAnonymous]
+#else
+[Authorize(Roles = nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce))]
+#endif
     public async Task<TResponseModel<int>> AddressOrganizationUpdate(AddressOrganizationBaseModel req)
         => await commRepo.AddressOrganizationUpdate(req);
 }

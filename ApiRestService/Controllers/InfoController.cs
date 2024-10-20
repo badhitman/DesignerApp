@@ -12,7 +12,10 @@ namespace ApiRestService.Controllers;
 /// <summary>
 /// Информация
 /// </summary>
-[Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog]
+[Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute))]
+#if !DEBUG
+    [LoggerNolog]
+#endif
 public class InfoController : ControllerBase
 {
     /// <summary>

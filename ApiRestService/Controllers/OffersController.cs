@@ -25,7 +25,10 @@ public class OffersController(ICommerceRemoteTransmissionService commRepo) : Con
     /// <remarks>
     /// Роли: <see cref="ExpressApiRolesEnum.OrdersReadCommerce"/>, <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-    [HttpPut($"/api/{GlobalStaticConstants.Routes.OFFERS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}"), LoggerNolog]
+    [HttpPut($"/api/{GlobalStaticConstants.Routes.OFFERS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}")]
+#if !DEBUG
+    [LoggerNolog]
+#endif
     public async Task<TResponseModel<TPaginationResponseModel<OfferGoodModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
         => await commRepo.OffersSelect(req);
 
@@ -35,7 +38,10 @@ public class OffersController(ICommerceRemoteTransmissionService commRepo) : Con
     /// <remarks>
     /// Роли: <see cref="ExpressApiRolesEnum.OrdersReadCommerce"/>, <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-    [HttpPut($"/api/{GlobalStaticConstants.Routes.OFFERS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.READ_ACTION_NAME}"), LoggerNolog]
+    [HttpPut($"/api/{GlobalStaticConstants.Routes.OFFERS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.READ_ACTION_NAME}")]
+#if !DEBUG
+    [LoggerNolog]
+#endif
     public async Task<TResponseModel<OfferGoodModelDB[]>> OffersRead(int[] req)
         => await commRepo.OffersRead(req);
 }

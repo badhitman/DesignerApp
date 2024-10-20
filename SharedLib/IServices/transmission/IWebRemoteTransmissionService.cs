@@ -20,7 +20,7 @@ public interface IWebRemoteTransmissionService
     public Task<TResponseModel<WebConfigModel?>> GetWebConfig();
 
     /// <summary>
-    /// Поиск пользователей в Identity по их идентификаторам
+    /// Получить пользователей из Identity по их идентификаторам
     /// </summary>
     public Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(string[] ids_users);
 
