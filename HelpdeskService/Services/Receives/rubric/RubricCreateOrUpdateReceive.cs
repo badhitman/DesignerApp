@@ -53,28 +53,22 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
             rubric.SortIndex = six.Length == 0 ? 1 : six.Max() + 1;
 
             await context.AddAsync(rubric);
+            await context.SaveChangesAsync();
             res.AddSuccess("Объект успешно создан");
+            res.Response = rubric.Id;
         }
         else
         {
-            RubricIssueHelpdeskModelDB rubric_db = await context
-                            .RubricsForIssues
-                            .FirstAsync(x => x.Id == rubric.Id);
+            res.Response = await context
+                .RubricsForIssues
+                .Where(x => x.Id == rubric.Id)
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.IsDisabled, rubric.IsDisabled)
+                .SetProperty(p => p.Name, rubric.Name)
+                .SetProperty(p => p.Description, rubric.Description));
 
-            rubric_db.ParentRubricId = rubric.ParentRubricId;
-            rubric_db.ProjectId = rubric.ProjectId;
-            rubric_db.Description = rubric.Description;
-            rubric_db.Name = rubric.Name;
-            rubric_db.IsDisabled = rubric.IsDisabled;
-            rubric_db.ContextName = rubric.ContextName;
-
-            context.Update(rubric_db);
             res.AddSuccess("Объект успешно обновлён");
         }
-
-        await context.SaveChangesAsync();
-
-        res.Response = rubric.Id;
 
         return res;
     }

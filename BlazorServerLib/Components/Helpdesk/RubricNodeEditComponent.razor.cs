@@ -33,10 +33,6 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required TreeItemDataRubricModel Item { get; set; }
 
-    /// <inheritdoc/>
-    [CascadingParameter, EditorRequired]
-    public required RubricsManageComponent HelpdeskParentView { get; set; }
-
 
     bool IsRenameMode;
 

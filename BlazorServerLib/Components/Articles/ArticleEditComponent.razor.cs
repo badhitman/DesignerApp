@@ -2,10 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
 namespace BlazorWebLib.Components.Articles;
@@ -39,7 +39,6 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseModel
     ArticleModelDB editArticle = default!;
 
     bool IsEdited => !orignArticle.Equals(editArticle);
-
 
     UserInfoMainModel user = default!;
     string images_upload_url = default!;
