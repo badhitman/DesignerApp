@@ -28,6 +28,7 @@ public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
     public required ArticleModelDB Article { get; set; }
 
 
+    MudAutocomplete<string?>? maRef;
     string? _value;
     string? TagAdding
     {
@@ -52,6 +53,8 @@ public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
         {
             Article.Update(res.Response!);
             _value = null;
+            if (maRef is not null)
+                await maRef.ClearAsync();
         }
         StateHasChanged();
     }
@@ -77,11 +80,19 @@ public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = false;
         if (!res.Success())
             SnackbarRepo.ShowMessagesResponse(res.Messages);
-        List<string> res_data = [.. res.Response];
+        List<string> res_data = [.. res.Response?.Where(x => Article.Tags?.Any(y => y.Name.Equals(x, StringComparison.OrdinalIgnoreCase)) != true)];
 
         if (!string.IsNullOrWhiteSpace(value) && !res_data.Contains(value))
             res_data.Add(value);
 
         return res_data;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (Article.Tags is not null && Article.Tags.Count != 0)
+            Article.Tags.Sort((x, y) => x.Name.CompareTo(y.Name));
     }
 }

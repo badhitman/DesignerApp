@@ -7,7 +7,7 @@
         <MudStack Justify="@Justify.Center" Class="mud-width-full">
             <MudGrid>
                 <MudItem xs="12" sm="6" md="3">
-                    <MudAutocomplete @bind-Value="TagAdding" SearchFunc="Search" Dense="true" Clearable="true" />
+                    <MudAutocomplete @ref="maRef" @bind-Value="TagAdding" SearchFunc="Search" Dense="true" Clearable="true" />
                 </MudItem>
                 <MudItem xs="12" sm="6" md="9">
                     <MudChipSet T="ArticleTagModelDB"
