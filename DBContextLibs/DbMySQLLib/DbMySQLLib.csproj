@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
-		<PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.5" />
+		<PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.8" />
 		<PackageReference Include="System.Drawing.Common" Version="8.0.10" />
 	</ItemGroup>
 
