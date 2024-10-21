@@ -9,7 +9,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MongoDB.Driver" Version="3.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.9.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
