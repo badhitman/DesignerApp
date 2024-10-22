@@ -55,10 +55,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseAuthModel
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         if (directoryNav_ref is not null)
-        {
             await directoryNav_ref.SetBusy();
-            directoryNav_ref.StateHasChangedCall();
-        }
 
         if (rest.Success())
             await elementsListOfDirectoryView_ref.ReloadElements(directoryNav_ref?.SelectedDirectoryId, true);
@@ -69,10 +66,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseAuthModel
         }
 
         if (directoryNav_ref is not null)
-        {
-            directoryNav_ref.IsBusyProgress = false;
-            directoryNav_ref.StateHasChangedCall();
-        }
+            await directoryNav_ref.SetBusy(false);
     }
 
     async void SelectedDirectoryChangeAction(int selectedDirectoryId)
