@@ -55,7 +55,6 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseModel
     private async Task<TableData<StorageFileModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         await SetBusy(token: token);
-
         TPaginationRequestModel<SelectFilesRequestModel> req = new()
         {
             Payload = new()

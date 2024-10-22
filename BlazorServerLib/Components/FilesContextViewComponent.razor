@@ -13,12 +13,16 @@
         <MudTh>FileName</MudTh>
         <MudTh>FileLength</MudTh>
         <MudTh>ContentType</MudTh>
+        <MudTh>Property</MudTh>
+        <MudTh>Prefix</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="CreatedAt">@context.CreatedAt</MudTd>
         <MudTd DataLabel="FileName">@context.FileName</MudTd>
-        <MudTd DataLabel="FileLength">@context.FileLength</MudTd>
+        <MudTd DataLabel="FileLength">@(GlobalTools.SizeDataAsString(context.FileLength))</MudTd>
         <MudTd DataLabel="ContentType">@context.ContentType</MudTd>
+        <MudTd DataLabel="Property">@context.Name</MudTd>
+        <MudTd DataLabel="Prefix">@context.PrefixPropertyName</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>

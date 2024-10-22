@@ -22,8 +22,8 @@ public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService s
     public async Task<IActionResult> UploadImage(
         [FromRoute] string AppNameStorage,
         [FromRoute] string NameStorage,
-        [FromQuery] string? PrefixStorage,
-        [FromQuery] int? OwnerKey,
+        [FromQuery] string? PrefixPropertyName,
+        [FromQuery] int? OwnerPrimaryKey,
         IFormFile file)
     {
         System.Security.Claims.ClaimsPrincipal user = HttpContext.User;
@@ -61,9 +61,9 @@ public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService s
         StorageImageMetadataModel req = new()
         {
             Referrer = HttpContext.Request.Headers["Referer"].FirstOrDefault(),
-            PrefixPropertyName = PrefixStorage,
+            PrefixPropertyName = PrefixPropertyName,
             ApplicationName = AppNameStorage,
-            OwnerPrimaryKey = OwnerKey,
+            OwnerPrimaryKey = OwnerPrimaryKey,
             Payload = payload,
             Name = NameStorage,
             AuthorUserIdentity = un,

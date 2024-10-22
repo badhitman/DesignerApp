@@ -55,8 +55,8 @@
     </MudTabPanel>
     <MudTabPanel Disabled="@(ArticleId < 1 || IsBusyProgress || IsEdited)" Text="Файлы">
         <FilesContextViewComponent ApplicationName="@GlobalStaticConstants.Routes.ARTICLE_CONTROLLER_NAME"
-                                   PropertyName="@GlobalStaticConstants.Routes.BODY_CONTROLLER_NAME"
-                                   PrefixPropertyName="@GlobalStaticConstants.Routes.IMAGE_ACTION_NAME"
+                                   PropertyName="@string.Empty"
+                                   PrefixPropertyName="@string.Empty"
                                    OwnerPrimaryKey="ArticleId" />
     </MudTabPanel>
 </MudTabs>

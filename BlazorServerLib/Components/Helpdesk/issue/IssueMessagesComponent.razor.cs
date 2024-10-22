@@ -98,6 +98,7 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await ReadCurrentUser();
         await ReloadMessages();
     }
 }
