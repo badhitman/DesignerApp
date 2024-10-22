@@ -15,7 +15,7 @@ namespace Transmission.Receives.commerce;
 /// StatusChangeReceive
 /// </summary>
 public class StatusChangeReceive(
-    IDbContextFactory<CommerceLayerContext> commerceDbFactory,
+    IDbContextFactory<CommerceContext> commerceDbFactory,
     ILogger<StatusChangeReceive> LoggerRepo)
     : IResponseReceive<StatusChangeRequestModel?, bool?>
 {
@@ -27,7 +27,7 @@ public class StatusChangeReceive(
         ArgumentNullException.ThrowIfNull(req);
         LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
 
-        using CommerceLayerContext context = await commerceDbFactory.CreateDbContextAsync();
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         TResponseModel<bool?> res = new()
         {
             Response = await context

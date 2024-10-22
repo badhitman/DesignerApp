@@ -37,6 +37,7 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await ReadCurrentUser();
         if (string.IsNullOrWhiteSpace(UserId))
         {
             if (CurrentUserSession!.IsAdmin)
