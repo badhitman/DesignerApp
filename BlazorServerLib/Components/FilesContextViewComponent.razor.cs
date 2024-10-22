@@ -3,12 +3,12 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using static MudBlazor.CategoryTypes;
-using System.Net.Http;
-using Microsoft.JSInterop;
+using BlazorWebLib.Components.Telegram;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorWebLib.Components;
 
@@ -49,18 +49,66 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseModel
     public int? OwnerPrimaryKey { get; set; }
 
 
+    private string? searchString = null;
+
+    private readonly List<IBrowserFile> loadedFiles = [];
+
     private MudTable<StorageFileModelDB>? table;
     StorageFileModelDB? _selectedFile;
     void FileManage(StorageFileModelDB _f)
     {
         _selectedFile = _f;
     }
-    void closeFileManager()
+    void CloseFileManager()
     {
         _selectedFile = null;
     }
 
-    private string? searchString = null;
+    void SelectFilesChange(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+
+        foreach (IBrowserFile file in e.GetMultipleFiles())
+        {
+            loadedFiles.Add(file);
+        }
+    }
+
+    async Task SendMessage()
+    {
+        if (loadedFiles.Count == 0)
+            throw new Exception();
+
+        await SetBusy();
+        //SendTextMessageTelegramBotModel req = new() { Message = _textSendMessage, UserTelegramId = Chat.ChatTelegramId, From = "Техподдержка" };
+
+        //// await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+        MemoryStream ms;
+
+
+        //    req.Files = [];
+
+        //    foreach (var fileBrowser in loadedFiles)
+        //    {
+        //        ms = new();
+        //        await fileBrowser.OpenReadStream(maxAllowedSize: 1024 * 18 * 1024).CopyToAsync(ms);
+        //        req.Files.Add(new() { ContentType = fileBrowser.ContentType, Name = fileBrowser.Name, Data = ms.ToArray() });
+        //        await ms.DisposeAsync();
+        //    }
+
+
+        //TResponseModel<MessageComplexIdsModel?> rest = await TelegramRepo.SendTextMessageTelegram(req);
+        //_textSendMessage = "";
+        //if (_messagesTelegramComponent.TableRef is not null)
+        //    await _messagesTelegramComponent.TableRef.ReloadServerData();
+
+        //IsBusyProgress = false;
+        //SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        //loadedFiles.Clear();
+        //_inputFileId = Guid.NewGuid().ToString();
+        //if (SendMessageHandle is not null)
+        //    SendMessageHandle(req);
+    }
 
     async Task DownloadFile()
     {

@@ -44,7 +44,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLiveLabel">Файл</h1>
-                    <button @onclick="closeFileManager" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button @onclick="CloseFileManager" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>@_selectedFile.Name - @GlobalTools.SizeDataAsString(_selectedFile.FileLength)</p>
@@ -52,11 +52,41 @@
                 <div class="modal-footer">
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <button @onclick="DownloadFile" type="button" class="btn btn-outline-primary">Скачать</button>
-                        <button @onclick="closeFileManager" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button @onclick="CloseFileManager" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div @onclick="closeFileManager" tabindex="-1" class="offcanvas-backdrop fade show"></div>
+    <div @onclick="CloseFileManager" tabindex="-1" class="offcanvas-backdrop fade show"></div>
+}
+
+<div class="my-3">
+    <label for="exampleFormControlTextarea1" class="form-label">Отправка сообщения</label>
+    <div class="input-group">
+        <button @onclick="SendMessage" disabled="@(IsBusyProgress)" class="btn btn-outline-secondary bi bi-send" type="button" id="button-addon2"></button>
+    </div>
+</div>
+
+<div class="input-group mb-3">
+    <InputFile class="form-control" OnChange="SelectFilesChange" />
+</div>
+
+@if (loadedFiles.Count != 0)
+{
+    <ol class="list-group list-group-numbered mb-2">
+        @foreach (IBrowserFile file_element in loadedFiles)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">@file_element.Name</div>
+                    @GlobalTools.SizeDataAsString(file_element.Size)
+                </div>
+                <span class="badge text-bg-primary rounded-pill">@file_element.LastModified</span>
+            </li>
+        }
+    </ol>
+    <div class="d-grid gap-2 mb-3">
+        <button @onclick="() => { loadedFiles.Clear(); }" class="btn btn-outline-primary" type="button">Отмена</button>
+    </div>
 }
