@@ -1,0 +1,32 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table" Loading="IsBusyProgress">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="CreatedAt" T="StorageFileModelDB">CreatedAt</MudTableSortLabel></MudTh>
+        <MudTh>FileName</MudTh>
+        <MudTh>FileLength</MudTh>
+        <MudTh>ContentType</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="CreatedAt">@context.CreatedAt</MudTd>
+        <MudTd DataLabel="FileName">@context.FileName</MudTd>
+        <MudTd DataLabel="FileLength">@context.FileLength</MudTd>
+        <MudTd DataLabel="ContentType">@context.ContentType</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Данные отсутствуют</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

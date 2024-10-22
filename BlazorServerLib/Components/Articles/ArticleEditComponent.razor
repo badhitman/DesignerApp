@@ -1,10 +1,10 @@
 ﻿@using BlazorWebLib.Components.Helpdesk
 @using MudBlazor
+
 @inherits BlazorBusyComponentBaseAuthModel
 
 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-    <MudTabPanel Text="Информация">
-
+    <MudTabPanel Disabled="IsBusyProgress" Text="Информация">
         @if (IsBusyProgress)
         {
             <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
@@ -36,6 +36,10 @@
 
             <div class="d-grid gap-2 mt-3">
                 <button @onclick="SaveArticle" disabled="@((!IsEdited && editArticle.Id > 0) || string.IsNullOrWhiteSpace(editArticle.Name))" class="btn btn-@(string.IsNullOrWhiteSpace(editArticle.Name) ? "-outline-secondary" : "primary")" type="button">@(string.IsNullOrWhiteSpace(editArticle.Name) ? "Укажите название..." : "Записать")</button>
+                @if (IsEdited && ArticleId > 0)
+                {
+                    <button @onclick="() => { editArticle = GlobalTools.CreateDeepCopy(orignArticle) ?? throw new Exception(); }" type="button" class="btn btn-light">Отмена</button>
+                }
             </div>
         }
     </MudTabPanel>
@@ -50,6 +54,9 @@
         </MudPaper>
     </MudTabPanel>
     <MudTabPanel Disabled="@(ArticleId < 1 || IsBusyProgress || IsEdited)" Text="Файлы">
-        <MudText>Файлы</MudText>
+        <FilesContextViewComponent ApplicationName="@GlobalStaticConstants.Routes.ARTICLE_CONTROLLER_NAME"
+                                   PropertyName="@GlobalStaticConstants.Routes.BODY_CONTROLLER_NAME"
+                                   PrefixPropertyName="@GlobalStaticConstants.Routes.IMAGE_ACTION_NAME"
+                                   OwnerPrimaryKey="ArticleId" />
     </MudTabPanel>
 </MudTabs>

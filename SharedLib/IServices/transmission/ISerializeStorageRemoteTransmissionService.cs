@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface ISerializeStorageRemoteTransmissionService
 {
     /// <summary>
+    /// Files select
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectFilesRequestModel> req);
+
+    /// <summary>
     /// ReadFile
     /// </summary>
     public Task<TResponseModel<StorageFileResponseModel>> ReadFile(int? req);

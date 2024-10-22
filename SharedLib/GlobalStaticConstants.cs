@@ -808,6 +808,9 @@ public static partial class GlobalStaticConstants
 
         #region Storage
         /// <inheritdoc/>
+        public readonly static string FilesSelectReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, Routes.FILES_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string SaveCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.SET_ACTION_NAME);
 
         /// <inheritdoc/>

@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Articles;
 public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService artRepo { get; set; } = default!;
+    IHelpdeskRemoteTransmissionService ArticlesRepo { get; set; } = default!;
 
     [Inject]
     NavigationManager NavRepo { get; set; } = default!;
@@ -40,7 +40,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
     {
         await SetBusy();
 
-        TResponseModel<int?> res = await artRepo.ArticleCreateOrUpdate(editArticle);
+        TResponseModel<int?> res = await ArticlesRepo.ArticleCreateOrUpdate(editArticle);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (editArticle.Id < 1 && res.Response.HasValue && res.Response.Value > 0)
@@ -53,7 +53,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
     {
         await SetBusy();
 
-        TResponseModel<ArticleModelDB[]> res = await artRepo.ArticlesRead([ArticleId]);
+        TResponseModel<ArticleModelDB[]> res = await ArticlesRepo.ArticlesRead([ArticleId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response is null)
@@ -65,7 +65,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
     async void SelectedRubricsChange(IReadOnlyCollection<RubricBaseModel?> req)
     {
         await SetBusy();
-        TResponseModel<bool?> res = await artRepo.UpdateRubricsForArticle(new() { ArticleId = ArticleId, RubricsIds = req.Select(x => x!.Id).ToArray() });
+        TResponseModel<bool?> res = await ArticlesRepo.UpdateRubricsForArticle(new() { ArticleId = ArticleId, RubricsIds = req.Select(x => x!.Id).ToArray() });
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
