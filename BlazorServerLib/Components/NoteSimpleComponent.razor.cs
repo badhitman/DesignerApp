@@ -17,9 +17,6 @@ public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Label
@@ -78,7 +75,7 @@ public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
 
     async Task SaveText()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<int> rest = await StorageRepo.SaveParameter(editValue, KeyStorage, false);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         IsBusyProgress = false;
@@ -89,7 +86,7 @@ public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         domId = $"{OwnerPrimaryKey}/{nameof(NoteSimpleComponent)}{ApplicationName}{Name}{PrefixPropertyName}";
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<string?> rest = await StorageRepo.ReadParameter<string>(KeyStorage);
         IsBusyProgress = false;
         initValue = rest.Response;

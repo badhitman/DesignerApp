@@ -106,9 +106,6 @@
     // [Inject]
     // IManufactureService ManufactureRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     [CascadingParameter, EditorRequired]
     public required ManufactureComponent ManufactureParentView { get; set; }
@@ -121,7 +118,7 @@
 
     Task UpdateManufacture()
     {
-        IsBusyProgress = true;
+        SetBusy();
         //ResponseBaseModel res = await ManufactureRepo.UpdateManufactureConfig(manufactureEdit);
         IsBusyProgress = false;
         //SnackbarRepo.ShowMessagesResponse(res.Messages);

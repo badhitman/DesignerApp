@@ -13,16 +13,10 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// GoodsEditComponent
 /// </summary>
-public partial class GoodsEditComponent : BlazorBusyComponentBaseModel
+public partial class GoodsEditComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-    [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
-
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -32,7 +26,6 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseModel
     public required int GoodsId { get; set; }
 
 
-    UserInfoMainModel user = default!;
     GoodsModelDB? CurrentGoods;
     GoodsModelDB? editGoods;
 
@@ -43,7 +36,8 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseModel
         if (editGoods is null)
             throw new ArgumentNullException(nameof(editGoods));
 
-        IsBusyProgress = true;
+        SetBusy();
+
         TResponseModel<int> res = await CommerceRepo.GoodUpdateReceive(editGoods);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -54,9 +48,10 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        SetBusy();
+        if (CurrentUserSession is null)
+            throw new Exception();
+
         TResponseModel<GoodsModelDB[]> res = await CommerceRepo.GoodsRead([GoodsId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

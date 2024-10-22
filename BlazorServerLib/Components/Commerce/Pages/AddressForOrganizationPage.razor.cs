@@ -16,9 +16,6 @@ namespace BlazorWebLib.Components.Commerce.Pages;
 public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
@@ -47,14 +44,16 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<AddressOrganizationModelDB[]> res_address = await CommerceRepo
             .AddressesOrganizationsRead([AddressForOrganization]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res_address.Messages);
         AddressCurrent = res_address.Response!.Single();
         AddressEdit = GlobalTools.CreateDeepCopy(AddressCurrent) ?? throw new Exception();
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<List<RubricIssueHelpdeskModelDB>?> res_rubric = await HelpdeskRepo.RubricRead(AddressCurrent.ParentId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res_rubric.Messages);
@@ -91,7 +90,8 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
         if (!CanSave)
             return;
 
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<int> res = await CommerceRepo.AddressOrganizationUpdate(new AddressOrganizationBaseModel()
         {
             Address = AddressEdit.Address!,

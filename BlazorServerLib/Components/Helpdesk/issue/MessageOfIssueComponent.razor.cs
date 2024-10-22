@@ -87,7 +87,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
         if (string.IsNullOrWhiteSpace(textMessage))
             throw new ArgumentNullException(nameof(textMessage));
 
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<int> rest = await HelpdeskRepo
             .MessageCreateOrUpdate(new()
             {

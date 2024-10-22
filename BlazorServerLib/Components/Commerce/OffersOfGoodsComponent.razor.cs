@@ -13,16 +13,10 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// OffersOfGoodsComponent
 /// </summary>
-public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
+public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-    [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
-
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -33,7 +27,6 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
 
 
     private MudTable<OfferGoodModelDB> table = default!;
-    UserInfoMainModel user = default!;
 
     async void CreateOfferAction(OfferGoodModelDB sender)
     {
@@ -58,7 +51,8 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -67,13 +61,6 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseModel
             return new TableData<OfferGoodModelDB>() { TotalItems = 0, Items = [] };
 
         return new TableData<OfferGoodModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnParametersSetAsync()
-    {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 
     bool _expanded;

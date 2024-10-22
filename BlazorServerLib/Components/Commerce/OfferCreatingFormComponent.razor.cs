@@ -17,9 +17,6 @@ public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseModel
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// CurrentGoods
@@ -51,7 +48,8 @@ public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseModel
             OfferUnit = UnitOffer,
             Price = priceOffer,
         };
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<int> res = await CommerceRepo.OfferUpdate(off);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

@@ -22,9 +22,6 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
@@ -70,7 +67,8 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
             current_user = me;
         else if (!string.IsNullOrWhiteSpace(UserId))
         {
-            IsBusyProgress = true;
+            SetBusy();
+            
             TResponseModel<UserInfoModel[]?> user_res = await WebRepo.GetUsersIdentity([UserId]);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(user_res.Messages);
@@ -94,7 +92,8 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

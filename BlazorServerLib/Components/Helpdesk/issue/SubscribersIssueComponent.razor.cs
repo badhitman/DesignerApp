@@ -27,8 +27,8 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         if (!MailAddress.TryCreate(addingSubscriber, out _))
             throw new Exception();
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         UserInfoModel? user_by_email = await UsersProfilesRepo.FindByEmailAsync(addingSubscriber);
         IsBusyProgress = false;
         if (user_by_email is null)
@@ -40,8 +40,8 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         if (!UsersIdentityDump.Any(x => x.UserId == user_by_email.UserId))
             UsersIdentityDump.Add(user_by_email);
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<bool> add_subscriber_res = await HelpdeskRepo.SubscribeUpdate(new()
         {
             SenderActionUserId = CurrentUser.UserId,
@@ -58,8 +58,8 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             return;
 
         addingSubscriber = null;
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<SubscriberIssueHelpdeskModelDB[]?> reload_subscribers_list = await HelpdeskRepo.SubscribesList(new() { Payload = Issue.Id, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(reload_subscribers_list.Messages);
@@ -85,8 +85,8 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             SenderActionUserId = CurrentUser.UserId
         };
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<bool> rest = await HelpdeskRepo.SubscribeUpdate(req);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -113,8 +113,8 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             SenderActionUserId = CurrentUser.UserId
         };
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<bool> rest = await HelpdeskRepo.SubscribeUpdate(req);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

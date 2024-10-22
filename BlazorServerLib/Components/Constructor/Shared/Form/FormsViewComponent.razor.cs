@@ -19,9 +19,6 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     IDialogService DialogServiceRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -54,7 +51,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     protected async Task OpenForm(FormConstructorModelDB form)
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.GetForm(form.Id);
         IsBusyProgress = false;
 
@@ -93,8 +90,8 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Проект не выбран.");
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<FormConstructorModelDB>> res = await ConstructorRepo.SelectForms(new() { Request = SimplePaginationRequestModel.Build(searchString, _table_state?.PageSize ?? 10, _table_state?.Page ?? 0), ProjectId = ParentFormsPage.MainProject.Id });
         rest_data = res.Response;
         IsBusyProgress = false;

@@ -24,9 +24,6 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
     //[Inject]
     //IManufactureService ManufactureRepo { get; set; } = default!;
 
@@ -103,8 +100,8 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     /// </summary>
     public async Task ReloadProjectData()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         var call = await ConstructorRepo.ProjectsRead([ParentFormsPage.MainProject!.Id]);
         ProjectModelDb[] rest_project = call.Response ?? throw new Exception();
         CurrentProject = rest_project.Single();

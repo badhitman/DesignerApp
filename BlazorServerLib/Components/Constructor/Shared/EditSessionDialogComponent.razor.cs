@@ -25,10 +25,6 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -109,7 +105,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
 
     async Task SaveForm()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.UpdateOrCreateSessionDocument(session_origin);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

@@ -20,9 +20,6 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
     //[Inject]
     //IManufactureService ManufactureRepo { get; set; } = default!;
 
@@ -47,7 +44,8 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
@@ -60,7 +58,8 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     public async Task ReadCurrentMainProject()
     {
         CanEditProject = false;
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<MainProjectViewModel> currentMainProject = await ConstructorRepo.GetCurrentMainProject(CurrentUser.UserId);
 
         if (!currentMainProject.Success())
@@ -75,7 +74,8 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
 
     //public async Task GetSystemNames()
     //{
-    //    IsBusyProgress = true;
+    //    SetBusy();
+    // 
     //    if (MainProject is not null)
     //        SystemNamesManufacture = await ManufactureRepo.GetSystemNames(MainProject!.Id);
     //    IsBusyProgress = false;

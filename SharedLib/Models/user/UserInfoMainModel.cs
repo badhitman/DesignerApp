@@ -8,7 +8,7 @@ namespace SharedLib;
 /// Добавьте свойства в этот класс и обновите AuthenticationStateProviders сервера и клиента, 
 /// чтобы предоставить клиенту дополнительную информацию о прошедшем проверку подлинности пользователе.
 /// </summary>
-public class UserInfoMainModel
+public record UserInfoMainModel
 {
     /// <summary>
     /// FirstName
@@ -21,18 +21,18 @@ public class UserInfoMainModel
     public string? Surname { get; set; }
 
     /// <inheritdoc/>
-    public required string UserId { get; set; }
+    public required string UserId { get; init; }
 
     /// <inheritdoc/>
-    public string? UserName { get; set; }
+    public string? UserName { get; init; }
 
     /// <inheritdoc/>
-    public string? Email { get; set; }
+    public string? Email { get; init; }
 
     /// <summary>
     /// Пользователь привязал Telegram к учётной записи
     /// </summary>
-    public long? TelegramId { get; set; }
+    public long? TelegramId { get; init; }
 
     /// <summary>
     /// Роли пользователя
@@ -42,7 +42,7 @@ public class UserInfoMainModel
     /// <summary>
     /// Claims
     /// </summary>
-    public EntryAltModel[]? Claims { get; set; }
+    public EntryAltModel[]? Claims { get; init; }
 
     /// <summary>
     /// Роли пользователя в виде одной строки

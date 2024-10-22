@@ -17,9 +17,6 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Card title
@@ -80,8 +77,8 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
         }
         SelectedChat = selected;
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> rest = await StorageRepo.SaveParameter(selected?.ChatTelegramId, KeyStorage, false);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -94,7 +91,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<long?> rest = await StorageRepo.ReadParameter<long?>(KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

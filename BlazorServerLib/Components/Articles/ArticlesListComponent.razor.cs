@@ -13,22 +13,16 @@ namespace BlazorWebLib.Components.Articles;
 /// <summary>
 /// ArticlesListComponent
 /// </summary>
-public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
+public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
 
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-    [Inject]
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
 
-    UserInfoMainModel user = default!;
     private MudTable<ArticleModelDB> table = default!;
 
     private string? searchString = null;
@@ -39,13 +33,12 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
     /// </summary>
     private async Task<TableData<ArticleModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-        IsBusyProgress = true;
-        await Task.Delay(1, token);
+        SetBusy(token: token);
         TPaginationRequestModel<SelectArticlesRequestModel> req = new()
         {
             Payload = new()
             {
-                IdentityUsersIds = [user.UserId],
+                IdentityUsersIds = [CurrentUserSession!.UserId],
                 SearchQuery = searchString,
                 IncludeExternal = true,
             },
@@ -74,8 +67,8 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
         if (_ids.Length == 0)
             return;
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+
         TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentity(_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -88,12 +81,5 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseModel
     {
         searchString = text;
         table.ReloadServerData();
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
-    {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 }

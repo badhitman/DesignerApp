@@ -34,9 +34,6 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     [Inject]
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     ///Journal mode
@@ -83,8 +80,8 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         SetTab(this);
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         if(string.IsNullOrWhiteSpace(UserIdentityId))
         {
             AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
@@ -108,7 +105,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     /// </summary>
     private async Task<TableData<IssueHelpdeskModel>> ServerReload(TableState state, CancellationToken token)
     {
-        IsBusyProgress = true;
+        SetBusy();
         await Task.Delay(1, token);
         TPaginationRequestModel<SelectIssuesRequestModel> req = new()
         {
@@ -144,8 +141,8 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
         if (_ids.Length == 0)
             return;
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentity(_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

@@ -17,9 +17,6 @@ namespace BlazorWebLib.Components.Constructor.Shared.Projects;
 public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -76,7 +73,7 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task SaveProject()
     {
-        IsBusyProgress = true;
+        SetBusy();
         if (projectObject.Id < 1)
         {
             TResponseModel<int> res = await ConstructorRepo.CreateProject(new() { Project = projectObject, UserId = CurrentUser.UserId });

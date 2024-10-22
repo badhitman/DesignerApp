@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
 
@@ -54,7 +51,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
         if (string.IsNullOrWhiteSpace(rubricName))
             throw new Exception();
 
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<int?> rest = await HelpdeskRepo.RubricCreateOrUpdate(new() { Name = rubricName, ParentRubricId = ItemModel.ParentRubricId > 0 ? ItemModel.ParentRubricId : null, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

@@ -242,8 +242,8 @@ public partial class FormOfTabConstructorComponent : FormBaseModel
         if (DocumentKey is null || SessionValues is null)
             throw new Exception();
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<ValueDataForSessionOfDocumentModelDB[]> res = await ConstructorRepo.SaveSessionForm(new() { JoinFormToTab = Join.Id, SessionId = DocumentKey.Value, SessionValues = SessionValues });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;

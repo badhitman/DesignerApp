@@ -22,10 +22,6 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
 
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -64,7 +60,7 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
     {
         if (DocumentScheme.Id > 0)
         {
-            IsBusyProgress = true;
+            SetBusy();
             TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetDocumentScheme(DocumentScheme.Id);
             IsBusyProgress = false;
 
@@ -90,8 +86,8 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.UpdateOrCreateDocumentScheme(new() { Payload = new EntryConstructedModel() { Id = DocumentScheme.Id, Name = DocumentNameOrigin, Description = DocumentDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id }, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
 

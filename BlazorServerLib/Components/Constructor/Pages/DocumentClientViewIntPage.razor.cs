@@ -32,7 +32,8 @@ public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 

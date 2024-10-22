@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace BlazorLib;
 
@@ -13,9 +14,25 @@ namespace BlazorLib;
 public abstract class BlazorBusyComponentBaseModel : ComponentBase, IDisposable
 {
     /// <summary>
+    /// Snackbar
+    /// </summary>
+    [Inject]
+    public ISnackbar SnackbarRepo { get; set; } = default!;
+
+
+    /// <summary>
     /// Компонент занят отправкой REST запроса и обработки ответа
     /// </summary>
     public bool IsBusyProgress { get; set; }
+
+    /// <summary>
+    /// SetBusy
+    /// </summary>
+    public void SetBusy(bool is_busy = true, CancellationToken token = default)
+    {
+        IsBusyProgress = is_busy;
+        Task.Delay(1, token);
+    }
 
     /// <summary>
     /// Уведомляет компонент об изменении его состояния.

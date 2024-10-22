@@ -16,12 +16,6 @@ namespace BlazorWebLib.Components;
 public abstract class LazySelectorComponent<TRow> : BlazorBusyComponentBaseModel
 {
     /// <summary>
-    /// SnackbarRepo
-    /// </summary>
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <summary>
     /// JS
     /// </summary>
     [Inject]

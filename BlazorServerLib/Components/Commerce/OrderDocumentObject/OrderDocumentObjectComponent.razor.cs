@@ -23,9 +23,6 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
 
     [Inject]
@@ -140,8 +137,8 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
         });
 
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> res = await StorageRepo.SaveParameter(doc, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true);
 
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -165,8 +162,8 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
                 Step = HelpdeskIssueStepsEnum.Canceled,
             }
         };
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<bool> res = await HelpdeskRepo.StatusChange(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

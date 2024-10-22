@@ -18,9 +18,6 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
     ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
 
@@ -52,7 +49,7 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
         if (ChatId is null || ChatId < 1)
             return;
 
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<ChatTelegramModelDB?> rest = await TelegramRepo.ChatTelegramRead(ChatId.Value);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -60,7 +57,7 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
         if (Chat is null)
             return;
 
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<TelegramUserBaseModel?> get_user = await WebRepo.GetTelegramUser(Chat.ChatTelegramId);
         IsBusyProgress = false;
         //SnackbarRepo.ShowMessagesResponse(get_user.Messages);

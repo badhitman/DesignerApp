@@ -17,9 +17,6 @@ public partial class DecimalParameterStorageComponent : BlazorBusyComponentBaseM
     [Inject]
     ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Label
@@ -55,7 +52,7 @@ public partial class DecimalParameterStorageComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<decimal?> res = await StoreRepo.ReadParameter<decimal?>(KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

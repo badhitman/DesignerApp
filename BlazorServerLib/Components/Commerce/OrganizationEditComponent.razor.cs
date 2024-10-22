@@ -23,9 +23,6 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
 
@@ -48,8 +45,8 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
         editOrg = GlobalTools.CreateDeepCopy(currentOrg);
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -90,8 +87,8 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
         if (!string.IsNullOrWhiteSpace(editOrg.NewName))
             req.Name = editOrg.NewName;
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<bool> res = await CommerceRepo.OrganizationSetLegal(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -104,8 +101,8 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
             throw new ArgumentNullException(nameof(editOrg));
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -124,8 +121,8 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
         if (OrganizationId is null)
             return;
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<OrganizationModelDB[]> res = await CommerceRepo.OrganizationsRead([OrganizationId.Value]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

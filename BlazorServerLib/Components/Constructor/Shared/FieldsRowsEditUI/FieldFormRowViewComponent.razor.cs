@@ -21,9 +21,6 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     [Inject]
@@ -238,7 +235,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task ClearValuesForFieldName(int? session_id)
     {
-        IsBusyProgress = true;
+        SetBusy();
         ResponseBaseModel rest = await ConstructorRepo.ClearValuesForFieldName(new() { FormId = Form.Id, FieldName = Field.Name, SessionId = session_id });
         IsBusyProgress = false;
 
@@ -273,7 +270,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     protected async Task SaveEditField()
     {
         ResponseBaseModel rest;
-        IsBusyProgress = true;
+        SetBusy();
         Action act;
         if (_field_master is FieldFormConstructorModelDB sf)
         {
@@ -363,7 +360,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
 
     async Task ReloadForm()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.GetForm(Field.OwnerId);
         IsBusyProgress = false;
 
@@ -453,7 +450,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     protected async Task DeleteClick()
     {
-        IsBusyProgress = true;
+        SetBusy();
         ResponseBaseModel rest;
         if (_field_master is FieldFormConstructorModelDB sf)
             rest = await ConstructorRepo.FormFieldDelete(new() { Payload = sf.Id, SenderActionUserId = user.UserId });
@@ -526,7 +523,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     protected async Task MoveFieldUp()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
             rest = await ConstructorRepo.FieldFormMove(new() { Payload = new() { Id = sf.Id, Direct = VerticalDirectionsEnum.Up }, SenderActionUserId = user.UserId });
@@ -563,7 +560,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseModel
     /// </summary>
     protected async Task MoveFieldDown()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
             rest = await ConstructorRepo.FieldFormMove(new() { Payload = new() { Id = sf.Id, Direct = VerticalDirectionsEnum.Down }, SenderActionUserId = user.UserId });

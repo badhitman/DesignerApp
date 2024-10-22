@@ -17,9 +17,6 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
     [Inject]
     ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Id - of database
@@ -50,7 +47,7 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
     /// </summary>
     private async Task<TableData<MessageTelegramModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>> rest_message = await TelegramRepo
             .MessagesListTelegram(new TPaginationRequestModel<SearchMessagesChatModel>()
             {

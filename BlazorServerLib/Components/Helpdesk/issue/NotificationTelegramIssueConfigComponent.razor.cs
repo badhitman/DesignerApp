@@ -17,9 +17,6 @@ public partial class NotificationTelegramIssueConfigComponent : BlazorBusyCompon
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
 
-    [Inject]
-    internal ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -48,7 +45,7 @@ public partial class NotificationTelegramIssueConfigComponent : BlazorBusyCompon
 
     async Task SaveConfig()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<int> rest = await StorageRepo.SaveParameter(SelectedChatSet.ChatTelegramId, KeyStorage, false);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         IsBusyProgress = false;
@@ -58,7 +55,7 @@ public partial class NotificationTelegramIssueConfigComponent : BlazorBusyCompon
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<long?> rest = await StorageRepo.ReadParameter<long?>(KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

@@ -17,10 +17,6 @@ namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 /// </summary>
 public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
@@ -58,8 +54,8 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> rest = await ConstructorRepo.CreateElementForDirectory(new() { Payload = createNewElementForDict, SenderActionUserId = CurrentUser.UserId }); // (new() { Payload = createNewElementForDict, SenderActionUserId = user.UserId });
         createNewElementForDict = OwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
         IsBusyProgress = false;
@@ -68,7 +64,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseModel
 
         if (directoryNav_ref is not null)
         {
-            directoryNav_ref.IsBusyProgress = true;
+            directoryNav_ref.SetBusy();
             directoryNav_ref.StateHasChangedCall();
         }
 

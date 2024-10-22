@@ -13,9 +13,6 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
 
@@ -131,7 +128,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 
     async Task<List<RubricBaseModel>> RequestRubrics(int? parent_id = null)
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<List<RubricBaseModel>> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

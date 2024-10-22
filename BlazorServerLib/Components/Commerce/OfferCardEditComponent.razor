@@ -1,28 +1,28 @@
 ﻿@using MudBlazor
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 
 <div class="card">
     <div class="card-header">
         <MudStack Row="true" Class="mb-3">
-            <MudTextField Disabled="(IsBusyProgress || !user.IsAdmin)" @bind-Value="editOffer.Name" Label="Название" Variant="Variant.Outlined" Immediate ShrinkLabel></MudTextField>
-            <MudSelect Disabled="(IsBusyProgress || !user.IsAdmin)" @bind-Value="editOffer.OfferUnit" Label="Единица измерения" Placeholder="Выбор ед.изм." Variant="Variant.Outlined">
+            <MudTextField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Name" Label="Название" Variant="Variant.Outlined" Immediate ShrinkLabel></MudTextField>
+            <MudSelect Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.OfferUnit" Label="Единица измерения" Placeholder="Выбор ед.изм." Variant="Variant.Outlined">
                 @foreach (UnitsOfMeasurementEnum u in Enum.GetValues(typeof(UnitsOfMeasurementEnum)).Cast<UnitsOfMeasurementEnum>())
                 {
                     <MudSelectItem Value="u">@u.DescriptionInfo()</MudSelectItem>
                 }
             </MudSelect>
-            <MudNumericField Disabled="(IsBusyProgress || !user.IsAdmin)" @bind-Value="editOffer.Multiplicity" Label="Кратность" Variant="Variant.Outlined" Immediate />
-            <MudNumericField Disabled="(IsBusyProgress || !user.IsAdmin)" @bind-Value="editOffer.Price" Label="Цена" Format="N2" Variant="Variant.Outlined" Immediate />
-            <MudFab Disabled="(!CanSave || IsBusyProgress|| !user.IsAdmin)" title="Сохранить изменения" OnClick="SaveOffer" StartIcon="@Icons.Material.Filled.Save" Color="@(CanSave ? Color.Info : Color.Default)" Size="Size.Small" Class="align-self-center" />
+            <MudNumericField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Multiplicity" Label="Кратность" Variant="Variant.Outlined" Immediate />
+            <MudNumericField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Price" Label="Цена" Format="N2" Variant="Variant.Outlined" Immediate />
+            <MudFab Disabled="(!CanSave || IsBusyProgress|| !CurrentUserSession!.IsAdmin)" title="Сохранить изменения" OnClick="SaveOffer" StartIcon="@Icons.Material.Filled.Save" Color="@(CanSave ? Color.Info : Color.Default)" Size="Size.Small" Class="align-self-center" />
             @if (CanSave)
             {
                 <MudFab OnClick="() => editOffer = GlobalTools.CreateDeepCopy(CurrentOffer)!" title="Отменить изменение" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Surface" Size="Size.Small" Class="align-self-center" />
             }
         </MudStack>
-        <MudSwitch Disabled="(!CanSave || IsBusyProgress|| !user.IsAdmin)" @bind-Value="editOffer.IsDisabled" Label="Отключение" Color="Color.Secondary" />
+        <MudSwitch Disabled="(!CanSave || IsBusyProgress|| !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.IsDisabled" Label="Отключение" Color="Color.Secondary" />
     </div>
     <div class="card-body">
-        @if (user.IsAdmin)
+        @if (CurrentUserSession!.IsAdmin)
         {
             <OrdersJournalComponent OfferFilter="editOffer.Id" />
         }

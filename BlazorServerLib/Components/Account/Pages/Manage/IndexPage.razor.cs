@@ -13,18 +13,10 @@ namespace BlazorWebLib.Components.Account.Pages.Manage;
 /// <summary>
 /// IndexPage
 /// </summary>
-public partial class IndexPage : BlazorBusyComponentBaseModel
+public partial class IndexPage : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-    [Inject]
     IWebRemoteTransmissionService webRepo { get; set; } = default!;
-
-    UserInfoModel? CurrentUser;
 
     string? username;
     string? firstName;
@@ -32,48 +24,38 @@ public partial class IndexPage : BlazorBusyComponentBaseModel
 
     List<ResultMessage> Messages = [];
 
-    bool IsEdited => CurrentUser is not null && (firstName != CurrentUser.GivenName || lastName != CurrentUser.Surname);
+    bool IsEdited => CurrentUserSession is not null && (firstName != CurrentUserSession.GivenName || lastName != CurrentUserSession.Surname);
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        IsBusyProgress = false;
-
-        UserInfoMainModel user_state = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-
+        await base.OnInitializedAsync();
         TResponseModel<string?> username_rest = await UsersProfilesRepo.GetUserNameAsync();
         Messages.AddRange(username_rest.Messages);
         username = username_rest.Response;
 
-        IsBusyProgress = true;
-        TResponseModel<UserInfoModel[]?> user_data = await webRepo.GetUsersIdentity([user_state.UserId]);
-        IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(user_data.Messages);
-        if (!user_data.Success() || user_data.Response is null)
+        if (CurrentUserSession is null)
             throw new Exception();
 
-        CurrentUser = user_data.Response.Single();
-
-        firstName = CurrentUser.GivenName;
-        lastName = CurrentUser.Surname;
+        firstName = CurrentUserSession.GivenName;
+        lastName = CurrentUserSession.Surname;
     }
 
     private async Task SaveAsync()
     {
-        if (CurrentUser is null)
-            throw new ArgumentNullException(nameof(CurrentUser));
+        if (CurrentUserSession is null)
+            throw new ArgumentNullException(nameof(CurrentUserSession));
 
         Messages = [];
-        IsBusyProgress = true;
-        ResponseBaseModel rest = await UsersProfilesRepo.UpdateFirstLastNamesUser(CurrentUser.UserId, firstName, lastName);
+        SetBusy();
+
+        ResponseBaseModel rest = await UsersProfilesRepo.UpdateFirstLastNamesUser(CurrentUserSession.UserId, firstName, lastName);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
         {
-            CurrentUser.GivenName = firstName;
-            CurrentUser.Surname = lastName;
+            CurrentUserSession.GivenName = firstName;
+            CurrentUserSession.Surname = lastName;
         }
     }
 }

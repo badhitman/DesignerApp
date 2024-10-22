@@ -13,9 +13,6 @@
     ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
@@ -26,7 +23,7 @@
     string? _textValue;
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         user = state.User.ReadCurrentUserInfo();
 

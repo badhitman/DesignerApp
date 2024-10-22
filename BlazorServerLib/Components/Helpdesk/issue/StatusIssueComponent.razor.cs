@@ -49,8 +49,8 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
 
     async Task SaveChange()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<bool> res = await HelpdeskRepo
             .StatusChange(new()
             {

@@ -23,9 +23,6 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     IDialogService DialogServiceRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     [Inject]
@@ -89,7 +86,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             FilterUserId = CurrentUser.UserId,
             ProjectId = ParentFormsPage.MainProject.Id
         };
-        IsBusyProgress = true;
+        SetBusy();
         await Task.Delay(1, token);
         TResponseModel<TPaginationResponseModel<SessionOfDocumentDataModelDB>> res_sd = await ConstructorRepo.RequestSessionsDocuments(req);
         TPaginationResponseModel<SessionOfDocumentDataModelDB> rest = res_sd.Response ?? throw new Exception();
@@ -110,7 +107,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task EditSession(SessionOfDocumentDataModelDB session)
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocument(new() { SessionId = session.Id, IncludeExtra = false });
         IsBusyProgress = false;
 
@@ -135,7 +132,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task DeleteSession(int session_id)
     {
-        IsBusyProgress = true;
+        SetBusy();
         ResponseBaseModel rest = await ConstructorRepo.DeleteSessionDocument(session_id);
         IsBusyProgress = false;
 
@@ -182,7 +179,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
             AuthorUser = CurrentUser.UserId,
             ProjectId = ParentFormsPage.MainProject.Id
         };
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.UpdateOrCreateSessionDocument(req);
         IsBusyProgress = false;
 
@@ -213,8 +210,8 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         var ds_res = await ConstructorRepo.RequestDocumentsSchemes(new() { RequestPayload = new() { PageNum = 0, PageSize = 1000 }, ProjectId = ParentFormsPage.MainProject.Id });
         TPaginationResponseModel<DocumentSchemeConstructorModelDB> rest = ds_res.Response ?? throw new Exception();
         IsBusyProgress = false;
@@ -232,7 +229,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         await RestUpdate();
-        IsBusyProgress = true;
+        SetBusy();
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
         IsBusyProgress = false;

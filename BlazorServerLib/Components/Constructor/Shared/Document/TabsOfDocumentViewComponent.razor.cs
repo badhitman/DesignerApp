@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components.Constructor.Shared.Document;
 public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -50,7 +47,7 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
             StateHasChanged();
             return;
         }
-        IsBusyProgress = true;
+        SetBusy();
         _ = InvokeAsync(async () =>
         {
             TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
@@ -101,7 +98,7 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
         if (TabOfDocumentScheme.JoinsForms is null)
         {
             SnackbarRepo.Add($"Дозагрузка `{nameof(TabOfDocumentScheme.JoinsForms)}` в `{nameof(TabOfDocumentScheme)} ['{TabOfDocumentScheme.Name}' #{TabOfDocumentScheme.Id}]`", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            IsBusyProgress = true;
+            SetBusy();
             TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
             IsBusyProgress = false;
 

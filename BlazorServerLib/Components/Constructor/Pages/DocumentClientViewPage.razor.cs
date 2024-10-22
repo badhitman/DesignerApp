@@ -28,7 +28,8 @@ public partial class DocumentClientViewPage : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocumentData(DocumentGuid.ToString());
         IsBusyProgress = false;
 

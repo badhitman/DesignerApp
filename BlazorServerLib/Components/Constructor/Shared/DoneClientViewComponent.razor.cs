@@ -16,10 +16,6 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
 {
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -49,7 +45,7 @@ public partial class DoneClientViewComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        IsBusyProgress = true;
+        SetBusy();
         ResponseBaseModel rest = await ConstructorRepo.SetDoneSessionDocumentData(SessionDocument.SessionToken);
         IsBusyProgress = false;
 

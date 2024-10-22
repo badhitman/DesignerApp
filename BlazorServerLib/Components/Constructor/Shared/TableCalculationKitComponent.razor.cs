@@ -19,10 +19,6 @@ public partial class TableCalculationKitComponent : BlazorBusyComponentBaseModel
     [Inject]
     protected IOptions<VirtualColumnCalculateGroupingTableModel[]> CalculationConfig { get; set; } = default!;
 
-    /// <inheritdoc/>
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]

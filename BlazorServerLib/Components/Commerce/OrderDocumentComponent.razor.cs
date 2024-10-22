@@ -13,19 +13,13 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// OrderDocumentComponent
 /// </summary>
-public partial class OrderDocumentComponent : BlazorBusyComponentBaseModel
+public partial class OrderDocumentComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider AuthRepo { get; set; } = default!;
-
     [Inject]
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
-
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -33,14 +27,4 @@ public partial class OrderDocumentComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [Parameter, EditorRequired]
     public required int DocumentId { get; set; }
-
-
-    UserInfoMainModel user = default!;
-
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
-    {
-        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-    }
 }

@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 using BlazorLib;
@@ -14,7 +13,7 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// OrderCreateComponent
 /// </summary>
-public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
+public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
@@ -23,20 +22,13 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
     NavigationManager NavRepo { get; set; } = default!;
 
     [Inject]
-    AuthenticationStateProvider AuthRepo { get; set; } = default!;
-
-    [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
-
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
 
 
     bool _visibleChangeAddresses;
     bool _visibleChangeOrganization;
     readonly DialogOptions _dialogOptions = new() { FullWidth = true };
 
-    UserInfoMainModel user = default!;
     OrderDocumentModelDB? CurrentCart;
     readonly Func<AddressOrganizationModelDB, string> converter = p => p.Name;
 
@@ -100,7 +92,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
                     }
                 }));
                 _selectedAddresses = [.. CurrentCart.AddressesTabs.Select(Convert)];
-                InvokeAsync(async () => await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), false));
+                InvokeAsync(async () => await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), false));
             }
             static AddressOrganizationModelDB Convert(TabAddressForOrderModelDb x) => new()
             {
@@ -127,7 +119,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
             {
                 CurrentCart.AddressesTabs!.RemoveAll(x => _prev.Any(y => y.Id == x.AddressOrganizationId));
                 _selectedAddresses = [.. CurrentCart.AddressesTabs.Select(Convert)];
-                InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true); });
+                InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true); });
             }
 
             // адреса/вкладки, которые имеют строки: требуют подтверждения у пользователя
@@ -160,7 +152,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
 
     async Task UpdateCachePriceRules()
     {
-        CurrentCart ??= OrderDocumentModelDB.NewEmpty(user.UserId);
+        CurrentCart ??= OrderDocumentModelDB.NewEmpty(CurrentUserSession!.UserId);
 
         if (CurrentCart.AddressesTabs is null)
         {
@@ -176,8 +168,8 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         if (offers_load.Count == 0)
             return;
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([.. offers_load]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -257,9 +249,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         _selectedAddresses = [.. _prevSelectedAddresses];
         _prevSelectedAddresses = null;
         _visibleChangeAddresses = false;
-        IsBusyProgress = true;
-        await Task.Delay(1);
-        await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true);
+        SetBusy();
+        
+        await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true);
         IsBusyProgress = false;
     }
 
@@ -287,7 +279,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         if (CurrentCart?.AddressesTabs is null)
             return;
         CurrentCart.AddressesTabs.ForEach(x => x.Rows?.Clear());
-        await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true);
+        await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true);
         NavRepo.Refresh(true);
     }
 
@@ -297,7 +289,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
             throw new ArgumentNullException(nameof(CurrentCart), GetType().FullName);
 
         CurrentCart.AddressesTabs?.RemoveAll(x => !CurrentOrganization!.Addresses!.Any(y => y.Id == x.AddressOrganizationId));
-        await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true);
+        await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true);
         StateHasChanged();
     }
 
@@ -310,7 +302,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
     void ResetAddresses()
     {
         _selectedAddresses?.Clear();
-        InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true); });
+        InvokeAsync(async () => { await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true); });
     }
 
     async Task OrderDocumentSendAsync()
@@ -325,8 +317,8 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         }
 
         CurrentCart.PrepareForSave();
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> rest = await CommerceRepo.OrderUpdate(CurrentCart);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -334,10 +326,10 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         {
             TResponseModel<OrderDocumentModelDB[]> doc = await CommerceRepo.OrdersRead([rest.Response]);
             CurrentCart.Information = CurrentCart.Information?.Trim();
-            CurrentCart = OrderDocumentModelDB.NewEmpty(user.UserId);
+            CurrentCart = OrderDocumentModelDB.NewEmpty(CurrentUserSession!.UserId);
 
             await StorageRepo
-            .SaveParameter<OrderDocumentModelDB?>(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true);
+            .SaveParameter<OrderDocumentModelDB?>(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true);
 
             NavRepo.NavigateTo($"/issue-card/{doc.Response!.First().HelpdeskId}");
         }
@@ -361,8 +353,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        await base.OnInitializedAsync();
 
         await OrganizationReset();
         await UpdateCachePriceRules();
@@ -375,7 +366,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
         {
             Payload = new()
             {
-                ForUserIdentityId = user.IsAdmin ? null : user.UserId,
+                ForUserIdentityId = CurrentUserSession!.IsAdmin ? null : CurrentUserSession!.UserId,
                 IncludeExternalData = true,
             },
             PageNum = 0,
@@ -384,8 +375,8 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
             SortingDirection = VerticalDirectionsEnum.Up,
         };
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;
@@ -394,14 +385,14 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
             return;
         Organizations = res.Response.Response;
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<OrderDocumentModelDB?> current_cart = await StorageRepo
-            .ReadParameter<OrderDocumentModelDB>(GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId));
+            .ReadParameter<OrderDocumentModelDB>(GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId));
         IsBusyProgress = false;
         CurrentCart = current_cart.Response ?? new()
         {
-            AuthorIdentityUserId = user.UserId,
+            AuthorIdentityUserId = CurrentUserSession!.UserId,
             Name = "Новый заказ",
         };
 
@@ -411,7 +402,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseModel
             if (CurrentCart.Organization is null)
                 CurrentCart.OrganizationId = 0;
 
-            await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true);
+            await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true);
         }
 
         CurrentCart.AddressesTabs ??= [];

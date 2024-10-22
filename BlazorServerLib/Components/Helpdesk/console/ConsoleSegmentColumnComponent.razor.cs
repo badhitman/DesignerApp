@@ -19,9 +19,6 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     ICommerceRemoteTransmissionService commRepo { get; set; } = default!;
 
 
@@ -68,8 +65,8 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
 
     async Task LoadData()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> res = await HelpdeskRepo.ConsoleIssuesSelect(new TPaginationRequestModel<ConsoleIssuesRequestModel>
         {
             PageNum = pageNum,
@@ -101,7 +98,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
         if (issues_ids.Length == 0)
             return;
 
-        IsBusyProgress = true;
+        SetBusy();
         TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req = new()
         {
             Payload = new()

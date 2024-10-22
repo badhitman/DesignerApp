@@ -1,4 +1,4 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@inherits BlazorBusyComponentBaseAuthModel
 
 @if (editGoods is null)
 {
@@ -17,16 +17,16 @@ else
         <div class="card-header">
             <div class="input-group mb-2">
                 <span class="input-group-text">Карточка номенклатуры</span>
-                <input @bind-value="editGoods.Name" disabled="@(!user.IsAdmin)" @bind-value:event="oninput" type="text" aria-label="First name" class="form-control">
-                <select disabled="@(!user.IsAdmin)" @bind="editGoods.BaseUnit" class="form-select">
+                <input @bind-value="editGoods.Name" disabled="@(!CurrentUserSession!.IsAdmin)" @bind-value:event="oninput" type="text" aria-label="First name" class="form-control">
+                <select disabled="@(!CurrentUserSession.IsAdmin)" @bind="editGoods.BaseUnit" class="form-select">
                     @foreach (UnitsOfMeasurementEnum uom in Enum.GetValues(typeof(UnitsOfMeasurementEnum)).Cast<UnitsOfMeasurementEnum>())
                     {
                         <option value="@uom">@uom.DescriptionInfo()</option>
                     }
                 </select>
-                @if (user.IsAdmin)
+                @if (CurrentUserSession.IsAdmin)
                 {
-                    <button @onclick="SaveGoods" disabled="@(!CanSave || !user.IsAdmin)" class="btn btn-outline-secondary" type="button" id="button-addon2">Сохранить</button>
+                    <button @onclick="SaveGoods" disabled="@(!CanSave || !CurrentUserSession.IsAdmin)" class="btn btn-outline-secondary" type="button" id="button-addon2">Сохранить</button>
                 }
             </div>
         </div>

@@ -38,7 +38,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         IsBusyProgress = false;
         user = state.User.ReadCurrentUserInfo() ?? throw new Exception();

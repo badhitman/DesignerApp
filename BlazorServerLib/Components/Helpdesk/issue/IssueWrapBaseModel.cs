@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
 {
     [Inject]
-    internal ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     internal IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]

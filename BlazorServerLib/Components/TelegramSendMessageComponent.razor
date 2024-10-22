@@ -65,7 +65,7 @@ else
     async Task SendMessage()
     {
         errorMessage = null;
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<TelegramUserBaseModel?> tg_user_info = await tgWebRepo.GetTelegramUserCachedInfo(TelegramId);
 
         if (!tg_user_info.Success())

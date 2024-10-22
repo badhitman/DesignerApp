@@ -18,9 +18,6 @@ namespace BlazorWebLib.Components.Constructor.Shared.Form;
 public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     [Inject]
@@ -55,7 +52,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
         TResponseModel<FormConstructorModelDB> rest;
         if (form is null)
         {
-            IsBusyProgress = true;
+            SetBusy();
             _ = InvokeAsync(async () =>
             {
                 rest = await ConstructorRepo.GetForm(Form.Id);
@@ -104,8 +101,8 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseModel
             return;
         }
         ResponseBaseModel rest;
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         if (_field_master is FieldFormAkaDirectoryConstructorModelDB directory_field)
         {
             rest = await ConstructorRepo.FormFieldDirectoryUpdateOrCreate(new()

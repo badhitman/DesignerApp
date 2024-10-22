@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
 
 
@@ -45,8 +42,8 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
 
     async Task SaveModeSelectingRubrics()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<ModesSelectRubricsEnum?>(SelectedOption, GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics, true);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -55,8 +52,8 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
 
     async Task ToggleShowingDisabledRubrics()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<bool?>(ShowDisabledRubrics, GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics, true);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -66,8 +63,8 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<bool?> res_ShowDisabledRubrics = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics);
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         IsBusyProgress = false;

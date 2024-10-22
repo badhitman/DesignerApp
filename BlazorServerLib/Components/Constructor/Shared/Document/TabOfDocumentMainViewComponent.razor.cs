@@ -24,9 +24,6 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     ILogger<TabOfDocumentMainViewComponent> LoggerRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -75,8 +72,8 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
         if (user is null)
             throw new ArgumentNullException(nameof(user));
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         ResponseBaseModel rest = await ConstructorRepo.DeleteTabDocumentSchemeJoinForm(new() { Payload = PageJoinForm.Id, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
@@ -135,8 +132,8 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
         if (user is null)
             throw new ArgumentNullException(nameof(user));
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabDocumentSchemeJoinForm(new() { Payload = new() { Id = PageJoinForm.Id, Direct = direct }, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
@@ -168,8 +165,8 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
             SortIndex = PageJoinForm.SortIndex
         };
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new() { Payload = req, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
 
@@ -210,7 +207,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
         if (PageJoinForm.Form is null)
         {
             LoggerRepo.LogWarning("Дозагрузка [Form] для [PageJoinForm]...");
-            IsBusyProgress = true;
+            SetBusy();
             TResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.GetForm(PageJoinForm.FormId);
             IsBusyProgress = false;
 

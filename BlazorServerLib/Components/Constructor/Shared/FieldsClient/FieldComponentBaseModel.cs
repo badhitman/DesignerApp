@@ -17,10 +17,6 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
 {
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -104,8 +100,8 @@ public abstract class FieldComponentBaseModel : BlazorBusyComponentBaseModel, ID
             SessionId = SessionDocument!.Id,
             ProjectVersionStamp = SessionDocument.Project.SchemeLastUpdated,
         };
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.SetValueFieldSessionDocumentData(req);
         IsBusyProgress = false;
 

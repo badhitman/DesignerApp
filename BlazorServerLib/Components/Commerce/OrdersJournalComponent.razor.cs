@@ -25,9 +25,6 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
     [Inject]
     AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Фильтр по организации
@@ -102,7 +99,8 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
             }
         };
 
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommerceRepo.OrdersSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -121,7 +119,8 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
         IsBusyProgress = false;
         CurrentSessionUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();

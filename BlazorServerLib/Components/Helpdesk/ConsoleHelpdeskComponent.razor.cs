@@ -20,9 +20,6 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
     ISerializeStorageRemoteTransmissionService storageRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
@@ -41,8 +38,8 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         FilterUserId = selected?.UserId;
         stepNum = 0;
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> res = await storageRepo.SaveParameter(FilterUserId, CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId), false);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -61,8 +58,8 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         IsLarge = !IsLarge;
         stepNum = 0;
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> res = await storageRepo.SaveParameter(IsLarge, SizeColumnsKeyStorage, true);
         IsBusyProgress = false;
         if (!res.Success())
@@ -75,8 +72,8 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<bool> res = await storageRepo.ReadParameter<bool>(SizeColumnsKeyStorage);
         TResponseModel<string?> current_filter_user_res = await storageRepo.ReadParameter<string>(CloudStorageMetadata.ConsoleFilterForUser(CurrentUser.UserId));
         IsBusyProgress = false;

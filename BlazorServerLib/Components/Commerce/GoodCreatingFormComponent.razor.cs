@@ -17,9 +17,6 @@ public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// GoodCreatingHandler
@@ -45,7 +42,8 @@ public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
             BaseUnit = UMeas,
         };
 
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<int> res = await CommerceRepo.GoodUpdateReceive(new_obj);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

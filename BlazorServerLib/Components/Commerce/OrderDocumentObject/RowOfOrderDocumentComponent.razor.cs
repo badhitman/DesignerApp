@@ -17,9 +17,6 @@ public partial class RowOfOrderDocumentComponent : BlazorBusyComponentBaseModel
     [Inject]
     ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Строка заказа (документа)

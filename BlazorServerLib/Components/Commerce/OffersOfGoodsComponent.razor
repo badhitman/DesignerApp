@@ -1,5 +1,5 @@
 ﻿@using MudBlazor
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 
 <style>
     td.mud-table-cell sup.bi, i.bi {
@@ -10,7 +10,7 @@
 
 <MudPaper Class="pa-4 mt-3">
     <MudStack Spacing="2">
-        @if (user.IsAdmin)
+        @if (CurrentUserSession!.IsAdmin)
         {
             <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Отмена" : "Создать")</MudButton>
             <MudCollapse Expanded="_expanded">
@@ -32,7 +32,7 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Goods">
-                @if (user.IsAdmin)
+                @if (CurrentUserSession!.IsAdmin)
                 {
                     <a href="/goods/offer-card/@context.Id">@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</a>
                 }
@@ -44,7 +44,7 @@
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Price">
                 @($"{context.Price}/{Math.Round(context.Price / context.Multiplicity, 2)}")
-                @if (user.IsAdmin)
+                @if (CurrentUserSession!.IsAdmin)
                 {
                     <PricesRulesForOfferComponent OfferGood="context" />
                 }

@@ -68,7 +68,8 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;        
+        SetBusy();
+        
         TResponseModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(new() { ProjectId = Form.ProjectId });
         IsBusyProgress = false;
         StateHasChangedHandler(FieldObject, GetType());

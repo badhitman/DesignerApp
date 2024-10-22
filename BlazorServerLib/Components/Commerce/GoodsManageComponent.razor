@@ -1,9 +1,9 @@
 ﻿@using MudBlazor
 
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 
 <MudPaper Class="pa-4 mt-3">
-    @if (user.IsAdmin)
+    @if (CurrentUserSession!.IsAdmin)
     {
         <MudStack Spacing="2">
 

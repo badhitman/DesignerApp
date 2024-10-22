@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
 
@@ -96,7 +93,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
             _selectedRubricId = 0;
         }
 
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<List<RubricBaseModel>> rest = await HelpdeskRepo.RubricsList(new() { Request = ownerRubricId, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -112,8 +109,8 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
             RubricMetadataShadow = set_rubricMetadataShadow;
         else
         {
-            IsBusyProgress = true;
-            await Task.Delay(1);
+            SetBusy();
+            
             TResponseModel<List<RubricIssueHelpdeskModelDB>?> dump_rubric = await HelpdeskRepo.RubricRead(rubric_id);
             RubricMetadataShadow = dump_rubric.Response;
             SnackbarRepo.ShowMessagesResponse(dump_rubric.Messages);

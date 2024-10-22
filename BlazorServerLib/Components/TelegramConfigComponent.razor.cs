@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components;
 public partial class TelegramConfigComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
 
 
@@ -34,7 +31,7 @@ public partial class TelegramConfigComponent : BlazorBusyComponentBaseModel
 
     async void SaveMode()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<bool?>(IsCommandModeTelegramBot, GlobalStaticConstants.CloudStorageMetadata.ParameterIsCommandModeTelegramBot, false);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -43,7 +40,7 @@ public partial class TelegramConfigComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<bool?> res_IsCommandModeTelegramBot = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterIsCommandModeTelegramBot);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res_IsCommandModeTelegramBot.Messages);

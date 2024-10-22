@@ -51,7 +51,7 @@
         {
             _selectedOption = value;
             _tab.SetArea(value);
-            IsBusyProgress = true;
+            SetBusy();
             InvokeAsync(UpdateState);
         }
     }

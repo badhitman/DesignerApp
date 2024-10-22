@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
 
@@ -55,7 +52,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         if (ItemModel is null)
             throw new ArgumentNullException(nameof(ItemModel));
 
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<bool?> res = await HelpdeskRepo.RubricMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -73,7 +70,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         IsRenameMode = false;
         ItemModel.Name = itemSystemName;
 
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<int?> res = await HelpdeskRepo.RubricCreateOrUpdate(new RubricIssueHelpdeskModelDB()
         {
             Name = ItemModel.Name,

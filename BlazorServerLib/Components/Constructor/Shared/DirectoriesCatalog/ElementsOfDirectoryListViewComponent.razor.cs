@@ -16,10 +16,6 @@ public partial class ElementsOfDirectoryListViewComponent : BlazorBusyComponentB
 {
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -43,7 +39,8 @@ public partial class ElementsOfDirectoryListViewComponent : BlazorBusyComponentB
             return;
         }
 
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<List<EntryModel>> rest = await ConstructorRepo.GetElementsOfDirectory(SelectedDirectoryId);
         IsBusyProgress = false;
 

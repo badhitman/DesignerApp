@@ -17,9 +17,6 @@ public partial class CKEditorParameterStorageComponent : BlazorBusyComponentBase
     [Inject]
     ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Label
@@ -55,8 +52,8 @@ public partial class CKEditorParameterStorageComponent : BlazorBusyComponentBase
 
     async Task StoreData()
     {
-        //IsBusyProgress = true;
-        //await Task.Delay(1);
+        //SetBusy();
+        //
         await StoreRepo.SaveParameter(_textValue, KeyStorage, true);
         //IsBusyProgress = false;
         //StateHasChanged();
@@ -65,7 +62,7 @@ public partial class CKEditorParameterStorageComponent : BlazorBusyComponentBase
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<string?> res = await StoreRepo.ReadParameter<string?>(KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

@@ -34,7 +34,7 @@ public partial class DocumentEditConstructorComponent : DocumentEditBaseComponen
         if (IsCancel)
             return;
 
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<DocumentSchemeConstructorModelDB[]?> ds = await JournalRepo.FindDocumentSchemes(DocumentNameOrId, ProjectId);
         SnackbarRepo.ShowMessagesResponse(ds.Messages);
 

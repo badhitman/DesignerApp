@@ -35,7 +35,7 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
                 SenderActionUserId = CurrentUser.UserId
             }
         };
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<bool> send_pulse = await HelpdeskRepo.PulsePush(req_pulse);
         TResponseModel<int> add_msg_system = await HelpdeskRepo.MessageCreateOrUpdate(new()
         {
@@ -51,7 +51,7 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
     protected override async Task OnInitializedAsync()
     {
         long[] chats_ids = [.. UsersIdentityDump.Where(x => x.TelegramId.HasValue).Select(x => x.TelegramId!.Value)];
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<ChatTelegramModelDB[]?> rest_chats = await tgRepo.ChatsReadTelegram(chats_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest_chats.Messages);

@@ -25,9 +25,6 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
     [Inject]
     ILogger<PricesRulesForOfferComponent> LoggerRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// OfferGood
@@ -62,7 +59,8 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     public async Task SaveRule(PriceRuleForOfferModelDB rule)
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(rule);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         LoggerRepo.LogWarning("Правило изменено");
@@ -75,7 +73,8 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
         QuantityAddingRule = 2;
         PriceAddingRule = 0;
         //
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([OfferGood.Id]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

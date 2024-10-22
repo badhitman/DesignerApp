@@ -87,7 +87,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _stringFieldValue;
         set
         {
-            IsBusyProgress = true;
+            SetBusy();
             _stringFieldValue = value;
             InvokeAsync(async () =>
             {
@@ -105,7 +105,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _boolFieldValue;
         set
         {
-            IsBusyProgress = true;
+            SetBusy();
             _boolFieldValue = value;
             InvokeAsync(async () =>
             {
@@ -123,7 +123,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _dateTimeFieldValue;
         set
         {
-            IsBusyProgress = true;
+            SetBusy();
             _dateTimeFieldValue = value;
             InvokeAsync(async () =>
             {
@@ -141,7 +141,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _doubleFieldValue;
         set
         {
-            IsBusyProgress = true;
+            SetBusy();
             _doubleFieldValue = value;
             InvokeAsync(async () =>
             {
@@ -160,7 +160,7 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _intFieldValue;
         set
         {
-            IsBusyProgress = true;
+            SetBusy();
             _intFieldValue = value;
             InvokeAsync(async () =>
             {

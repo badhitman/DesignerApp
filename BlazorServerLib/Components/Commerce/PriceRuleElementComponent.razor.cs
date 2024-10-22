@@ -17,9 +17,6 @@ public partial class PriceRuleElementComponent : BlazorBusyComponentBaseModel
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// PriceRule
@@ -43,7 +40,8 @@ public partial class PriceRuleElementComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     public async Task SaveRule()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(PriceRule);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await OwnerComponent.ReloadRules();
@@ -52,7 +50,8 @@ public partial class PriceRuleElementComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     public async Task DeleteRule()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<bool> res = await CommerceRepo.PriceRuleDelete(PriceRule.Id);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await OwnerComponent.ReloadRules();

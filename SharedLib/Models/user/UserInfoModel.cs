@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Пользователь
 /// </summary>
-public class UserInfoModel : UserInfoMainModel
+public record UserInfoModel : UserInfoMainModel
 {
     /// <inheritdoc/>
     public string? PhoneNumber { get; set; }

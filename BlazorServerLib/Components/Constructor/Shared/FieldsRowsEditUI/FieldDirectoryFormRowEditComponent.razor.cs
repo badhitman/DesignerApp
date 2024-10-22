@@ -18,10 +18,6 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
 {
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -85,8 +81,8 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(new() { ProjectId = Form.ProjectId });
         IsBusyProgress = false;
 

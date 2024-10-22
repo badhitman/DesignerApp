@@ -13,19 +13,11 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// GoodsManageComponent
 /// </summary>
-public partial class GoodsManageComponent : BlazorBusyComponentBaseModel
+public partial class GoodsManageComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-
-    UserInfoMainModel user = default!;
 
     bool _expanded;
     MudTable<GoodsModelDB> tableRef = default!;
@@ -50,7 +42,8 @@ public partial class GoodsManageComponent : BlazorBusyComponentBaseModel
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<GoodsModelDB>> res = await CommerceRepo.GoodsSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -59,13 +52,6 @@ public partial class GoodsManageComponent : BlazorBusyComponentBaseModel
             return new TableData<GoodsModelDB>() { TotalItems = 0, Items = [] };
 
         return new TableData<GoodsModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
-    {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 
     private void OnExpandCollapseClick()

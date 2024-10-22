@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components.Constructor.Shared;
 public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -44,7 +41,7 @@ public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBas
     /// </summary>
     public async Task FindFields()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<EntryDictModel[]> rest = await ConstructorRepo.FindSessionsDocumentsByFormFieldName(new() { FormId = Form.Id, FieldName = FieldName });
         IsBusyProgress = false;
         

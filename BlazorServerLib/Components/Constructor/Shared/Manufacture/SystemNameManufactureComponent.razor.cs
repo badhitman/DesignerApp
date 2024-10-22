@@ -16,9 +16,6 @@ namespace BlazorWebLib.Components.Constructor.Shared.Manufacture;
 /// </summary>
 public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseModel
 {
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
     //[Inject]
     //IManufactureService ManufactureRepo { get; set; } = default!;
 
@@ -69,7 +66,7 @@ public partial class SystemNameManufactureComponent : BlazorBusyComponentBaseMod
         if (Item.Value?.Tag is null)
             throw new Exception();
 
-        IsBusyProgress = true;
+        SetBusy();
         //ResponseBaseModel res = await ManufactureRepo
         //    .SetOrDeleteSystemName(new UpdateSystemNameModel()
         //    {

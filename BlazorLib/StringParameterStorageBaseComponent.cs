@@ -16,9 +16,6 @@ public class StringParameterStorageBaseComponent : BlazorBusyComponentBaseModel
     [Inject]
     ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Label
@@ -55,8 +52,8 @@ public class StringParameterStorageBaseComponent : BlazorBusyComponentBaseModel
 
     async Task StoreData()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         await StoreRepo.SaveParameter(_textValue, KeyStorage, false);
         IsBusyProgress = false;
         StateHasChanged();
@@ -65,7 +62,8 @@ public class StringParameterStorageBaseComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<string?> res = await StoreRepo.ReadParameter<string?>(KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

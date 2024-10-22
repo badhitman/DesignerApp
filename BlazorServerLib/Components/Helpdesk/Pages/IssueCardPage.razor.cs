@@ -27,9 +27,6 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     [Inject]
     IWebRemoteTransmissionService WebRemoteRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Id
@@ -81,8 +78,8 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
                 SenderActionUserId = "",
             }
         };
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommRepo.OrdersSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -93,8 +90,8 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
 
     async Task ReadSessionUser()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
         IsBusyProgress = false;
@@ -102,8 +99,8 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
 
     async Task ReadIssue()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<IssueHelpdeskModelDB[]> issue_res = await HelpdeskRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>() { Payload = new() { IssuesIds = [Id] }, SenderActionUserId = CurrentUser.UserId });
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
         IssueSource = issue_res.Response?.FirstOrDefault();
@@ -129,8 +126,8 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
         if (users_ids.Count != 0)
             users_ids = users_ids.Distinct().ToList();
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<UserInfoModel[]?> users_data_identity = await WebRemoteRepo.GetUsersIdentity([.. users_ids]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(users_data_identity.Messages);

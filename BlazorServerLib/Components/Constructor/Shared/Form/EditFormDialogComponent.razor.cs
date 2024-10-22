@@ -18,9 +18,6 @@ namespace BlazorWebLib.Components.Constructor.Shared.Form;
 public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     [Inject]
@@ -69,7 +66,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task SaveForm()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.FormUpdateOrCreate(new() { Payload = FormEditObject, SenderActionUserId = user.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

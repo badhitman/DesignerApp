@@ -16,10 +16,6 @@ namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 /// </summary>
 public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
 {
-    /// <inheritdoc/>
-    [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
@@ -68,7 +64,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
             if (_selected_dir_id > 0)
                 InvokeAsync(async () =>
                 {
-                    IsBusyProgress = true;
+                    SetBusy();
+                    
                     TResponseModel<EntryDescriptionModel> rest = await ConstructorRepo.GetDirectory(value);
                     IsBusyProgress = false;
 
@@ -121,7 +118,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task DeleteSelectedDirectory()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         ResponseBaseModel rest = await ConstructorRepo.DeleteDirectory(new() { Payload = SelectedDirectoryId, SenderActionUserId = CurrentUser.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -142,7 +140,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран текущий/основной проект");
 
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new() { Payload = new() { Name = directoryObject.Name, ProjectId = ParentFormsPage.MainProject.Id, Description = Description }, SenderActionUserId = CurrentUser.UserId });
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success())
@@ -161,7 +160,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     async Task CancelCreatingDirectory()
     {
         ResetNavForm();
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<EntryDescriptionModel> res = await ConstructorRepo.GetDirectory(_selected_dir_id);
         IsBusyProgress = false;
 
@@ -178,8 +178,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
         if (selectedDirectory is null || ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран текущий/основной проект");
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<int> rest = await ConstructorRepo.UpdateOrCreateDirectory(new()
         {
             Payload = EntryConstructedModel.Build(directoryObject, ParentFormsPage.MainProject.Id, Description),
@@ -217,8 +217,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
 
         ResetNavForm();
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(new() { ProjectId = ParentFormsPage.MainProject.Id });
         IsBusyProgress = false;
 
@@ -238,7 +238,8 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 

@@ -18,9 +18,6 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
     [Inject]
     ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// Чат
@@ -50,7 +47,7 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
         if (string.IsNullOrWhiteSpace(_textSendMessage))
             throw new ArgumentNullException(nameof(_textSendMessage));
 
-        IsBusyProgress = true;
+        SetBusy();
         SendTextMessageTelegramBotModel req = new() { Message = _textSendMessage, UserTelegramId = Chat.ChatTelegramId, From = "Техподдержка" };
 
         // await file.OpenReadStream(maxFileSize).CopyToAsync(fs);

@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components.Articles;
 public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IHelpdeskRemoteTransmissionService artRepo { get; set; } = default!;
 
 
@@ -44,7 +41,8 @@ public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
         if (string.IsNullOrWhiteSpace(_value))
             return;
 
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<EntryModel[]?> res = await artRepo.TagArticleSet(new() { Name = _value, Id = Article.Id, Set = true });
         IsBusyProgress = false;
         if (!res.Success())
@@ -63,7 +61,8 @@ public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
     {
         if (!string.IsNullOrWhiteSpace(chip.Value?.Name))
         {
-            IsBusyProgress = true;
+            SetBusy();
+            
             TResponseModel<EntryModel[]?> res = await artRepo.TagArticleSet(new() { Name = chip.Value.Name, Id = Article.Id, Set = false });
             IsBusyProgress = false;
             if (!res.Success())
@@ -75,7 +74,8 @@ public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
 
     private async Task<IEnumerable<string?>> Search(string value, CancellationToken token)
     {
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<string[]?> res = await artRepo.TagsOfArticlesSelect(value);
         IsBusyProgress = false;
         if (!res.Success())

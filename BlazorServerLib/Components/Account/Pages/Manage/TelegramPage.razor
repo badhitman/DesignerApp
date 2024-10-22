@@ -38,21 +38,19 @@ else
     List<ResultMessage> Messages = [];
     string? telegram_username;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
-        _ = Task.Run(async () =>
+        SetBusy();
+        
+        TResponseModel<string?> telegram_rest = await TelegramRemoteRepo.GetBotUsername();
+        await InvokeAsync(() =>
         {
-            TResponseModel<string?> telegram_rest = await TelegramRemoteRepo.GetBotUsername();
-            await InvokeAsync(() =>
-            {
-                if (!telegram_rest.Success())
-                    Messages.AddRange(telegram_rest.Messages);
+            if (!telegram_rest.Success())
+                Messages.AddRange(telegram_rest.Messages);
 
-                telegram_username = telegram_rest.Response;
-                IsBusyProgress = false;
-                StateHasChanged();
-            });
+            telegram_username = telegram_rest.Response;
+            IsBusyProgress = false;
+            StateHasChanged();
         });
     }
 }

@@ -18,10 +18,6 @@ public abstract class DocumenBodyBaseComponent : BlazorBusyComponentBaseModel
     [Inject]
     public IJournalUniversalService JournalRepo { get; set; } = default!;
 
-    /// <inheritdoc/>
-    [Inject]
-    public ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// ID (html dom)

@@ -15,9 +15,6 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class AddressesForOrganizationComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
@@ -53,7 +50,8 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
         if (!CanCreate)
             return;
 
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<int> res = await CommerceRepo.AddressOrganizationUpdate(new AddressOrganizationBaseModel()
         {
             Address = addingAddress!,
@@ -103,7 +101,8 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
                 return;
             _last_request = _curr_request;
 
-            IsBusyProgress = true;
+            SetBusy();
+            
             foreach (int i in added_rubrics)
             {
                 TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(i);

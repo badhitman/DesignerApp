@@ -17,9 +17,6 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// CurrentTab
@@ -127,7 +124,8 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
             SortingDirection = VerticalDirectionsEnum.Up,
             Payload = new()
         };
-        IsBusyProgress = true;
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
         IsBusyProgress = false;
         if (res.Success() && res.Response?.Response is not null && res.Response.Response.Count != 0)

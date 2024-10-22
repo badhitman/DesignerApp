@@ -50,8 +50,8 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
     /// </summary>
     public async Task ReloadListProjects()
     {
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<ProjectViewModel[]> res_pr = await ConstructorRepo.GetProjectsForUser(new() { UserId = CurrentUser.UserId });
         ProjectsOfUser = res_pr.Response ?? throw new Exception();
         IsBusyProgress = false;

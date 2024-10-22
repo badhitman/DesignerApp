@@ -62,7 +62,7 @@ public abstract class DocumentEditBaseComponent : DocumenBodyBaseComponent
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IsBusyProgress = true;
+        SetBusy();
         DocumentMetadata = await JournalRepo.GetDocumentMetadata(DocumentNameOrId);
         IsBusyProgress = false;
 

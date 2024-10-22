@@ -16,9 +16,6 @@ namespace BlazorWebLib.Components.Constructor.Shared.Projects;
 public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
     [Inject]
@@ -47,7 +44,7 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
         if (!MailAddress.TryCreate(emailForAddMember, out _))
             throw new Exception($"Email не корректный '{emailForAddMember}'");
 
-        IsBusyProgress = true;
+        SetBusy();
         UserInfoModel? user_info = await UserProfilesManage.FindByEmailAsync(emailForAddMember);
 
         if (user_info is null)
@@ -71,7 +68,7 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
         if (chip.Value is null)
             throw new Exception();
 
-        IsBusyProgress = true;
+        SetBusy();
         ResponseBaseModel res = await ConstructorRepo.DeleteMembersFromProject(new() { ProjectId = ProjectView.Id, UsersIds = [chip.Value.Id] });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

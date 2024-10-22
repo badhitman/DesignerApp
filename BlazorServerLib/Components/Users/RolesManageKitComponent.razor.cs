@@ -17,9 +17,6 @@ public partial class RolesManageKitComponent : BlazorBusyComponentBaseModel
     [Inject]
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
 
     /// <summary>
     /// RolesManageKit
@@ -77,7 +74,7 @@ public partial class RolesManageKitComponent : BlazorBusyComponentBaseModel
             User.Roles.AddRange(res.Response);
         };
 
-        IsBusyProgress = true;
+        SetBusy();
         if (value_bool && !User.Roles.Contains(roleName))
             await Act();
         else if (!value_bool && User.Roles.Contains(roleName))

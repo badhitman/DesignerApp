@@ -14,10 +14,6 @@ namespace BlazorWebLib.Components.Constructor.Shared.Manufacture;
 /// </summary>
 public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseModel
 {
-    [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required ManufactureComponent ManufactureParentView { get; set; }

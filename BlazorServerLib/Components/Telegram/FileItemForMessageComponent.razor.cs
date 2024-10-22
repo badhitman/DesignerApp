@@ -19,9 +19,6 @@ public partial class FileItemForMessageComponent : BlazorBusyComponentBaseModel
     ITelegramRemoteTransmissionService telegramRepo { get; set; } = default!;
 
     [Inject]
-    ISnackbar SnackbarRepo { get; set; } = default!;
-
-    [Inject]
     IJSRuntime JSRepo { get; set; } = default!;
 
 
@@ -36,7 +33,7 @@ public partial class FileItemForMessageComponent : BlazorBusyComponentBaseModel
 
     async Task DownloadFile()
     {
-        IsBusyProgress = true;
+        SetBusy();
         TResponseModel<byte[]?> rest = await telegramRepo.GetFile(FileElement.FileId);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

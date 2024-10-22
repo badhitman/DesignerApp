@@ -17,10 +17,6 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
 {
     /// <inheritdoc/>
     [Inject]
-    protected ISnackbar SnackbarRepo { get; set; } = default!;
-
-    /// <inheritdoc/>
-    [Inject]
     protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
 
@@ -61,8 +57,8 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
         if (ParentFormsPage.MainProject is null)
             throw new Exception("Не выбран основной/используемый проект");
 
-        IsBusyProgress = true;
-        await Task.Delay(1);
+        SetBusy();
+        
         TResponseModel<TPaginationResponseModel<FormConstructorModelDB>> rest = await ConstructorRepo.SelectForms(new() { ProjectId = ParentFormsPage.MainProject.Id, Request = AltSimplePaginationRequestModel.Build(null, int.MaxValue, 0, true) });
 
         IsBusyProgress = false;
@@ -76,7 +72,7 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
     /// <inheritdoc/>
     protected void DocumentReloadAction()
     {
-        IsBusyProgress = true;
+        SetBusy();
         InvokeAsync(async () =>
         {
             TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetDocumentScheme(DocumentScheme.Id);
