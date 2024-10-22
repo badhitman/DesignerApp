@@ -62,9 +62,15 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
         orignArticle = res.Response.Single();
     }
 
+    void SelectedRubricsChange(IReadOnlyCollection<RubricBaseModel?> req)
+    {
+        Console.WriteLine();
+    }
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await SetBusy();
         await ReadCurrentUser();
         images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{GlobalStaticConstants.Routes.ARTICLE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.BODY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={GlobalStaticConstants.Routes.IMAGE_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={ArticleId}";
         editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
@@ -82,5 +88,6 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
             };
 
         editArticle = GlobalTools.CreateDeepCopy(orignArticle) ?? throw new Exception();
+        await SetBusy(false);
     }
 }

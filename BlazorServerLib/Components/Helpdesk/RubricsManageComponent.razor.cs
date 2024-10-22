@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
@@ -22,10 +22,20 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     [Parameter]
     public string? ContextName { get; set; }
 
+    /// <summary>
+    /// ValueChanged
+    /// </summary>
+    [Parameter]
+    public TreeViewOptionsModel? SelectedValuesChanged { get; set; }
+
 
     List<TreeItemDataRubricModel> InitialTreeItems { get; set; } = [];
+    void SelectedValuesChangeHandler(IReadOnlyCollection<RubricBaseModel?> SelectedValues)
+    {
+        SelectedValuesChanged?.SelectedValuesChangedHandler(SelectedValues);
+    }
 
-    static List<TreeItemData<RubricBaseModel?>> ConvertRubrics(IEnumerable<RubricBaseModel> rubrics)
+    List<TreeItemData<RubricBaseModel?>> ConvertRubrics(IEnumerable<RubricBaseModel> rubrics)
     {
         (uint min, uint max) = rubrics.Any(x => x.SortIndex != uint.MaxValue)
             ? (rubrics.Min(x => x.SortIndex), rubrics.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
@@ -42,7 +52,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
             else
                 mhp = MoveRowStatesEnum.Between;
 
-                return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : Icons.Material.Filled.CropFree){ MoveRowState = mhp };
+                return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : SelectedValuesChanged is null ? Icons.Material.Filled.CropFree : Icons.Custom.Uncategorized.Folder ){ MoveRowState = mhp, Selected = SelectedValuesChanged?.SelectedNodes.Contains(x.Id) == true };
             })];
     }
 
@@ -130,14 +140,16 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     {
         await SetBusy();
         TResponseModel<List<RubricBaseModel>> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
-        
+
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null)
             throw new Exception();
 
         rest.Response = [.. rest.Response.OrderBy(x => x.SortIndex)];
 
-        rest.Response.Add(new RubricBaseModel() { Name = "", SortIndex = uint.MaxValue, ParentRubricId = parent_id });
+        if (SelectedValuesChanged is null)
+            rest.Response.Add(new RubricBaseModel() { Name = "", SortIndex = uint.MaxValue, ParentRubricId = parent_id });
+
         return rest.Response;
     }
 }

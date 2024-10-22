@@ -1,41 +1,58 @@
-﻿@using MudBlazor
+﻿@using BlazorWebLib.Components.Helpdesk
+@using MudBlazor
 @inherits BlazorBusyComponentBaseAuthModel
 
-<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-    <MudTabPanel Text="Информация">
-        <div class="mb-3">
-            <label for="artInputName" class="form-label">Название</label>
-            <input @bind-value="editArticle.Name" @bind-value:event="oninput" type="text" class="form-control" id="artInputName">
-        </div>
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+else
+{
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Информация">
+            <div class="mb-3">
+                <label for="artInputName" class="form-label">Название</label>
+                <input @bind-value="editArticle.Name" @bind-value:event="oninput" type="text" class="form-control" id="artInputName">
+            </div>
 
-        @if (ArticleId < 1)
-        {
-            <figure class="text-center">
-                <blockquote class="blockquote">
-                    <p>Объект не записан.</p>
-                </blockquote>
-                <figcaption class="blockquote-footer">
-                    Сохраните <cite title="после сохранения объекта станут доступны его остальные параметры">материал</cite>
-                </figcaption>
-            </figure>
-        }
-        else
-        {
-            <TinyMCE.Blazor.Editor @bind-Value="editArticle.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(ArticleId < 1)" />
-            <hr />
-            <TagsForArticlesComponent Article="orignArticle" />
-        }
+            @if (ArticleId < 1)
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Объект не записан.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Сохраните <cite title="после сохранения объекта станут доступны его остальные параметры">материал</cite>
+                    </figcaption>
+                </figure>
+            }
+            else
+            {
+                <TinyMCE.Blazor.Editor @bind-Value="editArticle.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(ArticleId < 1)" />
+                <hr />
+                <TagsForArticlesComponent Article="orignArticle" />
+            }
 
-        <div class="d-grid gap-2 mt-3">
-            <button @onclick="SaveArticle" disabled="@((!IsEdited && editArticle.Id > 0) || string.IsNullOrWhiteSpace(editArticle.Name))" class="btn btn-@(string.IsNullOrWhiteSpace(editArticle.Name) ? "-outline-secondary" : "primary")" type="button">@(string.IsNullOrWhiteSpace(editArticle.Name) ? "Укажите название..." : "Записать")</button>
-        </div>
-    </MudTabPanel>
-    <MudTabPanel Disabled="@(ArticleId < 1 || IsEdited)" Text="Категории">
-        <MudText>Категории</MudText>
-    </MudTabPanel>
-    <MudTabPanel Disabled="@(ArticleId < 1 || IsEdited)" Text="Файлы">
-        <MudText>Файлы</MudText>
-    </MudTabPanel>
-</MudTabs>
+            <div class="d-grid gap-2 mt-3">
+                <button @onclick="SaveArticle" disabled="@((!IsEdited && editArticle.Id > 0) || string.IsNullOrWhiteSpace(editArticle.Name))" class="btn btn-@(string.IsNullOrWhiteSpace(editArticle.Name) ? "-outline-secondary" : "primary")" type="button">@(string.IsNullOrWhiteSpace(editArticle.Name) ? "Укажите название..." : "Записать")</button>
+            </div>
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(ArticleId < 1 || IsEdited)" Text="Категории">
+            <MudPaper Class="ma-2" Elevation="3">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">Категории</h6>
+                        <RubricsManageComponent ContextName="@GlobalStaticConstants.Routes.ARTICLES_CONTROLLER_NAME" SelectedValuesChanged="@(new TreeViewOptionsModel(){ SelectedNodes = [.. orignArticle.RubricsJoins?.Select(x => x.RubricId)], SelectedValuesChangedHandler = SelectedRubricsChange })" />
+                    </div>
+                </div>
+            </MudPaper>
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(ArticleId < 1 || IsEdited)" Text="Файлы">
+            <MudText>Файлы</MudText>
+        </MudTabPanel>
+    </MudTabs>
+}
+
+
 
 

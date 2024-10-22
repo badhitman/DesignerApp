@@ -2,9 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk;
@@ -16,6 +15,13 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+
+
+    /// <summary>
+    /// ReadOnly
+    /// </summary>
+    [Parameter]
+    public bool ReadOnly { get; set; }
 
 
     /// <inheritdoc/>
@@ -84,7 +90,6 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         ItemUpdateHandle(ItemModel);
-        //ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);
     }
 
     /// <inheritdoc/>
