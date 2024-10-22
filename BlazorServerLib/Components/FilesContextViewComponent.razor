@@ -18,7 +18,9 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="CreatedAt">@context.CreatedAt</MudTd>
-        <MudTd DataLabel="FileName">@context.FileName</MudTd>
+        <MudTd DataLabel="FileName">
+            <button @onclick="() => FileManage(context)" type="button" class="btn btn-link">@context.FileName</button>
+        </MudTd>
         <MudTd DataLabel="FileLength">@(GlobalTools.SizeDataAsString(context.FileLength))</MudTd>
         <MudTd DataLabel="ContentType">@context.ContentType</MudTd>
         <MudTd DataLabel="Property">@context.Name</MudTd>
@@ -34,3 +36,27 @@
         <MudTablePager />
     </PagerContent>
 </MudTable>
+
+@if (_selectedFile is not null)
+{
+    <div class="modal fade show" id="exampleModalLive" tabindex="-1" aria-labelledby="exampleModalLiveLabel" style="display: block;" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLiveLabel">Файл</h1>
+                    <button @onclick="closeFileManager" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@_selectedFile.Name - @GlobalTools.SizeDataAsString(_selectedFile.FileLength)</p>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button @onclick="DownloadFile" type="button" class="btn btn-outline-primary">Скачать</button>
+                        <button @onclick="closeFileManager" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div @onclick="closeFileManager" tabindex="-1" class="offcanvas-backdrop fade show"></div>
+}

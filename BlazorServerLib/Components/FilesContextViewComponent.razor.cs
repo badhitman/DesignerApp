@@ -8,6 +8,7 @@ using SharedLib;
 using MudBlazor;
 using static MudBlazor.CategoryTypes;
 using System.Net.Http;
+using Microsoft.JSInterop;
 
 namespace BlazorWebLib.Components;
 
@@ -16,6 +17,9 @@ namespace BlazorWebLib.Components;
 /// </summary>
 public partial class FilesContextViewComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    IJSRuntime JsRuntimeRepo { get; set; } = default!;
+
     [Inject]
     ISerializeStorageRemoteTransmissionService FilesRepo { get; set; } = default!;
 
@@ -46,8 +50,32 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseModel
 
 
     private MudTable<StorageFileModelDB>? table;
+    StorageFileModelDB? _selectedFile;
+    void FileManage(StorageFileModelDB _f)
+    {
+        _selectedFile = _f;
+    }
+    void closeFileManager()
+    {
+        _selectedFile = null;
+    }
 
     private string? searchString = null;
+
+    async Task DownloadFile()
+    {
+        if (_selectedFile is null)
+            return;
+
+        TResponseModel<StorageFileResponseModel> downloadSource = await FilesRepo.ReadFile(_selectedFile.Id);
+
+        if (downloadSource.Success() && downloadSource.Response?.Payload is not null)
+        {
+            MemoryStream ms = new(downloadSource.Response.Payload);
+            using DotNetStreamReference streamRef = new(stream: ms);
+            await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", _selectedFile.FileName, streamRef);
+        }
+    }
 
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
