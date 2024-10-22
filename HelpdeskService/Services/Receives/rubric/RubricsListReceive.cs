@@ -31,7 +31,7 @@ public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFac
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         IQueryable<RubricBaseModel> q = context
-            .RubricsForIssues
+            .Rubrics
             .Where(x => x.ProjectId == req.ProjectId && x.ContextName == req.ContextName)
             .Select(x => new RubricBaseModel()
             {

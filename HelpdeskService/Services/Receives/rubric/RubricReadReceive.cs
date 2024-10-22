@@ -42,7 +42,7 @@ public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         RubricIssueHelpdeskModelDB? lpi = await context
-            .RubricsForIssues
+            .Rubrics
             .Include(x => x.ParentRubric)
             .FirstAsync(x => x.Id == rubricId);
 
@@ -51,7 +51,7 @@ public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
         while (lpi.ParentRubric is not null)
         {
             ctrl.Add(await context
-            .RubricsForIssues
+            .Rubrics
             .Include(x => x.ParentRubric)
             .ThenInclude(x => x!.NestedRubrics)
             .FirstAsync(x => x.Id == lpi.ParentRubric.Id));

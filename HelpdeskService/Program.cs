@@ -124,7 +124,7 @@ using (IServiceScope ss = app.Services.CreateScope())
 #if DEMO
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory = ss.ServiceProvider.GetRequiredService<IDbContextFactory<HelpdeskContext>>();
     using HelpdeskContext context_seed = await helpdeskDbFactory.CreateDbContextAsync();
-    List<RubricIssueHelpdeskModelDB> demo_rubrics = [.. await context_seed.RubricsForIssues.ToArrayAsync()];
+    List<RubricIssueHelpdeskModelDB> demo_rubrics = [.. await context_seed.Rubrics.ToArrayAsync()];
     if (demo_rubrics.Count == 0)
     {
         demo_rubrics = [

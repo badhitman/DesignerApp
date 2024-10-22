@@ -38,7 +38,7 @@ public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFa
             req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
 
             q = from issue_element in q
-                join rubric_element in context.RubricsForIssues on issue_element.RubricIssueId equals rubric_element.Id
+                join rubric_element in context.Rubrics on issue_element.RubricIssueId equals rubric_element.Id
                 into grp_rubrics
                 from c in grp_rubrics.DefaultIfEmpty()
                 where issue_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || c.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)

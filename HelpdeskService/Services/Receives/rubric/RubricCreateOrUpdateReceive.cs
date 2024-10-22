@@ -36,7 +36,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
         rubric.NormalizedNameUpper = rubric.Name.ToUpper();
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        if (await context.RubricsForIssues.AnyAsync(x => x.Id != rubric.Id && x.ParentRubricId == rubric.ParentRubricId && x.Name == rubric.Name))
+        if (await context.Rubrics.AnyAsync(x => x.Id != rubric.Id && x.ParentRubricId == rubric.ParentRubricId && x.Name == rubric.Name))
         {
             res.AddError("Объект с таким именем уже существует в данном узле");
             return res;
@@ -45,7 +45,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
         if (rubric.Id < 1)
         {
             uint[] six = await context
-                            .RubricsForIssues
+                            .Rubrics
                             .Where(x => x.ParentRubricId == rubric.ParentRubricId)
                             .Select(x => x.SortIndex)
                             .ToArrayAsync();
@@ -60,7 +60,7 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
         else
         {
             res.Response = await context
-                .RubricsForIssues
+                .Rubrics
                 .Where(x => x.Id == rubric.Id)
                 .ExecuteUpdateAsync(set => set
                 .SetProperty(p => p.IsDisabled, rubric.IsDisabled)

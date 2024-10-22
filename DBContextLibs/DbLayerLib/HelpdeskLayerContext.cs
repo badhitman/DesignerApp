@@ -36,7 +36,7 @@ public partial class HelpdeskLayerContext : DbContext
     /// <summary>
     /// Рубрики для обращений
     /// </summary>
-    public DbSet<RubricIssueHelpdeskModelDB> RubricsForIssues { get; set; }
+    public DbSet<RubricIssueHelpdeskModelDB> Rubrics { get; set; }
 
     /// <summary>
     /// Обращения

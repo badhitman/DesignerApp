@@ -58,7 +58,7 @@ public class IssueCreateOrUpdateReceive(
         if (_current_mode_rubric != ModesSelectRubricsEnum.AllowWithoutRubric)
         {
             string[] sub_rubrics = await context
-                        .RubricsForIssues
+                        .Rubrics
                         .Where(x => x.ParentRubricId == issue_upd.Payload.RubricId)
                         .Select(x => x.Name)
                         .ToArrayAsync();

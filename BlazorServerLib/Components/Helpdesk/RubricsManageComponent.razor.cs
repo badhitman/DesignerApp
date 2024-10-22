@@ -52,7 +52,11 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
             else
                 mhp = MoveRowStatesEnum.Between;
 
-                return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : SelectedValuesChanged is null ? Icons.Material.Filled.CropFree : Icons.Custom.Uncategorized.Folder ){ MoveRowState = mhp, Selected = SelectedValuesChanged?.SelectedNodes.Contains(x.Id) == true };
+                return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : SelectedValuesChanged is null ? Icons.Material.Filled.CropFree : Icons.Custom.Uncategorized.Folder )
+                { 
+                    MoveRowState = mhp, 
+                    Selected = SelectedValuesChanged?.SelectedNodes.Contains(x.Id) == true 
+                };
             })];
     }
 

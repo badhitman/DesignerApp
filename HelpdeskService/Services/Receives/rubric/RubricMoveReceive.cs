@@ -30,7 +30,7 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
         var data = await context
-        .RubricsForIssues
+        .Rubrics
         .Where(x => x.Id == req.ObjectId)
         .Select(x => new { x.Id, x.ParentRubricId, x.Name })
         .FirstAsync(x => x.Id == req.ObjectId);
@@ -50,7 +50,7 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
         }
 
         List<RubricIssueHelpdeskModelDB> all = await context
-            .RubricsForIssues
+            .Rubrics
             .Where(x => x.ParentRubricId == data.ParentRubricId)
             .OrderBy(x => x.SortIndex)
             .ToListAsync();

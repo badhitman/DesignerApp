@@ -87,7 +87,7 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
             q = from article_element in q
                 join rj_element in context.RubricsArticlesJoins on article_element.Id equals rj_element.ArticleId into outer_rj
                 from rj_item in outer_rj.DefaultIfEmpty()
-                join rubric_element in context.RubricsForIssues on rj_item.RubricId equals rubric_element.Id into outer_rubric
+                join rubric_element in context.Rubrics on rj_item.RubricId equals rubric_element.Id into outer_rubric
                 from rubric_item in outer_rubric.DefaultIfEmpty()
                 join tag_element in context.ArticlesTags on article_element.Id equals tag_element.Id into outer_tag
                 from tag_item in outer_tag.DefaultIfEmpty()
@@ -189,7 +189,7 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
         _ids = req.RubricsIds.Where(x => !rubrics_db.Any(y => y.RubricId == x)).ToArray();
         if (_ids.Length != 0)
         {
-            await context.AddAsync(_ids.Select(x => new RubricArticleJoinModelDB() { ArticleId = req.ArticleId, RubricId = x }));
+            await context.AddRangeAsync(_ids.Select(x => new RubricArticleJoinModelDB() { ArticleId = req.ArticleId, RubricId = x }));
             res = res || await context.SaveChangesAsync() != 0;
         }
 

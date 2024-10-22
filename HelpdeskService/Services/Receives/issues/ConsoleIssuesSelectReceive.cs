@@ -37,7 +37,7 @@ public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpd
         {
             req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
             q = from issue_element in q
-                join rubric_element in context.RubricsForIssues on issue_element.RubricIssueId equals rubric_element.Id into outer_rubric
+                join rubric_element in context.Rubrics on issue_element.RubricIssueId equals rubric_element.Id into outer_rubric
                 from rubric_item in outer_rubric.DefaultIfEmpty()
                 where issue_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || issue_element.NormalizedDescriptionUpper!.Contains(req.Payload.SearchQuery) || rubric_item.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)
                 select issue_element;

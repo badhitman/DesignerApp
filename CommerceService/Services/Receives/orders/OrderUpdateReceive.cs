@@ -53,6 +53,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context.Database.BeginTransaction();
             try
             {
+                req.StatusDocument = StatusesDocumentsEnum.Created;
                 await context.AddAsync(req);
                 await context.SaveChangesAsync();
                 res.Response = req.Id;
