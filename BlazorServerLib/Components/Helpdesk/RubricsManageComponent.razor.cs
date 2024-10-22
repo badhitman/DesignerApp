@@ -65,8 +65,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         {
             InitialTreeItems = [.. ConvertRubrics(rubrics).Cast<TreeItemDataRubricModel>()];
         }
-
-        StateHasChanged();
+        await SetBusy(false);
     }
 
     static TreeItemDataRubricModel? FindNode(int parent_id, IEnumerable<TreeItemDataRubricModel> treeItems)
@@ -112,6 +111,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     {
         List<RubricBaseModel> rubrics = await RequestRubrics();
         InitialTreeItems = [.. ConvertRubrics(rubrics).Cast<TreeItemDataRubricModel>()];
+        await SetBusy(false);
     }
 
     /// <inheritdoc/>
@@ -128,9 +128,9 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 
     async Task<List<RubricBaseModel>> RequestRubrics(int? parent_id = null)
     {
-        //await SetBusy();
+        await SetBusy();
         TResponseModel<List<RubricBaseModel>> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
-        //await SetBusy(false);
+        
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null)
             throw new Exception();
