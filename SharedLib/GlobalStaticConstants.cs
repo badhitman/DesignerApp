@@ -741,6 +741,9 @@ public static partial class GlobalStaticConstants
         public readonly static string TagArticleSetReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.TAG_CONTROLLER_NAME}-of-{Routes.ARTICLE_CONTROLLER_NAME}", Routes.SET_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string RubricsForArticleSetReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRICS_CONTROLLER_NAME}-for-{Routes.ARTICLES_CONTROLLER_NAME}", Routes.SET_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string RubricsForIssuesListHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.RUBRIC_CONTROLLER_NAME}-for-{Routes.ISSUE_CONTROLLER_NAME}", Routes.LIST_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -1200,6 +1203,11 @@ public static partial class GlobalStaticConstants
         /// Rubric
         /// </summary>
         public const string RUBRIC_CONTROLLER_NAME = "rubric";
+
+        /// <summary>
+        /// Rubrics
+        /// </summary>
+        public const string RUBRICS_CONTROLLER_NAME = "rubrics";
 
         /// <summary>
         /// Web

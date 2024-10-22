@@ -15,6 +15,10 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
 
     #region articles
     /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> UpdateRubricsForArticle(ArticleRubricsSetModel req)
+        => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.RubricsForArticleSetReceive, req);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<EntryModel[]?>> TagArticleSet(TagArticleSetModel req)
         => await rabbitClient.MqRemoteCall<EntryModel[]?>(GlobalStaticConstants.TransmissionQueues.TagArticleSetReceive, req);
 

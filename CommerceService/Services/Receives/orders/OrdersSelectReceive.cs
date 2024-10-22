@@ -32,7 +32,7 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
             .OrdersDocuments
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(req.Payload.SenderActionUserId))
+        if (!string.IsNullOrWhiteSpace(req.Payload.SenderActionUserId) && !req.Payload.SenderActionUserId.Equals(GlobalStaticConstants.Roles.System))
             q = q.Where(x => x.AuthorIdentityUserId == req.Payload.SenderActionUserId);
 
         if (req.Payload.Payload.OrganizationFilter.HasValue && req.Payload.Payload.OrganizationFilter.Value != 0)
@@ -51,7 +51,7 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
             q = q.Where(x => req.Payload.Payload.IssueIds.Any(y => y == x.HelpdeskId));
 
         if (req.Payload.Payload.AfterDateUpdate is not null)
-            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate);
+            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.Payload.AfterDateUpdate));
 
         if (req.Payload.Payload.StatusesFilter is not null && req.Payload.Payload.StatusesFilter.Length != 0)
             q = q.Where(x => req.Payload.Payload.StatusesFilter.Any(y => y == x.StatusDocument));

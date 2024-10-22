@@ -16,6 +16,11 @@ public interface IHelpdeskRemoteTransmissionService
 
     #region articles
     /// <summary>
+    /// UpdateRubricsForArticle
+    /// </summary>
+    public Task<TResponseModel<bool?>> UpdateRubricsForArticle(ArticleRubricsSetModel req);
+
+    /// <summary>
     /// TagArticleSet
     /// </summary>
     public Task<TResponseModel<EntryModel[]?>> TagArticleSet(TagArticleSetModel req);

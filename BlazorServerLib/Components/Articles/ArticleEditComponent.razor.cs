@@ -62,9 +62,12 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
         orignArticle = res.Response.Single();
     }
 
-    void SelectedRubricsChange(IReadOnlyCollection<RubricBaseModel?> req)
+    async void SelectedRubricsChange(IReadOnlyCollection<RubricBaseModel?> req)
     {
-        Console.WriteLine();
+        await SetBusy();
+        TResponseModel<bool?> res = await artRepo.UpdateRubricsForArticle(new() { ArticleId = ArticleId, RubricsIds = req.Select(x => x!.Id).ToArray() });
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
     /// <inheritdoc/>

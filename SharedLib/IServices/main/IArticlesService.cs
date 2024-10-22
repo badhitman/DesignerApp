@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IArticlesService
 {
     /// <summary>
+    /// Установит рубрики для статьи
+    /// </summary>
+    public Task<bool> UpdateRubricsForArticle(ArticleRubricsSetModel req);
+
+    /// <summary>
     /// TagArticleSet
     /// </summary>
     public Task<EntryModel[]> TagArticleSet(TagArticleSetModel req);

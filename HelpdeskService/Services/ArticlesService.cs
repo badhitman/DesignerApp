@@ -168,4 +168,31 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
             .Select(x => x.First().Name)
             .ToArrayAsync();
     }
+
+    /// <inheritdoc/>
+    public async Task<bool> UpdateRubricsForArticle(ArticleRubricsSetModel req)
+    {
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        if (req.RubricsIds.Length == 0)
+            return await context.RubricsArticlesJoins.Where(x => x.ArticleId == req.ArticleId).ExecuteDeleteAsync() != 0;
+
+        RubricArticleJoinModelDB[] rubrics_db = await context
+            .RubricsArticlesJoins
+            .Where(x => x.ArticleId == req.ArticleId)
+            .ToArrayAsync();
+
+        bool res = false;
+        int[] _ids = rubrics_db.Where(x => !req.RubricsIds.Contains(x.RubricId)).Select(x => x.Id).ToArray();
+        if (_ids.Length != 0)
+            res = await context.RubricsArticlesJoins.Where(x => _ids.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0;
+
+        _ids = req.RubricsIds.Where(x => !rubrics_db.Any(y => y.RubricId == x)).ToArray();
+        if (_ids.Length != 0)
+        {
+            await context.AddAsync(_ids.Select(x => new RubricArticleJoinModelDB() { ArticleId = req.ArticleId, RubricId = x }));
+            res = res || await context.SaveChangesAsync() != 0;
+        }
+
+        return res;
+    }
 }
