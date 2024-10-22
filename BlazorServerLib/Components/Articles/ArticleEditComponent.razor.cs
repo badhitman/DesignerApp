@@ -2,11 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using MudBlazor;
 
 namespace BlazorWebLib.Components.Articles;
 
@@ -67,7 +65,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        await ReadCurrentUser();
         images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{GlobalStaticConstants.Routes.ARTICLE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.BODY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={GlobalStaticConstants.Routes.IMAGE_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={ArticleId}";
         editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
 

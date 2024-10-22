@@ -1,8 +1,8 @@
 ﻿@using MudBlazor
 
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 
-@if (user.IsAdmin)
+@if (CurrentUserSession!.IsAdmin)
 {
     <sup @onclick="() => IsExpandPanel = !IsExpandPanel" title="правила ценообразования" class="bi bi-calculator text-primary"></sup>
 }

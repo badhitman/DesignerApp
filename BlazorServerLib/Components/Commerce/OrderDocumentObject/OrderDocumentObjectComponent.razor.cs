@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using BlazorLib;
@@ -14,7 +13,7 @@ namespace BlazorWebLib.Components.Commerce.OrderDocumentObject;
 /// <summary>
 /// OrderDocumentObjectComponent
 /// </summary>
-public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
+public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
@@ -29,11 +28,7 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
     NavigationManager NavRepo { get; set; } = default!;
 
     [Inject]
-    AuthenticationStateProvider AuthRepo { get; set; } = default!;
-
-    [Inject]
     IJSRuntime JsRuntimeRepo { get; set; } = default!;
-
 
 
     /// <summary>
@@ -99,13 +94,6 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
         isInitDelete = false;
     }
 
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
-    {
-        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-    }
-
     async Task OrderToCart()
     {
         OrderDocumentModelDB doc = GlobalTools.CreateDeepCopy(Document)!;
@@ -159,7 +147,7 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseModel
             Payload = new()
             {
                 IssueId = Issue.Id,
-                Step = HelpdeskIssueStepsEnum.Canceled,
+                Step = StatusesDocumentsEnum.Canceled,
             }
         };
         SetBusy();

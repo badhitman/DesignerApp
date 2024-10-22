@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
@@ -10,11 +9,8 @@ using SharedLib;
 namespace BlazorWebLib.Components.Constructor.Pages;
 
 /// <inheritdoc/>
-public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseModel
+public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
@@ -24,19 +20,14 @@ public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseModel
     public int DocumentId { get; set; }
 
 
-    /// <inheritdoc/>
-    public UserInfoMainModel CurrentUser { get; private set; } = default!;
-
     SessionOfDocumentDataModelDB SessionDocument = default!;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         SetBusy();
+        await ReadCurrentUser();
         
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-
         TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocument(new() { SessionId = DocumentId, IncludeExtra = false });
         IsBusyProgress = false;
 

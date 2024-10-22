@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components;
@@ -80,7 +79,5 @@ public partial class TinyMCEComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         _textValue = res.Response;
         IsBusyProgress = false;
-
-        await base.OnInitializedAsync();
     }
 }

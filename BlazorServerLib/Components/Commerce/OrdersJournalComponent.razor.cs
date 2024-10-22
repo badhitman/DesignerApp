@@ -2,28 +2,23 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using System.Collections.Generic;
 
 namespace BlazorWebLib.Components.Commerce;
 
 /// <summary>
 /// Журнал заказов
 /// </summary>
-public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
+public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
-
-    [Inject]
-    AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -52,7 +47,6 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
 
 
     List<OrderDocumentModelDB> documentsPartData = [];
-    UserInfoMainModel CurrentSessionUser = default!;
     readonly List<IssueHelpdeskModelDB> IssuesCacheDump = [];
 
     async Task UpdateCacheIssues()
@@ -66,7 +60,7 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
 
         TResponseModel<IssueHelpdeskModelDB[]> res = await HelpdeskRepo.IssuesRead(new()
         {
-            SenderActionUserId = CurrentSessionUser.UserId,
+            SenderActionUserId = CurrentUserSession!.UserId,
             Payload = new()
             {
                 IssuesIds = [.. q],
@@ -87,7 +81,7 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
             Payload = new()
             {
-                SenderActionUserId = CurrentSessionUser.UserId,
+                SenderActionUserId = CurrentUserSession!.UserId,
                 Payload = new()
                 {
                     IncludeExternalData = true,
@@ -114,15 +108,5 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseModel
             TotalItems = res.Response.TotalRowsCount,
             Items = documentsPartData
         };
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
-    {
-        SetBusy();
-        
-        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
-        IsBusyProgress = false;
-        CurrentSessionUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
     }
 }

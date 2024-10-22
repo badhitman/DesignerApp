@@ -16,6 +16,7 @@ public abstract class BlazorBusyComponentBaseAuthModel : BlazorBusyComponentBase
     [Inject]
     AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
+
     /// <summary>
     /// Текущий пользователь (сессия)
     /// </summary>
@@ -23,9 +24,15 @@ public abstract class BlazorBusyComponentBaseAuthModel : BlazorBusyComponentBase
 
 
     /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
+    public async Task ReadCurrentUser()
     {
         AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
         CurrentUserSession = state.User.ReadCurrentUserInfo();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await ReadCurrentUser();
     }
 }

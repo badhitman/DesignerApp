@@ -48,10 +48,10 @@ public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFa
         switch (req.Payload.JournalMode)
         {
             case HelpdeskJournalModesEnum.ActualOnly:
-                q = q.Where(x => x.StepIssue <= HelpdeskIssueStepsEnum.Progress);
+                q = q.Where(x => x.StepIssue <= StatusesDocumentsEnum.Progress);
                 break;
             case HelpdeskJournalModesEnum.ArchiveOnly:
-                q = q.Where(x => x.StepIssue > HelpdeskIssueStepsEnum.Progress);
+                q = q.Where(x => x.StepIssue > StatusesDocumentsEnum.Progress);
                 break;
             default:
                 break;

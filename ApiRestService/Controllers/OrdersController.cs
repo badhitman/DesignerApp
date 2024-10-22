@@ -32,8 +32,8 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)
-        => await commRepo.OrdersSelect(req);
+    public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<OrdersSelectRequestModel> req)
+        => await commRepo.OrdersSelect(new TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>>() { Payload = new TAuthRequestModel<OrdersSelectRequestModel>() { Payload = req.Payload, SenderActionUserId = GlobalStaticConstants.Roles.System } });
 
     /// <summary>
     /// Прикрепить файл к заказу (счёт, акт и т.п.). Имя файла должно быть уникальным в контексте заказа. Если файл с таким именем существует, тогда он будет перезаписан новым
@@ -133,7 +133,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
 #else
     [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
 #endif
-    public async Task<TResponseModel<bool>> OrderStageSet([FromRoute] int OrderId, [FromRoute] HelpdeskIssueStepsEnum Step)
+    public async Task<TResponseModel<bool>> OrderStageSet([FromRoute] int OrderId, [FromRoute] StatusesDocumentsEnum Step)
     {
         TResponseModel<OrderDocumentModelDB[]> call = await commRepo.OrdersRead([OrderId]);
         TResponseModel<bool> response = new() { Response = false };

@@ -31,7 +31,7 @@ public class StatusChangeReceive(
     public async Task<TResponseModel<bool>> ResponseHandleAction(TAuthRequestModel<StatusChangeRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        LoggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
+        LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<bool> res = new()
         {
             Response = false,
@@ -86,8 +86,8 @@ public class StatusChangeReceive(
         else
         {
             if (string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId) &&
-                req.Payload.Step >= HelpdeskIssueStepsEnum.Progress &&
-                req.Payload.Step != HelpdeskIssueStepsEnum.Canceled)
+                req.Payload.Step >= StatusesDocumentsEnum.Progress &&
+                req.Payload.Step != StatusesDocumentsEnum.Canceled)
             {
                 res.AddError("Для перевода обращения в работу нужно сначала указать исполнителя");
                 return res;
@@ -95,19 +95,7 @@ public class StatusChangeReceive(
 
             string msg = $"Статус успешно изменён с `{issue_data.StepIssue}` на `{req.Payload.Step}`";
 
-            IQueryable<IssueHelpdeskModelDB> _q = context
-                .Issues
-                .Where(x => x.Id == issue_data.Id);
-
-            IssueHelpdeskModelDB? current_issue_db = await _q.FirstOrDefaultAsync();
-            if (current_issue_db is null)
-            {
-                res.AddError($"Обращение {issue_data.Id} не найдено в БД");
-                return res;
-            }
-            HelpdeskIssueStepsEnum current_stage = current_issue_db.StepIssue;
-
-            await _q
+            await context.Issues.Where(x => x.Id == issue_data.Id)
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.StepIssue, req.Payload.Step));
 
             res.AddSuccess(msg);
@@ -147,6 +135,7 @@ public class StatusChangeReceive(
             TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> find_orders = await commRepo.OrdersSelect(req_docs);
             if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Response.Count != 0)
             {
+                await commRepo.StatusOrderChange(new() { IssueId = issue_data.Id, Step = req.Payload.Step });
                 TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                 OrderDocumentModelDB order_obj = find_orders.Response.Response[0];
                 string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetMsk().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetMsk().ToString("t", cultureInfo)}";

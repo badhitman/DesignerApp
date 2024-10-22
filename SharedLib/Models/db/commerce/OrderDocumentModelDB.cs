@@ -17,6 +17,11 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     }
 
     /// <summary>
+    /// Шаг/статус обращения: "Создан", "В работе", "На проверке" и "Готово"
+    /// </summary>
+    public StatusesDocumentsEnum StatusDocument { get; set; }
+
+    /// <summary>
     /// IdentityUserId
     /// </summary>
     public required string AuthorIdentityUserId { get; set; }

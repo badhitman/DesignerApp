@@ -2,26 +2,22 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlazorWebLib.Components.Constructor.Pages;
+using BlazorLib.Components.Shared.tabs;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using BlazorWebLib.Components.Constructor.Pages;
-using BlazorLib.Components.Shared.tabs;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Form;
 
 /// <summary>
 /// Edit form dialog
 /// </summary>
-public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
+public partial class EditFormDialogComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
-
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
     [CascadingParameter]
@@ -37,8 +33,6 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-
-    UserInfoMainModel user = default!;
 
     TabSetComponent tab_set_ref = default!;
 
@@ -67,7 +61,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     protected async Task SaveForm()
     {
         SetBusy();
-        TResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.FormUpdateOrCreate(new() { Payload = FormEditObject, SenderActionUserId = user.UserId });
+        TResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.FormUpdateOrCreate(new() { Payload = FormEditObject, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
@@ -89,10 +83,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-
+        await ReadCurrentUser();
         ResetForm();
-        await base.OnInitializedAsync();
     }
 }

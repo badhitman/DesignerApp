@@ -4,9 +4,7 @@
 
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
-using MudBlazor;
 using SharedLib;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -48,6 +46,7 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseAuthModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await ReadCurrentUser();
         SetBusy();
         if (CurrentUserSession is null)
             throw new Exception();

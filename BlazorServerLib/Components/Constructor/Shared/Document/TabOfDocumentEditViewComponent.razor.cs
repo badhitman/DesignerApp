@@ -7,18 +7,14 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Document;
 
 /// <summary>
 /// Page questionnaire view
 /// </summary>
-public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseModel
+public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
@@ -81,8 +77,6 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-
-    UserInfoMainModel user = default!;
 
     int _selectedFormForAdding;
     /// <summary>
@@ -149,8 +143,8 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     protected async Task MoveRow(VerticalDirectionsEnum direct)
     {
         SetBusy();
-        
-        TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabOfDocumentScheme(new() { Payload = new() { Id = DocumentPage.Id, Direct = direct }, SenderActionUserId = user.UserId });
+
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabOfDocumentScheme(new() { Payload = new() { Id = DocumentPage.Id, Direct = direct }, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -180,8 +174,8 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
             return;
         }
         SetBusy();
-        
-        ResponseBaseModel rest = await ConstructorRepo.DeleteTabOfDocumentScheme(new() { Payload = DocumentPage.Id, SenderActionUserId = user.UserId });
+
+        ResponseBaseModel rest = await ConstructorRepo.DeleteTabOfDocumentScheme(new() { Payload = DocumentPage.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -213,7 +207,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     protected async Task AddFormToPage()
     {
         SetBusy();
-        
+
         ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new()
         {
             Payload = new FormToTabJoinConstructorModelDB()
@@ -222,7 +216,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
                 TabId = DocumentPage.Id,
                 Name = addingFormToTabPageName,
             },
-            SenderActionUserId = user.UserId
+            SenderActionUserId = CurrentUserSession!.UserId
         });
         IsBusyProgress = false;
 
@@ -244,8 +238,8 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     protected async Task SavePage()
     {
         SetBusy();
-        
-        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.CreateOrUpdateTabOfDocumentScheme(new() { Payload = new EntryDescriptionOwnedModel() { Id = DocumentPage.Id, OwnerId = DocumentPage.OwnerId, Name = DocumentPage.Name, Description = DocumentPage.Description }, SenderActionUserId = user.UserId });
+
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.CreateOrUpdateTabOfDocumentScheme(new() { Payload = new EntryDescriptionOwnedModel() { Id = DocumentPage.Id, OwnerId = DocumentPage.OwnerId, Name = DocumentPage.Name, Description = DocumentPage.Description }, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -301,8 +295,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        await ReadCurrentUser();
 
         await ReloadPage();
         NameOrigin = DocumentPage.Name;

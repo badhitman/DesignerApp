@@ -102,7 +102,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 {
                     return raw.Replace(GlobalStaticConstants.OrderDocumentName, req.Name)
                     .Replace(GlobalStaticConstants.OrderDocumentDate, $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}")
-                    .Replace(GlobalStaticConstants.OrderStatusInfo, HelpdeskIssueStepsEnum.Created.DescriptionInfo())
+                    .Replace(GlobalStaticConstants.OrderStatusInfo, StatusesDocumentsEnum.Created.DescriptionInfo())
                     .Replace(GlobalStaticConstants.OrderLinkAddress, $"<a href='{_webConf.BaseUri}/issue-card/{req.HelpdeskId}'>{_about_order}</a>")
                     .Replace(GlobalStaticConstants.HostAddress, $"<a href='{_webConf.BaseUri}'>{_webConf.BaseUri}</a>");
                 }

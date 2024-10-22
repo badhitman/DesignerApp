@@ -12,7 +12,7 @@ public class StatusChangeRequestModel
     /// <summary>
     /// Step
     /// </summary>
-    public required HelpdeskIssueStepsEnum Step { get; set; }
+    public required StatusesDocumentsEnum Step { get; set; }
 
     /// <summary>
     /// IssueId

@@ -118,4 +118,8 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
     /// <inheritdoc/>
     public async Task<TResponseModel<byte[]>> GetFileOrder(string id)
         => await rabbitClient.MqRemoteCall<byte[]>(GlobalStaticConstants.TransmissionQueues.ReadFileCommerceReceive, id);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel req)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.StatusChangeOrderReceive, req);
 }

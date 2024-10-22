@@ -3,20 +3,15 @@
 ////////////////////////////////////////////////
 
 using BlazorWebLib.Components.Constructor.Shared.Manufacture;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
-using MudBlazor;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Constructor.Pages;
 
 /// <inheritdoc/>
-public partial class ConstructorPage : BlazorBusyComponentBaseModel
+public partial class ConstructorPage : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider AuthRepo { get; set; } = default!;
-
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
@@ -31,9 +26,6 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     public List<SystemNameEntryModel>? SystemNamesManufacture;
 
     /// <inheritdoc/>
-    UserInfoMainModel CurrentUser = default!;
-
-    /// <inheritdoc/>
     public MainProjectViewModel? MainProject { get; private set; }
 
     /// <summary>
@@ -45,10 +37,7 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         SetBusy();
-        
-        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
-        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-
+        await ReadCurrentUser();
         await ReadCurrentMainProject();
     }
 
@@ -59,14 +48,14 @@ public partial class ConstructorPage : BlazorBusyComponentBaseModel
     {
         CanEditProject = false;
         SetBusy();
-        
-        TResponseModel<MainProjectViewModel> currentMainProject = await ConstructorRepo.GetCurrentMainProject(CurrentUser.UserId);
+
+        TResponseModel<MainProjectViewModel> currentMainProject = await ConstructorRepo.GetCurrentMainProject(CurrentUserSession!.UserId);
 
         if (!currentMainProject.Success())
             SnackbarRepo.ShowMessagesResponse(currentMainProject.Messages);
 
         MainProject = currentMainProject.Response;
-        CanEditProject = MainProject is not null && (!MainProject.IsDisabled || MainProject.OwnerUserId.Equals(CurrentUser.UserId) || CurrentUser.IsAdmin);
+        CanEditProject = MainProject is not null && (!MainProject.IsDisabled || MainProject.OwnerUserId.Equals(CurrentUserSession!.UserId) || CurrentUserSession!.IsAdmin);
         IsBusyProgress = false;
         //await GetSystemNames();
 

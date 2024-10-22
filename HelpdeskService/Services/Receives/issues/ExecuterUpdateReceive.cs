@@ -92,7 +92,7 @@ public class ExecuterUpdateReceive(
                 res.AddInfo("Исполнитель уже отсутствует");
             else
             {
-                if (issue_data.StepIssue >= HelpdeskIssueStepsEnum.Progress)
+                if (issue_data.StepIssue >= StatusesDocumentsEnum.Progress)
                 {
                     res.AddError($"Обращение в статусе [{issue_data.StepIssue.DescriptionInfo()}]. После того как обращение переходит в работу (и далее) удалить исполнителя нельзя. Для открепления исполнителя поставьте обращение на паузу");
                     return res;

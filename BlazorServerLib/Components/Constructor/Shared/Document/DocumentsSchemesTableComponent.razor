@@ -1,4 +1,4 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@inherits BlazorBusyComponentBaseAuthModel
 
 <MudTable Class="d-flex flex-column flex-grow-1" Loading="IsBusyProgress" ServerData="@(new Func<TableState, CancellationToken, Task<TableData<DocumentSchemeConstructorModelDB>>>(ServerReload))" Dense="true" Hover="true" Striped="true" @ref="table">
     <ToolBarContent>

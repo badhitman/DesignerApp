@@ -2,28 +2,23 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using static MudBlazor.Colors;
 
 namespace BlazorWebLib.Components.Commerce;
 
 /// <summary>
 /// OrganizationEditComponent
 /// </summary>
-public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
+public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     NavigationManager NavigationRepo { get; set; } = default!;
 
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
-
-    [Inject]
-    AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -33,7 +28,6 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
     public int? OrganizationId { get; set; }
 
 
-    UserInfoMainModel user = default!;
     OrganizationModelDB? currentOrg;
     OrganizationModelDB? editOrg;
 
@@ -44,7 +38,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
 
         editOrg = GlobalTools.CreateDeepCopy(currentOrg);
 
-        TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
+        TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = CurrentUserSession!.UserId };
         SetBusy();
         
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
@@ -100,7 +94,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
         if (editOrg is null || editOrg.Equals(currentOrg))
             throw new ArgumentNullException(nameof(editOrg));
 
-        TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = user.UserId };
+        TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = CurrentUserSession!.UserId };
         SetBusy();
         
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
@@ -127,7 +121,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         currentOrg = res.Response?.FirstOrDefault();
-        if (currentOrg is not null && (currentOrg.Users?.Any(x => x.UserPersonIdentityId == user.UserId) != true && !user.IsAdmin && user.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true))
+        if (currentOrg is not null && (currentOrg.Users?.Any(x => x.UserPersonIdentityId == CurrentUserSession!.UserId) != true && !CurrentUserSession!.IsAdmin && CurrentUserSession!.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true))
         {
             currentOrg = null;
             return;
@@ -141,8 +135,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         OrganizationId ??= 0;
-        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        await ReadCurrentUser();
 
         if (OrganizationId == 0)
         {

@@ -10,6 +10,11 @@ namespace SharedLib;
 public class OrdersSelectRequestModel
 {
     /// <summary>
+    /// Статусы: "Создан", "В работе", "На проверке" и "Готово"
+    /// </summary>
+    public StatusesDocumentsEnum[]? StatusesFilter { get; set; }
+
+    /// <summary>
     /// Дата обновления должна быть не меньше указанной
     /// </summary>
     public DateTime? AfterDateUpdate { get; set; }

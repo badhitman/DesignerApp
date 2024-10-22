@@ -53,6 +53,9 @@ public class OrdersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
         if (req.Payload.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate);
 
+        if (req.Payload.Payload.StatusesFilter is not null && req.Payload.Payload.StatusesFilter.Length != 0)
+            q = q.Where(x => req.Payload.Payload.StatusesFilter.Any(y => y == x.StatusDocument));
+
         IOrderedQueryable<OrderDocumentModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
            ? q.OrderBy(x => x.CreatedAtUTC)
            : q.OrderByDescending(x => x.CreatedAtUTC);

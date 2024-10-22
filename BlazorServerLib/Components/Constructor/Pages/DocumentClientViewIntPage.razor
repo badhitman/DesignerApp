@@ -1,7 +1,7 @@
 ﻿@page "/questionnaire/session/protected/{DocumentId:int}"
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 
 @attribute [Authorize]
 
@@ -17,11 +17,9 @@
 }
 else
 {
-    <CascadingValue Value="CurrentUser">
-        <CascadingValue Value="SessionDocument">
-            <CascadingValue Value="true">
-                <DocumentClientViewComponent />
-            </CascadingValue>
+    <CascadingValue Value="SessionDocument">
+        <CascadingValue Value="true">
+            <DocumentClientViewComponent />
         </CascadingValue>
     </CascadingValue>
 }

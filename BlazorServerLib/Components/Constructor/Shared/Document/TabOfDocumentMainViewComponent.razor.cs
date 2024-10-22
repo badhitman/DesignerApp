@@ -5,9 +5,7 @@
 using BlazorLib;
 using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
-using MudBlazor;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Document;
@@ -15,11 +13,8 @@ namespace BlazorWebLib.Components.Constructor.Shared.Document;
 /// <summary>
 /// Page questionnaire form main view
 /// </summary>
-public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseModel
+public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
     [Inject]
     ILogger<TabOfDocumentMainViewComponent> LoggerRepo { get; set; } = default!;
 
@@ -64,17 +59,12 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     public required bool InUse { get; set; }
 
 
-    UserInfoMainModel? user;
 
     /// <inheritdoc/>
     protected async Task DeleteJoinForm()
     {
-        if (user is null)
-            throw new ArgumentNullException(nameof(user));
-
         SetBusy();
-        
-        ResponseBaseModel rest = await ConstructorRepo.DeleteTabDocumentSchemeJoinForm(new() { Payload = PageJoinForm.Id, SenderActionUserId = user.UserId });
+        ResponseBaseModel rest = await ConstructorRepo.DeleteTabDocumentSchemeJoinForm(new() { Payload = PageJoinForm.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -129,12 +119,8 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected async Task DocumentPageJoinFormMove(VerticalDirectionsEnum direct)
     {
-        if (user is null)
-            throw new ArgumentNullException(nameof(user));
-
         SetBusy();
-        
-        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabDocumentSchemeJoinForm(new() { Payload = new() { Id = PageJoinForm.Id, Direct = direct }, SenderActionUserId = user.UserId });
+        TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabDocumentSchemeJoinForm(new() { Payload = new() { Id = PageJoinForm.Id, Direct = direct }, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -150,9 +136,6 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected async Task SaveJoinForm()
     {
-        if(user is null)
-            throw new ArgumentNullException(nameof(user));
-
         FormToTabJoinConstructorModelDB req = new()
         {
             Description = PageJoinForm.Description,
@@ -166,8 +149,8 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
         };
 
         SetBusy();
-        
-        ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new() { Payload = req, SenderActionUserId = user.UserId });
+
+        ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new() { Payload = req, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -197,8 +180,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo();
+        await ReadCurrentUser();
 
         _join_name_origin = PageJoinForm.Name;
         _join_set_title_origin = PageJoinForm.ShowTitle == true;

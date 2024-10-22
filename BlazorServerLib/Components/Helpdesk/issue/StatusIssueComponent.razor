@@ -6,10 +6,10 @@
     <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
 }
 
-<MudSelect ReadOnly="@(!CanEdit || IsBusyProgress)" @bind-Value="IssueStep" T="HelpdeskIssueStepsEnum" Label="Статус" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-    @foreach (HelpdeskIssueStepsEnum step in Steps())
+<MudSelect ReadOnly="@(!CanEdit || IsBusyProgress)" @bind-Value="IssueStep" T="StatusesDocumentsEnum" Label="Статус" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (StatusesDocumentsEnum step in Steps())
     {
-        <MudSelectItem Class="@(step == Issue.StepIssue ? "text-success fw-bold" : "")" T="HelpdeskIssueStepsEnum" Value="@step">
+        <MudSelectItem Class="@(step == Issue.StepIssue ? "text-success fw-bold" : "")" T="StatusesDocumentsEnum" Value="@step">
             @step.DescriptionInfo()
         </MudSelectItem>
     }

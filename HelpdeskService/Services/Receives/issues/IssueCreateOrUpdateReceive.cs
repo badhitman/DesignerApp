@@ -82,7 +82,7 @@ public class IssueCreateOrUpdateReceive(
                 RubricIssueId = issue_upd.Payload.RubricId,
                 NormalizedNameUpper = normalizedNameUpper,
                 NormalizedDescriptionUpper = normalizedDescriptionUpper,
-                StepIssue = HelpdeskIssueStepsEnum.Created,
+                StepIssue = StatusesDocumentsEnum.Created,
                 ProjectId = issue_upd.Payload.ProjectId,
                 CreatedAt = dtn,
                 LastUpdateAt = dtn,

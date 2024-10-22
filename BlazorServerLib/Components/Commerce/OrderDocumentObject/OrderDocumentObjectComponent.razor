@@ -1,5 +1,5 @@
 ﻿@using MudBlazor
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 
 @foreach (TabAddressForOrderModelDb at in Document.AddressesTabs!)
 {
@@ -28,7 +28,7 @@
     </div>
 }
 <MudButton Class="mt-3" OnClick="OrderToCart" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Скопировать заказ в корзину</MudButton>
-@if (Issue.StepIssue == HelpdeskIssueStepsEnum.Created)
+@if (Issue.StepIssue == StatusesDocumentsEnum.Created)
 {
     <MudButton Class="mt-3" OnClick="OrderNull" Variant="Variant.Outlined" Color="Color.Secondary" FullWidth="true">Отмена заказа</MudButton>
 }

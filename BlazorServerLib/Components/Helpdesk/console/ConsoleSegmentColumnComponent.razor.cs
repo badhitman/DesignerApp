@@ -26,7 +26,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
     /// StepIssue
     /// </summary>
     [Parameter, EditorRequired]
-    public HelpdeskIssueStepsEnum StepIssue { get; set; }
+    public StatusesDocumentsEnum StepIssue { get; set; }
 
     /// <summary>
     /// IsLarge

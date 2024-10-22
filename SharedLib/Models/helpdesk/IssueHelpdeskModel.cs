@@ -15,7 +15,7 @@ public class IssueHelpdeskModel : EntryDescriptionModel
     /// <summary>
     /// Шаг/статус обращения: "Создан", "В работе", "На проверке" и "Готово"
     /// </summary>
-    public HelpdeskIssueStepsEnum StepIssue { get; set; }
+    public StatusesDocumentsEnum StepIssue { get; set; }
 
     /// <summary>
     /// IdentityUserId

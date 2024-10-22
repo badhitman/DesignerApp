@@ -1,10 +1,10 @@
 ﻿@using MudBlazor
 
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 
 <MudTable Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Юридические лица: (@(current_user is null ? "Все" : current_user.Email))</MudText>
+        <MudText Typo="Typo.h6">Юридические лица: (@(CurrentViewUser is null ? "Все" : CurrentViewUser.Email))</MudText>
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortLabel="@(nameof(OrganizationModelDB.Name))" T="OrganizationModelDB">Название</MudTableSortLabel></MudTh>

@@ -2,24 +2,20 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlazorWebLib.Components.Constructor.Shared.Document;
 using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using BlazorWebLib.Components.Constructor.Shared.Document;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared;
 
 /// <summary>
 /// Edit questionnaire dialog
 /// </summary>
-public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBaseModel
+public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
     /// <inheritdoc/>
     [Inject]
     protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
@@ -36,11 +32,6 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
     [Parameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-
-    /// <summary>
-    /// CurrentUser
-    /// </summary>
-    public UserInfoMainModel CurrentUser = default!;
 
     /// <inheritdoc/>
     protected bool IsEdited => DocumentScheme.Name != DocumentNameOrigin || DocumentScheme.Description != DocumentDescriptionOrigin;
@@ -88,7 +79,7 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
 
         SetBusy();
         
-        TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.UpdateOrCreateDocumentScheme(new() { Payload = new EntryConstructedModel() { Id = DocumentScheme.Id, Name = DocumentNameOrigin, Description = DocumentDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id }, SenderActionUserId = CurrentUser.UserId });
+        TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.UpdateOrCreateDocumentScheme(new() { Payload = new EntryConstructedModel() { Id = DocumentScheme.Id, Name = DocumentNameOrigin, Description = DocumentDescriptionOrigin, ProjectId = ParentFormsPage.MainProject.Id }, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -110,9 +101,7 @@ public partial class EditDocumentSchemeDialogComponent : BlazorBusyComponentBase
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-
+        await ReadCurrentUser();
         await ResetDocumentForm();
         base.OnInitialized();
     }

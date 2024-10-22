@@ -7,18 +7,14 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Document;
 
 /// <summary>
 /// Documents view
 /// </summary>
-public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseModel
+public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
     /// <inheritdoc/>
     [Inject]
     protected IDialogService DialogServiceRepo { get; set; } = default!;
@@ -31,8 +27,6 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
-
-    UserInfoMainModel CurrentUser = default!;
 
 
     MudTable<DocumentSchemeConstructorModelDB>? table;
@@ -47,9 +41,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-        await base.OnInitializedAsync();
+        await ReadCurrentUser();
     }
 
     /// <inheritdoc/>
@@ -57,7 +49,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseMod
     {
         SetBusy();
         
-        ResponseBaseModel rest = await ConstructorRepo.DeleteDocumentScheme(new() { Payload = questionnaire_id, SenderActionUserId = CurrentUser.UserId });
+        ResponseBaseModel rest = await ConstructorRepo.DeleteDocumentScheme(new() { Payload = questionnaire_id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

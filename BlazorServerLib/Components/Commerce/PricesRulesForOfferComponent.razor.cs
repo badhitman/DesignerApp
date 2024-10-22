@@ -14,11 +14,8 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// PricesRulesForOfferComponent
 /// </summary>
-public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
+public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
@@ -33,15 +30,14 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
     public required OfferGoodModelDB OfferGood { get; set; }
 
 
-    UserInfoMainModel user = default!;
     bool IsExpandPanel;
     PriceRuleForOfferModelDB[] rules = default!;
-    
+
     int QuantityAddingRule { get; set; } = 2;
     decimal PriceAddingRule { get; set; }
 
     string? TextValue { get; set; }
-    
+
 
     /// <inheritdoc/>
     public List<PriceRuleElementComponent> RulesViewsComponents { get; set; } = [];
@@ -60,7 +56,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
     public async Task SaveRule(PriceRuleForOfferModelDB rule)
     {
         SetBusy();
-        
+
         TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(rule);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         LoggerRepo.LogWarning("Правило изменено");
@@ -74,7 +70,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
         PriceAddingRule = 0;
         //
         SetBusy();
-        
+
         TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([OfferGood.Id]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -84,10 +80,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-
-
+        await ReadCurrentUser();
         await ReloadRules();
     }
 }

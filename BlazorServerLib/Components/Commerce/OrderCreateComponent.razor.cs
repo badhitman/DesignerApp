@@ -353,7 +353,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        await ReadCurrentUser();
 
         await OrganizationReset();
         await UpdateCachePriceRules();

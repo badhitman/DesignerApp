@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// Стадии/шаги обращения: "Создан", "В работе", "На проверке" и "Готово"
 /// </summary>
-public enum HelpdeskIssueStepsEnum
+public enum StatusesDocumentsEnum
 {
     /// <summary>
     /// Создан

@@ -252,7 +252,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Тема уведомления при изменении статуса заказа
         /// </summary>
-        public static StorageMetadataModel CommerceStatusChangeOrderSubjectNotification(HelpdeskIssueStepsEnum stage) => new()
+        public static StorageMetadataModel CommerceStatusChangeOrderSubjectNotification(StatusesDocumentsEnum stage) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
@@ -263,7 +263,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Текст уведомления при изменении статуса заказа
         /// </summary>
-        public static StorageMetadataModel CommerceStatusChangeOrderBodyNotification(HelpdeskIssueStepsEnum stage) => new()
+        public static StorageMetadataModel CommerceStatusChangeOrderBodyNotification(StatusesDocumentsEnum stage) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
@@ -307,7 +307,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// TELEGRAM: Текст уведомления при изменении статуса заказа
         /// </summary>
-        public static StorageMetadataModel CommerceStatusChangeOrderBodyNotificationTelegram(HelpdeskIssueStepsEnum stepEnum) => new()
+        public static StorageMetadataModel CommerceStatusChangeOrderBodyNotificationTelegram(StatusesDocumentsEnum stepEnum) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
@@ -637,6 +637,9 @@ public static partial class GlobalStaticConstants
         #region Commerce
         /// <inheritdoc/>
         public readonly static string ReadFileCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.FILE_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string StatusChangeOrderReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.STATUS_CONTROLLER_NAME}-for-{Routes.ORDER_CONTROLLER_NAME}", Routes.CHANGE_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string GoodsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);

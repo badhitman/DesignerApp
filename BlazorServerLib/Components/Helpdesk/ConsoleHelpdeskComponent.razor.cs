@@ -23,7 +23,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseModel
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
-    readonly List<HelpdeskIssueStepsEnum> Steps = [.. Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>()];
+    readonly List<StatusesDocumentsEnum> Steps = [.. Enum.GetValues(typeof(StatusesDocumentsEnum)).Cast<StatusesDocumentsEnum>()];
     byte stepNum;
     bool IsLarge;
     string? FilterUserId;

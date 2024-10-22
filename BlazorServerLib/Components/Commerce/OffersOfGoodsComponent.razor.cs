@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Commerce;
 

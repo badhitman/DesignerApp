@@ -17,5 +17,5 @@ public class ConsoleIssuesRequestModel : SimpleBaseRequestModel
     /// <summary>
     /// Status
     /// </summary>
-    public required HelpdeskIssueStepsEnum Status { get; set; }
+    public required StatusesDocumentsEnum Status { get; set; }
 }

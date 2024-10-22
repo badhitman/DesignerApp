@@ -2,11 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using MudBlazor;
 
 namespace BlazorWebLib.Components.Account.Pages.Manage;
 
@@ -29,7 +27,7 @@ public partial class IndexPage : BlazorBusyComponentBaseAuthModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        await ReadCurrentUser();
         TResponseModel<string?> username_rest = await UsersProfilesRepo.GetUserNameAsync();
         Messages.AddRange(username_rest.Messages);
         username = username_rest.Response;

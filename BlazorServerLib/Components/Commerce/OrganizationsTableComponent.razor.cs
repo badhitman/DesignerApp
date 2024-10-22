@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
@@ -13,16 +12,13 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// OrganizationsTableComponent
 /// </summary>
-public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
+public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
     [Inject]
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
-
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -34,45 +30,41 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
 
     string? _filterUser;
 
-    UserInfoMainModel? current_user;
+    UserInfoMainModel? CurrentViewUser;
 
     private MudTable<OrganizationModelDB> table = default!;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        UserInfoMainModel me = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-
-
         if (string.IsNullOrWhiteSpace(UserId))
         {
-            if (me.IsAdmin)
+            if (CurrentUserSession!.IsAdmin)
                 _filterUser = UserId;
             else
             {
-                _filterUser = me.UserId;
-                current_user = me;
+                _filterUser = CurrentUserSession!.UserId;
+                CurrentViewUser = CurrentUserSession!;
             }
         }
         else
         {
-            if (me.IsAdmin || me.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) == true)
+            if (CurrentUserSession!.IsAdmin || CurrentUserSession!.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) == true)
                 _filterUser = UserId;
             else
-                _filterUser = me.UserId;
+                _filterUser = CurrentUserSession!.UserId;
         }
 
-        if (UserId == me.UserId)
-            current_user = me;
+        if (UserId == CurrentUserSession!.UserId)
+            CurrentViewUser = CurrentUserSession!;
         else if (!string.IsNullOrWhiteSpace(UserId))
         {
             SetBusy();
-            
+
             TResponseModel<UserInfoModel[]?> user_res = await WebRepo.GetUsersIdentity([UserId]);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(user_res.Messages);
-            current_user = user_res.Response?.FirstOrDefault();
+            CurrentViewUser = user_res.Response?.FirstOrDefault();
         }
     }
 
@@ -93,7 +85,7 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         SetBusy();
-        
+
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

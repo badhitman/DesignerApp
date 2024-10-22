@@ -5,22 +5,15 @@
 using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
-using MudBlazor;
 using SharedLib;
-using static MudBlazor.CategoryTypes;
-using static SharedLib.GlobalStaticConstants;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 
 /// <summary>
 /// ElementDirectoryFieldSet
 /// </summary>
-public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBaseModel
+public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
@@ -48,7 +41,6 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     public required ConstructorPage ParentFormsPage { get; set; }
 
 
-    UserInfoMainModel CurrentUser { get; set; } = default!;
     EntryDescriptionModel? ElementObjectOrign;
     EntryDescriptionModel? ElementObjectEdit;
 
@@ -61,12 +53,10 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        await ReadCurrentUser();
 
-        images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{Routes.CONSTRUCTOR_CONTROLLER_NAME}/{Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Routes.SET_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
-        editorConf = TinyMCEditorConf(images_upload_url);
-        await base.OnInitializedAsync();
+        images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{GlobalStaticConstants.Routes.CONSTRUCTOR_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={GlobalStaticConstants.Routes.SET_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
+        editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
     }
 
     /// <inheritdoc/>
@@ -76,7 +66,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
 
         SetBusy();
         
-        ResponseBaseModel rest = await ConstructorRepo.UpdateElementOfDirectory(new() { Payload = ElementObjectEdit, SenderActionUserId = CurrentUser.UserId });
+        ResponseBaseModel rest = await ConstructorRepo.UpdateElementOfDirectory(new() { Payload = ElementObjectEdit, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -158,7 +148,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
         IsEdit = false;
         SetBusy();
         
-        ResponseBaseModel rest = await ConstructorRepo.UpMoveElementOfDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUser.UserId });
+        ResponseBaseModel rest = await ConstructorRepo.UpMoveElementOfDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
         if (!rest.Success())
         {
@@ -174,7 +164,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
         IsEdit = false;
         SetBusy();
         
-        ResponseBaseModel rest = await ConstructorRepo.DownMoveElementOfDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUser.UserId });
+        ResponseBaseModel rest = await ConstructorRepo.DownMoveElementOfDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
         if (!rest.Success())
         {
@@ -190,7 +180,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     {
         SetBusy();
         
-        ResponseBaseModel rest = await ConstructorRepo.DeleteElementFromDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUser.UserId });
+        ResponseBaseModel rest = await ConstructorRepo.DeleteElementFromDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
