@@ -41,7 +41,7 @@ public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
         if (string.IsNullOrWhiteSpace(_value))
             return;
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<EntryModel[]?> res = await artRepo.TagArticleSet(new() { Name = _value, Id = Article.Id, Set = true });
         IsBusyProgress = false;
@@ -61,7 +61,7 @@ public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
     {
         if (!string.IsNullOrWhiteSpace(chip.Value?.Name))
         {
-            SetBusy();
+            await SetBusy();
             
             TResponseModel<EntryModel[]?> res = await artRepo.TagArticleSet(new() { Name = chip.Value.Name, Id = Article.Id, Set = false });
             IsBusyProgress = false;
@@ -74,7 +74,7 @@ public partial class TagsForArticlesComponent : BlazorBusyComponentBaseModel
 
     private async Task<IEnumerable<string?>> Search(string value, CancellationToken token)
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<string[]?> res = await artRepo.TagsOfArticlesSelect(value);
         IsBusyProgress = false;

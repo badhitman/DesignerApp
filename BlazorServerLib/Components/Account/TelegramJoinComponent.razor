@@ -78,7 +78,7 @@ else
 
     async Task ReadState(bool notify_email)
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<TelegramJoinAccountModelDb> rest = await tgWebRepo.TelegramJoinAccountState(notify_email, User.UserId);
         IsBusyProgress = false;
@@ -92,7 +92,7 @@ else
 
     async Task CreateToken()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<TelegramJoinAccountModelDb> rest = await tgWebRepo.TelegramJoinAccountCreate();
         Messages = rest.Messages;
@@ -102,7 +102,7 @@ else
 
     async Task DeleteToken()
     {
-        SetBusy();
+        await SetBusy();
         
         ResponseBaseModel rest = await tgWebRepo.TelegramJoinAccountDeleteAction();
         Messages = rest.Messages;
@@ -116,7 +116,7 @@ else
 
     async Task Rest()
     {
-        SetBusy();
+        await SetBusy();
         
 
         if (string.IsNullOrWhiteSpace(UserId))
@@ -137,7 +137,7 @@ else
     {
         await Rest();
         await ReadState(false);
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<string?> bot_username_res = await TelegramRemoteRepo.GetBotUsername();
         IsBusyProgress = false;
@@ -145,7 +145,7 @@ else
         Messages.AddRange(bot_username_res.Messages);
         if (User.TelegramId.HasValue)
         {
-            SetBusy();
+            await SetBusy();
             
             TResponseModel<TelegramUserBaseModel?> rest = await tgWebRepo.GetTelegramUserCachedInfo(User.TelegramId.Value);
             IsBusyProgress = false;

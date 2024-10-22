@@ -27,7 +27,7 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
     /// <inheritdoc/>
     public override async Task LoadPartData()
     {
-        SetBusy();
+        await SetBusy();
         TResponseModel<TPaginationResponseModel<UserInfoModel>?> rest = await WebRepo
             .SelectUsersOfIdentity(new()
             {
@@ -64,7 +64,7 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
             return;
         }
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<UserInfoModel[]?> rest = await WebRepo.GetUsersIdentity([SelectedUser]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

@@ -142,7 +142,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseAut
     /// </summary>
     protected async Task MoveRow(VerticalDirectionsEnum direct)
     {
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabOfDocumentScheme(new() { Payload = new() { Id = DocumentPage.Id, Direct = direct }, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
@@ -173,7 +173,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseAut
             IsInitDelete = true;
             return;
         }
-        SetBusy();
+        await SetBusy();
 
         ResponseBaseModel rest = await ConstructorRepo.DeleteTabOfDocumentScheme(new() { Payload = DocumentPage.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
@@ -206,7 +206,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseAut
     /// </summary>
     protected async Task AddFormToPage()
     {
-        SetBusy();
+        await SetBusy();
 
         ResponseBaseModel rest = await ConstructorRepo.CreateOrUpdateTabDocumentSchemeJoinForm(new()
         {
@@ -237,7 +237,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseAut
     /// </summary>
     protected async Task SavePage()
     {
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.CreateOrUpdateTabOfDocumentScheme(new() { Payload = new EntryDescriptionOwnedModel() { Id = DocumentPage.Id, OwnerId = DocumentPage.OwnerId, Name = DocumentPage.Name, Description = DocumentPage.Description }, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
@@ -270,7 +270,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseAut
         if (DocumentPage.Id < 1)
             return;
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetTabOfDocumentScheme(DocumentPage.Id);
         IsBusyProgress = false;
 

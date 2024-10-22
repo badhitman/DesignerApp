@@ -47,9 +47,10 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
             StateHasChanged();
             return;
         }
-        SetBusy();
         _ = InvokeAsync(async () =>
         {
+            await SetBusy();
+            StateHasChanged();
             TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
             IsBusyProgress = false;
 
@@ -98,7 +99,7 @@ public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
         if (TabOfDocumentScheme.JoinsForms is null)
         {
             SnackbarRepo.Add($"Дозагрузка `{nameof(TabOfDocumentScheme.JoinsForms)}` в `{nameof(TabOfDocumentScheme)} ['{TabOfDocumentScheme.Name}' #{TabOfDocumentScheme.Id}]`", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
-            SetBusy();
+            await SetBusy();
             TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.GetTabOfDocumentScheme(TabOfDocumentScheme.Id);
             IsBusyProgress = false;
 

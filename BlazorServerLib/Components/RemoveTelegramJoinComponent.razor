@@ -49,7 +49,7 @@ else
             DeleteInit = true;
             return;
         }
-        SetBusy();
+        await SetBusy();
 
         ResponseBaseModel rest = TelegramUserId.HasValue
         ? await telegramWebRepo.TelegramAccountRemoveJoin(TelegramUserId.Value)

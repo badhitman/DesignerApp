@@ -32,7 +32,7 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
     /// </summary>
     private async Task<TableData<ArticleModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-        SetBusy(token: token);
+        await SetBusy(token: token);
         TPaginationRequestModel<SelectArticlesRequestModel> req = new()
         {
             Payload = new()
@@ -66,7 +66,7 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
         if (_ids.Length == 0)
             return;
 
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentity(_ids);
         IsBusyProgress = false;

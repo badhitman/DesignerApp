@@ -28,10 +28,10 @@ public abstract class BlazorBusyComponentBaseModel : ComponentBase, IDisposable
     /// <summary>
     /// SetBusy
     /// </summary>
-    public void SetBusy(bool is_busy = true, CancellationToken token = default)
+    public Task SetBusy(bool is_busy = true, CancellationToken token = default)
     {
         IsBusyProgress = is_busy;
-        Task.Delay(1, token);
+        return Task.Delay(1, token);
     }
 
     /// <summary>

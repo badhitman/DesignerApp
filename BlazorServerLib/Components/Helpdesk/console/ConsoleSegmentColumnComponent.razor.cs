@@ -65,7 +65,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
 
     async Task LoadData()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> res = await HelpdeskRepo.ConsoleIssuesSelect(new TPaginationRequestModel<ConsoleIssuesRequestModel>
         {
@@ -98,7 +98,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
         if (issues_ids.Length == 0)
             return;
 
-        SetBusy();
+        await SetBusy();
         TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req = new()
         {
             Payload = new()

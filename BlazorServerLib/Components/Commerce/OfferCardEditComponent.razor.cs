@@ -37,7 +37,7 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseAuthModel
 
     async Task SaveOffer()
     {
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<int> res = await CommerceRepo.OfferUpdate(editOffer);
         IsBusyProgress = false;
@@ -49,7 +49,7 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseAuthModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        SetBusy();
+        await SetBusy();
         TResponseModel<OfferGoodModelDB[]> res = await CommerceRepo.OffersRead([OfferId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

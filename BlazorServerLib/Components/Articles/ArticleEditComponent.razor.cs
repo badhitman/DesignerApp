@@ -38,7 +38,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
 
     async Task SaveArticle()
     {
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<int?> res = await artRepo.ArticleCreateOrUpdate(editArticle);
         IsBusyProgress = false;
@@ -51,7 +51,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
 
     async Task LoadArticleData()
     {
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<ArticleModelDB[]> res = await artRepo.ArticlesRead([ArticleId]);
         IsBusyProgress = false;

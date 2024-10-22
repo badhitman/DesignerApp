@@ -6,7 +6,7 @@
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize]
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 
 @if (IsBusyProgress)
 {
@@ -32,39 +32,38 @@ else
                 <CascadingValue Value="CanEdit">
                     <CascadingValue Value="IssueSource">
                         <CascadingValue Value="UsersIdentityDump">
-                            <CascadingValue Value="CurrentUser">
-                                <div class="col-sm-9">
-                                    <div class="vstack gap-3">
-                                        <div>
-                                            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-                                                @if (OrdersJournal is not null && OrdersJournal.Length != 0)
-                                                {
-                                                    <MudTabPanel Text="@($"Заказ{(OrdersJournal.Length == 1 ? "" : "ы")}")">
-                                                        <OrdersListComponent Orders="OrdersJournal" />
-                                                    </MudTabPanel>
-                                                }
-                                                @if (CurrentUser.IsAdmin)
-                                                {
-                                                    <MudTabPanel Text="Заявка">
-                                                        <IssueBodyComponent />
-                                                    </MudTabPanel>
-                                                }
-                                                <MudTabPanel Text="Сообщения">
-                                                    <IssueMessagesComponent />
+
+                            <div class="col-sm-9">
+                                <div class="vstack gap-3">
+                                    <div>
+                                        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                                            @if (OrdersJournal is not null && OrdersJournal.Length != 0)
+                                            {
+                                                <MudTabPanel Text="@($"Заказ{(OrdersJournal.Length == 1 ? "" : "ы")}")">
+                                                    <OrdersListComponent Orders="OrdersJournal" />
                                                 </MudTabPanel>
-                                                <MudTabPanel Text="Хроника">
-                                                    <PulseJournalComponent />
+                                            }
+                                            @if (CurrentUserSession!.IsAdmin)
+                                            {
+                                                <MudTabPanel Text="Заявка">
+                                                    <IssueBodyComponent />
                                                 </MudTabPanel>
-                                            </MudTabs>
-                                        </div>
-                                        @if (UsersIdentityDump.Any(x => x.TelegramId.HasValue))
-                                        {
-                                            <div><ChatsTelegramIssueComponent /></div>
-                                        }
+                                            }
+                                            <MudTabPanel Text="Сообщения">
+                                                <IssueMessagesComponent />
+                                            </MudTabPanel>
+                                            <MudTabPanel Text="Хроника">
+                                                <PulseJournalComponent />
+                                            </MudTabPanel>
+                                        </MudTabs>
                                     </div>
+                                    @if (UsersIdentityDump.Any(x => x.TelegramId.HasValue))
+                                    {
+                                        <div><ChatsTelegramIssueComponent /></div>
+                                    }
                                 </div>
-                                <div class="col-sm-3"><IssuePanelComponent /></div>
-                            </CascadingValue>
+                            </div>
+                            <div class="col-sm-3"><IssuePanelComponent /></div>
                         </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>

@@ -3,7 +3,7 @@
 
 <div class="vstack gap-3">
     <div class="px-1">
-        <CascadingValue Value="@(user.IsAdmin)">
+        <CascadingValue Value="@(CurrentUserSession!.IsAdmin)">
             <StatusIssueComponent />
         </CascadingValue>
     </div>

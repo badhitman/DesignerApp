@@ -87,11 +87,11 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
         if (string.IsNullOrWhiteSpace(textMessage))
             throw new ArgumentNullException(nameof(textMessage));
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<int> rest = await HelpdeskRepo
             .MessageCreateOrUpdate(new()
             {
-                SenderActionUserId = CurrentUser.UserId,
+                SenderActionUserId = CurrentUserSession!.UserId,
                 Payload = new()
                 {
                     MessageText = textMessage,
@@ -130,7 +130,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
 
         if (Message?.AuthorUserId == GlobalStaticConstants.Roles.System)
             _currentType = AuthorsTypesEnum.System;
-        else if (Message?.AuthorUserId == CurrentUser.UserId)
+        else if (Message?.AuthorUserId == CurrentUserSession!.UserId)
             _currentType = AuthorsTypesEnum.My;
         else if (Message?.AuthorUserId == Issue.ExecutorIdentityUserId)
             _currentType = AuthorsTypesEnum.Executor;

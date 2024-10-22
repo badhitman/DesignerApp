@@ -1,6 +1,6 @@
 ﻿@using Microsoft.Extensions.Options
 @attribute [Authorize]
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @inject IWebAppService tgWebRepo
@@ -38,12 +38,9 @@ else
 }
 
 @code {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-
     [Parameter, EditorRequired]
     public long TelegramId { get; set; } = default!;
+
 
     TelegramUserBaseModel TelegramUser = default!;
 
@@ -54,18 +51,16 @@ else
 
     string? errorMessage;
 
-    UserInfoMainModel UserInfo = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        UserInfo = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        await ReadCurrentUser();
     }
 
     async Task SendMessage()
     {
         errorMessage = null;
-        SetBusy();
+        await SetBusy();
         TResponseModel<TelegramUserBaseModel?> tg_user_info = await tgWebRepo.GetTelegramUserCachedInfo(TelegramId);
 
         if (!tg_user_info.Success())
@@ -75,7 +70,7 @@ else
 
         TResponseModel<MessageComplexIdsModel?> rest = await tgRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
             {
-                From = $"<a href='{conf.Value.BaseUri}'>{conf.Value.ClearBaseUri}</a> (от: {UserInfo?.UserName})",
+                From = $"<a href='{conf.Value.BaseUri}'>{conf.Value.ClearBaseUri}</a> (от: {CurrentUserSession?.UserName})",
                 UserTelegramId = TelegramUser.TelegramId,
                 Message = messageText!
             });

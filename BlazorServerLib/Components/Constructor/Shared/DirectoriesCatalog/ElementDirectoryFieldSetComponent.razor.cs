@@ -64,7 +64,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     {
         ArgumentNullException.ThrowIfNull(ElementObjectEdit);
 
-        SetBusy();
+        await SetBusy();
         
         ResponseBaseModel rest = await ConstructorRepo.UpdateElementOfDirectory(new() { Payload = ElementObjectEdit, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
@@ -98,7 +98,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
             return;
         }
         
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<EntryDescriptionModel> res = await ConstructorRepo.GetElementOfDirectory(ElementObject.Id);
         ElementObjectOrign = res.Response ?? throw new Exception();
@@ -146,7 +146,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     async Task MoveUp()
     {
         IsEdit = false;
-        SetBusy();
+        await SetBusy();
         
         ResponseBaseModel rest = await ConstructorRepo.UpMoveElementOfDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
@@ -162,7 +162,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     async Task MoveDown()
     {
         IsEdit = false;
-        SetBusy();
+        await SetBusy();
         
         ResponseBaseModel rest = await ConstructorRepo.DownMoveElementOfDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
@@ -178,7 +178,7 @@ public partial class ElementDirectoryFieldSetComponent : BlazorBusyComponentBase
     /// <inheritdoc/>
     protected async Task DeleteElementOfDirectory()
     {
-        SetBusy();
+        await SetBusy();
         
         ResponseBaseModel rest = await ConstructorRepo.DeleteElementFromDirectory(new() { Payload = ElementObject.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;

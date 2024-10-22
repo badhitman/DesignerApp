@@ -49,7 +49,7 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
         if (ChatId is null || ChatId < 1)
             return;
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<ChatTelegramModelDB?> rest = await TelegramRepo.ChatTelegramRead(ChatId.Value);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -57,7 +57,7 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
         if (Chat is null)
             return;
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<TelegramUserBaseModel?> get_user = await WebRepo.GetTelegramUser(Chat.ChatTelegramId);
         IsBusyProgress = false;
         //SnackbarRepo.ShowMessagesResponse(get_user.Messages);

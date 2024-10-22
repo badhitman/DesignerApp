@@ -77,7 +77,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
         }
         SelectedChat = selected;
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> rest = await StorageRepo.SaveParameter(selected?.ChatTelegramId, KeyStorage, false);
         IsBusyProgress = false;
@@ -91,7 +91,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        SetBusy();
+        await SetBusy();
         TResponseModel<long?> rest = await StorageRepo.ReadParameter<long?>(KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

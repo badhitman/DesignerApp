@@ -168,7 +168,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         if (offers_load.Count == 0)
             return;
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([.. offers_load]);
         IsBusyProgress = false;
@@ -249,7 +249,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         _selectedAddresses = [.. _prevSelectedAddresses];
         _prevSelectedAddresses = null;
         _visibleChangeAddresses = false;
-        SetBusy();
+        await SetBusy();
         
         await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true);
         IsBusyProgress = false;
@@ -317,7 +317,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         }
 
         CurrentCart.PrepareForSave();
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> rest = await CommerceRepo.OrderUpdate(CurrentCart);
 
@@ -375,7 +375,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             SortingDirection = VerticalDirectionsEnum.Up,
         };
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -385,7 +385,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             return;
         Organizations = res.Response.Response;
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<OrderDocumentModelDB?> current_cart = await StorageRepo
             .ReadParameter<OrderDocumentModelDB>(GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId));

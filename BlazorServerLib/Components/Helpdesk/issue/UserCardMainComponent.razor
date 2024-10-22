@@ -17,7 +17,7 @@
 
         <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME"
                              Name="@($"{GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DOCUMENT_CONTROLLER_NAME}")"
-                             PrefixPropertyName="@CurrentUser.UserId"
+                             PrefixPropertyName="@CurrentUserSession!.UserId"
                              OwnerPrimaryKey="Issue.Id"
                              Label="О заявке (приватно)"
                              Hint="Ваш личный (ни кому не видный) комментарий непосредственно к этому обращению"

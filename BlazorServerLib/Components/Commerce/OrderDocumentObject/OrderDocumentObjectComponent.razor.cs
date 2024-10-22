@@ -125,7 +125,7 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
         });
 
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await StorageRepo.SaveParameter(doc, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true);
 
@@ -150,7 +150,7 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
                 Step = StatusesDocumentsEnum.Canceled,
             }
         };
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<bool> res = await HelpdeskRepo.StatusChange(req);
         IsBusyProgress = false;

@@ -11,7 +11,7 @@
                     <dt>Автор</dt>
                     <dd>
                         <span>
-                            @if (Author?.UserId == CurrentUser.UserId)
+                            @if (Author?.UserId == CurrentUserSession!.UserId)
                             {
                                 <b title="Вы автор обращения">Вы</b>
                             }

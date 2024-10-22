@@ -34,7 +34,7 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseAuthModel
         if (editGoods is null)
             throw new ArgumentNullException(nameof(editGoods));
 
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<int> res = await CommerceRepo.GoodUpdateReceive(editGoods);
         IsBusyProgress = false;
@@ -47,7 +47,7 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseAuthModel
     protected override async Task OnInitializedAsync()
     {
         await ReadCurrentUser();
-        SetBusy();
+        await SetBusy();
         if (CurrentUserSession is null)
             throw new Exception();
 

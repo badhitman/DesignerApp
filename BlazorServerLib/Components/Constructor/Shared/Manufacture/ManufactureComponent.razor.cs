@@ -9,18 +9,14 @@ using CodegeneratorLib;
 using MudBlazor;
 using SharedLib;
 using BlazorLib;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Manufacture;
 
 /// <summary>
 /// Manufacture
 /// </summary>
-public partial class ManufactureComponent : BlazorBusyComponentBaseModel
+public partial class ManufactureComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
@@ -38,8 +34,6 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-
-    UserInfoMainModel user = default!;
 
     ConfigManufactureComponent _conf = default!;
 
@@ -72,7 +66,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     /// Текущий проект
     /// </summary>
     public ProjectModelDb CurrentProject { get; private set; } = default!;
-    
+
     /// <summary>
     /// Manufacture
     /// </summary>
@@ -100,14 +94,11 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
     /// </summary>
     public async Task ReloadProjectData()
     {
-        SetBusy();
-        
+        await SetBusy();
+
         var call = await ConstructorRepo.ProjectsRead([ParentFormsPage.MainProject!.Id]);
         ProjectModelDb[] rest_project = call.Response ?? throw new Exception();
         CurrentProject = rest_project.Single();
-
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
 
         //TResponseModel<ManageManufactureModelDB> rest_manufacture = await ManufactureRepo.ReadManufactureConfig(ParentFormsPage.MainProject.Id, user.UserId);
         //if (!rest_manufacture.Success())
@@ -118,7 +109,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseModel
 
     async Task Download()
     {
-        if(ParentFormsPage.SystemNamesManufacture is null)
+        if (ParentFormsPage.SystemNamesManufacture is null)
             return;
 
         ArgumentNullException.ThrowIfNull(CurrentProject.Directories);

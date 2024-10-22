@@ -46,9 +46,10 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseAuthModel
         TResponseModel<FormConstructorModelDB> rest;
         if (form is null)
         {
-            SetBusy();
             _ = InvokeAsync(async () =>
             {
+                await SetBusy();
+                StateHasChanged();
                 rest = await ConstructorRepo.GetForm(Form.Id);
                 IsBusyProgress = false;
                 SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -95,7 +96,7 @@ public partial class FieldsFormViewComponent : BlazorBusyComponentBaseAuthModel
             return;
         }
         ResponseBaseModel rest;
-        SetBusy();
+        await SetBusy();
 
         if (_field_master is FieldFormAkaDirectoryConstructorModelDB directory_field)
         {

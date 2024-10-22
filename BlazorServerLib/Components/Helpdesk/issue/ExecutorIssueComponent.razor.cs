@@ -26,7 +26,7 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
 
     async Task SetMeAsExecutor()
     {
-        await SetExecutor(CurrentUser.UserId);
+        await SetExecutor(CurrentUserSession!.UserId);
     }
 
     async Task SetNewExecutor()
@@ -37,7 +37,7 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
         UserInfoModel? user_by_email = null;
         if (!string.IsNullOrWhiteSpace(editExecutorEmail))
         {
-            SetBusy();
+            await SetBusy();
             user_by_email = await UsersProfilesRepo.FindByEmailAsync(editExecutorEmail);
             IsBusyProgress = false;
             if (user_by_email is null)
@@ -58,8 +58,8 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
 
     async Task SetExecutor(string user_id)
     {
-        SetBusy();
-        TResponseModel<bool> rest = await HelpdeskRepo.ExecuterUpdate(new() { SenderActionUserId = CurrentUser.UserId, Payload = new() { IssueId = Issue.Id, UserId = user_id } });
+        await SetBusy();
+        TResponseModel<bool> rest = await HelpdeskRepo.ExecuterUpdate(new() { SenderActionUserId = CurrentUserSession!.UserId, Payload = new() { IssueId = Issue.Id, UserId = user_id } });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
@@ -76,7 +76,7 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
         UsersIdentityDump ??= [];
         if (UsersIdentityDump.Any(x => x.UserId == user_id) != true)
         {
-            SetBusy();
+            await SetBusy();
             TResponseModel<UserInfoModel[]?> res_user = await WebRemoteTransmissionRepo.GetUsersIdentity([user_id]);
             IsBusyProgress = false;
 

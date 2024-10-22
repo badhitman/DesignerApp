@@ -1,4 +1,4 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@inherits BlazorBusyComponentBaseAuthModel
 
 @using MudBlazor
 
@@ -17,14 +17,13 @@
     </TabSetComponent>
 </CascadingValue>
 
-<CreateIssueComponent Update="Update" UserIdentityId="@user.UserId" />
+<CreateIssueComponent Update="Update" UserIdentityId="@CurrentUserSession!.UserId" />
 
 @code {
     [Inject]
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
     HelpdeskJournalComponent? _tab;
-    UserInfoMainModel user = default!;
 
     void Update()
     {
@@ -38,9 +37,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        SetBusy();
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        IsBusyProgress = false;
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        await ReadCurrentUser();
     }
 }

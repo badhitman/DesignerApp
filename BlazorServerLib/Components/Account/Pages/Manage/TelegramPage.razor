@@ -40,7 +40,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<string?> telegram_rest = await TelegramRemoteRepo.GetBotUsername();
         await InvokeAsync(() =>

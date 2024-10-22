@@ -124,7 +124,7 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
             SortingDirection = VerticalDirectionsEnum.Up,
             Payload = new()
         };
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
         IsBusyProgress = false;

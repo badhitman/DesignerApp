@@ -33,7 +33,7 @@ else
                 }
                 else
                 {
-                    if (CurrentUser.UserId != Issue.ExecutorIdentityUserId)
+                    if (CurrentUserSession!.UserId != Issue.ExecutorIdentityUserId)
                     {
                         <button @onclick="SetMeAsExecutor" title="Назначить меня" class="btn btn-outline-secondary bi bi-person-raised-hand" type="button"></button>
                     }

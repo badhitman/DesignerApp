@@ -87,10 +87,11 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _stringFieldValue;
         set
         {
-            SetBusy();
             _stringFieldValue = value;
             InvokeAsync(async () =>
             {
+                await SetBusy();
+                StateHasChanged();
                 await SetValue(_stringFieldValue, Field.Name);
                 StateHasChanged();
                 IsBusyProgress = false;
@@ -105,10 +106,11 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _boolFieldValue;
         set
         {
-            SetBusy();
             _boolFieldValue = value;
             InvokeAsync(async () =>
             {
+                await SetBusy();
+                StateHasChanged();
                 await SetValue(_boolFieldValue.ToString(), Field.Name);
                 IsBusyProgress = false;
                 StateHasChanged();
@@ -123,10 +125,11 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _dateTimeFieldValue;
         set
         {
-            SetBusy();
             _dateTimeFieldValue = value;
             InvokeAsync(async () =>
             {
+                await SetBusy();
+                StateHasChanged();
                 await SetValue(_dateTimeFieldValue.ToString(), Field.Name);
                 IsBusyProgress = false;
                 StateHasChanged();
@@ -141,10 +144,11 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _doubleFieldValue;
         set
         {
-            SetBusy();
             _doubleFieldValue = value;
             InvokeAsync(async () =>
             {
+                await SetBusy();
+                StateHasChanged();
                 await SetValue(_doubleFieldValue.ToString(), Field.Name);
                 IsBusyProgress = false;
                 StateHasChanged();
@@ -160,10 +164,11 @@ public partial class FieldBaseClientComponent : FieldComponentBaseModel
         get => _intFieldValue;
         set
         {
-            SetBusy();
             _intFieldValue = value;
             InvokeAsync(async () =>
             {
+                await SetBusy();
+                StateHasChanged();
                 await SetValue(_intFieldValue.ToString(), Field.Name);
                 IsBusyProgress = false;
                 StateHasChanged();

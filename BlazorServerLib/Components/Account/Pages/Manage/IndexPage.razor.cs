@@ -45,7 +45,7 @@ public partial class IndexPage : BlazorBusyComponentBaseAuthModel
             throw new ArgumentNullException(nameof(CurrentUserSession));
 
         Messages = [];
-        SetBusy();
+        await SetBusy();
 
         ResponseBaseModel rest = await UsersProfilesRepo.UpdateFirstLastNamesUser(CurrentUserSession.UserId, firstName, lastName);
         IsBusyProgress = false;

@@ -32,15 +32,15 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
                     PulseType = PulseIssuesTypesEnum.Messages,
                     Tag = GlobalStaticConstants.Routes.TELEGRAM_CONTROLLER_NAME,
                 },
-                SenderActionUserId = CurrentUser.UserId
+                SenderActionUserId = CurrentUserSession!.UserId
             }
         };
-        SetBusy();
+        await SetBusy();
         TResponseModel<bool> send_pulse = await HelpdeskRepo.PulsePush(req_pulse);
         TResponseModel<int> add_msg_system = await HelpdeskRepo.MessageCreateOrUpdate(new()
         {
             SenderActionUserId = GlobalStaticConstants.Roles.System,
-            Payload = new() { MessageText = $"<b>Пользователь {CurrentUser.UserName} отправил сообщение Telegram пользователю user-tg#{msg.UserTelegramId}</b>: {msg.Message}", IssueId = Issue.Id }
+            Payload = new() { MessageText = $"<b>Пользователь {CurrentUserSession!.UserName} отправил сообщение Telegram пользователю user-tg#{msg.UserTelegramId}</b>: {msg.Message}", IssueId = Issue.Id }
         });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(send_pulse.Messages);
@@ -51,7 +51,7 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
     protected override async Task OnInitializedAsync()
     {
         long[] chats_ids = [.. UsersIdentityDump.Where(x => x.TelegramId.HasValue).Select(x => x.TelegramId!.Value)];
-        SetBusy();
+        await SetBusy();
         TResponseModel<ChatTelegramModelDB[]?> rest_chats = await tgRepo.ChatsReadTelegram(chats_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest_chats.Messages);

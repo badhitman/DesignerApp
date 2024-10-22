@@ -3,8 +3,6 @@
 ////////////////////////////////////////////////
 
 using BlazorLib;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.issue;
@@ -14,19 +12,13 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 /// </summary>
 public partial class StatusIssueComponent : IssueWrapBaseModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-
-    UserInfoMainModel user = default!;
-
     StatusesDocumentsEnum IssueStep { get; set; }
 
     List<StatusesDocumentsEnum> Steps()
     {
         List<StatusesDocumentsEnum> res = [];
 
-        if (CurrentUser.IsAdmin || CurrentUser.UserId == Issue.ExecutorIdentityUserId || CurrentUser.Roles?.Contains(GlobalStaticConstants.Roles.HelpDeskTelegramBotManager) == true)
+        if (CurrentUserSession!.IsAdmin || CurrentUserSession!.UserId == Issue.ExecutorIdentityUserId || CurrentUserSession!.Roles?.Contains(GlobalStaticConstants.Roles.HelpDeskTelegramBotManager) == true)
             res.AddRange(Enum.GetValues<StatusesDocumentsEnum>());
         else
         {
@@ -49,12 +41,12 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
 
     async Task SaveChange()
     {
-        SetBusy();
-        
+        await SetBusy();
+
         TResponseModel<bool> res = await HelpdeskRepo
             .StatusChange(new()
             {
-                SenderActionUserId = CurrentUser.UserId,
+                SenderActionUserId = CurrentUserSession!.UserId,
                 Payload = new()
                 {
                     IssueId = Issue.Id,
@@ -74,7 +66,6 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
     protected override async Task OnInitializedAsync()
     {
         IssueStep = Issue.StepIssue;
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
+        await base.OnInitializedAsync();
     }
 }

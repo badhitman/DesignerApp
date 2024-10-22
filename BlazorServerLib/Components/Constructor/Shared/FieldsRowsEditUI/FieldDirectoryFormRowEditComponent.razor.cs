@@ -81,7 +81,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(new() { ProjectId = Form.ProjectId });
         IsBusyProgress = false;

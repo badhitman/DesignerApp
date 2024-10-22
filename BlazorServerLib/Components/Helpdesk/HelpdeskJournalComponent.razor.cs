@@ -3,27 +3,23 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.Logging;
 
 namespace BlazorWebLib.Components.Helpdesk;
 
 /// <summary>
 /// HelpdeskJournalComponent
 /// </summary>
-public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
+public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ILogger<HelpdeskJournalComponent> LoggerRepo { get; set; } = default!;
 
     [Inject]
     NavigationManager NavRepo { get; set; } = default!;
-
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
 
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
@@ -70,7 +66,6 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
 
     private string? searchString = null;
 
-    UserInfoModel CurrentUser = default!;
     readonly List<UserInfoModel> usersDump = [];
 
     /// <inheritdoc/>
@@ -80,24 +75,12 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         SetTab(this);
-        SetBusy();
-        
+        await SetBusy();
+        await ReadCurrentUser();
         if(string.IsNullOrWhiteSpace(UserIdentityId))
-        {
-            AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-            UserInfoMainModel user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-            UserIdentityId = user.UserId;
-        }
-
-        TResponseModel<UserInfoModel?> _current_user = await UsersProfilesRepo.FindByIdAsync(UserIdentityId);
-        if (!_current_user.Success() || _current_user.Response is null)
-        {
-            NavRepo.ReloadPage();
-            return;
-        }
+            UserIdentityId = CurrentUserSession!.UserId;
 
         IsBusyProgress = false;
-        CurrentUser = _current_user.Response;
     }
 
     /// <summary>
@@ -105,13 +88,13 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
     /// </summary>
     private async Task<TableData<IssueHelpdeskModel>> ServerReload(TableState state, CancellationToken token)
     {
-        SetBusy();
+        await SetBusy();
         await Task.Delay(1, token);
         TPaginationRequestModel<SelectIssuesRequestModel> req = new()
         {
             Payload = new()
             {
-                IdentityUsersIds = [CurrentUser.UserId],
+                IdentityUsersIds = [CurrentUserSession!.UserId],
                 JournalMode = JournalMode,
                 SearchQuery = searchString,
                 UserArea = UserArea,
@@ -141,7 +124,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseModel
         if (_ids.Length == 0)
             return;
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentity(_ids);
         IsBusyProgress = false;

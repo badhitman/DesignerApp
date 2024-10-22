@@ -62,7 +62,7 @@ public partial class TinyMCEComponent : BlazorBusyComponentBaseModel
 
     async Task StoreData()
     {
-        //SetBusy();
+        //await SetBusy();
         await StoreRepo.SaveParameter(_textValue, KeyStorage, true);
         //IsBusyProgress = false;
         //StateHasChanged();
@@ -74,7 +74,7 @@ public partial class TinyMCEComponent : BlazorBusyComponentBaseModel
         images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{KeyStorage.ApplicationName.Replace("\\", "_").Replace("/", "_")}/{KeyStorage.Name.Replace("\\", "_").Replace("/", "_")}?{nameof(KeyStorage.PrefixPropertyName)}={KeyStorage.PrefixPropertyName}&{nameof(KeyStorage.OwnerPrimaryKey)}={KeyStorage.OwnerPrimaryKey}";
         editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<string?> res = await StoreRepo.ReadParameter<string?>(KeyStorage);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         _textValue = res.Response;

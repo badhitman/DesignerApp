@@ -50,7 +50,7 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseAuthModel
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
         IsBusyProgress = false;

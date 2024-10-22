@@ -70,11 +70,11 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
         if (string.IsNullOrWhiteSpace(NameIssueEdit))
             throw new ArgumentNullException(nameof(NameIssueEdit));
 
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<int> res = await HelpdeskRepo.IssueCreateOrUpdate(new()
         {
-            SenderActionUserId = CurrentUser.UserId,
+            SenderActionUserId = CurrentUserSession!.UserId,
             Payload = new()
             {
                 Name = NameIssueEdit,
@@ -101,7 +101,7 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
         
         if (rubricSelector_ref is not null && Issue.RubricIssueId is not null)
         {
-            SetBusy();
+            await SetBusy();
             
             TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(Issue.RubricIssueId.Value);
             IsBusyProgress = false;
@@ -123,7 +123,7 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
     {
         CancelEdit();
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<bool?> res = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics);
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         IsBusyProgress = false;

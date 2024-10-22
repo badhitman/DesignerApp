@@ -93,7 +93,7 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
             }
         };
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommerceRepo.OrdersSelect(req);
         IsBusyProgress = false;

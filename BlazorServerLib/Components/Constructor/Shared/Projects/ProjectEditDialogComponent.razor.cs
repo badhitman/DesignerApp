@@ -73,7 +73,7 @@ public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected async Task SaveProject()
     {
-        SetBusy();
+        await SetBusy();
         if (projectObject.Id < 1)
         {
             TResponseModel<int> res = await ConstructorRepo.CreateProject(new() { Project = projectObject, UserId = CurrentUser.UserId });

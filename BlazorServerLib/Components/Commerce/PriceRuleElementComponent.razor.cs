@@ -40,7 +40,7 @@ public partial class PriceRuleElementComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     public async Task SaveRule()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(PriceRule);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -50,7 +50,7 @@ public partial class PriceRuleElementComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     public async Task DeleteRule()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<bool> res = await CommerceRepo.PriceRuleDelete(PriceRule.Id);
         SnackbarRepo.ShowMessagesResponse(res.Messages);

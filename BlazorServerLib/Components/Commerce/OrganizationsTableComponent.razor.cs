@@ -60,7 +60,7 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
             CurrentViewUser = CurrentUserSession!;
         else if (!string.IsNullOrWhiteSpace(UserId))
         {
-            SetBusy();
+            await SetBusy();
 
             TResponseModel<UserInfoModel[]?> user_res = await WebRepo.GetUsersIdentity([UserId]);
             IsBusyProgress = false;
@@ -85,7 +85,7 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         IsBusyProgress = false;

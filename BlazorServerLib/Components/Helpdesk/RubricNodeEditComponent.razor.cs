@@ -52,7 +52,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         if (ItemModel is null)
             throw new ArgumentNullException(nameof(ItemModel));
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<bool?> res = await HelpdeskRepo.RubricMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -70,7 +70,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         IsRenameMode = false;
         ItemModel.Name = itemSystemName;
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<int?> res = await HelpdeskRepo.RubricCreateOrUpdate(new RubricIssueHelpdeskModelDB()
         {
             Name = ItemModel.Name,

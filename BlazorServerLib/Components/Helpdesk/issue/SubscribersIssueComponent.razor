@@ -37,7 +37,7 @@
                     {
                         <li class="list-group-item p-1 m-0">
                             @(UsersIdentityDump?.FirstOrDefault(x => x.UserId == p.UserId)?.UserName ?? p.UserId)
-                            @if (p.UserId == CurrentUser.UserId)
+                            @if (p.UserId == CurrentUserSession!.UserId)
                             {
                                 <sup title="@(p.IsSilent ? "Включить" : "Выключить") уведомления. Сейчас уведомления @(p.IsSilent ? "выключены" : "включены")" @onclick="async () => await NotifyBellToggle(p)" style="cursor:pointer;" class="ms-2 bi bi-bell-@(p.IsSilent ? "slash text-secondary" : "fill text-primary-emphasis")"> Вы</sup>
                             }
@@ -49,7 +49,7 @@
                     }
                 }
             </ul>
-            @if (Issue.Subscribers?.Any(x => x.UserId == CurrentUser.UserId) != true && (Issue.AuthorIdentityUserId == CurrentUser.UserId || Issue.ExecutorIdentityUserId == CurrentUser.UserId))
+            @if (Issue.Subscribers?.Any(x => x.UserId == CurrentUserSession!.UserId) != true && (Issue.AuthorIdentityUserId == CurrentUserSession!.UserId || Issue.ExecutorIdentityUserId == CurrentUserSession!.UserId))
             {
                 <div title="У вас нет явной подписки, но вы непосредственный участник" class="card-footer">
                     Вы участник

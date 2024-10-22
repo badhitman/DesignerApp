@@ -6,9 +6,6 @@ using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using MudBlazor;
-using Microsoft.AspNetCore.Components.Authorization;
-using System.Collections.Generic;
 
 namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 
@@ -49,7 +46,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseAuthModel
             return;
         }
 
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<int> rest = await ConstructorRepo.CreateElementForDirectory(new() { Payload = createNewElementForDict, SenderActionUserId = CurrentUserSession!.UserId });
         createNewElementForDict = OwnedNameModel.BuildEmpty(createNewElementForDict.OwnerId);
@@ -59,7 +56,7 @@ public partial class DirectoryViewComponent : BlazorBusyComponentBaseAuthModel
 
         if (directoryNav_ref is not null)
         {
-            directoryNav_ref.SetBusy();
+            await directoryNav_ref.SetBusy();
             directoryNav_ref.StateHasChangedCall();
         }
 

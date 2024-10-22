@@ -3,11 +3,9 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using BlazorLib;
-using MudBlazor;
-using SharedLib;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Components.Authorization;
+using BlazorLib;
+using SharedLib;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -55,7 +53,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseAuthM
     /// <inheritdoc/>
     public async Task SaveRule(PriceRuleForOfferModelDB rule)
     {
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(rule);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -69,7 +67,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseAuthM
         QuantityAddingRule = 2;
         PriceAddingRule = 0;
         //
-        SetBusy();
+        await SetBusy();
 
         TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([OfferGood.Id]);
         IsBusyProgress = false;

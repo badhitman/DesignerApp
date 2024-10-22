@@ -42,7 +42,7 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
 
     async Task SaveModeSelectingRubrics()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<ModesSelectRubricsEnum?>(SelectedOption, GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics, true);
         IsBusyProgress = false;
@@ -52,7 +52,7 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
 
     async Task ToggleShowingDisabledRubrics()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<bool?>(ShowDisabledRubrics, GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics, true);
         IsBusyProgress = false;
@@ -63,7 +63,7 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<bool?> res_ShowDisabledRubrics = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics);
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);

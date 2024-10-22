@@ -128,7 +128,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 
     async Task<List<RubricBaseModel>> RequestRubrics(int? parent_id = null)
     {
-        SetBusy();
+        await SetBusy();
         TResponseModel<List<RubricBaseModel>> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

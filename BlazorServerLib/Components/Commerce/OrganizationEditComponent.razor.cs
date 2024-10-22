@@ -39,7 +39,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
         editOrg = GlobalTools.CreateDeepCopy(currentOrg);
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = CurrentUserSession!.UserId };
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
@@ -81,7 +81,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
         if (!string.IsNullOrWhiteSpace(editOrg.NewName))
             req.Name = editOrg.NewName;
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<bool> res = await CommerceRepo.OrganizationSetLegal(req);
         IsBusyProgress = false;
@@ -95,7 +95,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
             throw new ArgumentNullException(nameof(editOrg));
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = CurrentUserSession!.UserId };
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
@@ -115,7 +115,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
         if (OrganizationId is null)
             return;
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<OrganizationModelDB[]> res = await CommerceRepo.OrganizationsRead([OrganizationId.Value]);
         IsBusyProgress = false;

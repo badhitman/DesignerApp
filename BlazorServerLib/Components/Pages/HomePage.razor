@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @using BlazorWebLib.Components.Helpdesk.issue
@@ -12,22 +12,16 @@
     [Inject]
     ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
 
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
-
-    UserInfoMainModel? user;
 
     MarkupString ms => (MarkupString)(_textValue ?? "<h1>Hello, world!</h1> Welcome to your new app.");
 
     string? _textValue;
     protected override async Task OnInitializedAsync()
     {
-        SetBusy();
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        user = state.User.ReadCurrentUserInfo();
+        await SetBusy();
+        await ReadCurrentUser();
 
-        TResponseModel<string?> res = string.IsNullOrWhiteSpace(user?.Email)
+        TResponseModel<string?> res = string.IsNullOrWhiteSpace(CurrentUserSession?.Email)
         ? await StoreRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.HomePagePublic)
         : await StoreRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate);
 

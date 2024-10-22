@@ -51,13 +51,13 @@
         {
             _selectedOption = value;
             _tab.SetArea(value);
-            SetBusy();
             InvokeAsync(UpdateState);
         }
     }
 
     async Task UpdateState()
     {
+        await SetBusy();
         await _tab.TableRef.ReloadServerData();
         IsBusyProgress = false;
         _tab.StateHasChangedCall();

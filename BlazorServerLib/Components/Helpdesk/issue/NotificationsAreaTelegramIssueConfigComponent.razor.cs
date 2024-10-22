@@ -30,7 +30,7 @@ public partial class NotificationsAreaTelegramIssueConfigComponent : IssueWrapBa
         if (telegram_users_ids.Length == 0)
             return;
 
-        SetBusy();
+        await SetBusy();
         TResponseModel<ChatTelegramModelDB[]?> rest = await TelegramRepo.ChatsFindForUser(telegram_users_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

@@ -43,7 +43,7 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
 
     async void SaveMode()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreateIssue, GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue, true);
         IsBusyProgress = false;
@@ -53,7 +53,7 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
 
     async void SaveRubric()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter(_RubricIssueForCreateOrder, GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder, true);
         IsBusyProgress = false;
@@ -65,7 +65,7 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<bool?> res_ShowCreatingIssue = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue);
         TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);
@@ -73,7 +73,7 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
         _RubricIssueForCreateOrder = res_RubricIssueForCreateOrder.Response;
         if (ref_rubric is not null && _RubricIssueForCreateOrder.HasValue)
         {
-            SetBusy();
+            await SetBusy();
             
             TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(_RubricIssueForCreateOrder.Value);
             IsBusyProgress = false;

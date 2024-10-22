@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 /// <summary>
 /// IssueWrapBaseModel
 /// </summary>
-public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
+public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     internal IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
@@ -20,12 +20,6 @@ public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
     [Inject]
     internal NavigationManager NavRepo { get; set; } = default!;
 
-
-    /// <summary>
-    /// CurrentUser
-    /// </summary>
-    [CascadingParameter, EditorRequired]
-    public required UserInfoMainModel CurrentUser { get; set; }
 
     /// <summary>
     /// Issue
@@ -44,4 +38,10 @@ public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseModel
     /// </summary>
     [CascadingParameter]
     public List<UserInfoModel> UsersIdentityDump { get; set; } = [];
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await ReadCurrentUser();
+    }
 }

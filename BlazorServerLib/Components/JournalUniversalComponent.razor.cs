@@ -71,7 +71,7 @@ public partial class JournalUniversalComponent : BlazorBusyComponentBaseModel
         if (DocumentNameOrIdType is null)
             throw new Exception();
 
-        SetBusy();
+        await SetBusy();
         TPaginationResponseModel<KeyValuePair<int, Dictionary<string, object>>> res = await JournalRepo
             .SelectJournalPart(new SelectJournalPartRequestModel()
             {
@@ -102,7 +102,7 @@ public partial class JournalUniversalComponent : BlazorBusyComponentBaseModel
 
         if (ShowNavigation)
         {
-            SetBusy();
+            await SetBusy();
             MySchemas = await JournalRepo.GetMyDocumentsSchemas();
             IsBusyProgress = false;
 
@@ -112,7 +112,7 @@ public partial class JournalUniversalComponent : BlazorBusyComponentBaseModel
                 return;
             }
         }
-        SetBusy();
+        await SetBusy();
         TResponseModel<DocumentSchemeConstructorModelDB[]?> res_fs = await JournalRepo.FindDocumentSchemes(DocumentNameOrIdType, ProjectId);
         DocumentsSchemes = res_fs.Response;
         IsBusyProgress = false;
@@ -121,7 +121,7 @@ public partial class JournalUniversalComponent : BlazorBusyComponentBaseModel
             ColumnsNames = null;
         else
         {
-            SetBusy();
+            await SetBusy();
             TResponseModel<EntryAltModel[]?> res = await JournalRepo.GetColumnsForJournal(SelectedJournal, ProjectId);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
             ColumnsNames = res.Response;

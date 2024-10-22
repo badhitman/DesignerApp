@@ -50,7 +50,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
         if (!CanCreate)
             return;
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await CommerceRepo.AddressOrganizationUpdate(new AddressOrganizationBaseModel()
         {
@@ -101,7 +101,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
                 return;
             _last_request = _curr_request;
 
-            SetBusy();
+            await SetBusy();
             
             foreach (int i in added_rubrics)
             {

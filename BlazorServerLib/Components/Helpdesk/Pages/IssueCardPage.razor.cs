@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
@@ -13,11 +12,8 @@ namespace BlazorWebLib.Components.Helpdesk.Pages;
 /// <summary>
 /// IssueCardPage
 /// </summary>
-public partial class IssueCardPage : BlazorBusyComponentBaseModel
+public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider AuthRepo { get; set; } = default!;
-
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
@@ -35,12 +31,11 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     public int Id { get; set; }
 
     bool CanEdit =>
-        CurrentUser.IsAdmin ||
-        CurrentUser.Roles?.Contains(GlobalStaticConstants.Roles.HelpDeskTelegramBotManager) == true ||
-        CurrentUser.UserId == IssueSource?.ExecutorIdentityUserId ||
-        CurrentUser.UserId == IssueSource?.AuthorIdentityUserId;
+        CurrentUserSession!.IsAdmin ||
+        CurrentUserSession!.Roles?.Contains(GlobalStaticConstants.Roles.HelpDeskTelegramBotManager) == true ||
+        CurrentUserSession!.UserId == IssueSource?.ExecutorIdentityUserId ||
+        CurrentUserSession!.UserId == IssueSource?.AuthorIdentityUserId;
 
-    UserInfoMainModel CurrentUser { get; set; } = default!;
     IssueHelpdeskModelDB? IssueSource { get; set; }
 
     /// <summary>
@@ -53,7 +48,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await ReadSessionUser();
+        await ReadCurrentUser();
         await ReadIssue();
         await FlushUsersDump();
         await FindOrders();
@@ -78,7 +73,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
                 SenderActionUserId = "",
             }
         };
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommRepo.OrdersSelect(req);
         IsBusyProgress = false;
@@ -88,20 +83,10 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
             : [.. res.Response.Response];
     }
 
-    async Task ReadSessionUser()
-    {
-        SetBusy();
-        
-        AuthenticationState state = await AuthRepo.GetAuthenticationStateAsync();
-        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-        IsBusyProgress = false;
-    }
-
     async Task ReadIssue()
     {
-        SetBusy();
-        
-        TResponseModel<IssueHelpdeskModelDB[]> issue_res = await HelpdeskRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>() { Payload = new() { IssuesIds = [Id] }, SenderActionUserId = CurrentUser.UserId });
+        await SetBusy();        
+        TResponseModel<IssueHelpdeskModelDB[]> issue_res = await HelpdeskRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>() { Payload = new() { IssuesIds = [Id] }, SenderActionUserId = CurrentUserSession!.UserId });
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
         IssueSource = issue_res.Response?.FirstOrDefault();
         IsBusyProgress = false;
@@ -126,7 +111,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseModel
         if (users_ids.Count != 0)
             users_ids = users_ids.Distinct().ToList();
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<UserInfoModel[]?> users_data_identity = await WebRemoteRepo.GetUsersIdentity([.. users_ids]);
         IsBusyProgress = false;

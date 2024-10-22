@@ -42,7 +42,7 @@ public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
             BaseUnit = UMeas,
         };
 
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<int> res = await CommerceRepo.GoodUpdateReceive(new_obj);
         IsBusyProgress = false;

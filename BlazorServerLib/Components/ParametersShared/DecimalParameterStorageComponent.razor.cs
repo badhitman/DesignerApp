@@ -52,7 +52,7 @@ public partial class DecimalParameterStorageComponent : BlazorBusyComponentBaseM
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        SetBusy();
+        await SetBusy();
         TResponseModel<decimal?> res = await StoreRepo.ReadParameter<decimal?>(KeyStorage);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

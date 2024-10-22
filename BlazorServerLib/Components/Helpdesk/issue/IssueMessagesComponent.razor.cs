@@ -63,11 +63,11 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
     /// </summary>
     public async Task ReloadMessages()
     {
-        SetBusy();
+        await SetBusy();
         TResponseModel<IssueMessageHelpdeskModelDB[]> messages_rest = await HelpdeskRepo.MessagesList(new()
         {
             Payload = Issue.Id,
-            SenderActionUserId = CurrentUser.UserId,
+            SenderActionUserId = CurrentUserSession!.UserId,
         });
         IsBusyProgress = false;
         messages = messages_rest.Response;

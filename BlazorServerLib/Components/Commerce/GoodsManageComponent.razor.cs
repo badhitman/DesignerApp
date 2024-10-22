@@ -41,7 +41,7 @@ public partial class GoodsManageComponent : BlazorBusyComponentBaseAuthModel
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        SetBusy();
+        await SetBusy();
         
         TResponseModel<TPaginationResponseModel<GoodsModelDB>> res = await CommerceRepo.GoodsSelect(req);
         IsBusyProgress = false;

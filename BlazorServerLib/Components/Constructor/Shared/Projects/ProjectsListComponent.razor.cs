@@ -7,16 +7,12 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Constructor.Shared.Projects;
 
 /// <inheritdoc/>
-public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
+public partial class ProjectsListComponent : BlazorBusyComponentBaseAuthModel
 {
-    [Inject]
-    AuthenticationStateProvider authRepo { get; set; } = default!;
-
     [Inject]
     IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
 
@@ -28,8 +24,6 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
-    UserInfoMainModel CurrentUser { get; set; } = default!;
-
 
     /// <summary>
     /// Проекты пользователя
@@ -39,9 +33,7 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
-        CurrentUser = state.User.ReadCurrentUserInfo() ?? throw new Exception();
-
+        await ReadCurrentUser();
         await ReloadListProjects();
     }
 
@@ -50,9 +42,9 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
     /// </summary>
     public async Task ReloadListProjects()
     {
-        SetBusy();
-        
-        TResponseModel<ProjectViewModel[]> res_pr = await ConstructorRepo.GetProjectsForUser(new() { UserId = CurrentUser.UserId });
+        await SetBusy();
+
+        TResponseModel<ProjectViewModel[]> res_pr = await ConstructorRepo.GetProjectsForUser(new() { UserId = CurrentUserSession!.UserId });
         ProjectsOfUser = res_pr.Response ?? throw new Exception();
         IsBusyProgress = false;
     }
@@ -72,10 +64,10 @@ public partial class ProjectsListComponent : BlazorBusyComponentBaseModel
 
         DialogParameters<ProjectEditDialogComponent> parameters = new()
         {
-             { x => x.ProjectForEdit, new ProjectViewModel() { Name = name_new_project, OwnerUserId = CurrentUser.UserId } },
+             { x => x.ProjectForEdit, new ProjectViewModel() { Name = name_new_project, OwnerUserId = CurrentUserSession!.UserId } },
              { x => x.ParentFormsPage, ParentFormsPage },
              { x => x.ParentListProjects, this },
-             { x => x.CurrentUser, CurrentUser },
+             { x => x.CurrentUser, CurrentUserSession! },
         };
         DialogOptions options = new() { CloseButton = true, MaxWidth = MaxWidth.ExtraExtraLarge };
         IDialogReference res = await DialogService.ShowAsync<ProjectEditDialogComponent>("Создание проекта", parameters, options);
