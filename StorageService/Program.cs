@@ -67,6 +67,9 @@ builder.ConfigureServices((context, services) =>
     services.AddDbContextFactory<StorageContext>(opt =>
     opt.UseNpgsql(connectionIdentityString));
 
+    services
+    .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
+    .AddScoped<ICommerceRemoteTransmissionService, TransmissionCommerceService>();
 
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>()
@@ -79,6 +82,7 @@ builder.ConfigureServices((context, services) =>
     .RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>()
     .RegisterMqListener<SaveFileReceive, StorageImageMetadataModel?, StorageFileModelDB?>()
     .RegisterMqListener<ReadFileReceive, int?, StorageFileResponseModel?>()
+    .RegisterMqListener<FilesAreaGetMetadataReceive, FilesAreaMetadataRequestModel?, FilesAreaMetadataModel[]?>()
     .RegisterMqListener<FilesSelectReceive, TPaginationRequestModel<SelectFilesRequestModel>?, TPaginationResponseModel<StorageFileModelDB>?>()
     .RegisterMqListener<ReadParameterReceive, StorageMetadataModel?, StorageCloudParameterPayloadModel?>()
     .RegisterMqListener<FindParametersReceive, RequestStorageBaseModel?, FoundParameterModel[]?>();

@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface ISerializeStorageRemoteTransmissionService
 {
     /// <summary>
+    /// FilesAreaGetMetadata
+    /// </summary>
+    public Task<TResponseModel<FilesAreaMetadataModel[]>> FilesAreaGetMetadata(FilesAreaMetadataRequestModel req);
+
+    /// <summary>
     /// Files select
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectFilesRequestModel> req);

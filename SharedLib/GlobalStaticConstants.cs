@@ -811,6 +811,9 @@ public static partial class GlobalStaticConstants
         public readonly static string FilesSelectReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, Routes.FILES_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string FilesAreaGetMetadataReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, $"{Routes.FILES_CONTROLLER_NAME}-{Routes.AREAS_CONTROLLER_NAME}", $"{Routes.GET_ACTION_NAME}-{Routes.METADATA_CONTROLLER_NAME}");
+
+        /// <inheritdoc/>
         public readonly static string SaveCloudParameterReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.CLOUD_CONTROLLER_NAME, Routes.PROPERTY_CONTROLLER_NAME, Routes.SET_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -1333,6 +1336,16 @@ public static partial class GlobalStaticConstants
         public const string FILES_CONTROLLER_NAME = "files";
 
         /// <summary>
+        /// Areas
+        /// </summary>
+        public const string AREAS_CONTROLLER_NAME = "areas";
+
+        /// <summary>
+        /// Metadata
+        /// </summary>
+        public const string METADATA_CONTROLLER_NAME = "metadata";
+
+        /// <summary>
         /// Mongo
         /// </summary>
         public const string MONGO_CONTROLLER_NAME = "mongo";
@@ -1571,6 +1584,11 @@ public static partial class GlobalStaticConstants
         public const string Admin = "admin";
 
         /// <summary>
+        /// Debug
+        /// </summary>
+        public const string Debug = "debug";
+
+        /// <summary>
         /// system
         /// </summary>
         public const string System = "system";
@@ -1613,11 +1631,6 @@ public static partial class GlobalStaticConstants
         /// CommerceManager
         /// </summary>
         public const string CommerceManager = "CommerceManager";
-
-        /// <summary>
-        /// Debug
-        /// </summary>
-        public const string Debug = "debug";
         #endregion
     }
 

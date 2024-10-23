@@ -16,7 +16,11 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// Save file
 /// </summary>
-public class SaveFileReceive(IMongoDatabase mongoFs, IDbContextFactory<StorageContext> cloudParametersDbFactory)
+public class SaveFileReceive(
+    IMongoDatabase mongoFs,
+    IHelpdeskRemoteTransmissionService HelpdeskRepo,
+    ICommerceRemoteTransmissionService commRepo,
+    IDbContextFactory<StorageContext> cloudParametersDbFactory)
     : IResponseReceive<StorageImageMetadataModel?, StorageFileModelDB?>
 {
     /// <inheritdoc/>
@@ -54,6 +58,35 @@ public class SaveFileReceive(IMongoDatabase mongoFs, IDbContextFactory<StorageCo
         };
         await context.AddAsync(res.Response);
         await context.SaveChangesAsync();
+
+        if (req.ApplicationName == GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME && req.OwnerPrimaryKey.HasValue && req.OwnerPrimaryKey.Value > 0)
+        {
+            TResponseModel<OrderDocumentModelDB[]> get_order = await commRepo.OrdersRead([req.OwnerPrimaryKey.Value]);
+            if (!get_order.Success() || get_order.Response is null)
+                res.AddRangeMessages(get_order.Messages);
+            else
+            {
+                OrderDocumentModelDB orderDb = get_order.Response.Single();
+                if (orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
+                {
+                    PulseRequestModel reqPulse = new()
+                    {
+                        Payload = new()
+                        {
+                            Payload = new()
+                            {
+                                Description = $"Файл (внутренний) '{_file_name}' {GlobalTools.SizeDataAsString(req.Payload.Length)} [{nameof(res.Response.PointId)}:{_uf}] добавлен.",
+                                IssueId = orderDb.HelpdeskId.Value,
+                                PulseType = PulseIssuesTypesEnum.Files,
+                                Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME
+                            },
+                            SenderActionUserId = GlobalStaticConstants.Roles.System,
+                        }
+                    };
+                    await HelpdeskRepo.PulsePush(reqPulse);
+                }
+            }
+        }
 
         return res;
     }

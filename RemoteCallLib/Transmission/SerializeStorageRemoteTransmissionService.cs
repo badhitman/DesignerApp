@@ -83,4 +83,8 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectFilesRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<StorageFileModelDB>>(GlobalStaticConstants.TransmissionQueues.FilesSelectReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<FilesAreaMetadataModel[]>> FilesAreaGetMetadata(FilesAreaMetadataRequestModel req)
+        => await rabbitClient.MqRemoteCall<FilesAreaMetadataModel[]>(GlobalStaticConstants.TransmissionQueues.FilesAreaGetMetadataReceive, req);
 }

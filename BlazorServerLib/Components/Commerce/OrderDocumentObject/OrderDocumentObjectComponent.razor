@@ -45,7 +45,7 @@
             <div class="card mt-3">
                 <div class="card-body">
                     <h5 class="card-title">Файлы</h5>
-                    <h6 class="card-subtitle mb-2 text-body-secondary">Для заказа (внешние)</h6>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Из заказа (внешние)</h6>
                     @if (Document.Attachments is not null && Document.Attachments.Count != 0)
                     {
                         foreach (AttachmentForOrderModelDB _f in Document.Attachments)
@@ -64,8 +64,8 @@
                             </figcaption>
                         </figure>
                     }
-                    <hr />
-                    <h6 class="card-subtitle mb-2 text-body-secondary">В обращении</h6>
+                    <hr class="mb-4" />
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Для обращения:</h6>
                     <FilesContextViewComponent ApplicationName="@GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME"
                                                PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
                                                PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"

@@ -56,7 +56,7 @@ public class AttachmentDeleteFromOrderReceive(
                     {
                         Payload = new()
                         {
-                            Description = $"Файл '{file_db.Name}' {GlobalTools.SizeDataAsString(file_db.FileSize)} [{nameof(file_db.FilePoint)}:{file_db.FilePoint}] удалён.",
+                            Description = $"Файл (внешний) '{file_db.Name}' {GlobalTools.SizeDataAsString(file_db.FileSize)} [{nameof(file_db.FilePoint)}:{file_db.FilePoint}] удалён.",
                             IssueId = file_db.OrderDocument.HelpdeskId.Value,
                             PulseType = PulseIssuesTypesEnum.Files,
                             Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME

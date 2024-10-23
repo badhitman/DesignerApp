@@ -1,0 +1,8 @@
+﻿@page "/meta-files/home"
+
+@using BlazorWebLib.Components.MetaFiles
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.Debug}")]
+
+<MetaFilesComponent />
