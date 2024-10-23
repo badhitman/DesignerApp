@@ -118,26 +118,17 @@ public class StatusChangeReceive(
             };
 
             await helpdeskTransmissionRepo.PulsePush(p_req);
-            TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req_docs = new()
+            OrdersByIssuesSelectRequestModel req_docs = new()
             {
-                PageNum = 0,
-                PageSize = int.MaxValue,
-                Payload = new()
-                {
-                    Payload = new()
-                    {
-                        IssueIds = [issue_data.Id],
-                    },
-                    SenderActionUserId = ""
-                }
+                IssueIds = [issue_data.Id],
             };
 
-            TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> find_orders = await commRepo.OrdersSelect(req_docs);
-            if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Response.Count != 0)
+            TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
+            if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
             {
                 await commRepo.StatusOrderChange(new() { IssueId = issue_data.Id, Step = req.Payload.Step });
                 TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
-                OrderDocumentModelDB order_obj = find_orders.Response.Response[0];
+                OrderDocumentModelDB order_obj = find_orders.Response[0];
                 string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
                 DateTime cdd = order_obj.CreatedAtUTC.GetCustomTime();
                 string ReplaceTags(string raw)

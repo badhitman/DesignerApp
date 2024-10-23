@@ -150,25 +150,16 @@ public class MessageUpdateOrCreateReceive(
                     .Where(x => x.IssueId == req.Payload.IssueId && x.Id != my_marker.Id)
                     .ExecuteDeleteAsync();
 
-                TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req_docs = new()
+                OrdersByIssuesSelectRequestModel req_docs = new()
                 {
-                    PageNum = 0,
-                    PageSize = int.MaxValue,
-                    Payload = new()
-                    {
-                        Payload = new()
-                        {
-                            IssueIds = [issue_data.Id],
-                        },
-                        SenderActionUserId = ""
-                    }
+                    IssueIds = [issue_data.Id],
                 };
 
-                TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> find_orders = await commRepo.OrdersSelect(req_docs);
-                if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Response.Count != 0)
+                TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
+                if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
                 {
                     TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
-                    OrderDocumentModelDB order_obj = find_orders.Response.Response[0];
+                    OrderDocumentModelDB order_obj = find_orders.Response[0];
                     string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
 
                     string ReplaceTags(string raw)

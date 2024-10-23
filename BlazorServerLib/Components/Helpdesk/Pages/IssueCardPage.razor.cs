@@ -59,33 +59,24 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
         if (IssueSource is null)
             return;
 
-        TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req = new()
+        OrdersByIssuesSelectRequestModel req = new()
         {
-            PageNum = 0,
-            PageSize = int.MaxValue,
-            Payload = new()
-            {
-                Payload = new()
-                {
-                    IncludeExternalData = true,
-                    IssueIds = [IssueSource.Id],
-                },
-                SenderActionUserId = "",
-            }
+            IncludeExternalData = true,
+            IssueIds = [IssueSource.Id],
         };
         await SetBusy();
-        
-        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommRepo.OrdersSelect(req);
+
+        TResponseModel<OrderDocumentModelDB[]> res = await CommRepo.OrdersByIssues(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         OrdersJournal = res.Response is null
             ? null
-            : [.. res.Response.Response];
+            : [.. res.Response];
     }
 
     async Task ReadIssue()
     {
-        await SetBusy();        
+        await SetBusy();
         TResponseModel<IssueHelpdeskModelDB[]> issue_res = await HelpdeskRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>() { Payload = new() { IssuesIds = [Id] }, SenderActionUserId = CurrentUserSession!.UserId });
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
         IssueSource = issue_res.Response?.FirstOrDefault();
@@ -112,7 +103,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
             users_ids = users_ids.Distinct().ToList();
 
         await SetBusy();
-        
+
         TResponseModel<UserInfoModel[]?> users_data_identity = await WebRemoteRepo.GetUsersIdentity([.. users_ids]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(users_data_identity.Messages);

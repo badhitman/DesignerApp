@@ -171,27 +171,18 @@ public class IssueCreateOrUpdateReceive(
                                 .SetProperty(b => b.Name, issue_upd.Payload.Name)
                                 .SetProperty(b => b.LastUpdateAt, DateTime.UtcNow));
 
-                TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req_comm = new()
+                OrdersByIssuesSelectRequestModel req_comm = new()
                 {
-                    PageNum = 0,
-                    PageSize = int.MaxValue,
-                    Payload = new()
-                    {
-                        Payload = new()
-                        {
-                            IncludeExternalData = true,
-                            IssueIds = [issue_upd.Payload.Id],
-                        },
-                        SenderActionUserId = actor.UserId,
-                    }
+                    IncludeExternalData = true,
+                    IssueIds = [issue_upd.Payload.Id],
                 };
 
-                TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> comm_res = await commRepo.OrdersSelect(req_comm);
+                TResponseModel<OrderDocumentModelDB[]> comm_res = await commRepo.OrdersByIssues(req_comm);
                 TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                 msg = $"Документ (#{issue_upd.Payload.Id}) обновлён.";
-                if (comm_res.Success() && comm_res.Response?.Response is not null && comm_res.Response.Response.Count != 0)
+                if (comm_res.Success() && comm_res.Response is not null && comm_res.Response.Length != 0)
                 {
-                    msg += $". Заказ: [{string.Join(";", comm_res.Response.Response.Select(x => $"(№{x.Id} - {x.CreatedAtUTC.GetCustomTime()})"))}]";
+                    msg += $". Заказ: [{string.Join(";", comm_res.Response.Select(x => $"(№{x.Id} - {x.CreatedAtUTC.GetCustomTime()})"))}]";
                 }
                 msg += $". /<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/";
                 res.AddSuccess(msg);

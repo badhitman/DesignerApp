@@ -90,9 +90,14 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(int[] orders_ids);
 
     /// <summary>
-    /// Подбор (поиск по параметрам) заказов
+    /// Подбор заказов (поиск по параметрам)
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
+
+    /// <summary>
+    /// Получить заказов (по заявкам)
+    /// </summary>
+    public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssues(OrdersByIssuesSelectRequestModel req);
 
     /// <summary>
     /// Удалить Offer

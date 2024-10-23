@@ -50,9 +50,4 @@ public class OrdersSelectRequestModel
     /// .ThenInclude(x => x.Goods)
     /// </remarks>
     public bool IncludeExternalData { get; set; }
-
-    /// <summary>
-    /// Заказы для заявки из СДЭК
-    /// </summary>
-    public int[]? IssueIds { get; set; }
 }

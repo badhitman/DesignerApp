@@ -66,7 +66,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
     async Task LoadData()
     {
         await SetBusy();
-        
+
         TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> res = await HelpdeskRepo.ConsoleIssuesSelect(new TPaginationRequestModel<ConsoleIssuesRequestModel>
         {
             PageNum = pageNum,
@@ -99,22 +99,15 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
             return;
 
         await SetBusy();
-        TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req = new()
+        OrdersByIssuesSelectRequestModel req = new()
         {
-            Payload = new()
-            {
-                Payload = new()
-                {
-                    IssueIds = issues_ids,
-                    IncludeExternalData = true
-                },
-                SenderActionUserId = "",
-            }
+            IssueIds = issues_ids,
+            IncludeExternalData = true
         };
-        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> rest = await commRepo.OrdersSelect(req);
-        if (rest.Success() && rest.Response is not null && rest.Response.Response.Count != 0)
+        TResponseModel<OrderDocumentModelDB[]> rest = await commRepo.OrdersByIssues(req);
+        if (rest.Success() && rest.Response is not null && rest.Response.Length != 0)
         {
-            foreach (OrderDocumentModelDB ro in rest.Response.Response)
+            foreach (OrderDocumentModelDB ro in rest.Response)
                 OrdersCache.Add(ro.HelpdeskId!.Value, ro);
         }
         IsBusyProgress = false;

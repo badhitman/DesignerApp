@@ -88,6 +88,7 @@ builder.Services
     .RegisterMqListener<AddressOrganizationUpdateReceive, AddressOrganizationBaseModel?, int?>()
     .RegisterMqListener<AddressOrganizationDeleteReceive, int?, bool?>()
     .RegisterMqListener<GoodsUpdateReceive, GoodsModelDB?, int?>()
+    .RegisterMqListener<OrdersByIssuesGetReceive, OrdersByIssuesSelectRequestModel?, OrderDocumentModelDB[]?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
     .RegisterMqListener<StatusChangeReceive, StatusChangeRequestModel?, bool?>()
     .RegisterMqListener<GetFileOrderReceive, string?, byte[]?>()
