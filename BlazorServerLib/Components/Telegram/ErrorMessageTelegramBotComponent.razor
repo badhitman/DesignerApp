@@ -16,7 +16,7 @@
     <RowTemplate>
         <MudTd DataLabel="Date">
             <span data-cd="@context.CreatedAtUtc">
-                @context.CreatedAtUtc.GetMsk().ToString("d", CultureInfo.GetCultureInfo("ru-RU")) <sup>@context.CreatedAtUtc.GetMsk().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
+                @context.CreatedAtUtc.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU")) <sup>@context.CreatedAtUtc.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
             </span>
         </MudTd>
         <MudTd DataLabel="Type">@context.ExceptionTypeName</MudTd>

@@ -191,7 +191,7 @@ public class IssueCreateOrUpdateReceive(
                 msg = $"Документ (#{issue_upd.Payload.Id}) обновлён.";
                 if (comm_res.Success() && comm_res.Response?.Response is not null && comm_res.Response.Response.Count != 0)
                 {
-                    msg += $". Заказ: [{string.Join(";", comm_res.Response.Response.Select(x => $"(№{x.Id} - {x.CreatedAtUTC.GetMsk()})"))}]";
+                    msg += $". Заказ: [{string.Join(";", comm_res.Response.Response.Select(x => $"(№{x.Id} - {x.CreatedAtUTC.GetCustomTime()})"))}]";
                 }
                 msg += $". /<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/";
                 res.AddSuccess(msg);

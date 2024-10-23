@@ -169,12 +169,12 @@ public class MessageUpdateOrCreateReceive(
                 {
                     TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                     OrderDocumentModelDB order_obj = find_orders.Response.Response[0];
-                    string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetMsk().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetMsk().ToString("t", cultureInfo)}";
+                    string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
 
                     string ReplaceTags(string raw)
                     {
                         return raw.Replace(GlobalStaticConstants.OrderDocumentName, order_obj.Name)
-                        .Replace(GlobalStaticConstants.OrderDocumentDate, $"{order_obj.CreatedAtUTC.GetMsk().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetMsk().ToString("t", cultureInfo)}")
+                        .Replace(GlobalStaticConstants.OrderDocumentDate, $"{order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}")
                         .Replace(GlobalStaticConstants.OrderStatusInfo, issue_data.StepIssue.DescriptionInfo())
                         .Replace(GlobalStaticConstants.OrderLinkAddress, $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}'>{_about_order}</a>")
                         .Replace(GlobalStaticConstants.HostAddress, $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
@@ -186,7 +186,7 @@ public class MessageUpdateOrCreateReceive(
                         subject_email = CommerceNewMessageOrderSubjectNotification.Response;
                     subject_email = ReplaceTags(subject_email);
 
-                    msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetMsk()}]: Новое сообщение.</p>" +
+                    msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetCustomTime()}]: Новое сообщение.</p>" +
                                         $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
 
                     string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");

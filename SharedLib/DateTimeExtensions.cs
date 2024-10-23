@@ -2,9 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using System.Globalization;
-using System.Threading;
-
 namespace SharedLib;
 
 /// <summary>
@@ -13,15 +10,15 @@ namespace SharedLib;
 public static class DateTimeExtensions
 {
     /// <summary>
-    /// GetMsk
+    /// GetCustomTime
     /// </summary>
-    public static DateTime GetMsk(this DateTime dateTime) 
-        => TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById("Europe/Moscow"));
+    public static DateTime GetCustomTime(this DateTime dateTime, string timeZone = "Europe/Moscow") 
+        => TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZone));
 
     /// <summary>
     /// Создает новый объект System.DateTime, который имеет то же количество тактов,
     /// что и указанный System.DateTime, но обозначается как местное время, всеобщее
-    /// координированное время (UTC) или ни то, ни другое, как указано указанным значением System.DateTimeKind.
+    /// координированное время (UTC) или ни то, ни другое, как указано значением System.DateTimeKind.
     /// </summary>
     public static DateTime? SetKindUtc(this DateTime? dateTime)
     {

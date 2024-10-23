@@ -1,4 +1,5 @@
 ﻿@using MudBlazor
+@using System.Globalization
 @inherits BlazorBusyComponentBaseAuthModel
 
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="TableRef" Loading="IsBusyProgress">
@@ -21,7 +22,10 @@
         <MudTh>Prefix</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="CreatedAt">@context.CreatedAt</MudTd>
+        <MudTd DataLabel="CreatedAt">
+            @context.CreatedAt.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))
+            <sup>@context.CreatedAt.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
+        </MudTd>
         @if (ApplicationsNames.Length != 1)
         {
             <MudTd DataLabel="ContentType">@context.ApplicationName</MudTd>
@@ -55,12 +59,12 @@
                     <button @onclick="CloseFileManager" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>@_selectedFile.Name - @GlobalTools.SizeDataAsString(_selectedFile.FileLength)</p>
+                    <p>@_selectedFile.FileName - @GlobalTools.SizeDataAsString(_selectedFile.FileLength)</p>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <button @onclick="DownloadFile" type="button" class="btn btn-outline-primary">Скачать</button>
-                        <button @onclick="CloseFileManager" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button @onclick="CloseFileManager" type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

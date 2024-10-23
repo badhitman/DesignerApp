@@ -138,8 +138,8 @@ public class StatusChangeReceive(
                 await commRepo.StatusOrderChange(new() { IssueId = issue_data.Id, Step = req.Payload.Step });
                 TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                 OrderDocumentModelDB order_obj = find_orders.Response.Response[0];
-                string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetMsk().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetMsk().ToString("t", cultureInfo)}";
-                DateTime cdd = order_obj.CreatedAtUTC.GetMsk();
+                string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
+                DateTime cdd = order_obj.CreatedAtUTC.GetCustomTime();
                 string ReplaceTags(string raw)
                 {
                     return raw.Replace(GlobalStaticConstants.OrderDocumentName, order_obj.Name)
@@ -155,7 +155,7 @@ public class StatusChangeReceive(
                     subject_email = CommerceStatusChangeOrderSubjectNotification.Response;
                 subject_email = ReplaceTags(subject_email);
 
-                msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetMsk()}] - {req.Payload.Step.DescriptionInfo()}.</p>" +
+                msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetCustomTime()}] - {req.Payload.Step.DescriptionInfo()}.</p>" +
                                     $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
 
                 string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");

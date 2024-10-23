@@ -28,7 +28,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="@(nameof(ChatTelegramModelDB.LastUpdateUtc))">
-            <a href="@($"/helpdesk/telegram-chat-page/{context.Id}")">@context.LastUpdateUtc.GetMsk().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))<sup>@context.LastUpdateUtc.GetMsk().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup></a>
+            <a href="@($"/helpdesk/telegram-chat-page/{context.Id}")">@context.LastUpdateUtc.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))<sup>@context.LastUpdateUtc.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup></a>
         </MudTd>
         <MudTd DataLabel="Title">@context.Title</MudTd>
         <MudTd DataLabel="Type">@context.Type.DescriptionInfo()</MudTd>

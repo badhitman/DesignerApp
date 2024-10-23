@@ -97,7 +97,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 if (CommerceNewOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
                     subject_email = CommerceNewOrderSubjectNotification.Response;
 
-                DateTime _dt = DateTime.UtcNow.GetMsk();
+                DateTime _dt = DateTime.UtcNow.GetCustomTime();
                 string _about_order = $"'{req.Name}' {_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
                 string ReplaceTags(string raw)
                 {
