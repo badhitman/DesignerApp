@@ -8,6 +8,7 @@ using Microsoft.JSInterop;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
+using Newtonsoft.Json.Linq;
 
 namespace BlazorWebLib.Components;
 
@@ -156,7 +157,7 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
     /// </summary>
     private async Task<TableData<StorageFileModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-        await SetBusy(token: token);
+        IsBusyProgress = true;
         TPaginationRequestModel<SelectFilesRequestModel> req = new()
         {
             Payload = new()
@@ -178,9 +179,9 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
         TResponseModel<TPaginationResponseModel<StorageFileModelDB>> rest = await FilesRepo
             .FilesSelect(req);
 
-        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         List<StorageFileModelDB> data = rest.Response!.Response!;
+        IsBusyProgress = false;
         return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
     }
 
@@ -195,5 +196,6 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
     protected override async Task OnInitializedAsync()
     {
         await ReadCurrentUser();
+        await SetBusy(false);
     }
 }

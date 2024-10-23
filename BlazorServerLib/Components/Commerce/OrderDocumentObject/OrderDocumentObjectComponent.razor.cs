@@ -158,10 +158,11 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
         await SetBusy();
 
         TResponseModel<bool> res = await HelpdeskRepo.StatusChange(req);
-        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response && res.Success())
             NavRepo.ReloadPage();
+
+        await SetBusy(false);
     }
 
     /// <inheritdoc/>
