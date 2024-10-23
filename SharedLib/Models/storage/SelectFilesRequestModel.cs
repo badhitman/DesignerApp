@@ -12,7 +12,7 @@ public class SelectFilesRequestModel : SelectRequestBaseModel
     /// <summary>
     /// Приложение
     /// </summary>
-    public required string ApplicationName { get; set; }
+    public required string[] ApplicationsNames { get; set; }
 
     /// <summary>
     /// Имя

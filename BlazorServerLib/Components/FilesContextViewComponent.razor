@@ -1,15 +1,19 @@
 ﻿@using MudBlazor
 @inherits BlazorBusyComponentBaseAuthModel
 
-<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table" Loading="IsBusyProgress">
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="TableRef" Loading="IsBusyProgress">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Прикреплённые файлы</MudText>
         <MudSpacer />
-        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Поиск по имени файла" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="CreatedAt" T="StorageFileModelDB">CreatedAt</MudTableSortLabel></MudTh>
+        @if (ApplicationsNames.Length != 1)
+        {
+            <MudTh>App</MudTh>
+        }
         <MudTh>FileName</MudTh>
         <MudTh>FileLength</MudTh>
         <MudTh>ContentType</MudTh>
@@ -18,6 +22,10 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="CreatedAt">@context.CreatedAt</MudTd>
+        @if (ApplicationsNames.Length != 1)
+        {
+            <MudTd DataLabel="ContentType">@context.ApplicationName</MudTd>
+        }
         <MudTd DataLabel="FileName">
             <button @onclick="() => FileManage(context)" type="button" class="btn btn-link">@context.FileName</button>
         </MudTd>
@@ -60,16 +68,19 @@
     </div>
     <div @onclick="CloseFileManager" tabindex="-1" class="offcanvas-backdrop fade show"></div>
 }
-<hr class="mt-3" />
-<label for="exampleFormControlInputFile" class="form-label">Добавление файлов к документу:</label>
-<div class="input-group mb-3">
-    <InputFile @key=@(_inputFileId) class="form-control" OnChange="SelectFilesChange" id="exampleFormControlInputFile" multiple />
-    <button @onclick="SendFile" disabled="@(IsBusyProgress || loadedFiles.Count == 0)" class="btn btn-outline-secondary" type="button">@(loadedFiles.Count == 0 ? "Выберете файл для отправки..." : "Отправить")</button>
-    @if (loadedFiles.Count != 0)
-    {
-        <button @onclick="() => { loadedFiles.Clear(); _inputFileId = Guid.NewGuid().ToString(); }" disabled="@IsBusyProgress" class="btn btn-light" type="button">Сброс</button>
-    }
-</div>
+@if (CanAddingFile)
+{
+    <hr class="mt-3" />
+    <label for="exampleFormControlInputFile" class="form-label">Добавление файлов к документу:</label>
+    <div class="input-group mb-3">
+        <InputFile @key=@(_inputFileId) class="form-control" OnChange="SelectFilesChange" id="exampleFormControlInputFile" multiple />
+        <button @onclick="SendFile" disabled="@(IsBusyProgress || loadedFiles.Count == 0)" class="btn btn-outline-secondary" type="button">@(loadedFiles.Count == 0 ? "Выберете файл для отправки..." : "Отправить")</button>
+        @if (loadedFiles.Count != 0)
+        {
+            <button @onclick="() => { loadedFiles.Clear(); _inputFileId = Guid.NewGuid().ToString(); }" disabled="@IsBusyProgress" class="btn btn-light" type="button">Сброс</button>
+        }
+    </div>
+}
 
 @if (loadedFiles.Count != 0)
 {

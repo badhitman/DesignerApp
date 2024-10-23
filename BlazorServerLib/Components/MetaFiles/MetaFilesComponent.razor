@@ -1,3 +1,35 @@
-﻿@inherits BlazorBusyComponentBaseAuthModel
+﻿@using MudBlazor
 
-<h3>MetaFilesComponent</h3>
+@inherits BlazorBusyComponentBaseAuthModel
+
+<h3>Мета файлы</h3>
+
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+}
+
+<div class="d-flex">
+    @for (int i = 0; i < _included.Count; i++)
+    {
+        int index = i;
+        <MudCheckBox @bind-Value="_included[index]">`@FilesAreaMetadata[index].ApplicationName` @(GlobalTools.SizeDataAsString(FilesAreaMetadata[index].SizeFilesSum)) (файлов: @FilesAreaMetadata[index].CountFiles)</MudCheckBox>
+    }
+</div>
+
+@if (_included.Count(x => x) == _included.Count || _included.Count(x => !x) == _included.Count)
+{
+    <FilesContextViewComponent ApplicationsNames="@([])" PropertyName="@string.Empty" />
+}
+else
+{
+    reqNamesApps = [];
+    for (int i = 0; i < _included.Count; i++)
+    {
+        int index = i;
+        if (_included[index])
+            reqNamesApps.Add(FilesAreaMetadata[index].ApplicationName);
+    }
+
+    <FilesContextViewComponent ApplicationsNames="@(reqNamesApps.ToArray())" PropertyName="@string.Empty" />
+}

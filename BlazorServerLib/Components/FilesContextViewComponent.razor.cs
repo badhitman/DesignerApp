@@ -27,10 +27,10 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
 
 
     /// <summary>
-    /// Приложение
+    /// Приложения
     /// </summary>
     [Parameter, EditorRequired]
-    public required string ApplicationName { get; set; }
+    public required string[] ApplicationsNames { get; set; }
 
     /// <summary>
     /// Имя
@@ -57,11 +57,21 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
     public bool ManageMode { get; set; }
 
 
+    bool CanAddingFile => OwnerPrimaryKey.HasValue && OwnerPrimaryKey.Value > 0 &&
+        !string.IsNullOrWhiteSpace(PrefixPropertyName) &&
+        !string.IsNullOrWhiteSpace(PropertyName) &&
+        ApplicationsNames.Length == 1;
+
     private string? searchString = null;
     private string _inputFileId = Guid.NewGuid().ToString();
     private readonly List<IBrowserFile> loadedFiles = [];
 
-    private MudTable<StorageFileModelDB>? table;
+    /// <summary>
+    /// Table (ref)
+    /// </summary>
+    MudTable<StorageFileModelDB>? TableRef;
+
+
     StorageFileModelDB? _selectedFile;
     void FileManage(StorageFileModelDB _f)
     {
@@ -91,7 +101,7 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
         {
             AuthorUserIdentity = CurrentUserSession!.UserId,
             PrefixPropertyName = PrefixPropertyName,
-            ApplicationName = ApplicationName,
+            ApplicationName = ApplicationsNames.Single(),
             OwnerPrimaryKey = OwnerPrimaryKey,
             Name = PropertyName,
             Referrer = NavRepo.Uri,
@@ -122,8 +132,8 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
         _inputFileId = Guid.NewGuid().ToString();
         await SetBusy(false);
 
-        if (table is not null)
-            await table.ReloadServerData();
+        if (TableRef is not null)
+            await TableRef.ReloadServerData();
     }
 
     async Task DownloadFile()
@@ -153,7 +163,7 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
             {
                 SearchQuery = searchString,
                 IncludeExternal = false,
-                ApplicationName = ApplicationName,
+                ApplicationsNames = ApplicationsNames,
                 IdentityUsersIds = [],
                 PropertyName = ManageMode ? "" : PropertyName,
                 OwnerPrimaryKey = OwnerPrimaryKey,
@@ -177,8 +187,8 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
     private void OnSearch(string text)
     {
         searchString = text;
-        if (table is not null)
-            InvokeAsync(table.ReloadServerData);
+        if (TableRef is not null)
+            InvokeAsync(TableRef.ReloadServerData);
     }
 
     /// <inheritdoc/>

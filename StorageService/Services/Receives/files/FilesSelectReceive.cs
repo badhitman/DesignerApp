@@ -33,8 +33,8 @@ public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbConte
             .CloudFiles
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(req.Payload.ApplicationName))
-            q = q.Where(x => x.ApplicationName == req.Payload.ApplicationName);
+        if (req.Payload.ApplicationsNames is not null && req.Payload.ApplicationsNames.Length != 0)
+            q = q.Where(x => req.Payload.ApplicationsNames.Any(y => y == x.ApplicationName));
 
         if (!string.IsNullOrWhiteSpace(req.Payload.PropertyName))
             q = q.Where(x => x.Name == req.Payload.PropertyName);
@@ -55,7 +55,7 @@ public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbConte
         var inc = oq
             .Include(x => x.Tags)
             ;
-
+        int trc = await q.CountAsync();
         return new()
         {
             Response = new()
@@ -64,7 +64,7 @@ public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbConte
                 PageSize = req.PageSize,
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
+                TotalRowsCount = trc,
                 Response = req.Payload.IncludeExternal ? await inc.ToListAsync() : await oq.ToListAsync()
             }
         };
