@@ -142,6 +142,7 @@ public static partial class GlobalStaticConstants
         {
             ApplicationName = Path.Combine(Routes.HOME_CONTROLLER_NAME, Routes.PAGE_CONTROLLER_NAME),
             Name = Routes.PUBLIC_CONTROLLER_NAME,
+            PrefixPropertyName = Routes.HTML_CONTROLLER_NAME,
         };
 
         /// <summary>
@@ -151,6 +152,7 @@ public static partial class GlobalStaticConstants
         {
             ApplicationName = Path.Combine(Routes.HOME_CONTROLLER_NAME, Routes.PAGE_CONTROLLER_NAME),
             Name = Routes.PRIVATE_CONTROLLER_NAME,
+            PrefixPropertyName = Routes.HTML_CONTROLLER_NAME,
         };
 
         /// <summary>
@@ -1234,6 +1236,11 @@ public static partial class GlobalStaticConstants
         /// Home
         /// </summary>
         public const string HOME_CONTROLLER_NAME = "home";
+
+        /// <summary>
+        /// HTML
+        /// </summary>
+        public const string HTML_CONTROLLER_NAME = "html";
 
         /// <summary>
         /// Authorize
