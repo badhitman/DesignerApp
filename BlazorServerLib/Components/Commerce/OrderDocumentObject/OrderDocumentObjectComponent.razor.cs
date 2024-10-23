@@ -44,8 +44,6 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
     public required IssueHelpdeskModelDB Issue { get; set; }
 
 
-    UserInfoMainModel user = default!;
-
     AttachmentForOrderModelDB? _selectedFile;
     void FileManage(AttachmentForOrderModelDB _f)
     {
@@ -66,6 +64,13 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
             using DotNetStreamReference streamRef = new(stream: ms);
             await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", _selectedFile.Name, streamRef);
         }
+    }
+
+    bool _expandedAttachesManage = false;
+
+    private void OnAttachesExpandCollapseClick()
+    {
+        _expandedAttachesManage = !_expandedAttachesManage;
     }
 
     bool isInitDelete;
@@ -126,8 +131,8 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
 
 
         await SetBusy();
-        
-        TResponseModel<int> res = await StorageRepo.SaveParameter(doc, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(user.UserId), true);
+
+        TResponseModel<int> res = await StorageRepo.SaveParameter(doc, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true);
 
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         SnackbarRepo.Add("Содержимое документа отправлено в корзину для формирования нового заказа", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -143,7 +148,7 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
     {
         TAuthRequestModel<StatusChangeRequestModel> req = new()
         {
-            SenderActionUserId = user.UserId,
+            SenderActionUserId = CurrentUserSession!.UserId,
             Payload = new()
             {
                 IssueId = Issue.Id,
@@ -151,11 +156,17 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
             }
         };
         await SetBusy();
-        
+
         TResponseModel<bool> res = await HelpdeskRepo.StatusChange(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response && res.Success())
             NavRepo.ReloadPage();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await ReadCurrentUser();
     }
 }

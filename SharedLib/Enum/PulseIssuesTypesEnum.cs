@@ -41,4 +41,9 @@ public enum PulseIssuesTypesEnum
     /// Изменения в подписчиках
     /// </summary>
     Subscribes,
+
+    /// <summary>
+    /// Изменения в файлах
+    /// </summary>
+    Files,
 }

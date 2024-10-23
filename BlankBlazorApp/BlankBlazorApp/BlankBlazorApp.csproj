@@ -59,4 +59,9 @@
 	  </EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="wwwroot\img\errorimage.png;wwwroot\img\noimage-simple.png;wwwroot\img\unauthorizedimage.png;">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 </Project>

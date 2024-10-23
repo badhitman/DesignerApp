@@ -27,12 +27,13 @@ public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService s
         IFormFile file)
     {
         System.Security.Claims.ClaimsPrincipal user = HttpContext.User;
+        string un = user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")!.Value;
 
-        if (user.Identity?.IsAuthenticated != true)
+        if (user.Identity?.IsAuthenticated != true || string.IsNullOrWhiteSpace(un))
             return StatusCode(401, new { location = "/img/unauthorizedimage.png" });
 
         if (string.IsNullOrWhiteSpace(AppNameStorage) || string.IsNullOrWhiteSpace(NameStorage))
-            return StatusCode(500, new { location = "/img/unauthorizedimage.png" });
+            return StatusCode(401, new { location = "/img/errorimage.png" });
 
         byte[] payload = [];
         string? file_name = null;
@@ -57,7 +58,7 @@ public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService s
         if (payload.Length == 0)
             return StatusCode(500, new { location = "/img/unauthorizedimage.png" });
 
-        string un = user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")!.Value;
+
         StorageImageMetadataModel req = new()
         {
             Referrer = HttpContext.Request.Headers["Referer"].FirstOrDefault(),

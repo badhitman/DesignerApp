@@ -50,9 +50,7 @@ public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
         await SetBusy();
         SendTextMessageTelegramBotModel req = new() { Message = _textSendMessage, UserTelegramId = Chat.ChatTelegramId, From = "Техподдержка" };
 
-        // await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
         MemoryStream ms;
-
         if (loadedFiles.Count != 0)
         {
             req.Files = [];

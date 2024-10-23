@@ -2,21 +2,23 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using BlazorWebLib.Components.Telegram;
-using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorWebLib.Components;
 
 /// <summary>
 /// FilesContextViewComponent
 /// </summary>
-public partial class FilesContextViewComponent : BlazorBusyComponentBaseModel
+public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthModel
 {
+    [Inject]
+    NavigationManager NavRepo { get; set; } = default!;
+
     [Inject]
     IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
@@ -48,9 +50,15 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseModel
     [Parameter]
     public int? OwnerPrimaryKey { get; set; }
 
+    /// <summary>
+    /// ManageMode
+    /// </summary>
+    [Parameter]
+    public bool ManageMode { get; set; }
+
 
     private string? searchString = null;
-
+    private string _inputFileId = Guid.NewGuid().ToString();
     private readonly List<IBrowserFile> loadedFiles = [];
 
     private MudTable<StorageFileModelDB>? table;
@@ -74,40 +82,48 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    async Task SendMessage()
+    async Task SendFile()
     {
         if (loadedFiles.Count == 0)
             throw new Exception();
 
-        await SetBusy();
-        //SendTextMessageTelegramBotModel req = new() { Message = _textSendMessage, UserTelegramId = Chat.ChatTelegramId, From = "Техподдержка" };
+        StorageImageMetadataModel req = new()
+        {
+            AuthorUserIdentity = CurrentUserSession!.UserId,
+            PrefixPropertyName = PrefixPropertyName,
+            ApplicationName = ApplicationName,
+            OwnerPrimaryKey = OwnerPrimaryKey,
+            Name = PropertyName,
+            Referrer = NavRepo.Uri,
 
-        //// await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+            FileName = "",
+            ContentType = "",
+            Payload = []
+        };
+
+        await SetBusy();
+
+        TResponseModel<StorageFileModelDB> res;
         MemoryStream ms;
 
+        foreach (IBrowserFile fileBrowser in loadedFiles)
+        {
+            ms = new();
+            await fileBrowser.OpenReadStream(maxAllowedSize: 1024 * 18 * 1024).CopyToAsync(ms);
+            req.Payload = ms.ToArray();
+            req.ContentType = fileBrowser.ContentType;
+            req.FileName = fileBrowser.Name;
+            await ms.DisposeAsync();
+            res = await FilesRepo.SaveFile(req);
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+        }
 
-        //    req.Files = [];
+        loadedFiles.Clear();
+        _inputFileId = Guid.NewGuid().ToString();
+        await SetBusy(false);
 
-        //    foreach (var fileBrowser in loadedFiles)
-        //    {
-        //        ms = new();
-        //        await fileBrowser.OpenReadStream(maxAllowedSize: 1024 * 18 * 1024).CopyToAsync(ms);
-        //        req.Files.Add(new() { ContentType = fileBrowser.ContentType, Name = fileBrowser.Name, Data = ms.ToArray() });
-        //        await ms.DisposeAsync();
-        //    }
-
-
-        //TResponseModel<MessageComplexIdsModel?> rest = await TelegramRepo.SendTextMessageTelegram(req);
-        //_textSendMessage = "";
-        //if (_messagesTelegramComponent.TableRef is not null)
-        //    await _messagesTelegramComponent.TableRef.ReloadServerData();
-
-        //IsBusyProgress = false;
-        //SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        //loadedFiles.Clear();
-        //_inputFileId = Guid.NewGuid().ToString();
-        //if (SendMessageHandle is not null)
-        //    SendMessageHandle(req);
+        if (table is not null)
+            await table.ReloadServerData();
     }
 
     async Task DownloadFile()
@@ -139,9 +155,9 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseModel
                 IncludeExternal = false,
                 ApplicationName = ApplicationName,
                 IdentityUsersIds = [],
-                PropertyName = PropertyName,
+                PropertyName = ManageMode ? "" : PropertyName,
                 OwnerPrimaryKey = OwnerPrimaryKey,
-                PrefixPropertyName = PrefixPropertyName,
+                PrefixPropertyName = ManageMode ? "" : PrefixPropertyName,
             },
             PageNum = state.Page,
             PageSize = state.PageSize,
@@ -161,6 +177,13 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseModel
     private void OnSearch(string text)
     {
         searchString = text;
-        table?.ReloadServerData();
+        if (table is not null)
+            InvokeAsync(table.ReloadServerData);
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await ReadCurrentUser();
     }
 }

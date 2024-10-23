@@ -64,8 +64,7 @@ public partial class TinyMCEComponent : BlazorBusyComponentBaseModel
     {
         //await SetBusy();
         await StoreRepo.SaveParameter(_textValue, KeyStorage, true);
-        //IsBusyProgress = false;
-        //StateHasChanged();
+        //await SetBusy(false);
     }
 
     /// <inheritdoc/>
