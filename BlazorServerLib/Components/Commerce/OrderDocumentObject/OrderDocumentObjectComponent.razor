@@ -1,32 +1,40 @@
 ﻿@using MudBlazor
 @inherits BlazorBusyComponentBaseAuthModel
 
-@foreach (TabAddressForOrderModelDb at in Document.AddressesTabs!)
+@if (IsBusyProgress || Document.AddressesTabs is null)
 {
-    <div class="card mt-3">
-        <div class="card-header">
-            @(at.AddressOrganization!.Name)
-        </div>
-        <div class="card-body">
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Наименование</th>
-                        <th scope="col">Цена</th>
-                        <th scope="col">Кол-во</th>
-                        <th scope="col">Сумма</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (RowOfOrderDocumentModelDB row in at.Rows!)
-                    {
-                        <RowOfOrderDocumentComponent Row="row" />
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
 }
+else
+{
+    foreach (TabAddressForOrderModelDb at in Document.AddressesTabs)
+    {
+        <div class="card mt-3">
+            <div class="card-header">
+                @(at.AddressOrganization!.Name)
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Наименование</th>
+                            <th scope="col">Цена</th>
+                            <th scope="col">Кол-во</th>
+                            <th scope="col">Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (RowOfOrderDocumentModelDB row in at.Rows!)
+                        {
+                            <RowOfOrderDocumentComponent Row="row" />
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
+
 <MudButton Class="mt-3" OnClick="OrderToCart" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Скопировать заказ в корзину</MudButton>
 @if (Issue.StepIssue == StatusesDocumentsEnum.Created)
 {
