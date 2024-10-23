@@ -60,20 +60,20 @@
     </div>
     <div @onclick="CloseFileManager" tabindex="-1" class="offcanvas-backdrop fade show"></div>
 }
-
-<div class="my-3">
-    <label for="exampleFormControlTextarea1" class="form-label">Отправка сообщения</label>
-    <div class="input-group">
-        <button @onclick="SendMessage" disabled="@(IsBusyProgress)" class="btn btn-outline-secondary bi bi-send" type="button" id="button-addon2"></button>
-    </div>
-</div>
-
+<hr class="mt-3" />
+<label for="exampleFormControlInputFile" class="form-label">Добавление файлов к документу:</label>
 <div class="input-group mb-3">
-    <InputFile class="form-control" OnChange="SelectFilesChange" />
+    <InputFile class="form-control" OnChange="SelectFilesChange" id="exampleFormControlInputFile" multiple />
+    <button @onclick="SendMessage" disabled="@(IsBusyProgress || loadedFiles.Count == 0)" class="btn btn-outline-secondary" type="button">@(loadedFiles.Count == 0 ? "Выберете файл для отправки..." : "Отправить")</button>
+    @if (loadedFiles.Count != 0)
+    {
+        <button @onclick="()=> loadedFiles.Clear()" disabled="@IsBusyProgress" class="btn btn-light" type="button">Сброс</button>
+    }
 </div>
 
 @if (loadedFiles.Count != 0)
 {
+    <code>Выбранные файлы (@(GlobalTools.SizeDataAsString(loadedFiles.Sum(x => x.Size)))):</code>
     <ol class="list-group list-group-numbered mb-2">
         @foreach (IBrowserFile file_element in loadedFiles)
         {
@@ -82,11 +82,8 @@
                     <div class="fw-bold">@file_element.Name</div>
                     @GlobalTools.SizeDataAsString(file_element.Size)
                 </div>
-                <span class="badge text-bg-primary rounded-pill">@file_element.LastModified</span>
+                <span title="последнее изменение" class="badge text-bg-primary rounded-pill">@file_element.LastModified</span>
             </li>
         }
     </ol>
-    <div class="d-grid gap-2 mb-3">
-        <button @onclick="() => { loadedFiles.Clear(); }" class="btn btn-outline-primary" type="button">Отмена</button>
-    </div>
 }

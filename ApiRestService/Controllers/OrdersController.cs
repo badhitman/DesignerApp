@@ -59,10 +59,8 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
         }
         else if (call.Response?.Length != 1)
         {
-#if !DEBUG
             response.AddError($"Заказ #{OrderId} не найден или у вас не достаточно прав для выполнения команды");
             return response;
-#endif
         }
 
         GridFSBucket gridFS = new(mongoFs);
@@ -72,9 +70,6 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
             string _file_name = uploadedFile.FileName.Trim();
             if (string.IsNullOrWhiteSpace(_file_name))
                 _file_name = $"без имени: {DateTime.UtcNow}";
-
-            // путь к папке Files
-            //string path = Path.Combine(GlobalStaticConstants.Routes.FILES_CONTROLLER_NAME, GlobalStaticConstants.Routes.MONGO_CONTROLLER_NAME, GlobalStaticConstants.Routes.ORDERS_CONTROLLER_NAME, OrderId.ToString(), _file_name);
 
             using Stream stream = uploadedFile.OpenReadStream();
             ObjectId _uf = await gridFS.UploadFromStreamAsync(_file_name, stream);

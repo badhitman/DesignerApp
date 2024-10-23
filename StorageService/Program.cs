@@ -73,7 +73,7 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
     .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
 
-    services.AddScoped<ISerializeStorage, SerializeStorageService>();
+    services.AddScoped<ISerializeStorage, StorageServiceImpl>();
     ////
     services
     .RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>()

@@ -2,20 +2,19 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
-using Microsoft.Extensions.Caching.Memory;
-using Amazon.Runtime.Internal.Util;
 
 namespace StorageService;
 
 /// <inheritdoc/>
-public class SerializeStorageService(
+public class StorageServiceImpl(
     IDbContextFactory<StorageContext> cloudParametersDbFactory,
     IMemoryCache cache,
-    ILogger<SerializeStorageService> loggerRepo) : ISerializeStorage
+    ILogger<StorageServiceImpl> loggerRepo) : ISerializeStorage
 {
 #if DEBUG
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(50);
