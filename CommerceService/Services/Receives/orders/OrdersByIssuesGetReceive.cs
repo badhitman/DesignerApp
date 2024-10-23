@@ -38,9 +38,19 @@ public class OrdersByIssuesGetReceive(IDbContextFactory<CommerceContext> commerc
                 Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
             };
 
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = q
+            .Include(x => x.Attachments)
+            .Include(x => x.Organization)
+            .Include(x => x.AddressesTabs!)
+            .ThenInclude(x => x.AddressOrganization)
+            .Include(x => x.AddressesTabs!)
+            .ThenInclude(x => x.Rows!)
+            .ThenInclude(x => x.Offer!)
+            .ThenInclude(x => x.Goods);
+
         return new()
         {
-            Response = await q.ToArrayAsync(),
+            Response = req.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await q.ToArrayAsync()],
         };
     }
 }
