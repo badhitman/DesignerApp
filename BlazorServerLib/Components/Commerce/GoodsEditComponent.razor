@@ -26,12 +26,30 @@ else
                 </select>
                 @if (CurrentUserSession.IsAdmin)
                 {
-                    <button @onclick="SaveGoods" disabled="@(!CanSave || !CurrentUserSession.IsAdmin)" class="btn btn-outline-secondary" type="button" id="button-addon2">Сохранить</button>
+                    <button @onclick="SaveGoods" disabled="@(!CanSave || !CurrentUserSession.IsAdmin)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" id="button-addon2">Сохранить</button>
                 }
             </div>
         </div>
         <div class="card-body">
             <OffersOfGoodsComponent CurrentGoods="editGoods" />
+            @if (CurrentUserSession.IsAdmin)
+            {
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <TinyMCE.Blazor.Editor @bind-Value="editGoods.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(GoodsId < 1)" />
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME])"
+                                                   PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
+                                                   PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
+                                                   OwnerPrimaryKey="GoodsId"
+                                                   @ref="filesViewRef"
+                                                   ManageMode="true" />
+                    </div>
+                </div>
+            }
         </div>
     </div>
 }

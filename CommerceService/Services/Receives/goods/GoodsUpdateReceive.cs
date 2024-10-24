@@ -47,6 +47,7 @@ public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             goods_db = new()
             {
                 Name = req.Name,
+                Description = req.Description,
                 BaseUnit = req.BaseUnit,
                 IsDisabled = req.IsDisabled,
                 LastAtUpdatedUTC = dtu,
@@ -65,6 +66,7 @@ public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, req.Name)
+            .SetProperty(p => p.Description, req.Description)
             .SetProperty(p => p.BaseUnit, req.BaseUnit)
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));

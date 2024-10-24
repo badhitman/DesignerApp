@@ -31,7 +31,7 @@
             <MudTd DataLabel="ContentType">@context.ApplicationName</MudTd>
         }
         <MudTd DataLabel="FileName">
-            <button @onclick="() => FileManage(context)" type="button" class="btn btn-link">@context.FileName</button>
+            <a target="_blank" href="/cloud-fs/read/@context.Id/@context.FileName">@context.FileName</a> <sup title="скачать" style="cursor:pointer;" @onclick="() => FileManage(context)" class="bi bi-cloud-download-fill"></sup>
         </MudTd>
         <MudTd DataLabel="FileLength">@(GlobalTools.SizeDataAsString(context.FileLength))</MudTd>
         <MudTd DataLabel="ContentType">@context.ContentType</MudTd>

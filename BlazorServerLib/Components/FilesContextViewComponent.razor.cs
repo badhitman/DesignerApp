@@ -77,6 +77,14 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
     /// </summary>
     MudTable<StorageFileModelDB>? TableRef;
 
+    /// <summary>
+    /// ReloadServerData
+    /// </summary>
+    public async Task ReloadServerData()
+    {
+        if(TableRef is not null)
+           await TableRef.ReloadServerData();
+    }
 
     StorageFileModelDB? _selectedFile;
     void FileManage(StorageFileModelDB _f)
