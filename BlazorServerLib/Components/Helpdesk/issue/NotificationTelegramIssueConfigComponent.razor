@@ -4,15 +4,26 @@
 @using MudBlazor
 
 <div class="hstack gap-2 change-tg-notify">
-    <MudSelect @bind-Value="SelectedChatSet" T="ChatTelegramModelDB" Label="@Title" AnchorOrigin="Origin.BottomCenter" HelperText="@Hint">
-        @foreach (ChatTelegramModelDB ct in ChatsTelegram)
-        {
-            <MudSelectItem Value="@ct">@ct.ToString()</MudSelectItem>
-        }
-    </MudSelect>
-    @if (IsEdited)
+    @if (IsBusyProgress)
     {
-        <i @onclick="SaveConfig" title="Сохранить изменения" class="bi bi-floppy text-success"></i>
-        <i @onclick="() => SelectedChatSet = ChatsTelegram.First(x => x.Id == initValue)" title="Отмена изменения" class="bi bi-x-square text-warning"></i>
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <MudSelect @bind-Value="SelectedChatSet" T="ChatTelegramModelDB" Label="@Title" AnchorOrigin="Origin.BottomCenter" HelperText="@Hint">
+            @foreach (ChatTelegramModelDB ct in ChatsTelegram)
+            {
+                <MudSelectItem Value="@ct">@ct.ToString()</MudSelectItem>
+            }
+        </MudSelect>
+        if (IsEdited)
+        {
+            <i @onclick="SaveConfig" title="Сохранить изменения" class="bi bi-floppy text-success"></i>
+            <i @onclick="() => SelectedChatSet = ChatsTelegram.First(x => x.Id == initValue)" title="Отмена изменения" class="bi bi-x-square text-warning"></i>
+        }
     }
 </div>

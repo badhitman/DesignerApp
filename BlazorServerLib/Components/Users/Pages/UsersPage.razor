@@ -1,4 +1,6 @@
-﻿@page "/Users/Profiles"
+﻿@page "/Users"
+@page "/Users/Profiles"
+
 @attribute [Authorize(Roles = GlobalStaticConstants.Roles.Admin)]
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
