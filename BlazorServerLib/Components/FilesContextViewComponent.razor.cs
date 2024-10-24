@@ -183,7 +183,6 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
             Payload = new()
             {
                 SearchQuery = searchString,
-                IncludeExternal = false,
                 ApplicationsNames = ApplicationsNames,
                 IdentityUsersIds = [],
                 PropertyName = ManageMode ? "" : PropertyName,

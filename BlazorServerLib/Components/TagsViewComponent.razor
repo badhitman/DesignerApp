@@ -10,7 +10,7 @@
                     <MudAutocomplete @ref="maRef" @bind-Value="TagAdding" SearchFunc="Search" Dense="true" Clearable="true" />
                 </MudItem>
                 <MudItem xs="12" sm="6" md="9">
-                    <MudChipSet T="ArticleTagModelDB"
+                    @* <MudChipSet T="ArticleTagModelDB"
                                 CheckMark="false"
                                 AllClosable="@true"                                
                                 OnClose="@OnChipClosed">
@@ -20,7 +20,7 @@
                             ArticleTagModelDB _el = Article.Tags![_ix];
                             <MudChip Variant="@Variant.Text" Value="@_el" Text="@_el.Name" />
                         }
-                    </MudChipSet>
+                    </MudChipSet> *@
                 </MudItem>
             </MudGrid>
         </MudStack>

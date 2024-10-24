@@ -15,9 +15,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using MongoDB.Driver;
 
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-logger.Warn("init main");
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+IWebHostEnvironment env = builder.Environment;
+logger.Warn($"init main: {env.EnvironmentName}");
+
 builder
     .Logging
     .ClearProviders()
@@ -27,24 +30,33 @@ string curr_dir = Directory.GetCurrentDirectory();
 builder.Configuration.SetBasePath(curr_dir);
 
 builder.Configuration.SetBasePath(curr_dir);
-if (Path.Exists(Path.Combine(curr_dir, "appsettings.json")))
+string path_load = Path.Combine(curr_dir, "appsettings.json");
+if (Path.Exists(path_load))
+{
+    logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
     builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+}
 
-#if DEBUG
-if (Path.Exists(Path.Combine(curr_dir, "appsettings.Development.json")))
-    builder.Configuration.AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
-#else
-    if (Path.Exists(Path.Combine(curr_dir, "appsettings.Production.json")))
-        builder.Configuration.AddJsonFile($"appsettings.Production.json", optional: true, reloadOnChange: true);
-#endif
+path_load = Path.Combine(curr_dir, $"appsettings.{env.EnvironmentName}.json");
+if (Path.Exists(path_load))
+{
+    logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
+    builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+}
 
 // Secrets
 string secretPath = Path.Combine("..", "secrets");
 for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
     secretPath = Path.Combine("..", secretPath);
 if (Directory.Exists(secretPath))
+{
     foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
-        builder.Configuration.AddJsonFile(Path.GetFullPath(secret), optional: true, reloadOnChange: true);
+    {
+        path_load = Path.GetFullPath(secret);
+        logger.Warn($"!secret load: {path_load}");
+        builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+    }
+}
 else
     logger.Warn("Секреты не найдены");
 
@@ -54,6 +66,7 @@ builder.Services.AddTransient<UnhandledExceptionAttribute>();
 builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
 .Configure<MongoConfigModel>(builder.Configuration.GetSection("MongoDB"))
+.Configure<RestApiConfigBaseModel>(builder.Configuration.GetSection("ApiAccess"))
 ;
 builder.Services.AddOptions();
 builder.Services.AddMemoryCache();

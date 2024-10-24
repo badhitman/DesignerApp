@@ -16,7 +16,6 @@
         <MudTh>Name</MudTh>
         <MudTh>Author</MudTh>
         <MudTh>Rubrics</MudTh>
-        <MudTh>Tags</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Updated">
@@ -29,7 +28,6 @@
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Author">@(usersDump.FirstOrDefault(x => x.UserId == context.AuthorIdentityId)?.UserName ?? context.AuthorIdentityId)</MudTd>
         <MudTd DataLabel="Rubrics">@context.RubricsJoins?.Count</MudTd>
-        <MudTd DataLabel="Tags">@context.Tags?.Count</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>

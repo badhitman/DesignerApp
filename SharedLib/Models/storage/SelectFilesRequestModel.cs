@@ -28,10 +28,4 @@ public class SelectFilesRequestModel : SelectRequestBaseModel
     /// Идентификатор [PK] владельца объекта
     /// </summary>
     public int? OwnerPrimaryKey { get; set; }
-
-
-    /// <summary>
-    /// Загрузить данные по тэгам
-    /// </summary>
-    public bool IncludeExternal { get; set; }
 }

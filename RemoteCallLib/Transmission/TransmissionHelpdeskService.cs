@@ -19,14 +19,6 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<bool?>(GlobalStaticConstants.TransmissionQueues.RubricsForArticleSetReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryModel[]?>> TagArticleSet(TagArticleSetModel req)
-        => await rabbitClient.MqRemoteCall<EntryModel[]?>(GlobalStaticConstants.TransmissionQueues.TagArticleSetReceive, req);
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<string[]?>> TagsOfArticlesSelect(string? req)
-        => await rabbitClient.MqRemoteCall<string[]?>(GlobalStaticConstants.TransmissionQueues.TagsOfArticlesSelectReceive, req);
-
-    /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<ArticleModelDB>>> ArticlesSelect(TPaginationRequestModel<SelectArticlesRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<ArticleModelDB>>(GlobalStaticConstants.TransmissionQueues.ArticlesSelectHelpdeskReceive, req);
 

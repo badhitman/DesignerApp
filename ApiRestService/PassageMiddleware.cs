@@ -9,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using System.Security.Claims;
 using System.Security.Principal;
 using SharedLib;
+using Newtonsoft.Json;
 
 namespace ApiRestService;
 
@@ -23,6 +24,7 @@ public class PassageMiddleware(RequestDelegate next)
     private readonly RequestDelegate _next = next;
     HttpContext? _http_context;
     RestApiConfigBaseModel? _conf;
+    ILogger<PassageMiddleware>? _loggerRepo;
 
     /// <summary>
     /// Конвейер
@@ -30,6 +32,7 @@ public class PassageMiddleware(RequestDelegate next)
     public async Task Invoke(HttpContext http_context, ILogger<PassageMiddleware> _logger, IOptions<RestApiConfigBaseModel> conf)
     {
         _http_context = http_context;
+        _loggerRepo = _logger;
         _conf = conf.Value;
         try
         {
@@ -70,7 +73,7 @@ public class PassageMiddleware(RequestDelegate next)
         string[] current_session_roles = _http_context.User.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToArray();
         string[] current_permission_roles = perm.Roles?.Any() == true
             ? perm.Roles.Select(x => x.ToString()).ToArray()
-            : Array.Empty<string>();
+            : [];
 
         string? curr_sid = _http_context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Sid)?.Value;
 
@@ -85,6 +88,10 @@ public class PassageMiddleware(RequestDelegate next)
     /// <inheritdoc/>
     public string ReadTokenFromRequest()
     {
+#if DEBUG
+        _loggerRepo?.LogDebug(JsonConvert.SerializeObject(_http_context?.Request.Headers));
+#endif
+
         if (_http_context is null)
             return "";
 

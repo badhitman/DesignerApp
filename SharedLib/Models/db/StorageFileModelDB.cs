@@ -30,9 +30,4 @@ public class StorageFileModelDB : StorageFileMiddleModel
     /// Referrer (main/init)
     /// </summary>
     public string? ReferrerMain { get; set; }
-
-    /// <summary>
-    /// Tags
-    /// </summary>
-    public List<FileTagModelDB>? Tags { get; set; }
 }

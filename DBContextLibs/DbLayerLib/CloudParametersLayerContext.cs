@@ -44,7 +44,7 @@ public partial class CloudParametersLayerContext : DbContext
     public DbSet<StorageFileModelDB> CloudFiles { get; set; }
 
     /// <summary>
-    /// Тэги файлов
+    /// Тэги
     /// </summary>
-    public DbSet<FileTagModelDB> FilesTags { get; set; }
+    public DbSet<TagModelDB> CloudTags { get; set; }
 }

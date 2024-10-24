@@ -52,9 +52,6 @@ public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbConte
           ? q.OrderBy(x => x.CreatedAt).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
           : q.OrderByDescending(x => x.CreatedAt).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
 
-        var inc = oq
-            .Include(x => x.Tags)
-            ;
         int trc = await q.CountAsync();
         return new()
         {
@@ -65,7 +62,7 @@ public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbConte
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = trc,
-                Response = req.Payload.IncludeExternal ? await inc.ToListAsync() : await oq.ToListAsync()
+                Response = await oq.ToListAsync()
             }
         };
     }

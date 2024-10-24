@@ -15,16 +15,6 @@ public interface IArticlesService
     public Task<bool> UpdateRubricsForArticle(ArticleRubricsSetModel req);
 
     /// <summary>
-    /// TagArticleSet
-    /// </summary>
-    public Task<EntryModel[]> TagArticleSet(TagArticleSetModel req);
-
-    /// <summary>
-    /// TagsOfArticlesSelect
-    /// </summary>
-    public Task<string[]> TagsOfArticlesSelect(string? req);
-
-    /// <summary>
     /// Создать/обновить статью
     /// </summary>
     public Task<TResponseModel<int>> ArticleCreateOrUpdate(ArticleModelDB art);

@@ -100,11 +100,6 @@ public partial class HelpdeskLayerContext : DbContext
     public DbSet<ArticleModelDB> Articles { get; set; }
 
     /// <summary>
-    /// Articles Tags
-    /// </summary>
-    public DbSet<ArticleTagModelDB> ArticlesTags { get; set; }
-
-    /// <summary>
     /// RubricsArticles
     /// </summary>
     public DbSet<RubricArticleJoinModelDB> RubricsArticlesJoins { get; set; }

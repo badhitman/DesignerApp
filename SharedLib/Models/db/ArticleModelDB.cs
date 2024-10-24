@@ -51,28 +51,4 @@ public class ArticleModelDB : EntryDescriptionModel
     /// AuthorIdentityId
     /// </summary>
     public required string AuthorIdentityId { get; set; }
-
-    /// <summary>
-    /// Tags
-    /// </summary>
-    public List<ArticleTagModelDB>? Tags { get; set; }
-
-    /// <summary>
-    /// Update
-    /// </summary>
-    public void Update(EntryModel[] tags)
-    {
-        if (Tags is null)
-            Tags = tags.Select(x => new ArticleTagModelDB() { Id = x.Id, Name = x.Name, NormalizedNameUpper = x.Name.ToUpper(), OwnerArticleId = Id }).ToList();
-        else
-        {
-            EntryModel[] _items = tags
-                .Where(x => !Tags.Any(y => y.Id == x.Id))
-                .ToArray();
-            if (_items.Length != 0)
-                Tags.AddRange(_items.Select(x => new ArticleTagModelDB() { Id = x.Id, Name = x.Name, NormalizedNameUpper = x.Name.ToUpper(), OwnerArticleId = Id }));
-
-            Tags.RemoveAll(x => !tags.Any(y => y.Id == x.Id));
-        }
-    }
 }

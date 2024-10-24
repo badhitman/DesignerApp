@@ -84,7 +84,6 @@ builder.ConfigureServices((context, services) =>
     // 
     services.RegisterMqListener<RubricsListReceive, RubricsListRequestModel?, RubricBaseModel[]?>()
     .RegisterMqListener<RubricCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>()
-    .RegisterMqListener<TagsOfArticlesSelectReceive, string?, string[]?>()
     .RegisterMqListener<IssuesSelectReceive, TPaginationRequestModel<SelectIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>()
     .RegisterMqListener<ArticlesSelectReceive, TPaginationRequestModel<SelectArticlesRequestModel>?, TPaginationResponseModel<ArticleModelDB>?>()
     .RegisterMqListener<IssueCreateOrUpdateReceive, TAuthRequestModel<IssueUpdateRequestModel>?, int>()
@@ -92,7 +91,6 @@ builder.ConfigureServices((context, services) =>
     .RegisterMqListener<MessageUpdateOrCreateReceive, TAuthRequestModel<IssueMessageHelpdeskBaseModel>?, int?>()
     .RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>()
     .RegisterMqListener<UpdateRubricsForArticleReceive, ArticleRubricsSetModel?, bool?>()
-    .RegisterMqListener<TagArticleSetReceive, TagArticleSetModel?, EntryModel[]?>()
     .RegisterMqListener<ArticlesReadReceive, int[]?, ArticleModelDB[]?>()
     .RegisterMqListener<ArticleCreateOrUpdateReceive, ArticleModelDB?, int?>()
     .RegisterMqListener<IssuesReadReceive, TAuthRequestModel<IssuesReadRequestModel>?, IssueHelpdeskModelDB[]?>()

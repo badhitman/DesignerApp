@@ -61,7 +61,6 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         return await context.Articles
             .Where(x => req.Any(y => y == x.Id))
-            .Include(x => x.Tags)
             .Include(x => x.RubricsJoins!)
             .ThenInclude(x => x.Rubric)
             .ToArrayAsync();
@@ -89,9 +88,7 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
                 from rj_item in outer_rj.DefaultIfEmpty()
                 join rubric_element in context.Rubrics on rj_item.RubricId equals rubric_element.Id into outer_rubric
                 from rubric_item in outer_rubric.DefaultIfEmpty()
-                join tag_element in context.ArticlesTags on article_element.Id equals tag_element.Id into outer_tag
-                from tag_item in outer_tag.DefaultIfEmpty()
-                where article_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || tag_item.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || rubric_item.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)
+                where article_element.NormalizedNameUpper!.Contains(req.Payload.SearchQuery) || rubric_item.NormalizedNameUpper!.Contains(req.Payload.SearchQuery)
                 select article_element;
         }
 
@@ -101,7 +98,7 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
 
         var inc = oq
             .Include(x => x.RubricsJoins)
-            .Include(x => x.Tags);
+            ;
 
         return new()
         {
@@ -112,61 +109,6 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
             TotalRowsCount = await q.CountAsync(),
             Response = [.. req.Payload.IncludeExternal ? await inc.ToListAsync() : await oq.ToListAsync()]
         };
-    }
-
-    /// <inheritdoc/>
-    public async Task<EntryModel[]> TagArticleSet(TagArticleSetModel req)
-    {
-        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-        IQueryable<ArticleTagModelDB> q = context
-            .ArticlesTags
-            .Where(x => x.OwnerArticleId == req.Id);
-        req.Name = req.Name.Trim();
-
-        ArticleTagModelDB? currentTag = await q.FirstOrDefaultAsync(x => x.NormalizedNameUpper == req.Name.ToUpper());
-
-        if (req.Set)
-        {
-            if (currentTag is null)
-            {
-                await context.AddAsync(new ArticleTagModelDB()
-                {
-                    Name = req.Name,
-                    NormalizedNameUpper = req.Name.ToUpper(),
-                    OwnerArticleId = req.Id,
-                });
-                await context.SaveChangesAsync();
-            }
-            else if (currentTag.Name != req.Name)
-                await q.Where(x => x.Id == currentTag.Id).ExecuteUpdateAsync(set => set.SetProperty(x => x.Name, req.Name));
-        }
-        else if (currentTag is not null)
-            await q.Where(x => x.Id == currentTag.Id).ExecuteDeleteAsync();
-
-        return await q
-            .Select(x => new EntryModel() { Name = x.Name, Id = x.Id })
-            .ToArrayAsync();
-    }
-
-    /// <inheritdoc/>
-    public async Task<string[]> TagsOfArticlesSelect(string? req)
-    {
-        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-
-        IQueryable<ArticleTagModelDB> q = context
-            .ArticlesTags
-            .AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(req))
-        {
-            req = req.ToUpper();
-            q = q.Where(x => x.NormalizedNameUpper.Contains(req));
-        }
-
-        return await q
-            .GroupBy(x => x.NormalizedNameUpper)
-            .Select(x => x.First().Name)
-            .ToArrayAsync();
     }
 
     /// <inheritdoc/>

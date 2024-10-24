@@ -7,20 +7,16 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// FileTagModelDB
+/// TagModelDB
 /// </summary>
 [Index(nameof(NormalizedNameUpper))]
-[Index(nameof(NormalizedNameUpper), nameof(OwnerFileId), IsUnique = true)]
-public class FileTagModelDB : EntryModel
+[Index(nameof(NormalizedNameUpper), nameof(ContextName), IsUnique = true)]
+public class TagModelDB : EntryModel
 {
     /// <summary>
-    /// OwnerFile
+    /// ContextName
     /// </summary>
-    public StorageFileModelDB? OwnerFile { get; set; }
-    /// <summary>
-    /// OwnerFile (FK)
-    /// </summary>
-    public int OwnerFileId { get; set; }
+    public required string ContextName { get; set; }
 
     /// <summary>
     /// NormalizedNameUpper

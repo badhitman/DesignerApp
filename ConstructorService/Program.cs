@@ -15,8 +15,10 @@ using ConstructorService;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-logger.Warn("init main");
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+
+IHostEnvironment env = builder.Environment;
+logger.Warn($"init main: {env.EnvironmentName}");
 
 builder
     .Logging
