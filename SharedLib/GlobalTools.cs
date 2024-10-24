@@ -247,7 +247,7 @@ public static partial class GlobalTools
     /// </summary>
     public static bool IsImageFile(string file_tag)
     {
-        return file_tag.EndsWith("GIF", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("JPEG", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("PNG", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("BMP", StringComparison.OrdinalIgnoreCase);
+        return file_tag.EndsWith("GIF", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("JPG", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("JPEG", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("PNG", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("BMP", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

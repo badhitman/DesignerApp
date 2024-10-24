@@ -50,6 +50,7 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseAuthModel
     protected override async Task OnInitializedAsync()
     {
         await SetBusy();
+        await ReadCurrentUser();
         TResponseModel<OfferGoodModelDB[]> res = await CommerceRepo.OffersRead([OfferId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

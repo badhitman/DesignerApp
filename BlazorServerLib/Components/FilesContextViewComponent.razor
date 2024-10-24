@@ -60,11 +60,16 @@
                 </div>
                 <div class="modal-body">
                     <p>@_selectedFile.FileName - @GlobalTools.SizeDataAsString(_selectedFile.FileLength)</p>
+                    @if (GlobalTools.IsImageFile(_selectedFile.FileName))
+                    {
+                        <img style="max-height:500px;max-width:300px;" src="@($"/cloud-fs/read/{_selectedFile.Id}/{_selectedFile.FileName}")" class="rounded mx-auto d-block" alt="@_selectedFile.FileName">
+                    }
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <button @onclick="DownloadFile" type="button" class="btn btn-outline-primary">Скачать</button>
-                        <button @onclick="CloseFileManager" type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                        <button title="Скопировать ссылку в буфер обмена" @onclick="ClipboardCopyHandle" type="button" class="btn btn-outline-primary">Ссылка</button>
+                        <button @onclick="CloseFileManager" type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Закрыть</button>
                     </div>
                 </div>
             </div>

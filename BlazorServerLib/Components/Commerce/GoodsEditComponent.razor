@@ -27,6 +27,10 @@ else
                 @if (CurrentUserSession.IsAdmin)
                 {
                     <button @onclick="SaveGoods" disabled="@(!CanSave || !CurrentUserSession.IsAdmin)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" id="button-addon2">Сохранить</button>
+                    @if (CanSave)
+                    {
+                        <button @onclick="() => editGoods = GlobalTools.CreateDeepCopy(CurrentGoods)" class="btn btn-outline-light" type="button" id="button-addon2">Отмена</button>
+                    }
                 }
             </div>
         </div>

@@ -82,8 +82,8 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
     /// </summary>
     public async Task ReloadServerData()
     {
-        if(TableRef is not null)
-           await TableRef.ReloadServerData();
+        if (TableRef is not null)
+            await TableRef.ReloadServerData();
     }
 
     StorageFileModelDB? _selectedFile;
@@ -148,6 +148,16 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
 
         if (TableRef is not null)
             await TableRef.ReloadServerData();
+    }
+
+    /// <inheritdoc/>
+    protected async Task ClipboardCopyHandle()
+    {
+        if (_selectedFile is null)
+            return;
+
+        await JsRuntimeRepo.InvokeVoidAsync("clipboardCopy.copyText", $"{NavRepo.BaseUri}cloud-fs/read/{_selectedFile.Id}/{_selectedFile.FileName}");
+        SnackbarRepo.Add($"Ссылка {_selectedFile.FileName} скопирована в буфер обмена", Severity.Info, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
     }
 
     async Task DownloadFile()
