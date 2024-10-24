@@ -10,6 +10,8 @@ using RemoteCallLib;
 using MongoDB.Bson;
 using SharedLib;
 using DbcLib;
+using System.Drawing;
+using ImageMagick;
 
 namespace Transmission.Receives.storage;
 
@@ -56,6 +58,27 @@ public class SaveFileReceive(
             ReferrerMain = req.Referrer,
             FileLength = req.Payload.Length,
         };
+
+
+        try
+        {
+            if (GlobalTools.IsImageFile(_file_name))
+            {
+                using MagickImage image = new(req.Payload);
+                res.Response.Tags ??= [];
+                string _h = $"Height:{image.Height}", _w = $"Width:{image.Width}";
+                res.Response.Tags.Add(new FileTagModelDB() { Name = nameof(GlobalTools.IsImageFile), NormalizedNameUpper = nameof(GlobalTools.IsImageFile).ToUpper(), OwnerFile = res.Response });
+                res.Response.Tags.Add(new FileTagModelDB() { Name = _h, NormalizedNameUpper = _h.ToUpper(), OwnerFile = res.Response });
+                res.Response.Tags.Add(new FileTagModelDB() { Name = _w, NormalizedNameUpper = _w.ToUpper(), OwnerFile = res.Response });
+            }
+        }
+        catch(Exception ex) 
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        
+
         await context.AddAsync(res.Response);
         await context.SaveChangesAsync();
 

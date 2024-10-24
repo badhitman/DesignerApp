@@ -247,7 +247,17 @@ public static partial class GlobalTools
     /// </summary>
     public static bool IsImageFile(string file_tag)
     {
-        return file_tag.EndsWith("GIF", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("JPG", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("JPEG", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("PNG", StringComparison.OrdinalIgnoreCase) || file_tag.EndsWith("BMP", StringComparison.OrdinalIgnoreCase);
+        return file_tag
+            .EndsWith("GIF", StringComparison.OrdinalIgnoreCase) ||
+            file_tag.EndsWith("JPG", StringComparison.OrdinalIgnoreCase) ||
+            file_tag.EndsWith("JPEG", StringComparison.OrdinalIgnoreCase) ||
+            file_tag.EndsWith("PNG", StringComparison.OrdinalIgnoreCase) ||
+            file_tag.EndsWith("BMP", StringComparison.OrdinalIgnoreCase) ||
+            file_tag.EndsWith("BMP2", StringComparison.OrdinalIgnoreCase) ||
+            file_tag.EndsWith("BMP3", StringComparison.OrdinalIgnoreCase) ||
+            file_tag.EndsWith("ICO", StringComparison.OrdinalIgnoreCase) ||
+            file_tag.EndsWith("HEIC", StringComparison.OrdinalIgnoreCase) ||
+            file_tag.EndsWith("JBIG", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -406,6 +416,6 @@ public record struct ValidateReportModel(bool IsValid, List<ValidationResult> Va
     }
 
     /// <inheritdoc/>
-    public static implicit operator ValidateReportModel((bool IsValid, List<ValidationResult> ValidationResults) value) 
+    public static implicit operator ValidateReportModel((bool IsValid, List<ValidationResult> ValidationResults) value)
         => new(value.IsValid, value.ValidationResults);
 }

@@ -69,7 +69,7 @@ public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService s
             Name = NameStorage,
             AuthorUserIdentity = un,
             FileName = file_name,
-            ContentType = file.ContentType
+            ContentType = file.ContentType,
         };
 
         TResponseModel<StorageFileModelDB> rest = await storeRepo.SaveFile(req);
