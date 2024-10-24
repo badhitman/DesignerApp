@@ -9,32 +9,59 @@
         }
         else
         {
-            <MudStack Row="true" Class="mb-3">
-                <MudTextField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Name" Label="Название" Variant="Variant.Outlined" Immediate ShrinkLabel></MudTextField>
-                <MudSelect Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.OfferUnit" Label="Единица измерения" Placeholder="Выбор ед.изм." Variant="Variant.Outlined">
-                    @foreach (UnitsOfMeasurementEnum u in Enum.GetValues(typeof(UnitsOfMeasurementEnum)).Cast<UnitsOfMeasurementEnum>())
-                    {
-                        <MudSelectItem Value="u">@u.DescriptionInfo()</MudSelectItem>
-                    }
-                </MudSelect>
-                <MudNumericField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Multiplicity" Label="Кратность" Variant="Variant.Outlined" Immediate />
-                <MudNumericField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Price" Label="Цена" Format="N2" Variant="Variant.Outlined" Immediate />
-                <MudFab Disabled="(IsBusyProgress || !CanSave || !CurrentUserSession!.IsAdmin)" title="Сохранить изменения" OnClick="SaveOffer" StartIcon="@Icons.Material.Filled.Save" Color="@(CanSave ? Color.Info : Color.Default)" Size="Size.Small" Class="align-self-center" />
-                @if (!IsBusyProgress || CanSave)
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                <MudTabPanel Text="Основное">
+                    <MudStack Row="true" Class="mb-3">
+                        <MudTextField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Name" Label="Название" Variant="Variant.Outlined" Immediate ShrinkLabel></MudTextField>
+                        <MudSelect Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.OfferUnit" Label="Единица измерения" Placeholder="Выбор ед.изм." Variant="Variant.Outlined">
+                            @foreach (UnitsOfMeasurementEnum u in Enum.GetValues(typeof(UnitsOfMeasurementEnum)).Cast<UnitsOfMeasurementEnum>())
+                            {
+                                <MudSelectItem Value="u">@u.DescriptionInfo()</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudNumericField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Multiplicity" Label="Кратность" Variant="Variant.Outlined" Immediate />
+                        <MudNumericField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Price" Label="Цена" Format="N2" Variant="Variant.Outlined" Immediate />
+                        <MudFab Disabled="(IsBusyProgress || !CanSave || !CurrentUserSession!.IsAdmin)" title="Сохранить изменения" OnClick="SaveOffer" StartIcon="@Icons.Material.Filled.Save" Color="@(CanSave ? Color.Info : Color.Default)" Size="Size.Small" Class="align-self-center" />
+                        @if (!IsBusyProgress || CanSave)
+                        {
+                            <MudFab OnClick="() => editOffer = GlobalTools.CreateDeepCopy(CurrentOffer)!" title="Отменить изменение" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Surface" Size="Size.Small" Class="align-self-center" />
+                        }
+                    </MudStack>
+                    <MudSwitch Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.IsDisabled" Label="Отключение" Color="Color.Secondary" />
+                    <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
+                        <Authorized>
+                            <div class="card mt-3">
+                                <div class="card-body">
+                                    <TinyMCE.Blazor.Editor @bind-Value="editOffer.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(OfferId < 1)" />
+                                </div>
+                            </div>
+                            <div class="card mt-3">
+                                <div class="card-body">
+                                    <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.OFFER_CONTROLLER_NAME])"
+                                                               PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
+                                                               PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
+                                                               OwnerPrimaryKey="OfferId"
+                                                               @ref="filesViewRef"
+                                                               ManageMode="true" />
+                                </div>
+                            </div>
+                        </Authorized>
+                        <NotAuthorized>
+                            @((MarkupString)(editOffer.Description ?? ""))
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </MudTabPanel>
+                @if (CurrentUserSession!.IsAdmin)
                 {
-                    <MudFab OnClick="() => editOffer = GlobalTools.CreateDeepCopy(CurrentOffer)!" title="Отменить изменение" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Surface" Size="Size.Small" Class="align-self-center" />
+                    <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
+                        <Authorized>
+                            <MudTabPanel Text="Заказы">
+                                <OrdersJournalComponent OfferFilter="editOffer.Id" />
+                            </MudTabPanel>
+                        </Authorized>
+                    </AuthorizeView>
                 }
-            </MudStack>
-            <MudSwitch Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.IsDisabled" Label="Отключение" Color="Color.Secondary" />
-        }
-    </div>
-    <div class="card-body">
-        @if (!IsBusyProgress)
-        {
-            if (CurrentUserSession!.IsAdmin)
-            {
-                <OrdersJournalComponent OfferFilter="editOffer.Id" />
-            }
+            </MudTabs>
         }
     </div>
 </div>

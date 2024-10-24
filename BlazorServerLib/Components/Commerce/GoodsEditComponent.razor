@@ -36,24 +36,28 @@ else
         </div>
         <div class="card-body">
             <OffersOfGoodsComponent CurrentGoods="editGoods" />
-            @if (CurrentUserSession.IsAdmin)
-            {
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <TinyMCE.Blazor.Editor @bind-Value="editGoods.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(GoodsId < 1)" />
+            <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
+                <Authorized>
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <TinyMCE.Blazor.Editor @bind-Value="editGoods.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(GoodsId < 1)" />
+                        </div>
                     </div>
-                </div>
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME])"
-                                                   PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
-                                                   PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
-                                                   OwnerPrimaryKey="GoodsId"
-                                                   @ref="filesViewRef"
-                                                   ManageMode="true" />
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME])"
+                                                       PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
+                                                       PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
+                                                       OwnerPrimaryKey="GoodsId"
+                                                       @ref="filesViewRef"
+                                                       ManageMode="true" />
+                        </div>
                     </div>
-                </div>
-            }
+                </Authorized>
+                <NotAuthorized>
+                    @((MarkupString)(editGoods.Description ?? ""))
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
     </div>
 }
