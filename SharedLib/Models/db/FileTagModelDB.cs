@@ -10,6 +10,7 @@ namespace SharedLib;
 /// FileTagModelDB
 /// </summary>
 [Index(nameof(NormalizedNameUpper))]
+[Index(nameof(NormalizedNameUpper), nameof(OwnerFileId), IsUnique = true)]
 public class FileTagModelDB : EntryModel
 {
     /// <summary>
