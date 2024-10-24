@@ -8,7 +8,6 @@ using Microsoft.JSInterop;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using Newtonsoft.Json.Linq;
 
 namespace BlazorWebLib.Components;
 
@@ -56,6 +55,12 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
     /// </summary>
     [Parameter]
     public bool ManageMode { get; set; }
+
+    /// <summary>
+    /// Title
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = "Прикреплённые файлы";
 
 
     bool CanAddingFile => OwnerPrimaryKey.HasValue && OwnerPrimaryKey.Value > 0 &&
@@ -152,9 +157,6 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
         }
     }
 
-    /// <summary>
-    /// Here we simulate getting the paged, filtered and ordered data from the server
-    /// </summary>
     private async Task<TableData<StorageFileModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         IsBusyProgress = true;

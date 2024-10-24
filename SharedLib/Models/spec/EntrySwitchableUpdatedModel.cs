@@ -21,4 +21,9 @@ public class EntrySwitchableUpdatedModel : EntrySwitchableModel
     /// Дата создания
     /// </summary>
     public DateTime CreatedAtUTC { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Описание/примечание для объекта
+    /// </summary>
+    public string? Description { get; set; }
 }

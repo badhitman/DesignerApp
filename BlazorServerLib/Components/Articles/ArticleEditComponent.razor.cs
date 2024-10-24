@@ -66,6 +66,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
     {
         await SetBusy();
         TResponseModel<bool?> res = await ArticlesRepo.UpdateRubricsForArticle(new() { ArticleId = ArticleId, RubricsIds = req.Select(x => x!.Id).ToArray() });
+        await LoadArticleData();
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
     }

@@ -4,7 +4,7 @@
 
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="TableRef" Loading="IsBusyProgress">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Прикреплённые файлы</MudText>
+        <MudText Typo="Typo.h6">@Title</MudText>
         <MudSpacer />
         <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Поиск по имени файла" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
