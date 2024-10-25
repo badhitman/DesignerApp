@@ -12,17 +12,10 @@ namespace BlazorWebLib.Components;
 /// <summary>
 /// TagsViewComponent
 /// </summary>
-public partial class TagsViewComponent : BlazorBusyComponentBaseModel
+public partial class TagsViewComponent : MetaPropertyBaseComponent
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService artRepo { get; set; } = default!;
-
-
-    /// <summary>
-    /// Article
-    /// </summary>
-    [Parameter, EditorRequired]
-    public required ArticleModelDB Article { get; set; }
+    IHelpdeskRemoteTransmissionService ArtRepo { get; set; } = default!;
 
 
     MudAutocomplete<string?>? maRef;
@@ -62,7 +55,7 @@ public partial class TagsViewComponent : BlazorBusyComponentBaseModel
         if (!string.IsNullOrWhiteSpace(chip.Value?.Name))
         {
             await SetBusy();
-            
+
             //TResponseModel<EntryModel[]?> res = await artRepo.TagArticleSet(new() { Name = chip.Value.Name, Id = Article.Id, Set = false });
             //IsBusyProgress = false;
             //if (!res.Success())
@@ -74,8 +67,8 @@ public partial class TagsViewComponent : BlazorBusyComponentBaseModel
 
     private async Task<IEnumerable<string?>> Search(string value, CancellationToken token)
     {
-        await SetBusy();
-        
+        await SetBusy(token: token);
+
         //TResponseModel<string[]?> res = await artRepo.TagsOfArticlesSelect(value);
         //IsBusyProgress = false;
         //if (!res.Success())

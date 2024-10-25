@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components;
 /// <summary>
 /// FilesContextViewComponent
 /// </summary>
-public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthModel
+public partial class FilesContextViewComponent : MetaPropertyBaseComponent
 {
     [Inject]
     NavigationManager NavRepo { get; set; } = default!;
@@ -26,41 +26,13 @@ public partial class FilesContextViewComponent : BlazorBusyComponentBaseAuthMode
     ISerializeStorageRemoteTransmissionService FilesRepo { get; set; } = default!;
 
 
-    /// <summary>
-    /// Приложения
-    /// </summary>
-    [Parameter, EditorRequired]
-    public required string[] ApplicationsNames { get; set; }
-
-    /// <summary>
-    /// Имя
-    /// </summary>
-    [Parameter, EditorRequired]
-    public required string PropertyName { get; set; }
-
-    /// <summary>
-    /// Префикс
-    /// </summary>
-    [Parameter]
-    public string? PrefixPropertyName { get; set; }
-
-    /// <summary>
-    /// Идентификатор [PK] владельца объекта
-    /// </summary>
-    [Parameter]
-    public int? OwnerPrimaryKey { get; set; }
+    
 
     /// <summary>
     /// ManageMode
     /// </summary>
     [Parameter]
     public bool ManageMode { get; set; }
-
-    /// <summary>
-    /// Title
-    /// </summary>
-    [Parameter]
-    public string Title { get; set; } = "Прикреплённые файлы";
 
 
     bool CanAddingFile => OwnerPrimaryKey.HasValue && OwnerPrimaryKey.Value > 0 &&

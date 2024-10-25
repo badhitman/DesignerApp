@@ -4,7 +4,7 @@ Update-Database -Context MainDbAppContext -Project DbPostgreLib -StartupProject 
 ```
 
 ```
-Add-Migration StorageContext007 -Context StorageContext -Project DbPostgreLib -StartupProject StorageService
+Add-Migration StorageContext008 -Context StorageContext -Project DbPostgreLib -StartupProject StorageService
 Update-Database -Context StorageContext -Project DbPostgreLib -StartupProject StorageService
 ```
 
@@ -14,7 +14,7 @@ Update-Database -Context HelpdeskContext -Project DbPostgreLib -StartupProject H
 ```
 
 ```
-Add-Migration TelegramBotContext002 -Context TelegramBotContext -Project DbPostgreLib -StartupProject Telegram.Bot.Polling
+Add-Migration TelegramBotContext003 -Context TelegramBotContext -Project DbPostgreLib -StartupProject Telegram.Bot.Polling
 Update-Database -Context TelegramBotContext -Project DbPostgreLib -StartupProject Telegram.Bot.Polling
 ```
 

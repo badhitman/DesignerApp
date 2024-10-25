@@ -7,10 +7,10 @@ namespace SharedLib;
 /// <summary>
 /// TagArticleSetModel
 /// </summary>
-public class TagArticleSetModel : EntryModel
+public class TagSetModel : EntryModel
 {
     /// <summary>
     /// Set
     /// </summary>
-    public bool Set {  get; set; }
+    public bool Set {  get; set; }    
 }

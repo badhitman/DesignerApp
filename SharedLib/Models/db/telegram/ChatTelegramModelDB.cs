@@ -11,7 +11,8 @@ namespace SharedLib;
 /// <summary>
 /// ChatTelegramModelDB
 /// </summary>
-[Index(nameof(ChatTelegramId), IsUnique = true)]
+[Index(nameof(ChatTelegramId), IsUnique = true), Index(nameof(NormalizedFirstNameUpper)), Index(nameof(LastUpdateUtc))]
+[Index(nameof(NormalizedLastNameUpper)), Index(nameof(NormalizedTitleUpper)), Index(nameof(NormalizedUsernameUpper))]
 [Index(nameof(Type)), Index(nameof(Title)), Index(nameof(Username)), Index(nameof(FirstName)), Index(nameof(LastName)), Index(nameof(IsForum))]
 public class ChatTelegramModelDB
 {

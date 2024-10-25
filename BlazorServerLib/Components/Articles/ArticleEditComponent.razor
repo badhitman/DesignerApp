@@ -30,8 +30,8 @@
             else
             {
                 <TinyMCE.Blazor.Editor @bind-Value="editArticle.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(ArticleId < 1)" />
-                @* <hr />
-                <TagsForArticlesComponent Article="orignArticle" /> *@
+                <hr />
+                <TagsViewComponent  />
             }
 
             <div class="d-grid gap-2 mt-3">

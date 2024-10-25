@@ -10,9 +10,14 @@ namespace SharedLib;
 /// TagModelDB
 /// </summary>
 [Index(nameof(NormalizedNameUpper))]
-[Index(nameof(NormalizedNameUpper), nameof(ContextName), IsUnique = true)]
+[Index(nameof(NormalizedNameUpper), nameof(ContextName), nameof(OwnerPrimaryKey), IsUnique = true)]
 public class TagModelDB : EntryModel
 {
+    /// <summary>
+    /// OwnerPrimaryKey
+    /// </summary>
+    public required int OwnerPrimaryKey { get; set; }
+
     /// <summary>
     /// ContextName
     /// </summary>
