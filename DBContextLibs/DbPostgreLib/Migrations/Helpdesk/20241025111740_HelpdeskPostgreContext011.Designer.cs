@@ -3,6 +3,7 @@ using System;
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.Helpdesk
 {
     [DbContext(typeof(HelpdeskContext))]
-    partial class HelpdeskContextModelSnapshot : ModelSnapshot
+    [Migration("20241025111740_HelpdeskPostgreContext011")]
+    partial class HelpdeskPostgreContext011
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,17 +220,11 @@ namespace DbPostgreLib.Migrations.Helpdesk
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorIdentityUserId");
-
                     b.HasIndex("CreatedAt");
 
                     b.HasIndex("LastUpdateAt");
 
                     b.HasIndex("Name");
-
-                    b.HasIndex("NormalizedDescriptionUpper");
-
-                    b.HasIndex("NormalizedNameUpper");
 
                     b.HasIndex("RubricIssueId");
 
@@ -423,13 +420,9 @@ namespace DbPostgreLib.Migrations.Helpdesk
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContextName");
-
                     b.HasIndex("IsDisabled");
 
                     b.HasIndex("Name");
-
-                    b.HasIndex("NormalizedNameUpper");
 
                     b.HasIndex("ParentRubricId");
 

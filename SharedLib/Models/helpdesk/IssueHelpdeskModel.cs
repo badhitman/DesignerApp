@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// IssueHelpdeskModel
 /// </summary>
-[Index(nameof(LastUpdateAt)), Index(nameof(CreatedAt))]
+[Index(nameof(LastUpdateAt)), Index(nameof(CreatedAt)), Index(nameof(StepIssue)), Index(nameof(NormalizedDescriptionUpper)), Index(nameof(AuthorIdentityUserId))]
 public class IssueHelpdeskModel : EntryDescriptionModel
 {
     /// <summary>

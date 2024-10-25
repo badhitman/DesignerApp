@@ -41,6 +41,11 @@
     </MudTooltip>
 </h3>
 
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+}
+
 <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-4">
     <CascadingValue Value="this">
         <MudTabPanel Disabled="IsBusyProgress" Text="Проекты">
@@ -68,7 +73,7 @@
     </CascadingValue>
 </MudTabs>
 
-@if (MainProject is null)
+@if (!IsBusyProgress && MainProject is null)
 {
     <div class="alert alert-success mt-2" role="alert">
         <h4 class="alert-heading">Не выбран проект</h4>

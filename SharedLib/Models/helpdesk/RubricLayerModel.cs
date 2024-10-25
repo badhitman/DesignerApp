@@ -2,11 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
+
 namespace SharedLib;
 
 /// <summary>
 /// RubricLayerModel
 /// </summary>
+[Index(nameof(NormalizedNameUpper)), Index(nameof(ContextName))]
 public class RubricLayerModel : RubricBaseModel
 {
     /// <summary>

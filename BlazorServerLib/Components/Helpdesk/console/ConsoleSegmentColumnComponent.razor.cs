@@ -3,10 +3,10 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using System.Globalization;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using System.Globalization;
 
 namespace BlazorWebLib.Components.Helpdesk.console;
 
@@ -98,7 +98,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
         if (issues_ids.Length == 0)
             return;
 
-        await SetBusy();
+        //await SetBusy();
         OrdersByIssuesSelectRequestModel req = new()
         {
             IssueIds = issues_ids,
@@ -110,7 +110,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
             foreach (OrderDocumentModelDB ro in rest.Response)
                 OrdersCache.Add(ro.HelpdeskId!.Value, ro);
         }
-        IsBusyProgress = false;
+        //IsBusyProgress = false;
     }
 
     string? _luf;
