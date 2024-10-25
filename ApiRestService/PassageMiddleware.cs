@@ -95,10 +95,10 @@ public class PassageMiddleware(RequestDelegate next)
         if (_http_context is null)
             return "";
 
-        if (_http_context.Request.Headers.TryGetValue("token_access", out StringValues tok))
+        if (_http_context.Request.Headers.TryGetValue(_conf!.TokenAccessHeaderName, out StringValues tok))
             return tok.FirstOrDefault() ?? string.Empty;
-        if (_http_context.Request.Query.Any(x => x.Key.Equals("token_access")))
-            return _http_context.Request.Query["token_access"]!;
+        if (_http_context.Request.Query.Any(x => x.Key.Equals(_conf!.TokenAccessHeaderName)))
+            return _http_context.Request.Query["_conf!.TokenAccessHeaderName"]!;
 
         return "";
     }

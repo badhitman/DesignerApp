@@ -28,8 +28,8 @@ rm -r *
 git clone https://github.com/badhitman/DesignerApp.git
 git clone https://github.com/badhitman/HtmlGenerator.git
 
-dotnet publish -c Debug --output /srv/git/builds/StorageService /srv/git/DesignerApp/StorageService/StorageService.csproj
 dotnet publish -c Debug --output /srv/git/builds/ApiRestService /srv/git/DesignerApp/ApiRestService/ApiRestService.csproj
+dotnet publish -c Debug --output /srv/git/builds/StorageService /srv/git/DesignerApp/StorageService/StorageService.csproj
 dotnet publish -c Debug --output /srv/git/builds/CommerceService /srv/git/DesignerApp/CommerceService/CommerceService.csproj
 dotnet publish -c Debug --output /srv/git/builds/HelpdeskService /srv/git/DesignerApp/HelpdeskService/HelpdeskService.csproj
 dotnet publish -c Debug --output /srv/git/builds/ConstructorService /srv/git/DesignerApp/ConstructorService/ConstructorService.csproj
@@ -47,8 +47,8 @@ systemctl stop web.app.service comm.app.service tg.app.service api.app.service b
 
 cd /srv/services/
 rm -r /srv/services/*
-mv /srv/git/builds/StorageService /srv/services/StorageService
 mv /srv/git/builds/ApiRestService /srv/services/ApiRestService
+mv /srv/git/builds/StorageService /srv/services/StorageService
 mv /srv/git/builds/CommerceService /srv/services/CommerceService
 mv /srv/git/builds/HelpdeskService /srv/services/HelpdeskService
 mv /srv/git/builds/ConstructorService /srv/services/ConstructorService
