@@ -29,7 +29,7 @@ public class StorageServiceImpl(
         string _tn = typeof(T).FullName ?? throw new Exception();
         StorageCloudParameterModelDB[] _dbd = await context
             .CloudProperties
-            .Where(x => x.TypeName == _tn && x.ApplicationName == req.ApplicationName && x.Name == req.Name)
+            .Where(x => x.TypeName == _tn && x.ApplicationName == req.ApplicationName && x.PropertyName == req.PropertyName)
             .ToArrayAsync();
 
         return _dbd.Select(x => JsonConvert.DeserializeObject<T>(x.SerializedDataJson)).ToArray();
@@ -38,7 +38,7 @@ public class StorageServiceImpl(
     /// <inheritdoc/>
     public async Task<T?> Read<T>(StorageMetadataModel req)
     {
-        string mem_key = $"{req.Name}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
+        string mem_key = $"{req.PropertyName}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
         if (cache.TryGetValue(mem_key, out T? sd))
             return sd;
 
@@ -49,7 +49,7 @@ public class StorageServiceImpl(
             .CloudProperties
             .Where(x => x.TypeName == _tn && x.OwnerPrimaryKey == req.OwnerPrimaryKey && x.PrefixPropertyName == req.PrefixPropertyName && x.ApplicationName == req.ApplicationName)
             .OrderByDescending(x => x.CreatedAt)
-            .FirstOrDefaultAsync(x => x.Name == req.Name);
+            .FirstOrDefaultAsync(x => x.PropertyName == req.PropertyName);
 
         if (pdb is null)
             return default;
@@ -74,7 +74,7 @@ public class StorageServiceImpl(
         StorageCloudParameterModelDB _set = new()
         {
             ApplicationName = set.ApplicationName,
-            Name = set.Name,
+            PropertyName = set.PropertyName,
             TypeName = typeof(T).FullName ?? throw new Exception(),
             SerializedDataJson = JsonConvert.SerializeObject(obj),
             OwnerPrimaryKey = set.OwnerPrimaryKey,
@@ -83,7 +83,7 @@ public class StorageServiceImpl(
         ResponseBaseModel res = await FlushParameter(_set, trimHistory);
         if (res.Success())
         {
-            string mem_key = $"{set.Name}/{set.OwnerPrimaryKey}/{set.PrefixPropertyName}/{set.ApplicationName}";
+            string mem_key = $"{set.PropertyName}/{set.OwnerPrimaryKey}/{set.PrefixPropertyName}/{set.ApplicationName}";
             cache.Set(mem_key, obj, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
         }
     }
@@ -103,10 +103,10 @@ public class StorageServiceImpl(
             try
             {
                 await context.SaveChangesAsync();
-                string mem_key = $"{_set.Name}/{_set.OwnerPrimaryKey}/{_set.PrefixPropertyName}/{_set.ApplicationName}";
+                string mem_key = $"{_set.PropertyName}/{_set.OwnerPrimaryKey}/{_set.PrefixPropertyName}/{_set.ApplicationName}";
                 cache.Remove(mem_key);
                 success = true;
-                res.AddSuccess($"Данные успешно сохранены{(i > 0 ? $" (на попытке [{i}])" : "")}: {_set.ApplicationName}/{_set.Name}");
+                res.AddSuccess($"Данные успешно сохранены{(i > 0 ? $" (на попытке [{i}])" : "")}: {_set.ApplicationName}/{_set.PropertyName}");
                 res.Response = _set.Id;
             }
             catch (Exception ex)
@@ -122,7 +122,7 @@ public class StorageServiceImpl(
 
         IQueryable<StorageCloudParameterModelDB> qf = context
                  .CloudProperties
-                 .Where(x => x.TypeName == _set.TypeName && x.ApplicationName == _set.ApplicationName && x.Name == _set.Name && x.OwnerPrimaryKey == _set.OwnerPrimaryKey && x.PrefixPropertyName == _set.PrefixPropertyName)
+                 .Where(x => x.TypeName == _set.TypeName && x.ApplicationName == _set.ApplicationName && x.PropertyName == _set.PropertyName && x.OwnerPrimaryKey == _set.OwnerPrimaryKey && x.PrefixPropertyName == _set.PrefixPropertyName)
                  .AsQueryable();
 
         if (trimHistory)
@@ -162,7 +162,7 @@ public class StorageServiceImpl(
     /// <inheritdoc/>
     public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageMetadataModel req)
     {
-        string mem_key = $"{req.Name}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
+        string mem_key = $"{req.PropertyName}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
         TResponseModel<StorageCloudParameterPayloadModel?> res = new();
         if (cache.TryGetValue(mem_key, out StorageCloudParameterPayloadModel? sd))
         {
@@ -176,7 +176,7 @@ public class StorageServiceImpl(
             .OrderByDescending(x => x.CreatedAt)
             .FirstOrDefaultAsync(x =>
             x.OwnerPrimaryKey == req.OwnerPrimaryKey &&
-            x.Name == req.Name &&
+            x.PropertyName == req.PropertyName &&
             x.ApplicationName == req.ApplicationName &&
             x.PrefixPropertyName == req.PrefixPropertyName);
 
@@ -184,7 +184,7 @@ public class StorageServiceImpl(
             res.Response = new StorageCloudParameterPayloadModel()
             {
                 ApplicationName = parameter_db.ApplicationName,
-                Name = parameter_db.Name,
+                PropertyName = parameter_db.PropertyName,
                 OwnerPrimaryKey = parameter_db.OwnerPrimaryKey,
                 PrefixPropertyName = parameter_db.PrefixPropertyName,
                 TypeName = parameter_db.TypeName,
@@ -205,7 +205,7 @@ public class StorageServiceImpl(
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         StorageCloudParameterModelDB[] prop_db = await context
             .CloudProperties
-            .Where(x => req.Name == x.Name && req.ApplicationName == x.ApplicationName)
+            .Where(x => req.PropertyName == x.PropertyName && req.ApplicationName == x.ApplicationName)
             .ToArrayAsync();
 
         res.Response = prop_db

@@ -37,8 +37,14 @@ public class MetaPropertyBaseComponent : BlazorBusyComponentBaseAuthModel
     public int? OwnerPrimaryKey { get; set; }
 
     /// <summary>
-    /// Title
+    /// ManageMode
     /// </summary>
     [Parameter]
-    public string Title { get; set; } = "Прикреплённые файлы";
+    public bool ManageMode { get; set; }
+
+    /// <summary>
+    /// Title
+    /// </summary>
+    [Parameter, EditorRequired]
+    public  required string Title { get; set; }
 }

@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// RequestStorageCloudParameterModel
 /// </summary>
-[Index(nameof(ApplicationName), nameof(Name))]
+[Index(nameof(ApplicationName), nameof(PropertyName))]
 public class RequestStorageBaseModel
 {
     /// <summary>
@@ -17,8 +17,10 @@ public class RequestStorageBaseModel
     /// </summary>
     public required string ApplicationName { get; set; }
 
+
     /// <summary>
-    /// Имя параметра
+    /// Имя
     /// </summary>
-    public required string Name { get; set; }
+    public required string PropertyName { get; set; }
+
 }

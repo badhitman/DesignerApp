@@ -3,6 +3,7 @@ using System;
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.Storage
 {
     [DbContext(typeof(StorageContext))]
-    partial class StorageContextModelSnapshot : ModelSnapshot
+    [Migration("20241027011838_StorageContext008")]
+    partial class StorageContext008
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,14 +40,14 @@ namespace DbPostgreLib.Migrations.Storage
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("OwnerPrimaryKey")
                         .HasColumnType("integer");
 
                     b.Property<string>("PrefixPropertyName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PropertyName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SerializedDataJson")
@@ -61,7 +64,7 @@ namespace DbPostgreLib.Migrations.Storage
 
                     b.HasIndex("TypeName");
 
-                    b.HasIndex("ApplicationName", "PropertyName");
+                    b.HasIndex("ApplicationName", "Name");
 
                     b.HasIndex("PrefixPropertyName", "OwnerPrimaryKey");
 
@@ -97,6 +100,10 @@ namespace DbPostgreLib.Migrations.Storage
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("NormalizedFileNameUpper")
                         .HasColumnType("text");
 
@@ -108,10 +115,6 @@ namespace DbPostgreLib.Migrations.Storage
                         .HasColumnType("text");
 
                     b.Property<string>("PrefixPropertyName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PropertyName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ReferrerMain")
@@ -131,7 +134,7 @@ namespace DbPostgreLib.Migrations.Storage
 
                     b.HasIndex("ReferrerMain");
 
-                    b.HasIndex("ApplicationName", "PropertyName");
+                    b.HasIndex("ApplicationName", "Name");
 
                     b.HasIndex("PrefixPropertyName", "OwnerPrimaryKey");
 
@@ -153,7 +156,11 @@ namespace DbPostgreLib.Migrations.Storage
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("NormalizedTagNameUpper")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NormalizedNameUpper")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -163,23 +170,15 @@ namespace DbPostgreLib.Migrations.Storage
                     b.Property<string>("PrefixPropertyName")
                         .HasColumnType("text");
 
-                    b.Property<string>("PropertyName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TagName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
 
-                    b.HasIndex("NormalizedTagNameUpper");
+                    b.HasIndex("NormalizedNameUpper");
 
-                    b.HasIndex("ApplicationName", "PropertyName");
+                    b.HasIndex("ApplicationName", "Name");
 
-                    b.HasIndex("NormalizedTagNameUpper", "OwnerPrimaryKey")
+                    b.HasIndex("NormalizedNameUpper", "OwnerPrimaryKey")
                         .IsUnique();
 
                     b.HasIndex("PrefixPropertyName", "OwnerPrimaryKey");

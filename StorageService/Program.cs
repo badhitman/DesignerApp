@@ -81,9 +81,11 @@ builder.ConfigureServices((context, services) =>
     services
     .RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>()
     .RegisterMqListener<SaveFileReceive, StorageImageMetadataModel?, StorageFileModelDB?>()
+    .RegisterMqListener<TagSetReceive, TagSetModel?, bool?>()
     .RegisterMqListener<ReadFileReceive, int?, StorageFileResponseModel?>()
+    .RegisterMqListener<TagsSelectReceive, TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<TagModelDB>?>()
     .RegisterMqListener<FilesAreaGetMetadataReceive, FilesAreaMetadataRequestModel?, FilesAreaMetadataModel[]?>()
-    .RegisterMqListener<FilesSelectReceive, TPaginationRequestModel<SelectFilesRequestModel>?, TPaginationResponseModel<StorageFileModelDB>?>()
+    .RegisterMqListener<FilesSelectReceive, TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<StorageFileModelDB>?>()
     .RegisterMqListener<ReadParameterReceive, StorageMetadataModel?, StorageCloudParameterPayloadModel?>()
     .RegisterMqListener<FindParametersReceive, RequestStorageBaseModel?, FoundParameterModel[]?>();
     //

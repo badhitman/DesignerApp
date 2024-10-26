@@ -41,7 +41,7 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseAuthModel
     StorageMetadataModel SizeColumnsKeyStorage => new()
     {
         ApplicationName = Path.Combine(GlobalStaticConstants.Routes.CONSOLE_CONTROLLER_NAME, GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME),
-        Name = GlobalStaticConstants.Routes.SIZE_CONTROLLER_NAME,
+        PropertyName = GlobalStaticConstants.Routes.SIZE_CONTROLLER_NAME,
         PrefixPropertyName = CurrentUserSession!.UserId,
     };
 

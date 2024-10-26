@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// SelectFilesRequestModel
+/// SelectMetadataRequestModel
 /// </summary>
-public class SelectFilesRequestModel : SelectRequestBaseModel
+public class SelectMetadataRequestModel : SelectRequestBaseModel
 {
     /// <summary>
     /// Приложение

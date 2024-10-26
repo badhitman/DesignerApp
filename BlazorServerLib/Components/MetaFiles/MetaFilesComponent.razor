@@ -19,7 +19,7 @@
 
 @if (_included.Count(x => x) == _included.Count || _included.Count(x => !x) == _included.Count)
 {
-    <FilesContextViewComponent ApplicationsNames="@([])" PropertyName="@string.Empty" />
+    <FilesContextViewComponent Title="Файлы" ApplicationsNames="@([])" PropertyName="@string.Empty" />
 }
 else
 {
@@ -31,5 +31,5 @@ else
             reqNamesApps.Add(FilesAreaMetadata[index].ApplicationName);
     }
 
-    <FilesContextViewComponent ApplicationsNames="@(reqNamesApps.ToArray())" PropertyName="@string.Empty" />
+    <FilesContextViewComponent Title="Файлы" ApplicationsNames="@(reqNamesApps.ToArray())" PropertyName="@string.Empty" />
 }

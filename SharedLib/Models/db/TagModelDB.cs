@@ -9,22 +9,17 @@ namespace SharedLib;
 /// <summary>
 /// TagModelDB
 /// </summary>
-[Index(nameof(NormalizedNameUpper))]
-[Index(nameof(NormalizedNameUpper), nameof(ContextName), nameof(OwnerPrimaryKey), IsUnique = true)]
-public class TagModelDB : EntryModel
+[Index(nameof(NormalizedTagNameUpper))]
+[Index(nameof(NormalizedTagNameUpper), nameof(OwnerPrimaryKey), IsUnique = true)]
+public class TagModelDB : StorageBaseModelDB
 {
     /// <summary>
-    /// OwnerPrimaryKey
+    /// NormalizedTagNameUpper
     /// </summary>
-    public required int OwnerPrimaryKey { get; set; }
+    public string NormalizedTagNameUpper { get; set; } = default!;
 
     /// <summary>
-    /// ContextName
+    /// Имя параметра
     /// </summary>
-    public required string ContextName { get; set; }
-
-    /// <summary>
-    /// NormalizedNameUpper
-    /// </summary>
-    public string NormalizedNameUpper { get; set; } = default!;
+    public required string TagName { get; set; }
 }

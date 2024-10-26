@@ -25,6 +25,6 @@ public class StorageMetadataModel : RequestStorageBaseModel
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{PrefixPropertyName}/{OwnerPrimaryKey}/{Name}/{ApplicationName}";
+        return $"{PrefixPropertyName}/{OwnerPrimaryKey}/{PropertyName}/{ApplicationName}";
     }
 }

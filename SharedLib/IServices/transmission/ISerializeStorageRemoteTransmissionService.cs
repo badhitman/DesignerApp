@@ -10,6 +10,16 @@ namespace SharedLib;
 public interface ISerializeStorageRemoteTransmissionService
 {
     /// <summary>
+    /// TagSet
+    /// </summary>
+    public Task<TResponseModel<bool>> TagSet(TagSetModel req);
+
+    /// <summary>
+    /// TagsSelect
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<TagModelDB>>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req);
+
+    /// <summary>
     /// FilesAreaGetMetadata
     /// </summary>
     public Task<TResponseModel<FilesAreaMetadataModel[]>> FilesAreaGetMetadata(FilesAreaMetadataRequestModel req);
@@ -17,7 +27,7 @@ public interface ISerializeStorageRemoteTransmissionService
     /// <summary>
     /// Files select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectFilesRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req);
 
     /// <summary>
     /// ReadFile

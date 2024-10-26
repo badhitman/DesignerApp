@@ -141,7 +141,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel HomePagePublic => new()
         {
             ApplicationName = Path.Combine(Routes.HOME_CONTROLLER_NAME, Routes.PAGE_CONTROLLER_NAME),
-            Name = Routes.PUBLIC_CONTROLLER_NAME,
+            PropertyName = Routes.PUBLIC_CONTROLLER_NAME,
             PrefixPropertyName = Routes.HTML_CONTROLLER_NAME,
         };
 
@@ -151,7 +151,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel HomePagePrivate => new()
         {
             ApplicationName = Path.Combine(Routes.HOME_CONTROLLER_NAME, Routes.PAGE_CONTROLLER_NAME),
-            Name = Routes.PRIVATE_CONTROLLER_NAME,
+            PropertyName = Routes.PRIVATE_CONTROLLER_NAME,
             PrefixPropertyName = Routes.HTML_CONTROLLER_NAME,
         };
 
@@ -161,7 +161,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel TitleMain => new()
         {
             ApplicationName = Routes.MAIN_CONTROLLER_NAME,
-            Name = Routes.TITLE_CONTROLLER_NAME,
+            PropertyName = Routes.TITLE_CONTROLLER_NAME,
         };
 
         /// <summary>
@@ -170,7 +170,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel ParameterShowDisabledRubrics => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.SHOW_ACTION_NAME}-{Routes.DISABLED_CONTROLLER_NAME}"),
+            PropertyName = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.SHOW_ACTION_NAME}-{Routes.DISABLED_CONTROLLER_NAME}"),
         };
 
         /// <summary>
@@ -179,7 +179,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel ModeSelectingRubrics => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            Name = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"),
+            PropertyName = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"),
         };
 
         /// <summary>
@@ -188,7 +188,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel ParameterIsCommandModeTelegramBot => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            Name = Path.Combine(Routes.TELEGRAM_CONTROLLER_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.MODE_CONTROLLER_NAME),
+            PropertyName = Path.Combine(Routes.TELEGRAM_CONTROLLER_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.MODE_CONTROLLER_NAME),
         };
 
         /// <summary>
@@ -197,7 +197,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel ShowCreatingIssue => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            Name = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.ADD_ACTION_NAME),
+            PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.ADD_ACTION_NAME),
         };
 
         /// <summary>
@@ -206,7 +206,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel RubricIssueForCreateOrder => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            Name = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.RUBRIC_CONTROLLER_NAME),
+            PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.RUBRIC_CONTROLLER_NAME),
         };
 
         /// <summary>
@@ -215,7 +215,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel HelpdeskNotificationTelegramForCreateIssue => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}",
+            PropertyName = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}",
             PrefixPropertyName = $"{Routes.ISSUE_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
         };
 
@@ -225,7 +225,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel HelpdeskNotificationTelegramGlobalForIncomingMessage => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}",
+            PropertyName = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.GLOBAL_CONTROLLER_NAME,
         };
 
@@ -236,7 +236,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel CommerceNewOrderSubjectNotification => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
             PrefixPropertyName = Routes.SUBJECT_CONTROLLER_NAME
         };
 
@@ -246,7 +246,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel CommerceNewOrderBodyNotification => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}",
             PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
         };
 
@@ -257,7 +257,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel CommerceStatusChangeOrderSubjectNotification(StatusesDocumentsEnum stage) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.SUBJECT_CONTROLLER_NAME,
             OwnerPrimaryKey = (int)stage
         };
@@ -268,7 +268,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel CommerceStatusChangeOrderBodyNotification(StatusesDocumentsEnum stage) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
             OwnerPrimaryKey = (int)stage
         };
@@ -280,7 +280,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel CommerceNewMessageOrderSubjectNotification => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}",
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}",
             PrefixPropertyName = Routes.SUBJECT_CONTROLLER_NAME,
         };
 
@@ -290,7 +290,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel CommerceNewMessageOrderBodyNotification => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}",
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}",
             PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
         };
 
@@ -302,7 +302,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel CommerceNewOrderBodyNotificationTelegram => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
         };
 
@@ -312,7 +312,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel CommerceStatusChangeOrderBodyNotificationTelegram(StatusesDocumentsEnum stepEnum) => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
             OwnerPrimaryKey = (int)stepEnum
         };
@@ -323,7 +323,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel CommerceNewMessageOrderBodyNotificationTelegram => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
-            Name = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
         };
         #endregion
@@ -336,7 +336,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel ConsoleFilterForUser(string user_id) => new()
         {
             ApplicationName = Path.Combine(Routes.HELPDESK_CONTROLLER_NAME, Routes.CONSOLE_CONTROLLER_NAME),
-            Name = Path.Combine(Routes.FILTER_CONTROLLER_NAME, user_id),
+            PropertyName = Path.Combine(Routes.FILTER_CONTROLLER_NAME, user_id),
         };
 
         /// <summary>
@@ -346,7 +346,7 @@ public static partial class GlobalStaticConstants
             => new()
             {
                 ApplicationName = HelpdeskNotificationsTelegramAppName,
-                Name = Routes.USER_CONTROLLER_NAME,
+                PropertyName = Routes.USER_CONTROLLER_NAME,
                 PrefixPropertyName = user_id,
             };
 
@@ -358,7 +358,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel OrderCartForUser(string user_id) => new()
         {
             ApplicationName = Path.Combine(Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME),
-            Name = Path.Combine(Routes.CART_CONTROLLER_NAME, user_id),
+            PropertyName = Path.Combine(Routes.CART_CONTROLLER_NAME, user_id),
         };
 
         /// <summary>
@@ -367,7 +367,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel HelpdeskNotificationsTelegramForUser(long chat_id) => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            Name = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}/{Routes.USER_CONTROLLER_NAME}",
+            PropertyName = $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}/{Routes.USER_CONTROLLER_NAME}",
             PrefixPropertyName = $"{chat_id}",
         };
     }
@@ -808,6 +808,12 @@ public static partial class GlobalStaticConstants
         #region Storage
         /// <inheritdoc/>
         public readonly static string FilesSelectReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, Routes.FILES_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string TagsSelectReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, Routes.TAGS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string TagSetReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, Routes.TAG_CONTROLLER_NAME, Routes.SET_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string FilesAreaGetMetadataReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, $"{Routes.FILES_CONTROLLER_NAME}-{Routes.AREAS_CONTROLLER_NAME}", $"{Routes.GET_ACTION_NAME}-{Routes.METADATA_CONTROLLER_NAME}");

@@ -20,6 +20,5 @@ public class StorageBaseModelDB : StorageMetadataModel
     /// <summary>
     /// Создание
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;    
 }
-

@@ -15,8 +15,10 @@ namespace BlazorWebLib.Components;
 public partial class TagsViewComponent : MetaPropertyBaseComponent
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService ArtRepo { get; set; } = default!;
+    ISerializeStorageRemoteTransmissionService TagsRepo { get; set; } = default!;
 
+
+    List<TagModelDB> TagsSets { get; set; } = [];
 
     MudAutocomplete<string?>? maRef;
     string? _value;
@@ -31,61 +33,111 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
 
     private async Task AddChip()
     {
-        if (string.IsNullOrWhiteSpace(_value))
+        if (string.IsNullOrWhiteSpace(_value) || !OwnerPrimaryKey.HasValue)
             return;
 
-        await SetBusy();
+        TResponseModel<bool> res = await TagsRepo.TagSet(new()
+        {
+            PrefixPropertyName = PrefixPropertyName,
+            ApplicationName = ApplicationsNames.Single(),
+            PropertyName = PropertyName,
+            Name = _value,
+            Id = OwnerPrimaryKey.Value,
+            Set = true
+        });
 
-        /*TResponseModel<EntryModel[]?> res = await artRepo.TagArticleSet(new() { Name = _value, Id = Article.Id, Set = true });
-        IsBusyProgress = false;
         if (!res.Success())
             SnackbarRepo.ShowMessagesResponse(res.Messages);
         else
         {
-            //Article.Update(res.Response!);
-            //_value = null;
-            //if (maRef is not null)
-            //    await maRef.ClearAsync();
-        }*/
-        await SetBusy(false);
+            await ReloadTags();
+            StateHasChanged();
+        }
     }
 
     private async Task OnChipClosed(MudChip<TagModelDB> chip)
     {
-        if (!string.IsNullOrWhiteSpace(chip.Value?.Name))
+        if (!string.IsNullOrWhiteSpace(chip.Value?.TagName) && OwnerPrimaryKey.HasValue)
         {
             await SetBusy();
 
-            //TResponseModel<EntryModel[]?> res = await artRepo.TagArticleSet(new() { Name = chip.Value.Name, Id = Article.Id, Set = false });
-            //IsBusyProgress = false;
-            //if (!res.Success())
-            //    SnackbarRepo.ShowMessagesResponse(res.Messages);
-            //else
-            //    Article.Update(res.Response!);
+            await SetBusy();
+            TResponseModel<bool> res = await TagsRepo.TagSet(new()
+            {
+                PrefixPropertyName = PrefixPropertyName,
+                ApplicationName = ApplicationsNames.Single(),
+                PropertyName = PropertyName,
+                Name = chip.Value.TagName,
+                Id = OwnerPrimaryKey.Value,
+                Set = false
+            });
+            await ReloadTags();
+            await SetBusy(false);
+            if (!res.Success())
+                SnackbarRepo.ShowMessagesResponse(res.Messages);
         }
     }
 
     private async Task<IEnumerable<string?>> Search(string value, CancellationToken token)
     {
-        await SetBusy(token: token);
+        TPaginationRequestModel<SelectMetadataRequestModel> req = new()
+        {
+            Payload = new()
+            {
+                ApplicationsNames = this.ApplicationsNames,
+                IdentityUsersIds = [CurrentUserSession!.UserId],
+                PropertyName = PropertyName,
+                OwnerPrimaryKey = OwnerPrimaryKey,
+                PrefixPropertyName = PrefixPropertyName,
+                SearchQuery = value,
+            },
+            PageNum = 0,
+            PageSize = int.MaxValue,
+            SortingDirection = VerticalDirectionsEnum.Down,
+        };
 
-        //TResponseModel<string[]?> res = await artRepo.TagsOfArticlesSelect(value);
-        //IsBusyProgress = false;
-        //if (!res.Success())
-        //    SnackbarRepo.ShowMessagesResponse(res.Messages);
-        //List<string> res_data = [.. res.Response?.Where(x => Article.Tags?.Any(y => y.Name.Equals(x, StringComparison.OrdinalIgnoreCase)) != true)];
+        TResponseModel<TPaginationResponseModel<TagModelDB>> res = await TagsRepo.TagsSelect(req);
 
-        //if (!string.IsNullOrWhiteSpace(value) && !res_data.Contains(value))
-        //    res_data.Add(value);
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+        List<string> res_data = [.. res.Response?.Response?.Where(x => TagsSets?.Any(y => y.TagName.Equals(x.TagName, StringComparison.OrdinalIgnoreCase)) != true).Select(x => x.TagName)];
 
-        return [];
+        if (!string.IsNullOrWhiteSpace(value) && !res_data.Contains(value))
+            res_data.Add(value);
+
+        return res_data;
+    }
+
+    async Task ReloadTags()
+    {
+        await SetBusy();
+        TPaginationRequestModel<SelectMetadataRequestModel> req = new()
+        {
+            Payload = new()
+            {
+                ApplicationsNames = this.ApplicationsNames,
+                IdentityUsersIds = [CurrentUserSession!.UserId],
+                PropertyName = PropertyName,
+                OwnerPrimaryKey = OwnerPrimaryKey,
+                PrefixPropertyName = PrefixPropertyName,
+            },
+            PageNum = 0,
+            PageSize = int.MaxValue,
+            SortingDirection = VerticalDirectionsEnum.Down,
+        };
+
+        TResponseModel<TPaginationResponseModel<TagModelDB>> res = await TagsRepo.TagsSelect(req);
+
+        await SetBusy(false);
+        if (res.Response is not null)
+            TagsSets = res.Response.Response;
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-        //if (Article.Tags is not null && Article.Tags.Count != 0)
-        //    Article.Tags.Sort((x, y) => x.Name.CompareTo(y.Name));
+        await SetBusy();
+        await ReadCurrentUser();
+        await ReloadTags();
     }
 }

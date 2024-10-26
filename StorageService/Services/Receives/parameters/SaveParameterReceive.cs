@@ -25,7 +25,7 @@ public class SaveParameterReceive(ISerializeStorage serializeStorageRepo)
         StorageCloudParameterModelDB store_db = new()
         {
             ApplicationName = rx.Replace(req.ApplicationName.Trim(), " "),
-            Name = req.Name,
+            PropertyName = req.PropertyName,
             SerializedDataJson = req.SerializedDataJson,
             PrefixPropertyName = req.PrefixPropertyName is null ? null : rx.Replace(req.PrefixPropertyName.Trim(), " "),
             OwnerPrimaryKey = req.OwnerPrimaryKey,

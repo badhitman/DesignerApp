@@ -66,7 +66,7 @@ public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService s
             ApplicationName = AppNameStorage,
             OwnerPrimaryKey = OwnerPrimaryKey,
             Payload = payload,
-            Name = NameStorage,
+            PropertyName = NameStorage,
             AuthorUserIdentity = un,
             FileName = file_name,
             ContentType = file.ContentType,

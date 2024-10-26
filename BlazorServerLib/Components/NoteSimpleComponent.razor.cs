@@ -45,7 +45,7 @@ public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
     /// Имя параметра
     /// </summary>
     [Parameter, EditorRequired]
-    public required string Name { get; set; }
+    public required string PropertyName { get; set; }
 
     /// <summary>
     /// Префикс имени (опционально)
@@ -63,7 +63,7 @@ public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
     StorageMetadataModel KeyStorage => new()
     {
         ApplicationName = ApplicationName,
-        Name = Name,
+        PropertyName = PropertyName,
         OwnerPrimaryKey = OwnerPrimaryKey,
         PrefixPropertyName = PrefixPropertyName,
     };
@@ -85,7 +85,7 @@ public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        domId = $"{OwnerPrimaryKey}/{nameof(NoteSimpleComponent)}{ApplicationName}{Name}{PrefixPropertyName}";
+        domId = $"{OwnerPrimaryKey}/{nameof(NoteSimpleComponent)}{ApplicationName}{PropertyName}{PrefixPropertyName}";
         await SetBusy();
         TResponseModel<string?> rest = await StorageRepo.ReadParameter<string>(KeyStorage);
         IsBusyProgress = false;

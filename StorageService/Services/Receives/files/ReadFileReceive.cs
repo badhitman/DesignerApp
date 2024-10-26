@@ -44,7 +44,7 @@ public class ReadFileReceive(IMongoDatabase mongoFs, IDbContextFactory<StorageCo
             ApplicationName = file_db.ApplicationName,
             AuthorIdentityId = file_db.AuthorIdentityId,
             FileName = file_db.FileName,
-            Name = file_db.Name,
+            PropertyName = file_db.PropertyName,
             CreatedAt = file_db.CreatedAt,
             OwnerPrimaryKey = file_db.OwnerPrimaryKey,
             PointId = file_db.PointId,

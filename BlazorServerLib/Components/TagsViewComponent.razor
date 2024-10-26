@@ -7,20 +7,31 @@
         <MudStack Justify="@Justify.Center" Class="mud-width-full">
             <MudGrid>
                 <MudItem xs="12" sm="6" md="3">
-                    <MudAutocomplete @ref="maRef" @bind-Value="TagAdding" SearchFunc="Search" Dense="true" Clearable="true" />
+                    <MudAutocomplete Disabled="IsBusyProgress" @ref="maRef" @bind-Value="TagAdding" SearchFunc="Search" Dense="true" Clearable="true" ShowProgressIndicator="true">
+                        <ProgressIndicatorTemplate>
+                            <MudProgressLinear Size="Size.Small" Indeterminate="true" />
+                        </ProgressIndicatorTemplate>
+                    </MudAutocomplete>
                 </MudItem>
                 <MudItem xs="12" sm="6" md="9">
-                    @* <MudChipSet T="ArticleTagModelDB"
-                                CheckMark="false"
-                                AllClosable="@true"                                
-                                OnClose="@OnChipClosed">
-                        @for (int i = 0; i < Article.Tags!.Count; i++)
-                        {
-                            int _ix = i;
-                            ArticleTagModelDB _el = Article.Tags![_ix];
-                            <MudChip Variant="@Variant.Text" Value="@_el" Text="@_el.Name" />
-                        }
-                    </MudChipSet> *@
+                    @if (IsBusyProgress)
+                    {
+                        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+                    }
+                    else
+                    {
+                        <MudChipSet Disabled="IsBusyProgress" T="TagModelDB"
+                                    CheckMark="false"
+                                    AllClosable="@true"
+                                    OnClose="@OnChipClosed">
+                            @for (int i = 0; i < TagsSets!.Count; i++)
+                            {
+                                int _ix = i;
+                                TagModelDB _el = TagsSets![_ix];
+                                <MudChip Variant="@Variant.Text" Value="@_el" Text="@_el.TagName" />
+                            }
+                        </MudChipSet>
+                    }
                 </MudItem>
             </MudGrid>
         </MudStack>

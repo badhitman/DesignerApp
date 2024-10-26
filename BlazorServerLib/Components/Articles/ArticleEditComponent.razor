@@ -31,7 +31,11 @@
             {
                 <TinyMCE.Blazor.Editor @bind-Value="editArticle.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(ArticleId < 1)" />
                 <hr />
-                <TagsViewComponent  />
+                <TagsViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ARTICLE_CONTROLLER_NAME])"
+                                   PropertyName="@GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME"
+                                   OwnerPrimaryKey="ArticleId"
+                                   ManageMode="true"
+                                   Title="Теги" />
             }
 
             <div class="d-grid gap-2 mt-3">
@@ -58,6 +62,7 @@
                                    PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
                                    PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
                                    OwnerPrimaryKey="ArticleId"
+                                   Title="Прикреплённые файлы"
                                    ManageMode="true" />
     </MudTabPanel>
 </MudTabs>

@@ -49,7 +49,7 @@ public class SaveFileReceive(
             FileName = _file_name,
             NormalizedFileNameUpper = _file_name.ToUpper(),
             ContentType = req.ContentType,
-            Name = req.Name,
+            PropertyName = req.PropertyName,
             PointId = _uf.ToString(),
             CreatedAt = DateTime.UtcNow,
             OwnerPrimaryKey = req.OwnerPrimaryKey,

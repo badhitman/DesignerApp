@@ -62,7 +62,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
         {
             TrimHistory = trim,
             ApplicationName = store.ApplicationName,
-            Name = store.Name,
+            PropertyName = store.PropertyName,
             SerializedDataJson = JsonConvert.SerializeObject(payload_query, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings),
             TypeName = payload_query.GetType().FullName!,
             OwnerPrimaryKey = store.OwnerPrimaryKey,
@@ -81,10 +81,18 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
         => await rabbitClient.MqRemoteCall<StorageFileResponseModel>(GlobalStaticConstants.TransmissionQueues.ReadFileReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectFilesRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<StorageFileModelDB>>(GlobalStaticConstants.TransmissionQueues.FilesSelectReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<FilesAreaMetadataModel[]>> FilesAreaGetMetadata(FilesAreaMetadataRequestModel req)
         => await rabbitClient.MqRemoteCall<FilesAreaMetadataModel[]>(GlobalStaticConstants.TransmissionQueues.FilesAreaGetMetadataReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<TagModelDB>>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<TagModelDB>>(GlobalStaticConstants.TransmissionQueues.TagsSelectReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> TagSet(TagSetModel req)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.TagSetReceive, req);
 }

@@ -26,15 +26,6 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
     ISerializeStorageRemoteTransmissionService FilesRepo { get; set; } = default!;
 
 
-    
-
-    /// <summary>
-    /// ManageMode
-    /// </summary>
-    [Parameter]
-    public bool ManageMode { get; set; }
-
-
     bool CanAddingFile => OwnerPrimaryKey.HasValue && OwnerPrimaryKey.Value > 0 &&
         !string.IsNullOrWhiteSpace(PrefixPropertyName) &&
         !string.IsNullOrWhiteSpace(PropertyName) &&
@@ -89,7 +80,7 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
             PrefixPropertyName = PrefixPropertyName,
             ApplicationName = ApplicationsNames.Single(),
             OwnerPrimaryKey = OwnerPrimaryKey,
-            Name = PropertyName,
+            PropertyName = PropertyName,
             Referrer = NavRepo.Uri,
 
             FileName = "",
@@ -150,7 +141,7 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
     private async Task<TableData<StorageFileModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         IsBusyProgress = true;
-        TPaginationRequestModel<SelectFilesRequestModel> req = new()
+        TPaginationRequestModel<SelectMetadataRequestModel> req = new()
         {
             Payload = new()
             {

@@ -10,13 +10,13 @@
         <NotificationsAreaTelegramIssueConfigComponent />
 
         <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME"
-                             Name="@GlobalStaticConstants.Routes.USERS_CONTROLLER_NAME"
+                             PropertyName="@GlobalStaticConstants.Routes.USERS_CONTROLLER_NAME"
                              PrefixPropertyName="@($"{Author.UserName}")"
                              Label="О клиенте (общее)"
                              Hint="Единый параметр для всех сотрудников" />
 
         <NoteSimpleComponent ApplicationName="@GlobalStaticConstants.Routes.NOTES_CONTROLLER_NAME"
-                             Name="@($"{GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DOCUMENT_CONTROLLER_NAME}")"
+                             PropertyName="@($"{GlobalStaticConstants.Routes.HELPDESK_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DOCUMENT_CONTROLLER_NAME}")"
                              PrefixPropertyName="@CurrentUserSession!.UserId"
                              OwnerPrimaryKey="Issue.Id"
                              Label="О заявке (приватно)"
