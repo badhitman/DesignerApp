@@ -127,7 +127,7 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
         if (_selectedFile is null || CurrentUserSession is null)
             return;
 
-        TResponseModel<StorageFileResponseModel> downloadSource = await FilesRepo.ReadFile(new TAuthRequestModel<int>() { SenderActionUserId = CurrentUserSession.UserId, Payload = _selectedFile.Id });
+        TResponseModel<StorageFileResponseModel> downloadSource = await FilesRepo.ReadFile(new TAuthRequestModel<RequestFileReadModel>() { SenderActionUserId = CurrentUserSession.UserId, Payload = new() { FileId = _selectedFile.Id } });
 
         if (downloadSource.Success() && downloadSource.Response?.Payload is not null)
         {

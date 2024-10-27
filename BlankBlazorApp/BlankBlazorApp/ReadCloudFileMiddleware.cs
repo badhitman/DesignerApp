@@ -3,9 +3,11 @@
 ////////////////////////////////////////////////
 
 using BlankBlazorApp.Properties;
+using Microsoft.Extensions.Primitives;
 using SharedLib;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using System.Web;
 
 /// <summary>
 /// ReadCloudFileMiddleware
@@ -43,15 +45,23 @@ public partial class ReadCloudFileMiddleware(RequestDelegate next)
             return;
         }
         Claim? userId = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+
         TResponseModel<StorageFileResponseModel> rest = await storeRepo
-            .ReadFile(new TAuthRequestModel<int>()
+            .ReadFile(new TAuthRequestModel<RequestFileReadModel>()
             {
                 SenderActionUserId = userId?.Value ?? "",
-                Payload = fileId
+                Payload = new()
+                {
+                    FileId = fileId,
+                    TokenAccess = http_context.Request.Query.TryGetValue("token", out StringValues FileReadToken)
+                        ? FileReadToken.FirstOrDefault()
+                        : null
+                }
             });
 
         if (!rest.Success() || rest.Response is null || rest.Response.Payload.Length == 0)
         {
+            http_context.Response.Headers.Append(nameof(rest.Message), rest.Message());
             await http_context.Response.BodyWriter.WriteAsync(Resources.noimage_simple);
             return;
         }

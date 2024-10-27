@@ -31,6 +31,11 @@ public class StorageFileModelDB : StorageFileMiddleModel
     public string? ReferrerMain { get; set; }
 
     /// <summary>
+    /// TokenAccess
+    /// </summary>
+    public string TokenAccess { get; set; } = Guid.NewGuid().ToString();
+
+    /// <summary>
     /// AccessRules
     /// </summary>
     public List<AccessFileRuleModelDB>? AccessRules { get; set; }

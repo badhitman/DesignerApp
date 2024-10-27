@@ -15,14 +15,17 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// Read file
 /// </summary>
-public class ReadFileReceive(IMongoDatabase mongoFs, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<TAuthRequestModel<int>?, StorageFileResponseModel?>
+public class ReadFileReceive(IMongoDatabase mongoFs,
+    IHelpdeskRemoteTransmissionService hdRepo,
+    IDbContextFactory<StorageContext> cloudParametersDbFactory,
+    IWebRemoteTransmissionService webRepo)
+    : IResponseReceive<TAuthRequestModel<RequestFileReadModel>?, StorageFileResponseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadFileReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<StorageFileResponseModel?>> ResponseHandleAction(TAuthRequestModel<int>? req)
+    public async Task<TResponseModel<StorageFileResponseModel?>> ResponseHandleAction(TAuthRequestModel<RequestFileReadModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
@@ -31,11 +34,68 @@ public class ReadFileReceive(IMongoDatabase mongoFs, IDbContextFactory<StorageCo
         StorageFileModelDB? file_db = await context
             .CloudFiles
             .Include(x => x.AccessRules)
-            .FirstOrDefaultAsync(x => x.Id == req.Payload);
+            .FirstOrDefaultAsync(x => x.Id == req.Payload.FileId);
 
         if (file_db is null)
         {
-            res.AddError($"Файл #{req} не найден в БД");
+            res.AddError($"Файл #{req.Payload} не найден");
+            return res;
+        }
+
+        // если правил для файла не установлено или вызывающий является владельцем (тот кто его загрузил) файла
+        bool allowed = file_db.AccessRules is null || file_db.AccessRules.Count == 0 || (!string.IsNullOrEmpty(req.SenderActionUserId) && file_db.AuthorIdentityId == req.SenderActionUserId);
+        allowed = allowed || file_db.TokenAccess == req.Payload.TokenAccess;
+
+        string[] abs_rules = ["*", "all", "any"];
+        // правило: доступ любому авторизованному пользователю
+        allowed = allowed ||
+            (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && file_db.AccessRules?.Any(x => x.AccessRuleType == FileAccessRulesTypesEnum.User && (x.Option == req.SenderActionUserId || abs_rules.Contains(x.Option.Trim().ToLower()))) == true);
+        UserInfoModel? currentUser = null;
+        if (!allowed && !string.IsNullOrWhiteSpace(req.SenderActionUserId))
+        {
+            TResponseModel<UserInfoModel[]?> findUserRes = await webRepo.GetUsersIdentity([req.SenderActionUserId]);
+            currentUser = findUserRes.Response?.Single();
+            if (currentUser is null)
+            {
+                res.AddError($"Пользователь #{req.SenderActionUserId} не найден");
+                return res;
+            }
+            allowed = currentUser.IsAdmin;
+        }
+
+        if (!allowed)
+        {
+            List<string>? issues_rules = file_db
+                        .AccessRules?
+                        .Where(x => x.AccessRuleType == FileAccessRulesTypesEnum.Issue)
+                        .Select(x => x.Option)
+                        .ToList();
+
+            if (issues_rules is not null && issues_rules.Count != 0)
+            {
+                List<int> issues_ids = [];
+                issues_rules.ForEach(x => { if (int.TryParse(x, out int issue_id)) { issues_ids.Add(issue_id); } });
+                if (issues_ids.Count > 0)
+                {
+                    TAuthRequestModel<IssuesReadRequestModel> reqIssues = new()
+                    {
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssuesIds = [.. issues_ids],
+                            IncludeSubscribersOnly = false,
+                        }
+                    };
+                    TResponseModel<IssueHelpdeskModelDB[]> findIssues = await hdRepo.IssuesRead(reqIssues);
+                    allowed = findIssues.Success() &&
+                        findIssues.Response?.Any(x => x.AuthorIdentityUserId == req.SenderActionUserId || x.ExecutorIdentityUserId == req.SenderActionUserId || x.Subscribers?.Any(y => y.UserId == req.SenderActionUserId) == true) == true;
+                }
+            }
+        }
+
+        if (!allowed)
+        {
+            res.AddError($"Файл #{req.Payload} не прочитан");
             return res;
         }
 

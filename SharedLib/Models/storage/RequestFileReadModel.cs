@@ -5,22 +5,17 @@
 namespace SharedLib;
 
 /// <summary>
-/// FileAccessRulesTypesEnum
+/// RequestFileReadModel
 /// </summary>
-public enum FileAccessRulesTypesEnum
+public class RequestFileReadModel
 {
     /// <summary>
-    /// User
+    /// FileId
     /// </summary>
-    User = 0,
+    public int FileId { get; set; }
 
     /// <summary>
-    /// Issue
+    /// File-read TokenAccess
     /// </summary>
-    Issue = 10,
-
-    /// <summary>
-    /// Token
-    /// </summary>
-    Token = 20,
+    public string? TokenAccess { get; set; }
 }
