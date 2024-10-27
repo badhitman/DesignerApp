@@ -44,6 +44,13 @@
                                                                @ref="filesViewRef"
                                                                Title="Файлы"
                                                                ManageMode="true" />
+                                                               <hr/>
+                                    <TagsViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.OFFER_CONTROLLER_NAME])"
+                                               ManageMode="true"
+                                               PrefixPropertyName="@GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME"
+                                               PropertyName="@GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME"
+                                               Title="Теги"
+                                               OwnerPrimaryKey="@OfferId" />
                                 </div>
                             </div>
                         </Authorized>
@@ -52,8 +59,7 @@
                         </NotAuthorized>
                     </AuthorizeView>
                 </MudTabPanel>
-                @if (CurrentUserSession!.IsAdmin)
-                {
+                
                     <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
                         <Authorized>
                             <MudTabPanel Text="Заказы">
@@ -61,7 +67,7 @@
                             </MudTabPanel>
                         </Authorized>
                     </AuthorizeView>
-                }
+               
             </MudTabs>
         }
     </div>

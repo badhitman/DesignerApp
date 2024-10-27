@@ -3,6 +3,7 @@ using System;
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.Storage
 {
     [DbContext(typeof(StorageContext))]
-    partial class StorageContextModelSnapshot : ModelSnapshot
+    [Migration("20241027101705_StorageContext011")]
+    partial class StorageContext011
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,9 +183,6 @@ namespace DbPostgreLib.Migrations.Storage
                     b.HasIndex("ApplicationName", "PropertyName");
 
                     b.HasIndex("PrefixPropertyName", "OwnerPrimaryKey");
-
-                    b.HasIndex(new[] { "NormalizedTagNameUpper", "OwnerPrimaryKey", "ApplicationName" }, "IX_TagNameOwnerKeyUnique")
-                        .IsUnique();
 
                     b.ToTable("CloudTags");
                 });
