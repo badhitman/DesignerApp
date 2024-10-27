@@ -64,6 +64,13 @@
                     {
                         <img style="max-height:500px;max-width:300px;" src="@($"/cloud-fs/read/{_selectedFile.Id}/{_selectedFile.FileName}")" class="rounded mx-auto d-block" alt="@_selectedFile.FileName">
                     }
+                    <br />
+                    <TagsViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME])"
+                                       ManageMode="true"
+                                       PrefixPropertyName="@GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME"
+                                       PropertyName="@GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME"
+                                       Title="Теги"
+                                       OwnerPrimaryKey="@_selectedFile.Id" />
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group" role="group" aria-label="Basic example">

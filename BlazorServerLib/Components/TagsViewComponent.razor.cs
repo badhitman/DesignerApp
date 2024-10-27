@@ -53,6 +53,9 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
             await ReloadTags();
             StateHasChanged();
         }
+        _value = "";
+        if (maRef is not null)
+            await maRef.ClearAsync();
     }
 
     private async Task OnChipClosed(MudChip<TagModelDB> chip)
@@ -84,11 +87,11 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
         {
             Payload = new()
             {
-                ApplicationsNames = this.ApplicationsNames,
-                IdentityUsersIds = [CurrentUserSession!.UserId],
-                PropertyName = PropertyName,
-                OwnerPrimaryKey = OwnerPrimaryKey,
-                PrefixPropertyName = PrefixPropertyName,
+                ApplicationsNames = [],//ApplicationsNames,
+                IdentityUsersIds = [], // [CurrentUserSession!.UserId],
+                PropertyName = "",//PropertyName,
+                OwnerPrimaryKey = 0,//OwnerPrimaryKey,
+                PrefixPropertyName = "",//PrefixPropertyName
                 SearchQuery = value,
             },
             PageNum = 0,
@@ -105,7 +108,7 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
         if (!string.IsNullOrWhiteSpace(value) && !res_data.Contains(value))
             res_data.Add(value);
 
-        return res_data;
+        return res_data.DistinctBy(x => x.ToUpper());
     }
 
     async Task ReloadTags()
@@ -116,7 +119,7 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
             Payload = new()
             {
                 ApplicationsNames = this.ApplicationsNames,
-                IdentityUsersIds = [CurrentUserSession!.UserId],
+                IdentityUsersIds = [],
                 PropertyName = PropertyName,
                 OwnerPrimaryKey = OwnerPrimaryKey,
                 PrefixPropertyName = PrefixPropertyName,

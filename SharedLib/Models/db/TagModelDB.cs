@@ -10,7 +10,7 @@ namespace SharedLib;
 /// TagModelDB
 /// </summary>
 [Index(nameof(NormalizedTagNameUpper))]
-[Index(nameof(NormalizedTagNameUpper), nameof(OwnerPrimaryKey), IsUnique = true)]
+[Index(nameof(NormalizedTagNameUpper), nameof(OwnerPrimaryKey), nameof(ApplicationName), IsUnique = true)]
 public class TagModelDB : StorageBaseModelDB
 {
     /// <summary>

@@ -34,11 +34,12 @@ public class TagSetReceive(ILogger<TagSetReceive> loggerRepo, IDbContextFactory<
             x.OwnerPrimaryKey == req.Id &&
             x.ApplicationName == req.ApplicationName &&
             x.NormalizedTagNameUpper == req.Name.ToUpper() &&
+            x.PropertyName == req.PropertyName &&
             x.PrefixPropertyName == req.PrefixPropertyName);
 
         if (req.Set)
         {
-            if (q.Any())
+            if (await q.AnyAsync())
                 res.AddInfo("Тег уже установлен");
             else
             {

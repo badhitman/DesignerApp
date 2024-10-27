@@ -58,18 +58,48 @@ public class SaveFileReceive(
             FileLength = req.Payload.Length,
         };
 
+        await context.AddAsync(res.Response);
+        await context.SaveChangesAsync();
+
         if (GlobalTools.IsImageFile(_file_name))
         {
             using MagickImage image = new(req.Payload);
-            // res.Response.Tags ??= [];
+            // TagModelDB
             string _h = $"Height:{image.Height}", _w = $"Width:{image.Width}";
             //res.Response.Tags.Add(new FileTagModelDB() { Name = nameof(GlobalTools.IsImageFile), NormalizedNameUpper = nameof(GlobalTools.IsImageFile).ToUpper(), OwnerFile = res.Response });
             //res.Response.Tags.Add(new FileTagModelDB() { Name = _h, NormalizedNameUpper = _h.ToUpper(), OwnerFile = res.Response });
             //res.Response.Tags.Add(new FileTagModelDB() { Name = _w, NormalizedNameUpper = _w.ToUpper(), OwnerFile = res.Response });
+            await context.AddAsync(new TagModelDB()
+            {
+                ApplicationName = GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME,
+                PropertyName = GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME,
+                CreatedAt = DateTime.UtcNow,
+                NormalizedTagNameUpper = _h.ToUpper(),
+                TagName = _h,
+                OwnerPrimaryKey = res.Response.Id,
+                PrefixPropertyName = GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME,
+            });
+            await context.AddAsync(new TagModelDB()
+            {
+                ApplicationName = GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME,
+                PropertyName = GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME,
+                CreatedAt = DateTime.UtcNow,
+                NormalizedTagNameUpper = _w.ToUpper(),
+                TagName = _w,
+                OwnerPrimaryKey = res.Response.Id,
+                PrefixPropertyName = GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME,
+            });
+            await context.AddAsync(new TagModelDB()
+            {
+                ApplicationName = GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME,
+                PropertyName = GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME,
+                CreatedAt = DateTime.UtcNow,
+                NormalizedTagNameUpper = nameof(GlobalTools.IsImageFile).ToUpper(),
+                TagName = nameof(GlobalTools.IsImageFile),
+                OwnerPrimaryKey = res.Response.Id,
+                PrefixPropertyName = GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME,
+            });
         }
-
-        await context.AddAsync(res.Response);
-        await context.SaveChangesAsync();
 
         if (req.ApplicationName == GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME && req.OwnerPrimaryKey.HasValue && req.OwnerPrimaryKey.Value > 0)
         {
