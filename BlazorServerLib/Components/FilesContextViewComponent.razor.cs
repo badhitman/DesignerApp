@@ -82,7 +82,6 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
             OwnerPrimaryKey = OwnerPrimaryKey,
             PropertyName = PropertyName,
             Referrer = NavRepo.Uri,
-
             FileName = "",
             ContentType = "",
             Payload = []
@@ -125,10 +124,10 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
 
     async Task DownloadFile()
     {
-        if (_selectedFile is null)
+        if (_selectedFile is null || CurrentUserSession is null)
             return;
 
-        TResponseModel<StorageFileResponseModel> downloadSource = await FilesRepo.ReadFile(_selectedFile.Id);
+        TResponseModel<StorageFileResponseModel> downloadSource = await FilesRepo.ReadFile(new TAuthRequestModel<int>() { SenderActionUserId = CurrentUserSession.UserId, Payload = _selectedFile.Id });
 
         if (downloadSource.Success() && downloadSource.Response?.Payload is not null)
         {

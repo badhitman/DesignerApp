@@ -7,8 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <inheritdoc/>
-[Index(nameof(ReferrerMain))]
-[Index(nameof(NormalizedFileNameUpper))]
+[Index(nameof(ReferrerMain)),Index(nameof(NormalizedFileNameUpper))]
 public class StorageFileModelDB : StorageFileMiddleModel
 {
     /// <summary>
@@ -30,4 +29,9 @@ public class StorageFileModelDB : StorageFileMiddleModel
     /// Referrer (main/init)
     /// </summary>
     public string? ReferrerMain { get; set; }
+
+    /// <summary>
+    /// AccessRules
+    /// </summary>
+    public List<AccessFileRuleModelDB>? AccessRules { get; set; }
 }

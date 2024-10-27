@@ -64,11 +64,8 @@ public class SaveFileReceive(
         if (GlobalTools.IsImageFile(_file_name))
         {
             using MagickImage image = new(req.Payload);
-            // TagModelDB
+            //
             string _h = $"Height:{image.Height}", _w = $"Width:{image.Width}";
-            //res.Response.Tags.Add(new FileTagModelDB() { Name = nameof(GlobalTools.IsImageFile), NormalizedNameUpper = nameof(GlobalTools.IsImageFile).ToUpper(), OwnerFile = res.Response });
-            //res.Response.Tags.Add(new FileTagModelDB() { Name = _h, NormalizedNameUpper = _h.ToUpper(), OwnerFile = res.Response });
-            //res.Response.Tags.Add(new FileTagModelDB() { Name = _w, NormalizedNameUpper = _w.ToUpper(), OwnerFile = res.Response });
             await context.AddAsync(new TagModelDB()
             {
                 ApplicationName = GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME,

@@ -16,19 +16,23 @@ namespace Transmission.Receives.storage;
 /// Read file
 /// </summary>
 public class ReadFileReceive(IMongoDatabase mongoFs, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<int?, StorageFileResponseModel?>
+    : IResponseReceive<TAuthRequestModel<int>?, StorageFileResponseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadFileReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<StorageFileResponseModel?>> ResponseHandleAction(int? req)
+    public async Task<TResponseModel<StorageFileResponseModel?>> ResponseHandleAction(TAuthRequestModel<int>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
         TResponseModel<StorageFileResponseModel?> res = new();
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
-        StorageFileModelDB? file_db = await context.CloudFiles.FirstOrDefaultAsync(x => x.Id == req);
+        StorageFileModelDB? file_db = await context
+            .CloudFiles
+            .Include(x => x.AccessRules)
+            .FirstOrDefaultAsync(x => x.Id == req.Payload);
+
         if (file_db is null)
         {
             res.AddError($"Файл #{req} не найден в БД");

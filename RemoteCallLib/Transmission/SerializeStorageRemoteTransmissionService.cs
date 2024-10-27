@@ -77,7 +77,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
         => await rabbitClient.MqRemoteCall<StorageFileModelDB>(GlobalStaticConstants.TransmissionQueues.SaveFileReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<StorageFileResponseModel>> ReadFile(int? req)
+    public async Task<TResponseModel<StorageFileResponseModel>> ReadFile(TAuthRequestModel<int>? req)
         => await rabbitClient.MqRemoteCall<StorageFileResponseModel>(GlobalStaticConstants.TransmissionQueues.ReadFileReceive, req);
 
     /// <inheritdoc/>

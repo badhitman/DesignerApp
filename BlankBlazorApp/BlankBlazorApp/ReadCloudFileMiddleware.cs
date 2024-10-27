@@ -4,6 +4,7 @@
 
 using BlankBlazorApp.Properties;
 using SharedLib;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 /// <summary>
@@ -20,7 +21,7 @@ public partial class ReadCloudFileMiddleware(RequestDelegate next)
     public async Task Invoke(HttpContext http_context, ISerializeStorageRemoteTransmissionService storeRepo, ILogger<ReadCloudFileMiddleware> _logger)
     {
         _http_context = http_context;
-        System.Security.Claims.ClaimsPrincipal user = http_context.User;
+        ClaimsPrincipal user = http_context.User;
 
         //if (user.Identity?.IsAuthenticated != true)
         //{
@@ -41,8 +42,14 @@ public partial class ReadCloudFileMiddleware(RequestDelegate next)
             await http_context.Response.BodyWriter.WriteAsync(Resources.noimage_simple);
             return;
         }
+        Claim? userId = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+        TResponseModel<StorageFileResponseModel> rest = await storeRepo
+            .ReadFile(new TAuthRequestModel<int>()
+            {
+                SenderActionUserId = userId?.Value ?? "",
+                Payload = fileId
+            });
 
-        TResponseModel<StorageFileResponseModel> rest = await storeRepo.ReadFile(fileId);
         if (!rest.Success() || rest.Response is null || rest.Response.Payload.Length == 0)
         {
             await http_context.Response.BodyWriter.WriteAsync(Resources.noimage_simple);
