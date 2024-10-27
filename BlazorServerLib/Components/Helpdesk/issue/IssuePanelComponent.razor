@@ -10,7 +10,19 @@
     <AuthorizeView Roles="@($"{string.Join(",",GlobalStaticConstants.Roles.AllHelpDeskRoles)},{GlobalStaticConstants.Roles.Admin}")">
         <Authorized>
             <div class="px-1"><SubscribersIssueComponent /></div>
+            <hr />
+            <TagsViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME])"
+                               ManageMode="true"
+                               PrefixPropertyName="@GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME"
+                               PropertyName="@GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME"
+                               Title="Теги"
+                               OwnerPrimaryKey="@CurrentIssue.Id" />
         </Authorized>
     </AuthorizeView>
     <div class="px-1"><AboutIssueComponent /></div>
 </div>
+
+@code {
+    [CascadingParameter, EditorRequired]
+    public required IssueHelpdeskModelDB CurrentIssue { get; set; }
+}
