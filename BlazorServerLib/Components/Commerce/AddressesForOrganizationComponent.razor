@@ -79,7 +79,7 @@ else
             {
                 <tr @key="@($"{ad.Id}")">
                     <th scope="row"><b>@GetCity(ad)</b></th>
-                    <th><a href="/address-for-organization/@ad.Id">@ad.Name</a></th>
+                    <th><a href="/organizations/edit/addresses/@ad.Id">@ad.Name</a></th>
                     <td>@ad.Address</td>
                     <td>@ad.Contacts</td>
                 </tr>

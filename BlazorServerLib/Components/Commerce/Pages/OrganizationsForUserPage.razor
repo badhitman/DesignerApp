@@ -1,5 +1,5 @@
-﻿@page "/organizations-for-user/{UserId}"
-@page "/organizations-for-user"
+﻿@page "/organizations/{UserId}"
+@page "/organizations"
 
 @using MudBlazor
 
@@ -11,5 +11,5 @@
 <OrganizationsTableComponent UserId="@UserId" />
 
 <div class="d-grid gap-2 mt-2">
-    <a class="btn btn-outline-success" href="/organization-edit/0" role="button">Создать</a>
+    <a class="btn btn-outline-success" href="/organizations/edit/0" role="button">Создать</a>
 </div>

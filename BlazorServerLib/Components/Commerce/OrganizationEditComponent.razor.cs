@@ -103,7 +103,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
 
         if (OrganizationId == 0)
         {
-            NavigationRepo.NavigateTo($"/organization-edit/{res.Response}");
+            NavigationRepo.NavigateTo($"/organizations/edit/{res.Response}");
             return;
         }
 

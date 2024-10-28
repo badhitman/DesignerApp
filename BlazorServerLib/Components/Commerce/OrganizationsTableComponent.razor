@@ -13,7 +13,7 @@
         <MudTh>ИНН/ОГРН</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Название"><a href="/organization-edit/@(context.Id)">@context.Name</a></MudTd>
+        <MudTd DataLabel="Название"><a href="/organizations/edit/@(context.Id)">@context.Name</a></MudTd>
         <MudTd DataLabel="Контакты">
             @context.Phone
             <code class="ms-2">@context.Email</code>

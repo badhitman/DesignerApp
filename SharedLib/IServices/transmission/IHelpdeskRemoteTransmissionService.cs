@@ -40,7 +40,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<List<RubricBaseModel>>> RubricsList(RubricsListRequestModel req);
+    public Task<TResponseModel<List<RubricBaseModel>?>> RubricsList(RubricsListRequestModel req);
 
     /// <summary>
     /// Создать тему для обращений
