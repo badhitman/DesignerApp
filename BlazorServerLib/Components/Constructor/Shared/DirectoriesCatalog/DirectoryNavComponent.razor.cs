@@ -213,7 +213,7 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseAuthModel
         await SetBusy();
 
         TResponseModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(new() { ProjectId = ParentFormsPage.MainProject.Id });
-        IsBusyProgress = false;
+        await SetBusy(false);
 
         allDirectories = rest.Response ?? throw new Exception();
 
