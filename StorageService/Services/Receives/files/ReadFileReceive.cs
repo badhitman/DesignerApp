@@ -44,12 +44,15 @@ public class ReadFileReceive(IMongoDatabase mongoFs,
 
         // если правил для файла не установлено или вызывающий является владельцем (тот кто его загрузил) файла
         bool allowed = file_db.AccessRules is null || file_db.AccessRules.Count == 0 || (!string.IsNullOrEmpty(req.SenderActionUserId) && file_db.AuthorIdentityId == req.SenderActionUserId);
-        allowed = allowed || file_db.TokenAccess == req.Payload.TokenAccess;
 
         string[] abs_rules = ["*", "all", "any"];
         // правило: доступ любому авторизованному пользователю
         allowed = allowed ||
             (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && file_db.AccessRules?.Any(x => x.AccessRuleType == FileAccessRulesTypesEnum.User && (x.Option == req.SenderActionUserId || abs_rules.Contains(x.Option.Trim().ToLower()))) == true);
+
+        // проверка токена прямого доступа к файлу
+        allowed = allowed || (!string.IsNullOrWhiteSpace(req.Payload.TokenAccess) && file_db.AccessRules?.Any(x => x.AccessRuleType == FileAccessRulesTypesEnum.Token && x.Option == req.SenderActionUserId) == true);
+
         UserInfoModel? currentUser = null;
         if (!allowed && !string.IsNullOrWhiteSpace(req.SenderActionUserId))
         {
