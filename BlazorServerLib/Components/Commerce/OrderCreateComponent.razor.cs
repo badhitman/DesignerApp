@@ -169,11 +169,17 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             return;
 
         await SetBusy();
-        
+
         TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([.. offers_load]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        offers_load.ForEach(x => RulesCache.Add(x, res.Response?.Where(y => x == y.OfferId && !y.IsDisabled).ToArray()));
+        offers_load.ForEach(x =>
+        {
+            if (RulesCache.ContainsKey(x))
+                RulesCache[x] = res.Response?.Where(y => x == y.OfferId && !y.IsDisabled).ToArray();
+            else
+                RulesCache.Add(x, res.Response?.Where(y => x == y.OfferId && !y.IsDisabled).ToArray());
+        });
 
         StateHasChanged();
     }
@@ -250,7 +256,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         _prevSelectedAddresses = null;
         _visibleChangeAddresses = false;
         await SetBusy();
-        
+
         await StorageRepo.SaveParameter(CurrentCart, GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId), true);
         IsBusyProgress = false;
     }
@@ -318,7 +324,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
 
         CurrentCart.PrepareForSave();
         await SetBusy();
-        
+
         TResponseModel<int> rest = await CommerceRepo.OrderUpdate(CurrentCart);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -376,7 +382,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         };
 
         await SetBusy();
-        
+
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;
@@ -386,7 +392,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         Organizations = res.Response.Response;
 
         await SetBusy();
-        
+
         TResponseModel<OrderDocumentModelDB?> current_cart = await StorageRepo
             .ReadParameter<OrderDocumentModelDB>(GlobalStaticConstants.CloudStorageMetadata.OrderCartForUser(CurrentUserSession!.UserId));
         IsBusyProgress = false;

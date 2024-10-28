@@ -29,7 +29,7 @@ public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
         ArgumentNullException.ThrowIfNull(rubricId);
         TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = new();
 
-        if(rubricId <1)
+        if (rubricId < 1)
             return res;
 
         string mem_key = $"{QueueName}-{rubricId}";
@@ -44,7 +44,13 @@ public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
         RubricIssueHelpdeskModelDB? lpi = await context
             .Rubrics
             .Include(x => x.ParentRubric)
-            .FirstAsync(x => x.Id == rubricId);
+            .FirstOrDefaultAsync(x => x.Id == rubricId);
+
+        if (lpi is null)
+        {
+            res.AddWarning($"Рубрика #{rubricId} не найдена в БД (вероятно была удалена)");
+            return res;
+        }
 
         List<RubricIssueHelpdeskModelDB> ctrl = [lpi];
 

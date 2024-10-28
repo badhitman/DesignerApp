@@ -45,17 +45,16 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
     protected override async Task OnInitializedAsync()
     {
         await SetBusy();
-        
+
         TResponseModel<AddressOrganizationModelDB[]> res_address = await CommerceRepo
             .AddressesOrganizationsRead([AddressForOrganization]);
-        IsBusyProgress = false;
+
         SnackbarRepo.ShowMessagesResponse(res_address.Messages);
         AddressCurrent = res_address.Response!.Single();
         AddressEdit = GlobalTools.CreateDeepCopy(AddressCurrent) ?? throw new Exception();
-        await SetBusy();
-        
+
         TResponseModel<List<RubricIssueHelpdeskModelDB>?> res_rubric = await HelpdeskRepo.RubricRead(AddressCurrent.ParentId);
-        IsBusyProgress = false;
+        await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res_rubric.Messages);
         if (res_rubric.Success() && res_rubric.Response is not null && res_rubric.Response.Count != 0)
         {
@@ -91,7 +90,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
             return;
 
         await SetBusy();
-        
+
         TResponseModel<int> res = await CommerceRepo.AddressOrganizationUpdate(new AddressOrganizationBaseModel()
         {
             Address = AddressEdit.Address!,

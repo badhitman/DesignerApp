@@ -51,7 +51,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
             return;
 
         await SetBusy();
-        
+
         TResponseModel<int> res = await CommerceRepo.AddressOrganizationUpdate(new AddressOrganizationBaseModel()
         {
             Address = addingAddress!,
@@ -102,15 +102,17 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
             _last_request = _curr_request;
 
             await SetBusy();
-            
+
             foreach (int i in added_rubrics)
             {
                 TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(i);
                 if (res.Success() && res.Response is not null)
                     RubriciesCached.Add(i, res.Response);
+
+                if (res.Messages.Any(x => x.TypeMessage > ResultTypesEnum.Info))
+                    SnackbarRepo.ShowMessagesResponse(res.Messages);
             }
-            IsBusyProgress = false;
-            StateHasChanged();
+            await SetBusy(false);
         }
     }
 

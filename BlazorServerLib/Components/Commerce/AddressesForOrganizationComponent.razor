@@ -17,23 +17,30 @@
                 </MudCardHeader>
                 <MudCardContent>
                     <MudStack>
-                        <CascadingValue Value="RubricSelectAction">
-                            <RubricSelectorComponent ContextName="@GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME" Title="Регион, Город" ModeSelectingRubrics="ModesSelectRubricsEnum.Strict" ShowDisabledRubrics="false" ParentRubric="0" />
-                        </CascadingValue>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="nameFormControlInput1" class="form-label">Название</label>
-                                <input @bind-value:event="oninput" @bind-value="addingName" type="text" class="form-control" id="nameFormControlInput1" placeholder="Наименование">
+                        @if (IsBusyProgress)
+                        {
+                            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+                        }
+                        else
+                        {
+                            <CascadingValue Value="RubricSelectAction">
+                                <RubricSelectorComponent ContextName="@GlobalStaticConstants.Routes.ADDRESS_CONTROLLER_NAME" Title="Регион, Город" ModeSelectingRubrics="ModesSelectRubricsEnum.Strict" ShowDisabledRubrics="false" ParentRubric="0" />
+                            </CascadingValue>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="nameFormControlInput1" class="form-label">Название</label>
+                                    <input @bind-value:event="oninput" @bind-value="addingName" type="text" class="form-control" id="nameFormControlInput1" placeholder="Наименование">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="addrFormControlInput1" class="form-label">Адрес</label>
+                                    <input @bind-value:event="oninput" @bind-value="addingAddress" type="text" class="form-control" id="addrFormControlInput1" placeholder="Улица, дом...">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="telFormControlInput" class="form-label">Контакты</label>
+                                    <input @bind-value:event="oninput" @bind-value="addingContacts" type="tel" class="form-control" id="telFormControlInput" placeholder="Номер телефона, email...">
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <label for="addrFormControlInput1" class="form-label">Адрес</label>
-                                <input @bind-value:event="oninput" @bind-value="addingAddress" type="text" class="form-control" id="addrFormControlInput1" placeholder="Улица, дом...">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="telFormControlInput" class="form-label">Контакты</label>
-                                <input @bind-value:event="oninput" @bind-value="addingContacts" type="tel" class="form-control" id="telFormControlInput" placeholder="Номер телефона, email...">
-                            </div>
-                        </div>
+                        }
                     </MudStack>
                 </MudCardContent>
                 <MudCardActions>
