@@ -129,7 +129,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
 
 #### [StorageService](https://github.com/badhitman/DesignerApp/tree/main/StorageService)
 - Общее пространство хранения параметров со своим контекстом: `StorageContext`. Позволяет разным службам обращаться к параметрам друг друга. Например в Web интерфейсе HelpDesk можно изменить режим работы TelegramBot (бот читает этот параметр при каждом входящем сообщении).
-- Обслуживает [функционал хранения файлов](https://github.com/badhitman/DesignerApp/blob/main/README.md#%D1%85%D1%80%D0%B0%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5-%D1%84%D0%B0%D0%B9%D0%BB%D0%BE%D0%B2): MongoDB.Driver.GridFS
+- Обслуживает [функционал хранения файлов](./#%D1%85%D1%80%D0%B0%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5-%D1%84%D0%B0%D0%B9%D0%BB%D0%BE%D0%B2): MongoDB.Driver.GridFS
 
 #### [CommerceService](https://github.com/badhitman/DesignerApp/tree/main/CommerceService)
 - Справочник номенклатуры и офферов с настраиваемыми правилами ценообразования. Клиенты ведут свой перечень юридических лиц с разбивкой по филиалам, для которых можно формировать заказы. Документы после создания сразу попадают в основную СЭД, где с ними можно работать: менять статус, вести диалог с клиентом и т.д.
