@@ -59,11 +59,6 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
     public List<TabAddressForOrderModelDb>? AddressesTabs { get; set; }
 
     /// <summary>
-    /// Вложения (файлы)
-    /// </summary>
-    public List<AttachmentForOrderModelDB>? Attachments { get; set; }
-
-    /// <summary>
     /// Подготовить объект заказа для записи в БД
     /// </summary>
     public void PrepareForSave()

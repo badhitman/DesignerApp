@@ -75,11 +75,6 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<bool>> RowsForOrderDelete(int[] req);
 
     /// <summary>
-    /// Прикрепить файл к заказу (счёт, акт и т.п.)
-    /// </summary>
-    public Task<TResponseModel<int>> AttachmentForOrder(AttachmentForOrderRequestModel att);
-
-    /// <summary>
     /// Обновить строку заказа
     /// </summary>
     public Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB row);

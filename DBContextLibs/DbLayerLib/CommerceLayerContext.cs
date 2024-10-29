@@ -86,9 +86,4 @@ public partial class CommerceLayerContext : DbContext
     /// PaymentsDocuments
     /// </summary>
     public DbSet<PaymentDocumentModelDb> PaymentsDocuments { get; set; }
-
-    /// <summary>
-    /// AttachmentsForOrders
-    /// </summary>
-    public DbSet<AttachmentForOrderModelDB> AttachmentsForOrders { get; set; }
 }

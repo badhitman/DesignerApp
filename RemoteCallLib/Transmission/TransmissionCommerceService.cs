@@ -20,10 +20,6 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> AttachmentForOrder(AttachmentForOrderRequestModel att)
-        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.AttachmentAddToOrderCommerceReceive, att);
-
-    /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<GoodsModelDB>>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
 

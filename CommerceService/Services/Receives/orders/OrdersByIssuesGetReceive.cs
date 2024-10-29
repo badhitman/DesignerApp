@@ -39,7 +39,6 @@ public class OrdersByIssuesGetReceive(IDbContextFactory<CommerceContext> commerc
             };
 
         Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = q
-            .Include(x => x.Attachments)
             .Include(x => x.Organization)
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.AddressOrganization)

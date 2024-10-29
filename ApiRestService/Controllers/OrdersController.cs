@@ -4,10 +4,10 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver.GridFS;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using SharedLib;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace ApiRestService.Controllers;
 
@@ -20,7 +20,7 @@ namespace ApiRestService.Controllers;
 #else
 [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
 #endif
-public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelpdeskRemoteTransmissionService hdRepo, IMongoDatabase mongoFs) : ControllerBase
+public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelpdeskRemoteTransmissionService hdRepo, ISerializeStorageRemoteTransmissionService storageRepo) : ControllerBase
 {
     /// <summary>
     /// Подбор (поиск по параметрам) заказов
@@ -47,9 +47,15 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
 #else
     [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
 #endif
-    public async Task<ResponseBaseModel> AttachmentForOrder([FromRoute] int OrderId, IFormFile uploadedFile)
+    public async Task<TResponseModel<StorageFileModelDB>> AttachmentForOrder([FromRoute] int OrderId, IFormFile uploadedFile)
     {
-        TResponseModel<int> response = new();
+        TResponseModel<StorageFileModelDB> response = new();
+        if (uploadedFile is null || uploadedFile.Length == 0)
+        {
+            response.AddError("Данные файла отсутствуют");
+            return response;
+        }
+
         TResponseModel<OrderDocumentModelDB[]> call = await commRepo.OrdersRead([OrderId]);
 
         if (!call.Success())
@@ -63,27 +69,26 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
             return response;
         }
 
-        GridFSBucket gridFS = new(mongoFs);
+        string _file_name = uploadedFile.FileName.Trim();
+        if (string.IsNullOrWhiteSpace(_file_name))
+            _file_name = $"без имени: {DateTime.UtcNow}";
 
-        if (uploadedFile != null)
+        using MemoryStream stream = new();
+        uploadedFile.OpenReadStream().CopyTo(stream);
+        StorageImageMetadataModel reqSave = new()
         {
-            string _file_name = uploadedFile.FileName.Trim();
-            if (string.IsNullOrWhiteSpace(_file_name))
-                _file_name = $"без имени: {DateTime.UtcNow}";
+            ApplicationName = GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME,
+            PropertyName = GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME,
+            PrefixPropertyName = GlobalStaticConstants.Routes.REST_CONTROLLER_NAME,
+            AuthorUserIdentity = GlobalStaticConstants.Roles.System,
+            FileName = _file_name,
+            ContentType = uploadedFile.ContentType,
+            OwnerPrimaryKey = OrderId,
+            Referrer = this.Request.GetEncodedPathAndQuery(),
+            Payload = stream.ToArray(),
+        };
 
-            using Stream stream = uploadedFile.OpenReadStream();
-            ObjectId _uf = await gridFS.UploadFromStreamAsync(_file_name, stream);
-            AttachmentForOrderRequestModel att_file = new()
-            {
-                FileName = _file_name,
-                FilePoint = _uf.ToString(),
-                FileSize = uploadedFile.Length,
-                OrderDocumentId = OrderId
-            };
-            return await commRepo.AttachmentForOrder(att_file);
-        }
-
-        return ResponseBaseModel.CreateWarning("Данные не записаны");
+        return await storageRepo.SaveFile(reqSave);
     }
 
     /// <summary>

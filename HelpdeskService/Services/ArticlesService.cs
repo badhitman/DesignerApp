@@ -59,6 +59,13 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
     public async Task<ArticleModelDB[]> ArticlesRead(int[] req)
     {
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+#if DEBUG
+        var _res = await context.Articles
+            .Where(x => req.Any(y => y == x.Id))
+            .Include(x => x.RubricsJoins!)
+            .ThenInclude(x => x.Rubric)
+            .ToArrayAsync();
+#endif
         return await context.Articles
             .Where(x => req.Any(y => y == x.Id))
             .Include(x => x.RubricsJoins!)

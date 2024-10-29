@@ -1281,6 +1281,11 @@ public static partial class GlobalStaticConstants
         public const string ACCOUNT_CONTROLLER_NAME = "account";
 
         /// <summary>
+        /// Rest
+        /// </summary>
+        public const string REST_CONTROLLER_NAME = "rest";
+
+        /// <summary>
         /// User
         /// </summary>
         public const string USER_CONTROLLER_NAME = "user";

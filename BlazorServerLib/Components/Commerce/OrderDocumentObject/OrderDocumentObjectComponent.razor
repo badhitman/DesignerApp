@@ -34,6 +34,12 @@ else
         </div>
     }
 }
+<FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME])"
+                           PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
+                           PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
+                           OwnerPrimaryKey="Document.Id"
+                           Title="Вложения"
+                           ManageMode="true" />
 
 <MudButton Class="mt-3" OnClick="OrderToCart" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Скопировать заказ в корзину</MudButton>
 @if (Issue.StepIssue == StatusesDocumentsEnum.Created)
@@ -43,47 +49,4 @@ else
 @if (IsBusyProgress)
 {
     <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="my-7" />
-}
-
-@if (Document.Attachments is not null && Document.Attachments.Count != 0)
-{
-    <div class="card mt-3">
-        <div class="card-body">
-            <h5 class="card-title">Дополнительно</h5>
-            <h6 class="card-subtitle mb-2 text-body-secondary">Сопутствующие документы</h6>
-            @foreach (AttachmentForOrderModelDB _f in Document.Attachments)
-            {
-                <button @onclick="() => FileManage(_f)" type="button" class="btn btn-link">@_f.Name (@GlobalTools.SizeDataAsString(_f.FileSize))</button>
-            }
-        </div>
-    </div>
-}
-
-@if (_selectedFile is not null)
-{
-    <div class="modal fade show" id="exampleModalLive" tabindex="-1" aria-labelledby="exampleModalLiveLabel" style="display: block;" aria-modal="true" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLiveLabel">Файл</h1>
-                    <button @onclick="closeFileManager" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>@_selectedFile.Name - @GlobalTools.SizeDataAsString(_selectedFile.FileSize)</p>
-                </div>
-                <div class="modal-footer">
-                    <div class="btn-group" role="group" aria-label="Basic example">
-                        <button @onclick="DownloadFile" type="button" class="btn btn-outline-primary">Скачать</button>
-                        <button @onclick="TryDelete" type="button" class="btn btn-outline-warning">@(isInitDelete ? "Подтвердить удаление" : "Удалить")</button>
-                        @if (isInitDelete)
-                        {
-                            <button @onclick="() => isInitDelete = false" type="button" class="btn btn-outline-warning">Не удалять</button>
-                        }
-                        <button @onclick="closeFileManager" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div @onclick="closeFileManager" tabindex="-1" class="offcanvas-backdrop fade show"></div>
 }

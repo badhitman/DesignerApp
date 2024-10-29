@@ -27,10 +27,10 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
     public int ArticleId { get; set; }
 
 
-    ArticleModelDB orignArticle = default!;
-    ArticleModelDB editArticle = default!;
+    ArticleModelDB? orignArticle;
+    ArticleModelDB? editArticle;
 
-    bool IsEdited => !orignArticle.Equals(editArticle);
+    bool IsEdited => orignArticle is not null && editArticle is not null && !orignArticle.Equals(editArticle);
 
     string images_upload_url = default!;
     Dictionary<string, object> editorConf = default!;
@@ -38,6 +38,9 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
 
     async Task SaveArticle()
     {
+        if (editArticle is null)
+            throw new Exception();
+
         await SetBusy();
 
         TResponseModel<int?> res = await ArticlesRepo.ArticleCreateOrUpdate(editArticle);
@@ -46,7 +49,10 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
         if (editArticle.Id < 1 && res.Response.HasValue && res.Response.Value > 0)
             NavRepo.NavigateTo($"/articles/edit-card/{res.Response}");
         else
+        {
             await LoadArticleData();
+            editArticle = GlobalTools.CreateDeepCopy(orignArticle) ?? throw new Exception();
+        }
     }
 
     async Task LoadArticleData()
@@ -54,7 +60,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
         await SetBusy();
 
         TResponseModel<ArticleModelDB[]> res = await ArticlesRepo.ArticlesRead([ArticleId]);
-        IsBusyProgress = false;
+        await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response is null)
             throw new Exception();
@@ -64,10 +70,13 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
 
     async void SelectedRubricsChange(IReadOnlyCollection<RubricBaseModel?> req)
     {
+        if (editArticle?.RubricsJoins is not null && !req.Any(x => !editArticle!.RubricsJoins.Any(y => y.RubricId == x?.Id)) && !editArticle.RubricsJoins.Any(x => !req.Any(y => y?.Id == x.RubricId)))
+            return;
+
         await SetBusy();
         TResponseModel<bool?> res = await ArticlesRepo.UpdateRubricsForArticle(new() { ArticleId = ArticleId, RubricsIds = req.Select(x => x!.Id).ToArray() });
         await LoadArticleData();
-        await SetBusy(false);
+        // await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
