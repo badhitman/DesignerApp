@@ -45,8 +45,8 @@ public class RowsForOrderDeleteReceive(IDbContextFactory<CommerceContext> commer
                 .Where(x => orders_ids.Any(y => y == x.Id))
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
-        await context.RowsOfOrdersDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync();
-        res.AddSuccess("Команда удаления успешно выполнена");
+        res.Response = await context.RowsOfOrdersDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() > 0;
+        res.AddSuccess("Команда удаления выполнена");
         return res;
     }
 }

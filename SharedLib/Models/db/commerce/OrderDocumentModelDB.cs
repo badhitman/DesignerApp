@@ -72,6 +72,7 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
             x.Rows?.ForEach(y =>
             {
                 y.Id = 0;
+                y.Amount = y.Quantity * y.Offer!.Price;
                 y.OrderDocument = this;
                 y.Goods = null;
                 y.Offer = null;

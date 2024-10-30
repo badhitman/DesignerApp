@@ -40,10 +40,11 @@ public class RowForOrderUpdateReceive(IDbContextFactory<CommerceContext> commerc
             res.Response = req.Id;
             return res;
         }
-
+       
         res.Response = await context.RowsOfOrdersDocuments
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.Amount, req.Amount)
             .SetProperty(p => p.Quantity, req.Quantity));
 
         res.AddSuccess($"Обновление `{GetType().Name}` выполнено");

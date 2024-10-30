@@ -60,4 +60,9 @@ public class RowOfOrderDocumentModelDB
     /// Количество
     /// </summary>
     public int Quantity { get; set; }
+
+    /// <summary>
+    /// Сумма
+    /// </summary>
+    public decimal Amount { get; set; }
 }
