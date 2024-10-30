@@ -25,6 +25,12 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
     [Inject]
     ISerializeStorageRemoteTransmissionService FilesRepo { get; set; } = default!;
 
+    [Inject]
+    IHelpdeskRemoteTransmissionService HdRepo { get; set; } = default!;
+
+    [Inject]
+    ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
+
 
     bool CanAddingFile => OwnerPrimaryKey.HasValue && OwnerPrimaryKey.Value > 0 &&
         !string.IsNullOrWhiteSpace(PrefixPropertyName) &&
@@ -73,15 +79,16 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
     {
         if (loadedFiles.Count == 0)
             throw new Exception();
-
+        string appName = ApplicationsNames.Single();
         StorageImageMetadataModel req = new()
         {
             AuthorUserIdentity = CurrentUserSession!.UserId,
             PrefixPropertyName = PrefixPropertyName,
-            ApplicationName = ApplicationsNames.Single(),
+            ApplicationName = appName,
             OwnerPrimaryKey = OwnerPrimaryKey,
             PropertyName = PropertyName,
             Referrer = NavRepo.Uri,
+            //
             FileName = "",
             ContentType = "",
             Payload = []
@@ -96,12 +103,15 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
         {
             ms = new();
             await fileBrowser.OpenReadStream(maxAllowedSize: 1024 * 18 * 1024).CopyToAsync(ms);
+
             req.Payload = ms.ToArray();
             req.ContentType = fileBrowser.ContentType;
             req.FileName = fileBrowser.Name;
+
             await ms.DisposeAsync();
             res = await FilesRepo.SaveFile(req);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
+            await PulsePush(fileBrowser.Name, appName);
         }
 
         loadedFiles.Clear();
@@ -110,6 +120,50 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
 
         if (TableRef is not null)
             await TableRef.ReloadServerData();
+    }
+
+    private async Task PulsePush(string fileName, string appName)
+    {
+        if (CurrentUserSession is null || !OwnerPrimaryKey.HasValue)
+            throw new InvalidOperationException();
+
+        TAuthRequestModel<PulseIssueBaseModel> reqPulse = new()
+        {
+            SenderActionUserId = CurrentUserSession.UserId,
+            Payload = new()
+            {
+                Description = $"Файл '{fileName}' загружен",
+                IssueId = 0,
+                PulseType = PulseIssuesTypesEnum.Files,
+                Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME
+            }
+        };
+
+        switch (appName)
+        {
+            case GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME:
+                TResponseModel<OrderDocumentModelDB[]> findOrder = await CommRepo.OrdersByIssues(new OrdersByIssuesSelectRequestModel() { IssueIds = [OwnerPrimaryKey.Value] });
+                SnackbarRepo.ShowMessagesResponse(findOrder.Messages);
+
+                if (!findOrder.Success() || findOrder.Response is null || findOrder.Response.Length != 1)
+                {
+                    SnackbarRepo.Error($"Заказ #{OwnerPrimaryKey.Value} не найден в БД");
+                    return;
+                }
+                OrderDocumentModelDB orderDb = findOrder.Response.Single();
+                if (!orderDb.HelpdeskId.HasValue || orderDb.HelpdeskId.Value < 1)
+                {
+                    SnackbarRepo.Error($"Заказу #{OwnerPrimaryKey.Value} не назначен ведущий документ");
+                    return;
+                }
+                reqPulse.Payload.IssueId = orderDb.HelpdeskId.Value;
+                break;
+            case GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME:
+                reqPulse.Payload.IssueId = OwnerPrimaryKey.Value;
+                break;
+        }
+
+        TResponseModel<bool> res = await HdRepo.PulsePush(new PulseRequestModel() { Payload = reqPulse });
     }
 
     /// <inheritdoc/>
