@@ -11,7 +11,11 @@ namespace ApiRestService.Controllers;
 /// <summary>
 /// Платежи
 /// </summary>
-[Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog, Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsReadCommerce)}")]
+
+[Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog]
+#if !DEBUG
+[Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsReadCommerce)},{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
+#endif
 public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
 {
     /// <summary>
@@ -20,7 +24,10 @@ public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : C
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.PaymentsWriteCommerce"/>
     /// </remarks>
-    [HttpPost($"/api/{GlobalStaticConstants.Routes.PAYMENTS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), LoggerLog, Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
+    [HttpPost($"/api/{GlobalStaticConstants.Routes.PAYMENTS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), LoggerLog]
+#if !DEBUG
+    [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
+#endif
     public async Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment)
         => await commRepo.PaymentDocumentUpdate(payment);
 
@@ -30,7 +37,10 @@ public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : C
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.PaymentsWriteCommerce"/>
     /// </remarks>
-    [HttpDelete($"/api/{GlobalStaticConstants.Routes.PAYMENTS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}/{{payment_id}}"), LoggerLog, Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
+    [HttpDelete($"/api/{GlobalStaticConstants.Routes.PAYMENTS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}/{{payment_id}}"), LoggerLog]
+#if !DEBUG
+    [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
+#endif
     public async Task<TResponseModel<bool>> PaymentDocumentDelete([FromRoute] int payment_id)
         => await commRepo.PaymentDocumentDelete(payment_id);
 }

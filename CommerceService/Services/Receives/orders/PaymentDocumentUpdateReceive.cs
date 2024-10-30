@@ -25,18 +25,30 @@ public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> com
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int?> res = new() { Response = 0 };
+
+        if (req.Amount <= 0)
+        {
+            res.AddError("Сумма платежа должна быть больше нуля");
+            return res;
+        }
+        if (req.OrderDocumentId < 1)
+        {
+            res.AddError("Не указан документ-заказ");
+            return res;
+        }
+
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         DateTime dtu = DateTime.UtcNow;
 
-        await context.OrdersDocuments
-                .Where(x => x.Id == req.OrderDocumentId)
-                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+        PaymentDocumentModelDb? payment_db = null;
+        if (!string.IsNullOrWhiteSpace(req.ExternalDocumentId))
+        {
+            payment_db = await context
+               .PaymentsDocuments
+               .FirstOrDefaultAsync(x => x.ExternalDocumentId == req.ExternalDocumentId);
 
-        PaymentDocumentModelDb? payment_db = await context
-            .PaymentsDocuments
-            .FirstOrDefaultAsync(x => x.ExternalDocumentId == req.ExternalDocumentId);
-
-        req.Id = req.Id > 0 ? req.Id : payment_db?.Id ?? 0;
+            req.Id = req.Id > 0 ? req.Id : payment_db?.Id ?? 0;
+        }
 
         if (req.Id < 1)
         {
@@ -49,7 +61,16 @@ public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> com
             };
 
             await context.AddAsync(payment_db);
-            await context.SaveChangesAsync();
+
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
             res.AddSuccess("Платёж добавлен");
             res.Response = req.Id;
             return res;
@@ -61,7 +82,12 @@ public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> com
             .SetProperty(p => p.Name, req.Name)
             .SetProperty(p => p.Amount, req.Amount));
 
-        if (!string.IsNullOrWhiteSpace(req.ExternalDocumentId))
+        await context.OrdersDocuments
+               .Where(x => x.Id == req.OrderDocumentId)
+               .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+
+        if (!string.IsNullOrWhiteSpace(req.ExternalDocumentId) && payment_db?.ExternalDocumentId != req.ExternalDocumentId)
             res.Response = await context.PaymentsDocuments
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set.SetProperty(p => p.ExternalDocumentId, req.ExternalDocumentId));
