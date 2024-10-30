@@ -39,7 +39,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME}/{{OrderId}}/{GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME}-{GlobalStaticConstants.Routes.ADD_ACTION_NAME}")]
+    [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME}/{{OrderId}}/{GlobalStaticConstants.Routes.ATTACHMENT_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.ADD_ACTION_NAME}")]
 #if DEBUG
     [AllowAnonymous]
 #else
@@ -76,17 +76,34 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
         StorageImageMetadataModel reqSave = new()
         {
             ApplicationName = GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME,
-            PropertyName = GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME,
+            PropertyName = GlobalStaticConstants.Routes.ATTACHMENT_CONTROLLER_NAME,
             PrefixPropertyName = GlobalStaticConstants.Routes.REST_CONTROLLER_NAME,
             AuthorUserIdentity = GlobalStaticConstants.Roles.System,
             FileName = _file_name,
             ContentType = uploadedFile.ContentType,
             OwnerPrimaryKey = OrderId,
-            Referrer = this.Request.GetEncodedPathAndQuery(),
+            Referrer = Request.GetEncodedPathAndQuery(),
             Payload = stream.ToArray(),
         };
 
-        return await storageRepo.SaveFile(reqSave);
+        OrderDocumentModelDB orderDb = call.Response.Single();
+        TResponseModel<StorageFileModelDB> resWrite = await storageRepo.SaveFile(reqSave);
+
+        if (resWrite.Success() && orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
+        {
+            PulseIssueBaseModel pulseReq = new()
+            {
+                Description = "Файл загружен через api/rest",
+                IssueId = orderDb.HelpdeskId.Value,
+                PulseType = PulseIssuesTypesEnum.Files,
+                Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME
+            };
+
+            TResponseModel<bool> pulsePushRes = await hdRepo.PulsePush(new PulseRequestModel() { Payload = new() { SenderActionUserId = GlobalStaticConstants.Roles.System, Payload = pulseReq } });
+            resWrite.AddRangeMessages(pulsePushRes.Messages);
+        }
+
+        return resWrite;
     }
 
     /// <summary>

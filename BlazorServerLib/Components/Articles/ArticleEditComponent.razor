@@ -60,7 +60,7 @@
     </MudTabPanel>
     <MudTabPanel Disabled="@(ArticleId < 1 || IsBusyProgress || IsEdited)" Text="Файлы">
         <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ARTICLE_CONTROLLER_NAME])"
-                                   PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
+                                   PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_CONTROLLER_NAME"
                                    PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
                                    OwnerPrimaryKey="ArticleId"
                                    Title="Прикреплённые файлы"
