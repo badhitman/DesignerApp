@@ -12,7 +12,6 @@ using SharedLib;
 using NLog.Web;
 using NLog;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using MongoDB.Driver;
 
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
@@ -72,8 +71,10 @@ builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
 builder.Services.AddAuthorization();
 
-MongoConfigModel _jo = builder.Configuration.GetSection("MongoDB").Get<MongoConfigModel>()!;
-builder.Services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.FilesSystemName));
+//MongoConfigModel _jo = builder.Configuration.GetSection("MongoDB").Get<MongoConfigModel>() ?? throw new Exception("Отсутствует конфигурация MonoDB");
+//builder.Services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.FilesSystemName));
+
+RestApiConfigBaseModel restConf = builder.Configuration.GetSection("ApiAccess").Get<RestApiConfigBaseModel>() ?? throw new Exception("Отсутствует конфигурация ApiAccess");
 
 // Add services to the container.
 #region MQ Transmission (remote methods call)
@@ -108,7 +109,7 @@ builder.Services.AddSwaggerGen(options =>
               {
                   Version = "v1",
                   Title = "tools - REST API",
-                  Description = "Удалённый RESTful доступ к <a href='https://github.com/badhitman/DesignerApp'>https://github.com/badhitman/DesignerApp</a>",
+                  Description = $"Удалённый RESTful доступ к <a href='https://github.com/badhitman/DesignerApp'>https://github.com/badhitman/DesignerApp</a>. Токен доступа следует передавать с каждым запросом через заголовок с именем '{restConf.TokenAccessHeaderName}'",
                   Contact = new OpenApiContact
                   {
                       Email = "ru.usa@mail.ru",

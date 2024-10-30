@@ -4,8 +4,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
-using MongoDB.Bson;
 using SharedLib;
 using Microsoft.AspNetCore.Http.Extensions;
 

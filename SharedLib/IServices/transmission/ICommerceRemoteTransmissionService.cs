@@ -15,11 +15,6 @@ public interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel id);
 
     /// <summary>
-    /// GetFileOrder
-    /// </summary>
-    public Task<TResponseModel<byte[]>> GetFileOrder(string id);
-
-    /// <summary>
     /// Удалить ценообразование
     /// </summary>
     public Task<TResponseModel<bool>> PriceRuleDelete(int id);

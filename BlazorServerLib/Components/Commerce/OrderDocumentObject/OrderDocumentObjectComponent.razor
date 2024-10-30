@@ -34,13 +34,16 @@ else
         </div>
     }
 }
-<FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME])"
-                           PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
-                           PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
-                           OwnerPrimaryKey="Document.Id"
-                           Title="Вложения"
-                           ManageMode="true" />
-
+<div class="card my-3">
+    <div class="card-body">
+        <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME])"
+                                   PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_ACTION_NAME"
+                                   PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
+                                   OwnerPrimaryKey="Document.Id"
+                                   Title="Вложения"
+                                   ManageMode="true" />
+    </div>
+</div>
 <MudButton Class="mt-3" OnClick="OrderToCart" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Скопировать заказ в корзину</MudButton>
 @if (Issue.StepIssue == StatusesDocumentsEnum.Created)
 {

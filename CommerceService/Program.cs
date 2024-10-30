@@ -10,8 +10,6 @@ using SharedLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
-using MongoDB.Driver;
-using DbLayerLib;
 using Microsoft.AspNetCore.Hosting;
 
 // Early init of NLog to allow startup and exception logging, before host is built
@@ -59,9 +57,6 @@ builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
 ;
 
-MongoConfigModel _jo = builder.Configuration.GetSection("MongoDB").Get<MongoConfigModel>()!;
-builder.Services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.FilesSystemName));
-
 builder.Services.AddSingleton<WebConfigModel>();
 builder.Services.AddOptions();
 
@@ -95,7 +90,6 @@ builder.Services
     .RegisterMqListener<OrdersByIssuesGetReceive, OrdersByIssuesSelectRequestModel?, OrderDocumentModelDB[]?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
     .RegisterMqListener<StatusChangeReceive, StatusChangeRequestModel?, bool?>()
-    .RegisterMqListener<GetFileOrderReceive, string?, byte[]?>()
     .RegisterMqListener<PriceRuleDeleteReceive, int?, bool?>()
     .RegisterMqListener<PriceRuleUpdateReceive, PriceRuleForOfferModelDB?, int?>()
     .RegisterMqListener<PricesRulesGetForOffersReceive, int[]?, PriceRuleForOfferModelDB[]?>()
