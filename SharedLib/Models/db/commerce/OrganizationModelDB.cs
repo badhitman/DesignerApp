@@ -10,6 +10,16 @@ namespace SharedLib;
 public class OrganizationModelDB : OrganizationLegalModel
 {
     /// <summary>
+    /// Дата последнего обновления
+    /// </summary>
+    public DateTime LastAtUpdatedUTC { get; set; } = DateTime.MinValue;
+
+    /// <summary>
+    /// Дата создания
+    /// </summary>
+    public DateTime CreatedAtUTC { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
     /// НОВОЕ Название (запрос изменений)
     /// </summary>
     public string? NewName { get; set; }

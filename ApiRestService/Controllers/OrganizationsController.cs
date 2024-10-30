@@ -63,7 +63,7 @@ public class OrganizationsController(ICommerceRemoteTransmissionService commRepo
 #else
 [Authorize(Roles = nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce))]
 #endif
-    public async Task<TResponseModel<bool>> OrganizationSetLegal(OrganizationModelDB org)
+    public async Task<TResponseModel<bool>> OrganizationSetLegal(OrganizationLegalModel org)
         => await commRepo.OrganizationSetLegal(org);
 
     /// <summary>

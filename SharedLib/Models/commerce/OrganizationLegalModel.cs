@@ -13,7 +13,7 @@ namespace SharedLib;
 [Index(nameof(INN), IsUnique = true)]
 [Index(nameof(OGRN), IsUnique = true)]
 [Index(nameof(BankBIC), nameof(CorrespondentAccount), nameof(CurrentAccount), IsUnique = true)]
-public class OrganizationLegalModel : EntrySwitchableUpdatedModel
+public class OrganizationLegalModel : EntryDescriptionSwitchableModel
 {
     /// <summary>
     /// Телефон

@@ -38,10 +38,10 @@ public class StatusChangeReceive(
         };
 
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && (!rest.Success() || rest.Response is null || rest.Response.Length != 1))
             return new() { Messages = rest.Messages };
 
-        UserInfoModel actor = rest.Response[0];
+        UserInfoModel actor = req.SenderActionUserId == GlobalStaticConstants.Roles.System ? UserInfoModel.BuildSystem() : rest.Response![0];
 
         TResponseModel<IssueHelpdeskModelDB[]> issues_data = await helpdeskTransmissionRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
@@ -96,7 +96,9 @@ public class StatusChangeReceive(
             string msg = $"Статус успешно изменён с `{issue_data.StepIssue}` на `{req.Payload.Step}`";
 
             await context.Issues.Where(x => x.Id == issue_data.Id)
-                .ExecuteUpdateAsync(set => set.SetProperty(p => p.StepIssue, req.Payload.Step));
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.StepIssue, req.Payload.Step)
+                .SetProperty(p => p.LastUpdateAt, DateTime.UtcNow));
 
             res.AddSuccess(msg);
             res.Response = true;
@@ -113,8 +115,8 @@ public class StatusChangeReceive(
                         Description = msg,
                     },
                 },
-                IsMuteEmail = true,
-                IsMuteTelegram = true,
+                //IsMuteEmail = true,
+                //IsMuteTelegram = true,
             };
 
             await helpdeskTransmissionRepo.PulsePush(p_req);

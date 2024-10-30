@@ -125,7 +125,7 @@ public interface ICommerceRemoteTransmissionService
     /// <remarks>
     /// Если организация находиться в статусе запроса изменения реквизитов - этот признак обнуляется.
     /// </remarks>
-    public Task<TResponseModel<bool>> OrganizationSetLegal(OrganizationModelDB org);
+    public Task<TResponseModel<bool>> OrganizationSetLegal(OrganizationLegalModel org);
 
     /// <summary>
     /// Прочитать данные организаций по их идентификаторам

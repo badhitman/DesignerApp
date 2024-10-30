@@ -44,7 +44,7 @@ public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerce
         => await rabbitClient.MqRemoteCall<OrderDocumentModelDB[]>(GlobalStaticConstants.TransmissionQueues.OrdersReadCommerceReceive, orders_ids);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> OrganizationSetLegal(OrganizationModelDB org)
+    public async Task<TResponseModel<bool>> OrganizationSetLegal(OrganizationLegalModel org)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.OrganizationSetLegalCommerceReceive, org);
 
     /// <inheritdoc/>

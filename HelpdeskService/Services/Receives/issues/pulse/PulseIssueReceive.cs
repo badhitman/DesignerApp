@@ -59,10 +59,13 @@ public class PulseIssueReceive(
         await context.SaveChangesAsync();
         res.Response = true;
 
-        if (req.Payload.Payload.PulseType != PulseIssuesTypesEnum.Messages && req.Payload.Payload.PulseType != PulseIssuesTypesEnum.Status && req.Payload.Payload.PulseType != PulseIssuesTypesEnum.Subscribes)
+        PulseIssuesTypesEnum[] _notifiesTypes = [PulseIssuesTypesEnum.Status, PulseIssuesTypesEnum.Subscribes, PulseIssuesTypesEnum.Messages, PulseIssuesTypesEnum.Files];
+        if (!_notifiesTypes.Contains(req.Payload.Payload.PulseType))
             return res;
+
         else if ((req.Payload.Payload.PulseType == PulseIssuesTypesEnum.Messages || req.Payload.Payload.PulseType == PulseIssuesTypesEnum.Subscribes) && req.Payload.Payload.Tag != GlobalStaticConstants.Routes.ADD_ACTION_NAME)
             return res;
+
         IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
         List<string> users_ids = [issue_data.AuthorIdentityUserId];
         if (!string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId))
