@@ -149,6 +149,171 @@ Content-Type: application/json
 }
 ```
 
+Структура ответа такова:
+``` json
+{
+	"statusDocument": 0,
+	"authorIdentityUserId": "5ced9296-2e77-4f01-b32e-9e69bd18d186",
+	"externalDocumentId": null,
+	"information": null,
+	"helpdeskId": 1,
+	"organization": {
+		"lastAtUpdatedUTC": "2024-10-02T20:03:33.657184Z",
+		"createdAtUTC": "2024-09-30T04:57:51.6344Z",
+		"newName": null,
+		"newLegalAddress": "zxczxc",
+		"newINN": null,
+		"newKPP": null,
+		"newOGRN": null,
+		"newCurrentAccount": null,
+		"newCorrespondentAccount": null,
+		"newBankName": null,
+		"newBankBIC": null,
+		"hasRequestToChange": true,
+		"users": null,
+		"addresses": [
+			{
+				"organization": null,
+				"name": "Станислав Успенский",
+				"parentId": 48,
+				"address": "zxczxc",
+				"contacts": "zxczxc",
+				"organizationId": 1,
+				"id": 2
+			}
+		],
+		"phone": "sadasds",
+		"email": "dasdsad",
+		"legalAddress": "zxczxc",
+		"inn": "cxzczx",
+		"kpp": "czxczxc",
+		"ogrn": "zxczxc",
+		"currentAccount": "zxczxc",
+		"correspondentAccount": "xzczxc",
+		"bankName": "zxczxczxc",
+		"bankBIC": "xzczxc",
+		"description": null,
+		"name": "cxzcxz",
+		"id": 1,
+		"isDisabled": false
+	},
+	"organizationId": 1,
+	"addressesTabs": [
+		{
+			"id": 1,
+			"orderDocument": null,
+			"orderDocumentId": 1,
+			"addressOrganization": {
+				"organization": {
+					"lastAtUpdatedUTC": "2024-10-02T20:03:33.657184Z",
+					"createdAtUTC": "2024-09-30T04:57:51.6344Z",
+					"newName": null,
+					"newLegalAddress": "zxczxc",
+					"newINN": null,
+					"newKPP": null,
+					"newOGRN": null,
+					"newCurrentAccount": null,
+					"newCorrespondentAccount": null,
+					"newBankName": null,
+					"newBankBIC": null,
+					"hasRequestToChange": true,
+					"users": null,
+					"addresses": [],
+					"phone": "sadasds",
+					"email": "dasdsad",
+					"legalAddress": "zxczxc",
+					"inn": "cxzczx",
+					"kpp": "czxczxc",
+					"ogrn": "zxczxc",
+					"currentAccount": "zxczxc",
+					"correspondentAccount": "xzczxc",
+					"bankName": "zxczxczxc",
+					"bankBIC": "xzczxc",
+					"description": null,
+					"name": "cxzcxz",
+					"id": 1,
+					"isDisabled": false
+				},
+				"name": "Станислав Успенский",
+				"parentId": 48,
+				"address": "zxczxc",
+				"contacts": "zxczxc",
+				"organizationId": 1,
+				"id": 2
+			},
+			"addressOrganizationId": 2,
+			"rows": [
+				{
+					"id": 1,
+					"addressForOrderTab": null,
+					"addressForOrderTabId": 1,
+					"orderDocument": null,
+					"orderDocumentId": 1,
+					"offer": {
+						"goods": {
+							"baseUnit": "Thing",
+							"offers": [],
+							"lastAtUpdatedUTC": "2024-10-24T14:25:13.625921Z",
+							"createdAtUTC": "2024-10-01T18:47:53.59351Z",
+							"description": "<p><img src=\"../../cloud-fs/read/40/2024-10-18_001.jpg\" alt=\"\" width=\"2552\" height=\"3508\"></p>",
+							"name": "cxzczxc",
+							"id": 1,
+							"isDisabled": false
+						},
+						"goodsId": 1,
+						"offerUnit": "Stack",
+						"multiplicity": 2,
+						"price": 800,
+						"pricesRules": null,
+						"lastAtUpdatedUTC": "2024-10-01T18:48:05.419474Z",
+						"createdAtUTC": "2024-10-01T18:48:05.419476Z",
+						"description": null,
+						"name": " cvxcvxc",
+						"id": 1,
+						"isDisabled": false
+					},
+					"offerId": 1,
+					"goods": {
+						"baseUnit": "Thing",
+						"offers": [
+							{
+								"goods": null,
+								"goodsId": 1,
+								"offerUnit": "Stack",
+								"multiplicity": 2,
+								"price": 800,
+								"pricesRules": null,
+								"lastAtUpdatedUTC": "2024-10-01T18:48:05.419474Z",
+								"createdAtUTC": "2024-10-01T18:48:05.419476Z",
+								"description": null,
+								"name": " cvxcvxc",
+								"id": 1,
+								"isDisabled": false
+							}
+						],
+						"lastAtUpdatedUTC": "2024-10-24T14:25:13.625921Z",
+						"createdAtUTC": "2024-10-01T18:47:53.59351Z",
+						"description": "<p><img src=\"../../cloud-fs/read/40/2024-10-18_001.jpg\" alt=\"\" width=\"2552\" height=\"3508\"></p>",
+						"name": "cxzczxc",
+						"id": 1,
+						"isDisabled": false
+					},
+					"goodsId": 1,
+					"quantity": 1
+				}
+			]
+		}
+	],
+	"lastAtUpdatedUTC": "0001-01-01T00:00:00",
+	"createdAtUTC": "2024-10-01T04:02:21.036045Z",
+	"description": null,
+	"name": "Новый заказ",
+	"id": 1,
+	"isDisabled": false
+}
+```
+У документа есть поле `addressesTabs`, которые представляют перечень адресов доставки по данному заказу. У каждого адреса доставки есть поле `rows` в котором хранятся строки/данные по номенклатуре заказа.
+
 ### Смена статуса заказу
 ``` shell
 curl -X 'POST' \
