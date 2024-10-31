@@ -1,5 +1,7 @@
 ## Commerce
 
+[план обмена](https://github.com/badhitman/DesignerApp/blob/main/CommerceService/INTEGRATION.md)
+
 ![Заказ товаров](img/create-order.png)
 
 ### Контрагенты
