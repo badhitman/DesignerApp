@@ -42,6 +42,8 @@ public class OrganizationsSelectReceive(IDbContextFactory<CommerceContext> comme
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 
+        var extQ = pq.Include(x => x.Addresses).Include(x => x.Users);
+
         return new()
         {
             Response = new()
@@ -51,7 +53,7 @@ public class OrganizationsSelectReceive(IDbContextFactory<CommerceContext> comme
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = await q.CountAsync(),
-                Response = req.Payload.IncludeExternalData ? [.. await pq.Include(x => x.Addresses).ToArrayAsync()] : [.. await pq.ToArrayAsync()]
+                Response = req.Payload.IncludeExternalData ? [.. await extQ.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
             }
         }; ;
     }
