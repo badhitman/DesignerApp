@@ -24,10 +24,10 @@ public class TagsSelectReceive(ILogger<TagsSelectReceive> loggerRepo, IDbContext
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
 
         if (req.PageSize < 5)
             req.PageSize = 5;
+        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
 
         IQueryable<TagModelDB> q = context
             .CloudTags

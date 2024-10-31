@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using System.Text.RegularExpressions;
@@ -11,7 +12,7 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// Save parameter
 /// </summary>
-public class SaveParameterReceive(ISerializeStorage serializeStorageRepo)
+public class SaveParameterReceive(ISerializeStorage serializeStorageRepo,ILogger<SaveParameterReceive> LoggerRepo)
     : IResponseReceive<StorageCloudParameterPayloadModel?, int?>
 {
     /// <inheritdoc/>
@@ -21,6 +22,7 @@ public class SaveParameterReceive(ISerializeStorage serializeStorageRepo)
     public async Task<TResponseModel<int?>> ResponseHandleAction(StorageCloudParameterPayloadModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
+        LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         Regex rx = new(@"\s+", RegexOptions.Compiled);
         StorageCloudParameterModelDB store_db = new()
         {

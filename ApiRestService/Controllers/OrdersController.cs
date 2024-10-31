@@ -86,24 +86,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
             Payload = stream.ToArray(),
         };
 
-        OrderDocumentModelDB orderDb = call.Response.Single();
-        TResponseModel<StorageFileModelDB> resWrite = await storageRepo.SaveFile(reqSave);
-
-        if (resWrite.Success() && orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
-        {
-            PulseIssueBaseModel pulseReq = new()
-            {
-                Description = "Файл загружен через api/rest",
-                IssueId = orderDb.HelpdeskId.Value,
-                PulseType = PulseIssuesTypesEnum.Files,
-                Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME
-            };
-
-            TResponseModel<bool> pulsePushRes = await hdRepo.PulsePush(new PulseRequestModel() { Payload = new() { SenderActionUserId = GlobalStaticConstants.Roles.System, Payload = pulseReq } });
-            resWrite.AddRangeMessages(pulsePushRes.Messages);
-        }
-
-        return resWrite;
+        return await storageRepo.SaveFile(reqSave);
     }
 
     /// <summary>

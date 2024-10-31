@@ -15,35 +15,35 @@ public enum PulseIssuesTypesEnum
     /// <remarks>
     /// При создании обращения это первое событие для установки начального статуса: Создан
     /// </remarks>
-    Status,
+    Status = 0,
 
     /// <summary>
     /// Изменение в области темы, рубрики, описания
     /// </summary>
-    Main,
+    Main = 10,
 
     /// <summary>
     /// Изменения связанные с сообщениями
     /// </summary>
-    Messages,
+    Messages = 20,
 
     /// <summary>
     /// Изменения исполнителя
     /// </summary>
-    Executor,
+    Executor = 30,
 
     /// <summary>
     /// Голосование
     /// </summary>
-    Vote,
+    Vote = 40,
 
     /// <summary>
     /// Изменения в подписчиках
     /// </summary>
-    Subscribes,
+    Subscribes = 50,
 
     /// <summary>
     /// Изменения в файлах
     /// </summary>
-    Files,
+    Files = 60,
 }

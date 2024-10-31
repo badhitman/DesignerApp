@@ -213,7 +213,6 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseAuthModel
         await SetBusy();
 
         TResponseModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(new() { ProjectId = ParentFormsPage.MainProject.Id });
-        await SetBusy(false);
 
         allDirectories = rest.Response ?? throw new Exception();
 
@@ -223,19 +222,17 @@ public partial class DirectoryNavComponent : BlazorBusyComponentBaseAuthModel
             SelectedDirectoryId = allDirectories.FirstOrDefault()?.Id ?? 0;
 
         SelectedDirectoryChangeHandler(SelectedDirectoryId);
-
-        if (stateHasChanged)
-            StateHasChanged();
+        await SetBusy(false);
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await SetBusy();
-        await ReadCurrentUser();
-
         images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{GlobalStaticConstants.Routes.CONSTRUCTOR_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={SelectedDirectoryId}";
         editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
+
+        await SetBusy();
+        await ReadCurrentUser();
         await ReloadDirectories();
     }
 }

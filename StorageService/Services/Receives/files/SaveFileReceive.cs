@@ -5,6 +5,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver.GridFS;
+using Newtonsoft.Json;
 using MongoDB.Driver;
 using RemoteCallLib;
 using MongoDB.Bson;
@@ -18,9 +19,11 @@ namespace Transmission.Receives.storage;
 /// Save file
 /// </summary>
 public class SaveFileReceive(
+    ILogger<SaveFileReceive> LoggerRepo,
     IMongoDatabase mongoFs,
     IHelpdeskRemoteTransmissionService HelpdeskRepo,
     ICommerceRemoteTransmissionService commRepo,
+    WebConfigModel webConfig,
     IDbContextFactory<StorageContext> cloudParametersDbFactory)
     : IResponseReceive<StorageImageMetadataModel?, StorageFileModelDB?>
 {
@@ -31,7 +34,7 @@ public class SaveFileReceive(
     public async Task<TResponseModel<StorageFileModelDB?>> ResponseHandleAction(StorageImageMetadataModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-
+        LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<StorageFileModelDB?> res = new();
         GridFSBucket gridFS = new(mongoFs);
         Regex rx = new(@"\s+", RegexOptions.Compiled);
@@ -98,24 +101,47 @@ public class SaveFileReceive(
             });
         }
 
-        if (req.ApplicationName == GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME && req.OwnerPrimaryKey.HasValue && req.OwnerPrimaryKey.Value > 0)
+        if (req.OwnerPrimaryKey.HasValue && req.OwnerPrimaryKey.Value > 0)
         {
-            TResponseModel<OrderDocumentModelDB[]> get_order = await commRepo.OrdersRead([req.OwnerPrimaryKey.Value]);
-            if (!get_order.Success() || get_order.Response is null)
-                res.AddRangeMessages(get_order.Messages);
-            else
+            PulseRequestModel reqPulse;
+            switch (req.ApplicationName)
             {
-                OrderDocumentModelDB orderDb = get_order.Response.Single();
-                if (orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
-                {
-                    PulseRequestModel reqPulse = new()
+                case GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME:
+                    TResponseModel<OrderDocumentModelDB[]> get_order = await commRepo.OrdersRead([req.OwnerPrimaryKey.Value]);
+                    if (!get_order.Success() || get_order.Response is null)
+                        res.AddRangeMessages(get_order.Messages);
+                    else
+                    {
+                        OrderDocumentModelDB orderDb = get_order.Response.Single();
+                        if (orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
+                        {
+                            reqPulse = new()
+                            {
+                                Payload = new()
+                                {
+                                    Payload = new()
+                                    {
+                                        Description = $"В <a href='{webConfig.ClearBaseUri}/issue-card/{orderDb.HelpdeskId.Value}'>заказ #{orderDb.Id}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Length)} [{nameof(res.Response.PointId)}:{_uf}]", //$"Файл ({req.ApplicationName} для <a href='{webConfig.ClearBaseUri}'>заказа</a> #<b>{orderDb.Id}</b>) '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Length)} [{nameof(res.Response.PointId)}:{_uf}] добавлен.",
+                                        IssueId = orderDb.HelpdeskId.Value,
+                                        PulseType = PulseIssuesTypesEnum.Files,
+                                        Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME
+                                    },
+                                    SenderActionUserId = GlobalStaticConstants.Roles.System,
+                                }
+                            };
+                            await HelpdeskRepo.PulsePush(reqPulse);
+                        }
+                    }
+                    break;
+                case GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME:
+                    reqPulse = new()
                     {
                         Payload = new()
                         {
                             Payload = new()
                             {
-                                Description = $"Файл (внутренний) '{_file_name}' {GlobalTools.SizeDataAsString(req.Payload.Length)} [{nameof(res.Response.PointId)}:{_uf}] добавлен.",
-                                IssueId = orderDb.HelpdeskId.Value,
+                                Description = $"Файл ({req.ApplicationName} #<b>{req.OwnerPrimaryKey.Value}</b>) '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Length)} [{nameof(res.Response.PointId)}:{_uf}] добавлен.",
+                                IssueId = req.OwnerPrimaryKey.Value,
                                 PulseType = PulseIssuesTypesEnum.Files,
                                 Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME
                             },
@@ -123,7 +149,7 @@ public class SaveFileReceive(
                         }
                     };
                     await HelpdeskRepo.PulsePush(reqPulse);
-                }
+                    break;
             }
         }
 

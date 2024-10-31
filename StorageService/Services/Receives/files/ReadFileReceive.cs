@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 
@@ -16,6 +17,7 @@ namespace Transmission.Receives.storage;
 /// Read file
 /// </summary>
 public class ReadFileReceive(IMongoDatabase mongoFs,
+    ILogger<ReadFileReceive> LoggerRepo,
     IHelpdeskRemoteTransmissionService hdRepo,
     IDbContextFactory<StorageContext> cloudParametersDbFactory,
     IWebRemoteTransmissionService webRepo)
@@ -28,7 +30,7 @@ public class ReadFileReceive(IMongoDatabase mongoFs,
     public async Task<TResponseModel<StorageFileResponseModel?>> ResponseHandleAction(TAuthRequestModel<RequestFileReadModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-
+        LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<StorageFileResponseModel?> res = new();
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         StorageFileModelDB? file_db = await context

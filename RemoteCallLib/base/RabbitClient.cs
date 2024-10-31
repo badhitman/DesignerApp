@@ -10,6 +10,8 @@ using RabbitMQ.Client.Events;
 using SharedLib;
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace RemoteCallLib;
 
@@ -23,6 +25,10 @@ public class RabbitClient : IRabbitClient
     readonly ILogger<RabbitClient> loggerRepo;
 
     static Dictionary<string, object>? ResponseQueueArguments;
+
+#if !DEBUG
+    static JsonSerializerOptions serOpt = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
+#endif
 
     IBasicProperties? properties;
     /// <summary>
@@ -111,6 +117,11 @@ public class RabbitClient : IRabbitClient
                       autoDelete: false,
                       arguments: null);
 
+        // System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request);
+
+        
+
+#if DEBUG
         string request_payload_json = "";
         try
         {
@@ -122,6 +133,10 @@ public class RabbitClient : IRabbitClient
         }
 
         byte[] body = request is null ? [] : Encoding.UTF8.GetBytes(request_payload_json);
+#else
+        byte[] body = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, serOpt);
+#endif
+
         _channel!.BasicPublish(exchange: "",
                        routingKey: queue,
                        basicProperties: properties,

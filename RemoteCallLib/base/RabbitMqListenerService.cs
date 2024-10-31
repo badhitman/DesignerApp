@@ -10,6 +10,8 @@ using RabbitMQ.Client;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLib;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace RemoteCallLib;
 
@@ -24,6 +26,10 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     readonly ConnectionFactory factory;
 
     static Dictionary<string, object>? ResponseQueueArguments;
+
+#if !DEBUG
+    static JsonSerializerOptions serOpt = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
+#endif
 
     Type? _queueType;
     /// <summary>
@@ -74,12 +80,14 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
         EventingBasicConsumer consumer = new(_channel);
         consumer.Received += async (ch, ea) =>
         {
+            TResponseModel<TResponse?> result_handler;
+            TRequest? sr;
+#if DEBUG
             string content = Encoding.UTF8.GetString(ea.Body.ToArray()).Trim();
 
-            TResponseModel<TResponse?> result_handler;
             try
             {
-                TRequest? sr = content.Equals("null", StringComparison.OrdinalIgnoreCase)
+                sr = content.Equals("null", StringComparison.OrdinalIgnoreCase)
                 ? default
                 : JsonConvert.DeserializeObject<TRequest?>(content);
 
@@ -100,6 +108,32 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
                 {
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
+#else
+            try
+            {
+                sr = System.Text.Json.JsonSerializer.Deserialize<TRequest?>(ea.Body.ToArray());
+                result_handler = await receiveService.ResponseHandleAction(sr);
+            }
+            catch (Exception ex)
+            {
+                result_handler = new();
+                result_handler.Messages.InjectException(ex);
+            }
+            if (!string.IsNullOrWhiteSpace(ea.BasicProperties.ReplyTo))
+                try
+                {
+                    JsonSerializerOptions options = new JsonSerializerOptions()
+                    {
+                        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                        WriteIndented = true
+                    };
+                    _channel.BasicPublish(exchange: "", routingKey: ea.BasicProperties.ReplyTo, basicProperties: null, body: System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result_handler, serOpt));
+                }
+                finally
+                {
+                    _channel.BasicAck(ea.DeliveryTag, false);
+                }
+#endif
         };
 
         _channel.BasicConsume(QueueName, false, consumer);

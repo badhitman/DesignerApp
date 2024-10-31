@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 
@@ -10,7 +11,7 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// Read parameter
 /// </summary>
-public class ReadParameterReceive(ISerializeStorage serializeStorageRepo)
+public class ReadParameterReceive(ISerializeStorage serializeStorageRepo,ILogger<ReadParameterReceive> LoggerRepo)
     : IResponseReceive<StorageMetadataModel?, StorageCloudParameterPayloadModel?>
 {
     /// <inheritdoc/>
@@ -20,10 +21,7 @@ public class ReadParameterReceive(ISerializeStorage serializeStorageRepo)
     public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ResponseHandleAction(StorageMetadataModel? request)
     {
         ArgumentNullException.ThrowIfNull(request);
-
-//#if DEBUG
-//        TResponseModel<StorageCloudParameterPayloadModel?> _debug = await serializeStorageRepo.ReadParameter(request);
-//#endif
+        LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(request)}");
 
         return await serializeStorageRepo.ReadParameter(request);
     }
