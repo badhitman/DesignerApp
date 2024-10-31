@@ -38,6 +38,10 @@ public class OrganizationsSelectReceive(IDbContextFactory<CommerceContext> comme
         if (!string.IsNullOrWhiteSpace(req.Payload.ForUserIdentityId))
             q = q.Where(x => context.OrganizationsUsers.Any(y => y.OrganizationId == x.Id && y.UserPersonIdentityId == req.Payload.ForUserIdentityId));
 
+        q = req.SortingDirection == VerticalDirectionsEnum.Up
+            ? q.OrderBy(x => x.LastAtUpdatedUTC)
+            : q.OrderByDescending(x => x.LastAtUpdatedUTC);
+
         IQueryable<OrganizationModelDB> pq = q.OrderBy(x => x.LastAtUpdatedUTC)
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
