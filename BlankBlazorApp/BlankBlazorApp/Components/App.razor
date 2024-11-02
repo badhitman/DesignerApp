@@ -77,6 +77,13 @@
             webConfig.Value.BaseUri = NavigatorRepo.BaseUri;
 
         if (ServiceProviderExtensions.SetRemoteConf?.Success() != true)
-            ServiceProviderExtensions.SetRemoteConf = await tgRemoteCall.SetWebConfig(webConfig.Value);
+        {
+            Task<TResponseModel<object?>>[] _tasks = [
+                tgRemoteCall.SetWebConfigTelegram(webConfig.Value),
+                tgRemoteCall.SetWebConfigHelpdesk(webConfig.Value),
+                tgRemoteCall.SetWebConfigStorage(webConfig.Value)];
+
+            await Task.WhenAll(_tasks);
+        }
     }
 }

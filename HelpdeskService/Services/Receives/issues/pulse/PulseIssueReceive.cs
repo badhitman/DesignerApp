@@ -91,7 +91,8 @@ public class PulseIssueReceive(
                     {
                         From = _subj,
                         Message = req.Payload.Payload.Description,
-                        UserTelegramId = user.TelegramId.Value
+                        UserTelegramId = user.TelegramId.Value, 
+                        ParseModeName = "html"
                     };
                     await tgRepo.SendTextMessageTelegram(tg_req);
                 }

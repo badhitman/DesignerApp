@@ -43,7 +43,17 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
     /// </summary>
-    public Task<TResponseModel<object?>> SetWebConfig(WebConfigModel webConf);
+    public Task<TResponseModel<object?>> SetWebConfigTelegram(WebConfigModel webConf);
+
+    /// <summary>
+    /// Установить WebConfig. От web части отправляется значение при загрузке браузера
+    /// </summary>
+    public Task<TResponseModel<object?>> SetWebConfigHelpdesk(WebConfigModel webConf);
+
+    /// <summary>
+    /// Установить WebConfig. От web части отправляется значение при загрузке браузера
+    /// </summary>
+    public Task<TResponseModel<object?>> SetWebConfigStorage(WebConfigModel webConf);
 
     /// <summary>
     /// Прочитать данные по чатам

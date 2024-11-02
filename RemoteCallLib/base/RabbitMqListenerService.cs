@@ -10,8 +10,10 @@ using RabbitMQ.Client;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLib;
+#if !DEBUG
 using System.Text.Json.Serialization;
 using System.Text.Json;
+#endif
 
 namespace RemoteCallLib;
 

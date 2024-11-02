@@ -12,7 +12,7 @@ namespace SharedLib;
 /// </remarks>
 /// <param name="_namespace">Пространство имён</param>
 /// <param name="_dict">Словарь</param>
-public class MemCashePrefixModel(string _namespace, string _dict)
+public class MemCachePrefixModel(string _namespace, string _dict)
 {
     /// <summary>
     /// Пространство имён ключей доступа к данным

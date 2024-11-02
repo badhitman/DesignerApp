@@ -55,11 +55,18 @@ builder.ConfigureServices((context, services) =>
 {
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
+    .Configure<WebConfigModel>(context.Configuration.GetSection("WebConfig"))
     ;
     MongoConfigModel _jo = context.Configuration.GetSection("MongoDB").Get<MongoConfigModel>()!;
     services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.FilesSystemName));
 
     services.AddMemoryCache();
+    services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = context.Configuration.GetConnectionString("RedisConnectionString");
+        options.InstanceName = "SampleInstance";
+    });
+    services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
     services.AddSingleton<WebConfigModel>();
     services.AddOptions();
 
@@ -82,6 +89,7 @@ builder.ConfigureServices((context, services) =>
     .RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>()
     .RegisterMqListener<SaveFileReceive, StorageImageMetadataModel?, StorageFileModelDB?>()
     .RegisterMqListener<TagSetReceive, TagSetModel?, bool?>()
+    .RegisterMqListener<SetWebConfigReceive, WebConfigModel?, object?>()
     .RegisterMqListener<ReadFileReceive, TAuthRequestModel<RequestFileReadModel>?, StorageFileResponseModel?>()
     .RegisterMqListener<TagsSelectReceive, TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<TagModelDB>?>()
     .RegisterMqListener<FilesAreaGetMetadataReceive, FilesAreaMetadataRequestModel?, FilesAreaMetadataModel[]?>()

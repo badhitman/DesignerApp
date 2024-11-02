@@ -12,7 +12,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// ConsoleIssuesSelectReceive
 /// </summary>
-public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
+public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IManualCustomCacheService cacheRepo)
     : IResponseReceive<TPaginationRequestModel<ConsoleIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>
 {
     /// <inheritdoc/>
@@ -26,8 +26,15 @@ public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpd
         if (req.PageSize < 5)
             req.PageSize = 5;
 
-        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        string cst = Path.Combine(GlobalStaticConstants.Routes.CONSOLE_CONTROLLER_NAME, req.Payload.Status.ToString());
+        MemCacheComplexKeyModel mceKey = new(GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME, new MemCachePrefixModel(cst, GlobalStaticConstants.Routes.SELECT_ACTION_NAME));
+        string cacheToken = await cacheRepo.GetStringValueAsync(mceKey) ?? NewToken;
+        
+        TPaginationResponseModel<IssueHelpdeskModel>? _fr = await cacheRepo.GetObjectAsync<TPaginationResponseModel<IssueHelpdeskModel>>(cacheToken);
+        if (_fr is not null)
+            return new() { Response = _fr };
 
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IQueryable<IssueHelpdeskModelDB> q = context
             .Issues
             .Where(x => x.ProjectId == req.Payload.ProjectId && x.StepIssue == req.Payload.Status)
@@ -56,17 +63,20 @@ public class ConsoleIssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpd
             .Include(x => x.RubricIssue)
             .ToListAsync();
 
-        return new()
+        TPaginationResponseModel<IssueHelpdeskModel> res = new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = [.. data.Select(x => IssueHelpdeskModel.Build(x))]
-            }
-        }; ;
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = [.. data.Select(x => IssueHelpdeskModel.Build(x))]
+        };
+
+        await cacheRepo.SetObject(new MemCacheComplexKeyModel(cacheToken, new MemCachePrefixModel(cst, QueueName)), res);
+
+        return new() { Response = res };
     }
+
+    static string NewToken => $"{DateTime.UtcNow.Millisecond}/{Guid.NewGuid}";
 }

@@ -52,6 +52,14 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<MessageComplexIdsModel?>(GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive, message_telegram);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> SetWebConfig(WebConfigModel webConf)
-        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.SetWebConfigReceive, webConf);
+    public async Task<TResponseModel<object?>> SetWebConfigHelpdesk(WebConfigModel webConf)
+        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.SetWebConfigHelpdeskReceive, webConf);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<object?>> SetWebConfigStorage(WebConfigModel webConf)
+        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.SetWebConfigStorageReceive, webConf);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<object?>> SetWebConfigTelegram(WebConfigModel webConf)
+        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.SetWebConfigTelegramReceive, webConf);
 }

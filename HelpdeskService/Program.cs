@@ -7,6 +7,7 @@ using NLog.Web;
 using DbcLib;
 using NLog;
 using HelpdeskService;
+using Microsoft.Extensions.Options;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -54,13 +55,18 @@ builder.ConfigureServices((context, services) =>
 {
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
+    .Configure<WebConfigModel>(context.Configuration.GetSection("WebConfig"))
     ;
 
     services.AddScoped<IArticlesService, ArticlesService>();
-
-    services.AddSingleton<WebConfigModel>();
+    services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = context.Configuration.GetConnectionString("RedisConnectionString");
+        options.InstanceName = "SampleInstance";
+    });
+    
     services.AddOptions();
-
+    services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
     string connectionIdentityString = context.Configuration.GetConnectionString("HelpdeskConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
     services.AddDbContextFactory<HelpdeskContext>(opt =>
     {
@@ -90,6 +96,7 @@ builder.ConfigureServices((context, services) =>
     .RegisterMqListener<MessageVoteReceive, TAuthRequestModel<VoteIssueRequestModel>?, bool?>()
     .RegisterMqListener<MessageUpdateOrCreateReceive, TAuthRequestModel<IssueMessageHelpdeskBaseModel>?, int?>()
     .RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>()
+    .RegisterMqListener<SetWebConfigReceive, WebConfigModel?, object?>()
     .RegisterMqListener<UpdateRubricsForArticleReceive, ArticleRubricsSetModel?, bool?>()
     .RegisterMqListener<ArticlesReadReceive, int[]?, ArticleModelDB[]?>()
     .RegisterMqListener<ArticleCreateOrUpdateReceive, ArticleModelDB?, int?>()
@@ -112,11 +119,11 @@ IHost app = builder.Build();
 
 using (IServiceScope ss = app.Services.CreateScope())
 {
-    WebConfigModel wc_main = ss.ServiceProvider.GetRequiredService<WebConfigModel>();
+    IOptions<WebConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<WebConfigModel>>();
     IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
     TResponseModel<WebConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
     if (wc_remote.Response is not null && wc_remote.Success())
-        wc_main.Update(wc_remote.Response);
+        wc_main.Value.Update(wc_remote.Response);
 
 #if DEBUG
 #if DEMO

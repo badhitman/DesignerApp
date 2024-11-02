@@ -12,6 +12,7 @@ using MongoDB.Bson;
 using ImageMagick;
 using SharedLib;
 using DbcLib;
+using Microsoft.Extensions.Options;
 
 namespace Transmission.Receives.storage;
 
@@ -23,7 +24,8 @@ public class SaveFileReceive(
     IMongoDatabase mongoFs,
     IHelpdeskRemoteTransmissionService HelpdeskRepo,
     ICommerceRemoteTransmissionService commRepo,
-    WebConfigModel webConfig,
+//IServiceScopeFactory spRepo,
+IOptions<WebConfigModel> webConfig,
     IDbContextFactory<StorageContext> cloudParametersDbFactory)
     : IResponseReceive<StorageImageMetadataModel?, StorageFileModelDB?>
 {
@@ -100,10 +102,12 @@ public class SaveFileReceive(
                 PrefixPropertyName = GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME,
             });
         }
-
+        //AsyncServiceScope sp = spRepo.CreateAsyncScope();
+        //WebConfigModel webConfig = sp.ServiceProvider.GetRequiredService<WebConfigModel>();
         if (req.OwnerPrimaryKey.HasValue && req.OwnerPrimaryKey.Value > 0)
         {
             PulseRequestModel reqPulse;
+            string msg;
             switch (req.ApplicationName)
             {
                 case GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME:
@@ -115,13 +119,15 @@ public class SaveFileReceive(
                         OrderDocumentModelDB orderDb = get_order.Response.Single();
                         if (orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
                         {
+                            msg = $"В <a href=\"{webConfig.Value.ClearBaseUri}/issue-card/{orderDb.HelpdeskId.Value}\">заказ #{orderDb.Id}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Length)}";
+                            LoggerRepo.LogInformation($"{msg} [{nameof(res.Response.PointId)}:{_uf}]");
                             reqPulse = new()
                             {
                                 Payload = new()
                                 {
                                     Payload = new()
                                     {
-                                        Description = $"В <a href='{webConfig.ClearBaseUri}/issue-card/{orderDb.HelpdeskId.Value}'>заказ #{orderDb.Id}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Length)} [{nameof(res.Response.PointId)}:{_uf}]", //$"Файл ({req.ApplicationName} для <a href='{webConfig.ClearBaseUri}'>заказа</a> #<b>{orderDb.Id}</b>) '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Length)} [{nameof(res.Response.PointId)}:{_uf}] добавлен.",
+                                        Description = msg,
                                         IssueId = orderDb.HelpdeskId.Value,
                                         PulseType = PulseIssuesTypesEnum.Files,
                                         Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME
@@ -129,18 +135,21 @@ public class SaveFileReceive(
                                     SenderActionUserId = GlobalStaticConstants.Roles.System,
                                 }
                             };
+                            
                             await HelpdeskRepo.PulsePush(reqPulse);
                         }
                     }
                     break;
                 case GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME:
+                    msg = $"В <a href=\"{webConfig.Value.ClearBaseUri}/issue-card/{req.OwnerPrimaryKey.Value}\">заявку #{req.OwnerPrimaryKey.Value}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Length)}";
+                    LoggerRepo.LogInformation($"{msg} [{nameof(res.Response.PointId)}:{_uf}]");
                     reqPulse = new()
                     {
                         Payload = new()
                         {
                             Payload = new()
                             {
-                                Description = $"Файл ({req.ApplicationName} #<b>{req.OwnerPrimaryKey.Value}</b>) '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Length)} [{nameof(res.Response.PointId)}:{_uf}] добавлен.",
+                                Description = msg,
                                 IssueId = req.OwnerPrimaryKey.Value,
                                 PulseType = PulseIssuesTypesEnum.Files,
                                 Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME

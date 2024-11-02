@@ -57,9 +57,15 @@ builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
 ;
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnectionString");
+    options.InstanceName = "SampleInstance";
+});
+
 builder.Services.AddSingleton<WebConfigModel>();
 builder.Services.AddOptions();
-
+builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
 string connectionIdentityString = builder.Configuration.GetConnectionString("CommerceConnection") ?? throw new InvalidOperationException("Connection string 'CommerceConnection' not found.");
 builder.Services.AddDbContextFactory<CommerceContext>(opt =>
 {

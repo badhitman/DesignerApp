@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
+
 namespace RemoteCallLib;
 
 /// <summary>
@@ -26,9 +27,9 @@ public class RabbitClient : IRabbitClient
 
     static Dictionary<string, object>? ResponseQueueArguments;
 
-#if !DEBUG
-    static JsonSerializerOptions serOpt = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
-#endif
+
+    public static readonly JsonSerializerOptions SerializerOptions = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
+
 
     IBasicProperties? properties;
     /// <summary>
@@ -119,7 +120,7 @@ public class RabbitClient : IRabbitClient
 
         // System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request);
 
-        
+
 
 #if DEBUG
         string request_payload_json = "";
@@ -134,7 +135,7 @@ public class RabbitClient : IRabbitClient
 
         byte[] body = request is null ? [] : Encoding.UTF8.GetBytes(request_payload_json);
 #else
-        byte[] body = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, serOpt);
+        byte[] body = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request, SerializerOptions);
 #endif
 
         _channel!.BasicPublish(exchange: "",
