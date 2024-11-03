@@ -17,5 +17,5 @@ public class ConstructorConfigModel
     /// <summary>
     /// WebConfig
     /// </summary>
-    public WebConfigModel? WebConfig {  get; set; }
+    public TelegramBotConfigModel? WebConfig {  get; set; }
 }

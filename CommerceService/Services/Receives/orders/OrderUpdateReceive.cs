@@ -87,7 +87,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
 
                 if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
                 {
-                    TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                    TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                     _webConf.BaseUri = wc.Response?.ClearBaseUri;
                 }
 

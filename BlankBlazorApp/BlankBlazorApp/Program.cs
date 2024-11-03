@@ -99,7 +99,7 @@ builder.Services
     .Configure<UserManageConfigModel>(builder.Configuration.GetSection("UserManage"))
     .Configure<ServerConfigModel>(builder.Configuration.GetSection("ServerConfig"))
     .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
-    .Configure<WebConfigModel>(builder.Configuration.GetSection("WebConfig"))
+    .Configure<TelegramBotConfigModel>(builder.Configuration.GetSection("WebConfig"))
     ;
 
 NavMainMenuModel? mainNavMenu = builder.Configuration.GetSection("NavMenuConfig").Get<NavMainMenuModel>();
@@ -175,7 +175,7 @@ builder.Services
 builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserAuthModel?>()
     .RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>()
     .RegisterMqListener<TelegramJoinAccountDeleteReceive, long, object?>()
-    .RegisterMqListener<GetWebConfigReceive, object?, WebConfigModel>()
+    .RegisterMqListener<GetWebConfigReceive, object?, TelegramBotConfigModel>()
     .RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>()
     .RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModel>()
     .RegisterMqListener<GetUsersOfIdentityReceive, string[], UserInfoModel[]>()

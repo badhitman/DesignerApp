@@ -158,7 +158,7 @@ public class MessageUpdateOrCreateReceive(
                 TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
                 if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
                 {
-                    TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                    TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                     OrderDocumentModelDB order_obj = find_orders.Response[0];
                     string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
 

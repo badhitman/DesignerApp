@@ -37,8 +37,16 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
         => await GetObjectAsync<T>(new MemCacheComplexKeyModel(id, pref), token);
 
     /// <inheritdoc/>
-    public async Task<T?> GetObjectAsync<T>(string mem_key, CancellationToken token = default)
-        => System.Text.Json.JsonSerializer.Deserialize<T?>(await _cache.GetAsync(mem_key, token));
+    public async Task<T?> GetObjectAsync<T>(string mem_key, TimeSpan? expiry = null, CancellationToken token = default)
+    {
+        byte[]? br = await _cache.GetAsync(mem_key, token);
+        if (br is null)
+            return default;
+
+        T? res = System.Text.Json.JsonSerializer.Deserialize<T?>(br);
+
+        return res;
+    }
     #endregion
 
     #region set/update
@@ -47,7 +55,7 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
     {
         try
         {
-            await _cache.SetStringAsync(key.ToString(), value, new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = expiry ?? TimeSpan.FromMinutes(1) }, token: token);
+            await _cache.SetStringAsync(key.ToString(), value, new DistributedCacheEntryOptions() { SlidingExpiration = expiry }, token: token);
         }
         catch
         {
@@ -66,7 +74,7 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
     {
         DistributedCacheEntryOptions? opt = expiry is null
             ? null
-            : new() { AbsoluteExpiration = DateTime.UtcNow.Add(expiry.Value) };
+            : new() { SlidingExpiration = expiry.Value };
 
         if (opt is null)
             await _cache.SetAsync(key.ToString(), System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(value, RabbitClient.SerializerOptions), token: token);
@@ -77,6 +85,19 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
     /// <inheritdoc/>
     public async Task SetObject<T>(MemCachePrefixModel pref, string id, T value, TimeSpan? expiry = null, CancellationToken token = default)
         => await SetObject(new MemCacheComplexKeyModel(id, pref), value, token: token);
+
+    /// <inheritdoc/>
+    public async Task SetObject<T>(string mem_key, T value, TimeSpan? expiry = null, CancellationToken token = default)
+    {
+        DistributedCacheEntryOptions? opt = expiry is null
+           ? null
+           : new() { SlidingExpiration = expiry };
+
+        if (opt is null)
+            await _cache.SetAsync(mem_key, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(value, RabbitClient.SerializerOptions), token: token);
+        else
+            await _cache.SetAsync(mem_key, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(value, RabbitClient.SerializerOptions), options: opt, token: token);
+    }
     #endregion
 
     #region remove

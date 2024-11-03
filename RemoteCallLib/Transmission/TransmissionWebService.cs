@@ -12,8 +12,8 @@ namespace RemoteCallLib;
 public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTransmissionService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<WebConfigModel?>> GetWebConfig()
-        => await rabbitClient.MqRemoteCall<WebConfigModel?>(GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive);
+    public async Task<TResponseModel<TelegramBotConfigModel?>> GetWebConfig()
+        => await rabbitClient.MqRemoteCall<TelegramBotConfigModel?>(GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(string[] ids_users)

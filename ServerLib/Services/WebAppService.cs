@@ -24,7 +24,7 @@ public class WebAppService(
     IHttpContextAccessor httpContextAccessor,
     IMailProviderService mailRepo,
     IdentityTools identityToolsRepo,
-    IOptions<WebConfigModel> webConfig,
+    IOptions<TelegramBotConfigModel> webConfig,
     IWebRemoteTransmissionService webTransmissionRepo,
     ILogger<WebAppService> LoggerRepo)
 #pragma warning disable CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.

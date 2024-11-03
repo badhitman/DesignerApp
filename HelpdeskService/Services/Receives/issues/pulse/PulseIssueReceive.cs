@@ -21,6 +21,7 @@ public class PulseIssueReceive(
     ILogger<PulseIssueReceive> loggerRepo,
     IWebRemoteTransmissionService webTransmissionRepo,
     ITelegramRemoteTransmissionService tgRepo,
+    IManualCustomCacheService cacheRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
     : IResponseReceive<PulseRequestModel?, bool>
 {
@@ -67,6 +68,9 @@ public class PulseIssueReceive(
             return res;
 
         IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
+
+        await cacheRepo.RemoveAsync(GlobalStaticConstants.Cache.ConsoleSegmentStatusToken(issue_data.StepIssue));
+
         List<string> users_ids = [issue_data.AuthorIdentityUserId];
         if (!string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId))
             users_ids.Add(issue_data.ExecutorIdentityUserId);

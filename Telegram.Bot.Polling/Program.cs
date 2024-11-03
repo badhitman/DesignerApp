@@ -61,7 +61,7 @@ builder.ConfigureServices((context, services) =>
     ;
 
     services.AddMemoryCache();
-    services.AddSingleton<WebConfigModel>();
+    services.AddSingleton<TelegramBotConfigModel>();
     services.AddOptions();
 
 
@@ -106,7 +106,7 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     //
     services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, MessageComplexIdsModel?>()
-    .RegisterMqListener<SetWebConfigReceive, WebConfigModel, object?>()
+    .RegisterMqListener<SetWebConfigReceive, TelegramBotConfigModel, object?>()
     .RegisterMqListener<GetBotUsernameReceive, object?, string?>()
     .RegisterMqListener<ChatsReadTelegramReceive, long[]?, ChatTelegramModelDB[]?>()
     .RegisterMqListener<MessagesSelectTelegramReceive, TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>()
@@ -123,9 +123,9 @@ IHost app = builder.Build();
 
 using (IServiceScope ss = app.Services.CreateScope())
 {
-    WebConfigModel wc_main = ss.ServiceProvider.GetRequiredService<WebConfigModel>();
+    TelegramBotConfigModel wc_main = ss.ServiceProvider.GetRequiredService<TelegramBotConfigModel>();
     IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
-    TResponseModel<WebConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
+    TResponseModel<TelegramBotConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
     if (wc_remote.Response is not null && wc_remote.Success())
         wc_main.Update(wc_remote.Response);
 }

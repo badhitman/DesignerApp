@@ -178,7 +178,7 @@ public class IssueCreateOrUpdateReceive(
                 };
 
                 TResponseModel<OrderDocumentModelDB[]> comm_res = await commRepo.OrdersByIssues(req_comm);
-                TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                 msg = $"Документ (#{issue_upd.Payload.Id}) обновлён.";
                 if (comm_res.Success() && comm_res.Response is not null && comm_res.Response.Length != 0)
                 {

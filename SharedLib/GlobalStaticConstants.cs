@@ -1312,6 +1312,16 @@ public static partial class GlobalStaticConstants
         public const string CONSOLE_CONTROLLER_NAME = "console";
 
         /// <summary>
+        /// Segment
+        /// </summary>
+        public const string SEGMENT_CONTROLLER_NAME = "segment";
+
+        /// <summary>
+        /// Token
+        /// </summary>
+        public const string TOKEN_CONTROLLER_NAME = "token";
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public const string CONSTRUCTOR_CONTROLLER_NAME = "constructor";
@@ -1655,6 +1665,21 @@ public static partial class GlobalStaticConstants
         #endregion
     }
 
+    /// <summary>
+    /// Cache
+    /// </summary>
+    public static class Cache
+    {
+        /// <summary>
+        /// admin
+        /// </summary>
+        public static string ConsoleSegmentStatus(StatusesDocumentsEnum st) => $"{Routes.CONSOLE_CONTROLLER_NAME}:{Routes.SEGMENT_CONTROLLER_NAME}:{st}";
+
+        /// <summary>
+        /// ConsoleSegmentStatusToken
+        /// </summary>
+        public static MemCacheComplexKeyModel ConsoleSegmentStatusToken(StatusesDocumentsEnum st) => new(Routes.TOKEN_CONTROLLER_NAME, new MemCachePrefixModel(ConsoleSegmentStatus(st), Routes.SELECT_ACTION_NAME));
+    }
 
     /// <summary>
     /// HelpdeskNotificationsTelegramAppName

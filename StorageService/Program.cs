@@ -1,5 +1,6 @@
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using NLog;
 using NLog.Extensions.Logging;
@@ -64,10 +65,10 @@ builder.ConfigureServices((context, services) =>
     services.AddStackExchangeRedisCache(options =>
     {
         options.Configuration = context.Configuration.GetConnectionString("RedisConnectionString");
-        options.InstanceName = "SampleInstance";
+        // options.InstanceName = "app.";
     });
     services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
-    services.AddSingleton<WebConfigModel>();
+
     services.AddOptions();
 
     string connectionIdentityString = context.Configuration.GetConnectionString("CloudParametersConnection") ?? throw new InvalidOperationException("Connection string 'CloudParametersConnection' not found.");
@@ -105,11 +106,11 @@ IHost app = builder.Build();
 
 using (IServiceScope ss = app.Services.CreateScope())
 {
-    WebConfigModel wc_main = ss.ServiceProvider.GetRequiredService<WebConfigModel>();
+    IOptions<WebConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<WebConfigModel>>();
     IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
-    TResponseModel<WebConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
-    if (wc_remote.Response is not null && wc_remote.Success())
-        wc_main.Update(wc_remote.Response);
+    TResponseModel<TelegramBotConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
+    if (wc_remote.Response is not null && wc_remote.Success() && Uri.TryCreate(wc_remote.Response.BaseUri, UriKind.Absolute, out _))
+        wc_main.Value.Update(wc_remote.Response.BaseUri);
 }
 
 await app.RunAsync();

@@ -24,7 +24,6 @@ public class SaveFileReceive(
     IMongoDatabase mongoFs,
     IHelpdeskRemoteTransmissionService HelpdeskRepo,
     ICommerceRemoteTransmissionService commRepo,
-//IServiceScopeFactory spRepo,
 IOptions<WebConfigModel> webConfig,
     IDbContextFactory<StorageContext> cloudParametersDbFactory)
     : IResponseReceive<StorageImageMetadataModel?, StorageFileModelDB?>

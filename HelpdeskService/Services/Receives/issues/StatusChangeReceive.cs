@@ -53,7 +53,7 @@ public class StatusChangeReceive(
             return new() { Messages = issues_data.Messages };
 
         IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
-
+        
         if (!actor.IsAdmin &&
             issue_data.AuthorIdentityUserId != actor.UserId &&
             issue_data.ExecutorIdentityUserId != actor.UserId &&
@@ -63,7 +63,7 @@ public class StatusChangeReceive(
             res.AddError("Не достаточно прав для смены статуса");
             return res;
         }
-
+        
         if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
         {
             await helpdeskTransmissionRepo.SubscribeUpdate(new()
@@ -129,7 +129,7 @@ public class StatusChangeReceive(
             if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
             {
                 await commRepo.StatusOrderChange(new() { IssueId = issue_data.Id, Step = req.Payload.Step });
-                TResponseModel<WebConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                 OrderDocumentModelDB order_obj = find_orders.Response[0];
                 string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
                 DateTime cdd = order_obj.CreatedAtUTC.GetCustomTime();

@@ -60,7 +60,7 @@ builder.Services
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("RedisConnectionString");
-    options.InstanceName = "SampleInstance";
+    // options.InstanceName = "app.";
 });
 
 builder.Services.AddSingleton<WebConfigModel>();

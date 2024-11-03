@@ -152,7 +152,7 @@ using (IServiceScope ss = host.Services.CreateScope())
 {
     IOptions<ConstructorConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<ConstructorConfigModel>>();
     IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
-    TResponseModel<WebConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
+    TResponseModel<TelegramBotConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
     if (wc_remote.Response is not null && wc_remote.Success())
         wc_main.Value.WebConfig = wc_remote.Response;
 }

@@ -60,6 +60,6 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.SetWebConfigStorageReceive, webConf);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> SetWebConfigTelegram(WebConfigModel webConf)
+    public async Task<TResponseModel<object?>> SetWebConfigTelegram(TelegramBotConfigModel webConf)
         => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.SetWebConfigTelegramReceive, webConf);
 }

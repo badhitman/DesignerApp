@@ -55,16 +55,16 @@ builder.ConfigureServices((context, services) =>
 {
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
-    .Configure<WebConfigModel>(context.Configuration.GetSection("WebConfig"))
+    .Configure<HelpdeskConfigModel>(context.Configuration.GetSection("HelpdeskConfig"))
     ;
 
     services.AddScoped<IArticlesService, ArticlesService>();
     services.AddStackExchangeRedisCache(options =>
     {
         options.Configuration = context.Configuration.GetConnectionString("RedisConnectionString");
-        options.InstanceName = "SampleInstance";
+        // options.InstanceName = "app.";
     });
-    
+
     services.AddOptions();
     services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
     string connectionIdentityString = context.Configuration.GetConnectionString("HelpdeskConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
@@ -86,6 +86,7 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
     .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
     .AddScoped<ICommerceRemoteTransmissionService, TransmissionCommerceService>()
+    .AddScoped<IHelpdeskService, HelpdeskImplementService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     // 
     services.RegisterMqListener<RubricsListReceive, RubricsListRequestModel?, RubricBaseModel[]?>()
@@ -96,7 +97,7 @@ builder.ConfigureServices((context, services) =>
     .RegisterMqListener<MessageVoteReceive, TAuthRequestModel<VoteIssueRequestModel>?, bool?>()
     .RegisterMqListener<MessageUpdateOrCreateReceive, TAuthRequestModel<IssueMessageHelpdeskBaseModel>?, int?>()
     .RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>()
-    .RegisterMqListener<SetWebConfigReceive, WebConfigModel?, object?>()
+    .RegisterMqListener<SetWebConfigReceive, HelpdeskConfigModel?, object?>()
     .RegisterMqListener<UpdateRubricsForArticleReceive, ArticleRubricsSetModel?, bool?>()
     .RegisterMqListener<ArticlesReadReceive, int[]?, ArticleModelDB[]?>()
     .RegisterMqListener<ArticleCreateOrUpdateReceive, ArticleModelDB?, int?>()
@@ -119,11 +120,11 @@ IHost app = builder.Build();
 
 using (IServiceScope ss = app.Services.CreateScope())
 {
-    IOptions<WebConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<WebConfigModel>>();
+    IOptions<HelpdeskConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<HelpdeskConfigModel>>();
     IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
-    TResponseModel<WebConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
-    if (wc_remote.Response is not null && wc_remote.Success())
-        wc_main.Value.Update(wc_remote.Response);
+    TResponseModel<TelegramBotConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
+    if (wc_remote.Response is not null && wc_remote.Success() && Uri.TryCreate(wc_remote.Response.BaseUri, UriKind.Absolute, out _))
+        wc_main.Value.Update(wc_remote.Response.BaseUri);
 
 #if DEBUG
 #if DEMO

@@ -17,7 +17,7 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Получить `web config` сайта
     /// </summary>
-    public Task<TResponseModel<WebConfigModel?>> GetWebConfig();
+    public Task<TResponseModel<TelegramBotConfigModel?>> GetWebConfig();
 
     /// <summary>
     /// Получить пользователей из Identity по их идентификаторам

@@ -30,10 +30,8 @@ public interface IManualCustomCacheService
     /// <summary>
     /// Прочитать из Cache данные в виде строки
     /// </summary>
-    /// <param name="mem_key">Комплексный/полный ключ доступа Cache данным</param>
-    /// <param name="token"></param>
     /// <returns>Данные, прочитанные из Cache по комплексному/полному имени ключа</returns>
-    public Task<T?> GetObjectAsync<T>(string mem_key, CancellationToken token = default);
+    public Task<T?> GetObjectAsync<T>(string mem_key, TimeSpan? expiry = null, CancellationToken token = default);
 
     /// <summary>
     /// Прочитать из Cache данные в виде строки
@@ -96,6 +94,16 @@ public interface IManualCustomCacheService
     /// <param name="token"></param>
     /// <returns>Результат операции</returns>
     public Task SetObject<T>(MemCachePrefixModel pref, string id, T value, TimeSpan? expiry = null, CancellationToken token = default);
+
+    /// <summary>
+    /// Обновить/записать данные в Cache
+    /// </summary>
+    /// <param name="mem_key">Имя/идентификатор (конечный) доступа к данным Cache</param>
+    /// <param name="value">Значение для записи в Cache</param>
+    /// <param name="expiry">Срок годности/хранения данных в Cache (null - по умолчанию = бессрочно)</param>
+    /// <param name="token"></param>
+    /// <returns>Результат операции</returns>
+    public Task SetObject<T>(string mem_key, T value, TimeSpan? expiry = null, CancellationToken token = default);
     #endregion
 
     #region remove
