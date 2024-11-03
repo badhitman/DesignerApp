@@ -39,6 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "devops", "devops", "{3A274B
 	ProjectSection(SolutionItems) = preProject
 		devops\build-win.ps1 = devops\build-win.ps1
 		devops\docker-compose.yml = devops\docker-compose.yml
+		devops\nlog-db-create.sql = devops\nlog-db-create.sql
 		devops\pg_backup.txt = devops\pg_backup.txt
 		devops\readme.txt = devops\readme.txt
 	EndProjectSection

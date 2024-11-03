@@ -150,6 +150,25 @@ note for DbPostgreLib "Если используется другая СУБД, 
 #### Логирование (Nlog)
 Nlog пишет одновременно: в текстовый файл и в базу данных (`PostgreSQL`). Строка подключения к БД находится в конфигах 'nlog.config' - отредактируйте под свои параметры. Строка подключения по умолчанию (для всех сервисов): `Server=localhost;Port=5432;User Id=nlog;Password=nlog;Database=nlogs;`
 
+Скрипт для создания базы данных логов:
+``` sql
+CREATE TABLE public.logs
+(
+    "Id" integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+    "Application" character(256),
+    "Timestamp" timestamp without time zone NOT NULL,
+    "Level" character(128) NOT NULL,
+    "Message" varchar,
+    "Logger" character(256),
+    "Callsite" character(256),
+    "Exception" varchar,
+    CONSTRAINT logs_pk PRIMARY KEY ("Id")
+);
+
+ALTER TABLE IF EXISTS public.logs
+    OWNER to nlog;
+```
+
 ### Настройка
 - Перед запуском: в Blazor[^4] потребуются конфиги **Email** (отправка писем **SMTP**. в. т.ч. для **Identity**), а для **TelegramBot** потребуется токен. **MQ** и **Redis** настройки потребуются всем сервисам (единый контекст для всех сервисов). База данных может быть как SQLite, так и PostgreSQL/MySQL (у каждого сервиса своя БД). **MongoDB** потребуется для `StorageService`.
 - Помимо стандартных настроек **appsettings.json** потребуется отдельная папка где будут храниться приватные данные: логины и пароли к внешним системам. В всех службах поиск/загрузка секретов происходит одинаково:
