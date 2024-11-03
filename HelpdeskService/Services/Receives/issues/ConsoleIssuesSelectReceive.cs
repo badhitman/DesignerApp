@@ -20,7 +20,6 @@ public class ConsoleIssuesSelectReceive(IHelpdeskService hdRepo)
     public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ResponseHandleAction(TPaginationRequestModel<ConsoleIssuesRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-
         return new() { Response = await hdRepo.ConsoleIssuesSelect(req) };
     }
 }
