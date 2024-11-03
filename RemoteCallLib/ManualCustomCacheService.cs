@@ -102,11 +102,19 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
 
     #region remove
     /// <inheritdoc/>
-    public async Task<bool> RemoveAsync(MemCacheComplexKeyModel key)
+    public async Task<bool> RemoveAsync(MemCacheComplexKeyModel key) 
+        => await RemoveAsync(key.ToString());
+
+    /// <inheritdoc/>
+    public async Task<bool> RemoveAsync(MemCachePrefixModel pref, string id)
+        => await RemoveAsync(new MemCacheComplexKeyModel(id, pref));
+
+    /// <inheritdoc/>
+    public async Task<bool> RemoveAsync(string key)
     {
         try
         {
-            await _cache.RemoveAsync(key.ToString());
+            await _cache.RemoveAsync(key);
         }
         catch
         {
@@ -115,9 +123,5 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
 
         return true;
     }
-
-    /// <inheritdoc/>
-    public async Task<bool> RemoveAsync(MemCachePrefixModel pref, string id)
-        => await RemoveAsync(new MemCacheComplexKeyModel(id, pref));
     #endregion
 }

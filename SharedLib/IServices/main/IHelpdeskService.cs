@@ -41,4 +41,24 @@ public interface IHelpdeskService
     /// Subscribe update - of context user
     /// </summary>
     public Task<TResponseModel<bool?>> SubscribeUpdate(TAuthRequestModel<SubscribeUpdateRequestModel> req);
+
+    /// <summary>
+    /// Status change
+    /// </summary>
+    public Task<TResponseModel<bool>> StatusChange(TAuthRequestModel<StatusChangeRequestModel> req);
+
+    /// <summary>
+    /// Message vote
+    /// </summary>
+    public Task<TResponseModel<bool?>> MessageVote(TAuthRequestModel<VoteIssueRequestModel> req);
+
+    /// <summary>
+    /// Очистить кеш сегмента консоли
+    /// </summary>
+    public Task ConsoleSegmentCacheEmpty(StatusesDocumentsEnum Status);
+
+    /// <summary>
+    /// Read issue - of context user
+    /// </summary>
+    public Task<TResponseModel<IssueHelpdeskModelDB[]>> IssuesRead(TAuthRequestModel<IssuesReadRequestModel> req);
 }

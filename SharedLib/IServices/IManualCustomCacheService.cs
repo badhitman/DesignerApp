@@ -107,6 +107,12 @@ public interface IManualCustomCacheService
     #endregion
 
     #region remove
+    /// <summary>
+    /// Удалить (асинхронно) данные из Cache
+    /// </summary>
+    /// <param name="key">Ключ/указатель на данные в Cache</param>
+    /// <returns>Результат операции</returns>
+    public Task<bool> RemoveAsync(string key);
 
     /// <summary>
     /// Удалить (асинхронно) данные из Cache
