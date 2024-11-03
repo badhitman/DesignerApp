@@ -36,3 +36,11 @@ services:
       - ./mongodb:/var/lib/mongodb/data
     ports:
       - 27017:27017
+
+  redis:
+    image: redis
+    restart: always
+    volumes:
+      - ./redisdata:/var/lib/redis/data
+    ports:
+      - 6379:6379
