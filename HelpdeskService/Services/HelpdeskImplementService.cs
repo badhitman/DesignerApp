@@ -37,18 +37,26 @@ public class HelpdeskImplementService(
         if (req.PageSize < 10)
             req.PageSize = 10;
 
-        static string ConsoleSegmentNewCacheToken(StatusesDocumentsEnum st) => $"{GlobalStaticConstants.Routes.CONSOLE_CONTROLLER_NAME}:{GlobalStaticConstants.Routes.SEGMENT_CONTROLLER_NAME}:{st}:{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.{Guid.NewGuid()}";
-        MemCacheComplexKeyModel mceKey = GlobalStaticConstants.Cache.ConsoleSegmentStatusToken(req.Payload.Status);
-        string? cacheToken = await cacheRepo.GetStringValueAsync(mceKey);
-        if (string.IsNullOrWhiteSpace(cacheToken))
+        string ConsoleSegmentNewCacheToken(StatusesDocumentsEnum st) => $"{GlobalStaticConstants.Routes.CONSOLE_CONTROLLER_NAME}:{GlobalStaticConstants.Routes.SEGMENT_CONTROLLER_NAME}:{st}:{req.Payload.ProjectId}:{req.PageSize}:{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.{Guid.NewGuid()}";
+        string? cacheToken = null;
+
+        if (req.PageNum == 0 && string.IsNullOrWhiteSpace(req.Payload.SearchQuery) && string.IsNullOrWhiteSpace(req.Payload.FilterUserId))
         {
-            cacheToken = ConsoleSegmentNewCacheToken(req.Payload.Status);
-            await cacheRepo.SetStringAsync(mceKey, cacheToken);
+            MemCacheComplexKeyModel mceKey = GlobalStaticConstants.Cache.ConsoleSegmentStatusToken(req.Payload.Status);
+            cacheToken = await cacheRepo.GetStringValueAsync(mceKey);
+            if (string.IsNullOrWhiteSpace(cacheToken))
+            {
+                cacheToken = ConsoleSegmentNewCacheToken(req.Payload.Status);
+                await cacheRepo.SetStringAsync(mceKey, cacheToken);
+            }
         }
 
-        TPaginationResponseModel<IssueHelpdeskModel>? _fr = await cacheRepo.GetObjectAsync<TPaginationResponseModel<IssueHelpdeskModel>>(cacheToken);
-        if (_fr is not null)
-            return _fr;
+        if (!string.IsNullOrWhiteSpace(cacheToken))
+        {
+            TPaginationResponseModel<IssueHelpdeskModel>? _fr = await cacheRepo.GetObjectAsync<TPaginationResponseModel<IssueHelpdeskModel>>(cacheToken);
+            if (_fr is not null)
+                return _fr;
+        }
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IQueryable<IssueHelpdeskModelDB> q = context
@@ -89,7 +97,9 @@ public class HelpdeskImplementService(
             Response = [.. data.Select(x => IssueHelpdeskModel.Build(x))]
         };
 
-        await cacheRepo.SetObject(cacheToken, res, TimeSpan.FromSeconds(hdConf.Value.ConsoleSegmentCacheLifetimeSeconds));
+        if (!string.IsNullOrWhiteSpace(cacheToken))
+            await cacheRepo.SetObject(cacheToken, res, TimeSpan.FromSeconds(hdConf.Value.ConsoleSegmentCacheLifetimeSeconds));
+
         return res;
     }
 
