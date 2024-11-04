@@ -1,0 +1,13 @@
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @FakeGov 
+////////////////////////////////////////////////
+
+namespace SharedLib;
+
+/// <summary>
+/// IToolsSystemService
+/// </summary>
+public class IToolsSystemService
+{
+
+}

@@ -25,7 +25,7 @@
         <ApplicationTitle>ToolsMauiApp</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.toolsmauiapp</ApplicationId>
+        <ApplicationId>com.DesignerApp.ToolsMauiApp</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -60,6 +60,16 @@
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.92" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.92" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+        <PackageReference Include="MudBlazor" Version="7.15.0" />
+        <PackageReference Include="System.Text.Json" Version="8.0.5" />
     </ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\libs\" />
+	</ItemGroup>
 
 </Project>

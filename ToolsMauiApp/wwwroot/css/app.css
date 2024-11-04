@@ -69,6 +69,11 @@ h1:focus {
     display: none;
 }
 
+main > div.top-row {
+    background-color: #212528;
+    z-index: 10;
+}
+
 @supports (-webkit-touch-callout: none) {
     .status-bar-safe-area {
         display: flex;

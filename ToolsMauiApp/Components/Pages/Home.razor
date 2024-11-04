@@ -1,5 +1,63 @@
 ﻿@page "/"
+@using MudBlazor
+@using SharedLib
+@inherits BlazorBusyComponentBaseModel
 
-<h1>Hello, world!</h1>
+<div class="my-3">
+    <div class="input-group">
+        <span class="input-group-text">API</span>
+        <input type="text" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="configEdit.AccessToken" @bind-value:event="oninput">
+        <input type="text" aria-label="Address API" class="form-control" placeholder="Адрес API" @bind-value="configEdit.ApiAddress" @bind-value:event="oninput">
+        <button disabled="@(!CanSave)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" @onclick="SaveConfig">Сохранить</button>
+        @if (!configEdit.Equals(MauiProgram.ConfigStore.Response))
+        {
+            <button @onclick="() => configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!" class="btn btn-outline-warning" type="button">Отмена</button>
+        }
+        <button disabled="@(!configEdit.FullSets)" class="btn btn-outline-@(configEdit.ConnectionSet ? "success" : "secondary")" type="button">Test</button>
+    </div>
+    <div class="row g-3 align-items-center my-1">
+        <div class="col-auto">
+            <label for="inputLocalDir" class="col-form-label">Локальная папка</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" id="inputLocalDir" class="form-control" aria-describedby="localDirHelpInline" @bind-value="configEdit.LocalDirectory" @bind-value:event="oninput">
+        </div>
+        <div class="col-auto">
+            <span id="localDirHelpInline" class="form-text">
+                Данные, отправляемые на удалённый сервер.
+            </span>
+        </div>
+    </div>
+    <div class="row g-3 align-items-center my-1">
+        <div class="col-auto">
+            <label for="inputRemoteDir" class="col-form-label">Удалённая папка</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" id="inputRemoteDir" class="form-control" aria-describedby="remoteHelpInline" @bind-value="configEdit.RemoteDirectory" @bind-value:event="oninput">
+        </div>
+        <div class="col-auto">
+            <span id="remoteHelpInline" class="form-text">
+                Принимающая папка на удалённом сервере.
+            </span>
+        </div>
+    </div>
+</div>
 
-Welcome to your new app.
+
+@if (MauiProgram.ConfigStore.Success())
+{
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Tab One">
+            <MudText>Content One</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="Tab Two">
+            <MudText>Content Two</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="Tab Three">
+            <MudText>Content Three</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="Tab Disabled" Disabled="true">
+            <MudText>Content Disabled</MudText>
+        </MudTabPanel>
+    </MudTabs>
+}

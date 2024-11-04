@@ -402,3 +402,4 @@ FodyWeavers.xsd
 *.sqlite-wal
 *.sqlite-shm
 **/wwwroot/lib
+*/wwwroot/libs/*
