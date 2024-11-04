@@ -35,7 +35,7 @@ public class ForwardMessageTelegramReceive(
         Message sender_msg;
         try
         {
-            sender_msg = await _botClient.ForwardMessageAsync(chatId: message.DestinationChatId, fromChatId: message.SourceChatId, messageId: message.SourceMessageId);
+            sender_msg = await _botClient.ForwardMessage(chatId: message.DestinationChatId, fromChatId: message.SourceChatId, messageId: message.SourceMessageId);
 
             MessageTelegramModelDB msg_db = await storeTgRepo.StoreMessage(sender_msg);
             res.Response = new()

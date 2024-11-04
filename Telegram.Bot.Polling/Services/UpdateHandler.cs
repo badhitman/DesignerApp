@@ -5,6 +5,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using ServerLib;
 using SharedLib;
+using Microsoft.Extensions.Logging;
 
 namespace Telegram.Bot.Services;
 
@@ -48,7 +49,7 @@ public class UpdateHandler(
     private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
     {
         logger.LogInformation("Receive message type: {MessageType}", message.Type);
-        await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
+        await botClient.SendChatAction(message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
 
         MessageTelegramModelDB msg_db = await storeRepo.StoreMessage(message);
 
@@ -72,14 +73,14 @@ public class UpdateHandler(
                 if (!check_token.Success())
                 {
                     msg = $"Ошибка проверки токена: {check_token.Message()}. Начать заново /start";
-                    Message msg_s = await botClient.SendTextMessageAsync(
+                    Message msg_s = await botClient.SendMessage(
                                     chatId: message.Chat.Id,
                                     text: msg,
                                     parseMode: ParseMode.Html,
                                     replyMarkup: new ReplyKeyboardRemove(),
                                     cancellationToken: cancellationToken);
 #if DEBUG
-                    await botClient.EditMessageTextAsync(
+                    await botClient.EditMessageText(
                         chatId: msg_s.Chat.Id,
                         messageId: msg_s.MessageId,
                         text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
@@ -90,7 +91,7 @@ public class UpdateHandler(
                 else
                 {
                     msg = $"Токен успешно проверен";
-                    Message msg_s = await botClient.SendTextMessageAsync(
+                    Message msg_s = await botClient.SendMessage(
                                     chatId: message.Chat,
                                     text: msg,
                                     parseMode: ParseMode.Html,
@@ -98,7 +99,7 @@ public class UpdateHandler(
                                     cancellationToken: cancellationToken);
 
 #if DEBUG
-                    await botClient.EditMessageTextAsync(
+                    await botClient.EditMessageText(
                         chatId: msg_s.Chat.Id,
                         messageId: msg_s.MessageId,
                         text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
@@ -174,7 +175,7 @@ public class UpdateHandler(
         if (callbackQuery.Message?.From is null || string.IsNullOrEmpty(callbackQuery.Data))
             return;
 
-        await botClient.SendChatActionAsync(callbackQuery.Message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
+        await botClient.SendChatAction(callbackQuery.Message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
         TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(callbackQuery.From.Id, callbackQuery.From.FirstName, callbackQuery.From.LastName, callbackQuery.From.Username, callbackQuery.From.IsBot));
         await Usage(uc.Response!, callbackQuery.Message.MessageId, MessagesTypesEnum.CallbackQuery, callbackQuery.Message.Chat.Id, callbackQuery.Data, cancellationToken);
     }
@@ -217,7 +218,7 @@ public class UpdateHandler(
         {
             msg = $"Ошибка обработки ответа на входящее сообщение Telegram: {resp.Message()}. error {{3A3ABECF-6CFB-4FF5-AE63-A124308C5EE8}}";
             logger.LogError(msg);
-            Message msg_s = await botClient.SendTextMessageAsync(
+            Message msg_s = await botClient.SendMessage(
                                 chatId: chatId,
                                 text: msg,
                                 parseMode: ParseMode.Html,
@@ -225,7 +226,7 @@ public class UpdateHandler(
                                 cancellationToken: cancellationToken);
 
 #if DEBUG
-            await botClient.EditMessageTextAsync(
+            await botClient.EditMessageText(
                 chatId: msg_s.Chat.Id,
                 messageId: msg_s.MessageId,
                 text: $"#<b>{msg_s.MessageId}</b>\n{msg}",
@@ -248,14 +249,14 @@ public class UpdateHandler(
             msg = $"Ошибка обработки ответа на входящее сообщение Telegram: [ReplyKeyboard && ResponseText] is null. error {{A3A9DF60-8BC9-4868-8BD8-F29B64AE39CD}}";
             logger.LogError(msg);
 #if DEBUG            
-            messageSended = await botClient.SendTextMessageAsync(
+            messageSended = await botClient.SendMessage(
                                 chatId: chatId,
                                 text: msg,
                                 parseMode: ParseMode.Html,
                                 replyMarkup: new ReplyKeyboardRemove(),
                                 cancellationToken: cancellationToken);
 
-            await botClient.EditMessageTextAsync(
+            await botClient.EditMessageText(
                 chatId: messageSended.Chat.Id,
                 messageId: messageSended.MessageId,
                 text: $"#<b>{messageSended.MessageId}</b>\n{msg}",
@@ -272,13 +273,13 @@ public class UpdateHandler(
             {
                 try
                 {
-                    messageSended = await botClient.EditMessageReplyMarkupAsync(chatId: chatId, messageId: uc.MainTelegramMessageId.Value, replyMarkup: (InlineKeyboardMarkup?)replyKB, cancellationToken: cancellationToken);
+                    messageSended = await botClient.EditMessageReplyMarkup(chatId: chatId, messageId: uc.MainTelegramMessageId.Value, replyMarkup: (InlineKeyboardMarkup?)replyKB, cancellationToken: cancellationToken);
                 }
                 catch (Exception ex)
                 {
                     msg = $"Привет, {uc}!";
                     logger.LogError(ex, $"{msg} error {{F0A92AB9-9136-43C0-9422-AADA61A82841}}");
-                    messageSended = await botClient.SendTextMessageAsync(
+                    messageSended = await botClient.SendMessage(
                                         chatId: chatId,
                                         text: msg,
                                         parseMode: ParseMode.Html,
@@ -292,7 +293,7 @@ public class UpdateHandler(
                     else
                         logger.LogDebug($"TelegramMessageId для [основного сообщения] {uc} изменён на #{messageSended.MessageId}.");
 #if DEBUG
-                    await botClient.EditMessageTextAsync(
+                    await botClient.EditMessageText(
                         chatId: messageSended.Chat.Id,
                         messageId: messageSended.MessageId,
                         text: $"#<b>{messageSended.MessageId}</b>\n{msg}",
@@ -305,7 +306,7 @@ public class UpdateHandler(
             else
             {
                 msg = $"Привет, {uc}!";
-                messageSended = await botClient.SendTextMessageAsync(
+                messageSended = await botClient.SendMessage(
                                     chatId: chatId,
                                     text: msg,
                                     parseMode: ParseMode.Html,
@@ -319,7 +320,7 @@ public class UpdateHandler(
                 else
                     logger.LogDebug($"TelegramMessageId для [основного сообщения] {uc} изменён на #{messageSended.MessageId}.");
 #if DEBUG
-                await botClient.EditMessageTextAsync(
+                await botClient.EditMessageText(
                     chatId: messageSended.Chat.Id,
                     messageId: messageSended.MessageId,
                     text: $"#<b>{messageSended.MessageId}</b>\n{msg}",
@@ -338,7 +339,7 @@ public class UpdateHandler(
             {
                 try
                 {
-                    await botClient.DeleteMessageAsync(
+                    await botClient.DeleteMessage(
                                                     chatId: chatId,
                                                     messageId: uc.MainTelegramMessageId.Value,
                                                     cancellationToken: cancellationToken);
@@ -357,7 +358,7 @@ public class UpdateHandler(
                 }
             }
             //replyKB ??= new ReplyKeyboardRemove();
-            messageSended = await botClient.SendTextMessageAsync(
+            messageSended = await botClient.SendMessage(
                                             chatId: chatId,
                                             text: resp.Response,
                                             parseMode: ParseMode.Html,
@@ -365,7 +366,7 @@ public class UpdateHandler(
                                             cancellationToken: cancellationToken);
 
 #if DEBUG
-            messageSended = await botClient.EditMessageTextAsync(
+            messageSended = await botClient.EditMessageText(
                 chatId: messageSended.Chat.Id,
                 messageId: messageSended.MessageId,
                 text: $"#<b>{messageSended.MessageId}</b>\n{resp.Response}",
@@ -387,7 +388,7 @@ public class UpdateHandler(
         {
             try
             {
-                messageSended = await botClient.EditMessageTextAsync(
+                messageSended = await botClient.EditMessageText(
                                             chatId: chatId,
                                             messageId: resp.MainTelegramMessageId.Value,
                                             text: resp.Response,
@@ -400,7 +401,7 @@ public class UpdateHandler(
             {
                 logger.LogWarning(ex, $"Не удалось изменить [основного сообщения] для {uc} (вероятно ранее оно уже было удалено). warning 6C43B500-A863-4C3E-B4A6-238483F27166");
                 replyKB ??= new ReplyKeyboardRemove();
-                messageSended = await botClient.SendTextMessageAsync(
+                messageSended = await botClient.SendMessage(
                                             chatId: chatId,
                                             text: resp.Response,
                                             parseMode: ParseMode.Html,
@@ -408,14 +409,13 @@ public class UpdateHandler(
                                             cancellationToken: cancellationToken);
 
 #if DEBUG
-                await botClient.EditMessageTextAsync(
+                await botClient.EditMessageText(
                     chatId: messageSended.Chat.Id,
                     messageId: messageSended.MessageId,
                     text: $"#<b>{messageSended.MessageId}</b>\n{resp.Response}",
                     parseMode: ParseMode.Html,
                     replyMarkup: (InlineKeyboardMarkup?)replyKB,
-                    cancellationToken: cancellationToken
-                    );
+                    cancellationToken: cancellationToken);
 #endif
 
                 upd_main_msg_res = await webRemoteRepo
@@ -452,5 +452,12 @@ public class UpdateHandler(
         // Cooldown in case of network connection error
         if (exception is RequestException)
             await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, HandleErrorSource source, CancellationToken cancellationToken)
+    {
+        logger.LogError(exception, GetType().FullName);
+        return Task.CompletedTask;
     }
 }

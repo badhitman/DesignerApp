@@ -73,24 +73,24 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
 
                     if (GlobalTools.IsImageFile(file.Name))
                     {
-                        sender_msg = await _botClient.SendPhotoAsync(
+                        sender_msg = await _botClient.SendPhoto(
                                                             chatId: message.UserTelegramId,
                                                             photo: InputFile.FromStream(new MemoryStream(file.Data), file.Name),
 
                                                             caption: msg_text,
                                                             replyMarkup: replyKB,
                                                             parseMode: parse_mode,
-                                                            replyToMessageId: message.ReplyToMessageId);
+                                                            replyParameters: message.ReplyToMessageId!.Value);
                     }
                     else
                     {
-                        sender_msg = await _botClient.SendDocumentAsync(
+                        sender_msg = await _botClient.SendDocument(
                                     chatId: message.UserTelegramId,
                                     document: InputFile.FromStream(new MemoryStream(file.Data), file.Name),
 
                                     caption: msg_text,
                                     parseMode: parse_mode,
-                                    replyToMessageId: message.ReplyToMessageId);
+                                    replyParameters: message.ReplyToMessageId);
                     }
 
                     msg_db = await storeTgRepo.StoreMessage(sender_msg);
@@ -102,10 +102,10 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
                 }
                 else
                 {
-                    Message[] senders_msgs = await _botClient.SendMediaGroupAsync(
+                    Message[] senders_msgs = await _botClient.SendMediaGroup(
                         chatId: message.UserTelegramId,
                         media: message.Files.Select(ToolsStatic.ConvertFile).ToArray(),
-                        replyToMessageId: message.ReplyToMessageId);
+                        replyParameters: message.ReplyToMessageId);
 
                     foreach (Message mm in senders_msgs)
                     {
@@ -120,11 +120,11 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
             }
             else
             {
-                sender_msg = await _botClient.SendTextMessageAsync(
+                sender_msg = await _botClient.SendMessage(
                     chatId: message.UserTelegramId,
                     text: msg_text,
                     parseMode: parse_mode,
-                    replyToMessageId: message.ReplyToMessageId);
+                    replyParameters: message.ReplyToMessageId);
 
                 msg_db = await storeTgRepo.StoreMessage(sender_msg);
                 res.Response = new MessageComplexIdsModel()
@@ -134,15 +134,6 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
                 };
 
             }
-
-            //#if DEBUG
-            //            await _botClient.EditMessageTextAsync(
-            //                chatId: message.UserTelegramId,
-            //                messageId: sender_msg.MessageId,
-            //                text: $"#<b>{sender_msg.MessageId}</b>\n{msg_text}",
-            //                parseMode: ParseMode.Html
-            //                );
-            //#endif
         }
         catch (Exception ex)
         {
@@ -166,7 +157,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
         {
             try
             {
-                await _botClient.DeleteMessageAsync(chatId: message.UserTelegramId, message.MainTelegramMessageId.Value);
+                await _botClient.DeleteMessage(chatId: message.UserTelegramId, message.MainTelegramMessageId.Value);
             }
             finally { }
             await webRemoteCall.UpdateTelegramMainUserMessage(new() { MessageId = 0, UserId = message.UserTelegramId });

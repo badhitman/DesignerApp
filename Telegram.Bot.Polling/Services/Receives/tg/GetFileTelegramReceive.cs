@@ -24,7 +24,7 @@ public class GetFileTelegramReceive(ITelegramBotClient _botClient)
         TResponseModel<byte[]?> res = new();
         try
         {
-            Telegram.Bot.Types.File fileTg = await _botClient.GetFileAsync(fileId);
+            Telegram.Bot.Types.File fileTg = await _botClient.GetFile(fileId);
             MemoryStream ms = new();
 
             if (string.IsNullOrWhiteSpace(fileTg.FilePath))
@@ -33,7 +33,7 @@ public class GetFileTelegramReceive(ITelegramBotClient _botClient)
                 return res;
             }
 
-            await _botClient.DownloadFileAsync(fileTg.FilePath, ms);
+            await _botClient.DownloadFile(fileTg.FilePath, ms);
             res.Response = ms.ToArray();
         }
         catch (Exception ex)

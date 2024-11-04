@@ -1,12 +1,17 @@
-﻿namespace ToolsMauiApp
-{
-    public partial class App : Application
-    {
-        public App()
-        {
-            InitializeComponent();
+﻿namespace ToolsMauiApp;
 
-            MainPage = new MainPage();
-        }
+/// <summary>
+/// App
+/// </summary>
+public partial class App : Application
+{
+    /// <summary>
+    /// App
+    /// </summary>
+    public App()
+    {
+        InitializeComponent();
+
+        MainPage = new MainPage();
     }
 }

@@ -34,10 +34,11 @@ public abstract class ReceiverServiceBase<TUpdateHandler> : IReceiverService
         ReceiverOptions receiverOptions = new()
         {
             AllowedUpdates = [],
-            ThrowPendingUpdates = true,
+            //ThrowPendingUpdates = true,
+             DropPendingUpdates = true,
         };
 
-        Types.User me = await _botClient.GetMeAsync(stoppingToken);
+        Types.User me = await _botClient.GetMe(stoppingToken);
         _logger.LogInformation("Start receiving updates for {BotName}", me.Username ?? "My Awesome Bot");
 
         // Start receiving updates
