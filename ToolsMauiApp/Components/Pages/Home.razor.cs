@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.Components;
 using SharedLib;
 
 namespace ToolsMauiApp.Components.Pages;
@@ -11,6 +12,9 @@ namespace ToolsMauiApp.Components.Pages;
 /// </summary>
 public partial class Home : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    IToolsSystemService toolsRepo { get; set; } = default!;
+
     ConfigStoreModel configEdit = new();
 
     bool CanSave => configEdit.FullSets && !configEdit.Equals(MauiProgram.ConfigStore.Response);
@@ -31,14 +35,15 @@ public partial class Home : BlazorBusyComponentBaseModel
             return;
         }
 
-        FileInfo _fi = new(configEdit.LocalDirectory);
+        DirectoryInfo _fi = new(configEdit.LocalDirectory);
         if (!_fi.Exists)
         {
             SnackbarRepo.Error("Локальная директория отсутствует");
             return;
         }
+        
         await SetBusy();
-
+        TResponseModel<ExpressProfileResponseModel> res = await toolsRepo.GetMe();
         await SetBusy(false);
     }
 

@@ -22,7 +22,7 @@ public class InfoController : ControllerBase
     /// Получить информацию по текущему профилю (проверка токена доступа)
     /// </summary>
     /// <returns>Информация по текущему пользователю (имя и роли)</returns>
-    [HttpGet("/api/info/my"), Authorize]
+    [HttpGet($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.INFO_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MY_CONTROLLER_NAME}"), Authorize]
     public ExpressProfileResponseModel GetMyProfile()
     {
         ExpressProfileResponseModel res = new() { UserName = HttpContext.User.Identity?.Name };

@@ -3,6 +3,8 @@ using System.Security.Claims;
 using SharedLib;
 using MudBlazor;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace ToolsMauiApp;
 
@@ -11,6 +13,25 @@ namespace ToolsMauiApp;
 /// </summary>
 public static class Extensions
 {
+    /// <summary>
+    /// Отправка запроса GET согласно указанному универсальному коду ресурса (URI) и возврат текста ответа в виде строки в асинхронной операции.
+    /// </summary>
+    public static async Task<TResponseModel<T>> GetStringAsync<T>(this HttpClient httpCli, [StringSyntax(StringSyntaxAttribute.Uri)] string? requestUri) where T : class
+    {
+        TResponseModel<T> res = new();
+        try
+        {
+            string raw = await httpCli.GetStringAsync(requestUri);
+            res.Response = JsonConvert.DeserializeObject<T>(raw) ?? throw new Exception(raw);
+        }
+        catch (Exception ex)
+        {
+            res.Messages.InjectException(ex);
+        }
+
+        return res;
+    }
+
     /// <summary>
     /// Получить данные по текущему пользователю
     /// </summary>

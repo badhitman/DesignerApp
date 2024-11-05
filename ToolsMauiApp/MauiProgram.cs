@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 using Newtonsoft.Json;
@@ -98,6 +99,14 @@ public static class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
         builder.Services.AddMudServices();
+        builder.Services.AddScoped<IToolsSystemService, ToolsSystemService>();
+
+        if (ConfigStore.Response is not null)
+            builder.Services.AddHttpClient(HttpClientsNamesEnum.Tools.ToString(), cc =>
+            {
+                cc.BaseAddress = new Uri(ConfigStore.Response.ApiAddress ?? "localhost");
+                cc.DefaultRequestHeaders.Add("token-access", ConfigStore.Response.AccessToken);
+            });
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();

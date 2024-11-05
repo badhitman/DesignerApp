@@ -1287,6 +1287,21 @@ public static partial class GlobalStaticConstants
         public const string ACCOUNT_CONTROLLER_NAME = "account";
 
         /// <summary>
+        /// API
+        /// </summary>
+        public const string API_CONTROLLER_NAME = "api";
+
+        /// <summary>
+        /// Info
+        /// </summary>
+        public const string INFO_CONTROLLER_NAME = "info";
+
+        /// <summary>
+        /// My
+        /// </summary>
+        public const string MY_CONTROLLER_NAME = "my";
+
+        /// <summary>
         /// Rest
         /// </summary>
         public const string REST_CONTROLLER_NAME = "rest";

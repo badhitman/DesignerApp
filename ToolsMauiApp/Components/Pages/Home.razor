@@ -13,7 +13,7 @@
         {
             <button @onclick="() => configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!" class="btn btn-outline-warning" type="button">Отмена</button>
         }
-        <button disabled="@(!configEdit.FullSets)" class="btn btn-outline-@(configEdit.ConnectionSet ? "success" : "secondary")" type="button">Test</button>
+        <button @onclick="TestConnect" disabled="@(!configEdit.FullSets)" class="btn btn-outline-@(configEdit.ConnectionSet ? "success" : "secondary")" type="button">Test</button>
     </div>
     <div class="row g-3 align-items-center my-1">
         <div class="col-auto">

@@ -7,7 +7,10 @@ namespace SharedLib;
 /// <summary>
 /// IToolsSystemService
 /// </summary>
-public class IToolsSystemService
+public interface IToolsSystemService
 {
-
+    /// <summary>
+    /// GetMe
+    /// </summary>
+    public Task<TResponseModel<ExpressProfileResponseModel>> GetMe();
 }

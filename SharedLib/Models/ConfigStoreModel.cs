@@ -36,7 +36,7 @@ public class ConfigStoreModel
     /// </summary>
     public bool ConnectionSet =>
         !string.IsNullOrWhiteSpace(AccessToken) &&
-        !string.IsNullOrWhiteSpace(ApiAddress);
+        !string.IsNullOrWhiteSpace(ApiAddress) && Uri.TryCreate(ApiAddress, uriKind: UriKind.Absolute, out _);
 
     /// <summary>
     /// Форма заполнена
