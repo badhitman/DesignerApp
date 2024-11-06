@@ -1,0 +1,12 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<h3>Синхронизация папок</h3>
+
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+}
+
+<div class="d-grid gap-2">
+    <button class="btn btn-primary" type="button">Выполнить</button>
+</div>

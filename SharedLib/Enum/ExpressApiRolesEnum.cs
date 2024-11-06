@@ -46,4 +46,10 @@ public enum ExpressApiRolesEnum
     /// </summary>
     [Description("Изменение доставки заказов (сервис: Commerce)")]
     OrdersWriteCommerce = 60,
+
+    /// <summary>
+    /// Системные права
+    /// </summary>
+    [Description("Системные права")]
+    SystemRoot = int.MaxValue,
 }

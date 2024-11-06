@@ -6,21 +6,21 @@
 <div class="my-3">
     <div class="input-group">
         <span class="input-group-text">API</span>
-        <input type="text" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="configEdit.AccessToken" @bind-value:event="oninput">
-        <input type="text" aria-label="Address API" class="form-control" placeholder="Адрес API" @bind-value="configEdit.ApiAddress" @bind-value:event="oninput">
-        <button disabled="@(!CanSave)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" @onclick="SaveConfig">Сохранить</button>
+        <input disabled="@IsBusyProgress" type="text" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="configEdit.AccessToken" @bind-value:event="oninput">
+        <input disabled="@IsBusyProgress" type="text" aria-label="Address API" class="form-control" placeholder="Адрес API" @bind-value="configEdit.ApiAddress" @bind-value:event="oninput">
+        <button disabled="@(!CanSave || IsBusyProgress)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" @onclick="SaveConfig">Сохранить</button>
         @if (!configEdit.Equals(MauiProgram.ConfigStore.Response))
         {
-            <button @onclick="() => configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!" class="btn btn-outline-warning" type="button">Отмена</button>
+            <button disabled="@IsBusyProgress" @onclick="() => configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!" class="btn btn-outline-warning" type="button">Отмена</button>
         }
-        <button @onclick="TestConnect" disabled="@(!configEdit.FullSets)" class="btn btn-outline-@(configEdit.ConnectionSet ? "success" : "secondary")" type="button">Test</button>
+        <button @onclick="TestConnect" disabled="@(!configEdit.FullSets || IsBusyProgress)" class="btn btn-outline-@(configEdit.ConnectionSet ? "success" : "secondary")" type="button">Test</button>
     </div>
     <div class="row g-3 align-items-center my-1">
         <div class="col-auto">
             <label for="inputLocalDir" class="col-form-label">Локальная папка</label>
         </div>
         <div class="col-auto">
-            <input type="text" id="inputLocalDir" class="form-control" aria-describedby="localDirHelpInline" @bind-value="configEdit.LocalDirectory" @bind-value:event="oninput">
+            <input disabled="@IsBusyProgress" type="text" id="inputLocalDir" class="form-control" aria-describedby="localDirHelpInline" @bind-value="configEdit.LocalDirectory" @bind-value:event="oninput">
         </div>
         <div class="col-auto">
             <span id="localDirHelpInline" class="form-text">
@@ -33,7 +33,7 @@
             <label for="inputRemoteDir" class="col-form-label">Удалённая папка</label>
         </div>
         <div class="col-auto">
-            <input type="text" id="inputRemoteDir" class="form-control" aria-describedby="remoteHelpInline" @bind-value="configEdit.RemoteDirectory" @bind-value:event="oninput">
+            <input disabled="@IsBusyProgress" type="text" id="inputRemoteDir" class="form-control" aria-describedby="remoteHelpInline" @bind-value="configEdit.RemoteDirectory" @bind-value:event="oninput">
         </div>
         <div class="col-auto">
             <span id="remoteHelpInline" class="form-text">
@@ -43,21 +43,91 @@
     </div>
 </div>
 
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+}
 
-@if (MauiProgram.ConfigStore.Success())
+@if (!IsBusyProgress && configEdit.FullSets && testResult?.Response?.Roles is not null && MauiProgram.ConfigStore.Success())
 {
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-        <MudTabPanel Text="Tab One">
-            <MudText>Content One</MudText>
+        <MudTabPanel Text="Статус">
+            <div class="card my-1">
+                <div class="card-body">
+                    <h5 class="card-title">Карточка клиента</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">@testResult.Response.UserName</h6>
+                    @foreach (string _r in testResult.Response.Roles)
+                    {
+                        <span class="badge text-bg-primary mx-1">@_r</span>
+                    }
+                </div>
+            </div>
+            @if (testResult.Messages.Count != 0)
+            {
+                <table class="table table-dark table-hover my-2">
+                    <thead>
+                        <tr>
+                            <th scope="col">Logs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (ResultMessage _r in testResult.Messages)
+                        {
+                            <tr>
+                                <th scope="row" class="table-@Home.ColorStatus(_r.TypeMessage)">@_r.Text</th>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            }
         </MudTabPanel>
-        <MudTabPanel Text="Tab Two">
-            <MudText>Content Two</MudText>
-        </MudTabPanel>
-        <MudTabPanel Text="Tab Three">
-            <MudText>Content Three</MudText>
-        </MudTabPanel>
-        <MudTabPanel Text="Tab Disabled" Disabled="true">
-            <MudText>Content Disabled</MudText>
+        <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Отправка">
+            @if (checkDir is null)
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Данные отсутсвуют.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Проверьте <cite title="Настройки">Настройки</cite>
+                    </figcaption>
+                </figure>
+            }
+            else if (!configEdit.Equals(MauiProgram.ConfigStore.Response))
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Настройки изменены.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Сохраните <cite title="Настройки">Настройки</cite>
+                    </figcaption>
+                </figure>
+            }
+            else
+            {
+                <SyncFilesComponent />
+            }
         </MudTabPanel>
     </MudTabs>
+}
+@if (MauiProgram.ConfigStore.Messages.Count != 0)
+{
+    <table class="table table-dark table-hover my-2">
+        <thead>
+            <tr>
+                <th scope="col">Logs</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ResultMessage _r in MauiProgram.ConfigStore.Messages)
+            {
+                <tr>
+                    <th scope="row" class="table-@Home.ColorStatus(_r.TypeMessage)">@_r.Text</th>
+                </tr>
+            }
+        </tbody>
+
+    </table>
 }

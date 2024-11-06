@@ -49,7 +49,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
         if (req.Id < 1)
         {
             TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);
-
+            
             using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context.Database.BeginTransaction();
             try
             {

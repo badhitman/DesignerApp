@@ -80,11 +80,14 @@ public static class MauiProgram
                     ConfigStore.AddWarning($"Создан новый (перезаписан) файл конфигурации: {_fi.FullName}");
                 }
                 else
+                {
                     ConfigStore.Response = _cs;
+                    ConfigStore.AddSuccess($"Прочитан файл конфигурации: {_fi.FullName} (изменён: {_fi.LastWriteTime})");
+                }
             }
             catch (Exception ex)
             {
-                ConfigStore.AddError($"Не удалось прочитать/десериализовать файл конфигурации: {_fi.FullName}. Убедитесь, что есть права на доступ");
+                ConfigStore.AddError($"Не удалось прочитать/десериализовать файл конфигурации: {_fi.FullName}. Убедитесь, что есть права на доступ и формат файла корректный.");
                 ConfigStore.Messages.InjectException(ex);
             }
         }
@@ -99,7 +102,9 @@ public static class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
         builder.Services.AddMudServices();
+        builder.Services.AddScoped<IToolsSystemExtService, ToolsSystemExtService>();
         builder.Services.AddScoped<IToolsSystemService, ToolsSystemService>();
+        //
 
         if (ConfigStore.Response is not null)
             builder.Services.AddHttpClient(HttpClientsNamesEnum.Tools.ToString(), cc =>

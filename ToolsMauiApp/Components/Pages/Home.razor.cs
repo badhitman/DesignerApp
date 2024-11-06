@@ -13,11 +13,23 @@ namespace ToolsMauiApp.Components.Pages;
 public partial class Home : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IToolsSystemService toolsRepo { get; set; } = default!;
+    IToolsSystemExtService toolsRepo { get; set; } = default!;
 
     ConfigStoreModel configEdit = new();
+    TResponseModel<ExpressProfileResponseModel>? testResult;
+    TResponseModel<ToolsFilesResponseModel[]>? checkDir;
 
     bool CanSave => configEdit.FullSets && !configEdit.Equals(MauiProgram.ConfigStore.Response);
+
+    static string ColorStatus(ResultTypesEnum rt) => rt switch
+    {
+        ResultTypesEnum.Error => "danger",
+        ResultTypesEnum.Success => "success",
+        ResultTypesEnum.Info => "info",
+        ResultTypesEnum.Alert => "primary",
+        ResultTypesEnum.Warning => "warning",
+        _ => throw new NotImplementedException(),
+    };
 
     async Task SaveConfig()
     {
@@ -29,9 +41,9 @@ public partial class Home : BlazorBusyComponentBaseModel
 
     async Task TestConnect()
     {
-        if (string.IsNullOrWhiteSpace(configEdit.LocalDirectory))
+        if (string.IsNullOrWhiteSpace(configEdit.LocalDirectory) || string.IsNullOrWhiteSpace(configEdit.RemoteDirectory))
         {
-            SnackbarRepo.Error("Не установлена локальная директория");
+            SnackbarRepo.Error("Не установлена директория");
             return;
         }
 
@@ -41,18 +53,41 @@ public partial class Home : BlazorBusyComponentBaseModel
             SnackbarRepo.Error("Локальная директория отсутствует");
             return;
         }
-        
+
+        MauiProgram.ConfigStore.Messages.Clear();
+        ToolsFilesRequestModel req = new()
+        {
+            RemoteDirectory = configEdit.RemoteDirectory,
+        };
+
         await SetBusy();
-        TResponseModel<ExpressProfileResponseModel> res = await toolsRepo.GetMe();
+
+        testResult = await toolsRepo.GetMe();
+        SnackbarRepo.ShowMessagesResponse(testResult.Messages);
+        checkDir = await toolsRepo.GetDirectory(req);
+        SnackbarRepo.ShowMessagesResponse(checkDir.Messages);
+
         await SetBusy(false);
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (MauiProgram.ConfigStore.Response is null)
+        {
+            MauiProgram.ConfigStore.AddError("MauiProgram.ConfigStore.Response is null");
             return;
+        }
 
         configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!;
+
+        if (MauiProgram.ConfigStore.Response.FullSets)
+        {
+            await SetBusy();
+            testResult = await toolsRepo.GetMe();
+            //if (testResult.Messages.Count != 0)
+            //    MauiProgram.ConfigStore.Messages.AddRange(testResult.Messages);
+            await SetBusy(false);
+        }
     }
 }

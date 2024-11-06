@@ -88,6 +88,8 @@ builder.Services
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
 #endregion
 
+builder.Services.AddScoped<IToolsSystemService, ToolsSystemService>();
+
 builder.Services
     .AddControllers(options => options.Filters.Add(typeof(LoggerActionFilter)))
     .AddNewtonsoftJson(options => { options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore; options.SerializerSettings.Converters.Add(new StringEnumConverter() { }); });

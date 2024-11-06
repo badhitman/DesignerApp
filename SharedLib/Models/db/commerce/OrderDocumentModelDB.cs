@@ -66,9 +66,7 @@ public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
         Organization = null;
         AddressesTabs?.ForEach(x =>
         {
-            //x.OrderDocument = null;
             x.AddressOrganization = null;
-
             x.Rows?.ForEach(y =>
             {
                 y.Id = 0;

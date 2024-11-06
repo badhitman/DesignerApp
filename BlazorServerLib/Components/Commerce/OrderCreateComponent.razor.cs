@@ -322,7 +322,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             return;
         }
 
-        CurrentCart.PrepareForSave();
+        //CurrentCart.PrepareForSave();
         await SetBusy();
 
         TResponseModel<int> rest = await CommerceRepo.OrderUpdate(CurrentCart);

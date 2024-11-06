@@ -5,12 +5,12 @@
 namespace SharedLib;
 
 /// <summary>
-/// IToolsSystemService
+/// IToolsSystemExtService
 /// </summary>
-public interface IToolsSystemService
+public interface IToolsSystemExtService : IToolsSystemService
 {
     /// <summary>
-    /// GetDirectory
+    /// GetMe
     /// </summary>
-    public Task<TResponseModel<ToolsFilesResponseModel[]>> GetDirectory(ToolsFilesRequestModel req);
+    public Task<TResponseModel<ExpressProfileResponseModel>> GetMe();
 }

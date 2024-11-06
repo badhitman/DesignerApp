@@ -25,12 +25,12 @@ public class InfoController : ControllerBase
     [HttpGet($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.INFO_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MY_CONTROLLER_NAME}"), Authorize]
     public ExpressProfileResponseModel GetMyProfile()
     {
-        ExpressProfileResponseModel res = new() { UserName = HttpContext.User.Identity?.Name };
-        if (string.IsNullOrWhiteSpace(res.UserName))
+        ExpressProfileResponseModel res = new()
         {
-            res.AddWarning("Сессии не установлено имя");
-        }
-        res.Roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(x => x.Value).ToArray();
+            UserName = HttpContext.User.Identity?.Name,
+            Roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(x => x.Value).ToArray()
+        };
+
         return res;
     }
 

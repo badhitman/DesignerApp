@@ -102,7 +102,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageService", "StorageSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConstructorService", "ConstructorService\ConstructorService.csproj", "{96B0DA02-8148-4F5D-B98C-D12F9B595166}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolsMauiApp", "ToolsMauiApp\ToolsMauiApp.csproj", "{77DAC5F2-6E00-4C39-87A1-8CB450118360}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolsMauiApp", "ToolsMauiApp\ToolsMauiApp.csproj", "{77DAC5F2-6E00-4C39-87A1-8CB450118360}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

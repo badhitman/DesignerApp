@@ -11,9 +11,10 @@ namespace ApiRestService.Controllers;
 /// <summary>
 /// Платежи
 /// </summary>
-
 [Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog]
-#if !DEBUG
+#if DEBUG
+[AllowAnonymous]
+#else
 [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsReadCommerce)},{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
 #endif
 public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
@@ -24,7 +25,7 @@ public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : C
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.PaymentsWriteCommerce"/>
     /// </remarks>
-    [HttpPost($"/api/{GlobalStaticConstants.Routes.PAYMENTS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), LoggerLog]
+    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PAYMENT_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}"), LoggerLog]
 #if !DEBUG
     [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
 #endif
@@ -37,7 +38,7 @@ public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : C
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.PaymentsWriteCommerce"/>
     /// </remarks>
-    [HttpDelete($"/api/{GlobalStaticConstants.Routes.PAYMENTS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}/{{payment_id}}"), LoggerLog]
+    [HttpDelete($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PAYMENT_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}/{{payment_id}}"), LoggerLog]
 #if !DEBUG
     [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
 #endif

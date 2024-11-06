@@ -932,6 +932,11 @@ public static partial class GlobalStaticConstants
         public const string PAYMENTS_CONTROLLER_NAME = "payments";
 
         /// <summary>
+        /// Tools
+        /// </summary>
+        public const string TOOLS_CONTROLLER_NAME = "tools";
+
+        /// <summary>
         /// Row
         /// </summary>
         public const string ROW_CONTROLLER_NAME = "row";
