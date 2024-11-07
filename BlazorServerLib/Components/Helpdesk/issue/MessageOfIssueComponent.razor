@@ -1,10 +1,16 @@
-﻿@inherits IssueWrapBaseModel
+﻿@using MudBlazor
+@inherits IssueWrapBaseModel
 
 @if (IsCreatingNewMessage)
 {
     <p class="lead">
         Новое сообщение.
     </p>
+}
+
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
 }
 
 <div class="card position-relative mt-1">

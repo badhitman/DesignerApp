@@ -45,6 +45,8 @@ dotnet publish -c Debug --output /srv/git/builds/Telegram.Bot.Polling /srv/git/D
 
 systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service hd.app.service constructor.app.service
 
+# rm -r /srv/git/builds/*
+
 cd /srv/services/
 rm -r /srv/services/*
 mv /srv/git/builds/ApiRestService /srv/services/ApiRestService

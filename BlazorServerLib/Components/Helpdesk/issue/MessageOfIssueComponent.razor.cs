@@ -121,8 +121,9 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
+        await ReadCurrentUser();
         if (Message is null || Message.Id < 1)
             IsEditMode = true;
 
