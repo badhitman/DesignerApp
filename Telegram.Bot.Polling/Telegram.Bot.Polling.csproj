@@ -8,6 +8,7 @@
 		<UserSecretsId>dotnet-Telegram.Bot.Polling-4bacb3b0-aa49-457b-bfab-5d1dafe539ca</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>.</DockerfileContext>
+		<Version>1.0.0.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

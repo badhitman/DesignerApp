@@ -43,6 +43,11 @@ public class ToolsFilesResponseModel
     /// </summary>
     public string? Version { get; set; }
 
+    /// <summary>
+    /// Hash File
+    /// </summary>
+    public string? Hash { get; set; }
+
     /// <inheritdoc/>
     public override string ToString()
     {
@@ -56,7 +61,7 @@ public class ToolsFilesResponseModel
             return false;
 
         if (obj is ToolsFilesResponseModel _t)
-            return _t.ScopeName == ScopeName && _t.Size == Size && (_t.Version == Version || (string.IsNullOrWhiteSpace(_t.Version) && string.IsNullOrWhiteSpace(Version)));
+            return _t.ScopeName == ScopeName && _t.Size == Size && (_t.Version == Version || (string.IsNullOrWhiteSpace(_t.Version) && string.IsNullOrWhiteSpace(Version))) && (_t.Hash == Hash || (string.IsNullOrWhiteSpace(_t.Hash) && string.IsNullOrWhiteSpace(Hash)));
 
         return false;
     }

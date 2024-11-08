@@ -18,4 +18,9 @@ public class ToolsFilesRequestModel
     /// CalculationVersion
     /// </summary>
     public bool CalculationVersion { get; set; }
+
+    /// <summary>
+    /// CalculationHash
+    /// </summary>
+    public bool CalculationHash { get; set; }
 }

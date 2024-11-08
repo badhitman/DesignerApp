@@ -135,6 +135,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         {
             RemoteDirectory = MauiProgram.ConfigStore.Response!.LocalDirectory!,
             CalculationVersion = true,
+            CalculationHash = true,
         });
         localScanBusy = false;
     }
@@ -148,6 +149,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         {
             RemoteDirectory = MauiProgram.ConfigStore.Response!.RemoteDirectory!,
             CalculationVersion = true,
+            CalculationHash = true,
         });
         remoteScanBusy = false;
     }

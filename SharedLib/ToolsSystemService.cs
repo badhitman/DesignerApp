@@ -3,6 +3,8 @@
 ////////////////////////////////////////////////
 
 using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SharedLib;
 
@@ -29,6 +31,13 @@ public class ToolsSystemService() : IToolsSystemService
                 mfi = req.CalculationVersion
                 ? FileVersionInfo.GetVersionInfo(fileInfo.FullName)
                 : null;
+                string? Hash = null;
+                if (req.CalculationHash)
+                {
+                    using var md5 = MD5.Create();
+                    using var stream = File.OpenRead(fileInfo.FullName);
+                    Hash = Encoding.UTF8.GetString(md5.ComputeHash(stream));
+                }
 
                 return new ToolsFilesResponseModel()
                 {
@@ -36,6 +45,7 @@ public class ToolsSystemService() : IToolsSystemService
                     ScopeName = x.StartsWith(req.RemoteDirectory) ? x[req.RemoteDirectory.Length..] : x,
                     Size = fileInfo.Length,
                     Version = mfi?.FileVersion,
+                    Hash = Hash,
                 };
             }).ToList();
         }
