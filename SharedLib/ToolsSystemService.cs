@@ -17,7 +17,7 @@ public class ToolsSystemService() : IToolsSystemService
     public Task<TResponseModel<List<ToolsFilesResponseModel>>> GetDirectory(ToolsFilesRequestModel req)
     {
         TResponseModel<List<ToolsFilesResponseModel>> res = new();
-        FileVersionInfo? mfi = null;
+
         DirectoryInfo _di = new(req.RemoteDirectory);
         if (!_di.Exists)
             res.AddError($"Папки {req.RemoteDirectory} ({_di.FullName}) не существует");
@@ -28,9 +28,6 @@ public class ToolsSystemService() : IToolsSystemService
             {
                 FileInfo fileInfo = new(x);
 
-                mfi = req.CalculationVersion
-                ? FileVersionInfo.GetVersionInfo(fileInfo.FullName)
-                : null;
                 string? Hash = null;
                 if (req.CalculationHash)
                 {
@@ -44,7 +41,6 @@ public class ToolsSystemService() : IToolsSystemService
                     FullName = x,
                     ScopeName = x.StartsWith(req.RemoteDirectory) ? x[req.RemoteDirectory.Length..] : x,
                     Size = fileInfo.Length,
-                    Version = mfi?.FileVersion,
                     Hash = Hash,
                 };
             }).ToList();

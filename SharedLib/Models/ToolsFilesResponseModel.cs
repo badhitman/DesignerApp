@@ -39,11 +39,6 @@ public class ToolsFilesResponseModel
     public required long Size { get; set; }
 
     /// <summary>
-    /// Version File
-    /// </summary>
-    public string? Version { get; set; }
-
-    /// <summary>
     /// Hash File
     /// </summary>
     public string? Hash { get; set; }
@@ -51,7 +46,7 @@ public class ToolsFilesResponseModel
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{GlobalTools.SizeDataAsString(Size)} - {(string.IsNullOrWhiteSpace(Version) ? "" : $"({Version})")}: {ScopeName}";
+        return $"{GlobalTools.SizeDataAsString(Size)} - {ScopeName}";
     }
 
     /// <inheritdoc/>
@@ -61,7 +56,7 @@ public class ToolsFilesResponseModel
             return false;
 
         if (obj is ToolsFilesResponseModel _t)
-            return _t.ScopeName == ScopeName && _t.Size == Size && (_t.Version == Version || (string.IsNullOrWhiteSpace(_t.Version) && string.IsNullOrWhiteSpace(Version))) && (_t.Hash == Hash || (string.IsNullOrWhiteSpace(_t.Hash) && string.IsNullOrWhiteSpace(Hash)));
+            return _t.ScopeName == ScopeName && _t.Size == Size && (_t.Hash == Hash || (string.IsNullOrWhiteSpace(_t.Hash) && string.IsNullOrWhiteSpace(Hash)));
 
         return false;
     }
@@ -69,6 +64,6 @@ public class ToolsFilesResponseModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{Size} {Version} {ScopeName}".GetHashCode();
+        return $"{Size} {ScopeName}".GetHashCode();
     }
 }
