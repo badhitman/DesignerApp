@@ -46,9 +46,8 @@ dotnet publish -c Debug --output /srv/git/builds/Telegram.Bot.Polling /srv/git/D
 systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service hd.app.service constructor.app.service
 
 # rm -r /srv/git/builds/*
-
-# cd /srv/services/
 # rm -r /srv/services/*
+
 cp -r /srv/git/builds/ApiRestService /srv/services/ApiRestService
 cp -r /srv/git/builds/StorageService /srv/services/StorageService
 cp -r /srv/git/builds/CommerceService /srv/services/CommerceService
@@ -59,6 +58,9 @@ cp -r /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
 
 chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services
+
+chown -R www-data:www-data /srv/git/builds
+chmod -R 777 /srv/git/builds
 
 systemctl start comm.app.service web.app.service bus.app.service tg.app.service api.app.service hd.app.service constructor.app.service
 

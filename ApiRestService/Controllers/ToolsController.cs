@@ -65,7 +65,10 @@ public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
         {
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
-                entry.ExtractToFile(Path.Combine(di.FullName, entry.FullName));
+                _file = new(Path.Combine(di.FullName, entry.FullName));
+                if (_file.Exists)
+                    _file.Delete();
+                entry.ExtractToFile(_file.FullName);
             }
         }
         System.IO.File.Delete(_tmpFile);

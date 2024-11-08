@@ -145,7 +145,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         remoteScanBusy = true;
         await Task.Delay(1);
         StateHasChanged();
-        remoteScan = await ToolsLocalRepo.GetDirectory(new ToolsFilesRequestModel
+        remoteScan = await ToolsExtRepo.GetDirectory(new ToolsFilesRequestModel
         {
             RemoteDirectory = MauiProgram.ConfigStore.Response!.RemoteDirectory!,
             CalculationVersion = true,
