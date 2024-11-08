@@ -36,7 +36,7 @@ public class ToolsSystemService() : IToolsSystemService
                 {
                     using var md5 = MD5.Create();
                     using var stream = File.OpenRead(fileInfo.FullName);
-                    Hash = Encoding.UTF8.GetString(md5.ComputeHash(stream));
+                    Hash = Convert.ToBase64String(md5.ComputeHash(stream));
                 }
 
                 return new ToolsFilesResponseModel()

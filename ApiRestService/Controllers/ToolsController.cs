@@ -106,7 +106,4 @@ public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
 
         return response;
     }
-
-
-
 }
