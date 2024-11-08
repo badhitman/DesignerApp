@@ -12,5 +12,5 @@ public interface IToolsSystemService
     /// <summary>
     /// GetDirectory
     /// </summary>
-    public Task<TResponseModel<ToolsFilesResponseModel[]>> GetDirectory(ToolsFilesRequestModel req);
+    public Task<TResponseModel<List<ToolsFilesResponseModel>>> GetDirectory(ToolsFilesRequestModel req);
 }

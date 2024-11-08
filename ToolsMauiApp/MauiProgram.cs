@@ -2,14 +2,13 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 using Newtonsoft.Json;
 using SharedLib;
+using CommunityToolkit.Maui;
 
 namespace ToolsMauiApp;
-
 /// <summary>
 /// MauiProgram
 /// </summary>
@@ -93,31 +92,25 @@ public static class MauiProgram
         }
 
         MauiAppBuilder builder = MauiApp.CreateBuilder();
-        builder
-            .UseMauiApp<App>()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            });
-
+        builder.UseMauiApp<App>().ConfigureFonts(fonts =>
+        {
+            fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+        }).UseMauiCommunityToolkit();
         builder.Services.AddMauiBlazorWebView();
         builder.Services.AddMudServices();
         builder.Services.AddScoped<IToolsSystemExtService, ToolsSystemExtService>();
         builder.Services.AddScoped<IToolsSystemService, ToolsSystemService>();
         //
-
         if (ConfigStore.Response is not null)
             builder.Services.AddHttpClient(HttpClientsNamesEnum.Tools.ToString(), cc =>
             {
                 cc.BaseAddress = new Uri(ConfigStore.Response.ApiAddress ?? "localhost");
                 cc.DefaultRequestHeaders.Add("token-access", ConfigStore.Response.AccessToken);
             });
-
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
-
         return builder.Build();
     }
 }

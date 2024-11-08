@@ -1,4 +1,5 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using SharedLib
+@inherits BlazorBusyComponentBaseModel
 
 <h3>Синхронизация папок</h3>
 
@@ -7,6 +8,127 @@
     <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
 }
 
-<div class="d-grid gap-2">
-    <button class="btn btn-primary" type="button">Выполнить</button>
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Локальный каталог</h5>
+                @if (localScanBusy)
+                {
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Загрузка...</span>
+                        </div>
+                    </div>
+                }
+                else if (localScan?.Response is not null)
+                {
+                    <dl class="row">
+                        <dt class="col-sm-3">Файлов всего</dt>
+                        <dd class="col-sm-9">@localScan.Response.Count</dd>
+
+                        <dt class="col-sm-3">Размер</dt>
+                        <dd class="col-sm-9">
+                            @GlobalTools.SizeDataAsString(localScan.Response.Sum(x => x.Size))
+                        </dd>
+                    </dl>
+                }
+                else
+                {
+                    <p class="card-text">
+                        Данные отсутствуют.
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Удалённый каталог</h5>
+                @if (remoteScanBusy)
+                {
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Загрузка...</span>
+                        </div>
+                    </div>
+                }
+                else if (remoteScan?.Response is not null)
+                {
+                    <dl class="row">
+                        <dt class="col-sm-3">Файлов всего</dt>
+                        <dd class="col-sm-9">@remoteScan.Response.Count</dd>
+
+                        <dt class="col-sm-3">Размер</dt>
+                        <dd class="col-sm-9">
+                            @GlobalTools.SizeDataAsString(remoteScan.Response.Sum(x => x.Size))
+                        </dd>
+                    </dl>
+                }
+                else
+                {
+                    <p class="card-text">
+                        Данные отсутствуют.
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (forDelete is not null && forUpdateOrAdd is not null)
+{
+    if (forDelete.Length == 0)
+    {
+        <p class="card-text">
+            Удаления файлов не требуется.
+        </p>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Удаление файлов (@forDelete.Length шт. @GlobalTools.SizeDataAsString(forDelete.Sum(x => x.Size))):</h5>
+                <ul>
+                    @foreach (ToolsFilesResponseModel _tfd in forDelete)
+                    {
+                        <li>@_tfd.ToString()</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    if (forUpdateOrAdd.Length == 0)
+    {
+        <p class="card-text">
+            Изменённых или новых файлов нет.
+        </p>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"> Изменения файлов (@forUpdateOrAdd.Length шт. @GlobalTools.SizeDataAsString(forUpdateOrAdd.Sum(x => x.Size))):</h5>
+                <ul>
+                    @foreach (ToolsFilesResponseModel _tfd in forUpdateOrAdd)
+                    {
+                        <li>@_tfd.ToString()</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+}
+
+<div class="d-grid gap-2 mt-3">
+    @if (forDelete is null || forUpdateOrAdd is null)
+    {
+        <button disabled="@(IsBusyProgress || remoteScanBusy || localScanBusy)" @onclick="SyncRun" class="btn btn-primary" type="button">Старт</button>
+    }
+    else
+    {
+        <button disabled="@(IsBusyProgress || (forDelete.Length == 0 && forUpdateOrAdd.Length == 0))" @onclick="Send" class="btn btn-primary" type="button">Отправить</button>
+    }
 </div>

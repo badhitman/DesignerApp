@@ -12,9 +12,9 @@ namespace SharedLib;
 public class ToolsSystemService() : IToolsSystemService
 {
     /// <inheritdoc/>
-    public Task<TResponseModel<ToolsFilesResponseModel[]>> GetDirectory(ToolsFilesRequestModel req)
+    public Task<TResponseModel<List<ToolsFilesResponseModel>>> GetDirectory(ToolsFilesRequestModel req)
     {
-        TResponseModel<ToolsFilesResponseModel[]> res = new();
+        TResponseModel<List<ToolsFilesResponseModel>> res = new();
         FileVersionInfo? mfi = null;
         DirectoryInfo _di = new(req.RemoteDirectory);
         if (!_di.Exists)
@@ -37,7 +37,7 @@ public class ToolsSystemService() : IToolsSystemService
                     Size = fileInfo.Length,
                     Version = mfi?.FileVersion,
                 };
-            }).ToArray();
+            }).ToList();
         }
         return Task.FromResult(res);
     }

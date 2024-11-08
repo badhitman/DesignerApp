@@ -17,7 +17,7 @@ public partial class Home : BlazorBusyComponentBaseModel
 
     ConfigStoreModel configEdit = new();
     TResponseModel<ExpressProfileResponseModel>? testResult;
-    TResponseModel<ToolsFilesResponseModel[]>? checkDir;
+    TResponseModel<List<ToolsFilesResponseModel>>? checkDir;
 
     bool CanSave => configEdit.FullSets && !configEdit.Equals(MauiProgram.ConfigStore.Response);
 

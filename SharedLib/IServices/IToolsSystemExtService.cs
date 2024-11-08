@@ -13,4 +13,16 @@ public interface IToolsSystemExtService : IToolsSystemService
     /// GetMe
     /// </summary>
     public Task<TResponseModel<ExpressProfileResponseModel>> GetMe();
+
+    /// <summary>
+    /// UpdateFile
+    /// </summary>
+    public Task<TResponseModel<bool>> UpdateFile(ToolsFilesResponseModel tFile, byte[] bytes);
+
+
+
+    /// <summary>
+    /// UpdateFile
+    /// </summary>
+    public Task<TResponseModel<bool>> DeleteFile(DeleteRemoteFileRequestModel req);
 }
