@@ -47,15 +47,15 @@ systemctl stop web.app.service comm.app.service tg.app.service api.app.service b
 
 # rm -r /srv/git/builds/*
 
-cd /srv/services/
-rm -r /srv/services/*
-mv /srv/git/builds/ApiRestService /srv/services/ApiRestService
-mv /srv/git/builds/StorageService /srv/services/StorageService
-mv /srv/git/builds/CommerceService /srv/services/CommerceService
-mv /srv/git/builds/HelpdeskService /srv/services/HelpdeskService
-mv /srv/git/builds/ConstructorService /srv/services/ConstructorService
-mv /srv/git/builds/Telegram.Bot.Polling /srv/services/Telegram.Bot.Polling
-mv /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
+# cd /srv/services/
+# rm -r /srv/services/*
+cp -r /srv/git/builds/ApiRestService /srv/services/ApiRestService
+cp -r /srv/git/builds/StorageService /srv/services/StorageService
+cp -r /srv/git/builds/CommerceService /srv/services/CommerceService
+cp -r /srv/git/builds/HelpdeskService /srv/services/HelpdeskService
+cp -r /srv/git/builds/ConstructorService /srv/services/ConstructorService
+cp -r /srv/git/builds/Telegram.Bot.Polling /srv/services/Telegram.Bot.Polling
+cp -r /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
 
 chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services

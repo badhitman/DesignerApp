@@ -15,11 +15,7 @@ namespace ApiRestService.Controllers;
 /// Tools
 /// </summary>
 [Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog]
-#if DEBUG
-[AllowAnonymous]
-#else
 [Authorize(Roles = nameof(ExpressApiRolesEnum.SystemRoot))]
-#endif
 public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
 {
     /// <summary>

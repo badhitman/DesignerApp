@@ -7,7 +7,7 @@
     <div class="input-group">
         <span class="input-group-text">API</span>
         <input disabled="@IsBusyProgress" type="text" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="configEdit.AccessToken" @bind-value:event="oninput">
-        <input disabled="@IsBusyProgress" type="text" aria-label="Address API" class="form-control" placeholder="Адрес API" @bind-value="configEdit.ApiAddress" @bind-value:event="oninput">
+        <input disabled="@IsBusyProgress" type="text" aria-label="HOST API" class="form-control" placeholder="Адрес хоста API" @bind-value="configEdit.ApiAddress" @bind-value:event="oninput">
         <button disabled="@(!CanSave || IsBusyProgress)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" @onclick="SaveConfig">Сохранить</button>
         @if (!configEdit.Equals(MauiProgram.ConfigStore.Response))
         {
