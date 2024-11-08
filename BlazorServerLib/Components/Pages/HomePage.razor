@@ -6,7 +6,15 @@
 @using MudBlazor
 
 <PageTitle>Home</PageTitle>
-@ms
+
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+}
+else
+{
+    @ms
+}
 
 @code {
     [Inject]
@@ -25,7 +33,7 @@
         ? await StoreRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.HomePagePublic)
         : await StoreRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate);
 
-        IsBusyProgress = false;
+        await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         _textValue = res.Response;
     }
