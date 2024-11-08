@@ -114,13 +114,11 @@
                 <ul>
                     @foreach (ToolsFilesResponseModel _tfd in forUpdateOrAdd)
                     {
-                        ToolsFilesResponseModel? _clMd = localScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);
-                        ToolsFilesResponseModel? _crMd = remoteScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);
+                        ToolsFilesResponseModel? _localMd = localScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);
+                        ToolsFilesResponseModel? _remoteMd = remoteScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);
 
                         <li>
-                            <p>@_tfd.ToString()</p>
-                            L[@_clMd?.Size @_clMd?.Hash] 
-                            R[@_crMd?.Size @_crMd?.Hash]
+                            @_tfd.ToString() L[@_localMd?.Size @_localMd?.Hash] R[@(_remoteMd is null ? "новый" : $"{_remoteMd?.Size} {_remoteMd?.Hash}")]
                         </li>
                     }
                 </ul>
