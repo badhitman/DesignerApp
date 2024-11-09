@@ -95,7 +95,7 @@ public class ToolsSystemService() : IToolsSystemService
         using MemoryStream stream = new(bytes);
 
         string _tmpFile = Path.GetTempFileName();
-
+        using MD5 md5 = MD5.Create();
         File.WriteAllBytes(_tmpFile, stream.ToArray());
         using (ZipArchive archive = ZipFile.OpenRead(_tmpFile))
         {
@@ -105,12 +105,12 @@ public class ToolsSystemService() : IToolsSystemService
                 if (_file.Exists)
                     _file.Delete();
                 entry.ExtractToFile(_file.FullName);
+
+                using FileStream streamMd = File.OpenRead(_file.FullName);
+                response.Response = Convert.ToBase64String(md5.ComputeHash(streamMd));
             }
         }
-
-        using MD5 md5 = MD5.Create();
-        using FileStream streamMd = File.OpenRead(_tmpFile);
-        response.Response = Convert.ToBase64String(md5.ComputeHash(streamMd));
+               
         File.Delete(_tmpFile);
 
         return Task.FromResult(response);
