@@ -21,6 +21,7 @@ public static class Extensions
         if (userId is null)
             return null;
 
+        string? phoneNum = principal.FindFirst(ClaimTypes.MobilePhone)?.Value;
         string? givenName = principal.FindFirst(ClaimTypes.GivenName)?.Value;
         string? surName = principal.FindFirst(ClaimTypes.Surname)?.Value;
         string? userName = principal.FindFirst(ClaimTypes.Name)?.Value;
@@ -34,6 +35,7 @@ public static class Extensions
 
         return new()
         {
+            PhoneNumber = phoneNum,
             UserId = userId,
             Email = email,
             TelegramId = telegram_id,

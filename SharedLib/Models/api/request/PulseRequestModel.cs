@@ -23,4 +23,9 @@ public class PulseRequestModel
     /// IsMuteTelegram
     /// </summary>
     public bool IsMuteTelegram { get; set; }
+
+    /// <summary>
+    /// IsMuteWhatsapp
+    /// </summary>
+    public bool IsMuteWhatsapp { get; set; }
 }

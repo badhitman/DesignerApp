@@ -891,7 +891,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> UpdateFirstLastNamesUser(string userId, string? firstName, string? lastName)
+    public async Task<ResponseBaseModel> UpdateFirstLastNamesUser(string userId, string? firstName, string? lastName, string? phoneNum)
     {
         firstName ??= "";
         lastName ??= "";
@@ -899,7 +899,7 @@ public class UsersProfilesService(
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         ApplicationUser? user_db = await identityContext
             .Users
-            .FirstOrDefaultAsync(x => x.Id == userId && (x.FirstName != firstName || x.LastName != lastName));
+            .FirstOrDefaultAsync(x => x.Id == userId && (x.FirstName != firstName || x.LastName != lastName || x.PhoneNumber != phoneNum));
 
         if (user_db is null)
             return ResponseBaseModel.CreateInfo("Без изменений");
@@ -908,13 +908,20 @@ public class UsersProfilesService(
             .Users
             .Where(x => x.Id == userId)
             .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.PhoneNumber, phoneNum)
             .SetProperty(p => p.FirstName, firstName)
             .SetProperty(p => p.NormalizedFirstNameUpper, firstName.ToUpper())
             .SetProperty(p => p.LastName, lastName)
             .SetProperty(p => p.NormalizedLastNameUpper, lastName.ToUpper()));
 
+        user_db.PhoneNumber = phoneNum;
+        user_db.FirstName = firstName;
+        user_db.NormalizedFirstNameUpper = firstName.ToUpper();
+        user_db.LastName = lastName;
+        user_db.NormalizedLastNameUpper = lastName.ToUpper();
+
         await IdentityToolsRepo.ClaimsUpdateForUser(user_db);
 
-        return ResponseBaseModel.CreateSuccess("First/Last names update");
+        return ResponseBaseModel.CreateSuccess("First/Last names (and phone) update");
     }
 }

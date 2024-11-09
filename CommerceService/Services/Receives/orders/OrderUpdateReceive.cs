@@ -8,6 +8,8 @@ using RemoteCallLib;
 using SharedLib;
 using DbcLib;
 using System.Globalization;
+using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 
 namespace Transmission.Receives.commerce;
 
@@ -15,6 +17,7 @@ namespace Transmission.Receives.commerce;
 /// OrderUpdateReceive
 /// </summary>
 public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory,
+    IHttpClientFactory HttpClientFactory,
     WebConfigModel _webConf,
     ILogger<OrderUpdateReceive> loggerRepo,
     ISerializeStorageRemoteTransmissionService StorageTransmissionRepo,
@@ -40,7 +43,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             res.AddRangeMessages(actor.Messages);
             return res;
         }
-        string msg;
+        string msg, waMsg;
         DateTime dtu = DateTime.UtcNow;
         req.CreatedAtUTC = dtu;
         req.LastAtUpdatedUTC = dtu;
@@ -98,13 +101,13 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
 
                 DateTime _dt = DateTime.UtcNow.GetCustomTime();
                 string _about_order = $"'{req.Name}' {_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
-                string ReplaceTags(string raw)
+                string ReplaceTags(string raw, bool clearMd = false)
                 {
                     return raw.Replace(GlobalStaticConstants.OrderDocumentName, req.Name)
                     .Replace(GlobalStaticConstants.OrderDocumentDate, $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}")
                     .Replace(GlobalStaticConstants.OrderStatusInfo, StatusesDocumentsEnum.Created.DescriptionInfo())
-                    .Replace(GlobalStaticConstants.OrderLinkAddress, $"<a href='{_webConf.BaseUri}/issue-card/{req.HelpdeskId}'>{_about_order}</a>")
-                    .Replace(GlobalStaticConstants.HostAddress, $"<a href='{_webConf.BaseUri}'>{_webConf.BaseUri}</a>");
+                    .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{_webConf.BaseUri}/issue-card/{req.HelpdeskId}" : $"<a href='{_webConf.BaseUri}/issue-card/{req.HelpdeskId}'>{_about_order}</a>")
+                    .Replace(GlobalStaticConstants.HostAddress, clearMd ? _webConf.BaseUri : $"<a href='{_webConf.BaseUri}'>{_webConf.BaseUri}</a>");
                 }
 
                 subject_email = ReplaceTags(subject_email);
@@ -113,6 +116,8 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 msg = $"<p>Заказ <b>'{issue_new.Payload.Name}' от [{_dt}]</b> успешно создан.</p>" +
                         $"<p>/<a href='{_webConf.ClearBaseUri}'>{_webConf.ClearBaseUri}</a>/</p>";
                 string msg_for_tg = msg.Replace("<p>", "").Replace("</p>", "");
+
+                waMsg = $"Заказ '{issue_new.Payload.Name}' от [{_dt}] успешно создан.\n{_webConf.ClearBaseUri}";
 
                 TResponseModel<string?> CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification);
                 if (CommerceNewOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotification.Response))
@@ -131,6 +136,31 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
 
                 if (actor.Response[0].TelegramId.HasValue)
                     servicesCalls.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value }));
+
+                if (!string.IsNullOrWhiteSpace(actor.Response[0].PhoneNumber) && GlobalTools.IsPhoneNumber(actor.Response[0].PhoneNumber!))
+                {
+                    TResponseModel<string?> wappiToken = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
+                    TResponseModel<string?> wappiProfileId = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
+
+                    if (wappiToken.Success() && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId.Success() && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
+                    {
+                        TResponseModel<string?> CommerceNewOrderBodyNotificationWhatsapp = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationWhatsapp);
+                        if (CommerceNewOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationWhatsapp.Response))
+                            waMsg = CommerceNewOrderBodyNotificationWhatsapp.Response;
+                        waMsg = ReplaceTags(waMsg, true);
+
+                        servicesCalls.Add(Task.Run(async () =>
+                        {
+                            using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Wappi.ToString());
+                            if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
+                                client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
+
+                            using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = waMsg, Recipient = actor.Response[0].PhoneNumber! });
+                            string rj = await response.Content.ReadAsStringAsync();
+                            SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
+                        }));
+                    }
+                }
 
                 loggerRepo.LogInformation(msg_for_tg);
                 await Task.WhenAll(servicesCalls);

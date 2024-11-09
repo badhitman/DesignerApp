@@ -22,6 +22,14 @@ namespace SharedLib;
 public static partial class GlobalTools
 {
     /// <summary>
+    /// IsPhoneNumber
+    /// </summary>
+    public static bool IsPhoneNumber(string number)
+    {
+        return Regex.Match(number, @"^(\+?[0-9]{11})$").Success;
+    }
+
+    /// <summary>
     /// RunCommandWithBash
     /// </summary>
     public static string RunCommandWithBash(string command, string fileName = "/bin/bash")

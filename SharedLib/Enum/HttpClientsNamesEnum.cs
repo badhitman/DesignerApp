@@ -12,10 +12,15 @@ public enum HttpClientsNamesEnum
     /// <summary>
     /// Default
     /// </summary>
-    Default,
+    Default = 10,
 
     /// <summary>
     /// Tools
     /// </summary>
-    Tools,
+    Tools = 20,
+
+    /// <summary>
+    /// Wappi
+    /// </summary>
+    Wappi = 30,
 }

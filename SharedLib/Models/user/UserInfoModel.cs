@@ -9,9 +9,6 @@ namespace SharedLib;
 /// </summary>
 public record UserInfoModel : UserInfoMainModel
 {
-    /// <inheritdoc/>
-    public string? PhoneNumber { get; set; }
-
     /// <summary>
     /// Флаг, указывающий, подтвердил ли пользователь свой адрес электронной почты.
     /// </summary>

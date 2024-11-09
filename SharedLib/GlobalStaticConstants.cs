@@ -229,6 +229,26 @@ public static partial class GlobalStaticConstants
             PrefixPropertyName = Routes.GLOBAL_CONTROLLER_NAME,
         };
 
+        /// <summary>
+        /// WappiTokenApi
+        /// </summary>
+        public static StorageMetadataModel WappiTokenApi => new()
+        {
+            ApplicationName = Routes.WAPPI_CONTROLLER_NAME,
+            PropertyName = $"{Routes.API_CONTROLLER_NAME}-{Routes.TOKEN_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.GLOBAL_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// WappiTokenApi
+        /// </summary>
+        public static StorageMetadataModel WappiProfileId => new()
+        {
+            ApplicationName = Routes.WAPPI_CONTROLLER_NAME,
+            PropertyName = $"{Routes.PROFILE_ACTION_NAME}-{Routes.IDENTITY_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.GLOBAL_CONTROLLER_NAME,
+        };
+
         #region commerce notifications
         /// <summary>
         /// Тема уведомления при создании нового заказа
@@ -297,6 +317,16 @@ public static partial class GlobalStaticConstants
 
 
         /// <summary>
+        /// Whatsapp: Текст уведомления при создании нового заказа
+        /// </summary>
+        public static StorageMetadataModel CommerceNewOrderBodyNotificationWhatsapp => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.CREATE_ACTION_NAME}-{Routes.WHATSAPP_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+        };
+
+        /// <summary>
         /// TELEGRAM: Текст уведомления при создании нового заказа
         /// </summary>
         public static StorageMetadataModel CommerceNewOrderBodyNotificationTelegram => new()
@@ -318,12 +348,33 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
+        /// WHATSAPP: Текст уведомления при изменении статуса заказа
+        /// </summary>
+        public static StorageMetadataModel CommerceStatusChangeOrderBodyNotificationWhatsapp(StatusesDocumentsEnum stepEnum) => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.STATUS_CONTROLLER_NAME}-{Routes.WHATSAPP_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+            OwnerPrimaryKey = (int)stepEnum
+        };
+
+        /// <summary>
         /// TELEGRAM: Текст уведомления при добавлении комментария к заказу
         /// </summary>
         public static StorageMetadataModel CommerceNewMessageOrderBodyNotificationTelegram => new()
         {
             ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
             PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}",
+            PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
+        };
+
+        /// <summary>
+        /// WHATSAPP: Текст уведомления при добавлении комментария к заказу
+        /// </summary>
+        public static StorageMetadataModel CommerceNewMessageOrderBodyNotificationWhatsapp => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            PropertyName = $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.NOTIFICATIONS_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}-{Routes.ADD_ACTION_NAME}-{Routes.WHATSAPP_CONTROLLER_NAME}",
             PrefixPropertyName = Routes.BODY_CONTROLLER_NAME,
         };
         #endregion
@@ -967,6 +1018,11 @@ public static partial class GlobalStaticConstants
         public const string NOTIFICATIONS_CONTROLLER_NAME = "notifications";
 
         /// <summary>
+        /// Whatsapp
+        /// </summary>
+        public const string WHATSAPP_CONTROLLER_NAME = "whatsapp";
+
+        /// <summary>
         /// Перечисления (enum`s)
         /// </summary>
         public const string ENUMS_CONTROLLER_NAME = "enums";
@@ -1100,6 +1156,11 @@ public static partial class GlobalStaticConstants
         /// Helpdesk
         /// </summary>
         public const string HELPDESK_CONTROLLER_NAME = "helpdesk";
+
+        /// <summary>
+        /// Wappi
+        /// </summary>
+        public const string WAPPI_CONTROLLER_NAME = "wappi";
 
         /// <summary>
         /// Cart

@@ -120,6 +120,44 @@
                     </div>
                 </div>
             </MudTabPanel>
+            <MudTabPanel Text="Whatsapp">
+                <div class="card my-3">
+                    <div class="card-body">
+                        <p class="text-warning">Синтаксис должен соответствовать Whatsapp</p>
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Новый заказ</h6>
+                                <p class="card-text">
+                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationWhatsapp" HelperText="Текст Whatsap уведомления при создании заказа" />
+                                </p>
+                            </div>
+                        </div>
+                        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                            @foreach (StatusesDocumentsEnum stepEnum in Enum.GetValues(typeof(StatusesDocumentsEnum)).Cast<StatusesDocumentsEnum>())
+                            {
+                                <MudTabPanel Text="@stepEnum.DescriptionInfo()">
+                                    <div class="card my-3">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
+                                            <p class="card-text">
+                                                <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationWhatsapp(stepEnum)" HelperText="Текст Whatsapp уведомления при изменении статуса заказа" />
+                                            </p>
+                                        </div>
+                                    </div>
+                                </MudTabPanel>
+                            }
+                        </MudTabs>
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Новое сообщение</h6>
+                                <p class="card-text">
+                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp" HelperText="Текст Whatsapp уведомления при добавлении комментария к заказу" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </MudTabPanel>
         </MudTabs>
         <hr class="my-3" />
         <div class="alert alert-primary" role="alert">

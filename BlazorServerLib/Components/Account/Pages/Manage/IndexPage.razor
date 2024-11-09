@@ -24,6 +24,10 @@
                 <input type="text" @bind-value="lastName" @bind-value:event="oninput" id="last-name" class="form-control" placeholder="LastName" />
                 <label for="last-name" class="form-label">LastName</label>
             </div>
+            <div class="form-floating mb-3">
+                <input type="text" @bind-value="phoneNum" @bind-value:event="oninput" id="phone-num" class="form-control" placeholder="Phone number" />
+                <label for="phone-num" class="form-label">Phone</label>
+            </div>
             <button disabled="@(!IsEdited)" @onclick="SaveAsync" type="button" class="w-100 btn btn-lg btn-@(IsEdited?"primary":"outline-secondary")">Сохранить</button>
         </div>
     </div>

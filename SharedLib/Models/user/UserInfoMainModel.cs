@@ -10,6 +10,9 @@ namespace SharedLib;
 /// </summary>
 public record UserInfoMainModel
 {
+    /// <inheritdoc/>
+    public string? PhoneNumber { get; set; }
+
     /// <summary>
     /// FirstName
     /// </summary>

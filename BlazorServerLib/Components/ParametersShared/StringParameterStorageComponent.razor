@@ -3,7 +3,7 @@
 @inherits StringParameterStorageBaseComponent
 
 <div class="hstack gap-3">
-    <MudTextField  HelperText="@HelperText" @bind-Value="TextValue" Immediate Label="@Label" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField InputType="@(IsPassword ? InputType.Password : InputType.Text)" HelperText="@HelperText" @bind-Value="TextValue" Immediate Label="@Label" Variant="Variant.Outlined"></MudTextField>
     @if (IsBusyProgress)
     {
         <div class="spinner-grow" role="status">
@@ -11,3 +11,8 @@
         </div>
     }
 </div>
+
+@code {
+    [Parameter]
+    public bool IsPassword { get; set; }
+}

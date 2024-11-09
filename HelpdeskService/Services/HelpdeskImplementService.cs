@@ -11,6 +11,7 @@ using SharedLib;
 using DbcLib;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Memory;
+using System.Net.Http.Json;
 
 namespace HelpdeskService;
 
@@ -23,6 +24,7 @@ public class HelpdeskImplementService(
     IManualCustomCacheService cacheRepo,
     IOptions<HelpdeskConfigModel> hdConf,
     ICommerceRemoteTransmissionService commRepo,
+    IHttpClientFactory HttpClientFactory,
     IMemoryCache cache,
     ITelegramRemoteTransmissionService telegramRemoteRepo,
     ISerializeStorageRemoteTransmissionService StorageRepo,
@@ -362,6 +364,7 @@ public class HelpdeskImplementService(
                 },
                 IsMuteEmail = true,
                 IsMuteTelegram = true,
+                IsMuteWhatsapp = true,
             };
 
             await PulsePush(p_req);
@@ -609,6 +612,7 @@ public class HelpdeskImplementService(
                     },
                     IsMuteEmail = true,
                     IsMuteTelegram = true,
+                    IsMuteWhatsapp = true,
                 };
 
                 await PulsePush(p_req);
@@ -743,6 +747,7 @@ public class HelpdeskImplementService(
                     },
                     IsMuteEmail = true,
                     IsMuteTelegram = true,
+                    IsMuteWhatsapp = true,
                 };
 
                 await PulsePush(p_req);
@@ -905,12 +910,10 @@ public class HelpdeskImplementService(
         PulseIssuesTypesEnum[] _notifiesTypes = [PulseIssuesTypesEnum.Status, PulseIssuesTypesEnum.Subscribes, PulseIssuesTypesEnum.Messages, PulseIssuesTypesEnum.Files];
         if (!_notifiesTypes.Contains(req.Payload.Payload.PulseType))
             return res;
-
         else if ((req.Payload.Payload.PulseType == PulseIssuesTypesEnum.Messages || req.Payload.Payload.PulseType == PulseIssuesTypesEnum.Subscribes) && req.Payload.Payload.Tag != GlobalStaticConstants.Routes.ADD_ACTION_NAME)
             return res;
 
         IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
-
         await cacheRepo.RemoveAsync(GlobalStaticConstants.Cache.ConsoleSegmentStatusToken(issue_data.StepIssue));
 
         List<string> users_ids = [issue_data.AuthorIdentityUserId];
@@ -924,12 +927,16 @@ public class HelpdeskImplementService(
         if (!rest.Success() || rest.Response is null || rest.Response.Length != users_ids.Count)
             return new() { Messages = rest.Messages };
 
-        if (!req.IsMuteEmail || !req.IsMuteTelegram)
+        List<Task> tasks = [];
+
+        TResponseModel<string?>? wappiToken = null, wappiProfileId = null;
+
+        if (!req.IsMuteEmail || !req.IsMuteTelegram || !req.IsMuteWhatsapp)
             foreach (UserInfoModel user in rest.Response)
             {
                 string _subj = $"Уведомление: {req.Payload.Payload.PulseType.DescriptionInfo()}";
                 if (!req.IsMuteEmail)
-                    await webTransmissionRepo.SendEmail(new() { Email = user.Email!, Subject = _subj, TextMessage = req.Payload.Payload.Description });
+                    tasks.Add(webTransmissionRepo.SendEmail(new() { Email = user.Email!, Subject = _subj, TextMessage = req.Payload.Payload.Description }));
 
                 if (user.TelegramId.HasValue && !req.IsMuteTelegram)
                 {
@@ -940,9 +947,35 @@ public class HelpdeskImplementService(
                         UserTelegramId = user.TelegramId.Value,
                         ParseModeName = "html"
                     };
-                    await telegramRemoteRepo.SendTextMessageTelegram(tg_req);
+                    tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req));
+                }
+
+                if (!string.IsNullOrWhiteSpace(user.PhoneNumber) && GlobalTools.IsPhoneNumber(user.PhoneNumber) && !req.IsMuteWhatsapp)
+                {
+                    wappiToken ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
+                    wappiProfileId ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
+
+                    if (wappiToken.Success() && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId.Success() && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
+                    {
+                        tasks.Add(Task.Run(async () =>
+                        {
+
+                            using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Wappi.ToString());
+                            if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
+                                client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
+
+                            using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = req.Payload.Payload.Description, Recipient = user.PhoneNumber });
+                            string rj = await response.Content.ReadAsStringAsync();
+                            SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
+
+                        }));
+                    }
+
                 }
             }
+
+        if (tasks.Count != 0)
+            await Task.WhenAll(tasks);
 
         return res;
     }

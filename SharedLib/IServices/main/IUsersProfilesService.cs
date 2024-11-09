@@ -260,5 +260,5 @@ public partial interface IUsersProfilesService
     /// <summary>
     /// Обновить пользователю поля: FirstName и LastName
     /// </summary>
-    public Task<ResponseBaseModel> UpdateFirstLastNamesUser(string userId, string? firstName, string? lastName);
+    public Task<ResponseBaseModel> UpdateFirstLastNamesUser(string userId, string? firstName, string? lastName, string? phoneNum);
 }
