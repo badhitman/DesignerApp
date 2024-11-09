@@ -26,7 +26,7 @@ public class ToolsFilesResponseModel
         {
             string _res = ScopeName;
 
-            while (_res.StartsWith("\\") || _res.StartsWith("/"))
+            while (_res.StartsWith('\\') || _res.StartsWith('/'))
                 _res = _res[1..];
 
             return _res;
@@ -56,7 +56,7 @@ public class ToolsFilesResponseModel
             return false;
 
         if (obj is ToolsFilesResponseModel _t)
-            return _t.ScopeName == ScopeName && _t.Size == Size && (_t.Hash == Hash || (string.IsNullOrWhiteSpace(_t.Hash) && string.IsNullOrWhiteSpace(Hash)));
+            return _t.SafeScopeName == SafeScopeName && _t.Size == Size && (_t.Hash == Hash || (string.IsNullOrWhiteSpace(_t.Hash) && string.IsNullOrWhiteSpace(Hash)));
 
         return false;
     }

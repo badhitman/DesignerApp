@@ -49,12 +49,12 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         }
         await SetBusy();
         forDelete = remoteScan.Response
-            .Where(x => !localScan.Response.Any(y => x.ScopeName == y.ScopeName))
+            .Where(x => !localScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName))
             .ToArray();
 
         forUpdateOrAdd = localScan.Response
-            .Where(x => !remoteScan.Response.Any(y => x.ScopeName == y.ScopeName))
-            .Union(remoteScan.Response.Where(x => localScan.Response.Any(y => x.ScopeName == y.ScopeName && !x.Equals(y))))
+            .Where(x => !remoteScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName))
+            .Union(remoteScan.Response.Where(x => localScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName && !x.Equals(y))))
             .ToArray();
 
         await SetBusy(false);
@@ -94,7 +94,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                 ZipArchiveEntry entry = zip.CreateEntryFromFile(Path.Combine(MauiProgram.ConfigStore.Response.LocalDirectory, tFile.SafeScopeName), tFile.SafeScopeName);
                 zip.Dispose();
                 ms = new MemoryStream(File.ReadAllBytes(archive));
-                TResponseModel<bool> resUpd = await ToolsExtRepo.UpdateFile(tFile.ScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
+                TResponseModel<bool> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
                 if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
                     SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
                 File.Delete(archive);
