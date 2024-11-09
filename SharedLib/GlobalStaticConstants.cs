@@ -1072,6 +1072,11 @@ public static partial class GlobalStaticConstants
         public const string DIRECTORY_CONTROLLER_NAME = "directory";
 
         /// <summary>
+        /// cmd
+        /// </summary>
+        public const string CMD_CONTROLLER_NAME = "cmd";
+
+        /// <summary>
         /// Elements
         /// </summary>
         public const string ELEMENTS_CONTROLLER_NAME = "elements";
@@ -1290,6 +1295,11 @@ public static partial class GlobalStaticConstants
         /// Account
         /// </summary>
         public const string ACCOUNT_CONTROLLER_NAME = "account";
+
+        /// <summary>
+        /// Null
+        /// </summary>
+        public const string NULL_CONTROLLER_NAME = "null";
 
         /// <summary>
         /// API
@@ -1552,6 +1562,11 @@ public static partial class GlobalStaticConstants
         /// Get
         /// </summary>
         public const string GET_ACTION_NAME = "get";
+
+        /// <summary>
+        /// exe
+        /// </summary>
+        public const string EXE_ACTION_NAME = "exe";
 
         /// <summary>
         /// Редактировать

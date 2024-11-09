@@ -3,11 +3,10 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using SharedLib;
 using System.IO.Compression;
 using System.Text;
+using SharedLib;
 
 namespace ApiRestService.Controllers;
 
@@ -24,6 +23,29 @@ public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
     /// </remarks>
+    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.CMD_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.EXE_ACTION_NAME}")]
+    public TResponseModel<string> ExeCommand(ExeCommandModel req)
+    {
+        TResponseModel<string> res = new();
+
+        try
+        {
+            res.Response = GlobalTools.RunCommandWithBash(req.Arguments, req.FileName);
+        }
+        catch (Exception ex)
+        {
+            res.Messages.InjectException(ex);
+        }
+
+        return res;
+    }
+
+    /// <summary>
+    /// GetDirectory
+    /// </summary>
+    /// <remarks>
+    /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
+    /// </remarks>
     [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.GET_ACTION_NAME}")]
     public Task<TResponseModel<List<ToolsFilesResponseModel>>> GetDirectory(ToolsFilesRequestModel req)
         => toolsRepo.GetDirectory(req);
@@ -31,12 +53,15 @@ public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
     /// <summary>
     /// AttachmentForOrder
     /// </summary>
+    /// <remarks>
+    /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
+    /// </remarks>
     [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}")]
-    public TResponseModel<bool> FileUpdateOrCreate(IFormFile uploadedFile, [FromHeader] string RemoteDirectory)
+    public async Task<TResponseModel<bool>> FileUpdateOrCreate(IFormFile uploadedFile, [FromHeader] string remoteDirectory)
     {
         TResponseModel<bool> response = new();
-        RemoteDirectory = Encoding.UTF8.GetString(Convert.FromBase64String(RemoteDirectory));
-        RemoteDirectory = RemoteDirectory.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+        remoteDirectory = Encoding.UTF8.GetString(Convert.FromBase64String(remoteDirectory));
+        remoteDirectory = remoteDirectory.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
 
         if (uploadedFile is null || uploadedFile.Length == 0)
         {
@@ -44,66 +69,22 @@ public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
             return response;
         }
 
-        DirectoryInfo di = new(RemoteDirectory);
-        if (!di.Exists)
-        {
-            response.AddError("Папка отсутствует");
-            return response;
-        }
+        string _file_name = Path.Combine(remoteDirectory, uploadedFile.FileName.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar).Trim());
+        using MemoryStream ms = new();
+        uploadedFile.OpenReadStream().CopyTo(ms);
 
-        string _file_name = Path.Combine(RemoteDirectory, uploadedFile.FileName.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar).Trim());
-        FileInfo _file = new(_file_name);
-        if (_file.Exists)
-            _file.Delete();
-
-        using MemoryStream stream = new();
-        uploadedFile.OpenReadStream().CopyTo(stream);
-        string _tmpFile = System.IO.Path.GetTempFileName();
-        //Path.Combine(di.FullName, _file.FullName,"")
-        System.IO.File.WriteAllBytes(_tmpFile, stream.ToArray());
-        using (ZipArchive archive = ZipFile.OpenRead(_tmpFile))
-        {
-            foreach (ZipArchiveEntry entry in archive.Entries)
-            {
-                _file = new(Path.Combine(di.FullName, entry.FullName));
-                if (_file.Exists)
-                    _file.Delete();
-                entry.ExtractToFile(_file.FullName);
-            }
-        }
-        System.IO.File.Delete(_tmpFile);
-
-        response.Response = true;
-        return response;
+        return await toolsRepo.UpdateFile(_file_name, remoteDirectory, ms.ToArray());
     }
 
     /// <summary>
     /// AttachmentForOrder
     /// </summary>
+    /// <remarks>
+    /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
+    /// </remarks>
     [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}")]
-    public TResponseModel<bool> FileDelete(DeleteRemoteFileRequestModel req)
+    public async Task<TResponseModel<bool>> FileDelete(DeleteRemoteFileRequestModel req)
     {
-        TResponseModel<bool> response = new();
-        DirectoryInfo di = new(req.RemoteDirectory);
-        if (!di.Exists)
-        {
-            response.AddError("Папка отсутствует");
-            return response;
-        }
-
-        string _file_name = Path.Combine(req.RemoteDirectory, req.SafeScopeName.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar).Trim());
-        FileInfo _file = new(_file_name);
-        if (_file.Exists)
-        {
-            _file.Delete();
-            response.Response = true;
-        }
-        else
-        {
-            response.AddWarning($"Файл отсутствует: {_file.FullName}");
-            response.Response = false;
-        }
-
-        return response;
+        return await toolsRepo.DeleteFile(req);
     }
 }

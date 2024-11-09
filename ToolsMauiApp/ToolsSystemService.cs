@@ -2,11 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Newtonsoft.Json;
-using SharedLib;
-using System.Net.Http;
 using System.Net.Http.Json;
+using Newtonsoft.Json;
 using System.Text;
+using SharedLib;
 
 namespace ToolsMauiApp;
 
@@ -15,7 +14,7 @@ namespace ToolsMauiApp;
 /// </summary>
 public class ToolsSystemExtService(IHttpClientFactory HttpClientFactory) : IToolsSystemExtService
 {
-    static string snh = nameof(ConfigStoreModel.RemoteDirectory);
+    private static readonly string snh = nameof(ConfigStoreModel.RemoteDirectory);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> DeleteFile(DeleteRemoteFileRequestModel req)
@@ -24,6 +23,16 @@ public class ToolsSystemExtService(IHttpClientFactory HttpClientFactory) : ITool
         using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}", req);
         string rj = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<TResponseModel<bool>>(rj)!;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string>> ExeCommand(ExeCommandModel req)
+    {
+        using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
+        using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.CMD_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.EXE_ACTION_NAME}", req);
+        string rj = await response.Content.ReadAsStringAsync();
+
+        return JsonConvert.DeserializeObject<TResponseModel<string>>(rj)!;
     }
 
     /// <inheritdoc/>
@@ -67,7 +76,7 @@ public class ToolsSystemExtService(IHttpClientFactory HttpClientFactory) : ITool
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> UpdateFile(ToolsFilesResponseModel tFile, byte[] file_bytes)
+    public async Task<TResponseModel<bool>> UpdateFile(string fileScopeName, string remoteDirectory, byte[] bytes)
     {
         TResponseModel<bool> res = new();
         if (string.IsNullOrWhiteSpace(MauiProgram.ConfigStore.Response?.RemoteDirectory))
@@ -81,7 +90,7 @@ public class ToolsSystemExtService(IHttpClientFactory HttpClientFactory) : ITool
         MultipartFormDataContent form = new()
         {
             //{ new StringContent(nameof(tFile.SafeScopeName)), tFile.SafeScopeName },
-            { new ByteArrayContent(file_bytes, 0, file_bytes.Length), "uploadedFile", tFile.SafeScopeName }
+            { new ByteArrayContent(bytes, 0, bytes.Length), "uploadedFile", fileScopeName }
         };
 
         if (!httpClient.DefaultRequestHeaders.Any(x => x.Key == snh))

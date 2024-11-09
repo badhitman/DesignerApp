@@ -5,12 +5,17 @@
 namespace SharedLib;
 
 /// <summary>
-/// IToolsSystemExtService
+/// ExeCommandModel
 /// </summary>
-public interface IToolsSystemExtService : IToolsSystemService
+public class ExeCommandModel
 {
     /// <summary>
-    /// GetMe
+    /// FileName
     /// </summary>
-    public Task<TResponseModel<ExpressProfileResponseModel>> GetMe();
+    public required string FileName { get; set; }
+
+    /// <summary>
+    /// Arguments
+    /// </summary>
+    public required string Arguments { get; set; }
 }

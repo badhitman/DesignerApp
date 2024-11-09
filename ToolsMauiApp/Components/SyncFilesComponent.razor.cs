@@ -94,7 +94,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                 ZipArchiveEntry entry = zip.CreateEntryFromFile(Path.Combine(MauiProgram.ConfigStore.Response.LocalDirectory, tFile.SafeScopeName), tFile.SafeScopeName);
                 zip.Dispose();
                 ms = new MemoryStream(File.ReadAllBytes(archive));
-                TResponseModel<bool> resUpd = await ToolsExtRepo.UpdateFile(tFile, ms.ToArray());
+                TResponseModel<bool> resUpd = await ToolsExtRepo.UpdateFile(tFile.ScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
                 if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
                     SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
                 File.Delete(archive);

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
@@ -20,6 +21,29 @@ namespace SharedLib;
 /// </summary>
 public static partial class GlobalTools
 {
+    /// <summary>
+    /// RunCommandWithBash
+    /// </summary>
+    public static string RunCommandWithBash(string command, string fileName = "/bin/bash")
+    {
+        ProcessStartInfo psi = new()
+        {
+            FileName = fileName,
+            Arguments = command,
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using Process? process = Process.Start(psi);
+
+        if(process is null)
+            return GlobalStaticConstants.Routes.NULL_CONTROLLER_NAME;
+
+        process.WaitForExit();
+        return process.StandardOutput.ReadToEnd();
+    }
+
     /// <summary>
     /// Перемешать список элементов
     /// </summary>
