@@ -76,10 +76,10 @@ public class ToolsSystemExtService(IHttpClientFactory HttpClientFactory) : ITool
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> UpdateFile(string fileScopeName, string remoteDirectory, byte[] bytes)
+    public async Task<TResponseModel<string>> UpdateFile(string fileScopeName, string remoteDirectory, byte[] bytes)
     {
-        TResponseModel<bool> res = new();
-        if (string.IsNullOrWhiteSpace(MauiProgram.ConfigStore.Response?.RemoteDirectory))
+        TResponseModel<string> res = new();
+        if (string.IsNullOrWhiteSpace(remoteDirectory))
         {
             res.AddError("Настройки не инициализированы");
             return res;
@@ -102,6 +102,6 @@ public class ToolsSystemExtService(IHttpClientFactory HttpClientFactory) : ITool
         response.EnsureSuccessStatusCode();
         httpClient.Dispose();
         string sd = response.Content.ReadAsStringAsync().Result;
-        return JsonConvert.DeserializeObject<TResponseModel<bool>>(sd)!;
+        return JsonConvert.DeserializeObject<TResponseModel<string>>(sd)!;
     }
 }

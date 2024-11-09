@@ -22,7 +22,7 @@ public interface IToolsSystemService
     /// <summary>
     /// UpdateFile
     /// </summary>
-    public Task<TResponseModel<bool>> UpdateFile(string fileScopeName, string remoteDirectory, byte[] bytes);
+    public Task<TResponseModel<string>> UpdateFile(string fileScopeName, string remoteDirectory, byte[] bytes);
 
     /// <summary>
     /// UpdateFile

@@ -13,7 +13,7 @@ namespace ToolsMauiApp.Components.Pages;
 public partial class Home : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IToolsSystemExtService toolsRepo { get; set; } = default!;
+    IToolsSystemExtService ToolsRepo { get; set; } = default!;
 
     ConfigStoreModel configEdit = new();
     TResponseModel<ExpressProfileResponseModel>? testResult;
@@ -62,9 +62,9 @@ public partial class Home : BlazorBusyComponentBaseModel
 
         await SetBusy();
 
-        testResult = await toolsRepo.GetMe();
+        testResult = await ToolsRepo.GetMe();
         SnackbarRepo.ShowMessagesResponse(testResult.Messages);
-        checkDir = await toolsRepo.GetDirectory(req);
+        checkDir = await ToolsRepo.GetDirectory(req);
         SnackbarRepo.ShowMessagesResponse(checkDir.Messages);
 
         await SetBusy(false);
@@ -84,7 +84,7 @@ public partial class Home : BlazorBusyComponentBaseModel
         if (MauiProgram.ConfigStore.Response.FullSets)
         {
             await SetBusy();
-            testResult = await toolsRepo.GetMe();
+            testResult = await ToolsRepo.GetMe();
             //if (testResult.Messages.Count != 0)
             //    MauiProgram.ConfigStore.Messages.AddRange(testResult.Messages);
             await SetBusy(false);

@@ -76,9 +76,9 @@ public class ToolsSystemService() : IToolsSystemService
     }
 
     /// <inheritdoc/>
-    public Task<TResponseModel<bool>> UpdateFile(string fileName, string remoteDirectory, byte[] bytes)
+    public Task<TResponseModel<string>> UpdateFile(string fileName, string remoteDirectory, byte[] bytes)
     {
-        TResponseModel<bool> response = new();
+        TResponseModel<string> response = new();
 
         DirectoryInfo di = new(remoteDirectory);
         if (!di.Exists)
@@ -107,9 +107,12 @@ public class ToolsSystemService() : IToolsSystemService
                 entry.ExtractToFile(_file.FullName);
             }
         }
+
+        using MD5 md5 = MD5.Create();
+        using FileStream streamMd = File.OpenRead(_tmpFile);
+        response.Response = Convert.ToBase64String(md5.ComputeHash(streamMd));
         File.Delete(_tmpFile);
 
-        response.Response = true;
         return Task.FromResult(response);
     }
 

@@ -57,9 +57,9 @@ public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
     /// </remarks>
     [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}")]
-    public async Task<TResponseModel<bool>> FileUpdateOrCreate(IFormFile uploadedFile, [FromHeader] string remoteDirectory)
+    public async Task<TResponseModel<string>> FileUpdateOrCreate(IFormFile uploadedFile, [FromHeader] string remoteDirectory)
     {
-        TResponseModel<bool> response = new();
+        TResponseModel<string> response = new();
         remoteDirectory = Encoding.UTF8.GetString(Convert.FromBase64String(remoteDirectory));
         remoteDirectory = remoteDirectory.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
 

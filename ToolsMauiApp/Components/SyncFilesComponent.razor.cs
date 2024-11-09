@@ -7,6 +7,7 @@ using CommunityToolkit.Maui.Storage;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 using System.IO.Compression;
+using System.Security.Cryptography;
 
 namespace ToolsMauiApp.Components;
 
@@ -30,7 +31,6 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
     ToolsFilesResponseModel[]? forDelete;
     ToolsFilesResponseModel[]? forUpdateOrAdd;
-
 
     async Task SyncRun()
     {
@@ -86,19 +86,6 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
         await SetBusy();
         MemoryStream ms;
-        if (forUpdateOrAdd.Length != 0)
-            foreach (ToolsFilesResponseModel tFile in forUpdateOrAdd)
-            {
-                string archive = Path.GetTempFileName();
-                using ZipArchive zip = ZipFile.Open(archive, ZipArchiveMode.Update);
-                ZipArchiveEntry entry = zip.CreateEntryFromFile(Path.Combine(MauiProgram.ConfigStore.Response.LocalDirectory, tFile.SafeScopeName), tFile.SafeScopeName);
-                zip.Dispose();
-                ms = new MemoryStream(File.ReadAllBytes(archive));
-                TResponseModel<bool> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
-                if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
-                    SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
-                File.Delete(archive);
-            }
 
         if (forDelete.Length != 0)
             foreach (ToolsFilesResponseModel tFile in forDelete)
@@ -107,6 +94,30 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     RemoteDirectory = MauiProgram.ConfigStore.Response.RemoteDirectory,
                     SafeScopeName = tFile.SafeScopeName,
                 });
+
+        using MD5 md5 = MD5.Create();
+        string _hash;
+        if (forUpdateOrAdd.Length != 0)
+            foreach (ToolsFilesResponseModel tFile in forUpdateOrAdd)
+            {
+                string archive = Path.GetTempFileName();
+                using ZipArchive zip = ZipFile.Open(archive, ZipArchiveMode.Update);
+                ZipArchiveEntry entry = zip.CreateEntryFromFile(Path.Combine(MauiProgram.ConfigStore.Response.LocalDirectory, tFile.SafeScopeName), tFile.SafeScopeName);
+                zip.Dispose();
+                ms = new MemoryStream(File.ReadAllBytes(archive));
+                TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
+
+                using FileStream stream = File.OpenRead(tFile.FullName);
+                _hash = Convert.ToBase64String(md5.ComputeHash(stream));
+
+                if (_hash != resUpd.Response)
+                    SnackbarRepo.Error($"Hash file conflict: {tFile.FullName}");
+
+                if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
+                    SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
+
+                File.Delete(archive);
+            }
 
         await SyncRun();
     }
