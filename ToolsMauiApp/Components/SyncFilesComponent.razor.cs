@@ -111,7 +111,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                 _hash = Convert.ToBase64String(md5.ComputeHash(stream));
 
                 if (_hash != resUpd.Response)
-                    SnackbarRepo.Error($"Hash file conflict: {tFile.FullName}");
+                    SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}] R[{resUpd.Response}]");
 
                 if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
                     SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
