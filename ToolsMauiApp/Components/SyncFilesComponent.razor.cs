@@ -102,6 +102,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
             {
                 string archive = Path.GetTempFileName();
                 using ZipArchive zip = ZipFile.Open(archive, ZipArchiveMode.Update);
+
                 ZipArchiveEntry entry = zip.CreateEntryFromFile(Path.Combine(MauiProgram.ConfigStore.Response.LocalDirectory, tFile.SafeScopeName), tFile.SafeScopeName);
                 zip.Dispose();
                 ms = new MemoryStream(File.ReadAllBytes(archive));
@@ -111,7 +112,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                 _hash = Convert.ToBase64String(md5.ComputeHash(stream));
 
                 if (_hash != resUpd.Response)
-                    SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}] R[{resUpd.Response}]");
+                    SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{tFile.FullName} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
 
                 if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
                     SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
