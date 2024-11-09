@@ -62,14 +62,7 @@ public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> com
 
             await context.AddAsync(payment_db);
 
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            await context.SaveChangesAsync();
 
             res.AddSuccess("Платёж добавлен");
             res.Response = req.Id;

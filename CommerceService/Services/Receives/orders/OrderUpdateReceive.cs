@@ -49,7 +49,7 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
         if (req.Id < 1)
         {
             TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);
-            
+
             using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context.Database.BeginTransaction();
             try
             {
@@ -91,7 +91,6 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                     _webConf.BaseUri = wc.Response?.ClearBaseUri;
                 }
 
-
                 string subject_email = "Создан новый заказ";
                 TResponseModel<string?> CommerceNewOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification);
                 if (CommerceNewOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
@@ -125,11 +124,16 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                     msg_for_tg = CommerceNewOrderBodyNotificationTelegram.Response;
                 msg_for_tg = ReplaceTags(msg_for_tg);
 
-                if (actor.Response[0].TelegramId.HasValue)
-                    await tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value });
-                loggerRepo.LogInformation(msg_for_tg);
-                await webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg });
+                List<Task> servicesCalls =
+                [
+                    webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg }),
+                ];
 
+                if (actor.Response[0].TelegramId.HasValue)
+                    servicesCalls.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value }));
+
+                loggerRepo.LogInformation(msg_for_tg);
+                await Task.WhenAll(servicesCalls);
                 return res;
             }
             catch (Exception ex)
