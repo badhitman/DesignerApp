@@ -94,7 +94,7 @@ public class ToolsSystemExtService(IHttpClientFactory HttpClientFactory) : ITool
         };
 
         if (!httpClient.DefaultRequestHeaders.Any(x => x.Key == snh))
-            httpClient.DefaultRequestHeaders.Add(snh, Convert.ToBase64String(Encoding.UTF8.GetBytes(MauiProgram.ConfigStore.Response.RemoteDirectory)));
+            httpClient.DefaultRequestHeaders.Add(snh, Convert.ToBase64String(Encoding.UTF8.GetBytes(remoteDirectory)));
 
         string routeUri = $"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}";
         HttpResponseMessage response = await httpClient.PostAsync(routeUri, form);
