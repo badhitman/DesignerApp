@@ -959,7 +959,6 @@ public class HelpdeskImplementService(
                     {
                         tasks.Add(Task.Run(async () =>
                         {
-
                             using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Wappi.ToString());
                             if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
                                 client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
@@ -967,10 +966,8 @@ public class HelpdeskImplementService(
                             using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = req.Payload.Payload.Description, Recipient = user.PhoneNumber });
                             string rj = await response.Content.ReadAsStringAsync();
                             SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
-
                         }));
                     }
-
                 }
             }
 
@@ -1068,8 +1065,6 @@ public class HelpdeskImplementService(
                         Description = msg,
                     },
                 },
-                //IsMuteEmail = true,
-                //IsMuteTelegram = true,
             };
 
             await PulsePush(p_req);
