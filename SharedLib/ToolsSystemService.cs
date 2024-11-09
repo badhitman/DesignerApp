@@ -101,7 +101,7 @@ public class ToolsSystemService() : IToolsSystemService
         {
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
-                _file = new(Path.Combine(di.FullName, entry.FullName));
+                _file = new(Path.Combine(di.FullName, entry.FullName.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar)));
                 if (_file.Exists)
                     _file.Delete();
                 entry.ExtractToFile(_file.FullName);
