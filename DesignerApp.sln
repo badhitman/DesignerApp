@@ -58,6 +58,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "systemd", "systemd", "{5B96
 		devops\etc\systemd\system\bus.app.service = devops\etc\systemd\system\bus.app.service
 		devops\etc\systemd\system\comm.app.service = devops\etc\systemd\system\comm.app.service
 		devops\etc\systemd\system\constructor.app.service = devops\etc\systemd\system\constructor.app.service
+		devops\etc\systemd\system\docker-compose-app.service = devops\etc\systemd\system\docker-compose-app.service
 		devops\etc\systemd\system\hd.app.service = devops\etc\systemd\system\hd.app.service
 		devops\etc\systemd\system\tg.app.service = devops\etc\systemd\system\tg.app.service
 		devops\etc\systemd\system\web.app.service = devops\etc\systemd\system\web.app.service

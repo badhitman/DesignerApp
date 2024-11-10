@@ -1,0 +1,16 @@
+[Unit]
+Description=Docker Compose Application Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/srv
+ExecStart=docker-compose up -d
+ExecStop=docker-compose down
+TimeoutStartSec=0
+User=root
+
+[Install]
+WantedBy=multi-user.target

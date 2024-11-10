@@ -97,6 +97,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
         using MD5 md5 = MD5.Create();
         string _hash;
+        long totalTransferData = 0;
         if (forUpdateOrAdd.Length != 0)
             foreach (ToolsFilesResponseModel tFile in forUpdateOrAdd)
             {
@@ -111,7 +112,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     zip.Dispose();
                     ms = new MemoryStream(File.ReadAllBytes(archive));
                     TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
-
+                    totalTransferData += ms.Length;
                     using FileStream stream = File.OpenRead(_fnT);
                     _hash = Convert.ToBase64String(md5.ComputeHash(stream));
 
