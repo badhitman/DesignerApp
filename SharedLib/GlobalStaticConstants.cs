@@ -219,6 +219,15 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
+        /// ShowingAttachmentsIssuesArea
+        /// </summary>
+        public static StorageMetadataModel ShowingAttachmentsIssuesArea => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.SHOW_ACTION_NAME, Routes.ISSUE_CONTROLLER_NAME, Routes.ATTACHMENT_CONTROLLER_NAME, Routes.AREAS_CONTROLLER_NAME),
+        };
+
+        /// <summary>
         /// RubricIssueForCreateOrder
         /// </summary>
         public static StorageMetadataModel RubricIssueForCreateOrder => new()

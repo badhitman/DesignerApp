@@ -54,14 +54,17 @@ else
                                             <MudTabPanel Text="Хроника">
                                                 <PulseJournalComponent />
                                             </MudTabPanel>
-                                            <MudTabPanel Text="Файлы">
-                                                <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME])"
-                                                                           PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_CONTROLLER_NAME"
-                                                                           PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
-                                                                           OwnerPrimaryKey="Id"
-                                                                           Title="Файлы"
-                                                                           ManageMode="true" />
-                                            </MudTabPanel>
+                                            @if (ShowingAttachmentsIssueArea)
+                                            {
+                                                <MudTabPanel Text="Файлы">
+                                                    <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME])"
+                                                                               PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_CONTROLLER_NAME"
+                                                                               PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
+                                                                               OwnerPrimaryKey="Id"
+                                                                               Title="Файлы"
+                                                                               ManageMode="true" />
+                                                </MudTabPanel>
+                                            }
                                         </MudTabs>
                                     </div>
                                     @if (ShowingTelegramArea && UsersIdentityDump.Any(x => x.TelegramId.HasValue))

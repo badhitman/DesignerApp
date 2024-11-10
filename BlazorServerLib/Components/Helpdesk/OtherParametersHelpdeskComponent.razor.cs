@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
-using MudBlazor;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk;
@@ -63,9 +62,20 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
         }
     }
 
+    bool _showingAttachmentsIssueArea;
+    bool ShowingAttachmentsIssueArea
+    {
+        get => _showingAttachmentsIssueArea;
+        set
+        {
+            _showingAttachmentsIssueArea = value;
+            InvokeAsync(SaveModeShowingAttachmentsIssueArea);
+        }
+    }
+
     async void SaveModeShowCreateIssue()
     {
-        await SetBusy();        
+        await SetBusy();
         TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreateIssue, GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue, true);
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -87,10 +97,19 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
         SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
+    async void SaveModeShowingAttachmentsIssueArea()
+    {
+        await SetBusy();
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreateIssue, GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsIssuesArea, true);
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+    }
+
+
     async void SaveRubric()
     {
         await SetBusy();
-        
+
         TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter(_RubricIssueForCreateOrder, GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder, true);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -102,7 +121,7 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
     protected override async Task OnInitializedAsync()
     {
         await SetBusy();
-        
+
         TResponseModel<bool?> res_ShowCreatingIssue = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue);
         TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);
         IsBusyProgress = false;
@@ -110,7 +129,7 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
         if (ref_rubric is not null && _RubricIssueForCreateOrder.HasValue)
         {
             await SetBusy();
-            
+
             TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(_RubricIssueForCreateOrder.Value);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(res.Messages);
