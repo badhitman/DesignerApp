@@ -22,6 +22,8 @@ public partial class NotificationsAreaTelegramIssueConfigComponent : IssueWrapBa
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         long[] telegram_users_ids = UsersIdentityDump
             .Where(x => x.TelegramId.HasValue)
             .Select(x => x.TelegramId!.Value)

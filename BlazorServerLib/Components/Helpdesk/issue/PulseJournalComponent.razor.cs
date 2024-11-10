@@ -64,4 +64,10 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
 
         return new TableData<PulseViewModel>() { TotalItems = tp.TotalRowsCount, Items = tp.Response };
     }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
 }

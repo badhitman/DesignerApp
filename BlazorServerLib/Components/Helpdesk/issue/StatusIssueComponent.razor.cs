@@ -65,7 +65,7 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        IssueStep = Issue.StepIssue;
         await base.OnInitializedAsync();
+        IssueStep = Issue.StepIssue;
     }
 }

@@ -23,4 +23,10 @@ public partial class UserCardMainComponent : IssueWrapBaseModel
     /// </summary>
     [Parameter, EditorRequired]
     public required UserInfoModel Author { get; set; }
+
+    /// <inheritdoc/>
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
 }

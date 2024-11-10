@@ -28,7 +28,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             throw new Exception();
 
         await SetBusy();
-        
+
         UserInfoModel? user_by_email = await UsersProfilesRepo.FindByEmailAsync(addingSubscriber);
         IsBusyProgress = false;
         if (user_by_email is null)
@@ -41,7 +41,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             UsersIdentityDump.Add(user_by_email);
 
         await SetBusy();
-        
+
         TResponseModel<bool> add_subscriber_res = await HelpdeskRepo.SubscribeUpdate(new()
         {
             SenderActionUserId = CurrentUserSession!.UserId,
@@ -59,7 +59,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
 
         addingSubscriber = null;
         await SetBusy();
-        
+
         TResponseModel<SubscriberIssueHelpdeskModelDB[]?> reload_subscribers_list = await HelpdeskRepo.SubscribesList(new() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(reload_subscribers_list.Messages);
@@ -69,7 +69,11 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         Issue.Subscribers = [.. reload_subscribers_list.Response];
     }
 
-
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
 
     async Task NotifyBellToggle(SubscriberIssueHelpdeskModelDB p)
     {
@@ -86,7 +90,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         };
 
         await SetBusy();
-        
+
         TResponseModel<bool> rest = await HelpdeskRepo.SubscribeUpdate(req);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
@@ -114,7 +118,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         };
 
         await SetBusy();
-        
+
         TResponseModel<bool> rest = await HelpdeskRepo.SubscribeUpdate(req);
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

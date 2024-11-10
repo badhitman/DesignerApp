@@ -42,6 +42,6 @@ public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseAuthModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await ReadCurrentUser();
+        await base.OnInitializedAsync();
     }
 }

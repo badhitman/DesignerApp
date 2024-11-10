@@ -123,7 +123,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
     /// <inheritdoc/>
     protected override async void OnInitialized()
     {
-        await ReadCurrentUser();
+        await base.OnInitializedAsync();
         if (Message is null || Message.Id < 1)
             IsEditMode = true;
 

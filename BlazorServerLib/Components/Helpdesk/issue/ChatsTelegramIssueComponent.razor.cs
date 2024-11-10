@@ -50,6 +50,7 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         long[] chats_ids = [.. UsersIdentityDump.Where(x => x.TelegramId.HasValue).Select(x => x.TelegramId!.Value)];
         await SetBusy();
         TResponseModel<ChatTelegramModelDB[]?> rest_chats = await tgRepo.ChatsReadTelegram(chats_ids);

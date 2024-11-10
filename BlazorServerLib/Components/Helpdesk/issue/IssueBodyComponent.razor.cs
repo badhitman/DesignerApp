@@ -121,6 +121,7 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         CancelEdit();
 
         await SetBusy();
