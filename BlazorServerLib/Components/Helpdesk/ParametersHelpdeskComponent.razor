@@ -28,7 +28,7 @@
         <TelegramConfigComponent />
     </MudTabPanel>
     <MudTabPanel ToolTip="Права пользователей" Text="Доступ">
-        <UsersTableComponent HideClaimsColumn="true" HideRolesColumn="true" RolesManageKit="@GlobalStaticConstants.Roles.AllHelpDeskRoles.Union([GlobalStaticConstants.Roles.CommerceManager,GlobalStaticConstants.Roles.Debug])" />
+        <UsersTableComponent HideClaimsColumn="true" HideRolesColumn="true" RolesManageKit="@GlobalStaticConstants.Roles.AllHelpDeskRoles.Union([GlobalStaticConstants.Roles.CommerceManager,GlobalStaticConstants.Roles.CommerceClient, GlobalStaticConstants.Roles.Debug])" />
     </MudTabPanel>
     <MudTabPanel Text="Шаблоны уведомлений">
         <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">

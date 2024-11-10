@@ -1785,6 +1785,11 @@ public static partial class GlobalStaticConstants
         /// CommerceManager
         /// </summary>
         public const string CommerceManager = "CommerceManager";
+
+        /// <summary>
+        /// CommerceClient
+        /// </summary>
+        public const string CommerceClient = "CommerceClient";
         #endregion
     }
 
