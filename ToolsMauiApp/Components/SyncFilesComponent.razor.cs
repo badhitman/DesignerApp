@@ -100,24 +100,31 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         if (forUpdateOrAdd.Length != 0)
             foreach (ToolsFilesResponseModel tFile in forUpdateOrAdd)
             {
-                string archive = Path.GetTempFileName();
-                using ZipArchive zip = ZipFile.Open(archive, ZipArchiveMode.Update);
+                try
+                {
+                    string archive = Path.GetTempFileName();
+                    using ZipArchive zip = ZipFile.Open(archive, ZipArchiveMode.Update);
 
-                ZipArchiveEntry entry = zip.CreateEntryFromFile(Path.Combine(MauiProgram.ConfigStore.Response.LocalDirectory, tFile.SafeScopeName), tFile.SafeScopeName);
-                zip.Dispose();
-                ms = new MemoryStream(File.ReadAllBytes(archive));
-                TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
+                    ZipArchiveEntry entry = zip.CreateEntryFromFile(Path.Combine(MauiProgram.ConfigStore.Response.LocalDirectory, tFile.SafeScopeName), tFile.SafeScopeName);
+                    zip.Dispose();
+                    ms = new MemoryStream(File.ReadAllBytes(archive));
+                    TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
 
-                using FileStream stream = File.OpenRead(tFile.FullName);
-                _hash = Convert.ToBase64String(md5.ComputeHash(stream));
+                    using FileStream stream = File.OpenRead(tFile.FullName);
+                    _hash = Convert.ToBase64String(md5.ComputeHash(stream));
 
-                if (_hash != resUpd.Response)
-                    SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{tFile.FullName} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
+                    if (_hash != resUpd.Response)
+                        SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{tFile.FullName} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
 
-                if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
-                    SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
+                    if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
+                        SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
 
-                File.Delete(archive);
+                    File.Delete(archive);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
             }
 
         await SyncRun();
