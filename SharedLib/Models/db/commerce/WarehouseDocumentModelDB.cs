@@ -25,5 +25,5 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// Rows
     /// </summary>
-    List<RowOfWarehouseDocumentModelDB>? Rows { get; set; }
+    public List<RowOfWarehouseDocumentModelDB>? Rows { get; set; }
 }

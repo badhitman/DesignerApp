@@ -1,0 +1,13 @@
+﻿@page "/warehouse/editing/{Id:int?}"
+@page "/warehouse/editing"
+@using BlazorWebLib.Components.Warehouse
+
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.Debug},{GlobalStaticConstants.Roles.CommerceManager}")]
+
+<WarehouseEditingComponent Id="@(Id.HasValue ? Id.Value : 0)" />
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+}

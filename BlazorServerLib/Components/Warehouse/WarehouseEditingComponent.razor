@@ -1,0 +1,49 @@
+﻿@using BlazorWebLib.Components.Commerce
+@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<div>
+    <div class="mb-3">
+        <label for="exampleInputName" class="form-label">Название</label>
+        <input type="text" class="form-control" id="exampleInputName" aria-describedby="nameHelp">
+        <div id="nameHelp" class="form-text">Наименование.</div>
+    </div>
+    <div class="mb-3">
+        <MudTextField T="DateTime?" Format="yyyy-MM-dd" Label="Date" InputType="InputType.Date" />
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+        <label class="form-check-label" for="exampleCheck1">Отключение</label>
+    </div>
+    <div class="d-grid gap-2 my-2">
+        <button class="btn btn-primary" type="button">Сохранить</button>
+    </div>
+</div>
+<MudTable ServerData="ServerReload" Dense="true" Hover="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Номенклатура</MudText>
+        <MudSpacer />
+        <div class="ms-3">
+            @* <AddRowToOrderDocumentComponent @ref="addingDomRef" AllOffers="allOffers" CurrentTab="CurrentTab" AddingOfferHandler="AddingOfferAction" /> *@
+        </div>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="nr_field" T="RowOfWarehouseDocumentModelDB">Goods</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="sign_field" T="RowOfWarehouseDocumentModelDB">Offer</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="name_field" T="RowOfWarehouseDocumentModelDB">Quantity</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Goods">@context.Goods!.Name</MudTd>
+        <MudTd DataLabel="Offer">@context.Offer!.Name</MudTd>
+        <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Данные отсутствуют</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

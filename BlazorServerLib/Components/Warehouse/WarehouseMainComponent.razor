@@ -1,3 +1,35 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
 
-<h3>WarehouseMainComponent</h3>
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Складские документы</MudText>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="Id" T="WarehouseDocumentModelDB">Id</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="Name" T="WarehouseDocumentModelDB">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="DeliveryData" T="WarehouseDocumentModelDB">DeliveryData</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="At" T="WarehouseDocumentModelDB">At</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="DeliveryData">@context.DeliveryData</MudTd>
+        <MudTd DataLabel="At">@context.CreatedAtUTC @context.LastAtUpdatedUTC</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Данные отсутствуют</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+<div class="d-grid gap-2 mt-3">
+    <a class="btn btn-primary" href="/warehouse/editing" role="button">Создать новый документ</a>
+</div>
