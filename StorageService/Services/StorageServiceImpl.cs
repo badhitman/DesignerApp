@@ -56,7 +56,9 @@ public class StorageServiceImpl(
 
         try
         {
-            return JsonConvert.DeserializeObject<T>(pdb.SerializedDataJson);
+            T? rawData = JsonConvert.DeserializeObject<T>(pdb.SerializedDataJson);
+            cache.Set(mem_key, rawData, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
+            return rawData;
         }
         catch (Exception ex)
         {
