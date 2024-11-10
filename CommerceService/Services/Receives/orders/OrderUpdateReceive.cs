@@ -100,11 +100,13 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                     subject_email = CommerceNewOrderSubjectNotification.Response;
 
                 DateTime _dt = DateTime.UtcNow.GetCustomTime();
-                string _about_order = $"'{req.Name}' {_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
+                string _dtAsString = $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
+
+                string _about_order = $"'{req.Name}' {_dtAsString}";
                 string ReplaceTags(string raw, bool clearMd = false)
                 {
                     return raw.Replace(GlobalStaticConstants.OrderDocumentName, req.Name)
-                    .Replace(GlobalStaticConstants.OrderDocumentDate, $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}")
+                    .Replace(GlobalStaticConstants.OrderDocumentDate, $"{_dtAsString}")
                     .Replace(GlobalStaticConstants.OrderStatusInfo, StatusesDocumentsEnum.Created.DescriptionInfo())
                     .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{_webConf.BaseUri}/issue-card/{req.HelpdeskId}" : $"<a href='{_webConf.BaseUri}/issue-card/{req.HelpdeskId}'>{_about_order}</a>")
                     .Replace(GlobalStaticConstants.HostAddress, clearMd ? _webConf.BaseUri : $"<a href='{_webConf.BaseUri}'>{_webConf.BaseUri}</a>");
@@ -113,11 +115,11 @@ public class OrderUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 subject_email = ReplaceTags(subject_email);
 
                 res.AddSuccess(subject_email);
-                msg = $"<p>Заказ <b>'{issue_new.Payload.Name}' от [{_dt}]</b> успешно создан.</p>" +
+                msg = $"<p>Заказ <b>'{issue_new.Payload.Name}' от [{_dtAsString}]</b> успешно создан.</p>" +
                         $"<p>/<a href='{_webConf.ClearBaseUri}'>{_webConf.ClearBaseUri}</a>/</p>";
                 string msg_for_tg = msg.Replace("<p>", "").Replace("</p>", "");
 
-                waMsg = $"Заказ '{issue_new.Payload.Name}' от [{_dt}] успешно создан.\n{_webConf.ClearBaseUri}";
+                waMsg = $"Заказ '{issue_new.Payload.Name}' от [{_dtAsString}] успешно создан.\n{_webConf.ClearBaseUri}";
 
                 TResponseModel<string?> CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification);
                 if (CommerceNewOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotification.Response))
