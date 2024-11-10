@@ -23,6 +23,9 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
     [Inject]
     IWebRemoteTransmissionService WebRemoteRepo { get; set; } = default!;
 
+    [Inject]
+    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo { get; set; } = default!;
+
 
     /// <summary>
     /// Id
@@ -44,6 +47,8 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
     public List<UserInfoModel> UsersIdentityDump = [];
 
     OrderDocumentModelDB[]? OrdersJournal;
+    bool ShowingTelegramArea;
+    
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -52,6 +57,10 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
         await ReadIssue();
         await FlushUsersDump();
         await FindOrders();
+        await SetBusy();
+        TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingTelegramArea);
+        ShowingTelegramArea = res.Response == true;        
+        await SetBusy(false);
     }
 
     async Task FindOrders()

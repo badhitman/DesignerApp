@@ -37,18 +37,54 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
         set
         {
             _showCreateIssue = value;
-            InvokeAsync(SaveMode);
+            InvokeAsync(SaveModeShowCreateIssue);
         }
     }
 
-    async void SaveMode()
+    bool _sowingTelegramArea;
+    bool ShowingTelegramArea
+    {
+        get => _sowingTelegramArea;
+        set
+        {
+            _sowingTelegramArea = value;
+            InvokeAsync(SaveModeShowingTelegramAreaIssue);
+        }
+    }
+
+    bool _showingAttachmentsOrderArea;
+    bool ShowingAttachmentsOrderArea
+    {
+        get => _showingAttachmentsOrderArea;
+        set
+        {
+            _showingAttachmentsOrderArea = value;
+            InvokeAsync(SaveModeShowingAttachmentsOrderArea);
+        }
+    }
+
+    async void SaveModeShowCreateIssue()
+    {
+        await SetBusy();        
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreateIssue, GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue, true);
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+    }
+
+    async void SaveModeShowingTelegramAreaIssue()
     {
         await SetBusy();
-        
-        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreateIssue, GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue, true);
-        IsBusyProgress = false;
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowingTelegramArea, GlobalStaticConstants.CloudStorageMetadata.ShowingTelegramArea, true);
+        await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        StateHasChanged();
+    }
+
+    async void SaveModeShowingAttachmentsOrderArea()
+    {
+        await SetBusy();
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreateIssue, GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsOrderArea, true);
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
     async void SaveRubric()

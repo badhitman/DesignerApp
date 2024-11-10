@@ -201,6 +201,24 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
+        /// ShowingTelegramArea
+        /// </summary>
+        public static StorageMetadataModel ShowingTelegramArea => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.SHOW_ACTION_NAME, Routes.TELEGRAM_CONTROLLER_NAME, Routes.AREAS_CONTROLLER_NAME),
+        };
+
+        /// <summary>
+        /// ShowingAttachmentsOrderArea
+        /// </summary>
+        public static StorageMetadataModel ShowingAttachmentsOrderArea => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.SHOW_ACTION_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.ATTACHMENT_CONTROLLER_NAME, Routes.AREAS_CONTROLLER_NAME),
+        };
+
+        /// <summary>
         /// RubricIssueForCreateOrder
         /// </summary>
         public static StorageMetadataModel RubricIssueForCreateOrder => new()

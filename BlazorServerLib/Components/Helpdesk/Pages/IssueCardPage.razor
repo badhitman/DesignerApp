@@ -64,7 +64,7 @@ else
                                             </MudTabPanel>
                                         </MudTabs>
                                     </div>
-                                    @if (UsersIdentityDump.Any(x => x.TelegramId.HasValue))
+                                    @if (ShowingTelegramArea && UsersIdentityDump.Any(x => x.TelegramId.HasValue))
                                     {
                                         <div><ChatsTelegramIssueComponent /></div>
                                     }

@@ -43,7 +43,7 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
     [CascadingParameter, EditorRequired]
     public required IssueHelpdeskModelDB Issue { get; set; }
 
-
+    bool ShowingAttachmentsOrderArea;
     async Task OrderToCart()
     {
         OrderDocumentModelDB doc = GlobalTools.CreateDeepCopy(Document)!;
@@ -112,5 +112,9 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
     protected override async Task OnInitializedAsync()
     {
         await ReadCurrentUser();
+        await SetBusy();
+        TResponseModel<bool?> res = await StorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsOrderArea);
+        ShowingAttachmentsOrderArea = res.Response == true;
+        await SetBusy(false);
     }
 }

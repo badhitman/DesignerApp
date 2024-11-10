@@ -131,6 +131,8 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
             }
 
         await SyncRun();
+        if (totalTransferData != 0)
+            SnackbarRepo.Add($"Отправлено: {GlobalTools.SizeDataAsString(totalTransferData)}", MudBlazor.Severity.Info, c => c.DuplicatesBehavior = MudBlazor.SnackbarDuplicatesBehavior.Allow);
     }
 
     async Task<FileSaverResult?> PickAndShow(MemoryStream ms)
