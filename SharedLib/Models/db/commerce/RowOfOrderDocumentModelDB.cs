@@ -2,21 +2,13 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using System.ComponentModel.DataAnnotations;
-
 namespace SharedLib;
 
 /// <summary>
 /// Строка заказа (документа)
 /// </summary>
-public class RowOfOrderDocumentModelDB
+public class RowOfOrderDocumentModelDB : RowOfBaseDocumentModelDB
 {
-    /// <summary>
-    /// Идентификатор/Key
-    /// </summary>
-    [Key]
-    public int Id { get; set; }
-
     /// <summary>
     /// Адрес доставки (из документа заказа)
     /// </summary>
@@ -35,31 +27,6 @@ public class RowOfOrderDocumentModelDB
     /// Заказ (документ)
     /// </summary>
     public int? OrderDocumentId { get; set; }
-
-    /// <summary>
-    /// Торговое предложение
-    /// </summary>
-    public OfferGoodModelDB? Offer { get; set; }
-
-    /// <summary>
-    /// Offer
-    /// </summary>
-    public int OfferId { get; set; }
-
-    /// <summary>
-    /// Номенклатура
-    /// </summary>
-    public GoodsModelDB? Goods { get; set; }
-
-    /// <summary>
-    /// Goods
-    /// </summary>
-    public int GoodsId { get; set; }
-
-    /// <summary>
-    /// Количество
-    /// </summary>
-    public int Quantity { get; set; }
 
     /// <summary>
     /// Сумма

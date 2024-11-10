@@ -18,11 +18,11 @@ public partial class CommerceLayerContext : DbContext
     public CommerceLayerContext(DbContextOptions options)
         : base(options)
     {
-//#if DEBUG
-//        Database.EnsureCreated();
-//#else
+        //#if DEBUG
+        //        Database.EnsureCreated();
+        //#else
         Database.Migrate();
-//#endif
+        //#endif
     }
 
     /// <inheritdoc/>
@@ -64,6 +64,26 @@ public partial class CommerceLayerContext : DbContext
     /// </summary>
     public DbSet<PriceRuleForOfferModelDB> PricesRules { get; set; }
 
+
+    /// <summary>
+    /// Документы поступления
+    /// </summary>
+    public DbSet<WarehouseDocumentModelDB> WarehouseDocuments { get; set; }
+
+    /// <summary>
+    /// RowsOfWarehouseDocuments
+    /// </summary>
+    public DbSet<RowOfWarehouseDocumentModelDB> RowsOfWarehouseDocuments { get; set; }
+
+    /// <summary>
+    /// OffersAvailability
+    /// </summary>
+    public DbSet<OfferAvailabilityModelDB> OffersAvailability { get; set; }
+
+    /// <summary>
+    /// LockerOffersAvailability
+    /// </summary>
+    public DbSet<LockOffersAvailabilityModelDB> LockerOffersAvailability { get; set; }
 
 
     /// <summary>
