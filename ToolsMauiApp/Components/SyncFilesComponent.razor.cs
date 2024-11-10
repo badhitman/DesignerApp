@@ -105,16 +105,18 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     string archive = Path.GetTempFileName();
                     using ZipArchive zip = ZipFile.Open(archive, ZipArchiveMode.Update);
 
-                    ZipArchiveEntry entry = zip.CreateEntryFromFile(Path.Combine(MauiProgram.ConfigStore.Response.LocalDirectory, tFile.SafeScopeName), tFile.SafeScopeName);
+                    string _fnT = Path.Combine(MauiProgram.ConfigStore.Response.LocalDirectory, tFile.SafeScopeName);
+
+                    ZipArchiveEntry entry = zip.CreateEntryFromFile(_fnT, tFile.SafeScopeName);
                     zip.Dispose();
                     ms = new MemoryStream(File.ReadAllBytes(archive));
                     TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
 
-                    using FileStream stream = File.OpenRead(tFile.FullName);
+                    using FileStream stream = File.OpenRead(_fnT);
                     _hash = Convert.ToBase64String(md5.ComputeHash(stream));
 
                     if (_hash != resUpd.Response)
-                        SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{tFile.FullName} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
+                        SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{_fnT} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
 
                     if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
                         SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
