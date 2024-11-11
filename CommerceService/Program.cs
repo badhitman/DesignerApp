@@ -11,6 +11,7 @@ using NLog.Web;
 using DbcLib;
 using NLog;
 using Microsoft.AspNetCore.Hosting;
+using CommerceService;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -67,6 +68,8 @@ builder.Services.AddHttpClient(HttpClientsNamesEnum.Wappi.ToString(), cc =>
 {
     cc.BaseAddress = new Uri("https://wappi.pro/");
 });
+
+builder.Services.AddScoped<ICommerceService, CommerceImplementService>();
 
 builder.Services.AddSingleton<WebConfigModel>();
 builder.Services.AddOptions();

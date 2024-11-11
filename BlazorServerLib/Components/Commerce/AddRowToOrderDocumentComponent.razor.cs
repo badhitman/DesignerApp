@@ -23,7 +23,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
     /// CurrentTab
     /// </summary>
     [Parameter, EditorRequired]
-    public required TabAddressForOrderModelDb CurrentTab { get; set; }
+    public required List<int> CurrentRows { get; set; }
 
     /// <summary>
     /// AddingOfferHandler
@@ -45,7 +45,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentBaseMod
         }
     }
 
-    IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentTab.Rows!.Any(y => y.OfferId == x.Id));
+    IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentRows!.Contains(x.Id));
 
     bool IsShowAddingOffer;
     int QuantityValue { get; set; } = 1;

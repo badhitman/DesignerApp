@@ -1,49 +1,96 @@
 ﻿@using BlazorWebLib.Components.Commerce
 @using MudBlazor
-@inherits BlazorBusyComponentBaseModel
+@inherits OffersTableBaseComponent
 
-<div>
-    <div class="mb-3">
-        <label for="exampleInputName" class="form-label">Название</label>
-        <input type="text" class="form-control" id="exampleInputName" aria-describedby="nameHelp">
-        <div id="nameHelp" class="form-text">Наименование.</div>
-    </div>
-    <div class="mb-3">
-        <MudTextField T="DateTime?" Format="yyyy-MM-dd" Label="Date" InputType="InputType.Date" />
-    </div>
-    <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="exampleCheck1">
-        <label class="form-check-label" for="exampleCheck1">Отключение</label>
-    </div>
-    <div class="d-grid gap-2 my-2">
-        <button class="btn btn-primary" type="button">Сохранить</button>
-    </div>
-</div>
-<MudTable ServerData="ServerReload" Dense="true" Hover="true">
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">Номенклатура</MudText>
-        <MudSpacer />
-        <div class="ms-3">
-            @* <AddRowToOrderDocumentComponent @ref="addingDomRef" AllOffers="allOffers" CurrentTab="CurrentTab" AddingOfferHandler="AddingOfferAction" /> *@
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+}
+else
+{
+    <div>
+        <div class="mb-3">
+            <label for="exampleInputName" class="form-label">Примечание</label>
+            <input type="text" class="form-control" id="exampleInputName" aria-describedby="nameHelp">
+            <div id="nameHelp" class="form-text">Наименование</div>
         </div>
+        <div class="mb-3">
+            <MudTextField T="DateTime?" Format="yyyy-MM-dd" Label="Date" InputType="InputType.Date" />
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Отключение</label>
+        </div>
+        <div class="d-grid gap-2 my-2">
+            <button class="btn btn-primary" type="button">Сохранить</button>
+        </div>
+    </div>
+}
+
+<MudTable Hover="true"
+          Loading="IsBusyProgress"
+          ReadOnly="ReadOnly"
+          SortLabel="@(nameof(RowOfOrderDocumentModelDB.Goods.Name))"
+          CanCancelEdit="true"
+          Items="@CurrentDocument.Rows"
+          RowEditPreview="RowEditPreviewHandler"
+          RowEditCommit="RowEditCommitHandler"
+          CancelEditIcon="@Icons.Material.Filled.Cancel"
+          CancelEditTooltip="Отменить изменение"
+          CommitEditTooltip="Сохранить изменения"
+          RowEditCancel="RowEditCancelHandler"
+          EditTrigger="@EditTrigger">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">
+            Номенклатура поступления
+        </MudText>
+        <MudSpacer />
+        @if (!ReadOnly)
+        {
+            <div class="ms-3">
+                <AddRowToOrderDocumentComponent @ref="addingDomRef" AllOffers="allOffers" CurrentRows="CurrentDocument.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
+            </div>
+        }
     </ToolBarContent>
+    <ColGroup>
+        <col />
+        <col />
+        <col style="width:50px;" />
+        @if (EditTrigger == TableEditTrigger.EditButton)
+        {
+            <col style="width:50px;" />
+        }
+    </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="nr_field" T="RowOfWarehouseDocumentModelDB">Goods</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="sign_field" T="RowOfWarehouseDocumentModelDB">Offer</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="name_field" T="RowOfWarehouseDocumentModelDB">Quantity</MudTableSortLabel></MudTh>
+        <MudTh>Название</MudTh>
+        <MudTh>Количество</MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Goods">@context.Goods!.Name</MudTd>
-        <MudTd DataLabel="Offer">@context.Offer!.Name</MudTd>
-        <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+        <MudTd DataLabel="Name">
+            @context!.Offer!.GetName()
+        </MudTd>
+        <MudTd DataLabel="Quantity">
+            @context!.Quantity
+        </MudTd>
+        <MudTd><MudIconButton OnClick="() => DeleteRow(context.OfferId)" title="Удалить строку" Icon="@Icons.Material.Filled.Delete" aria-label="delete" Size="Size.Small" /></MudTd>
     </RowTemplate>
-    <NoRecordsContent>
-        <MudText>Данные отсутствуют</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>Загрузка...</MudText>
-    </LoadingContent>
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            @context?.Offer?.GetName()
+        </MudTd>
+        <MudTd DataLabel="Price">
+            @(context.Offer!.Price)
+        </MudTd>
+        <MudTd DataLabel="Quantity">
+            <MudNumericField @bind-Value="context!.Quantity" Required Min="1" />
+        </MudTd>
+    </RowEditingTemplate>
     <PagerContent>
         <MudTablePager />
     </PagerContent>
+    <EditButtonContent Context="button">
+        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
+    </EditButtonContent>
 </MudTable>

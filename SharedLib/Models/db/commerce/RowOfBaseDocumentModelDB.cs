@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// RowOfBaseDocumentModelDB
 /// </summary>
-public class RowOfBaseDocumentModelDB
+public abstract class RowOfBaseDocumentModelDB
 {
     /// <summary>
     /// Идентификатор/Key

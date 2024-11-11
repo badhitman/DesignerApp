@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// Сервис хранения файлов и доступа к ним
+/// Warehouse documents select request
 /// </summary>
-public interface IStorageFilesService
+public class WarehouseDocumentsSelectRequestModel : DocumentsSelectRequestBaseModel
 {
 
 }

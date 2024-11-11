@@ -1,5 +1,5 @@
 ﻿@using MudBlazor
-@inherits BlazorBusyComponentBaseModel
+@inherits OffersTableBaseComponent
 
 <MudTable Hover="true"
           ReadOnly="ReadOnly"
@@ -12,7 +12,7 @@
           CancelEditTooltip="Отменить изменение"
           CommitEditTooltip="Сохранить изменения"
           RowEditCancel="RowEditCancelHandler"
-          EditTrigger="@editTrigger">
+          EditTrigger="@EditTrigger">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">
@@ -31,7 +31,7 @@
         @if (!ReadOnly)
         {
             <div class="ms-3">
-                <AddRowToOrderDocumentComponent @ref="addingDomRef" AllOffers="allOffers" CurrentTab="CurrentTab" AddingOfferHandler="AddingOfferAction" />
+                <AddRowToOrderDocumentComponent @ref="addingDomRef" AllOffers="allOffers" CurrentRows="CurrentTab.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
             </div>
         }
     </ToolBarContent>
@@ -41,7 +41,7 @@
         <col />
         <col />
         <col style="width:50px;" />
-        @if (editTrigger == TableEditTrigger.EditButton)
+        @if (EditTrigger == TableEditTrigger.EditButton)
         {
             <col style="width:50px;" />
         }
@@ -66,7 +66,7 @@
         <MudTd DataLabel="Sum">
             @(context!.Quantity * context.Offer!.Price)
         </MudTd>
-        <MudTd><MudIconButton OnClick="() => DeleteRow(context)" title="Удалить строку" Icon="@Icons.Material.Filled.Delete" aria-label="delete" Size="Size.Small" /></MudTd>
+        <MudTd><MudIconButton OnClick="() => DeleteRow(context.OfferId)" title="Удалить строку" Icon="@Icons.Material.Filled.Delete" aria-label="delete" Size="Size.Small" /></MudTd>
     </RowTemplate>
     <RowEditingTemplate>
         <MudTd DataLabel="Name">

@@ -2,22 +2,16 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
-using System.Globalization;
 
 namespace Transmission.Receives.commerce;
 
 /// <summary>
 /// StatusChangeReceive
 /// </summary>
-public class StatusChangeReceive(
-    IDbContextFactory<CommerceContext> commerceDbFactory,
-    ILogger<StatusChangeReceive> LoggerRepo)
-    : IResponseReceive<StatusChangeRequestModel?, bool?>
+public class StatusChangeReceive(ICommerceService commRepo, ILogger<StatusChangeReceive> LoggerRepo) : IResponseReceive<StatusChangeRequestModel?, bool?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.StatusChangeOrderReceive;
@@ -27,15 +21,11 @@ public class StatusChangeReceive(
         ArgumentNullException.ThrowIfNull(req);
         LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
 
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        TResponseModel<bool?> res = new()
+        TResponseModel<bool> res = await commRepo.StatusChange(req);
+        return new()
         {
-            Response = await context
-                    .OrdersDocuments
-                    .Where(x => x.HelpdeskId == req.IssueId)
-                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.StatusDocument, req.Step)) != 0,
+            Messages = res.Messages,
+            Response = res.Response,
         };
-
-        return res;
     }
 }
