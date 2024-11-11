@@ -21,7 +21,7 @@ public partial class WarehouseEditingComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required int Id { get; set; }
 
-    AddRowToOrderDocumentComponent? addingDomRef;
+    //AddRowToOrderDocumentComponent? addingDomRef;
 
     void AddingOfferAction(OfferGoodActionModel off)
     {

@@ -14,8 +14,7 @@ namespace BlazorWebLib.Components.Warehouse;
 public partial class WarehouseMainComponent : BlazorBusyComponentBaseModel
 {
     private MudTable<WarehouseDocumentModelDB>? table;
-
-    private int totalItems;
+        
     private string? searchString = null;
 
     /// <summary>
@@ -24,7 +23,7 @@ public partial class WarehouseMainComponent : BlazorBusyComponentBaseModel
     private async Task<TableData<WarehouseDocumentModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         
-        return new TableData<WarehouseDocumentModelDB>() { TotalItems = totalItems, Items = [] };
+        return new TableData<WarehouseDocumentModelDB>() { TotalItems = 0, Items = [] };
     }
 
     private void OnSearch(string text)
