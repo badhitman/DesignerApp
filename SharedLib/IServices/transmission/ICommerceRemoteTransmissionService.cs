@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// E-Commerce Remote Transmission Service
 /// </summary>
-public interface ICommerceRemoteTransmissionService
+public partial interface ICommerceRemoteTransmissionService
 {
     /// <summary>
     /// StatusOrderChange
@@ -28,11 +28,6 @@ public interface ICommerceRemoteTransmissionService
     /// Обновить/создать платёжный документ
     /// </summary>
     public Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment);
-
-    /// <summary>
-    /// OrderUpdate
-    /// </summary>
-    public Task<TResponseModel<int>> OrderUpdate(OrderDocumentModelDB order);
 
     /// <summary>
     /// PricesRulesGetForOffers
@@ -78,6 +73,11 @@ public interface ICommerceRemoteTransmissionService
     /// OrdersRead
     /// </summary>
     public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(int[] orders_ids);
+
+    /// <summary>
+    /// OrderUpdate
+    /// </summary>
+    public Task<TResponseModel<int>> OrderUpdate(OrderDocumentModelDB order);
 
     /// <summary>
     /// Подбор заказов (поиск по параметрам)

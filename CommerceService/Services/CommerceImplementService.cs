@@ -79,67 +79,18 @@ public class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)
+    public async Task<TResponseModel<bool>> StatusChange(StatusChangeRequestModel req)
     {
-        if (req.PageSize < 10)
-            req.PageSize = 10;
-
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-
-        IQueryable<OrderDocumentModelDB> q = context
-            .OrdersDocuments
-            .AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(req.Payload.SenderActionUserId) && !req.Payload.SenderActionUserId.Equals(GlobalStaticConstants.Roles.System))
-            q = q.Where(x => x.AuthorIdentityUserId == req.Payload.SenderActionUserId);
-
-        if (req.Payload.Payload.OrganizationFilter.HasValue && req.Payload.Payload.OrganizationFilter.Value != 0)
-            q = q.Where(x => x.OrganizationId == req.Payload.Payload.OrganizationFilter);
-
-        if (req.Payload.Payload.AddressForOrganizationFilter.HasValue && req.Payload.Payload.AddressForOrganizationFilter.Value != 0)
-            q = q.Where(x => context.TabsAddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.AddressOrganizationId == req.Payload.Payload.AddressForOrganizationFilter));
-
-        if (req.Payload.Payload.OfferFilter.HasValue && req.Payload.Payload.OfferFilter.Value != 0)
-            q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.OfferId == req.Payload.Payload.OfferFilter));
-
-        if (req.Payload.Payload.GoodsFilter.HasValue && req.Payload.Payload.GoodsFilter.Value != 0)
-            q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.GoodsId == req.Payload.Payload.GoodsFilter));
-
-        if (req.Payload.Payload.AfterDateUpdate is not null)
-            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.Payload.AfterDateUpdate));
-
-        if (req.Payload.Payload.StatusesFilter is not null && req.Payload.Payload.StatusesFilter.Length != 0)
-            q = q.Where(x => req.Payload.Payload.StatusesFilter.Any(y => y == x.StatusDocument));
-
-        IOrderedQueryable<OrderDocumentModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-           ? q.OrderBy(x => x.CreatedAtUTC)
-           : q.OrderByDescending(x => x.CreatedAtUTC);
-
-        IQueryable<OrderDocumentModelDB> pq = oq
-            .Skip(req.PageNum * req.PageSize)
-            .Take(req.PageSize);
-
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = pq
-            .Include(x => x.Organization)
-            .Include(x => x.AddressesTabs!)
-            .ThenInclude(x => x.AddressOrganization)
-            .Include(x => x.AddressesTabs!)
-            .ThenInclude(x => x.Rows!)
-            .ThenInclude(x => x.Offer!)
-            .ThenInclude(x => x.Goods);
-
-        return new()
+        TResponseModel<bool> res = new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = req.Payload.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
-            },
+            Response = await context
+                    .OrdersDocuments
+                    .Where(x => x.HelpdeskId == req.IssueId)
+                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.StatusDocument, req.Step)) != 0,
         };
+
+        return res;
     }
 
     /// <inheritdoc/>
@@ -156,12 +107,11 @@ public class CommerceImplementService(
         }
         string msg, waMsg;
         DateTime dtu = DateTime.UtcNow;
-        req.CreatedAtUTC = dtu;
         req.LastAtUpdatedUTC = dtu;
-
         req.PrepareForSave();
         if (req.Id < 1)
         {
+            req.CreatedAtUTC = dtu;
             TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);
 
             using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context.Database.BeginTransaction();
@@ -313,33 +263,67 @@ public class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB req)
+    public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)
     {
-        TResponseModel<int> res = new() { Response = 0 };
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        DateTime dtu = DateTime.UtcNow;
 
-        await context.OrdersDocuments
-                .Where(x => x.Id == req.OrderDocumentId)
-                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+        IQueryable<OrderDocumentModelDB> q = context
+            .OrdersDocuments
+            .AsQueryable();
 
-        if (req.Id < 1)
+        if (!string.IsNullOrWhiteSpace(req.Payload.SenderActionUserId) && !req.Payload.SenderActionUserId.Equals(GlobalStaticConstants.Roles.System))
+            q = q.Where(x => x.AuthorIdentityUserId == req.Payload.SenderActionUserId);
+
+        if (req.Payload.Payload.OrganizationFilter.HasValue && req.Payload.Payload.OrganizationFilter.Value != 0)
+            q = q.Where(x => x.OrganizationId == req.Payload.Payload.OrganizationFilter);
+
+        if (req.Payload.Payload.AddressForOrganizationFilter.HasValue && req.Payload.Payload.AddressForOrganizationFilter.Value != 0)
+            q = q.Where(x => context.TabsAddressesForOrders.Any(y => y.OrderDocumentId == x.Id && y.AddressOrganizationId == req.Payload.Payload.AddressForOrganizationFilter));
+
+        if (req.Payload.Payload.OfferFilter.HasValue && req.Payload.Payload.OfferFilter.Value != 0)
+            q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.OfferId == req.Payload.Payload.OfferFilter));
+
+        if (req.Payload.Payload.GoodsFilter.HasValue && req.Payload.Payload.GoodsFilter.Value != 0)
+            q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.GoodsId == req.Payload.Payload.GoodsFilter));
+
+        if (req.Payload.Payload.AfterDateUpdate is not null)
+            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.Payload.AfterDateUpdate));
+
+        if (req.Payload.Payload.StatusesFilter is not null && req.Payload.Payload.StatusesFilter.Length != 0)
+            q = q.Where(x => req.Payload.Payload.StatusesFilter.Any(y => y == x.StatusDocument));
+
+        IOrderedQueryable<OrderDocumentModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+           ? q.OrderBy(x => x.CreatedAtUTC)
+           : q.OrderByDescending(x => x.CreatedAtUTC);
+
+        IQueryable<OrderDocumentModelDB> pq = oq
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize);
+
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = pq
+            .Include(x => x.Organization)
+            .Include(x => x.AddressesTabs!)
+            .ThenInclude(x => x.AddressOrganization)
+            .Include(x => x.AddressesTabs!)
+            .ThenInclude(x => x.Rows!)
+            .ThenInclude(x => x.Offer!)
+            .ThenInclude(x => x.Goods);
+
+        return new()
         {
-            await context.AddAsync(req);
-            await context.SaveChangesAsync();
-            res.AddSuccess("Товар добавлен к заказу");
-            res.Response = req.Id;
-            return res;
-        }
-
-        res.Response = await context.RowsOfOrdersDocuments
-            .Where(x => x.Id == req.Id)
-            .ExecuteUpdateAsync(set => set
-            .SetProperty(p => p.Amount, req.Amount)
-            .SetProperty(p => p.Quantity, req.Quantity));
-
-        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
-        return res;
+            Response = new()
+            {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = req.Payload.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
+            },
+        };
     }
 
     /// <inheritdoc/>
@@ -372,47 +356,188 @@ public class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusChange(StatusChangeRequestModel req)
+    public async Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB req)
     {
+        TResponseModel<int> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        TResponseModel<bool> res = new()
-        {
-            Response = await context
-                    .OrdersDocuments
-                    .Where(x => x.HelpdeskId == req.IssueId)
-                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.StatusDocument, req.Step)) != 0,
-        };
+        DateTime dtu = DateTime.UtcNow;
 
+        await context.OrdersDocuments
+                .Where(x => x.Id == req.OrderDocumentId)
+                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+        if (req.Id < 1)
+        {
+            await context.AddAsync(req);
+            await context.SaveChangesAsync();
+            res.AddSuccess("Товар добавлен к заказу");
+            res.Response = req.Id;
+            return res;
+        }
+
+        res.Response = await context.RowsOfOrdersDocuments
+            .Where(x => x.Id == req.Id)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.Amount, req.Amount)
+            .SetProperty(p => p.Quantity, req.Quantity));
+
+        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
         return res;
     }
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> RowForWarehouseDocumentUpdate(RowOfWarehouseDocumentModelDB req)
     {
-        throw new NotImplementedException();
+
+        TResponseModel<int> res = new() { Response = 0 };
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        DateTime dtu = DateTime.UtcNow;
+
+        await context.WarehouseDocuments
+                .Where(x => x.Id == req.WarehouseDocumentId)
+                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+        if (req.Id < 1)
+        {
+            await context.AddAsync(req);
+            await context.SaveChangesAsync();
+            res.AddSuccess("Товар добавлен к документу");
+            res.Response = req.Id;
+            return res;
+        }
+
+        res.Response = await context.RowsOfWarehouseDocuments
+            .Where(x => x.Id == req.Id)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.Quantity, req.Quantity));
+
+        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
+        return res;
     }
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> RowsForWarehouseDocumentDelete(int[] req)
     {
-        throw new NotImplementedException();
-    }
+        TResponseModel<bool> res = new() { Response = true };
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-    /// <inheritdoc/>
-    public async Task<TResponseModel<WarehouseDocumentModelDB[]>> WarehouseDocumentsRead(int[] req)
-    {
-        throw new NotImplementedException();
+        int[] documents_ids = await context
+            .WarehouseDocuments
+            .Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id))
+            .Select(x => x.Id)
+            .ToArrayAsync();
+
+        if (documents_ids.Length == 0)
+        {
+            res.AddError($"Документы не найдены");
+            return res;
+        }
+
+        DateTime dtu = DateTime.UtcNow;
+
+        await context.WarehouseDocuments
+                .Where(x => documents_ids.Any(y => y == x.Id))
+                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+        res.Response = await context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0;
+        res.AddSuccess("Команда удаления выполнена");
+        return res;
     }
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>>> WarehouseDocumentsSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req)
     {
-        throw new NotImplementedException();
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        IQueryable<WarehouseDocumentModelDB> q = context
+            .WarehouseDocuments
+            .AsQueryable();
+
+        if (req.Payload.OfferFilter.HasValue && req.Payload.OfferFilter.Value != 0)
+            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.OfferId == req.Payload.OfferFilter));
+
+        if (req.Payload.GoodsFilter.HasValue && req.Payload.GoodsFilter.Value != 0)
+            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.GoodsId == req.Payload.GoodsFilter));
+
+        if (req.Payload.AfterDateUpdate is not null)
+            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
+
+        IOrderedQueryable<WarehouseDocumentModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+           ? q.OrderBy(x => x.CreatedAtUTC)
+           : q.OrderByDescending(x => x.CreatedAtUTC);
+
+        IQueryable<WarehouseDocumentModelDB> pq = oq
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize);
+
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<WarehouseDocumentModelDB, GoodsModelDB?> inc_query = pq
+            .Include(x => x.Rows!)
+            .ThenInclude(x => x.Offer!)
+            .ThenInclude(x => x.Goods);
+
+        return new()
+        {
+            Response = new()
+            {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
+            },
+        };
     }
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> WarehouseDocumentUpdate(WarehouseDocumentModelDB req)
     {
-        throw new NotImplementedException();
+        TResponseModel<int> res = new() { Response = 0 };
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        DateTime dtu = DateTime.UtcNow;
+        if (req.Id < 1)
+        {
+            req.CreatedAtUTC = dtu;
+            req.LastAtUpdatedUTC = dtu;
+            await context.AddAsync(req);
+            await context.SaveChangesAsync();
+            res.Response = req.Id;
+        }
+        else
+        {
+            res.Response = await context.WarehouseDocuments
+                .Where(x => x.Id == req.Id)
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.Name, req.Name)
+                .SetProperty(p => p.Description, req.Description)
+                .SetProperty(p => p.DeliveryData, req.DeliveryData)
+                .SetProperty(p => p.IsDisabled, req.IsDisabled)
+                .SetProperty(p => p.LastAtUpdatedUTC, dtu));
+        }
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<WarehouseDocumentModelDB[]>> WarehouseDocumentsRead(int[] req)
+    {
+        TResponseModel<WarehouseDocumentModelDB[]> res = new();
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        IQueryable<WarehouseDocumentModelDB> q = context
+            .WarehouseDocuments
+            .Where(x => req.Any(y => x.Id == y));
+
+        res.Response = await q
+            .Include(x => x.Rows!)
+            .ThenInclude(x => x.Offer!)
+            .ThenInclude(x => x.Goods)
+            .ToArrayAsync();
+
+        return res;
     }
 }

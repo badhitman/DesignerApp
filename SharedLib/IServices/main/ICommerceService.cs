@@ -34,6 +34,7 @@ public interface ICommerceService
     /// </summary>
     public Task<TResponseModel<WarehouseDocumentModelDB[]>> WarehouseDocumentsRead(int[] req);
 
+
     /// <summary>
     /// Status change
     /// </summary>

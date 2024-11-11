@@ -9,7 +9,7 @@ namespace RemoteCallLib;
 /// <summary>
 /// TransmissionCommerceService
 /// </summary>
-public class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerceRemoteTransmissionService
+public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerceRemoteTransmissionService
 {
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> AddressOrganizationDelete(int req)

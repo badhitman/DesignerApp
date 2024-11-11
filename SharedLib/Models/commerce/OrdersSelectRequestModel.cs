@@ -15,11 +15,6 @@ public class OrdersSelectRequestModel : DocumentsSelectRequestBaseModel
     public StatusesDocumentsEnum[]? StatusesFilter { get; set; }
 
     /// <summary>
-    /// Дата обновления должна быть не меньше указанной
-    /// </summary>
-    public DateTime? AfterDateUpdate { get; set; }
-
-    /// <summary>
     /// Фильтр по адресам организаций (вкладки в заказах)
     /// </summary>
     public int? AddressForOrganizationFilter { get; set; }
