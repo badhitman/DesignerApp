@@ -2,11 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.AspNetCore.Components;
-using SharedLib;
 using System.Net.Mail;
+using BlazorLib;
+using SharedLib;
 
 namespace BlazorWebLib.Components.Users;
 
@@ -44,7 +44,14 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
     /// RolesManageKit
     /// </summary>
     [Parameter]
-    public IEnumerable<string>? RolesManageKit {  get; set; }
+    public IEnumerable<string>? RolesManageKit { get; set; }
+
+    /// <summary>
+    /// RolesMarkers
+    /// </summary>
+    [Parameter]
+    public EntryAltModel[]? RolesMarkers { get; set; }
+
 
     PaginationState pagination = new() { ItemsPerPage = 15 };
     string nameFilter = string.Empty;

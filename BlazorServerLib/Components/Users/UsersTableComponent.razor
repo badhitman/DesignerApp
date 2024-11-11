@@ -63,7 +63,7 @@
                     }
                     else
                     {
-                        <span @onclick="() => SetUserLock(context.UserId, string.IsNullOrWhiteSpace(lock_user_css_link))" title="разблокировать пользователя" class="my-btn mx-2 badge text-bg-success">
+                        <span @onclick="() => SetUserLock(context.UserId, string.IsNullOrWhiteSpace(lock_user_css_link))" title="разблокировать пользователя" class="my-btn mx-2 badge text-bg-success rounded-pill">
                             разблокировать
                         </span>
                     }
@@ -88,6 +88,15 @@
                 <TemplateColumn Title="Claims" Align="Align.Right">
                     @context.ClaimsAsString(";")
                 </TemplateColumn>
+            }
+            @if (RolesMarkers is not null && RolesMarkers.Length != 0)
+            {
+                foreach (EntryAltModel ch in RolesMarkers)
+                {
+                    <TemplateColumn Title="@ch.Name" Align="Align.Right">
+                        @(context.Roles?.Contains(ch.Id) == true ? "ДА" : "")
+                    </TemplateColumn>
+                }
             }
         </QuickGrid>
         <Paginator State="@pagination" />
