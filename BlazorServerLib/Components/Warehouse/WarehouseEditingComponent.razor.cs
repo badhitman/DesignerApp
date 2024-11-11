@@ -4,6 +4,7 @@
 
 using BlazorWebLib.Components.Commerce;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Warehouse;
@@ -13,6 +14,12 @@ namespace BlazorWebLib.Components.Warehouse;
 /// </summary>
 public partial class WarehouseEditingComponent : OffersTableBaseComponent
 {
+    [Inject]
+    ICommerceRemoteTransmissionService commRepo { get; set; } = default!;
+
+    [Inject]
+    NavigationManager navRepo { get; set; } = default!;
+
     /// <summary>
     /// Id
     /// </summary>
@@ -21,8 +28,41 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
 
 
     WarehouseDocumentModelDB CurrentDocument = new() { DeliveryData = DateTime.Now, Name = "Новый", Rows = [] };
+    WarehouseDocumentModelDB editDocument = new() { DeliveryData = DateTime.Now, Name = "Новый", Rows = [] };
+
     AddRowToOrderDocumentComponent? addingDomRef;
     RowOfWarehouseDocumentModelDB? elementBeforeEdit;
+
+    bool CanSave => Id < 1 || !CurrentDocument.Equals(editDocument);
+
+    async Task SaveDocument()
+    {
+        await SetBusy();
+        TResponseModel<int> res = await commRepo.WarehouseUpdate(editDocument);
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (editDocument.Id < 1 && res.Response > 0)
+        {
+            navRepo.NavigateTo($"/warehouse/editing/{res.Response}");
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (Id < 1)
+            return;
+
+        await SetBusy();
+        TResponseModel<WarehouseDocumentModelDB[]> res = await commRepo.WarehousesRead([Id]);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (res.Success() && res.Response is not null)
+            CurrentDocument = res.Response.First();
+
+        editDocument = GlobalTools.CreateDeepCopy(CurrentDocument)!;
+        await SetBusy(false);
+    }
 
     /// <inheritdoc/>
     protected override void AddingOfferAction(OfferGoodActionModel off)

@@ -14,7 +14,7 @@ public partial class TransmissionCommerceService
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> RowForWarehouseUpdate(RowOfWarehouseDocumentModelDB req)
-        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.WarehouseDocumentUpdateCommerceReceive, req);
+        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.RowForWarehouseDocumentUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<WarehouseDocumentModelDB[]>> WarehousesRead(int[] ids)
@@ -22,7 +22,7 @@ public partial class TransmissionCommerceService
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> WarehouseUpdate(WarehouseDocumentModelDB document)
-        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.RowForWarehouseDocumentUpdateCommerceReceive, document);
+        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.WarehouseDocumentUpdateCommerceReceive, document);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>>> WarehousesSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req)

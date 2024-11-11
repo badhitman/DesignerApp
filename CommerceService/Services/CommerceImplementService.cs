@@ -385,6 +385,7 @@ public class CommerceImplementService(
         return res;
     }
 
+
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> RowForWarehouseDocumentUpdate(RowOfWarehouseDocumentModelDB req)
     {
@@ -496,6 +497,13 @@ public class CommerceImplementService(
     public async Task<TResponseModel<int>> WarehouseDocumentUpdate(WarehouseDocumentModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
+        ValidateReportModel ck = GlobalTools.ValidateObject(req);
+        if (!ck.IsValid)
+        {
+            res.Messages.InjectException(ck.ValidationResults);
+            return res;
+        }
+
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         DateTime dtu = DateTime.UtcNow;
