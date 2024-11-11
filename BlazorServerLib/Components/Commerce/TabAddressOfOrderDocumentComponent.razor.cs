@@ -127,7 +127,7 @@ public partial class TabAddressOfOrderDocumentComponent : BlazorBusyComponentBas
         await SetBusy();
         
         TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
-        IsBusyProgress = false;
+        await SetBusy(false);
         if (res.Success() && res.Response?.Response is not null && res.Response.Response.Count != 0)
         {
             allOffers!.AddRange(res.Response.Response);
