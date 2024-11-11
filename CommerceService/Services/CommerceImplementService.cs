@@ -503,7 +503,7 @@ public class CommerceImplementService(
             res.Messages.InjectException(ck.ValidationResults);
             return res;
         }
-
+        req.DeliveryData = req.DeliveryData.ToUniversalTime();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         DateTime dtu = DateTime.UtcNow;

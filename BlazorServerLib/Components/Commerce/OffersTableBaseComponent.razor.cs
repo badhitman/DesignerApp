@@ -48,10 +48,11 @@ public abstract class OffersTableBaseComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Происходит, когда изменения фиксируются для редактируемой строки.
     /// </summary>
-    protected void RowEditCommitHandler(object element)
+    protected virtual void RowEditCommitHandler(object element)
     {
         if (DocumentUpdateHandler is not null)
             DocumentUpdateHandler();
+
     }
 
     /// <inheritdoc/>

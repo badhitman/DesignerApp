@@ -34,6 +34,18 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     RowOfWarehouseDocumentModelDB? elementBeforeEdit;
 
     bool CanSave => Id < 1 || !CurrentDocument.Equals(editDocument);
+    /// <inheritdoc/>
+
+    protected override async void RowEditCommitHandler(object element)
+    {
+        if (element is RowOfWarehouseDocumentModelDB _el)
+        {
+
+        }
+
+
+        base.RowEditCommitHandler(element);
+    }
 
     async Task SaveDocument()
     {
@@ -54,6 +66,11 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         if (Id < 1)
             return;
 
+        await ReadDocument();
+    }
+
+    async Task ReadDocument()
+    {
         await SetBusy();
         TResponseModel<WarehouseDocumentModelDB[]> res = await commRepo.WarehousesRead([Id]);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -65,12 +82,13 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     }
 
     /// <inheritdoc/>
-    protected override void AddingOfferAction(OfferGoodActionModel off)
+    protected override async void AddingOfferAction(OfferGoodActionModel off)
     {
         CurrentDocument.Rows ??= [];
         int exist_row = CurrentDocument.Rows.FindIndex(x => x.OfferId == off.Id);
         if (exist_row < 0)
-            CurrentDocument.Rows.Add(new()
+        {
+            RowOfWarehouseDocumentModelDB _newRow = new()
             {
                 Goods = off.Goods,
                 GoodsId = off.GoodsId,
@@ -79,9 +97,25 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
                 WarehouseDocument = CurrentDocument,
                 WarehouseDocumentId = CurrentDocument.Id,
                 Quantity = off.Quantity,
-            });
+            };
+
+            await SetBusy();
+            TResponseModel<int> res = await commRepo.RowForWarehouseUpdate(_newRow);
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+
+            if (!res.Success())
+                return;
+
+            await ReadDocument();
+            addingDomRef?.StateHasChangedCall();
+            if (DocumentUpdateHandler is not null)
+                DocumentUpdateHandler();
+
+        }
         else
+        {
             CurrentDocument.Rows[exist_row].Quantity = +off.Quantity;
+        }
 
         if (DocumentUpdateHandler is not null)
             DocumentUpdateHandler();
@@ -102,13 +136,32 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     }
 
     /// <inheritdoc/>
-    protected override void DeleteRow(int offerId)
+    protected override async void DeleteRow(int offerId)
     {
         CurrentDocument.Rows ??= [];
-        CurrentDocument.Rows.RemoveAll(x => x.OfferId == offerId);
+        RowOfWarehouseDocumentModelDB? currentRow = CurrentDocument.Rows.FirstOrDefault(x => x.OfferId == offerId);
+        if (currentRow is null)
+        {
+            await ReadDocument();
+            return;
+        }
+
+        if (currentRow.Id < 1)
+        {
+            CurrentDocument.Rows.RemoveAll(x => x.OfferId == offerId);
+            return;
+        }
+
+        await SetBusy();
+        TResponseModel<bool> res = await commRepo.RowsForOrderDelete([currentRow.Id]);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+
+        if (!res.Success())
+            return;
+
+        await ReadDocument();
+        addingDomRef?.StateHasChangedCall();
         if (DocumentUpdateHandler is not null)
             DocumentUpdateHandler();
-
-        addingDomRef?.StateHasChangedCall();
     }
 }

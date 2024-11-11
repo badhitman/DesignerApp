@@ -66,3 +66,5 @@ systemctl start comm.app.service web.app.service bus.app.service tg.app.service 
 
 journalctl -f -u web.app.service
 journalctl -f -u docker-compose-app.service
+
+systemctl status constructor.app.service
