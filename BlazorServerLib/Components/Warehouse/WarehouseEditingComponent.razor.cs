@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
-using BlazorWebLib.Components.Commerce;
 
 namespace BlazorWebLib.Components.Warehouse;
 

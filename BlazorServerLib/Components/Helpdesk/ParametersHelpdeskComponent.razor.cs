@@ -11,5 +11,5 @@ namespace BlazorWebLib.Components.Helpdesk;
 /// </summary>
 public partial class ParametersHelpdeskComponent
 {
-    static EntryAltModel[] showMarkersRoles = [new() { Id = GlobalStaticConstants.Roles.CommerceClient, Name = "Покупатель" }];
+    static readonly EntryAltModel[] showMarkersRoles = [new() { Id = GlobalStaticConstants.Roles.CommerceClient, Name = "Покупатель" }];
 }
