@@ -48,7 +48,7 @@ public class OrganizationUpdateReceive(IDbContextFactory<CommerceContext> commer
                     .OrganizationsUsers
                     .Where(x => x.UserPersonIdentityId == req.SenderActionUserId && x.OrganizationId == duple.Id);
 
-                if (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && req.SenderActionUserId != GlobalStaticConstants.Roles.System && !sq.Any())
+                if (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && req.SenderActionUserId != GlobalStaticConstants.Roles.System && !await sq.AnyAsync())
                 {
                     await context.AddAsync(new UserOrganizationModelDB()
                     {
