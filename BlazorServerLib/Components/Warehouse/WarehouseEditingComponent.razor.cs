@@ -90,11 +90,8 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         {
             RowOfWarehouseDocumentModelDB _newRow = new()
             {
-                Goods = off.Goods,
                 GoodsId = off.GoodsId,
-                Offer = off,
                 OfferId = off.Id,
-                WarehouseDocument = CurrentDocument,
                 WarehouseDocumentId = CurrentDocument.Id,
                 Quantity = off.Quantity,
             };
