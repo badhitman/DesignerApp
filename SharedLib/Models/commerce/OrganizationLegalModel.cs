@@ -43,8 +43,7 @@ public class OrganizationLegalModel : EntryDescriptionSwitchableModel
     /// <summary>
     /// КПП
     /// </summary>
-    [Required]
-    public required string KPP { get; set; }
+    public string? KPP { get; set; }
 
     /// <summary>
     /// ОГРН
