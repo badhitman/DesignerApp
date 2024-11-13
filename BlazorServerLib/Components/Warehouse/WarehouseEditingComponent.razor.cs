@@ -27,8 +27,8 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     public required int Id { get; set; }
 
 
-    WarehouseDocumentModelDB CurrentDocument = new() { DeliveryData = DateTime.Now, Name = "Новый", Rows = [] };
-    WarehouseDocumentModelDB editDocument = new() { DeliveryData = DateTime.Now, Name = "Новый", Rows = [] };
+    WarehouseDocumentModelDB CurrentDocument = new() { DeliveryData = DateTime.Now, Name = "Новый", NormalizedUpperName = "НОВЫЙ", Rows = [] };
+    WarehouseDocumentModelDB editDocument = new() { DeliveryData = DateTime.Now, Name = "Новый", NormalizedUpperName = "НОВЫЙ", Rows = [] };
 
     AddRowToOrderDocumentComponent? addingDomRef;
     RowOfWarehouseDocumentModelDB? elementBeforeEdit;

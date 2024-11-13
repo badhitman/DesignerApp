@@ -436,7 +436,6 @@ public class CommerceImplementService(
         }
 
         DateTime dtu = DateTime.UtcNow;
-
         await context.WarehouseDocuments
                 .Where(x => documents_ids.Any(y => y == x.Id))
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
@@ -457,6 +456,9 @@ public class CommerceImplementService(
         IQueryable<WarehouseDocumentModelDB> q = context
             .WarehouseDocuments
             .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
+            q = q.Where(x => x.NormalizedUpperName.Contains(req.Payload.SearchQuery.ToUpper()));
 
         if (req.Payload.OfferFilter.HasValue && req.Payload.OfferFilter.Value != 0)
             q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.OfferId == req.Payload.OfferFilter));
@@ -505,6 +507,8 @@ public class CommerceImplementService(
             return res;
         }
         req.DeliveryData = req.DeliveryData.ToUniversalTime();
+        req.Name = req.Name.Trim();
+        req.NormalizedUpperName = req.Name.ToUpper();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         DateTime dtu = DateTime.UtcNow;

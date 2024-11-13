@@ -10,9 +10,14 @@ namespace SharedLib;
 /// <summary>
 /// WarehouseDocumentModelDB
 /// </summary>
-[Index(nameof(DeliveryData))]
+[Index(nameof(DeliveryData)), Index(nameof(NormalizedUpperName))]
 public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
 {
+    /// <summary>
+    /// NormalizedUpperName
+    /// </summary>
+    public required string NormalizedUpperName { get; set; }
+
     /// <summary>
     /// Дата доставки
     /// </summary>
