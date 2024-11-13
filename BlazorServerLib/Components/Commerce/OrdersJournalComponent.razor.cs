@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
+using System.Globalization;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -46,6 +47,7 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
     public int? OfferFilter { get; set; }
 
 
+    static CultureInfo cultureInfo = new CultureInfo("ru-RU");
     List<OrderDocumentModelDB> documentsPartData = [];
     readonly List<IssueHelpdeskModelDB> IssuesCacheDump = [];
 

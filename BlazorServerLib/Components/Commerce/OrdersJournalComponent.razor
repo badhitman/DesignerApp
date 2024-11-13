@@ -20,7 +20,6 @@
         <MudTd DataLabel="Создан">
             @{
                 DateTime msk_dt = context.CreatedAtUTC.GetCustomTime();
-                CultureInfo cultureInfo = new CultureInfo("ru-RU");
             }
             @if (hd_doc is null)
             {
