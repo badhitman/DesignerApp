@@ -2,16 +2,16 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Caching.Memory;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Globalization;
+using System.Net.Http.Json;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Caching.Memory;
-using System.Net.Http.Json;
 
 namespace HelpdeskService;
 
@@ -685,6 +685,8 @@ public class HelpdeskImplementService(
 
                     IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
 
+                    List<Task> tasks = [];
+                    TResponseModel<string?>? wappiToken = null, wappiProfileId = null;
                     string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
                     TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
                     if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
@@ -700,9 +702,45 @@ public class HelpdeskImplementService(
                                 });
                             }
                             loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
-                            await webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg });
+                            tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }));
+
+                            if (u.TelegramId.HasValue)
+                            {
+                                SendTextMessageTelegramBotModel tg_req = new()
+                                {
+                                    From = subject_email,
+                                    Message = msg.Replace("<p>", "\n").Replace("</p>", ""),
+                                    UserTelegramId = u.TelegramId.Value,
+                                    ParseModeName = "html"
+                                };
+                                tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req));
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
+                            {
+                                wappiToken ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
+                                wappiProfileId ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
+
+                                if (wappiToken.Success() && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId.Success() && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
+                                {
+                                    tasks.Add(Task.Run(async () =>
+                                    {
+                                        using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Wappi.ToString());
+                                        if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
+                                            client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
+
+                                        using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = req.Payload.Payload.Description, Recipient = user.PhoneNumber });
+                                        string rj = await response.Content.ReadAsStringAsync();
+                                        SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
+                                    }));
+                                }
+                            }
+
                         }
                     }
+
+                    if (tasks.Count != 0)
+                        await Task.WhenAll(tasks);
                 }
 
             }

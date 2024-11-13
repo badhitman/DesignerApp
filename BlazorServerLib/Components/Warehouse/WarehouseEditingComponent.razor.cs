@@ -34,18 +34,16 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     RowOfWarehouseDocumentModelDB? elementBeforeEdit;
 
     bool CanSave => Id < 1 || !CurrentDocument.Equals(editDocument);
-    /// <inheritdoc/>
 
+    /// <inheritdoc/>
     protected override async void RowEditCommitHandler(object element)
     {
         if (element is RowOfWarehouseDocumentModelDB _el)
         {
             TResponseModel<int> res = await commRepo.RowForWarehouseUpdate(_el);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
-            if (res.Success())
-                await ReadDocument();
         }
-
+        await ReadDocument();
         base.RowEditCommitHandler(element);
     }
 
@@ -56,9 +54,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (editDocument.Id < 1 && res.Response > 0)
-        {
             navRepo.NavigateTo($"/warehouse/editing/{res.Response}");
-        }
     }
 
     /// <inheritdoc/>
@@ -106,7 +102,6 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
             if (!res.Success())
                 return;
 
-            await ReadDocument();
             addingDomRef?.StateHasChangedCall();
             if (DocumentUpdateHandler is not null)
                 DocumentUpdateHandler();
@@ -120,6 +115,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
             await SetBusy(false);
         }
 
+        await ReadDocument();
         if (DocumentUpdateHandler is not null)
             DocumentUpdateHandler();
 
@@ -156,9 +152,9 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         }
 
         await SetBusy();
-        TResponseModel<bool> res = await commRepo.RowsForOrderDelete([currentRow.Id]);
+        TResponseModel<bool> res = await commRepo.RowsForWarehouseDelete([currentRow.Id]);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-
+        await SetBusy(false);
         if (!res.Success())
             return;
 

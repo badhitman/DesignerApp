@@ -78,10 +78,7 @@ else
             </RowTemplate>
             <RowEditingTemplate>
                 <MudTd DataLabel="Name">
-                    @context?.Offer?.GetName()
-                </MudTd>
-                <MudTd DataLabel="Price">
-                    @(context.Offer!.Price)
+                    @context?.Offer?.GetName() // @(context?.Quantity * context?.Offer?.Price) руб.
                 </MudTd>
                 <MudTd DataLabel="Quantity">
                     <MudNumericField @bind-Value="context!.Quantity" Required Min="1" />
