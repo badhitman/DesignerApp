@@ -419,13 +419,14 @@ public class CommerceImplementService(
             await context.SaveChangesAsync();
             res.AddSuccess("Товар добавлен к документу");
             res.Response = req.Id;
-            return res;
         }
-
-        res.Response = await context.RowsOfWarehouseDocuments
-            .Where(x => x.Id == req.Id)
-            .ExecuteUpdateAsync(set => set
-            .SetProperty(p => p.Quantity, req.Quantity));
+        else
+        {
+            res.Response = await context.RowsOfWarehouseDocuments
+                       .Where(x => x.Id == req.Id)
+                       .ExecuteUpdateAsync(set => set
+                       .SetProperty(p => p.Quantity, req.Quantity));
+        }
 
         context.Remove(locker);
         await context.SaveChangesAsync();
