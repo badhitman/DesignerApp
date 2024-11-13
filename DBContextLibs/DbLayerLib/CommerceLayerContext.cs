@@ -71,17 +71,22 @@ public partial class CommerceLayerContext : DbContext
     public DbSet<WarehouseDocumentModelDB> WarehouseDocuments { get; set; }
 
     /// <summary>
-    /// RowsOfWarehouseDocuments
+    /// Rows of warehouse documents
     /// </summary>
     public DbSet<RowOfWarehouseDocumentModelDB> RowsOfWarehouseDocuments { get; set; }
 
     /// <summary>
-    /// OffersAvailability
+    /// Offers availability
     /// </summary>
     public DbSet<OfferAvailabilityModelDB> OffersAvailability { get; set; }
 
     /// <summary>
-    /// LockerOffersAvailability
+    /// Rows of offers availabilities
+    /// </summary>
+    public DbSet<RowOfOffersAvailabilityModelDB> RowsOfOffersAvailabilities { get; set; }
+
+    /// <summary>
+    /// Locker offers availability
     /// </summary>
     public DbSet<LockOffersAvailabilityModelDB> LockerOffersAvailability { get; set; }
 
@@ -103,7 +108,7 @@ public partial class CommerceLayerContext : DbContext
 
 
     /// <summary>
-    /// PaymentsDocuments
+    /// Payments documents
     /// </summary>
     public DbSet<PaymentDocumentModelDb> PaymentsDocuments { get; set; }
 }

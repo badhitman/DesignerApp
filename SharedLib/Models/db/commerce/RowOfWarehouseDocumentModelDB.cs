@@ -2,19 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
 /// RowOfWarehouseDocumentModelDB
 /// </summary>
-public class RowOfWarehouseDocumentModelDB : RowOfBaseDocumentModelDB
+public class RowOfWarehouseDocumentModelDB : RowOfWarehouseDocumentAbstractModelDB
 {
-    /// <summary>
-    /// WarehouseDocument
-    /// </summary>
-    public WarehouseDocumentModelDB? WarehouseDocument { get; set; }
-    /// <summary>
-    /// WarehouseDocument
-    /// </summary>
-    public int WarehouseDocumentId { get; set; }
+    
 }
