@@ -81,11 +81,6 @@ public partial class CommerceLayerContext : DbContext
     public DbSet<OfferAvailabilityModelDB> OffersAvailability { get; set; }
 
     /// <summary>
-    /// Rows of offers availabilities
-    /// </summary>
-    public DbSet<RowOfOffersAvailabilityModelDB> RowsOfOffersAvailabilities { get; set; }
-
-    /// <summary>
     /// Locker offers availability
     /// </summary>
     public DbSet<LockOffersAvailabilityModelDB> LockerOffersAvailability { get; set; }

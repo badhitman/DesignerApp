@@ -244,7 +244,7 @@ public class CommerceImplementService(
             return res;
         }
 
-        if (order_document.Name == req.Name && order_document.IsDisabled == req.IsDisabled)
+        if (order_document.Name == req.Name && order_document.IsDisabled == req.IsDisabled && order_document.Description == req.Description)
         {
             res.AddInfo($"Документ #{req.Id} не требует обновления");
             return res;
@@ -254,6 +254,7 @@ public class CommerceImplementService(
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, req.Name)
+            .SetProperty(p => p.Description, req.Description)
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 

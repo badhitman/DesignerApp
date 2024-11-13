@@ -653,13 +653,13 @@ public class HelpdeskImplementService(
                     OrderDocumentModelDB order_obj = find_orders.Response[0];
                     string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
 
-                    string ReplaceTags(string raw)
+                    string ReplaceTags(string raw, bool clearMd = false)
                     {
                         return raw.Replace(GlobalStaticConstants.OrderDocumentName, order_obj.Name)
                         .Replace(GlobalStaticConstants.OrderDocumentDate, $"{order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}")
                         .Replace(GlobalStaticConstants.OrderStatusInfo, issue_data.StepIssue.DescriptionInfo())
-                        .Replace(GlobalStaticConstants.OrderLinkAddress, $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}'>{_about_order}</a>")
-                        .Replace(GlobalStaticConstants.HostAddress, $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
+                        .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}" : $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}'>{_about_order}</a>")
+                        .Replace(GlobalStaticConstants.HostAddress, clearMd ? wc.Response?.ClearBaseUri : $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
                     }
 
                     string subject_email = "Новое сообщение";
@@ -1065,6 +1065,9 @@ public class HelpdeskImplementService(
                         Description = msg,
                     },
                 },
+                IsMuteEmail = true,
+                IsMuteTelegram = true,
+                IsMuteWhatsapp = true,
             };
 
             await PulsePush(p_req);
@@ -1079,15 +1082,16 @@ public class HelpdeskImplementService(
                 await commRepo.StatusOrderChange(new() { IssueId = issue_data.Id, Step = req.Payload.Step });
                 TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                 OrderDocumentModelDB order_obj = find_orders.Response[0];
-                string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
                 DateTime cdd = order_obj.CreatedAtUTC.GetCustomTime();
-                string ReplaceTags(string raw)
+                string normCreatedAtUTC = $"{cdd.ToString("d", cultureInfo)} {cdd.ToString("t", cultureInfo)}";
+                string _about_order = $"'{order_obj.Name}' {normCreatedAtUTC}";
+                string ReplaceTags(string raw, bool clearMd = false)
                 {
                     return raw.Replace(GlobalStaticConstants.OrderDocumentName, order_obj.Name)
                     .Replace(GlobalStaticConstants.OrderDocumentDate, $"{cdd.ToString("d", cultureInfo)} {cdd.ToString("t", cultureInfo)}")
                     .Replace(GlobalStaticConstants.OrderStatusInfo, req.Payload.Step.DescriptionInfo())
-                    .Replace(GlobalStaticConstants.OrderLinkAddress, $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}'>{_about_order}</a>")
-                    .Replace(GlobalStaticConstants.HostAddress, $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
+                    .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}" : $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}'>{_about_order}</a>")
+                    .Replace(GlobalStaticConstants.HostAddress, clearMd ? wc.Response?.ClearBaseUri : $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
                 }
 
                 string subject_email = "Изменение статуса документа";
@@ -1096,10 +1100,12 @@ public class HelpdeskImplementService(
                     subject_email = CommerceStatusChangeOrderSubjectNotification.Response;
                 subject_email = ReplaceTags(subject_email);
 
-                msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetCustomTime()}] - {req.Payload.Step.DescriptionInfo()}.</p>" +
+                msg = $"<p>Заказ '{order_obj.Name}' от [{normCreatedAtUTC}] - {req.Payload.Step.DescriptionInfo()}.</p>" +
                                     $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
 
                 string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
+                string wp_message = $"Заказ '{order_obj.Name}' от [{normCreatedAtUTC}] - {req.Payload.Step.DescriptionInfo()}. " +
+                                    $"{wc.Response?.ClearBaseUri}";
 
                 TResponseModel<string?> CommerceStatusChangeOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(issue_data.StepIssue));
                 if (CommerceStatusChangeOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
@@ -1111,8 +1117,11 @@ public class HelpdeskImplementService(
                     tg_message = CommerceStatusChangeOrderBodyNotificationTelegram.Response;
                 tg_message = ReplaceTags(tg_message);
 
-                IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
+                TResponseModel<string?>? CommerceStatusChangeOrderBodyNotificationWhatsapp = null;
 
+                IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
+                TResponseModel<string?>? wappiToken = null, wappiProfileId = null;
+                List<Task> tasks = [];
                 string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
                 TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
                 if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
@@ -1121,15 +1130,44 @@ public class HelpdeskImplementService(
                     {
                         if (u.TelegramId.HasValue)
                         {
-                            TResponseModel<MessageComplexIdsModel?> tgs_res = await telegramRemoteRepo.SendTextMessageTelegram(new()
+                            tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(new()
                             {
                                 Message = tg_message,
                                 UserTelegramId = u.TelegramId!.Value
-                            });
+                            }));
                         }
                         loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
-                        await webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg });
+                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }));
+                        if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
+                        {
+                            if (CommerceStatusChangeOrderBodyNotificationWhatsapp is null)
+                            {
+                                CommerceStatusChangeOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationWhatsapp(issue_data.StepIssue));
+                                if (CommerceStatusChangeOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationWhatsapp.Response))
+                                    wp_message = CommerceStatusChangeOrderBodyNotificationWhatsapp.Response;
+                                wp_message = ReplaceTags(wp_message, true);
+                            }
+
+                            wappiToken ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
+                            wappiProfileId ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
+
+                            if (wappiToken.Success() && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId.Success() && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
+                            {
+                                tasks.Add(Task.Run(async () =>
+                                {
+                                    using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Wappi.ToString());
+                                    if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
+                                        client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
+
+                                    using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = wp_message, Recipient = u.PhoneNumber });
+                                    string rj = await response.Content.ReadAsStringAsync();
+                                    SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
+                                }));
+                            }
+                        }
                     }
+                    if (tasks.Count != 0)
+                        await Task.WhenAll(tasks);
                 }
             }
         }

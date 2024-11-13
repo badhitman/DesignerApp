@@ -50,7 +50,7 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
         TResponseModel<TPaginationResponseModel<ArticleModelDB>> rest = await HelpdeskRepo
             .ArticlesSelect(req);
 
-        IsBusyProgress = false;
+        await SetBusy(false, token: token);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         // Forward the provided token to methods which support it

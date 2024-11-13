@@ -10,6 +10,11 @@ namespace SharedLib;
 public class DocumentsSelectRequestBaseModel
 {
     /// <summary>
+    /// SearchQuery
+    /// </summary>
+    public string? SearchQuery { get; set; }
+
+    /// <summary>
     /// Фильтр по номенклатуре
     /// </summary>
     public int? GoodsFilter { get; set; }

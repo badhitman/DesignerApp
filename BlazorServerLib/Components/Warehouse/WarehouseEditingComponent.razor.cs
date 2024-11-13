@@ -40,9 +40,11 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     {
         if (element is RowOfWarehouseDocumentModelDB _el)
         {
-
+            TResponseModel<int> res = await commRepo.RowForWarehouseUpdate(_el);
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+            if (res.Success())
+                await ReadDocument();
         }
-
 
         base.RowEditCommitHandler(element);
     }
