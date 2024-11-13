@@ -8,6 +8,7 @@ using System.Net.Http.Json;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CommerceService;
 
@@ -390,7 +391,6 @@ public class CommerceImplementService(
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> RowForWarehouseDocumentUpdate(RowOfWarehouseDocumentModelDB req)
     {
-
         TResponseModel<int> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         DateTime dtu = DateTime.UtcNow;
@@ -398,6 +398,20 @@ public class CommerceImplementService(
         await context.WarehouseDocuments
                 .Where(x => x.Id == req.WarehouseDocumentId)
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        LockOffersAvailabilityModelDB locker = new() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = 0 };
+        try
+        {
+            await context.AddAsync(locker);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            res.AddError($"Не удалось выполнить команду: {ex.Message}");
+            return res;
+        }
 
         if (req.Id < 1)
         {
@@ -412,6 +426,10 @@ public class CommerceImplementService(
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Quantity, req.Quantity));
+
+        context.Remove(locker);
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
         return res;
@@ -442,6 +460,45 @@ public class CommerceImplementService(
 
         res.Response = await context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0;
         res.AddSuccess("Команда удаления выполнена");
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> WarehouseDocumentUpdate(WarehouseDocumentModelDB req)
+    {
+        TResponseModel<int> res = new() { Response = 0 };
+        ValidateReportModel ck = GlobalTools.ValidateObject(req);
+        if (!ck.IsValid)
+        {
+            res.Messages.InjectException(ck.ValidationResults);
+            return res;
+        }
+        req.DeliveryData = req.DeliveryData.ToUniversalTime();
+        req.Name = req.Name.Trim();
+        req.NormalizedUpperName = req.Name.ToUpper();
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        DateTime dtu = DateTime.UtcNow;
+        if (req.Id < 1)
+        {
+            req.CreatedAtUTC = dtu;
+            req.LastAtUpdatedUTC = dtu;
+            await context.AddAsync(req);
+            await context.SaveChangesAsync();
+            res.Response = req.Id;
+        }
+        else
+        {
+            res.Response = await context.WarehouseDocuments
+                .Where(x => x.Id == req.Id)
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.Name, req.Name)
+                .SetProperty(p => p.Description, req.Description)
+                .SetProperty(p => p.DeliveryData, req.DeliveryData)
+                .SetProperty(p => p.IsDisabled, req.IsDisabled)
+                .SetProperty(p => p.LastAtUpdatedUTC, dtu));
+        }
+
         return res;
     }
 
@@ -494,45 +551,6 @@ public class CommerceImplementService(
                 Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
             },
         };
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WarehouseDocumentUpdate(WarehouseDocumentModelDB req)
-    {
-        TResponseModel<int> res = new() { Response = 0 };
-        ValidateReportModel ck = GlobalTools.ValidateObject(req);
-        if (!ck.IsValid)
-        {
-            res.Messages.InjectException(ck.ValidationResults);
-            return res;
-        }
-        req.DeliveryData = req.DeliveryData.ToUniversalTime();
-        req.Name = req.Name.Trim();
-        req.NormalizedUpperName = req.Name.ToUpper();
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-
-        DateTime dtu = DateTime.UtcNow;
-        if (req.Id < 1)
-        {
-            req.CreatedAtUTC = dtu;
-            req.LastAtUpdatedUTC = dtu;
-            await context.AddAsync(req);
-            await context.SaveChangesAsync();
-            res.Response = req.Id;
-        }
-        else
-        {
-            res.Response = await context.WarehouseDocuments
-                .Where(x => x.Id == req.Id)
-                .ExecuteUpdateAsync(set => set
-                .SetProperty(p => p.Name, req.Name)
-                .SetProperty(p => p.Description, req.Description)
-                .SetProperty(p => p.DeliveryData, req.DeliveryData)
-                .SetProperty(p => p.IsDisabled, req.IsDisabled)
-                .SetProperty(p => p.LastAtUpdatedUTC, dtu));
-        }
-
-        return res;
     }
 
     /// <inheritdoc/>
