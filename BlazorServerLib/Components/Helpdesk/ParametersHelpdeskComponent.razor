@@ -131,6 +131,43 @@
                                     <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationWhatsapp" HelperText="Текст Whatsap уведомления при создании заказа" />
                                 </p>
                             </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    Курсив - Чтобы выделить текст <i>курсивом</i>, используйте символ подчеркивания по обе стороны текста: _Текст_
+                                </li>
+                                <li class="list-group-item">
+                                    Жирный шрифт - Чтобы выделить текст <b>жирным шрифтом</b>, используйте звездочку по обе стороны текста: *Текст*
+                                </li>
+                                <li class="list-group-item">
+                                    Зачеркивание - Чтобы <s>зачеркнуть текст</s>, используйте символ тильды по обе стороны текста: ~Текст~
+                                </li>
+                                <li class="list-group-item">
+                                    Моноширинный шрифт - Чтобы выделить текст <span class="font-monospace">моноширинным шрифтом</span>, используйте три обратных апострофа по обе стороны текста: ```Текст```
+                                </li>
+                                <li class="list-group-item">
+                                    Маркированный список - Чтобы добавить в сообщение маркированный список, поставьте звездочку или дефис и пробел перед каждым словом или предложением:
+                                    <pre>
+* Текст
+* Текст
+Или
+- Текст
+- Текст
+                                    </pre>
+                                </li>
+                                <li class="list-group-item">
+                                    Нумерованный список - Чтобы добавить в сообщение нумерованный список, поставьте номер, точку и пробел перед каждой строкой текста:
+                                    <pre>
+1. Текст
+2. Текст
+                                    </pre>
+                                </li>
+                                <li class="list-group-item">
+                                    Цитирование - Чтобы добавить в сообщение цитату, поставьте угловую скобку и пробел перед текстом: > Текст
+                                </li>
+                                <li class="list-group-item">
+                                    Встроенный код - Чтобы добавить в сообщение встроенный код, поставьте обратный штрих с обеих сторон сообщения: `Текст`
+                                </li>
+                            </ul>
                         </div>
                         <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                             @foreach (StatusesDocumentsEnum stepEnum in Enum.GetValues(typeof(StatusesDocumentsEnum)).Cast<StatusesDocumentsEnum>())
