@@ -86,6 +86,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     {
         CurrentDocument.Rows ??= [];
         int exist_row = CurrentDocument.Rows.FindIndex(x => x.OfferId == off.Id);
+        TResponseModel<int> res;
         if (exist_row < 0)
         {
             RowOfWarehouseDocumentModelDB _newRow = new()
@@ -97,9 +98,9 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
             };
 
             await SetBusy();
-            TResponseModel<int> res = await commRepo.RowForWarehouseUpdate(_newRow);
+            res = await commRepo.RowForWarehouseUpdate(_newRow);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
-
+            await SetBusy(false);
             if (!res.Success())
                 return;
 
@@ -107,11 +108,14 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
             addingDomRef?.StateHasChangedCall();
             if (DocumentUpdateHandler is not null)
                 DocumentUpdateHandler();
-
         }
         else
         {
             CurrentDocument.Rows[exist_row].Quantity = +off.Quantity;
+            await SetBusy();
+            res = await commRepo.RowForWarehouseUpdate(CurrentDocument.Rows[exist_row]);
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+            await SetBusy(false);
         }
 
         if (DocumentUpdateHandler is not null)
