@@ -668,10 +668,11 @@ public class HelpdeskImplementService(
                         subject_email = CommerceNewMessageOrderSubjectNotification.Response;
                     subject_email = ReplaceTags(subject_email);
 
-                    msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetCustomTime()}]: Новое сообщение.</p>" +
+                    msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.</p>" +
                                         $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
 
-                    string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
+                    string tg_message = msg.Replace("<p>", "\n").Replace("</p>", ""),
+                        wpMessage = $"Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение. {wc.Response?.ClearBaseUri}";
 
                     TResponseModel<string?> CommerceNewMessageOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification);
                     if (CommerceNewMessageOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
@@ -682,6 +683,11 @@ public class HelpdeskImplementService(
                     if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
                         tg_message = CommerceNewMessageOrderBodyNotificationTelegram.Response;
                     tg_message = ReplaceTags(tg_message);
+
+                    TResponseModel<string?> CommerceNewMessageOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp);
+                    if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
+                        wpMessage = CommerceNewMessageOrderBodyNotificationWhatsapp.Response;
+                    wpMessage = ReplaceTags(wpMessage, true);
 
                     IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
 
@@ -729,7 +735,7 @@ public class HelpdeskImplementService(
                                         if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
                                             client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
 
-                                        using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = req.Payload.Payload.Description, Recipient = user.PhoneNumber });
+                                        using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = wpMessage, Recipient = u.PhoneNumber });
                                         string rj = await response.Content.ReadAsStringAsync();
                                         SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
                                     }));
