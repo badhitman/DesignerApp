@@ -10,15 +10,15 @@
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortLabel="Id" T="WarehouseDocumentModelDB">Id</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="Name" T="WarehouseDocumentModelDB">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="DeliveryData" T="WarehouseDocumentModelDB">DeliveryData</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="At" T="WarehouseDocumentModelDB">At</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="Name" T="WarehouseDocumentModelDB">Примечание</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="DeliveryData" T="WarehouseDocumentModelDB">Доставка</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="About" T="WarehouseDocumentModelDB">Создан/Обновлён</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id">@context.Id</MudTd>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="DeliveryData">@context.DeliveryData</MudTd>
-        <MudTd DataLabel="At">@context.CreatedAtUTC @context.LastAtUpdatedUTC</MudTd>
+        <MudTd DataLabel="Id"><a href="/warehouse/editing/@(context.Id)">@context.Id</a></MudTd>
+        <MudTd DataLabel="Примечание"><a href="/warehouse/editing/@(context.Id)">@context.Name</a></MudTd>
+        <MudTd DataLabel="Доставка">@context.DeliveryData.GetHumanDateTime()</MudTd>
+        <MudTd DataLabel="About">@context.CreatedAtUTC.GetHumanDateTime()/@context.LastAtUpdatedUTC.GetHumanDateTime()</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>

@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.Globalization;
+
 namespace SharedLib;
 
 /// <summary>
@@ -12,8 +14,19 @@ public static class DateTimeExtensions
     /// <summary>
     /// GetCustomTime
     /// </summary>
-    public static DateTime GetCustomTime(this DateTime dateTime, string timeZone = "Europe/Moscow") 
+    public static DateTime GetCustomTime(this DateTime dateTime, string timeZone = "Europe/Moscow")
         => TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZone));
+
+    static CultureInfo cultureInfo = new CultureInfo("ru-RU");
+    /// <summary>
+    /// GetHumanDateTime
+    /// </summary>
+    public static string GetHumanDateTime(this DateTime dateTime, string timeZone = "Europe/Moscow")
+    {
+        DateTime _cdt = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZone));
+        return $"{_cdt.ToString("d", cultureInfo)} {_cdt.ToString("t", cultureInfo)}";
+    }
+
 
     /// <summary>
     /// Создает новый объект System.DateTime, который имеет то же количество тактов,
