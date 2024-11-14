@@ -54,7 +54,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (editDocument.Id < 1 && res.Response > 0)
-            navRepo.NavigateTo($"/warehouse/editing/{res.Response}");
+            navRepo.NavigateTo($"/goods/warehouse/editing/{res.Response}");
     }
 
     /// <inheritdoc/>

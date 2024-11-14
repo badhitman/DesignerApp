@@ -392,15 +392,20 @@ public class CommerceImplementService(
     public async Task<TResponseModel<int>> RowForWarehouseDocumentUpdate(RowOfWarehouseDocumentModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
+        if (req.Quantity == 0)
+        {
+            res.AddError($"Количество не должно быть нулевым");
+            return res;
+        }
+
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        DateTime dtu = DateTime.UtcNow;
-
-        await context.WarehouseDocuments
-                .Where(x => x.Id == req.WarehouseDocumentId)
-                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
-
         using IDbContextTransaction transaction = context.Database.BeginTransaction();
-        LockOffersAvailabilityModelDB locker = new() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = 0 };
+        LockOffersAvailabilityModelDB locker = new()
+        {
+            LockerName = nameof(OfferAvailabilityModelDB),
+            LockerId = req.OfferId,
+            RubricId = req.RubricId,
+        };
         try
         {
             await context.AddAsync(locker);
@@ -412,9 +417,27 @@ public class CommerceImplementService(
             res.AddError($"Не удалось выполнить команду: {ex.Message}");
             return res;
         }
+        OfferAvailabilityModelDB? regOfferAv = await context.OffersAvailability.FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.RubricId == req.RubricId);
+        if (regOfferAv is null)
+        {
+            regOfferAv = new()
+            {
+                OfferId = req.OfferId,
+                GoodsId = req.GoodsId,
+                RubricId = req.RubricId,
+            };
+
+            await context.AddAsync(regOfferAv);
+            await context.SaveChangesAsync();
+        }
+
+        await context.WarehouseDocuments
+                        .Where(x => x.Id == req.WarehouseDocumentId)
+                        .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow));
 
         if (req.Id < 1)
         {
+            regOfferAv.Quantity += req.Quantity;
             await context.AddAsync(req);
             await context.SaveChangesAsync();
             res.AddSuccess("Товар добавлен к документу");
@@ -422,6 +445,8 @@ public class CommerceImplementService(
         }
         else
         {
+            RowOfWarehouseDocumentModelDB rowDb = await context.RowsOfWarehouseDocuments.FirstAsync(x => x.Id == req.Id);
+            // int _del
             res.Response = await context.RowsOfWarehouseDocuments
                        .Where(x => x.Id == req.Id)
                        .ExecuteUpdateAsync(set => set

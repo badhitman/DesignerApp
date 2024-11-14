@@ -41,4 +41,9 @@ public abstract class RowOfBaseDocumentModelDB
     /// Количество
     /// </summary>
     public int Quantity { get; set; }
+
+    /// <summary>
+    /// Rubric
+    /// </summary>
+    public int? RubricId { get; set; }
 }

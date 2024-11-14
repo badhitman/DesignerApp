@@ -10,7 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// WarehouseDocumentModelDB
 /// </summary>
-[Index(nameof(DeliveryData)), Index(nameof(NormalizedUpperName))]
+[Index(nameof(DeliveryData)), Index(nameof(NormalizedUpperName)), Index(nameof(RubricId))]
 public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
@@ -34,6 +34,11 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
     /// </summary>
     public List<RowOfWarehouseDocumentModelDB>? Rows { get; set; }
 
+    /// <summary>
+    /// Rubric
+    /// </summary>
+    public int? RubricId { get; set; }
+
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
@@ -44,6 +49,7 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
             return
                 Id == _wd.Id &&
                 Name == _wd.Name &&
+                RubricId == _wd.RubricId &&
                 IsDisabled == _wd.IsDisabled &&
                 DeliveryData == _wd.DeliveryData &&
                 ExternalDocumentId == _wd.ExternalDocumentId &&
@@ -55,6 +61,6 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{Id} {IsDisabled} {DeliveryData} {Name} {ExternalDocumentId} {Description}".GetHashCode();
+        return $"{Id} {IsDisabled} {RubricId} {DeliveryData} {Name} {ExternalDocumentId} {Description}".GetHashCode();
     }
 }

@@ -15,8 +15,8 @@
         <MudTh><MudTableSortLabel SortLabel="About" T="WarehouseDocumentModelDB">Создан/Обновлён</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id"><a href="/warehouse/editing/@(context.Id)">@context.Id</a></MudTd>
-        <MudTd DataLabel="Примечание"><a href="/warehouse/editing/@(context.Id)">@context.Name</a></MudTd>
+        <MudTd DataLabel="Id"><a href="/goods/warehouse/editing/@(context.Id)">@context.Id</a></MudTd>
+        <MudTd DataLabel="Примечание"><a href="/goods/warehouse/editing/@(context.Id)">@context.Name</a></MudTd>
         <MudTd DataLabel="Доставка">@context.DeliveryData.GetHumanDateTime()</MudTd>
         <MudTd DataLabel="About">@context.CreatedAtUTC.GetHumanDateTime()/@context.LastAtUpdatedUTC.GetHumanDateTime()</MudTd>
     </RowTemplate>
@@ -31,5 +31,5 @@
     </PagerContent>
 </MudTable>
 <div class="d-grid gap-2 mt-3">
-    <a class="btn btn-primary" href="/warehouse/editing" role="button">Создать новый документ</a>
+    <a class="btn btn-primary" href="/goods/warehouse/editing" role="button">Создать новый документ</a>
 </div>
