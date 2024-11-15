@@ -13,13 +13,13 @@
             <MudTabPanel Text="Справочник">
                 <GoodsManageComponent />
             </MudTabPanel>
-            <MudTabPanel Text="Документы">
-                <WarehouseMainComponent />
-            </MudTabPanel>
             <MudTabPanel Text="Склады">
                 <MudPaper Class="ma-2" Elevation="3">
                     <RubricsManageComponent ContextName="@GlobalStaticConstants.Routes.WAREHOUSE_CONTROLLER_NAME" />
                 </MudPaper>
+            </MudTabPanel>
+            <MudTabPanel Text="Документы поступления">
+                <WarehouseMainComponent />
             </MudTabPanel>
         </MudTabs>
     </Authorized>

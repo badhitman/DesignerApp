@@ -37,7 +37,9 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// Rubric
     /// </summary>
-    public int? RubricId { get; set; }
+    [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Требуется указать склад.")]
+    public int RubricId { get; set; }
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)
