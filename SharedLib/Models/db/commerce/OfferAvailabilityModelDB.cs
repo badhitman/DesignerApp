@@ -9,5 +9,8 @@ namespace SharedLib;
 /// </summary>
 public class OfferAvailabilityModelDB : RowOfBaseDocumentModelDB
 {
-    
+    /// <summary>
+    /// Rubric
+    /// </summary>
+    public required int RubricId { get; set; }
 }

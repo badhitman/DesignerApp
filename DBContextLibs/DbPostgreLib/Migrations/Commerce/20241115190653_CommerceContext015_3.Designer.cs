@@ -3,6 +3,7 @@ using System;
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.Commerce
 {
     [DbContext(typeof(CommerceContext))]
-    partial class CommerceContextModelSnapshot : ModelSnapshot
+    [Migration("20241115190653_CommerceContext015_3")]
+    partial class CommerceContext015_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,12 +111,12 @@ namespace DbPostgreLib.Migrations.Commerce
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("RubricId")
+                    b.Property<int?>("RubricId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LockerId", "LockerName", "RubricId")
+                    b.HasIndex("LockerId", "LockerName")
                         .IsUnique();
 
                     b.ToTable("LockerOffersAvailability");
@@ -136,7 +139,7 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("RubricId")
+                    b.Property<int?>("RubricId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -144,6 +147,8 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.HasIndex("GoodsId");
 
                     b.HasIndex("OfferId");
+
+                    b.HasIndex("RubricId");
 
                     b.ToTable("OffersAvailability");
                 });
@@ -459,6 +464,9 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("RubricId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AddressForOrderTabId");
@@ -468,6 +476,8 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.HasIndex("OfferId");
 
                     b.HasIndex("OrderDocumentId");
+
+                    b.HasIndex("RubricId");
 
                     b.ToTable("RowsOfOrdersDocuments");
                 });
@@ -489,6 +499,9 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("RubricId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("WarehouseDocumentId")
                         .HasColumnType("integer");
 
@@ -497,6 +510,8 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.HasIndex("GoodsId");
 
                     b.HasIndex("OfferId");
+
+                    b.HasIndex("RubricId");
 
                     b.HasIndex("WarehouseDocumentId");
 

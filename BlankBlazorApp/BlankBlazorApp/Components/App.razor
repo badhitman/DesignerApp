@@ -71,19 +71,22 @@
 </html>
 
 @code {
+    static bool _isLoaded = false;
     protected override async Task OnInitializedAsync()
     {
         if (webConfig.Value.BaseUri is null)
             webConfig.Value.BaseUri = NavigatorRepo.BaseUri;
 
-        if (ServiceProviderExtensions.SetRemoteConf?.Success() != true)
+        if (!_isLoaded)
         {
-            Task<TResponseModel<object?>>[] _tasks = [
-                tgRemoteCall.SetWebConfigTelegram(webConfig.Value),
-                tgRemoteCall.SetWebConfigHelpdesk(webConfig.Value),
-                tgRemoteCall.SetWebConfigStorage(webConfig.Value)];
+            _isLoaded = true;
+            if (ServiceProviderExtensions.SetRemoteConf?.Success() != true)
+            {
+                Task<TResponseModel<object?>>[] _tasks = [tgRemoteCall.SetWebConfigTelegram(webConfig.Value), tgRemoteCall.SetWebConfigHelpdesk(webConfig.Value), tgRemoteCall.SetWebConfigStorage(webConfig.Value)];
+                await Task.WhenAll(_tasks);
+            }
 
-            await Task.WhenAll(_tasks);
         }
+
     }
 }

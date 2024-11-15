@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -41,9 +42,4 @@ public abstract class RowOfBaseDocumentModelDB
     /// Количество
     /// </summary>
     public int Quantity { get; set; }
-
-    /// <summary>
-    /// Rubric
-    /// </summary>
-    public int? RubricId { get; set; }
 }

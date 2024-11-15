@@ -10,7 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// LockOffersAvailabilityModelDB
 /// </summary>
-[Index(nameof(LockerId), nameof(LockerName), IsUnique = true)]
+[Index(nameof(LockerId), nameof(LockerName), nameof(RubricId), IsUnique = true)]
 public class LockOffersAvailabilityModelDB
 {
     /// <summary>
@@ -27,10 +27,10 @@ public class LockOffersAvailabilityModelDB
     /// <summary>
     /// LockerId
     /// </summary>
-    public int LockerId { get; set; }
+    public required int LockerId { get; set; }
 
     /// <summary>
     /// Rubric
     /// </summary>
-    public int? RubricId { get; set; }
+    public required int RubricId { get; set; }
 }

@@ -27,7 +27,7 @@ else
         </div>
         <div class="mb-3 form-check">
             <input @bind="editDocument.IsDisabled" type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Выкл/Вкл</label>
+            <label class="form-check-label" for="exampleCheck1">@(editDocument.IsDisabled ? "Выключено (включить?)" : "Включено (выключить?)")</label>
         </div>
         <div class="d-grid gap-2 my-2">
             <button @onclick="SaveDocument" disabled="@(!CanSave)" class="btn btn-primary" type="button">Сохранить</button>
