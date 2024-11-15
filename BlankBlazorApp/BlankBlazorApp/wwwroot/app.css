@@ -78,3 +78,7 @@ main > div.top-row {
 .tox-tinymce .tox-editor-container .tox-editor-header .tox-promotion {
     display: none;
 }
+
+#components-reconnect-modal button {
+    background-color: black;
+}

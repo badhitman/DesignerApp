@@ -522,6 +522,7 @@ public class CommerceImplementService(
                 .SetProperty(p => p.Description, req.Description)
                 .SetProperty(p => p.DeliveryData, req.DeliveryData)
                 .SetProperty(p => p.IsDisabled, req.IsDisabled)
+                .SetProperty(p => p.RubricId, req.RubricId)
                 .SetProperty(p => p.LastAtUpdatedUTC, dtu));
         }
 

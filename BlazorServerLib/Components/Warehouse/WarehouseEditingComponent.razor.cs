@@ -6,6 +6,7 @@ using BlazorWebLib.Components.Commerce;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
+using BlazorWebLib.Components.Helpdesk;
 
 namespace BlazorWebLib.Components.Warehouse;
 
@@ -20,6 +21,10 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     [Inject]
     NavigationManager navRepo { get; set; } = default!;
 
+    [Inject]
+    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+
+
     /// <summary>
     /// Id
     /// </summary>
@@ -29,11 +34,18 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
 
     WarehouseDocumentModelDB CurrentDocument = new() { DeliveryData = DateTime.Now, Name = "Новый", NormalizedUpperName = "НОВЫЙ", Rows = [] };
     WarehouseDocumentModelDB editDocument = new() { DeliveryData = DateTime.Now, Name = "Новый", NormalizedUpperName = "НОВЫЙ", Rows = [] };
-
+    RubricSelectorComponent? ref_rubric;
     AddRowToOrderDocumentComponent? addingDomRef;
     RowOfWarehouseDocumentModelDB? elementBeforeEdit;
+    List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow;
 
     bool CanSave => Id < 1 || !CurrentDocument.Equals(editDocument);
+
+    void RubricSelectAction(RubricBaseModel? selectedRubric)
+    {
+        editDocument.RubricId = selectedRubric?.Id;
+        StateHasChanged();
+    }
 
     /// <inheritdoc/>
     protected override async void RowEditCommitHandler(object element)
@@ -61,8 +73,25 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        await SetBusy();
         if (Id < 1)
+        {
+            TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(0);
+            await SetBusy(false);
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+            RubricMetadataShadow = res.Response;
+            if (RubricMetadataShadow is not null && RubricMetadataShadow.Count != 0)
+            {
+                RubricIssueHelpdeskModelDB current_element = RubricMetadataShadow.Last();
+                if (ref_rubric is not null)
+                {
+                    await ref_rubric.OwnerRubricSet(current_element.ParentRubricId ?? 0);
+                    await ref_rubric.SetRubric(current_element.Id, RubricMetadataShadow);
+                    ref_rubric.StateHasChangedCall();
+                }
+            }
             return;
+        }
 
         await ReadDocument();
     }
@@ -76,7 +105,21 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
             CurrentDocument = res.Response.First();
 
         editDocument = GlobalTools.CreateDeepCopy(CurrentDocument)!;
+
+        TResponseModel<List<RubricIssueHelpdeskModelDB>?> resShadow = await HelpdeskRepo.RubricRead(editDocument.RubricId ?? 0);
         await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(resShadow.Messages);
+        RubricMetadataShadow = resShadow.Response;
+        if (RubricMetadataShadow is not null && RubricMetadataShadow.Count != 0)
+        {
+            RubricIssueHelpdeskModelDB current_element = RubricMetadataShadow.Last();
+            if (ref_rubric is not null)
+            {
+                await ref_rubric.OwnerRubricSet(current_element.ParentRubricId ?? 0);
+                await ref_rubric.SetRubric(current_element.Id, RubricMetadataShadow);
+                ref_rubric.StateHasChangedCall();
+            }
+        }
     }
 
     /// <inheritdoc/>

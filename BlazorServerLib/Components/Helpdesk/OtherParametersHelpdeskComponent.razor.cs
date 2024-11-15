@@ -121,7 +121,6 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
     protected override async Task OnInitializedAsync()
     {
         await SetBusy();
-
         TResponseModel<bool?> res_ShowCreatingIssue = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue);
         TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);
         IsBusyProgress = false;
@@ -129,9 +128,8 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
         if (ref_rubric is not null && _RubricIssueForCreateOrder.HasValue)
         {
             await SetBusy();
-
             TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(_RubricIssueForCreateOrder.Value);
-            IsBusyProgress = false;
+            await SetBusy(false);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
             RubricMetadataShadow = res.Response;
             if (RubricMetadataShadow is not null && RubricMetadataShadow.Count != 0)

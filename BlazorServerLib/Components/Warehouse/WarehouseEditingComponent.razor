@@ -1,4 +1,5 @@
 ﻿@using BlazorWebLib.Components.Commerce
+@using BlazorWebLib.Components.Helpdesk
 @using MudBlazor
 @inherits OffersTableBaseComponent
 
@@ -16,6 +17,13 @@ else
         </div>
         <div class="mb-3">
             <MudTextField @bind-Value="editDocument.DeliveryData" Format="yyyy-MM-dd" Label="Дата поставки" InputType="InputType.Date" />
+        </div>
+        <div class="mb-3">
+            <CascadingValue Value="RubricSelectAction">
+                <CascadingValue Value="RubricMetadataShadow">
+                    <RubricSelectorComponent @ref="ref_rubric" Title="Склад поступления" ContextName="@GlobalStaticConstants.Routes.WAREHOUSE_CONTROLLER_NAME" ModeSelectingRubrics="ModesSelectRubricsEnum.AllowWithoutRubric" ShowDisabledRubrics="true" ParentRubric="0" StartRubric="editDocument.RubricId" />
+                </CascadingValue>
+            </CascadingValue>
         </div>
         <div class="mb-3 form-check">
             <input @bind="editDocument.IsDisabled" type="checkbox" class="form-check-input" id="exampleCheck1">
