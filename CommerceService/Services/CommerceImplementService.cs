@@ -388,6 +388,77 @@ public class CommerceImplementService(
     }
 
 
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> WarehouseDocumentUpdate(WarehouseDocumentModelDB req)
+    {
+        TResponseModel<int> res = new() { Response = 0 };
+        ValidateReportModel ck = GlobalTools.ValidateObject(req);
+        if (!ck.IsValid)
+        {
+            res.Messages.InjectException(ck.ValidationResults);
+            return res;
+        }
+        req.DeliveryData = req.DeliveryData.ToUniversalTime();
+        req.Name = req.Name.Trim();
+        req.NormalizedUpperName = req.Name.ToUpper();
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        //LockOffersAvailabilityModelDB locker = new()
+        //{
+        //    LockerName = nameof(OfferAvailabilityModelDB),
+        //    LockerId = req.OfferId,
+        //    RubricId = req.RubricId,
+        //};
+        //try
+        //{
+        //    await context.AddAsync(locker);
+        //    await context.SaveChangesAsync();
+        //}
+        //catch (Exception ex)
+        //{
+        //    await transaction.RollbackAsync();
+        //    res.AddError($"Не удалось выполнить команду: {ex.Message}");
+        //    return res;
+        //}
+
+        LockOffersAvailabilityModelDB[] offersLocked = await context.RowsOfWarehouseDocuments
+            .Where(x => x.WarehouseDocumentId == req.Id)
+            .Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = req.RubricId })
+            .ToArrayAsync();
+
+        if (offersLocked.Length != 0)
+        {
+
+        }
+
+        DateTime dtu = DateTime.UtcNow;
+        if (req.Id < 1)
+        {
+            req.CreatedAtUTC = dtu;
+            req.LastAtUpdatedUTC = dtu;
+            await context.AddAsync(req);
+            await context.SaveChangesAsync();
+            res.Response = req.Id;
+        }
+        else
+        {
+
+            res.Response = await context.WarehouseDocuments
+                .Where(x => x.Id == req.Id)
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.Name, req.Name)
+                .SetProperty(p => p.Description, req.Description)
+                .SetProperty(p => p.DeliveryData, req.DeliveryData)
+                .SetProperty(p => p.IsDisabled, req.IsDisabled)
+                .SetProperty(p => p.RubricId, req.RubricId)
+                .SetProperty(p => p.LastAtUpdatedUTC, dtu));
+        }
+
+        await transaction.CommitAsync();
+        return res;
+    }
+
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> RowForWarehouseDocumentUpdate(RowOfWarehouseDocumentModelDB req)
     {
@@ -486,46 +557,6 @@ public class CommerceImplementService(
 
         res.Response = await context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0;
         res.AddSuccess("Команда удаления выполнена");
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WarehouseDocumentUpdate(WarehouseDocumentModelDB req)
-    {
-        TResponseModel<int> res = new() { Response = 0 };
-        ValidateReportModel ck = GlobalTools.ValidateObject(req);
-        if (!ck.IsValid)
-        {
-            res.Messages.InjectException(ck.ValidationResults);
-            return res;
-        }
-        req.DeliveryData = req.DeliveryData.ToUniversalTime();
-        req.Name = req.Name.Trim();
-        req.NormalizedUpperName = req.Name.ToUpper();
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-
-        DateTime dtu = DateTime.UtcNow;
-        if (req.Id < 1)
-        {
-            req.CreatedAtUTC = dtu;
-            req.LastAtUpdatedUTC = dtu;
-            await context.AddAsync(req);
-            await context.SaveChangesAsync();
-            res.Response = req.Id;
-        }
-        else
-        {
-            res.Response = await context.WarehouseDocuments
-                .Where(x => x.Id == req.Id)
-                .ExecuteUpdateAsync(set => set
-                .SetProperty(p => p.Name, req.Name)
-                .SetProperty(p => p.Description, req.Description)
-                .SetProperty(p => p.DeliveryData, req.DeliveryData)
-                .SetProperty(p => p.IsDisabled, req.IsDisabled)
-                .SetProperty(p => p.RubricId, req.RubricId)
-                .SetProperty(p => p.LastAtUpdatedUTC, dtu));
-        }
-
         return res;
     }
 
