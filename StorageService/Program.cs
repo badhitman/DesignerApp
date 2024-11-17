@@ -12,7 +12,7 @@ using Transmission.Receives.storage;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-logger.Warn("init main");
+
 IHostBuilder builder = Host.CreateDefaultBuilder(args);
 
 // NLog: Setup NLog for Dependency injection
@@ -54,6 +54,7 @@ builder.ConfigureHostConfiguration(configHost =>
 
 builder.ConfigureServices((context, services) =>
 {
+    logger.Warn($"init main: {context.HostingEnvironment.EnvironmentName}");
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
     .Configure<WebConfigModel>(context.Configuration.GetSection("WebConfig"))
@@ -96,6 +97,7 @@ builder.ConfigureServices((context, services) =>
     .RegisterMqListener<FilesAreaGetMetadataReceive, FilesAreaMetadataRequestModel?, FilesAreaMetadataModel[]?>()
     .RegisterMqListener<FilesSelectReceive, TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<StorageFileModelDB>?>()
     .RegisterMqListener<ReadParameterReceive, StorageMetadataModel?, StorageCloudParameterPayloadModel?>()
+    .RegisterMqListener<ReadParametersReceive, StorageMetadataModel[]?, List<StorageCloudParameterPayloadModel>?>()
     .RegisterMqListener<FindParametersReceive, RequestStorageBaseModel?, FoundParameterModel[]?>();
     //
     #endregion

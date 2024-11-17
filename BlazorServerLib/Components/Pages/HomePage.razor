@@ -2,8 +2,11 @@
 @inherits BlazorBusyComponentBaseAuthModel
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
+@using BlazorLib
 @using BlazorWebLib.Components.Helpdesk.issue
+@using Microsoft.AspNetCore.Components.Web
 @using MudBlazor
+@using SharedLib
 
 <PageTitle>Home</PageTitle>
 
@@ -34,7 +37,9 @@ else
         : await StoreRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate);
 
         await SetBusy(false);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+
         _textValue = res.Response;
     }
 }

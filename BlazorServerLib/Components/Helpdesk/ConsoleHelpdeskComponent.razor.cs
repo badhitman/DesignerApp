@@ -33,9 +33,9 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseAuthModel
 
         await SetBusy();
         TResponseModel<int> res = await StorageRepo.SaveParameter(FilterUserId, GlobalStaticConstants.CloudStorageMetadata.ConsoleFilterForUser(CurrentUserSession!.UserId), false);
-        IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        StateHasChanged();
+        await SetBusy(false);
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
     StorageMetadataModel SizeColumnsKeyStorage => new()
@@ -68,8 +68,10 @@ public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseAuthModel
         TResponseModel<string?> current_filter_user_res = await StorageRepo.ReadParameter<string>(GlobalStaticConstants.CloudStorageMetadata.ConsoleFilterForUser(CurrentUserSession!.UserId));
         IsBusyProgress = false;
 
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        SnackbarRepo.ShowMessagesResponse(current_filter_user_res.Messages);
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (!current_filter_user_res.Success())
+            SnackbarRepo.ShowMessagesResponse(current_filter_user_res.Messages);
 
         FilterUserId = current_filter_user_res.Response;
         IsLarge = res.Response == true;

@@ -52,6 +52,15 @@ public interface ISerializeStorage
     public Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageMetadataModel req);
 
     /// <summary>
+    /// Прочитать значения параметров. Данные запрашиваемых параметров, которые отсутствуют в БД - не попадут в возвращаемый ответ.
+    /// </summary>
+    /// <remarks>
+    /// Возвращается самое актуальные значения (последнее установленное). Хранится история значений - если значение будет часто меняться будет ротация стека накопленных значений с усечением от 150 до 100.
+    /// Проверка переполнения происходит при каждой команде сохранения.
+    /// </remarks>
+    public Task<TResponseModel<List<StorageCloudParameterPayloadModel>>> ReadParameters(StorageMetadataModel[] req);
+
+    /// <summary>
     /// Поиск значений параметров
     /// </summary>
     public Task<TResponseModel<FoundParameterModel[]?>> Find(RequestStorageBaseModel req);

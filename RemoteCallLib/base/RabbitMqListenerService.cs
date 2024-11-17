@@ -10,6 +10,7 @@ using RabbitMQ.Client;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLib;
+using Microsoft.Extensions.Logging;
 #if !DEBUG
 using System.Text.Json.Serialization;
 using System.Text.Json;
@@ -17,11 +18,17 @@ using System.Text.Json;
 
 namespace RemoteCallLib;
 
-/// <inheritdoc/>
+/// <summary>
+/// Обработчик входящих запросов
+/// </summary>
+/// <typeparam name="TQueue">Очередь</typeparam>
+/// <typeparam name="TRequest">Запрос</typeparam>
+/// <typeparam name="TResponse">Ответ</typeparam>
 public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     : BackgroundService
     where TQueue : IResponseReceive<TRequest?, TResponse>
 {
+    readonly ILogger<RabbitMqListenerService<TQueue, TRequest, TResponse>> LoggerRepo;
     readonly IConnection _connection;
     readonly IModel _channel;
     readonly IResponseReceive<TRequest?, TResponse> receiveService;
@@ -30,14 +37,17 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     static Dictionary<string, object>? ResponseQueueArguments;
 
 #if !DEBUG
-    static JsonSerializerOptions serOpt = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
+private static readonly JsonSerializerSettings _sOpt = new()
+    {
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+    };
 #endif
 
     Type? _queueType;
     /// <summary>
     /// Queue type
     /// </summary>
-    public Type QueueType { get { _queueType ??= typeof(TQueue); return _queueType; } }
+    Type QueueType { get { _queueType ??= typeof(TQueue); return _queueType; } }
 
     string? _queueName;
     /// <summary>
@@ -46,20 +56,17 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     public string QueueName { get { _queueName ??= TQueue.QueueName; return _queueName; } }
 
     /// <inheritdoc/>
-    public RabbitMqListenerService(IOptions<RabbitMQConfigModel> rabbitConf, IServiceProvider servicesProvider)
+    public RabbitMqListenerService(IOptions<RabbitMQConfigModel> rabbitConf, IServiceProvider servicesProvider, ILogger<RabbitMqListenerService<TQueue, TRequest, TResponse>> loggerRepo)
     {
+        LoggerRepo = loggerRepo;
         ResponseQueueArguments ??= new()
         {
             { "x-message-ttl", rabbitConf.Value.RemoteCallTimeoutMs },
             { "x-expires", rabbitConf.Value.RemoteCallTimeoutMs }
         };
 
-        // Console.WriteLine(JsonConvert.SerializeObject(rabbitConf.Value));
-
-        using (IServiceScope scope = servicesProvider.CreateScope())
-        {
-            receiveService = scope.ServiceProvider.GetServices<IResponseReceive<TRequest?, TResponse>>().First(o => o.GetType() == QueueType);
-        }
+        using IServiceScope scope = servicesProvider.CreateScope();
+        receiveService = scope.ServiceProvider.GetServices<IResponseReceive<TRequest?, TResponse>>().First(o => o.GetType() == QueueType);
 
         factory = new()
         {
@@ -99,9 +106,11 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
             {
                 result_handler = new();
                 result_handler.Messages.InjectException(ex);
+                LoggerRepo.LogError(ex, $"Ошибка выполнения удалённой команды");
             }
 
             if (!string.IsNullOrWhiteSpace(ea.BasicProperties.ReplyTo))
+            {
                 try
                 {
                     _channel.BasicPublish(exchange: "", routingKey: ea.BasicProperties.ReplyTo, basicProperties: null, body: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(result_handler, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)));
@@ -110,6 +119,7 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
                 {
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
+            }
 #else
             try
             {
@@ -129,7 +139,7 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
                         ReferenceHandler = ReferenceHandler.IgnoreCycles,
                         WriteIndented = true
                     };
-                    _channel.BasicPublish(exchange: "", routingKey: ea.BasicProperties.ReplyTo, basicProperties: null, body: System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result_handler, serOpt));
+                    _channel.BasicPublish(exchange: "", routingKey: ea.BasicProperties.ReplyTo, basicProperties: null, body: System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result_handler, _sOpt));
                 }
                 finally
                 {

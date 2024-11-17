@@ -11,7 +11,7 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// Read parameter
 /// </summary>
-public class ReadParameterReceive(ISerializeStorage serializeStorageRepo,ILogger<ReadParameterReceive> LoggerRepo)
+public class ReadParameterReceive(ISerializeStorage serializeStorageRepo, ILogger<ReadParameterReceive> LoggerRepo)
     : IResponseReceive<StorageMetadataModel?, StorageCloudParameterPayloadModel?>
 {
     /// <inheritdoc/>

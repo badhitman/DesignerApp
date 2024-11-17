@@ -43,7 +43,6 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
     async Task SaveModeSelectingRubrics()
     {
         await SetBusy();
-        
         TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<ModesSelectRubricsEnum?>(SelectedOption, GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics, true);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -53,23 +52,25 @@ public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
     async Task ToggleShowingDisabledRubrics()
     {
         await SetBusy();
-        
         TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<bool?>(ShowDisabledRubrics, GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics, true);
-        IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        StateHasChanged();
+
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+        await SetBusy(false);
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await SetBusy();
-        
         TResponseModel<bool?> res_ShowDisabledRubrics = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics);
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
-        IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res_ShowDisabledRubrics.Messages);
-        SnackbarRepo.ShowMessagesResponse(res_ModeSelectingRubrics.Messages);
+        await SetBusy(false);
+        if (!res_ShowDisabledRubrics.Success())
+            SnackbarRepo.ShowMessagesResponse(res_ShowDisabledRubrics.Messages);
+        if (!res_ModeSelectingRubrics.Success())
+            SnackbarRepo.ShowMessagesResponse(res_ModeSelectingRubrics.Messages);
+
         _showDisabledRubrics = res_ShowDisabledRubrics.Response == true;
 
         if (res_ModeSelectingRubrics.Response is null || ((int)res_ModeSelectingRubrics.Response) == 0)

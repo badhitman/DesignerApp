@@ -50,6 +50,16 @@ public interface ISerializeStorageRemoteTransmissionService
     public Task<TResponseModel<T?>> ReadParameter<T>(StorageMetadataModel req);
 
     /// <summary>
+    /// Прочитать значения параметров. Данные запрашиваемых параметров, которые отсутствуют в БД - не попадут в возвращаемый ответ.
+    /// </summary>
+    /// <typeparam name="T">Тип данных (для десериализации из JSON)</typeparam>
+    /// <remarks>
+    /// Возвращается самое актуальное значение (последнее установленное). Хранится история значений - если значение будет часто меняться будет ротация стека накопленных значений с усечением от 150 до 100.
+    /// Проверка переполнения происходит при каждой команде сохранения.
+    /// </remarks>
+    public Task<TResponseModel<List<T>?>> ReadParameters<T>(StorageMetadataModel[] req);
+
+    /// <summary>
     /// Сохранить параметр
     /// </summary>
     public Task<TResponseModel<int>> SaveParameter<T>(T payload_query, StorageMetadataModel store, bool trim);

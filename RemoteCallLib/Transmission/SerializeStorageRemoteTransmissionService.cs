@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SharedLib;
 
@@ -13,10 +14,29 @@ namespace RemoteCallLib;
 public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClient) : ISerializeStorageRemoteTransmissionService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<List<T>?>> ReadParameters<T>(StorageMetadataModel[] req)
+    {
+        TResponseModel<List<StorageCloudParameterPayloadModel>?> response_payload = await rabbitClient.MqRemoteCall<List<StorageCloudParameterPayloadModel>?>(GlobalStaticConstants.TransmissionQueues.ReadCloudParametersReceive, req);
+        TResponseModel<List<T>?> res = new();
+        if (!response_payload.Success())
+        {
+            res.Messages = response_payload.Messages;
+            return res;
+        }
+
+        if (response_payload.Response is null || response_payload.Response.Count == 0)
+            return res;
+
+        res.Response = response_payload.Response.Select(x => JsonConvert.DeserializeObject<T>(x.SerializedDataJson)).ToList()!;
+        return res;
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<T?>> ReadParameter<T>(StorageMetadataModel req)
     {
         TResponseModel<StorageCloudParameterPayloadModel?> response_payload = await rabbitClient.MqRemoteCall<StorageCloudParameterPayloadModel?>(GlobalStaticConstants.TransmissionQueues.ReadCloudParameterReceive, req);
-        TResponseModel<T?> res = new();
+        TResponseModel<T?> res = new() { Messages = response_payload.Messages };
+
         if (!response_payload.Success())
         {
             res.Messages = response_payload.Messages;

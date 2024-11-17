@@ -27,6 +27,7 @@ public class SendEmailReceive(IMailProviderService mailRepo, ILogger<SendEmailRe
         ResponseBaseModel mail_result = await mailRepo.SendEmailAsync(email_send.Email, email_send.Subject, email_send.TextMessage, email_send.MimeType);
         res.AddRangeMessages(mail_result.Messages);
         res.Response = mail_result.Success();
+
         return res;
     }
 }

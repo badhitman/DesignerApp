@@ -98,11 +98,11 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
     async Task EditToggle()
     {
         IsEditMode = !IsEditMode;
-        
+
         if (rubricSelector_ref is not null && Issue.RubricIssueId is not null)
         {
             await SetBusy();
-            
+
             TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(Issue.RubricIssueId.Value);
             IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -129,8 +129,10 @@ public partial class IssueBodyComponent : IssueWrapBaseModel
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await SerializeStorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
         IsBusyProgress = false;
 
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        SnackbarRepo.ShowMessagesResponse(res_ModeSelectingRubrics.Messages);
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (!res_ModeSelectingRubrics.Success())
+            SnackbarRepo.ShowMessagesResponse(res_ModeSelectingRubrics.Messages);
 
         if (res_ModeSelectingRubrics.Response is null || (int)res_ModeSelectingRubrics.Response == 0)
             res_ModeSelectingRubrics.Response = ModesSelectRubricsEnum.AllowWithoutRubric;

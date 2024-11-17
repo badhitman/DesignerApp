@@ -2,22 +2,21 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RabbitMQ.Client.Events;
+using System.Diagnostics;
+using System.Text.Json;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using SharedLib;
-using System.Diagnostics;
 using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-
+using SharedLib;
 
 namespace RemoteCallLib;
 
 /// <summary>
-/// RabbitMq client
+/// Удалённый вызов команд (RabbitMq client)
 /// </summary>
 public class RabbitClient : IRabbitClient
 {
@@ -26,14 +25,10 @@ public class RabbitClient : IRabbitClient
     readonly ILogger<RabbitClient> loggerRepo;
 
     static Dictionary<string, object>? ResponseQueueArguments;
-
-
     public static readonly JsonSerializerOptions SerializerOptions = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
 
-
-    IBasicProperties? properties;
     /// <summary>
-    /// RabbitMq client
+    /// Удалённый вызов команд (RabbitMq client)
     /// </summary>
     public RabbitClient(IOptions<RabbitMQConfigModel> rabbitConf, ILogger<RabbitClient> _loggerRepo)
     {
@@ -62,9 +57,9 @@ public class RabbitClient : IRabbitClient
         using IConnection _connection = factory.CreateConnection(); ;
         using IModel _channel = _connection.CreateModel();
 
-        _channel.QueueDeclare(queue: response_topic, durable: false, exclusive: false, autoDelete: true, arguments: ResponseQueueArguments);
-        properties = _channel.CreateBasicProperties();
+        IBasicProperties? properties = _channel.CreateBasicProperties();
         properties.ReplyTo = response_topic;
+        _channel.QueueDeclare(queue: response_topic, durable: false, exclusive: false, autoDelete: true, arguments: ResponseQueueArguments);
 
         TResponseModel<T> res = new();
         Stopwatch stopwatch = new();
@@ -73,12 +68,13 @@ public class RabbitClient : IRabbitClient
         CancellationTokenSource cts = new();
         CancellationToken token = cts.Token;
         ManualResetEventSlim mres = new(false);
-
+        string _msg;
         void MessageReceivedEvent(object? sender, BasicDeliverEventArgs e)
         {
             string msg;
             consumer.Received -= MessageReceivedEvent;
             string content = Encoding.UTF8.GetString(e.Body.ToArray());
+
             try
             {
                 res = JsonConvert.DeserializeObject<TResponseModel<T>>(content, GlobalStaticConstants.JsonSerializerSettings)
@@ -117,10 +113,6 @@ public class RabbitClient : IRabbitClient
                       exclusive: false,
                       autoDelete: false,
                       arguments: null);
-
-        // System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request);
-
-
 
 #if DEBUG
         string request_payload_json = "";
@@ -166,11 +158,13 @@ public class RabbitClient : IRabbitClient
 
         if (stopwatch.IsRunning)
         {
+            _msg = $"Elapsed for `{queue}` -> `{response_topic}`: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}";
+            loggerRepo.LogError(_msg);
             stopwatch.Stop();
-            res.AddInfo($"Elapsed: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
+            res.AddInfo(_msg);
         }
-
-        loggerRepo.LogDebug($"Elapsed: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
+        else
+            loggerRepo.LogDebug($"Elapsed [{queue}] -> [{response_topic}]: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
 
         return Task.FromResult(res);
     }

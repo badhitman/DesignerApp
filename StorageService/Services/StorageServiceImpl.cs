@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
@@ -17,9 +18,9 @@ public class StorageServiceImpl(
     ILogger<StorageServiceImpl> loggerRepo) : ISerializeStorage
 {
 #if DEBUG
-    static readonly TimeSpan _ts = TimeSpan.FromSeconds(50);
+    static readonly TimeSpan _ts = TimeSpan.FromSeconds(10);
 #else
-    static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
+    static readonly TimeSpan _ts = TimeSpan.FromSeconds(60);
 #endif
 
     /// <inheritdoc/>
@@ -171,7 +172,7 @@ public class StorageServiceImpl(
             res.Response = sd;
             return res;
         }
-
+        string msg;
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         StorageCloudParameterModelDB? parameter_db = await context
             .CloudProperties
@@ -183,6 +184,7 @@ public class StorageServiceImpl(
             x.PrefixPropertyName == req.PrefixPropertyName);
 
         if (parameter_db is not null)
+        {
             res.Response = new StorageCloudParameterPayloadModel()
             {
                 ApplicationName = parameter_db.ApplicationName,
@@ -192,12 +194,39 @@ public class StorageServiceImpl(
                 TypeName = parameter_db.TypeName,
                 SerializedDataJson = parameter_db.SerializedDataJson,
             };
+            msg = $"Параметр `{req}` прочитан";
+            res.AddInfo(msg);
+        }
         else
-            res.AddWarning($"Параметр не найден");
+        {
+            msg = $"Параметр не найден: `{req}`";
+            res.AddWarning(msg);
+        }
 
         cache.Set(mem_key, res.Response, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
 
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<List<StorageCloudParameterPayloadModel>>> ReadParameters(StorageMetadataModel[] req)
+    {
+        BlockingCollection<StorageCloudParameterPayloadModel> res = [];
+        BlockingCollection<ResultMessage> _messages = [];
+        await Task.WhenAll(req.Select(x => Task.Run(async () =>
+        {
+            TResponseModel<StorageCloudParameterPayloadModel?> _subResult = await ReadParameter(x);
+            if (_subResult.Success() && _subResult.Response is not null)
+                res.Add(_subResult.Response);
+            if (_subResult.Messages.Count != 0)
+                _subResult.Messages.ForEach(m => _messages.Add(m));
+        })));
+
+        return new TResponseModel<List<StorageCloudParameterPayloadModel>>()
+        {
+            Response = [.. res],
+            Messages = [.. _messages],
+        };
     }
 
     /// <inheritdoc/>

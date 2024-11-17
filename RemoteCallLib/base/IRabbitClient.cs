@@ -7,7 +7,7 @@ using SharedLib;
 namespace RemoteCallLib;
 
 /// <summary>
-/// RabbitMq client
+/// Удалённый вызов команд (RabbitMq client)
 /// </summary>
 public interface IRabbitClient
 {

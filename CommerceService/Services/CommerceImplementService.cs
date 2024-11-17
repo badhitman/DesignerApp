@@ -241,18 +241,19 @@ public class CommerceImplementService(
                 res.AddError($"Для адреса доставки '{x.AddressOrganization?.Name}' не указана номенклатура");
             else if (x.Rows.Any(x => x.Quantity < 1))
                 res.AddError($"В адресе доставки '{x.AddressOrganization?.Name}' есть номенклатура без количества");
+            else if (x.Rows.Count != x.Rows.GroupBy(x => x.OfferId).Count())
+                res.AddError($"В адресе доставки '{x.AddressOrganization?.Name}' ошибка в таблице товаров: оффер встречается более одного раза");
         });
         if (!res.Success())
             return res;
 
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         TResponseModel<UserInfoModel[]?> actor = await webTransmissionRepo.GetUsersIdentity([req.AuthorIdentityUserId]);
-
         if (!actor.Success() || actor.Response is null || actor.Response.Length == 0)
         {
             res.AddRangeMessages(actor.Messages);
             return res;
         }
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         using IDbContextTransaction transaction = context.Database.BeginTransaction();
 
         RowOfOrderDocumentModelDB[] _offersOfDocument = req.AddressesTabs.SelectMany(x => x.Rows!).ToArray();
@@ -275,7 +276,7 @@ public class CommerceImplementService(
             return res;
         }
 
-        int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId).Distinct()];
+        int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId)];
         List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
             .Where(x => _offersIds.Any(y => y == x.OfferId))
             .ToListAsync();
@@ -284,7 +285,7 @@ public class CommerceImplementService(
         DateTime dtu = DateTime.UtcNow;
         req.LastAtUpdatedUTC = dtu;
         req.PrepareForSave();
-        List<Task> tasks = [];
+        List<Task> tasks;
         if (req.Id < 1)
         {
             req.CreatedAtUTC = dtu;
@@ -309,17 +310,12 @@ public class CommerceImplementService(
                 };
 
                 TResponseModel<int> issue = await hdRepo.IssueCreateOrUpdate(issue_new);
-
                 if (!issue.Success())
                 {
                     await transaction.RollbackAsync();
                     res.Messages.AddRange(issue.Messages);
                     return res;
                 }
-
-                req.HelpdeskId = issue.Response;
-                context.Update(req);
-                await context.SaveChangesAsync();
 
                 if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
                 {
@@ -328,14 +324,25 @@ public class CommerceImplementService(
                 }
 
                 string subject_email = "Создан новый заказ";
-                TResponseModel<string?> CommerceNewOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification);
-                if (CommerceNewOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
-                    subject_email = CommerceNewOrderSubjectNotification.Response;
-
                 DateTime _dt = DateTime.UtcNow.GetCustomTime();
                 string _dtAsString = $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
-
                 string _about_order = $"'{req.Name}' {_dtAsString}";
+                TResponseModel<string?>? CommerceNewOrderSubjectNotification = null, CommerceNewOrderBodyNotification = null, CommerceNewOrderBodyNotificationTelegram = null;
+
+                req.HelpdeskId = issue.Response;
+                context.Update(req);
+
+                tasks = [
+                    context.SaveChangesAsync(),
+                    Task.Run(async () => { CommerceNewOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification); }),
+                    Task.Run(async () => { CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification); }),
+                    Task.Run(async () => { CommerceNewOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram); })];
+
+                await Task.WhenAll(tasks);
+
+                if (CommerceNewOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
+                    subject_email = CommerceNewOrderSubjectNotification.Response;
+
                 string ReplaceTags(string raw, bool clearMd = false)
                 {
                     return raw.Replace(GlobalStaticConstants.OrderDocumentName, req.Name)
@@ -346,7 +353,6 @@ public class CommerceImplementService(
                 }
 
                 subject_email = ReplaceTags(subject_email);
-
                 res.AddSuccess(subject_email);
                 msg = $"<p>Заказ <b>'{issue_new.Payload.Name}' от [{_dtAsString}]</b> успешно создан.</p>" +
                         $"<p>/<a href='{_webConf.ClearBaseUri}'>{_webConf.ClearBaseUri}</a>/</p>";
@@ -354,17 +360,15 @@ public class CommerceImplementService(
 
                 waMsg = $"Заказ '{issue_new.Payload.Name}' от [{_dtAsString}] успешно создан.\n{_webConf.ClearBaseUri}";
 
-                TResponseModel<string?> CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification);
-                if (CommerceNewOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotification.Response))
+                if (CommerceNewOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotification.Response))
                     msg = CommerceNewOrderBodyNotification.Response;
                 msg = ReplaceTags(msg);
 
-                TResponseModel<string?> CommerceNewOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram);
-                if (CommerceNewOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationTelegram.Response))
+                if (CommerceNewOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationTelegram.Response))
                     msg_for_tg = CommerceNewOrderBodyNotificationTelegram.Response;
                 msg_for_tg = ReplaceTags(msg_for_tg);
 
-                tasks.Add(webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg }));
+                tasks = [webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg })];
 
                 if (actor.Response[0].TelegramId.HasValue)
                     tasks.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value }));
@@ -412,7 +416,7 @@ public class CommerceImplementService(
 
         OrderDocumentModelDB order_document = await context.OrdersDocuments.FirstAsync(x => x.Id == req.Id);
 
-        if (order_document.Name == req.Name && order_document.IsDisabled == req.IsDisabled && order_document.Description == req.Description)
+        if (order_document.Name == req.Name && /*order_document.IsDisabled == req.IsDisabled &&*/ order_document.Description == req.Description)
         {
             res.AddInfo($"Документ #{req.Id} не требует обновления");
             await transaction.CommitAsync();
