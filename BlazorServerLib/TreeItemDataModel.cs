@@ -49,4 +49,26 @@ public class TreeItemDataModel : TreeItemData<EntryTagModel>
         Text = entry.Name;
         Icon = icon;
     }
+
+    /// <inheritdoc/>
+    public TreeItemDataModel(TreeItemData<EntryTagModel> x)
+    {
+        TreeItemDataModel _sender = (TreeItemDataModel)x;
+        Value = _sender.Value;
+        Children = _sender.Children;
+
+        SystemName = _sender.SystemName;
+        Qualification = _sender.Qualification;
+        Tooltip = _sender.Tooltip;
+        ErrorMessage = _sender.ErrorMessage;
+        Information = _sender.Information;
+        Visible = _sender.Visible;
+        IsDisabled = _sender.IsDisabled;
+        Expandable = _sender.Expandable;
+        Expanded = _sender.Expanded;
+        Text = _sender.Text;
+        Icon = _sender.Icon;
+        SystemName = _sender.SystemName;
+        Selected = _sender.Selected;
+    }
 }

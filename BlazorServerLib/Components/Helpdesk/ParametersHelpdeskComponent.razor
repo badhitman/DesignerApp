@@ -1,7 +1,10 @@
 @using BlazorWebLib.Components.ParametersShared
 @using BlazorWebLib.Components.Telegram
 @using BlazorWebLib.Components.Users
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Web
 @using MudBlazor
+@using SharedLib
 
 @attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.HelpDeskTelegramBotManager},{GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit}")]
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
@@ -132,19 +135,19 @@
                                 </p>
                             </div>
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
+                                <li class="list-group-item list-group-item-info">
                                     Курсив - Чтобы выделить текст <i>курсивом</i>, используйте символ подчеркивания по обе стороны текста: _Текст_
                                 </li>
-                                <li class="list-group-item">
+                                <li class="list-group-item list-group-item-info">
                                     Жирный шрифт - Чтобы выделить текст <b>жирным шрифтом</b>, используйте звездочку по обе стороны текста: *Текст*
                                 </li>
-                                <li class="list-group-item">
+                                <li class="list-group-item list-group-item-info">
                                     Зачеркивание - Чтобы <s>зачеркнуть текст</s>, используйте символ тильды по обе стороны текста: ~Текст~
                                 </li>
-                                <li class="list-group-item">
+                                <li class="list-group-item list-group-item-info">
                                     Моноширинный шрифт - Чтобы выделить текст <span class="font-monospace">моноширинным шрифтом</span>, используйте три обратных апострофа по обе стороны текста: ```Текст```
                                 </li>
-                                <li class="list-group-item">
+                                <li class="list-group-item list-group-item-info">
                                     Маркированный список - Чтобы добавить в сообщение маркированный список, поставьте звездочку или дефис и пробел перед каждым словом или предложением:
                                     <pre>
 * Текст

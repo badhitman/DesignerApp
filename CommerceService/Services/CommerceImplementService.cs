@@ -228,6 +228,23 @@ public class CommerceImplementService(
     public async Task<TResponseModel<int>> OrderUpdate(OrderDocumentModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
+
+        if (req.AddressesTabs is null || req.AddressesTabs.Count == 0)
+        {
+            res.AddError($"В заказе отсутствуют адреса доставки");
+            return res;
+        }
+
+        req.AddressesTabs.ForEach(x =>
+        {
+            if (x.Rows is null || x.Rows.Count == 0)
+                res.AddError($"Для адреса доставки '{x.AddressOrganization?.Name}' не указана номенклатура");
+            else if (x.Rows.Any(x => x.Quantity < 1))
+                res.AddError($"В адресе доставки '{x.AddressOrganization?.Name}' есть номенклатура без количества");
+        });
+        if (!res.Success())
+            return res;
+
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         TResponseModel<UserInfoModel[]?> actor = await webTransmissionRepo.GetUsersIdentity([req.AuthorIdentityUserId]);
 
@@ -237,10 +254,37 @@ public class CommerceImplementService(
             return res;
         }
         using IDbContextTransaction transaction = context.Database.BeginTransaction();
+
+        RowOfOrderDocumentModelDB[] _offersOfDocument = req.AddressesTabs.SelectMany(x => x.Rows!).ToArray();
+        LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB()
+        {
+            LockerName = nameof(OfferAvailabilityModelDB),
+            LockerId = x.OfferId,
+            RubricId = -1
+        }).ToArray();
+
+        try
+        {
+            await context.AddRangeAsync(offersLocked);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
+            return res;
+        }
+
+        int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId).Distinct()];
+        List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
+            .Where(x => _offersIds.Any(y => y == x.OfferId))
+            .ToListAsync();
+
         string msg, waMsg;
         DateTime dtu = DateTime.UtcNow;
         req.LastAtUpdatedUTC = dtu;
         req.PrepareForSave();
+        List<Task> tasks = [];
         if (req.Id < 1)
         {
             req.CreatedAtUTC = dtu;
@@ -320,17 +364,14 @@ public class CommerceImplementService(
                     msg_for_tg = CommerceNewOrderBodyNotificationTelegram.Response;
                 msg_for_tg = ReplaceTags(msg_for_tg);
 
-                List<Task> servicesCalls =
-                [
-                    webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg }),
-                ];
+                tasks.Add(webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg }));
 
                 if (actor.Response[0].TelegramId.HasValue)
-                    servicesCalls.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value }));
+                    tasks.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value }));
 
                 if (!string.IsNullOrWhiteSpace(actor.Response[0].PhoneNumber) && GlobalTools.IsPhoneNumber(actor.Response[0].PhoneNumber!))
                 {
-                    servicesCalls.Add(Task.Run(async () =>
+                    tasks.Add(Task.Run(async () =>
                     {
                         TResponseModel<string?> wappiToken = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
                         TResponseModel<string?> wappiProfileId = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
@@ -354,7 +395,9 @@ public class CommerceImplementService(
                 }
 
                 loggerRepo.LogInformation(msg_for_tg);
-                await Task.WhenAll(servicesCalls);
+                context.RemoveRange(offersLocked);
+                tasks.Add(context.SaveChangesAsync());
+                await Task.WhenAll(tasks);
                 await transaction.CommitAsync();
                 return res;
             }
@@ -367,13 +410,7 @@ public class CommerceImplementService(
             }
         }
 
-        OrderDocumentModelDB? order_document = await context.OrdersDocuments.FirstOrDefaultAsync(x => x.Id == req.Id);
-        if (order_document is null)
-        {
-            res.AddError($"Документ #{req.Id} не найден");
-            await transaction.RollbackAsync();
-            return res;
-        }
+        OrderDocumentModelDB order_document = await context.OrdersDocuments.FirstAsync(x => x.Id == req.Id);
 
         if (order_document.Name == req.Name && order_document.IsDisabled == req.IsDisabled && order_document.Description == req.Description)
         {
@@ -387,7 +424,7 @@ public class CommerceImplementService(
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, req.Name)
             .SetProperty(p => p.Description, req.Description)
-            .SetProperty(p => p.IsDisabled, req.IsDisabled)
+            //.SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
         await transaction.CommitAsync();

@@ -163,7 +163,7 @@ public partial class DocumentsManufactureComponent : BlazorBusyComponentBaseMode
     protected override void OnInitialized()
     {
         ReloadTree();
-        ManufactureParentView.TreeBuildDoneAction(TreeItems.Cast<TreeItemDataModel>());
+        ManufactureParentView.TreeBuildDoneAction(TreeItems.Select(x => new TreeItemDataModel(x)));
     }
 
     /// <inheritdoc/>

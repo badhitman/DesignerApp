@@ -22,6 +22,21 @@ public class TreeItemDataRubricModel : TreeItemData<RubricBaseModel?>
         Expandable = entry.Id > 0;
     }
 
+    /// <inheritdoc/>
+    public TreeItemDataRubricModel(TreeItemData<RubricBaseModel> x)
+    {
+        TreeItemDataRubricModel _sender = (TreeItemDataRubricModel)x!;
+        Value = _sender.Value;
+        Children = _sender.Children;
+        Icon = _sender.Icon;
+        MoveRowState = _sender.MoveRowState;
+        Expanded = _sender.Expanded;
+        Expandable = _sender.Expandable;
+        Visible = _sender.Visible;
+        Text = _sender.Text;
+        Selected = _sender.Selected;
+    }
+
     /// <summary>
     /// Состояние элемента касательно возможности его сдвинуть (выше/ниже)
     /// </summary>

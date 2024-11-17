@@ -85,7 +85,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseAuthModel
                 _errors.Add(tree_item.ErrorMessage);
 
             if (tree_item.Children is not null)
-                TreeBuildDoneAction(tree_item.Children.Cast<TreeItemDataModel>());
+                TreeBuildDoneAction(tree_item.Children.Select(x => new TreeItemDataModel(x)));
         }
     }
 

@@ -35,7 +35,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         SelectedValuesChanged?.SelectedValuesChangedHandler(SelectedValues);
     }
 
-    List<TreeItemData<RubricBaseModel?>> ConvertRubrics(IEnumerable<RubricBaseModel> rubrics)
+    List<TreeItemData<RubricBaseModel>> ConvertRubrics(IEnumerable<RubricBaseModel> rubrics)
     {
         (uint min, uint max) = rubrics.Any(x => x.SortIndex != uint.MaxValue)
             ? (rubrics.Min(x => x.SortIndex), rubrics.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
@@ -73,11 +73,11 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         if (parent_id > 0)
         {
             TreeItemDataRubricModel findNode = FindNode(parent_id, InitialTreeItems) ?? throw new Exception();
-            findNode.Children = ConvertRubrics(rubrics);
+            findNode.Children = ConvertRubrics(rubrics)!;
         }
         else
         {
-            InitialTreeItems = [.. ConvertRubrics(rubrics).Cast<TreeItemDataRubricModel>()];
+            InitialTreeItems = [.. ConvertRubrics(rubrics).Select(x => new TreeItemDataRubricModel(x))]; //.Cast<TreeItemDataRubricModel>()];
         }
         await SetBusy(false);
     }
@@ -124,7 +124,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     protected override async void OnInitialized()
     {
         List<RubricBaseModel> rubrics = await RequestRubrics();
-        InitialTreeItems = [.. ConvertRubrics(rubrics).Cast<TreeItemDataRubricModel>()];
+        InitialTreeItems = [.. ConvertRubrics(rubrics).Select(x => new TreeItemDataRubricModel(x))];
         await SetBusy(false);
     }
 
@@ -136,7 +136,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         List<RubricBaseModel> rubrics = await RequestRubrics(parentValue.Id);
         TreeItemDataRubricModel findNode = FindNode(parentValue.Id, InitialTreeItems) ?? throw new Exception();
 
-        findNode.Children = ConvertRubrics(rubrics);
+        findNode.Children = ConvertRubrics(rubrics)!;
         return findNode.Children;
     }
 
