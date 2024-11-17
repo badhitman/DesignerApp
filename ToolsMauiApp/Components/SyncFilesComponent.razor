@@ -91,7 +91,7 @@
             <div class="card-body">
                 <h5 class="card-title">Удаление файлов (@forDelete.Length шт. @GlobalTools.SizeDataAsString(forDelete.Sum(x => x.Size))):</h5>
                 <ul>
-                    @foreach (ToolsFilesResponseModel _tfd in forDelete)
+                    @foreach (ToolsFilesResponseModel _tfd in forDelete.OrderBy(x => x.ScopeName))
                     {
                         <li>@_tfd.ToString()</li>
                     }
@@ -112,7 +112,7 @@
             <div class="card-body">
                 <h5 class="card-title"> Изменения файлов (@forUpdateOrAdd.Length шт. @GlobalTools.SizeDataAsString(forUpdateOrAdd.Sum(x => x.Size))):</h5>
                 <ul>
-                    @foreach (ToolsFilesResponseModel _tfd in forUpdateOrAdd)
+                    @foreach (ToolsFilesResponseModel _tfd in forUpdateOrAdd.OrderByDescending(x => x.Size))
                     {
                         ToolsFilesResponseModel? _localMd = localScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);
                         ToolsFilesResponseModel? _remoteMd = remoteScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);

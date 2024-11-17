@@ -1083,15 +1083,16 @@ public class HelpdeskImplementService(
                 req.Payload.Step != StatusesDocumentsEnum.Canceled)
             {
                 res.AddError("Для перевода обращения в работу нужно сначала указать исполнителя");
+                await Task.WhenAll(tasks);
                 return res;
             }
 
             string msg = $"Статус успешно изменён с `{issue_data.StepIssue}` на `{req.Payload.Step}`";
 
-            await context.Issues.Where(x => x.Id == issue_data.Id)
+            tasks.Add(context.Issues.Where(x => x.Id == issue_data.Id)
                 .ExecuteUpdateAsync(set => set
                 .SetProperty(p => p.StepIssue, req.Payload.Step)
-                .SetProperty(p => p.LastUpdateAt, DateTime.UtcNow));
+                .SetProperty(p => p.LastUpdateAt, DateTime.UtcNow)));
 
             tasks.Add(ConsoleSegmentCacheEmpty(issue_data.StepIssue));
             res.AddSuccess(msg);
@@ -1117,6 +1118,7 @@ public class HelpdeskImplementService(
             tasks.Add(PulsePush(p_req));
             await Task.WhenAll(tasks);
             tasks.Clear();
+
             OrdersByIssuesSelectRequestModel req_docs = new()
             {
                 IssueIds = [issue_data.Id],
@@ -1139,10 +1141,28 @@ public class HelpdeskImplementService(
                     .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}" : $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}'>{_about_order}</a>")
                     .Replace(GlobalStaticConstants.HostAddress, clearMd ? wc.Response?.ClearBaseUri : $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
                 }
-
+                TResponseModel<UserInfoModel[]?>? users_notify = null;
+                TResponseModel<string?>?
+                    CommerceStatusChangeOrderSubjectNotification = null,
+                    CommerceStatusChangeOrderBodyNotification = null,
+                    CommerceStatusChangeOrderBodyNotificationWhatsapp = null,
+                    CommerceStatusChangeOrderBodyNotificationTelegram = null;
                 string subject_email = "Изменение статуса документа";
-                TResponseModel<string?> CommerceStatusChangeOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(issue_data.StepIssue));
-                if (CommerceStatusChangeOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderSubjectNotification.Response))
+
+                IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
+                TResponseModel<string?>? wappiToken = null, wappiProfileId = null;
+
+                tasks = [
+                    Task.Run(async () => {
+                        string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
+                        users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids); }),
+                    Task.Run(async () => { CommerceStatusChangeOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(issue_data.StepIssue)); }),
+                    Task.Run(async () => { CommerceStatusChangeOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(issue_data.StepIssue)); }),
+                    Task.Run(async () => { CommerceStatusChangeOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(issue_data.StepIssue)); })];
+
+                await Task.WhenAll(tasks);
+
+                if (CommerceStatusChangeOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderSubjectNotification.Response))
                     subject_email = CommerceStatusChangeOrderSubjectNotification.Response;
                 subject_email = ReplaceTags(subject_email);
 
@@ -1153,27 +1173,19 @@ public class HelpdeskImplementService(
                 string wp_message = $"Заказ '{order_obj.Name}' от [{normCreatedAtUTC}] - {req.Payload.Step.DescriptionInfo()}. " +
                                     $"{wc.Response?.ClearBaseUri}";
 
-                TResponseModel<string?> CommerceStatusChangeOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(issue_data.StepIssue));
-                if (CommerceStatusChangeOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
+                if (CommerceStatusChangeOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
                     msg = CommerceStatusChangeOrderBodyNotification.Response;
                 msg = ReplaceTags(msg);
 
-                TResponseModel<string?> CommerceStatusChangeOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(issue_data.StepIssue));
-                if (CommerceStatusChangeOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationTelegram.Response))
+                if (CommerceStatusChangeOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationTelegram.Response))
                     tg_message = CommerceStatusChangeOrderBodyNotificationTelegram.Response;
                 tg_message = ReplaceTags(tg_message);
 
-                TResponseModel<string?>? CommerceStatusChangeOrderBodyNotificationWhatsapp = null;
-
-                IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
-                TResponseModel<string?>? wappiToken = null, wappiProfileId = null;
-                
-                string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
-                TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
-                if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
+                if (users_notify?.Success() == true && users_notify.Response is not null && users_notify.Response.Length != 0)
                 {
                     foreach (UserInfoModel u in users_notify.Response)
                     {
+                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }));
                         if (u.TelegramId.HasValue)
                         {
                             tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(new()
@@ -1183,7 +1195,6 @@ public class HelpdeskImplementService(
                             }));
                         }
                         loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
-                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }));
                         if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
                         {
                             if (CommerceStatusChangeOrderBodyNotificationWhatsapp is null)
@@ -1194,10 +1205,11 @@ public class HelpdeskImplementService(
                                 wp_message = ReplaceTags(wp_message, true);
                             }
 
-                            wappiToken ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
-                            wappiProfileId ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
+                            await Task.WhenAll([
+                                Task.Run(async () => { wappiToken ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi); }),
+                                Task.Run(async () => { wappiProfileId ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId); })]);
 
-                            if (wappiToken.Success() && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId.Success() && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
+                            if (wappiToken?.Success() == true && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId?.Success() == true && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
                             {
                                 tasks.Add(Task.Run(async () =>
                                 {
