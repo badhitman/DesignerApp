@@ -36,20 +36,20 @@ public partial class CloudParametersLayerContext : DbContext
     /// <summary>
     /// Параметры
     /// </summary>
-    public DbSet<StorageCloudParameterModelDB> CloudProperties { get; set; }
+    public DbSet<StorageCloudParameterModelDB> CloudProperties { get; set; } = default!;
 
     /// <summary>
     /// Файлы
     /// </summary>
-    public DbSet<StorageFileModelDB> CloudFiles { get; set; }
+    public DbSet<StorageFileModelDB> CloudFiles { get; set; } = default!;
 
     /// <summary>
     /// RulesFilesAccess
     /// </summary>
-    public DbSet<AccessFileRuleModelDB> RulesFilesAccess { get; set; }
+    public DbSet<AccessFileRuleModelDB> RulesFilesAccess { get; set; } = default!;
 
     /// <summary>
     /// Тэги
     /// </summary>
-    public DbSet<TagModelDB> CloudTags { get; set; }
+    public DbSet<TagModelDB> CloudTags { get; set; } = default!;
 }

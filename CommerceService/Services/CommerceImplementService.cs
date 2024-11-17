@@ -355,12 +355,14 @@ public class CommerceImplementService(
 
                 loggerRepo.LogInformation(msg_for_tg);
                 await Task.WhenAll(servicesCalls);
+                await transaction.CommitAsync();
                 return res;
             }
             catch (Exception ex)
             {
                 loggerRepo.LogError(ex, $"Не удалось создать заявку-заказ: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
                 res.Messages.InjectException(ex);
+                await transaction.RollbackAsync();
                 return res;
             }
         }
@@ -369,12 +371,14 @@ public class CommerceImplementService(
         if (order_document is null)
         {
             res.AddError($"Документ #{req.Id} не найден");
+            await transaction.RollbackAsync();
             return res;
         }
 
         if (order_document.Name == req.Name && order_document.IsDisabled == req.IsDisabled && order_document.Description == req.Description)
         {
             res.AddInfo($"Документ #{req.Id} не требует обновления");
+            await transaction.CommitAsync();
             return res;
         }
 

@@ -1056,10 +1056,10 @@ public class HelpdeskImplementService(
             res.AddError("Не достаточно прав для смены статуса");
             return res;
         }
-
+        List<Task> tasks = [];
         if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
         {
-            await SubscribeUpdate(new()
+            tasks.Add(SubscribeUpdate(new()
             {
                 SenderActionUserId = GlobalStaticConstants.Roles.System,
                 Payload = new()
@@ -1069,7 +1069,7 @@ public class HelpdeskImplementService(
                     UserId = actor.UserId,
                     IsSilent = false,
                 }
-            });
+            }));
         }
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
@@ -1093,7 +1093,7 @@ public class HelpdeskImplementService(
                 .SetProperty(p => p.StepIssue, req.Payload.Step)
                 .SetProperty(p => p.LastUpdateAt, DateTime.UtcNow));
 
-            await ConsoleSegmentCacheEmpty(issue_data.StepIssue);
+            tasks.Add(ConsoleSegmentCacheEmpty(issue_data.StepIssue));
             res.AddSuccess(msg);
             res.Response = true;
             PulseRequestModel p_req = new()
@@ -1114,7 +1114,9 @@ public class HelpdeskImplementService(
                 IsMuteWhatsapp = true,
             };
 
-            await PulsePush(p_req);
+            tasks.Add(PulsePush(p_req));
+            await Task.WhenAll(tasks);
+            tasks.Clear();
             OrdersByIssuesSelectRequestModel req_docs = new()
             {
                 IssueIds = [issue_data.Id],
@@ -1123,7 +1125,7 @@ public class HelpdeskImplementService(
             TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
             if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
             {
-                await commRepo.StatusOrderChange(new() { IssueId = issue_data.Id, Step = req.Payload.Step });
+                tasks.Add(commRepo.StatusOrderChange(new() { IssueId = issue_data.Id, Step = req.Payload.Step }));
                 TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                 OrderDocumentModelDB order_obj = find_orders.Response[0];
                 DateTime cdd = order_obj.CreatedAtUTC.GetCustomTime();
@@ -1165,7 +1167,7 @@ public class HelpdeskImplementService(
 
                 IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
                 TResponseModel<string?>? wappiToken = null, wappiProfileId = null;
-                List<Task> tasks = [];
+                
                 string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
                 TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
                 if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)

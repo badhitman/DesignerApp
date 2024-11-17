@@ -67,82 +67,82 @@ public partial class TelegramBotLayerContext : DbContext
     /// <summary>
     /// JoinsUsersToChats
     /// </summary>
-    public DbSet<JoinUserChatModelDB> JoinsUsersToChats { get; set; }
+    public DbSet<JoinUserChatModelDB> JoinsUsersToChats { get; set; } = default!;
 
     /// <summary>
     /// Chats
     /// </summary>
-    public DbSet<ChatTelegramModelDB> Chats { get; set; }
+    public DbSet<ChatTelegramModelDB> Chats { get; set; } = default!;
 
     /// <summary>
     /// Chats Photos
     /// </summary>
-    public DbSet<ChatPhotoTelegramModelDB> ChatsPhotos { get; set; }
+    public DbSet<ChatPhotoTelegramModelDB> ChatsPhotos { get; set; } = default!;
 
 
     /// <summary>
     /// Users
     /// </summary>
-    public DbSet<UserTelegramModelDB> Users { get; set; }
+    public DbSet<UserTelegramModelDB> Users { get; set; } = default!;
 
 
     /// <summary>
     /// Messages
     /// </summary>
-    public DbSet<MessageTelegramModelDB> Messages { get; set; }
+    public DbSet<MessageTelegramModelDB> Messages { get; set; } = default!;
 
     /// <summary>
     /// Photos Messages
     /// </summary>
-    public DbSet<PhotoMessageTelegramModelDB> PhotosMessages { get; set; }
+    public DbSet<PhotoMessageTelegramModelDB> PhotosMessages { get; set; } = default!;
 
 
     /// <summary>
     /// Audios
     /// </summary>
-    public DbSet<AudioTelegramModelDB> Audios { get; set; }
+    public DbSet<AudioTelegramModelDB> Audios { get; set; } = default!;
 
     /// <summary>
     /// AudiosThumbnails
     /// </summary>
-    public DbSet<AudioThumbnailTelegramModelDB> AudiosThumbnails { get; set; }
+    public DbSet<AudioThumbnailTelegramModelDB> AudiosThumbnails { get; set; } = default!;
 
 
     /// <summary>
     /// Documents
     /// </summary>
-    public DbSet<DocumentTelegramModelDB> Documents { get; set; }
+    public DbSet<DocumentTelegramModelDB> Documents { get; set; } = default!;
 
     /// <summary>
     /// DocumentsThumbnails
     /// </summary>
-    public DbSet<DocumentThumbnailTelegramModelDB> DocumentsThumbnails { get; set; }
+    public DbSet<DocumentThumbnailTelegramModelDB> DocumentsThumbnails { get; set; } = default!;
 
 
     /// <summary>
     /// Videos
     /// </summary>
-    public DbSet<VideoTelegramModelDB> Videos { get; set; }
+    public DbSet<VideoTelegramModelDB> Videos { get; set; } = default!;
 
     /// <summary>
     /// VideosThumbnails
     /// </summary>
-    public DbSet<VideoThumbnailTelegramModelDB> VideosThumbnails { get; set; }
+    public DbSet<VideoThumbnailTelegramModelDB> VideosThumbnails { get; set; } = default!;
 
 
     /// <summary>
     /// Voices
     /// </summary>
-    public DbSet<VoiceTelegramModelDB> Voices { get; set; }
+    public DbSet<VoiceTelegramModelDB> Voices { get; set; } = default!;
 
 
     /// <summary>
     /// Contacts
     /// </summary>
-    public DbSet<ContactTelegramModelDB> Contacts { get; set; }
+    public DbSet<ContactTelegramModelDB> Contacts { get; set; } = default!;
 
     /// <summary>
     /// Ошибки отправки сообщений TelegramBot
     /// </summary>
-    public DbSet<ErrorSendingMessageTelegramBotModelDB> ErrorsSendingTextMessageTelegramBot { get; set; }
+    public DbSet<ErrorSendingMessageTelegramBotModelDB> ErrorsSendingTextMessageTelegramBot { get; set; } = default!;
 }

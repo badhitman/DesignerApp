@@ -36,74 +36,74 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// Organizations
     /// </summary>
-    public DbSet<OrganizationModelDB> Organizations { get; set; }
+    public DbSet<OrganizationModelDB> Organizations { get; set; } = default!;
 
     /// <summary>
     /// AddressesOrganizations
     /// </summary>
-    public DbSet<AddressOrganizationModelDB> AddressesOrganizations { get; set; }
+    public DbSet<AddressOrganizationModelDB> AddressesOrganizations { get; set; } = default!;
 
     /// <summary>
     /// OrganizationsUsers
     /// </summary>
-    public DbSet<UserOrganizationModelDB> OrganizationsUsers { get; set; }
+    public DbSet<UserOrganizationModelDB> OrganizationsUsers { get; set; } = default!;
 
 
     /// <summary>
     /// Товары
     /// </summary>
-    public DbSet<GoodsModelDB> Goods { get; set; }
+    public DbSet<GoodsModelDB> Goods { get; set; } = default!;
 
     /// <summary>
     /// ProductsOffers
     /// </summary>
-    public DbSet<OfferGoodModelDB> OffersGoods { get; set; }
+    public DbSet<OfferGoodModelDB> OffersGoods { get; set; } = default!;
 
     /// <summary>
     /// Правила формирования цены
     /// </summary>
-    public DbSet<PriceRuleForOfferModelDB> PricesRules { get; set; }
+    public DbSet<PriceRuleForOfferModelDB> PricesRules { get; set; } = default!;
 
 
     /// <summary>
     /// Документы поступления
     /// </summary>
-    public DbSet<WarehouseDocumentModelDB> WarehouseDocuments { get; set; }
+    public DbSet<WarehouseDocumentModelDB> WarehouseDocuments { get; set; } = default!;
 
     /// <summary>
     /// Rows of warehouse documents
     /// </summary>
-    public DbSet<RowOfWarehouseDocumentModelDB> RowsOfWarehouseDocuments { get; set; }
+    public DbSet<RowOfWarehouseDocumentModelDB> RowsOfWarehouseDocuments { get; set; } = default!;
 
     /// <summary>
     /// Offers availability
     /// </summary>
-    public DbSet<OfferAvailabilityModelDB> OffersAvailability { get; set; }
+    public DbSet<OfferAvailabilityModelDB> OffersAvailability { get; set; } = default!;
 
     /// <summary>
     /// Locker offers availability
     /// </summary>
-    public DbSet<LockOffersAvailabilityModelDB> LockerOffersAvailability { get; set; }
+    public DbSet<LockOffersAvailabilityModelDB> LockerOffersAvailability { get; set; } = default!;
 
 
     /// <summary>
     /// Orders
     /// </summary>
-    public DbSet<OrderDocumentModelDB> OrdersDocuments { get; set; }
+    public DbSet<OrderDocumentModelDB> OrdersDocuments { get; set; } = default!;
 
     /// <summary>
     /// Адреса организаций в заказе
     /// </summary>
-    public DbSet<TabAddressForOrderModelDb> TabsAddressesForOrders { get; set; }
+    public DbSet<TabAddressForOrderModelDb> TabsAddressesForOrders { get; set; } = default!;
 
     /// <summary>
     /// Строки заказов
     /// </summary>
-    public DbSet<RowOfOrderDocumentModelDB> RowsOfOrdersDocuments { get; set; }
+    public DbSet<RowOfOrderDocumentModelDB> RowsOfOrdersDocuments { get; set; } = default!;
 
 
     /// <summary>
     /// Payments documents
     /// </summary>
-    public DbSet<PaymentDocumentModelDb> PaymentsDocuments { get; set; }
+    public DbSet<PaymentDocumentModelDb> PaymentsDocuments { get; set; } = default!;
 }
