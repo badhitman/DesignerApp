@@ -416,7 +416,7 @@ public class CommerceImplementService(
 
         OrderDocumentModelDB order_document = await context.OrdersDocuments.FirstAsync(x => x.Id == req.Id);
 
-        if (order_document.Name == req.Name && /*order_document.IsDisabled == req.IsDisabled &&*/ order_document.Description == req.Description)
+        if (order_document.Name == req.Name && order_document.Description == req.Description)
         {
             res.AddInfo($"Документ #{req.Id} не требует обновления");
             await transaction.CommitAsync();
@@ -428,7 +428,6 @@ public class CommerceImplementService(
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, req.Name)
             .SetProperty(p => p.Description, req.Description)
-            //.SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
         await transaction.CommitAsync();

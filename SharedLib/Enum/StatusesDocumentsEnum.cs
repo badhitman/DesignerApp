@@ -51,5 +51,5 @@ public enum StatusesDocumentsEnum
     /// Отменён
     /// </summary>
     [Description("Отменён")]
-    Canceled = 60
+    Canceled = 1000
 }

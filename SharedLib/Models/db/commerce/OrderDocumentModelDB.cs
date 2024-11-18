@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Заказ (документ)
 /// </summary>
-public class OrderDocumentModelDB : EntrySwitchableUpdatedModel
+public class OrderDocumentModelDB : EntryUpdatedModel
 {
     /// <inheritdoc/>
     public static OrderDocumentModelDB NewEmpty(string authorIdentityUserId)
