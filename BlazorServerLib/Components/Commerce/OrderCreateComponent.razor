@@ -17,17 +17,6 @@ else if (CurrentCart is null || Organizations.Count == 0)
         </figcaption>
     </figure>
 }
-@* else if (CurrentOrganization?.Addresses is null || CurrentOrganization.Addresses.Count == 0)
-{
-    <figure class="text-center">
-        <blockquote class="blockquote">
-            <p>Организация без адреса.</p>
-        </blockquote>
-        <figcaption class="blockquote-footer">
-            Добавьте адрес для организации.
-        </figcaption>
-    </figure>
-} *@
 else
 {
     decimal sum_doc = SumOfDocument;

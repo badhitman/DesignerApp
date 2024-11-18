@@ -2,8 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlazorWebLib.Components.Helpdesk;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
+using BlazorLib;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -12,6 +14,10 @@ namespace BlazorWebLib.Components.Commerce;
 /// </summary>
 public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseComponent
 {
+    [Inject]
+    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+
+
     /// <summary>
     /// CurrentTab
     /// </summary>
@@ -21,7 +27,38 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
 
     AddRowToOrderDocumentComponent? addingDomRef;
     RowOfOrderDocumentModelDB? elementBeforeEdit;
+    RubricSelectorComponent? ref_rubric;
+    List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow;
 
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await SetBusy();
+        TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(0);
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        RubricMetadataShadow = res.Response;
+        if (RubricMetadataShadow is not null && RubricMetadataShadow.Count != 0)
+        {
+            RubricIssueHelpdeskModelDB current_element = RubricMetadataShadow.Last();
+            if (ref_rubric is not null)
+            {
+                await ref_rubric.OwnerRubricSet(current_element.ParentRubricId ?? 0);
+                await ref_rubric.SetRubric(current_element.Id, RubricMetadataShadow);
+                ref_rubric.StateHasChangedCall();
+            }
+        }
+    }
+
+    void RubricSelectAction(RubricBaseModel? selectedRubric)
+    {
+        CurrentTab.WarehouseId = selectedRubric?.Id ?? 0;
+        StateHasChanged();
+
+        if (DocumentUpdateHandler is not null)
+            DocumentUpdateHandler();
+    }
 
     /// <inheritdoc/>
     protected override void DeleteRow(int offerId)

@@ -233,8 +233,8 @@ public class CommerceImplementService(
             res.AddError($"В заказе отсутствуют адреса доставки");
             return res;
         }
-
-        req.AddressesTabs.ForEach(x =>
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        req.AddressesTabs.ForEach(async x =>
         {
             if (x.Rows is null || x.Rows.Count == 0)
                 res.AddError($"Для адреса доставки '{x.AddressOrganization?.Name}' не указана номенклатура");
@@ -242,6 +242,9 @@ public class CommerceImplementService(
                 res.AddError($"В адресе доставки '{x.AddressOrganization?.Name}' есть номенклатура без количества");
             else if (x.Rows.Count != x.Rows.GroupBy(x => x.OfferId).Count())
                 res.AddError($"В адресе доставки '{x.AddressOrganization?.Name}' ошибка в таблице товаров: оффер встречается более одного раза");
+
+            if (x.WarehouseId < 1 || (await hdRepo.RubricRead(x.WarehouseId)).Response?.Count != 1)
+                res.AddError($"В адресе доставки '{x.AddressOrganization?.Name}' не корректный склад #{x.WarehouseId}");
         });
         if (!res.Success())
             return res;
@@ -252,7 +255,7 @@ public class CommerceImplementService(
             res.AddRangeMessages(actor.Messages);
             return res;
         }
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
         string msg, waMsg;
         DateTime dtu = DateTime.UtcNow;
         req.LastAtUpdatedUTC = dtu;
@@ -324,16 +327,36 @@ public class CommerceImplementService(
                 {
                     foreach (RowOfOrderDocumentModelDB rowDoc in tabAddr.Rows!)
                     {
-
+                        OfferAvailabilityModelDB? rowReg = registersOffersDb.FirstOrDefault(x => x.OfferId == rowDoc.OfferId && x.WarehouseId == tabAddr.WarehouseId);
+                        if (rowReg is null)
+                        {
+                            tasks.Add(Task.Run(async () =>
+                            {
+                                await context.AddAsync(new OfferAvailabilityModelDB()
+                                {
+                                    WarehouseId = tabAddr.WarehouseId,
+                                    GoodsId = rowDoc.GoodsId,
+                                    OfferId = rowDoc.OfferId,
+                                    Quantity = rowDoc.Quantity,
+                                });
+                            }));
+                        }
+                        else
+                        {
+                            rowReg.Quantity += rowDoc.Quantity;
+                            context.Update(rowReg);
+                        }
                     }
                 }
                 if (tasks.Count != 0)
                     await Task.WhenAll(tasks);
                 else
                 {
+                    await transaction.RollbackAsync();
                     res.AddError("Документ реализации не производит перемещений остатков");
                     return res;
                 }
+                await context.SaveChangesAsync();
 
                 if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
                 {
@@ -666,7 +689,7 @@ public class CommerceImplementService(
 
         OfferAvailabilityModelDB? regOfferAv = await context
             .OffersAvailability
-            .FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.RubricId == _rubricId);
+            .FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.WarehouseId == _rubricId);
 
         if (regOfferAv is null)
         {
@@ -674,7 +697,7 @@ public class CommerceImplementService(
             {
                 OfferId = req.OfferId,
                 GoodsId = req.GoodsId,
-                RubricId = _rubricId,
+                WarehouseId = _rubricId,
             };
 
             await context.AddAsync(regOfferAv);
