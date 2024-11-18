@@ -37,7 +37,7 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     static Dictionary<string, object>? ResponseQueueArguments;
 
 #if !DEBUG
-private static readonly JsonSerializerSettings _sOpt = new()
+    private static readonly JsonSerializerSettings _sOpt = new()
     {
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
     };
@@ -141,7 +141,7 @@ private static readonly JsonSerializerSettings _sOpt = new()
             {
                 try
                 {
-                    JsonSerializerOptions options = new JsonSerializerOptions()
+                    JsonSerializerOptions options = new()
                     {
                         ReferenceHandler = ReferenceHandler.IgnoreCycles,
                         WriteIndented = true
@@ -152,7 +152,7 @@ private static readonly JsonSerializerSettings _sOpt = new()
                 {
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
-            }            
+            }
             else
                 _channel.BasicAck(ea.DeliveryTag, false);
 #endif
