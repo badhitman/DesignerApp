@@ -30,7 +30,7 @@ public class LockOffersAvailabilityModelDB
     public required int LockerId { get; set; }
 
     /// <summary>
-    /// Rubric
+    /// Склад
     /// </summary>
     public required int RubricId { get; set; }
 }

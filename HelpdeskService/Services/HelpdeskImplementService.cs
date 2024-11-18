@@ -492,6 +492,7 @@ public class HelpdeskImplementService(
         if (issues_db is null || issues_db.Length == 0)
         {
             loggerRepo.LogError($"Обращение не найдено: {mem_key}");
+            await ConsoleSegmentCacheEmpty();
             return new()
             {
                 Messages = [new() { TypeMessage = ResultTypesEnum.Warning, Text = "Обращение не найдено или у вас нет к нему доступа" }]
@@ -1095,6 +1096,8 @@ public class HelpdeskImplementService(
                 .SetProperty(p => p.LastUpdateAt, DateTime.UtcNow)));
 
             tasks.Add(ConsoleSegmentCacheEmpty(issue_data.StepIssue));
+            tasks.Add(ConsoleSegmentCacheEmpty(req.Payload.Step));
+
             res.AddSuccess(msg);
             res.Response = true;
             PulseRequestModel p_req = new()
@@ -1383,9 +1386,28 @@ public class HelpdeskImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task ConsoleSegmentCacheEmpty(StatusesDocumentsEnum st)
+    public async Task ConsoleSegmentCacheEmpty(StatusesDocumentsEnum? st = null)
     {
-        MemCacheComplexKeyModel mceKey = GlobalStaticConstants.Cache.ConsoleSegmentStatusToken(st);
+        MemCacheComplexKeyModel mceKey;
+        if (st is null || !st.HasValue)
+        {
+            await Task.WhenAll(Enum.GetValues<StatusesDocumentsEnum>().Cast<StatusesDocumentsEnum>().Select(x =>
+            {
+                return Task.Run(async () =>
+            {
+                mceKey = GlobalStaticConstants.Cache.ConsoleSegmentStatusToken(x);
+                string? cacheToken = await cacheRepo.GetStringValueAsync(mceKey);
+                if (!string.IsNullOrWhiteSpace(cacheToken))
+                {
+                    await cacheRepo.RemoveAsync(cacheToken);
+                    await cacheRepo.RemoveAsync(mceKey);
+                }
+            });
+            }));
+            return;
+        }
+
+        mceKey = GlobalStaticConstants.Cache.ConsoleSegmentStatusToken(st.Value);
         string? cacheToken = await cacheRepo.GetStringValueAsync(mceKey);
         if (!string.IsNullOrWhiteSpace(cacheToken))
         {

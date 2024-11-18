@@ -146,7 +146,7 @@ public class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusChange(StatusChangeRequestModel req)
+    public async Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel req)
     {
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         using IDbContextTransaction transaction = context.Database.BeginTransaction();
@@ -228,7 +228,6 @@ public class CommerceImplementService(
     public async Task<TResponseModel<int>> OrderUpdate(OrderDocumentModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
-
         if (req.AddressesTabs is null || req.AddressesTabs.Count == 0)
         {
             res.AddError($"В заказе отсутствуют адреса доставки");
@@ -254,33 +253,6 @@ public class CommerceImplementService(
             return res;
         }
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
-
-        RowOfOrderDocumentModelDB[] _offersOfDocument = req.AddressesTabs.SelectMany(x => x.Rows!).ToArray();
-        LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB()
-        {
-            LockerName = nameof(OfferAvailabilityModelDB),
-            LockerId = x.OfferId,
-            RubricId = -1
-        }).ToArray();
-
-        try
-        {
-            await context.AddRangeAsync(offersLocked);
-            await context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
-            return res;
-        }
-
-        int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId)];
-        List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
-            .Where(x => _offersIds.Any(y => y == x.OfferId))
-            .ToListAsync();
-
         string msg, waMsg;
         DateTime dtu = DateTime.UtcNow;
         req.LastAtUpdatedUTC = dtu;
@@ -288,12 +260,42 @@ public class CommerceImplementService(
         List<Task> tasks;
         if (req.Id < 1)
         {
+            req.StatusDocument = StatusesDocumentsEnum.Created;
+            using IDbContextTransaction transaction = context.Database.BeginTransaction();
+            RowOfOrderDocumentModelDB[] _offersOfDocument = req.AddressesTabs
+                            .SelectMany(x => x.Rows!)
+                            .DistinctBy(x => x.OfferId)
+                            .ToArray();
+
+            LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB()
+            {
+                LockerName = nameof(OfferAvailabilityModelDB),
+                LockerId = x.OfferId,
+                RubricId = -1
+            }).ToArray();
+
+            try
+            {
+                await context.AddRangeAsync(offersLocked);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
+                return res;
+            }
+
+            int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId)];
+            List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
+                .Where(x => _offersIds.Any(y => y == x.OfferId))
+                .ToListAsync();
+
             req.CreatedAtUTC = dtu;
             TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);
 
             try
             {
-                req.StatusDocument = StatusesDocumentsEnum.Created;
                 await context.AddAsync(req);
                 await context.SaveChangesAsync();
                 res.Response = req.Id;
@@ -419,7 +421,6 @@ public class CommerceImplementService(
         if (order_document.Name == req.Name && order_document.Description == req.Description)
         {
             res.AddInfo($"Документ #{req.Id} не требует обновления");
-            await transaction.CommitAsync();
             return res;
         }
 
@@ -430,7 +431,6 @@ public class CommerceImplementService(
             .SetProperty(p => p.Description, req.Description)
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
-        await transaction.CommitAsync();
         res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
 
         return res;

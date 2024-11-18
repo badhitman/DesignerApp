@@ -36,9 +36,9 @@ public interface ICommerceService
 
 
     /// <summary>
-    /// Status change
+    /// Смена статуса заказу
     /// </summary>
-    public Task<TResponseModel<bool>> StatusChange(StatusChangeRequestModel req);
+    public Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel req);
 
     /// <summary>
     /// Rows for order delete

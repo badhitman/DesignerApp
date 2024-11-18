@@ -55,7 +55,7 @@ public interface IHelpdeskService
     /// <summary>
     /// Очистить кеш сегмента консоли
     /// </summary>
-    public Task ConsoleSegmentCacheEmpty(StatusesDocumentsEnum Status);
+    public Task ConsoleSegmentCacheEmpty(StatusesDocumentsEnum? Status = null);
 
     /// <summary>
     /// Read issue - of context user

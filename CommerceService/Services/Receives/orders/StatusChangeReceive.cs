@@ -21,7 +21,7 @@ public class StatusChangeReceive(ICommerceService commRepo, ILogger<StatusChange
         ArgumentNullException.ThrowIfNull(req);
         LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
 
-        TResponseModel<bool> res = await commRepo.StatusChange(req);
+        TResponseModel<bool> res = await commRepo.StatusOrderChange(req);
         return new()
         {
             Messages = res.Messages,
