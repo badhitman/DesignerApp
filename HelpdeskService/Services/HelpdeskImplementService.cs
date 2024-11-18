@@ -980,7 +980,7 @@ public class HelpdeskImplementService(
             {
                 string _subj = $"Уведомление: {req.Payload.Payload.PulseType.DescriptionInfo()}";
                 if (!req.IsMuteEmail)
-                    tasks.Add(webTransmissionRepo.SendEmail(new() { Email = user.Email!, Subject = _subj, TextMessage = req.Payload.Payload.Description }));
+                    tasks.Add(webTransmissionRepo.SendEmail(new() { Email = user.Email!, Subject = _subj, TextMessage = req.Payload.Payload.Description }, false));
 
                 if (user.TelegramId.HasValue && !req.IsMuteTelegram)
                 {
@@ -991,7 +991,7 @@ public class HelpdeskImplementService(
                         UserTelegramId = user.TelegramId.Value,
                         ParseModeName = "html"
                     };
-                    tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req));
+                    tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req, false));
                 }
 
                 if (!string.IsNullOrWhiteSpace(user.PhoneNumber) && GlobalTools.IsPhoneNumber(user.PhoneNumber) && !req.IsMuteWhatsapp)
@@ -1185,14 +1185,14 @@ public class HelpdeskImplementService(
                 {
                     foreach (UserInfoModel u in users_notify.Response)
                     {
-                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }));
+                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }, false));
                         if (u.TelegramId.HasValue)
                         {
                             tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(new()
                             {
                                 Message = tg_message,
                                 UserTelegramId = u.TelegramId!.Value
-                            }));
+                            }, false));
                         }
                         loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
                         if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))

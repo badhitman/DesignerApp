@@ -18,7 +18,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Переслать сообщение пользователю через TelegramBot
     /// </summary>
-    public Task<TResponseModel<MessageComplexIdsModel?>> ForwardMessage(ForwardMessageTelegramBotModel message);
+    public Task<TResponseModel<MessageComplexIdsModel?>> ForwardMessage(ForwardMessageTelegramBotModel message, bool waitResponse = true);
 
     /// <summary>
     /// Получить Username для TelegramBot
@@ -28,7 +28,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Отправить сообщение через Telegram бота
     /// </summary>
-    public Task<TResponseModel<MessageComplexIdsModel?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram);
+    public Task<TResponseModel<MessageComplexIdsModel?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram, bool waitResponse = true);
 
     /// <summary>
     /// ChatsSelect
@@ -43,17 +43,17 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
     /// </summary>
-    public Task<TResponseModel<object?>> SetWebConfigTelegram(TelegramBotConfigModel webConf);
+    public Task<TResponseModel<object?>> SetWebConfigTelegram(TelegramBotConfigModel webConf, bool waitResponse = true);
 
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
     /// </summary>
-    public Task<TResponseModel<object?>> SetWebConfigHelpdesk(WebConfigModel webConf);
+    public Task<TResponseModel<object?>> SetWebConfigHelpdesk(WebConfigModel webConf, bool waitResponse = true);
 
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
     /// </summary>
-    public Task<TResponseModel<object?>> SetWebConfigStorage(WebConfigModel webConf);
+    public Task<TResponseModel<object?>> SetWebConfigStorage(WebConfigModel webConf, bool waitResponse = true);
 
     /// <summary>
     /// Прочитать данные по чатам

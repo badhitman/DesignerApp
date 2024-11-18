@@ -368,10 +368,10 @@ public class CommerceImplementService(
                     msg_for_tg = CommerceNewOrderBodyNotificationTelegram.Response;
                 msg_for_tg = ReplaceTags(msg_for_tg);
 
-                tasks = [webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg })];
+                tasks = [webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg }, false)];
 
                 if (actor.Response[0].TelegramId.HasValue)
-                    tasks.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value }));
+                    tasks.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value }, false));
 
                 if (!string.IsNullOrWhiteSpace(actor.Response[0].PhoneNumber) && GlobalTools.IsPhoneNumber(actor.Response[0].PhoneNumber!))
                 {

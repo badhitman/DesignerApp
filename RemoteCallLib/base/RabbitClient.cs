@@ -50,16 +50,19 @@ public class RabbitClient : IRabbitClient
     }
 
     /// <inheritdoc/>
-    public Task<TResponseModel<T>> MqRemoteCall<T>(string queue, object? request = null)
+    public Task<TResponseModel<T>> MqRemoteCall<T>(string queue, object? request = null, bool waitResponse = true)
     {
-        string response_topic = $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}";
+        string response_topic = waitResponse ? $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}" : "";
 
         using IConnection _connection = factory.CreateConnection(); ;
         using IModel _channel = _connection.CreateModel();
 
         IBasicProperties? properties = _channel.CreateBasicProperties();
-        properties.ReplyTo = response_topic;
-        _channel.QueueDeclare(queue: response_topic, durable: false, exclusive: false, autoDelete: true, arguments: ResponseQueueArguments);
+        if (waitResponse)
+        {
+            properties.ReplyTo = response_topic;
+            _channel.QueueDeclare(queue: response_topic, durable: false, exclusive: false, autoDelete: true, arguments: ResponseQueueArguments);
+        }
 
         TResponseModel<T> res = new();
         Stopwatch stopwatch = new();
@@ -106,7 +109,9 @@ public class RabbitClient : IRabbitClient
         }
 
         consumer.Received += MessageReceivedEvent;
-        _channel.BasicConsume(response_topic, false, consumer);
+
+        if (waitResponse)
+            _channel.BasicConsume(response_topic, false, consumer);
 
         _channel!.QueueDeclare(queue: queue,
                       durable: true,
@@ -135,36 +140,39 @@ public class RabbitClient : IRabbitClient
                        basicProperties: properties,
                        body: body);
 
-        stopwatch.Start();
-        _ = Task.Run(async () =>
+        if (waitResponse)
         {
-            await Task.Delay(RabbitConfigRepo.RemoteCallTimeoutMs);
-            cts.Cancel();
-        });
-        try
-        {
-            mres.Wait(token);
-        }
-        catch (OperationCanceledException)
-        {
-            //res.AddInfo("Обработка запроса прервана: OperationCanceledException");
-            loggerRepo.LogDebug($"response for {response_topic}");
-        }
-        catch (Exception ex)
-        {
-            res.Messages.InjectException(ex);
-            stopwatch.Stop();
-        }
+            stopwatch.Start();
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(RabbitConfigRepo.RemoteCallTimeoutMs);
+                cts.Cancel();
+            });
+            try
+            {
+                mres.Wait(token);
+            }
+            catch (OperationCanceledException)
+            {
+                //res.AddInfo("Обработка запроса прервана: OperationCanceledException");
+                loggerRepo.LogDebug($"response for {response_topic}");
+            }
+            catch (Exception ex)
+            {
+                res.Messages.InjectException(ex);
+                stopwatch.Stop();
+            }
 
-        if (stopwatch.IsRunning)
-        {
-            _msg = $"Elapsed for `{queue}` -> `{response_topic}`: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}";
-            loggerRepo.LogError(_msg);
-            stopwatch.Stop();
-            res.AddInfo(_msg);
+            if (stopwatch.IsRunning)
+            {
+                _msg = $"Elapsed for `{queue}` -> `{response_topic}`: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}";
+                loggerRepo.LogError(_msg);
+                stopwatch.Stop();
+                res.AddInfo(_msg);
+            }
+            else
+                loggerRepo.LogDebug($"Elapsed [{queue}] -> [{response_topic}]: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
         }
-        else
-            loggerRepo.LogDebug($"Elapsed [{queue}] -> [{response_topic}]: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
 
         return Task.FromResult(res);
     }

@@ -73,7 +73,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> SaveParameter<T>(T payload_query, StorageMetadataModel store, bool trim)
+    public async Task<TResponseModel<int>> SaveParameter<T>(T payload_query, StorageMetadataModel store, bool trim, bool waitResponse = true)
     {
         if (payload_query is null)
             throw new ArgumentNullException(nameof(payload_query));
@@ -89,7 +89,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
             PrefixPropertyName = store.PrefixPropertyName,
         };
 
-        return await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.SaveCloudParameterReceive, set_req);
+        return await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.SaveCloudParameterReceive, set_req, waitResponse);
     }
 
     /// <inheritdoc/>

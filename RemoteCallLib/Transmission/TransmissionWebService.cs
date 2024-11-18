@@ -20,13 +20,13 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
         => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityReceive, ids_users);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req)
-        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.SendEmailReceive, req);
+    public async Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req, bool waitResponse = true)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.SendEmailReceive, req, waitResponse);
 
     #region tg
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req)
-        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive, req);
+    public async Task<TResponseModel<object?>> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true)
+        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive, req, waitResponse);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user)

@@ -37,7 +37,7 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Отправка Email
     /// </summary>
-    public Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req);
+    public Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req, bool waitResponse = true);
 
     #region tg
     /// <summary>
@@ -48,7 +48,7 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Проверка Telegram пользователя
     /// </summary>
-    public Task<TResponseModel<object?>> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req);
+    public Task<TResponseModel<object?>> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true);
 
     /// <summary>
     /// Удалить связь Telegram аккаунта с учётной записью сайта

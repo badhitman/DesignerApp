@@ -14,5 +14,5 @@ public interface IRabbitClient
     /// <summary>
     /// Удалённый вызов метода через MQ
     /// </summary>
-    public Task<TResponseModel<T>> MqRemoteCall<T>(string queue, object? request = null);
+    public Task<TResponseModel<T>> MqRemoteCall<T>(string queue, object? request = null, bool waitResponse = true);
 }

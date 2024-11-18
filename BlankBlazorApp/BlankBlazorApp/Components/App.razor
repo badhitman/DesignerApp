@@ -26,18 +26,18 @@
     <link rel="icon" type="image/png" href="favicon.png" />
     <script type="text/javascript">
         window.downloadFileFromStream = async (fileName, contentStreamReference) => {
-            const arrayBuffer = await contentStreamReference.arrayBuffer();
-            const blob = new Blob([arrayBuffer]);
-            const url = URL.createObjectURL(blob);
-            triggerFileDownload(fileName, url);
-            URL.revokeObjectURL(url);
+        const arrayBuffer = await contentStreamReference.arrayBuffer();
+        const blob = new Blob([arrayBuffer]);
+        const url = URL.createObjectURL(blob);
+        triggerFileDownload(fileName, url);
+        URL.revokeObjectURL(url);
         };
         window.triggerFileDownload = (fileName, url) => {
-            const anchorElement = document.createElement('a');
-            anchorElement.href = url;
-            anchorElement.download = fileName ?? '';
-            anchorElement.click();
-            anchorElement.remove();
+        const anchorElement = document.createElement('a');
+        anchorElement.href = url;
+        anchorElement.download = fileName ?? '';
+        anchorElement.click();
+        anchorElement.remove();
         };
     </script>
     <HeadOutlet />
@@ -59,12 +59,12 @@
     <script src="/js/site.js?version=@GlobalStaticConstants.InitSalt"></script>
     <script>
         window.onBlazorReady = () => {
-            $(document).tooltip({
-                track: true
-            });
+        $(document).tooltip({
+        track: true
+        });
         };
         window.tooltipeHide = () => {
-            $("div.ui-tooltip").hide();
+        $("div.ui-tooltip").hide();
         };
     </script>
 </body>
@@ -82,7 +82,7 @@
             _isLoaded = true;
             if (ServiceProviderExtensions.SetRemoteConf?.Success() != true)
             {
-                Task<TResponseModel<object?>>[] _tasks = [tgRemoteCall.SetWebConfigTelegram(webConfig.Value), tgRemoteCall.SetWebConfigHelpdesk(webConfig.Value), tgRemoteCall.SetWebConfigStorage(webConfig.Value)];
+                Task<TResponseModel<object?>>[] _tasks = [tgRemoteCall.SetWebConfigTelegram(webConfig.Value, false), tgRemoteCall.SetWebConfigHelpdesk(webConfig.Value, false), tgRemoteCall.SetWebConfigStorage(webConfig.Value, false)];
                 await Task.WhenAll(_tasks);
             }
 

@@ -97,7 +97,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Добавить событие в журнал
     /// </summary>
-    public Task<TResponseModel<bool>> PulsePush(PulseRequestModel req);
+    public Task<TResponseModel<bool>> PulsePush(PulseRequestModel req, bool waitResponse = true);
 
     /// <summary>
     /// Журнал событий в обращении
