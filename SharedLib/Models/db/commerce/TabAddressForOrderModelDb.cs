@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -9,6 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// Адрес организации в заказе
 /// </summary>
+[Index(nameof(WarehouseId))]
 public class TabAddressForOrderModelDb
 {
     /// <summary>
@@ -36,6 +38,11 @@ public class TabAddressForOrderModelDb
     /// AddressOrganization
     /// </summary>
     public int AddressOrganizationId { get; set; }
+
+    /// <summary>
+    /// Склад
+    /// </summary>
+    public int WarehouseId { get; set; }
 
     /// <summary>
     /// Строки заказа

@@ -319,6 +319,22 @@ public class CommerceImplementService(
                     return res;
                 }
 
+                tasks = [];
+                foreach (TabAddressForOrderModelDb tabAddr in req.AddressesTabs)
+                {
+                    foreach (RowOfOrderDocumentModelDB rowDoc in tabAddr.Rows!)
+                    {
+
+                    }
+                }
+                if (tasks.Count != 0)
+                    await Task.WhenAll(tasks);
+                else
+                {
+                    res.AddError("Документ реализации не производит перемещений остатков");
+                    return res;
+                }
+
                 if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
                 {
                     TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();

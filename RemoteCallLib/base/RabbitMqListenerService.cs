@@ -115,11 +115,17 @@ private static readonly JsonSerializerSettings _sOpt = new()
                 {
                     _channel.BasicPublish(exchange: "", routingKey: ea.BasicProperties.ReplyTo, basicProperties: null, body: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(result_handler, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)));
                 }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
                 finally
                 {
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
             }
+            else
+                _channel.BasicAck(ea.DeliveryTag, false);
 #else
             try
             {
@@ -132,6 +138,7 @@ private static readonly JsonSerializerSettings _sOpt = new()
                 result_handler.Messages.InjectException(ex);
             }
             if (!string.IsNullOrWhiteSpace(ea.BasicProperties.ReplyTo))
+            {
                 try
                 {
                     JsonSerializerOptions options = new JsonSerializerOptions()
@@ -145,6 +152,9 @@ private static readonly JsonSerializerSettings _sOpt = new()
                 {
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
+            }            
+            else
+                _channel.BasicAck(ea.DeliveryTag, false);
 #endif
         };
 

@@ -111,7 +111,16 @@ public class RabbitClient : IRabbitClient
         consumer.Received += MessageReceivedEvent;
 
         if (waitResponse)
-            _channel.BasicConsume(response_topic, false, consumer);
+        {
+            try
+            {
+                _channel.BasicConsume(response_topic, false, consumer);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
 
         _channel!.QueueDeclare(queue: queue,
                       durable: true,
