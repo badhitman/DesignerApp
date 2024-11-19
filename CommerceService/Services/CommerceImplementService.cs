@@ -153,73 +153,11 @@ public class CommerceImplementService(
         {
             Response = await context
                     .OrdersDocuments
-                    .Where(x => x.HelpdeskId == req.IssueId)
+                    .Where(x => x.HelpdeskId == req.DocumentId)
                     .ExecuteUpdateAsync(set => set.SetProperty(p => p.StatusDocument, req.Step)) != 0,
         };
 
         await transaction.CommitAsync();
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB req)
-    {
-        TResponseModel<int> res = new() { Response = 0 };
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        DateTime dtu = DateTime.UtcNow;
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
-        await context.OrdersDocuments
-                .Where(x => x.Id == req.OrderDocumentId)
-                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
-
-        if (req.Id < 1)
-        {
-            await context.AddAsync(req);
-            await context.SaveChangesAsync();
-            res.AddSuccess("Товар добавлен к заказу");
-            res.Response = req.Id;
-            return res;
-        }
-
-        res.Response = await context.RowsOfOrdersDocuments
-            .Where(x => x.Id == req.Id)
-            .ExecuteUpdateAsync(set => set
-            .SetProperty(p => p.Amount, req.Amount)
-            .SetProperty(p => p.Quantity, req.Quantity));
-
-        await transaction.CommitAsync();
-        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> RowsForOrderDelete(int[] req)
-    {
-        TResponseModel<bool> res = new() { Response = true };
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-
-        int[] orders_ids = await context
-            .OrdersDocuments
-            .Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id))
-            .Select(x => x.Id)
-            .ToArrayAsync();
-
-        if (orders_ids.Length == 0)
-        {
-            res.AddError($"Документы не найдены");
-            return res;
-        }
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
-        DateTime dtu = DateTime.UtcNow;
-
-        await context.OrdersDocuments
-                .Where(x => orders_ids.Any(y => y == x.Id))
-                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
-
-        res.Response = await context.RowsOfOrdersDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0;
-
-        await transaction.CommitAsync();
-        res.AddSuccess("Команда удаления выполнена");
         return res;
     }
 
@@ -462,6 +400,376 @@ public class CommerceImplementService(
         return res;
     }
 
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> RowsForOrderDelete(int[] req)
+    {
+        TResponseModel<bool> res = new() { Response = true };
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        DateTime dtu = DateTime.UtcNow;
+
+        var q = from r in context.RowsOfOrdersDocuments.Where(x => req.Any(y => y == x.Id))
+                join d in context.WarehouseDocuments on r.OrderDocumentId equals d.Id
+                select new { DocumentId = d.Id, r.OfferId, r.GoodsId, r.Quantity, d.RubricId };
+
+        var _offersOfDocument = await q
+           .ToArrayAsync();
+
+        if (_offersOfDocument.Length == 0)
+        {
+            res.AddError($"Документы не найдены");
+            return res;
+        }
+
+        LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Length == 0
+           ? []
+           : _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = x.RubricId }).ToArray();
+
+        if (offersLocked.Length != 0)
+        {
+            try
+            {
+                await context.AddRangeAsync(offersLocked);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
+                return res;
+            }
+        }
+
+        int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId)];
+
+        List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
+           .Where(x => _offersIds.Any(y => y == x.OfferId))
+           .ToListAsync();
+        int[] documents_ids = [.. _offersOfDocument.Select(x => x.DocumentId)];
+        List<Task> tasks = [.. documents_ids.Select(doc_id => context.OrdersDocuments.Where(x => x.Id == doc_id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Version, Guid.NewGuid()).SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)))];
+
+        foreach (OfferAvailabilityModelDB rowEl in registersOffersDb)
+        {
+            var offerDoc = _offersOfDocument.First(x => x.OfferId == rowEl.OfferId);
+            rowEl.Quantity -= offerDoc.Quantity;
+        }
+        context.UpdateRange(registersOffersDb);
+
+        if (offersLocked.Length != 0)
+            context.RemoveRange(offersLocked);
+
+        tasks.Add(context.SaveChangesAsync());
+        tasks.Add(Task.Run(async () => { res.Response = await context.RowsOfOrdersDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0; }));
+
+        await Task.WhenAll(tasks);
+        await transaction.CommitAsync();
+        res.AddSuccess("Команда удаления выполнена");
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB req)
+    {
+        TResponseModel<int> res = new() { Response = 0 };
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        int _rubricId = await context.TabsAddressesForOrders
+            .Where(x => x.Id == req.OrderDocumentId)
+            .Select(x => x.WarehouseId)
+            .FirstAsync();
+
+        if (_rubricId == 0)
+        {
+            res.AddError($"В документе не указан склад");
+            return res;
+        }
+
+        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        LockOffersAvailabilityModelDB locker = new()
+        {
+            LockerName = nameof(OfferAvailabilityModelDB),
+            LockerId = req.OfferId,
+            RubricId = _rubricId,
+        };
+        try
+        {
+            await context.AddAsync(locker);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            res.AddError($"Не удалось выполнить команду: {ex.Message}");
+            return res;
+        }
+
+        OfferAvailabilityModelDB? regOfferAv = await context
+            .OffersAvailability
+            .FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.WarehouseId == _rubricId);
+
+        if (regOfferAv is null)
+        {
+            regOfferAv = new()
+            {
+                OfferId = req.OfferId,
+                GoodsId = req.GoodsId,
+                WarehouseId = _rubricId,
+            };
+
+            await context.AddAsync(regOfferAv);
+            await context.SaveChangesAsync();
+        }
+
+        List<Task> tasks = [];
+        if (regOfferAv.GoodsId != req.GoodsId)
+            tasks.Add(context.OffersAvailability.Where(x => x.Id == regOfferAv.Id).ExecuteUpdateAsync(set => set.SetProperty(p => p.GoodsId, req.GoodsId)));
+
+        IQueryable<OrderDocumentModelDB> q = from r in context.RowsOfOrdersDocuments.Where(x => x.Id == req.Id)
+                                             join d in context.OrdersDocuments on r.OrderDocumentId equals d.Id
+                                             select d;
+
+        tasks.Add(q.ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow).SetProperty(p => p.Version, Guid.NewGuid())));
+
+        DateTime dtu = DateTime.UtcNow;
+
+        await context.OrdersDocuments
+                .Where(x => x.Id == req.OrderDocumentId)
+                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+        if (req.Id < 1)
+        {
+            req.Version = Guid.NewGuid();
+            await context.AddAsync(req);
+            await context.SaveChangesAsync();
+            res.AddSuccess("Товар добавлен к заказу");
+            res.Response = req.Id;
+            return res;
+        }
+        else
+        {
+            RowOfOrderDocumentModelDB rowDb = await context.RowsOfOrdersDocuments.FirstAsync(x => x.Id == req.Id);
+            if (rowDb.Version != req.Version)
+            {
+                await transaction.RollbackAsync();
+                res.AddError("Строка документа была уже кем-то изменена. Обновите документ (F5), что бы получить актуальные данные");
+                return res;
+            }
+
+            int _delta = rowDb.Quantity > req.Quantity
+                               ? rowDb.Quantity - req.Quantity
+                               : rowDb.Quantity - req.Quantity;
+            if (_delta == 0)
+                res.AddInfo("Количество не изменилось");
+            else
+            {
+                regOfferAv.Quantity += _delta;
+                context.Update(regOfferAv);
+            }
+
+            tasks.Add(Task.Run(async () => res.Response = await context.RowsOfOrdersDocuments
+                       .Where(x => x.Id == req.Id)
+                       .ExecuteUpdateAsync(set => set
+                       .SetProperty(p => p.Quantity, req.Quantity)
+                       .SetProperty(p => p.Amount, req.Amount)
+                       .SetProperty(p => p.Version, Guid.NewGuid()))));
+        }
+        await Task.WhenAll(tasks);
+
+        context.Update(regOfferAv);
+        context.Remove(locker);
+        await context.SaveChangesAsync();
+
+        await transaction.CommitAsync();
+        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
+        return res;
+    }
+
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> RowForWarehouseDocumentUpdate(RowOfWarehouseDocumentModelDB req)
+    {
+        TResponseModel<int> res = new() { Response = 0 };
+        if (req.Quantity == 0)
+        {
+            res.AddError($"Количество не может быть нулевым");
+            return res;
+        }
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        int _rubricId = await context.WarehouseDocuments
+            .Where(x => x.Id == req.WarehouseDocumentId)
+            .Select(x => x.RubricId)
+            .FirstAsync();
+
+        if (_rubricId == 0)
+        {
+            res.AddError($"В документе не указан склад");
+            return res;
+        }
+
+        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        LockOffersAvailabilityModelDB locker = new()
+        {
+            LockerName = nameof(OfferAvailabilityModelDB),
+            LockerId = req.OfferId,
+            RubricId = _rubricId,
+        };
+        try
+        {
+            await context.AddAsync(locker);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            res.AddError($"Не удалось выполнить команду: {ex.Message}");
+            return res;
+        }
+
+        OfferAvailabilityModelDB? regOfferAv = await context
+            .OffersAvailability
+            .FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.WarehouseId == _rubricId);
+
+        if (regOfferAv is null)
+        {
+            regOfferAv = new()
+            {
+                OfferId = req.OfferId,
+                GoodsId = req.GoodsId,
+                WarehouseId = _rubricId,
+            };
+
+            await context.AddAsync(regOfferAv);
+            await context.SaveChangesAsync();
+        }
+        List<Task> tasks = [];
+        if (regOfferAv.GoodsId != req.GoodsId)
+            tasks.Add(context.OffersAvailability.Where(x => x.Id == regOfferAv.Id).ExecuteUpdateAsync(set => set.SetProperty(p => p.GoodsId, req.GoodsId)));
+
+        IQueryable<WarehouseDocumentModelDB> q = from r in context.RowsOfWarehouseDocuments.Where(x => x.Id == req.Id)
+                                                 join d in context.WarehouseDocuments on r.WarehouseDocumentId equals d.Id
+                                                 select d;
+
+        tasks.Add(q.ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow).SetProperty(p => p.Version, Guid.NewGuid())));
+
+        if (req.Id < 1)
+        {
+            req.Version = Guid.NewGuid();
+            regOfferAv.Quantity += req.Quantity;
+            await context.AddAsync(req);
+            await context.SaveChangesAsync();
+            res.AddSuccess("Товар добавлен к документу");
+            res.Response = req.Id;
+        }
+        else
+        {
+            RowOfWarehouseDocumentModelDB rowDb = await context.RowsOfWarehouseDocuments.FirstAsync(x => x.Id == req.Id);
+
+            if (rowDb.Version != req.Version)
+            {
+                await transaction.RollbackAsync();
+                res.AddError("Строка документа была уже кем-то изменена. Обновите документ (F5), что бы получить актуальные данные");
+                return res;
+            }
+
+            int _delta = rowDb.Quantity > req.Quantity
+                               ? rowDb.Quantity - req.Quantity
+                               : rowDb.Quantity - req.Quantity;
+            if (_delta == 0)
+                res.AddInfo("Количество не изменилось");
+            else
+            {
+                regOfferAv.Quantity += _delta;
+                context.Update(regOfferAv);
+            }
+
+            tasks.Add(Task.Run(async () => res.Response = await context.RowsOfWarehouseDocuments
+                       .Where(x => x.Id == req.Id)
+                       .ExecuteUpdateAsync(set => set
+                       .SetProperty(p => p.Quantity, req.Quantity).SetProperty(p => p.Version, Guid.NewGuid()))));
+        }
+        await Task.WhenAll(tasks);
+
+        context.Update(regOfferAv);
+        context.Remove(locker);
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> RowsForWarehouseDocumentDelete(int[] req)
+    {
+        TResponseModel<bool> res = new() { Response = req.Any(x => x > 0) };
+        if (!res.Response)
+        {
+            res.AddError("Пустой запрос");
+            return res;
+        }
+        req = [.. req.Distinct()];
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+
+        var q = from r in context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id))
+                join d in context.WarehouseDocuments on r.WarehouseDocumentId equals d.Id
+                select new { DocumentId = d.Id, r.OfferId, r.GoodsId, r.Quantity, d.RubricId };
+
+        var _offersOfDocument = await q
+           .ToArrayAsync();
+
+        if (_offersOfDocument.Length == 0)
+        {
+            res.AddError($"Документы не найдены");
+            return res;
+        }
+
+        LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Length == 0
+           ? []
+           : _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = x.RubricId }).ToArray();
+
+        if (offersLocked.Length != 0)
+        {
+            try
+            {
+                await context.AddRangeAsync(offersLocked);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
+                return res;
+            }
+        }
+
+        int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId)];
+
+        List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
+           .Where(x => _offersIds.Any(y => y == x.OfferId))
+           .ToListAsync();
+        int[] documents_ids = [.. _offersOfDocument.Select(x => x.DocumentId)];
+        List<Task> tasks = [.. documents_ids.Select(doc_id => context.WarehouseDocuments.Where(x => x.Id == doc_id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Version, Guid.NewGuid()).SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)))];
+
+        foreach (OfferAvailabilityModelDB rowEl in registersOffersDb)
+        {
+            var offerDoc = _offersOfDocument.First(x => x.OfferId == rowEl.OfferId);
+            rowEl.Quantity -= offerDoc.Quantity;
+        }
+        context.UpdateRange(registersOffersDb);
+
+        if (offersLocked.Length != 0)
+            context.RemoveRange(offersLocked);
+
+        tasks.Add(context.SaveChangesAsync());
+        tasks.Add(Task.Run(async () => res.Response = await context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0));
+
+        await Task.WhenAll(tasks);
+        await transaction.CommitAsync();
+
+        res.AddSuccess("Команда удаления выполнена");
+        return res;
+    }
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> WarehouseDocumentUpdate(WarehouseDocumentModelDB req)
@@ -564,191 +872,6 @@ public class CommerceImplementService(
         }
 
         await transaction.CommitAsync();
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> RowsForWarehouseDocumentDelete(int[] req)
-    {
-        TResponseModel<bool> res = new() { Response = req.Any(x => x > 0) };
-        if (!res.Response)
-        {
-            res.AddError("Пустой запрос");
-            return res;
-        }
-        req = [.. req.Distinct()];
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
-
-        var q = from r in context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id))
-                join d in context.WarehouseDocuments on r.WarehouseDocumentId equals d.Id
-                select new { DocumentId = d.Id, r.OfferId, r.GoodsId, r.Quantity, d.RubricId };
-
-        var _offersOfDocument = await q
-           .ToArrayAsync();
-
-        if (_offersOfDocument.Length == 0)
-        {
-            res.AddError($"Документы не найдены");
-            return res;
-        }
-
-        LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Length == 0
-           ? []
-           : _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = x.RubricId }).ToArray();
-
-        if (offersLocked.Length != 0)
-        {
-            try
-            {
-                await context.AddRangeAsync(offersLocked);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
-                return res;
-            }
-        }
-
-        int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId)];
-
-        List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
-           .Where(x => _offersIds.Any(y => y == x.OfferId))
-           .ToListAsync();
-        int[] documents_ids = [.. _offersOfDocument.Select(x => x.DocumentId)];
-        List<Task> tasks = [.. documents_ids.Select(doc_id => context.WarehouseDocuments.Where(x => x.Id == doc_id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Version, Guid.NewGuid()).SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)))];
-
-        foreach (OfferAvailabilityModelDB rowEl in registersOffersDb)
-        {
-            var offerDoc = _offersOfDocument.First(x => x.OfferId == rowEl.OfferId);
-            rowEl.Quantity -= offerDoc.Quantity;
-        }
-        context.UpdateRange(registersOffersDb);
-
-        if (offersLocked.Length != 0)
-            context.RemoveRange(offersLocked);
-
-        tasks.Add(context.SaveChangesAsync());
-        tasks.Add(Task.Run(async () => res.Response = await context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0));
-
-        await Task.WhenAll(tasks);
-        await transaction.CommitAsync();
-
-        res.AddSuccess("Команда удаления выполнена");
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<int>> RowForWarehouseDocumentUpdate(RowOfWarehouseDocumentModelDB req)
-    {
-        TResponseModel<int> res = new() { Response = 0 };
-        if (req.Quantity == 0)
-        {
-            res.AddError($"Количество не может быть нулевым");
-            return res;
-        }
-
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        int _rubricId = await context.WarehouseDocuments
-            .Where(x => x.Id == req.WarehouseDocumentId)
-            .Select(x => x.RubricId)
-            .FirstAsync();
-
-        if (_rubricId == 0)
-        {
-            res.AddError($"В документе не указан склад");
-            return res;
-        }
-
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
-        LockOffersAvailabilityModelDB locker = new()
-        {
-            LockerName = nameof(OfferAvailabilityModelDB),
-            LockerId = req.OfferId,
-            RubricId = _rubricId,
-        };
-        try
-        {
-            await context.AddAsync(locker);
-            await context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            res.AddError($"Не удалось выполнить команду: {ex.Message}");
-            return res;
-        }
-
-        OfferAvailabilityModelDB? regOfferAv = await context
-            .OffersAvailability
-            .FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.WarehouseId == _rubricId);
-
-        if (regOfferAv is null)
-        {
-            regOfferAv = new()
-            {
-                OfferId = req.OfferId,
-                GoodsId = req.GoodsId,
-                WarehouseId = _rubricId,
-            };
-
-            await context.AddAsync(regOfferAv);
-            await context.SaveChangesAsync();
-        }
-        List<Task> tasks = [];
-        if (regOfferAv.GoodsId != req.GoodsId)
-            tasks.Add(context.OffersAvailability.Where(x => x.Id == regOfferAv.Id).ExecuteUpdateAsync(set => set.SetProperty(p => p.GoodsId, req.GoodsId)));
-
-        tasks.Add(context.WarehouseDocuments
-                        .Where(x => x.Id == req.WarehouseDocumentId)
-                        .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)));
-
-        if (req.Id < 1)
-        {
-            req.Version = Guid.NewGuid();
-            regOfferAv.Quantity += req.Quantity;
-            await context.AddAsync(req);
-            await context.SaveChangesAsync();
-            res.AddSuccess("Товар добавлен к документу");
-            res.Response = req.Id;
-        }
-        else
-        {
-            RowOfWarehouseDocumentModelDB rowDb = await context.RowsOfWarehouseDocuments.FirstAsync(x => x.Id == req.Id);
-
-            if (rowDb.Version != req.Version)
-            {
-                await transaction.RollbackAsync();
-                res.AddError("Строка документа была уже кем-то изменена. Обновите документ (F5), что бы получить актуальные данные");
-                return res;
-            }
-
-            int _delta = rowDb.Quantity > req.Quantity
-                               ? rowDb.Quantity - req.Quantity
-                               : rowDb.Quantity - req.Quantity;
-            if (_delta == 0)
-                res.AddInfo("Количество не изменилось");
-            else
-            {
-                regOfferAv.Quantity += _delta;
-                context.Update(regOfferAv);
-            }
-
-            tasks.Add(Task.Run(async () => res.Response = await context.RowsOfWarehouseDocuments
-                       .Where(x => x.Id == req.Id)
-                       .ExecuteUpdateAsync(set => set
-                       .SetProperty(p => p.Quantity, req.Quantity).SetProperty(p => p.Version, Guid.NewGuid()))));
-        }
-        await Task.WhenAll(tasks);
-
-        context.Update(regOfferAv);
-        context.Remove(locker);
-        await context.SaveChangesAsync();
-        await transaction.CommitAsync();
-
-        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
         return res;
     }
 

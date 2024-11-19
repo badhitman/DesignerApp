@@ -49,7 +49,7 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
                 SenderActionUserId = CurrentUserSession!.UserId,
                 Payload = new()
                 {
-                    IssueId = Issue.Id,
+                    DocumentId = Issue.Id,
                     Step = IssueStep
                 }
             });

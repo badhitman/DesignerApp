@@ -179,7 +179,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
             SenderActionUserId = GlobalStaticConstants.Roles.System,
             Payload = new()
             {
-                IssueId = hd_obj.Id,
+                DocumentId = hd_obj.Id,
                 Step = Step,
             }
         };

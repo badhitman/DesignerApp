@@ -15,7 +15,7 @@ public class StatusChangeRequestModel
     public required StatusesDocumentsEnum Step { get; set; }
 
     /// <summary>
-    /// IssueId
+    /// Document Id
     /// </summary>
-    public required int IssueId { get; set; }
+    public required int DocumentId { get; set; }
 }

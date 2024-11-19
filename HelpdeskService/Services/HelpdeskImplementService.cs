@@ -654,7 +654,7 @@ public class HelpdeskImplementService(
         TResponseModel<IssueHelpdeskModelDB[]> issues_data = await IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
         {
             SenderActionUserId = actor.UserId,
-            Payload = new() { IssuesIds = [req.Payload.IssueId], IncludeSubscribersOnly = true },
+            Payload = new() { IssuesIds = [req.Payload.DocumentId], IncludeSubscribersOnly = true },
         });
 
         if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
@@ -744,7 +744,7 @@ public class HelpdeskImplementService(
             TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
             if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
             {
-                tasks.Add(commRepo.StatusOrderChange(new() { IssueId = issue_data.Id, Step = req.Payload.Step }));
+                tasks.Add(commRepo.StatusOrderChange(new() { DocumentId = issue_data.Id, Step = req.Payload.Step }));
                 TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                 OrderDocumentModelDB order_obj = find_orders.Response[0];
                 DateTime cdd = order_obj.CreatedAtUTC.GetCustomTime();

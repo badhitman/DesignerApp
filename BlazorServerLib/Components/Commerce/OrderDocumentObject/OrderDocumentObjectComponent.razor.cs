@@ -96,7 +96,7 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
             SenderActionUserId = CurrentUserSession!.UserId,
             Payload = new()
             {
-                IssueId = Issue.Id,
+                DocumentId = Issue.Id,
                 Step = StatusesDocumentsEnum.Canceled,
             }
         };
