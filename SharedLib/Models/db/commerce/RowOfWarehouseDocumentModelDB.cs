@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
@@ -17,4 +19,10 @@ public class RowOfWarehouseDocumentModelDB : RowOfBaseDocumentModelDB
     /// WarehouseDocument
     /// </summary>
     public int WarehouseDocumentId { get; set; }
+
+    /// <summary>
+    /// Version
+    /// </summary>
+    [ConcurrencyCheck]
+    public Guid Version { get; set; }
 }

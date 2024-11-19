@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
@@ -58,6 +60,12 @@ public class OrderDocumentModelDB : EntryUpdatedModel
     public List<TabAddressForOrderModelDb>? AddressesTabs { get; set; }
 
     /// <summary>
+    /// Version
+    /// </summary>
+    [ConcurrencyCheck]
+    public Guid Version { get; set; }
+
+    /// <summary>
     /// Подготовить объект заказа для записи в БД
     /// </summary>
     public void PrepareForSave()
@@ -73,6 +81,7 @@ public class OrderDocumentModelDB : EntryUpdatedModel
                 y.OrderDocument = this;
                 y.Goods = null;
                 y.Offer = null;
+                y.Version = Guid.NewGuid();
             });
         });
     }

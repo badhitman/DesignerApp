@@ -262,6 +262,7 @@ public class CommerceImplementService(
         List<Task> tasks;
         if (req.Id < 1)
         {
+            req.Version = Guid.NewGuid();
             req.StatusDocument = StatusesDocumentsEnum.Created;
             using IDbContextTransaction transaction = context.Database.BeginTransaction();
             RowOfOrderDocumentModelDB[] _offersOfDocument = req.AddressesTabs
@@ -349,7 +350,7 @@ public class CommerceImplementService(
                 }
                 if (tasks.Count != 0)
                     await Task.WhenAll(tasks);
-                
+
                 await context.SaveChangesAsync();
 
                 if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
@@ -437,6 +438,11 @@ public class CommerceImplementService(
         }
 
         OrderDocumentModelDB order_document = await context.OrdersDocuments.FirstAsync(x => x.Id == req.Id);
+        if (order_document.Version != req.Version)
+        {
+            res.AddError($"Документ был кем-то изменён пока был открытым у вас. Обновите сначала документ (F5)");
+            return res;
+        }
 
         if (order_document.Name == req.Name && order_document.Description == req.Description)
         {
@@ -449,10 +455,10 @@ public class CommerceImplementService(
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, req.Name)
             .SetProperty(p => p.Description, req.Description)
+            .SetProperty(p => p.Version, Guid.NewGuid())
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
         res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
-
         return res;
     }
 
@@ -475,6 +481,7 @@ public class CommerceImplementService(
         DateTime dtu = DateTime.UtcNow;
         if (req.Id < 1)
         {
+            req.Version = Guid.NewGuid();
             req.CreatedAtUTC = dtu;
             req.LastAtUpdatedUTC = dtu;
             await context.AddAsync(req);
@@ -483,6 +490,9 @@ public class CommerceImplementService(
             res.AddSuccess("Документ создан");
             return res;
         }
+
+        WarehouseDocumentModelDB whDb = await context.WarehouseDocuments
+            .FirstAsync(x => x.Id == req.Id);
 
         using IDbContextTransaction transaction = context.Database.BeginTransaction();
         var _offersOfDocument = await context.RowsOfWarehouseDocuments
@@ -509,14 +519,18 @@ public class CommerceImplementService(
             }
         }
 
+        if (whDb.Version != req.Version)
+        {
+            res.AddError("Документ был кем-то изменён. Обновите страницу (F5), что бы загрузить актуальную версию объекта");
+            await transaction.RollbackAsync();
+            return res;
+        }
+
         List<Task> _tasks = [];
         int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId).Distinct()];
         List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
             .Where(x => _offersIds.Any(y => y == x.OfferId))
             .ToListAsync();
-
-        WarehouseDocumentModelDB whDb = await context.WarehouseDocuments
-            .FirstAsync(x => x.Id == req.Id);
 
         if (whDb.IsDisabled != req.IsDisabled)
         {
@@ -535,6 +549,7 @@ public class CommerceImplementService(
             .SetProperty(p => p.DeliveryData, req.DeliveryData)
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.RubricId, req.RubricId)
+            .SetProperty(p => p.Version, Guid.NewGuid())
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
         res.AddSuccess(res.Response == 0 ? "Складской документ обновлён" : "Обновление складского документа не требуется");
@@ -565,7 +580,7 @@ public class CommerceImplementService(
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         using IDbContextTransaction transaction = context.Database.BeginTransaction();
 
-        var q = from r in context.RowsOfWarehouseDocuments
+        var q = from r in context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id))
                 join d in context.WarehouseDocuments on r.WarehouseDocumentId equals d.Id
                 select new { DocumentId = d.Id, r.OfferId, r.GoodsId, r.Quantity, d.RubricId };
 
@@ -596,17 +611,14 @@ public class CommerceImplementService(
                 return res;
             }
         }
+
         int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId)];
 
         List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
            .Where(x => _offersIds.Any(y => y == x.OfferId))
            .ToListAsync();
-
-        List<Task> tasks = [];
         int[] documents_ids = [.. _offersOfDocument.Select(x => x.DocumentId)];
-        tasks.Add(context.WarehouseDocuments
-                .Where(x => documents_ids.Any(y => y == x.Id))
-                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)));
+        List<Task> tasks = [.. documents_ids.Select(doc_id => context.WarehouseDocuments.Where(x => x.Id == doc_id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Version, Guid.NewGuid()).SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)))];
 
         foreach (OfferAvailabilityModelDB rowEl in registersOffersDb)
         {
@@ -614,11 +626,12 @@ public class CommerceImplementService(
             rowEl.Quantity -= offerDoc.Quantity;
         }
         context.UpdateRange(registersOffersDb);
-        tasks.Add(context.SaveChangesAsync());
-        tasks.Add(Task.Run(async () => res.Response = await context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0));
 
         if (offersLocked.Length != 0)
             context.RemoveRange(offersLocked);
+
+        tasks.Add(context.SaveChangesAsync());
+        tasks.Add(Task.Run(async () => res.Response = await context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0));
 
         await Task.WhenAll(tasks);
         await transaction.CommitAsync();
@@ -694,6 +707,7 @@ public class CommerceImplementService(
 
         if (req.Id < 1)
         {
+            req.Version = Guid.NewGuid();
             regOfferAv.Quantity += req.Quantity;
             await context.AddAsync(req);
             await context.SaveChangesAsync();
@@ -703,6 +717,14 @@ public class CommerceImplementService(
         else
         {
             RowOfWarehouseDocumentModelDB rowDb = await context.RowsOfWarehouseDocuments.FirstAsync(x => x.Id == req.Id);
+
+            if (rowDb.Version != req.Version)
+            {
+                await transaction.RollbackAsync();
+                res.AddError("Строка документа была уже кем-то изменена. Обновите документ (F5), что бы получить актуальные данные");
+                return res;
+            }
+
             int _delta = rowDb.Quantity > req.Quantity
                                ? rowDb.Quantity - req.Quantity
                                : rowDb.Quantity - req.Quantity;
@@ -717,7 +739,7 @@ public class CommerceImplementService(
             tasks.Add(Task.Run(async () => res.Response = await context.RowsOfWarehouseDocuments
                        .Where(x => x.Id == req.Id)
                        .ExecuteUpdateAsync(set => set
-                       .SetProperty(p => p.Quantity, req.Quantity))));
+                       .SetProperty(p => p.Quantity, req.Quantity).SetProperty(p => p.Version, Guid.NewGuid()))));
         }
         await Task.WhenAll(tasks);
 

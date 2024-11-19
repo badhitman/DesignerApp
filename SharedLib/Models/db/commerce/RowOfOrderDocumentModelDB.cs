@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
@@ -32,4 +34,10 @@ public class RowOfOrderDocumentModelDB : RowOfBaseDocumentModelDB
     /// Сумма
     /// </summary>
     public decimal Amount { get; set; }
+
+    /// <summary>
+    /// Version
+    /// </summary>
+    [ConcurrencyCheck]
+    public Guid Version { get; set; }
 }
