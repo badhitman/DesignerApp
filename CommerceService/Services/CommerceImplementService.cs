@@ -145,23 +145,6 @@ public class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel req)
-    {
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
-        TResponseModel<bool> res = new()
-        {
-            Response = await context
-                    .OrdersDocuments
-                    .Where(x => x.HelpdeskId == req.DocumentId)
-                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.StatusDocument, req.Step)) != 0,
-        };
-
-        await transaction.CommitAsync();
-        return res;
-    }
-
-    /// <inheritdoc/>
     public async Task<TResponseModel<int>> OrderUpdate(OrderDocumentModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
@@ -202,7 +185,7 @@ public class CommerceImplementService(
         {
             req.Version = Guid.NewGuid();
             req.StatusDocument = StatusesDocumentsEnum.Created;
-            using IDbContextTransaction transaction = context.Database.BeginTransaction();
+            using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
             RowOfOrderDocumentModelDB[] _offersOfDocument = req.AddressesTabs
                             .SelectMany(x => x.Rows!)
                             .DistinctBy(x => x.OfferId)
@@ -223,7 +206,9 @@ public class CommerceImplementService(
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
+                msg = "Не удалось выполнить команду блокировки БД: ";
+                loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+                res.AddError($"{msg}{ex.Message}");
                 return res;
             }
 
@@ -378,7 +363,9 @@ public class CommerceImplementService(
         OrderDocumentModelDB order_document = await context.OrdersDocuments.FirstAsync(x => x.Id == req.Id);
         if (order_document.Version != req.Version)
         {
-            res.AddError($"Документ был кем-то изменён пока был открытым у вас. Обновите сначала документ (F5)");
+            msg = "Документ был кем-то изменён пока был открытым";
+            loggerRepo.LogError($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError($"{msg}. Обновите сначала документ (F5)");
             return res;
         }
 
@@ -405,25 +392,25 @@ public class CommerceImplementService(
     {
         TResponseModel<bool> res = new() { Response = true };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
         DateTime dtu = DateTime.UtcNow;
-
+        string msg;
         var q = from r in context.RowsOfOrdersDocuments.Where(x => req.Any(y => y == x.Id))
                 join d in context.WarehouseDocuments on r.OrderDocumentId equals d.Id
-                select new { DocumentId = d.Id, r.OfferId, r.GoodsId, r.Quantity, d.RubricId };
+                select new { DocumentId = d.Id, r.OfferId, r.GoodsId, r.Quantity, d.WarehouseId };
 
         var _offersOfDocument = await q
            .ToArrayAsync();
 
         if (_offersOfDocument.Length == 0)
         {
-            res.AddError($"Документы не найдены");
+            res.AddError($"Данные документа не найдены");
             return res;
         }
 
         LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Length == 0
            ? []
-           : _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = x.RubricId }).ToArray();
+           : _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = x.WarehouseId }).ToArray();
 
         if (offersLocked.Length != 0)
         {
@@ -435,7 +422,9 @@ public class CommerceImplementService(
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
+                msg = "Не удалось выполнить команду блокировки БД: ";
+                res.AddError($"{msg}{ex.Message}");
+                loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
                 return res;
             }
         }
@@ -483,13 +472,14 @@ public class CommerceImplementService(
             return res;
         }
 
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
         LockOffersAvailabilityModelDB locker = new()
         {
             LockerName = nameof(OfferAvailabilityModelDB),
             LockerId = req.OfferId,
             RubricId = _rubricId,
         };
+        string msg;
         try
         {
             await context.AddAsync(locker);
@@ -498,7 +488,9 @@ public class CommerceImplementService(
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            res.AddError($"Не удалось выполнить команду: {ex.Message}");
+            msg = $"Не удалось выполнить команду: ";
+            loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError($"{msg}{ex.Message}");
             return res;
         }
 
@@ -550,7 +542,9 @@ public class CommerceImplementService(
             if (rowDb.Version != req.Version)
             {
                 await transaction.RollbackAsync();
-                res.AddError("Строка документа была уже кем-то изменена. Обновите документ (F5), что бы получить актуальные данные");
+                msg = "Строка документа была уже кем-то изменена";
+                loggerRepo.LogError($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+                res.AddError($"{msg}. Обновите документ (F5), что бы получить актуальные данные");
                 return res;
             }
 
@@ -583,10 +577,28 @@ public class CommerceImplementService(
         return res;
     }
 
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel req)
+    {
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+
+        TResponseModel<bool> res = new()
+        {
+            Response = await context
+                    .OrdersDocuments
+                    .Where(x => x.HelpdeskId == req.DocumentId)
+                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.StatusDocument, req.Step)) != 0,
+        };
+        await transaction.CommitAsync();
+        return res;
+    }
+
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> RowForWarehouseDocumentUpdate(RowOfWarehouseDocumentModelDB req)
     {
+        string msg;
         TResponseModel<int> res = new() { Response = 0 };
         if (req.Quantity == 0)
         {
@@ -597,7 +609,7 @@ public class CommerceImplementService(
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         int _rubricId = await context.WarehouseDocuments
             .Where(x => x.Id == req.WarehouseDocumentId)
-            .Select(x => x.RubricId)
+            .Select(x => x.WarehouseId)
             .FirstAsync();
 
         if (_rubricId == 0)
@@ -606,7 +618,7 @@ public class CommerceImplementService(
             return res;
         }
 
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
         LockOffersAvailabilityModelDB locker = new()
         {
             LockerName = nameof(OfferAvailabilityModelDB),
@@ -621,7 +633,9 @@ public class CommerceImplementService(
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            res.AddError($"Не удалось выполнить команду: {ex.Message}");
+            msg = $"Не удалось выполнить команду: ";
+            res.AddError($"{msg}{ex.Message}");
+            loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
             return res;
         }
 
@@ -663,11 +677,12 @@ public class CommerceImplementService(
         else
         {
             RowOfWarehouseDocumentModelDB rowDb = await context.RowsOfWarehouseDocuments.FirstAsync(x => x.Id == req.Id);
-
             if (rowDb.Version != req.Version)
             {
                 await transaction.RollbackAsync();
-                res.AddError("Строка документа была уже кем-то изменена. Обновите документ (F5), что бы получить актуальные данные");
+                msg = "Строка документа была уже кем-то изменена";
+                loggerRepo.LogError($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+                res.AddError($"{msg}. Обновите документ (F5), что бы получить актуальные данные");
                 return res;
             }
 
@@ -701,6 +716,7 @@ public class CommerceImplementService(
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> RowsForWarehouseDocumentDelete(int[] req)
     {
+        string msg;
         TResponseModel<bool> res = new() { Response = req.Any(x => x > 0) };
         if (!res.Response)
         {
@@ -709,46 +725,49 @@ public class CommerceImplementService(
         }
         req = [.. req.Distinct()];
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
-
-        var q = from r in context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id))
+        IQueryable<RowOfWarehouseDocumentModelDB> mainQuery = context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id));
+        var q = from r in mainQuery
                 join d in context.WarehouseDocuments on r.WarehouseDocumentId equals d.Id
-                select new { DocumentId = d.Id, r.OfferId, r.GoodsId, r.Quantity, d.RubricId };
+                select new { DocumentId = d.Id, d.IsDisabled, r.OfferId, r.GoodsId, r.Quantity, d.WarehouseId };
 
         var _offersOfDocument = await q
            .ToArrayAsync();
 
         if (_offersOfDocument.Length == 0)
         {
-            res.AddError($"Документы не найдены");
+            res.AddWarning($"Данные не найдены. Метод удаления [{nameof(RowsForWarehouseDocumentDelete)}] не выполнил запрос.");
+            return res;
+        }
+        LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument
+            .Select(x => new LockOffersAvailabilityModelDB()
+            {
+                LockerName = nameof(OfferAvailabilityModelDB),
+                LockerId = x.OfferId,
+                RubricId = x.WarehouseId
+            })
+            .ToArray();
+
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+        try
+        {
+            await context.AddRangeAsync(offersLocked);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            msg = $"Не удалось выполнить команду блокировки БД: ";
+            loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError($"{msg}{ex.Message}");
             return res;
         }
 
-        LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Length == 0
-           ? []
-           : _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = x.RubricId }).ToArray();
-
-        if (offersLocked.Length != 0)
-        {
-            try
-            {
-                await context.AddRangeAsync(offersLocked);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
-                return res;
-            }
-        }
-
         int[] _offersIds = [.. _offersOfDocument.Select(x => x.OfferId)];
-
         List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
            .Where(x => _offersIds.Any(y => y == x.OfferId))
            .ToListAsync();
-        int[] documents_ids = [.. _offersOfDocument.Select(x => x.DocumentId)];
+
+        int[] documents_ids = [.. _offersOfDocument.Select(x => x.DocumentId).Distinct()];
         List<Task> tasks = [.. documents_ids.Select(doc_id => context.WarehouseDocuments.Where(x => x.Id == doc_id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Version, Guid.NewGuid()).SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)))];
 
         foreach (OfferAvailabilityModelDB rowEl in registersOffersDb)
@@ -785,10 +804,12 @@ public class CommerceImplementService(
         req.Name = req.Name.Trim();
         req.NormalizedUpperName = req.Name.ToUpper();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-
+        string msg;
         DateTime dtu = DateTime.UtcNow;
         if (req.Id < 1)
         {
+            req.Rows?.Clear();
+            req.Id = 0;
             req.Version = Guid.NewGuid();
             req.CreatedAtUTC = dtu;
             req.LastAtUpdatedUTC = dtu;
@@ -799,19 +820,16 @@ public class CommerceImplementService(
             return res;
         }
 
-        WarehouseDocumentModelDB whDb = await context.WarehouseDocuments
-            .FirstAsync(x => x.Id == req.Id);
-
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
         var _offersOfDocument = await context.RowsOfWarehouseDocuments
             .Where(x => x.WarehouseDocumentId == req.Id)
-            .Select(x => new { x.OfferId, x.GoodsId, x.Quantity })
+            .Select(x => new { x.WarehouseDocumentId, x.OfferId, x.GoodsId, x.Quantity })
             .ToArrayAsync();
 
         LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Length == 0
             ? []
-            : _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = req.RubricId }).ToArray();
+            : _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = req.WarehouseId }).ToArray();
 
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
         if (offersLocked.Length != 0)
         {
             try
@@ -822,14 +840,21 @@ public class CommerceImplementService(
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                res.AddError($"Не удалось выполнить команду блокировки БД: {ex.Message}");
+                msg = $"Не удалось выполнить команду блокировки БД: ";
+                loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+                res.AddError($"{msg}{ex.Message}");
                 return res;
             }
         }
 
+        WarehouseDocumentModelDB whDb = await context.WarehouseDocuments
+            .FirstAsync(x => x.Id == req.Id);
+
         if (whDb.Version != req.Version)
         {
-            res.AddError("Документ был кем-то изменён. Обновите страницу (F5), что бы загрузить актуальную версию объекта");
+            msg = $"Документ #{whDb.Id} был кем-то изменён (version concurent)";
+            loggerRepo.LogError($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError($"{msg}. Перед редактированием обновите страницу (F5), что бы загрузить актуальную версию объекта");
             await transaction.RollbackAsync();
             return res;
         }
@@ -842,11 +867,24 @@ public class CommerceImplementService(
 
         if (whDb.IsDisabled != req.IsDisabled)
         {
-            foreach (OfferAvailabilityModelDB ro in registersOffersDb)
+            if (req.IsDisabled)
+                registersOffersDb.ForEach(ro =>
+                {
+                    var offerDocRow = _offersOfDocument.FirstOrDefault(x => x.OfferId == ro.OfferId && x.WarehouseDocumentId == ro.WarehouseId);
+                    if (offerDocRow is not null)
+                    {
+                        int q = ro.Quantity -= offerDocRow.Quantity;
+                        _tasks.Add(context.OffersAvailability.Where(y => true).ExecuteUpdateAsync(set => set.SetProperty(p => p.Quantity, q)));
+                    }
+                });
+            else
             {
-                int q = ro.Quantity += _offersOfDocument.First(x => x.OfferId == ro.OfferId).Quantity * (req.IsDisabled ? -1 : 1);
-                _tasks.Add(context.OffersAvailability.Where(y => true).ExecuteUpdateAsync(set => set.SetProperty(p => p.Quantity, q)));
+                if (whDb.WarehouseId != req.WarehouseId)
+                {
+
+                }
             }
+
         }
 
         res.Response = await context.WarehouseDocuments
@@ -856,20 +894,20 @@ public class CommerceImplementService(
             .SetProperty(p => p.Description, req.Description)
             .SetProperty(p => p.DeliveryData, req.DeliveryData)
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
-            .SetProperty(p => p.RubricId, req.RubricId)
+            .SetProperty(p => p.WarehouseId, req.WarehouseId)
             .SetProperty(p => p.Version, Guid.NewGuid())
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
         res.AddSuccess(res.Response == 0 ? "Складской документ обновлён" : "Обновление складского документа не требуется");
 
-        if (_tasks.Count != 0)
-            await Task.WhenAll(_tasks);
-
         if (offersLocked.Length != 0)
         {
             context.RemoveRange(offersLocked);
-            await context.SaveChangesAsync();
+            _tasks.Add(context.SaveChangesAsync());
         }
+
+        if (_tasks.Count != 0)
+            await Task.WhenAll(_tasks);
 
         await transaction.CommitAsync();
         return res;

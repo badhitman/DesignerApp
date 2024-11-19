@@ -33,9 +33,10 @@ public static partial class GlobalStaticConstants
     public static readonly string TinyMCEditorScriptSrc = "/lib/tinymce/tinymce.min.js";
 
     /// <summary>
-    /// JsonSerializerSettings
+    /// NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore
     /// </summary>
-    public static JsonSerializerSettings JsonSerializerSettings => new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+    public static JsonSerializerSettings JsonSerializerSettings 
+        => new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
 
 
     static string? _initSalt;

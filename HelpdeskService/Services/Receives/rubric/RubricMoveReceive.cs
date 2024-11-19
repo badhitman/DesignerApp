@@ -35,7 +35,7 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
         .Select(x => new { x.Id, x.ParentRubricId, x.Name })
         .FirstAsync(x => x.Id == req.ObjectId);
 
-        using IDbContextTransaction transaction = context.Database.BeginTransaction();
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
         LockUniqueTokenModelDB locker = new() { Token = $"rubric-sort-upd-{data.ParentRubricId}" };
         try
         {

@@ -41,7 +41,7 @@ public class WebAppService(
 
         if (tgUserDb is null)
         {
-            using IDbContextTransaction transaction = identityContext.Database.BeginTransaction();
+            using IDbContextTransaction transaction = identityContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
             ApplicationUser app_user = new()
             {
                 ChatTelegramId = user.TelegramUserId,

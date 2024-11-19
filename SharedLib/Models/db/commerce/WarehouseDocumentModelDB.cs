@@ -10,7 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// WarehouseDocumentModelDB
 /// </summary>
-[Index(nameof(DeliveryData)), Index(nameof(NormalizedUpperName)), Index(nameof(RubricId))]
+[Index(nameof(DeliveryData)), Index(nameof(NormalizedUpperName)), Index(nameof(WarehouseId))]
 public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
@@ -35,11 +35,11 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
     public List<RowOfWarehouseDocumentModelDB>? Rows { get; set; }
 
     /// <summary>
-    /// Rubric
+    /// Warehouse
     /// </summary>
     [Required]
     [Range(1, int.MaxValue, ErrorMessage = "Требуется указать склад.")]
-    public int RubricId { get; set; }
+    public int WarehouseId { get; set; }
 
     /// <summary>
     /// Version
@@ -58,7 +58,7 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
             return
                 Id == _wd.Id &&
                 Name == _wd.Name &&
-                RubricId == _wd.RubricId &&
+                WarehouseId == _wd.WarehouseId &&
                 IsDisabled == _wd.IsDisabled &&
                 DeliveryData == _wd.DeliveryData &&
                 ExternalDocumentId == _wd.ExternalDocumentId &&
@@ -70,6 +70,6 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{Id} {IsDisabled} {RubricId} {DeliveryData} {Name} {ExternalDocumentId} {Description}".GetHashCode();
+        return $"{Id} {IsDisabled} {WarehouseId} {DeliveryData} {Name} {ExternalDocumentId} {Description}".GetHashCode();
     }
 }

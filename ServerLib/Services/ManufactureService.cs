@@ -31,7 +31,7 @@ public class ManufactureService(
         UserInfoModel current_user = users_find.Response![0];
 
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
-        using IDbContextTransaction transaction = context_forms.Database.BeginTransaction();
+        using IDbContextTransaction transaction = context_forms.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
 
         ProjectSnapshotModelDB _project_snapshot = new()
         {

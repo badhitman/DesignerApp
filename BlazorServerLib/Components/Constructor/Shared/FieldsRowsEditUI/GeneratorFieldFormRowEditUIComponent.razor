@@ -39,7 +39,7 @@
                 <hr />
             }
             <p class="card-subtitle mb-2 text-muted">Пример тела запроса:</p>
-            <code>@JsonConvert.SerializeObject(RequestModel)</code>
+            <code>@JsonConvert.SerializeObject(RequestModel, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)</code>
         }
         else
         {

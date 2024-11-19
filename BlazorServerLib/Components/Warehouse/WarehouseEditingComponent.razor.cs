@@ -43,7 +43,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
 
     void RubricSelectAction(RubricBaseModel? selectedRubric)
     {
-        editDocument.RubricId = selectedRubric?.Id ?? 0;
+        editDocument.WarehouseId = selectedRubric?.Id ?? 0;
         StateHasChanged();
     }
 
@@ -106,7 +106,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
 
         editDocument = GlobalTools.CreateDeepCopy(CurrentDocument)!;
 
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> resShadow = await HelpdeskRepo.RubricRead(editDocument.RubricId);
+        TResponseModel<List<RubricIssueHelpdeskModelDB>?> resShadow = await HelpdeskRepo.RubricRead(editDocument.WarehouseId);
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(resShadow.Messages);
         RubricMetadataShadow = resShadow.Response;
