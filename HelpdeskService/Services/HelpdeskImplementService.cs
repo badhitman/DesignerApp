@@ -25,7 +25,6 @@ public class HelpdeskImplementService(
     IManualCustomCacheService cacheRepo,
     IOptions<HelpdeskConfigModel> hdConf,
     ICommerceRemoteTransmissionService commRepo,
-    IHttpClientFactory HttpClientFactory,
     IMemoryCache cache,
     ITelegramRemoteTransmissionService telegramRemoteRepo,
     ISerializeStorageRemoteTransmissionService StorageRepo,
@@ -768,7 +767,6 @@ public class HelpdeskImplementService(
                 string subject_email = "Изменение статуса документа";
 
                 IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
-                TResponseModel<string?>? wappiToken = null, wappiProfileId = null;
 
                 tasks = [
                     Task.Run(async () => {
@@ -820,36 +818,18 @@ public class HelpdeskImplementService(
                                 CommerceStatusChangeOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationWhatsapp(issue_data.StepIssue));
                                 if (CommerceStatusChangeOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationWhatsapp.Response))
                                     wp_message = CommerceStatusChangeOrderBodyNotificationWhatsapp.Response;
-                                wp_message = ReplaceTags(wp_message, true);
                             }
-
-                            await Task.WhenAll([
-                                Task.Run(async () => { wappiToken ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi); }),
-                                Task.Run(async () => { wappiProfileId ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId); })]);
-
-                            if (wappiToken?.Success() == true && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId?.Success() == true && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
-                            {
-                                tasks.Add(Task.Run(async () =>
-                                {
-                                    using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Wappi.ToString());
-                                    if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
-                                        client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
-
-                                    using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = wp_message, Recipient = u.PhoneNumber });
-                                    string rj = await response.Content.ReadAsStringAsync();
-                                    SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
-                                }));
-                            }
+                            tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = ReplaceTags(wp_message, true) }, false));
                         }
                     }
-                    if (tasks.Count != 0)
-                        await Task.WhenAll(tasks);
                 }
+                if (tasks.Count != 0)
+                    await Task.WhenAll(tasks);
             }
         }
-
         return res;
     }
+
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> SubscribeUpdate(TAuthRequestModel<SubscribeUpdateRequestModel> req)
@@ -1168,12 +1148,11 @@ public class HelpdeskImplementService(
                     TResponseModel<string?> CommerceNewMessageOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp);
                     if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
                         wpMessage = CommerceNewMessageOrderBodyNotificationWhatsapp.Response;
-                    wpMessage = ReplaceTags(wpMessage, true);
 
                     IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
 
                     List<Task> tasks = [];
-                    TResponseModel<string?>? wappiToken = null, wappiProfileId = null;
+
                     string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
                     TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
                     if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
@@ -1204,25 +1183,7 @@ public class HelpdeskImplementService(
                             }
 
                             if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
-                            {
-                                wappiToken ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
-                                wappiProfileId ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
-
-                                if (wappiToken.Success() && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId.Success() && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
-                                {
-                                    tasks.Add(Task.Run(async () =>
-                                    {
-                                        using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Wappi.ToString());
-                                        if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
-                                            client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
-
-                                        using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = wpMessage, Recipient = u.PhoneNumber });
-                                        string rj = await response.Content.ReadAsStringAsync();
-                                        SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
-                                    }));
-                                }
-                            }
-
+                                tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = ReplaceTags(wpMessage, true) }, false));
                         }
                     }
 
@@ -1453,9 +1414,6 @@ public class HelpdeskImplementService(
             return new() { Messages = rest.Messages };
 
         List<Task> tasks = [];
-
-        TResponseModel<string?>? wappiToken = null, wappiProfileId = null;
-
         if (!req.IsMuteEmail || !req.IsMuteTelegram || !req.IsMuteWhatsapp)
             foreach (UserInfoModel user in rest.Response)
             {
@@ -1476,24 +1434,7 @@ public class HelpdeskImplementService(
                 }
 
                 if (!string.IsNullOrWhiteSpace(user.PhoneNumber) && GlobalTools.IsPhoneNumber(user.PhoneNumber) && !req.IsMuteWhatsapp)
-                {
-                    wappiToken ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
-                    wappiProfileId ??= await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
-
-                    if (wappiToken.Success() && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId.Success() && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
-                    {
-                        tasks.Add(Task.Run(async () =>
-                        {
-                            using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Wappi.ToString());
-                            if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
-                                client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
-
-                            using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = req.Payload.Payload.Description, Recipient = user.PhoneNumber });
-                            string rj = await response.Content.ReadAsStringAsync();
-                            SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
-                        }));
-                    }
-                }
+                    tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = user.PhoneNumber, Text = req.Payload.Payload.Description }, false));
             }
 
         if (tasks.Count != 0)

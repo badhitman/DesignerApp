@@ -51,6 +51,9 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
     public async Task<TResponseModel<MessageComplexIdsModel?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram, bool waitResponse = true)
         => await rabbitClient.MqRemoteCall<MessageComplexIdsModel?>(GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive, message_telegram, waitResponse);
 
+    public async Task<TResponseModel<SendMessageResponseModel?>> SendWappiMessage(EntryAltExtModel message, bool waitResponse = true)
+        => await rabbitClient.MqRemoteCall<SendMessageResponseModel?>(GlobalStaticConstants.TransmissionQueues.SendWappiMessageReceive, message, waitResponse);
+
     /// <inheritdoc/>
     public async Task<TResponseModel<object?>> SetWebConfigHelpdesk(WebConfigModel webConf, bool waitResponse = true)
         => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.SetWebConfigHelpdeskReceive, webConf, waitResponse);

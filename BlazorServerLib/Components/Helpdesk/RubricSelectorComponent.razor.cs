@@ -56,12 +56,6 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     public string? ContextName { get; set; }
 
 
-#if DEBUG
-    static bool IsDebug = true;
-#else
-    static bool IsDebug = false;
-#endif
-
     RubricSelectorComponent? childSelector;
 
     List<RubricBaseModel>? CurrentRubrics;

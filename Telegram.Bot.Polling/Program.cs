@@ -60,7 +60,10 @@ builder.ConfigureServices((context, services) =>
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
     .Configure<BotConfiguration>(context.Configuration.GetSection(BotConfiguration.Configuration))
     ;
-
+    services.AddHttpClient(HttpClientsNamesEnum.Wappi.ToString(), cc =>
+    {
+        cc.BaseAddress = new Uri("https://wappi.pro/");
+    });
     services.AddMemoryCache();
     services.AddSingleton<TelegramBotConfigModel>();
     services.AddOptions();
@@ -112,6 +115,7 @@ builder.ConfigureServices((context, services) =>
     .RegisterMqListener<ChatsReadTelegramReceive, long[]?, ChatTelegramModelDB[]?>()
     .RegisterMqListener<MessagesSelectTelegramReceive, TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>()
     .RegisterMqListener<GetFileTelegramReceive, string?, byte[]?>()
+    .RegisterMqListener<SendWappiMessageReceive, EntryAltExtModel?, SendMessageResponseModel?>()
     .RegisterMqListener<ChatsFindForUserTelegramReceive, long[]?, ChatTelegramModelDB[]?>()
     .RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>?, TPaginationResponseModel<ChatTelegramModelDB>?>()
     .RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>()

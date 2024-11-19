@@ -64,11 +64,6 @@ builder.Services.AddStackExchangeRedisCache(options =>
     // options.InstanceName = "app.";
 });
 
-builder.Services.AddHttpClient(HttpClientsNamesEnum.Wappi.ToString(), cc =>
-{
-    cc.BaseAddress = new Uri("https://wappi.pro/");
-});
-
 builder.Services.AddScoped<ICommerceService, CommerceImplementService>();
 
 builder.Services.AddSingleton<WebConfigModel>();

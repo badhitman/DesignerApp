@@ -32,7 +32,7 @@ else
             }
             @foreach (RubricBaseModel rubric in CurrentRubrics!.Where(x => ShowDisabledRubrics || !x.IsDisabled))
             {
-                <option disabled="@rubric.IsDisabled" value="@rubric.Id">@rubric.Name @(IsDebug ? $" #{rubric.Id}" : "")</option>
+                <option disabled="@rubric.IsDisabled" value="@rubric.Id">@rubric.Name</option>
             }
         </select>
     }

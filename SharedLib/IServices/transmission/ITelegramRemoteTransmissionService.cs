@@ -31,6 +31,11 @@ public interface ITelegramRemoteTransmissionService
     public Task<TResponseModel<MessageComplexIdsModel?>> SendTextMessageTelegram(SendTextMessageTelegramBotModel message_telegram, bool waitResponse = true);
 
     /// <summary>
+    /// Отправить сообщение через Wappi
+    /// </summary>
+    public Task<TResponseModel<SendMessageResponseModel?>> SendWappiMessage(EntryAltExtModel message, bool waitResponse = true);
+
+    /// <summary>
     /// ChatsSelect
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?>> ChatsSelect(TPaginationRequestModel<string?> req);

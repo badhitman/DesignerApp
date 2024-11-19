@@ -109,7 +109,7 @@ else
                     </div>
                 }
                 <div class="d-grid gap-2">
-                    <button disabled="@(IsBusyProgress || CurrentCart.AddressesTabs?.Any(x => x.Rows?.Any(y => y.Quantity > 0) == true) != true)" @onclick="OrderDocumentSendAsync" class="btn btn-primary" type="button">@(IsBusyProgress ? "Обработка запроса ..." : "Отправить заказ в работу")</button>
+                    <button disabled="@(IsBusyProgress || CurrentCart.AddressesTabs is null || CurrentCart.AddressesTabs.Any(x => x.WarehouseId < 1)  || !CurrentCart.AddressesTabs.Any(x => x.Rows?.Any(y => y.Quantity > 0) == true))" @onclick="OrderDocumentSendAsync" class="btn btn-primary" type="button">@(IsBusyProgress ? "Обработка запроса ..." : "Отправить заказ в работу")</button>
                     @if (CurrentCart.AddressesTabs?.Any(x => x.Rows?.Any() == true) == true)
                     {
                         <button disabled="@IsBusyProgress" @onclick="ClearOrder" class="btn btn-primary" type="button">Сброс</button>

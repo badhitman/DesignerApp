@@ -20,7 +20,6 @@ public class CommerceImplementService(
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService hdRepo,
     ITelegramRemoteTransmissionService tgRepo,
-    IHttpClientFactory HttpClientFactory,
     ILogger<CommerceImplementService> loggerRepo,
     WebConfigModel _webConf,
     ISerializeStorageRemoteTransmissionService StorageTransmissionRepo) : ICommerceService
@@ -350,12 +349,7 @@ public class CommerceImplementService(
                 }
                 if (tasks.Count != 0)
                     await Task.WhenAll(tasks);
-                else
-                {
-                    await transaction.RollbackAsync();
-                    res.AddError("Документ реализации не производит перемещений остатков");
-                    return res;
-                }
+                
                 await context.SaveChangesAsync();
 
                 if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
@@ -418,24 +412,11 @@ public class CommerceImplementService(
                 {
                     tasks.Add(Task.Run(async () =>
                     {
-                        TResponseModel<string?> wappiToken = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
-                        TResponseModel<string?> wappiProfileId = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
+                        TResponseModel<string?> CommerceNewOrderBodyNotificationWhatsapp = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationWhatsapp);
+                        if (CommerceNewOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationWhatsapp.Response))
+                            waMsg = CommerceNewOrderBodyNotificationWhatsapp.Response;
 
-                        if (wappiToken.Success() && !string.IsNullOrWhiteSpace(wappiToken.Response) && wappiProfileId.Success() && !string.IsNullOrWhiteSpace(wappiProfileId.Response))
-                        {
-                            TResponseModel<string?> CommerceNewOrderBodyNotificationWhatsapp = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationWhatsapp);
-                            if (CommerceNewOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationWhatsapp.Response))
-                                waMsg = CommerceNewOrderBodyNotificationWhatsapp.Response;
-                            waMsg = ReplaceTags(waMsg, true);
-
-                            using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Wappi.ToString());
-                            if (!client.DefaultRequestHeaders.Any(x => x.Key == "Authorization"))
-                                client.DefaultRequestHeaders.Add("Authorization", wappiToken.Response);
-
-                            using HttpResponseMessage response = await client.PostAsJsonAsync($"/api/sync/message/send?profile_id={wappiProfileId.Response}", new SendMessageRequestModel() { Body = waMsg, Recipient = actor.Response[0].PhoneNumber! });
-                            string rj = await response.Content.ReadAsStringAsync();
-                            SendMessageResponseModel sendWappiRes = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj)!;
-                        }
+                        await tgRepo.SendWappiMessage(new() { Number = actor.Response[0].PhoneNumber!, Text = ReplaceTags(waMsg, true) }, false);
                     }));
                 }
 

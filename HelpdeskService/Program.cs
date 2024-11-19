@@ -77,11 +77,6 @@ builder.ConfigureServices((context, services) =>
 #endif
     });
 
-    services.AddHttpClient(HttpClientsNamesEnum.Wappi.ToString(), cc =>
-    {
-        cc.BaseAddress = new Uri("https://wappi.pro/");
-    });
-
     services.AddMemoryCache();
 
     #region MQ Transmission (remote methods call)
