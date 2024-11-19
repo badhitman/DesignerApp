@@ -44,6 +44,8 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
     public required IssueHelpdeskModelDB Issue { get; set; }
 
     bool ShowingAttachmentsOrderArea;
+    List<RubricIssueHelpdeskModelDB> currentWarehouses = default!;
+
     async Task OrderToCart()
     {
         OrderDocumentModelDB doc = GlobalTools.CreateDeepCopy(Document)!;
@@ -112,8 +114,17 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
     protected override async Task OnInitializedAsync()
     {
         await ReadCurrentUser();
+        int[] orderWarehouses = [.. Document.AddressesTabs!.Select(x => x.WarehouseId).Distinct()];
         await SetBusy();
+
+        TResponseModel<List<RubricIssueHelpdeskModelDB>?> getWarehouses = await HelpdeskRepo.RubricsGet(orderWarehouses);
+        SnackbarRepo.ShowMessagesResponse(getWarehouses.Messages);
+        currentWarehouses = getWarehouses.Response ?? [];
+
         TResponseModel<bool?> res = await StorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsOrderArea);
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+
         ShowingAttachmentsOrderArea = res.Response == true;
         await SetBusy(false);
     }

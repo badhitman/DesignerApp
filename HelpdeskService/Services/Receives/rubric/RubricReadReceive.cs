@@ -2,24 +2,19 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
-using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
 /// Прочитать рубрику (со всеми вышестоящими владельцами)
 /// </summary>
-public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, IMemoryCache cache)
+public class RubricReadReceive(IHelpdeskService hdRepo)
     : IResponseReceive<int?, List<RubricIssueHelpdeskModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricForIssuesReadHelpdeskReceive;
-
-    static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 
     /// <summary>
     /// Прочитать рубрику (со всеми вышестоящими владельцами)
@@ -27,45 +22,7 @@ public class RubricReadReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
     public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> ResponseHandleAction(int? rubricId)
     {
         ArgumentNullException.ThrowIfNull(rubricId);
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = new();
-
-        if (rubricId < 1)
-            return res;
-
-        string mem_key = $"{QueueName}-{rubricId}";
-        if (cache.TryGetValue(mem_key, out List<RubricIssueHelpdeskModelDB>? rubric))
-        {
-            res.Response = rubric;
-            return res;
-        }
-
-        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-
-        RubricIssueHelpdeskModelDB? lpi = await context
-            .Rubrics
-            .Include(x => x.ParentRubric)
-            .FirstOrDefaultAsync(x => x.Id == rubricId);
-
-        if (lpi is null)
-        {
-            res.AddWarning($"Рубрика #{rubricId} не найдена в БД (вероятно была удалена)");
-            return res;
-        }
-
-        List<RubricIssueHelpdeskModelDB> ctrl = [lpi];
-
-        while (lpi.ParentRubric is not null)
-        {
-            ctrl.Add(await context
-            .Rubrics
-            .Include(x => x.ParentRubric)
-            .ThenInclude(x => x!.NestedRubrics)
-            .FirstAsync(x => x.Id == lpi.ParentRubric.Id));
-            lpi = ctrl.Last();
-        }
-
-        res.Response = ctrl;
-        cache.Set(mem_key, res.Response, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
+        TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await hdRepo.RubricRead(rubricId.Value);
         return res;
     }
 }

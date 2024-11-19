@@ -14,6 +14,7 @@ else
                 @(at.AddressOrganization!.Name)
             </div>
             <div class="card-body">
+                <h5 class="card-title">Склад: @(currentWarehouses.FirstOrDefault(x => x.Id == at.WarehouseId)?.Name)</h5>
                 <table class="table table-hover table-striped">
                     <thead>
                         <tr>

@@ -33,6 +33,10 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
 
     #region rubric
     /// <inheritdoc/>
+    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricsGet(IEnumerable<int> rubricsIds)
+        => await rabbitClient.MqRemoteCall<List<RubricIssueHelpdeskModelDB>?>(GlobalStaticConstants.TransmissionQueues.RubricsForIssuesGetHelpdeskReceive, rubricsIds);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricRead(int rubricId)
         => await rabbitClient.MqRemoteCall<List<RubricIssueHelpdeskModelDB>?>(GlobalStaticConstants.TransmissionQueues.RubricForIssuesReadHelpdeskReceive, rubricId);
 

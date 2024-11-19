@@ -53,9 +53,14 @@ public interface IHelpdeskRemoteTransmissionService
     public Task<TResponseModel<bool?>> RubricMove(RowMoveModel req);
 
     /// <summary>
-    /// Прочитать данные рубрики (вместе со всеми вышестоящими родлителями)
+    /// Прочитать данные рубрики (вместе со всеми вышестоящими родителями)
     /// </summary>
     public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricRead(int rubricId);
+
+    /// <summary>
+    /// Получить рубрики
+    /// </summary>
+    public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricsGet(IEnumerable<int> rubricsIds);
     #endregion
 
     #region issue

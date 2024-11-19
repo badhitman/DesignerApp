@@ -2,19 +2,16 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
-using DbcLib;
-using System.Text.RegularExpressions;
 
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
 /// CreateIssueTheme
 /// </summary>
-public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, ILogger<RubricCreateOrUpdateReceive> loggerRepo)
+public class RubricCreateOrUpdateReceive(IHelpdeskService hdRepo, ILogger<RubricCreateOrUpdateReceive> loggerRepo)
     : IResponseReceive<RubricIssueHelpdeskModelDB?, int?>
 {
     /// <inheritdoc/>
@@ -25,51 +22,12 @@ public class RubricCreateOrUpdateReceive(IDbContextFactory<HelpdeskContext> help
     {
         ArgumentNullException.ThrowIfNull(rubric);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(rubric)}");
-        TResponseModel<int?> res = new();
-        Regex rx = new(@"\s+", RegexOptions.Compiled);
-        rubric.Name = rx.Replace(rubric.Name.Trim(), " ");
-        if (string.IsNullOrWhiteSpace(rubric.Name))
+        TResponseModel<int> res = await hdRepo.RubricCreateOrUpdate(rubric);
+
+        return new TResponseModel<int?>()
         {
-            res.AddError("Объект должен иметь имя");
-            return res;
-        }
-        rubric.NormalizedNameUpper = rubric.Name.ToUpper();
-        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-
-        if (await context.Rubrics.AnyAsync(x => x.Id != rubric.Id && x.ParentRubricId == rubric.ParentRubricId && x.Name == rubric.Name))
-        {
-            res.AddError("Объект с таким именем уже существует в данном узле");
-            return res;
-        }
-
-        if (rubric.Id < 1)
-        {
-            uint[] six = await context
-                            .Rubrics
-                            .Where(x => x.ParentRubricId == rubric.ParentRubricId)
-                            .Select(x => x.SortIndex)
-                            .ToArrayAsync();
-
-            rubric.SortIndex = six.Length == 0 ? 1 : six.Max() + 1;
-
-            await context.AddAsync(rubric);
-            await context.SaveChangesAsync();
-            res.AddSuccess("Объект успешно создан");
-            res.Response = rubric.Id;
-        }
-        else
-        {
-            res.Response = await context
-                .Rubrics
-                .Where(x => x.Id == rubric.Id)
-                .ExecuteUpdateAsync(set => set
-                .SetProperty(p => p.IsDisabled, rubric.IsDisabled)
-                .SetProperty(p => p.Name, rubric.Name)
-                .SetProperty(p => p.Description, rubric.Description));
-
-            res.AddSuccess("Объект успешно обновлён");
-        }
-
-        return res;
+            Messages = res.Messages,
+            Response = res.Response,
+        };
     }
 }
