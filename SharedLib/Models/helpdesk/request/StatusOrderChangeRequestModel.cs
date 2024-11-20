@@ -2,18 +2,15 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
-
 namespace SharedLib;
 
 /// <summary>
-/// OfferAvailabilityModelDB
+/// Status order change request
 /// </summary>
-[Index(nameof(WarehouseId))]
-public class OfferAvailabilityModelDB : RowOfBaseDocumentModelDB
+public class StatusOrderChangeRequestModel : StatusChangeRequestModel
 {
     /// <summary>
-    /// Склад
+    /// VersionDocument
     /// </summary>
-    public required int WarehouseId { get; set; }
+    public required Guid VersionDocument { get; set; }
 }

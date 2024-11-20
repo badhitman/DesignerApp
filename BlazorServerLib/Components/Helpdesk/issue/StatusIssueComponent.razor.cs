@@ -58,7 +58,6 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
         if (!res.Success())
             return;
 
-        //Issue.StepIssue = IssueStep;
         NavRepo.ReloadPage();
     }
 

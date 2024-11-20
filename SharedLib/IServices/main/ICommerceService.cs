@@ -38,7 +38,7 @@ public interface ICommerceService
     /// <summary>
     /// Смена статуса заказу
     /// </summary>
-    public Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel req);
+    public Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel req);
 
     /// <summary>
     /// Rows for order delete
@@ -59,6 +59,11 @@ public interface ICommerceService
     /// Orders select
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
+        
+    /// <summary>
+    /// Registers select
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>> RegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req);
 
     /// <summary>
     /// Orders read

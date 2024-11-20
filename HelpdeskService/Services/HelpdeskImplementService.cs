@@ -744,7 +744,7 @@ public class HelpdeskImplementService(
             TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
             if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
             {
-                tasks.Add(commRepo.StatusOrderChange(new() { DocumentId = issue_data.Id, Step = req.Payload.Step }));
+                tasks.Add(commRepo.StatusOrderChange(new() { DocumentId = issue_data.Id, Step = req.Payload.Step, VersionDocument = find_orders.Response[0].Version }));
                 TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
                 OrderDocumentModelDB order_obj = find_orders.Response[0];
                 DateTime cdd = order_obj.CreatedAtUTC.GetCustomTime();

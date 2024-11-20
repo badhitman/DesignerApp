@@ -35,7 +35,7 @@ public static partial class GlobalStaticConstants
     /// <summary>
     /// NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore
     /// </summary>
-    public static JsonSerializerSettings JsonSerializerSettings 
+    public static JsonSerializerSettings JsonSerializerSettings
         => new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
 
 
@@ -744,6 +744,9 @@ public static partial class GlobalStaticConstants
         public readonly static string WarehousesSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.WAREHOUSE_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string OffersRegistersSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.OFFERS_CONTROLLER_NAME}-{Routes.REGISTERS_CONTROLLER_NAME}", Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string OrdersByIssuesGetReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.ORDERS_CONTROLLER_NAME}-by-{Routes.ISSUES_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -1068,6 +1071,11 @@ public static partial class GlobalStaticConstants
         /// Offers
         /// </summary>
         public const string OFFERS_CONTROLLER_NAME = "offers";
+
+        /// <summary>
+        /// Registers
+        /// </summary>
+        public const string REGISTERS_CONTROLLER_NAME = "registers";
 
         /// <summary>
         /// Notifications

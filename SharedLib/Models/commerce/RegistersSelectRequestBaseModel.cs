@@ -2,15 +2,12 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
-
 namespace SharedLib;
 
 /// <summary>
-/// OfferAvailabilityModelDB
+/// Registers select request base
 /// </summary>
-[Index(nameof(WarehouseId))]
-public class OfferAvailabilityModelDB : RowOfBaseDocumentModelDB
+public class RegistersSelectRequestBaseModel : OffersSelectRequestBaseModel
 {
     /// <summary>
     /// Склад

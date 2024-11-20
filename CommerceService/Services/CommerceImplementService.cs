@@ -4,7 +4,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-using System.Net.Http.Json;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
@@ -24,7 +23,7 @@ public class CommerceImplementService(
     WebConfigModel _webConf,
     ISerializeStorageRemoteTransmissionService StorageTransmissionRepo) : ICommerceService
 {
-    static CultureInfo cultureInfo = new("ru-RU");
+    private static readonly CultureInfo cultureInfo = new("ru-RU");
 
     /// <inheritdoc/>
     public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssuesGet(OrdersByIssuesSelectRequestModel req)
@@ -448,7 +447,7 @@ public class CommerceImplementService(
                 return res;
             }
 
-            req.AddressesTabs.ForEach(async x =>
+            req.AddressesTabs.ForEach(x =>
             {
                 if (x.Rows is null || x.Rows.Count == 0)
                     res.AddError($"Для адреса доставки '{x.AddressOrganization?.Name}' не указана номенклатура");
@@ -697,7 +696,7 @@ public class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel req)
+    public async Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel req)
     {
         string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
@@ -1202,6 +1201,25 @@ public class CommerceImplementService(
     }
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<WarehouseDocumentModelDB[]>> WarehouseDocumentsRead(int[] req)
+    {
+        TResponseModel<WarehouseDocumentModelDB[]> res = new();
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        IQueryable<WarehouseDocumentModelDB> q = context
+            .WarehouseDocuments
+            .Where(x => req.Any(y => x.Id == y));
+
+        res.Response = await q
+            .Include(x => x.Rows!)
+            .ThenInclude(x => x.Offer!)
+            .ThenInclude(x => x.Goods)
+            .ToArrayAsync();
+
+        return res;
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>>> WarehouseDocumentsSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req)
     {
         if (req.PageSize < 10)
@@ -1253,21 +1271,46 @@ public class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WarehouseDocumentModelDB[]>> WarehouseDocumentsRead(int[] req)
+    public async Task<TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>> RegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req)
     {
-        TResponseModel<WarehouseDocumentModelDB[]> res = new();
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<WarehouseDocumentModelDB> q = context
-            .WarehouseDocuments
-            .Where(x => req.Any(y => x.Id == y));
+        IQueryable<OfferAvailabilityModelDB> q = context
+            .OffersAvailability
+            .AsQueryable();
 
-        res.Response = await q
-            .Include(x => x.Rows!)
-            .ThenInclude(x => x.Offer!)
-            .ThenInclude(x => x.Goods)
-            .ToArrayAsync();
+        if (req.Payload.OfferFilter.HasValue && req.Payload.OfferFilter.Value > 0)
+            q = q.Where(x => x.OfferId == req.Payload.OfferFilter.Value);
 
-        return res;
+        if (req.Payload.GoodsFilter.HasValue && req.Payload.GoodsFilter.Value > 0)
+            q = q.Where(x => x.GoodsId == req.Payload.GoodsFilter.Value);
+
+        var exQuery = from offerAv in q
+                      join oj in context.OffersGoods on offerAv.OfferId equals oj.Id
+                      select new { offerAv, OfferGood = oj };
+
+        IQueryable<OfferAvailabilityModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+           ? exQuery.OrderBy(x => x.OfferGood.Name).Select(x => x.offerAv)
+           : exQuery.OrderByDescending(x => x.OfferGood.Name).Select(x => x.offerAv);
+
+        IQueryable<OfferAvailabilityModelDB> pq = oq
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize);
+
+        return new()
+        {
+            Response = new()
+            {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = [.. await pq.ToArrayAsync()],
+            },
+        };
     }
 }

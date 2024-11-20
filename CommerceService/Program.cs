@@ -98,14 +98,13 @@ builder.Services
     .RegisterMqListener<GoodsUpdateReceive, GoodsModelDB?, int?>()
     .RegisterMqListener<OrdersByIssuesGetReceive, OrdersByIssuesSelectRequestModel?, OrderDocumentModelDB[]?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
-
+    .RegisterMqListener<OffersRegistersSelectReceive, TPaginationRequestModel<RegistersSelectRequestBaseModel>?, TPaginationResponseModel<OfferAvailabilityModelDB>?>()
     .RegisterMqListener<WarehousesSelectReceive, TPaginationRequestModel<WarehouseDocumentsSelectRequestModel>?, TPaginationResponseModel<WarehouseDocumentModelDB>?>()
     .RegisterMqListener<WarehousesReadReceive, int[]?, WarehouseDocumentModelDB[]?>()
     .RegisterMqListener<WarehouseDocumentUpdateReceive, WarehouseDocumentModelDB?, int?>()
     .RegisterMqListener<RowsForWarehouseDocumentDeleteReceive, int[]?, bool?>()
     .RegisterMqListener<RowForWarehouseDocumentUpdateReceive, RowOfWarehouseDocumentModelDB?, int?>()
-
-    .RegisterMqListener<StatusChangeReceive, StatusChangeRequestModel?, bool?>()
+    .RegisterMqListener<StatusChangeReceive, StatusOrderChangeRequestModel?, bool?>()
     .RegisterMqListener<PriceRuleDeleteReceive, int?, bool?>()
     .RegisterMqListener<PriceRuleUpdateReceive, PriceRuleForOfferModelDB?, int?>()
     .RegisterMqListener<PricesRulesGetForOffersReceive, int[]?, PriceRuleForOfferModelDB[]?>()

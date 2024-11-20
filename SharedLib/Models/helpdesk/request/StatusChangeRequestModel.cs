@@ -18,9 +18,4 @@ public class StatusChangeRequestModel
     /// Document Id
     /// </summary>
     public required int DocumentId { get; set; }
-
-    /// <summary>
-    /// VersionDocument
-    /// </summary>
-    public required Guid VersionDocument { get; set; }
 }

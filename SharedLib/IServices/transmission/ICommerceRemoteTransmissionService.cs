@@ -12,7 +12,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// StatusOrderChange
     /// </summary>
-    public Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel id);
+    public Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel id);
 
     /// <summary>
     /// Удалить ценообразование

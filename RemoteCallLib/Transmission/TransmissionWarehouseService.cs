@@ -9,6 +9,10 @@ namespace RemoteCallLib;
 public partial class TransmissionCommerceService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>> OffersRegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OfferAvailabilityModelDB>>(GlobalStaticConstants.TransmissionQueues.OffersRegistersSelectCommerceReceive, req);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool>> RowsForWarehouseDelete(int[] req)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.RowsDeleteFromWarehouseDocumentCommerceReceive, req);
 
