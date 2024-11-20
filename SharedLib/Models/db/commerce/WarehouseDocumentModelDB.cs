@@ -10,7 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// WarehouseDocumentModelDB
 /// </summary>
-[Index(nameof(DeliveryData)), Index(nameof(NormalizedUpperName)), Index(nameof(WarehouseId))]
+[Index(nameof(DeliveryDate)), Index(nameof(NormalizedUpperName)), Index(nameof(WarehouseId))]
 public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
@@ -22,7 +22,7 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
     /// Дата доставки
     /// </summary>
     [Required]
-    public required DateTime DeliveryData { get; set; }
+    public required DateTime DeliveryDate { get; set; }
 
     /// <summary>
     /// Идентификатор документа из внешней системы (например 1С)
@@ -60,7 +60,7 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
                 Name == _wd.Name &&
                 WarehouseId == _wd.WarehouseId &&
                 IsDisabled == _wd.IsDisabled &&
-                DeliveryData == _wd.DeliveryData &&
+                DeliveryDate == _wd.DeliveryDate &&
                 ExternalDocumentId == _wd.ExternalDocumentId &&
                 _wd.Description == Description;
 
@@ -70,6 +70,6 @@ public class WarehouseDocumentModelDB : EntrySwitchableUpdatedModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{Id} {IsDisabled} {WarehouseId} {DeliveryData} {Name} {ExternalDocumentId} {Description}".GetHashCode();
+        return $"{Id} {IsDisabled} {WarehouseId} {DeliveryDate} {Name} {ExternalDocumentId} {Description}".GetHashCode();
     }
 }

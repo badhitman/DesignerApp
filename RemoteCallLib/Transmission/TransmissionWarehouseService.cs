@@ -22,7 +22,10 @@ public partial class TransmissionCommerceService
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> WarehouseUpdate(WarehouseDocumentModelDB document)
-        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.WarehouseDocumentUpdateCommerceReceive, document);
+    {
+        document.DeliveryDate = document.DeliveryDate.ToUniversalTime();
+        return await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.WarehouseDocumentUpdateCommerceReceive, document);
+    }
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>>> WarehousesSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req)

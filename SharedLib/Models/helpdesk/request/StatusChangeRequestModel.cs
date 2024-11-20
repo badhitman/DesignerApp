@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// StatusChangeRequestModel
+/// Status change request
 /// </summary>
 public class StatusChangeRequestModel
 {
@@ -18,4 +18,9 @@ public class StatusChangeRequestModel
     /// Document Id
     /// </summary>
     public required int DocumentId { get; set; }
+
+    /// <summary>
+    /// VersionDocument
+    /// </summary>
+    public required Guid VersionDocument { get; set; }
 }

@@ -17,7 +17,7 @@
     <RowTemplate>
         <MudTd DataLabel="Id"><a href="/goods/warehouse/editing/@(context.Id)">@context.Id</a></MudTd>
         <MudTd DataLabel="Примечание"><a href="/goods/warehouse/editing/@(context.Id)">@context.Name</a></MudTd>
-        <MudTd DataLabel="Доставка">@context.DeliveryData.GetHumanDateTime()</MudTd>
+        <MudTd DataLabel="Доставка">@context.DeliveryDate.GetHumanDateTime()</MudTd>
         <MudTd DataLabel="About">@context.CreatedAtUTC.GetHumanDateTime()/@context.LastAtUpdatedUTC.GetHumanDateTime()</MudTd>
     </RowTemplate>
     <NoRecordsContent>
