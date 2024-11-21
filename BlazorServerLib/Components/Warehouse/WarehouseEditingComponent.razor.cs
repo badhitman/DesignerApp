@@ -67,7 +67,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (editDocument.Id < 1 && res.Response > 0)
             navRepo.NavigateTo($"/goods/warehouse/editing/{res.Response}");
-        else
+        else if(res.Success())
             await ReadDocument();
     }
 
@@ -100,6 +100,9 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
 
     async Task ReadDocument()
     {
+        if (Id < 1)
+            return;
+
         await SetBusy();
         TResponseModel<WarehouseDocumentModelDB[]> res = await commRepo.WarehousesRead([Id]);
         SnackbarRepo.ShowMessagesResponse(res.Messages);

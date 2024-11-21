@@ -308,7 +308,7 @@ public class CommerceImplementService(
         }
 
         context.RemoveRange(lokers);
-        tasks.Add(context.SaveChangesAsync());
+        await context.SaveChangesAsync();
         await Task.WhenAll(tasks);
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
@@ -781,12 +781,14 @@ public class CommerceImplementService(
             int _i = registersOffersDb.FindIndex(y => y.WarehouseId == offerEl.WarehouseId && y.OfferId == offerEl.Row.OfferId);
 
             if (req.Step == StatusesDocumentsEnum.Canceled)
-                registersOffersDb[_i].Quantity -= offerEl.Row.Quantity;
-            else if (orderDb.StatusDocument == StatusesDocumentsEnum.Canceled)
                 registersOffersDb[_i].Quantity += offerEl.Row.Quantity;
+            else if (orderDb.StatusDocument == StatusesDocumentsEnum.Canceled)
+                registersOffersDb[_i].Quantity -= offerEl.Row.Quantity;
         });
 
         context.UpdateRange(registersOffersDb);
+        if (offersLocked.Length != 0)
+            context.RemoveRange(offersLocked);
 
         List<Task> _tasks = [
             context.SaveChangesAsync(),
@@ -800,7 +802,7 @@ public class CommerceImplementService(
                     .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
             }),
             ];
-
+        
         await Task.WhenAll(_tasks);
         await transaction.CommitAsync();
         res.AddSuccess("Запрос смены статуса заказа выполнен успешно");

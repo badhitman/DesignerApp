@@ -8,13 +8,13 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// WarehousesReadReceive
+/// WarehousesDocumentsReadReceive
 /// </summary>
-public class WarehousesReadReceive(ICommerceService commRepo)
+public class WarehousesDocumentsReadReceive(ICommerceService commRepo)
 : IResponseReceive<int[]?, WarehouseDocumentModelDB[]?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.WarehousesReadCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.WarehousesDocumentsReadCommerceReceive;
 
     /// <inheritdoc/>
     public async Task<TResponseModel<WarehouseDocumentModelDB[]?>> ResponseHandleAction(int[]? req)

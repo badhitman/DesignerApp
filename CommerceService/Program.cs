@@ -100,7 +100,7 @@ builder.Services
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
     .RegisterMqListener<OffersRegistersSelectReceive, TPaginationRequestModel<RegistersSelectRequestBaseModel>?, TPaginationResponseModel<OfferAvailabilityModelDB>?>()
     .RegisterMqListener<WarehousesSelectReceive, TPaginationRequestModel<WarehouseDocumentsSelectRequestModel>?, TPaginationResponseModel<WarehouseDocumentModelDB>?>()
-    .RegisterMqListener<WarehousesReadReceive, int[]?, WarehouseDocumentModelDB[]?>()
+    .RegisterMqListener<WarehousesDocumentsReadReceive, int[]?, WarehouseDocumentModelDB[]?>()
     .RegisterMqListener<WarehouseDocumentUpdateReceive, WarehouseDocumentModelDB?, int?>()
     .RegisterMqListener<RowsForWarehouseDocumentDeleteReceive, int[]?, bool?>()
     .RegisterMqListener<RowForWarehouseDocumentUpdateReceive, RowOfWarehouseDocumentModelDB?, int?>()
