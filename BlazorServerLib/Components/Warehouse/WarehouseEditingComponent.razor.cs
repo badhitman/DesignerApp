@@ -67,19 +67,26 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (editDocument.Id < 1 && res.Response > 0)
             NavRepo.NavigateTo($"/goods/warehouse/editing/{res.Response}");
-        else if(res.Success())
+        else if (res.Success())
             await ReadDocument();
+    }
+
+    bool _shouldRender = true;
+    /// <inheritdoc/>
+    protected override bool ShouldRender()
+    {
+        return _shouldRender;
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
         await SetBusy();
+        _shouldRender = false;
+        await base.OnInitializedAsync();
         if (Id < 1)
         {
             TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(0);
-            await SetBusy(false);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
             RubricMetadataShadow = res.Response;
             if (RubricMetadataShadow is not null && RubricMetadataShadow.Count != 0)
@@ -92,10 +99,14 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
                     ref_rubric.StateHasChangedCall();
                 }
             }
+            _shouldRender = true;
+            await SetBusy(false);
             return;
         }
 
         await ReadDocument();
+        _shouldRender = true;
+        await SetBusy(false);
     }
 
     async Task ReadDocument()
