@@ -14,6 +14,12 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegistersModel
 {
     /// <summary>
+    /// ForceAdding
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required bool ForceAdding { get; set; }
+
+    /// <summary>
     /// Склад
     /// </summary>
     [Parameter, EditorRequired]
@@ -58,14 +64,17 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
 
     int GetMaxValue()
     {
+        if(ForceAdding)
+            return int.MaxValue;
+
         return SelectedOffer is null
             ? 0
             : RegistersCache.Where(x => x.OfferId == SelectedOffer.Id && x.WarehouseId == WarehouseId).Sum(x => x.Quantity);
     }
 
-    bool CanAdd()
+    bool CantAdd()
     {
-        return SelectedOffer is null || GetMaxValue() == 0;
+        return !ForceAdding && (SelectedOffer is null || GetMaxValue() > 0);
     }
 
     IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentRows!.Contains(x.Id));
