@@ -14,6 +14,12 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegistersModel
 {
     /// <summary>
+    /// WarehouseId
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required int WarehouseId { get; set; }
+
+    /// <summary>
     /// AllOffers
     /// </summary>
     [Parameter, EditorRequired]

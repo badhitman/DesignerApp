@@ -57,7 +57,7 @@ else
                 @if (!ReadOnly)
                 {
                     <div class="ms-3">
-                        <AddRowToOrderDocumentComponent @ref="addingDomRef" AllOffers="allOffers" CurrentRows="CurrentDocument.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
+                        <AddRowToOrderDocumentComponent @ref="addingDomRef" WarehouseId="editDocument.WarehouseId" AllOffers="allOffers" CurrentRows="CurrentDocument.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
                     </div>
                 }
             </ToolBarContent>

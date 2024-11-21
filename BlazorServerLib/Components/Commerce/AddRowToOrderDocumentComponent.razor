@@ -22,7 +22,7 @@ else
             }
         </select>
         <MudNumericField @bind-Value="QuantityValue" Variant="Variant.Text" Min="1" />
-        <MudIconButton title="Добавить товар в корзину" OnClick="AddOffer" Disabled="@(SelectedOffer is null)" Icon="@Icons.Material.Filled.Add" Color="Color.Success"></MudIconButton>
+        <MudIconButton title="Добавить товар в корзину" OnClick="AddOffer" Disabled="@(SelectedOffer is null || this.RegistersCache.Where(x => x.OfferId == SelectedOffer.Id && x.WarehouseId == WarehouseId).Sum(x=>x.Quantity) == 0)" Icon="@Icons.Material.Filled.Add" Color="Color.Success"></MudIconButton>
         <MudButton title="Отмена добавления товара в корзину" Color="Color.Info" OnClick="OnExpandAddingOffer">Отмена</MudButton>
     </div>
 }

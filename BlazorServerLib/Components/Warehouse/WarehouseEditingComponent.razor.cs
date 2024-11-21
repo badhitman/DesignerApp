@@ -19,7 +19,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     ICommerceRemoteTransmissionService commRepo { get; set; } = default!;
 
     [Inject]
-    NavigationManager navRepo { get; set; } = default!;
+    NavigationManager NavRepo { get; set; } = default!;
 
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
@@ -66,7 +66,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (editDocument.Id < 1 && res.Response > 0)
-            navRepo.NavigateTo($"/goods/warehouse/editing/{res.Response}");
+            NavRepo.NavigateTo($"/goods/warehouse/editing/{res.Response}");
         else if(res.Success())
             await ReadDocument();
     }
