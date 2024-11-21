@@ -5,22 +5,22 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Поступления</MudText>
         <MudSpacer />
-        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Поиск по примечанию" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel  T="WarehouseDocumentModelDB">Id</MudTableSortLabel></MudTh>
+        <MudTh>Id</MudTh>
         <MudTh><MudTableSortLabel SortDirection="SortDirection.Ascending" SortLabel="Name" T="WarehouseDocumentModelDB">Примечание</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel  T="WarehouseDocumentModelDB">Доставка</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel T="WarehouseDocumentModelDB">Warehouse</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel  T="WarehouseDocumentModelDB">Создан/Обновлён</MudTableSortLabel></MudTh>
+        <MudTh>Доставка</MudTh>
+        <MudTh>Склад</MudTh>
+        <MudTh>Атрибуты</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id"><a href="/goods/warehouse/editing/@(context.Id)">@context.Id</a></MudTd>
         <MudTd DataLabel="Примечание"><a href="/goods/warehouse/editing/@(context.Id)">@context.Name</a></MudTd>
         <MudTd DataLabel="Доставка">@context.DeliveryDate.GetHumanDateTime()</MudTd>
-        <MudTd DataLabel="Warehouse">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
-        <MudTd DataLabel="About">@context.CreatedAtUTC.GetHumanDateTime()/@context.LastAtUpdatedUTC.GetHumanDateTime()</MudTd>
+        <MudTd DataLabel="Склад">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
+        <MudTd DataLabel="Атрибуты">@context.CreatedAtUTC.GetHumanDateTime()/@context.LastAtUpdatedUTC.GetHumanDateTime()</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>

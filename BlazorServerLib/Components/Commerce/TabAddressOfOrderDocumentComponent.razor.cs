@@ -54,10 +54,19 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
     void RubricSelectAction(RubricBaseModel? selectedRubric)
     {
         CurrentTab.WarehouseId = selectedRubric?.Id ?? 0;
-        StateHasChanged();
+
 
         if (DocumentUpdateHandler is not null)
             DocumentUpdateHandler();
+
+        if (CurrentTab.Rows is not null)
+            InvokeAsync(async () =>
+            {
+                await CacheRegistersGoodsUpdate(CurrentTab.Rows.Select(x => x.OfferId), CurrentTab.WarehouseId, true);
+                StateHasChanged();
+            });
+        else
+            StateHasChanged();
     }
 
     /// <inheritdoc/>

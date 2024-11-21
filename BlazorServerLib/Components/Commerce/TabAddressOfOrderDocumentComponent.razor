@@ -47,6 +47,7 @@
         <col />
         <col />
         <col />
+        <col />
         <col style="width:50px;" />
         @if (EditTrigger == TableEditTrigger.EditButton)
         {
@@ -55,6 +56,7 @@
     </ColGroup>
     <HeaderContent>
         <MudTh>Название</MudTh>
+        <MudTh>Остаток</MudTh>
         <MudTh>Цена</MudTh>
         <MudTh>Количество</MudTh>
         <MudTh>Сумма</MudTh>
@@ -63,6 +65,9 @@
     <RowTemplate>
         <MudTd DataLabel="Name">
             @context!.Offer!.GetName()
+        </MudTd>
+        <MudTd DataLabel="Остаток">
+            @(this.RegistersCache.Where(x => x.OfferId == context.OfferId && x.WarehouseId == CurrentTab.WarehouseId).Sum(x => x.Quantity))
         </MudTd>
         <MudTd DataLabel="Price">
             @context!.Offer!.Price руб. (@($"{Math.Round(context!.Offer!.Price / context!.Offer.Multiplicity, 2)} р/{context.Goods!.BaseUnit.DescriptionInfo().ToLower()}"))

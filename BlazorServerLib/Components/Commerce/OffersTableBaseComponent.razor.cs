@@ -12,15 +12,8 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// OffersTableBaseComponent
 /// </summary>
-public abstract class OffersTableBaseComponent : BlazorBusyComponentBaseModel
+public abstract class OffersTableBaseComponent : BlazorBusyComponentRegistersModel
 {
-    /// <summary>
-    /// CommerceRepo
-    /// </summary>
-    [Inject]
-    protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
-
-
     /// <summary>
     /// ReadOnly
     /// </summary>

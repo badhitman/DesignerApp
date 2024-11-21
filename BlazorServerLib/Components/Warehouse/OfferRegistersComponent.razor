@@ -7,19 +7,19 @@
         <MudSpacer />
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel T="RegistersSelectRequestBaseModel">Id</MudTableSortLabel></MudTh>
+        <MudTh>Id</MudTh>
         <MudTh><MudTableSortLabel SortDirection="SortDirection.Ascending" SortLabel="Offer" T="RegistersSelectRequestBaseModel">Offer</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel T="RegistersSelectRequestBaseModel">Warehouse</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel T="RegistersSelectRequestBaseModel">Quantity</MudTableSortLabel></MudTh>
+        <MudTh>Склад</MudTh>
+        <MudTh>Кол-во</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.Id</MudTd>
         <MudTd DataLabel="Offer">
             @context.Offer?.Name
-            <sup>@context.Goods?.Name</sup>
+            <sup title="Номенклатура">@context.Goods?.Name</sup>
         </MudTd>
-        <MudTd DataLabel="Warehouse">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
-        <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+        <MudTd DataLabel="Склад">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
+        <MudTd DataLabel="Кол-во">@context.Quantity</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>
