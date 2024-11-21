@@ -14,31 +14,46 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegistersModel
 {
     /// <summary>
-    /// ForceAdding
-    /// </summary>
-    [Parameter, EditorRequired]
-    public required bool ForceAdding { get; set; }
-
-    /// <summary>
     /// Склад
     /// </summary>
     [Parameter, EditorRequired]
     public required int WarehouseId { get; set; }
 
     /// <summary>
-    /// AllOffers
+    /// Все офферы
     /// </summary>
     [Parameter, EditorRequired]
     public required List<OfferGoodModelDB> AllOffers { get; set; }
 
     /// <summary>
-    /// CurrentTab
+    /// Текущие/выбранные строки
     /// </summary>
     [Parameter, EditorRequired]
     public required List<int> CurrentRows { get; set; }
 
     /// <summary>
-    /// AddingOfferHandler
+    /// Если true - тогда отображается цена за единицу (непосредственно в элементах html селектора/select: option).
+    /// Если false - тогда цена за единицу не будет отображаться
+    /// </summary>
+    [Parameter]
+    public bool ShowPriceOffers { get; set; }
+
+    /// <summary>
+    /// Если true - тогда отображается остаток (непосредственно в элементах html селектора/select: option).
+    /// Если false - тогда остаток не будет отображаться
+    /// </summary>
+    [Parameter]
+    public bool ShowRegistersOffersQuantity { get; set; }
+
+    /// <summary>
+    /// Если true - тогда можно добавлять офферы, которых нет в остатках.
+    /// Если false - тогда для добавления доступны только офферы на остатках
+    /// </summary>
+    [Parameter]
+    public bool ForceAdding { get; set; }
+
+    /// <summary>
+    /// Обработчик добавления оффера
     /// </summary>
     [Parameter, EditorRequired]
     public required Action<OfferGoodActionModel> AddingOfferHandler { get; set; }
@@ -62,6 +77,11 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
         }
     }
 
+    int GetOfferQuantity(OfferGoodModelDB opt)
+    {
+        return RegistersCache.Where(x => x.OfferId == opt.Id && (WarehouseId < 1 || x.WarehouseId == WarehouseId)).Sum(x => x.Quantity);
+    }
+
     int GetMaxValue()
     {
         if (ForceAdding)
@@ -74,7 +94,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
 
     bool CantAdd()
     {
-        return !ForceAdding && (SelectedOffer is null || GetMaxValue() > 0);
+        return !ForceAdding && (SelectedOffer is null || GetMaxValue() == 0);
     }
 
     IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentRows!.Contains(x.Id));
