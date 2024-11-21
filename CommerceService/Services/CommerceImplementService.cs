@@ -1301,6 +1301,9 @@ public class CommerceImplementService(
             .OffersAvailability
             .AsQueryable();
 
+        if (req.Payload.MinQuantity.HasValue)
+            q = q.Where(x => x.Quantity >= req.Payload.MinQuantity);
+
         if (req.Payload.OfferFilter is not null && req.Payload.OfferFilter.Length != 0)
             q = q.Where(x => req.Payload.OfferFilter.Any(y => y == x.OfferId));
 

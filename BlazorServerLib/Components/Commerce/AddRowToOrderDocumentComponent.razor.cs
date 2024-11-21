@@ -57,14 +57,14 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
         {
             _selectedOfferId = value;
             SelectedOffer = AllOffers.FirstOrDefault(x => x.Id == value);
-            if (SelectedOffer is not null)
+            if (SelectedOffer is not null && !ForceAdding)
                 InvokeAsync(async () => await CacheRegistersOfferUpdate([SelectedOffer.Id], WarehouseId, true));
         }
     }
 
     int GetMaxValue()
     {
-        if(ForceAdding)
+        if (ForceAdding)
             return int.MaxValue;
 
         return SelectedOffer is null
@@ -121,9 +121,9 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
     {
         if (!firstRender)
         {
-            if (cacheId != SelectedOfferId && SelectedOffer is not null)
+            if (cacheId != SelectedOfferId && SelectedOffer is not null && !ForceAdding)
             {
-                await CacheRegistersOfferUpdate([SelectedOffer.Id], WarehouseId, true);
+                await CacheRegistersOfferUpdate([], WarehouseId, true);
                 cacheId = SelectedOfferId;
                 StateHasChanged();
             }
@@ -134,7 +134,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
     protected override async Task OnInitializedAsync()
     {
         SelectedOfferId = ActualOffers.FirstOrDefault()?.Id;
-        if (SelectedOffer is not null)
+        if (SelectedOffer is not null && !ForceAdding)
             await CacheRegistersOfferUpdate([SelectedOffer.Id], WarehouseId, true);
 
         cacheId = SelectedOfferId;

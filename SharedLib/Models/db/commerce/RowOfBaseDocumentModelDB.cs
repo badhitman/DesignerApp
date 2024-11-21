@@ -10,6 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// RowOfBaseDocumentModelDB
 /// </summary>
+[Index(nameof(Quantity))]
 public abstract class RowOfBaseDocumentModelDB
 {
     /// <summary>

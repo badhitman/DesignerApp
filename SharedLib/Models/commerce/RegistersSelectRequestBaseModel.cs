@@ -23,4 +23,9 @@ public class RegistersSelectRequestBaseModel
     /// Фильтр по коммерческому предложению
     /// </summary>
     public int[]? OfferFilter { get; set; }
+
+    /// <summary>
+    /// Min quantity
+    /// </summary>
+    public int? MinQuantity { get; set; }
 }

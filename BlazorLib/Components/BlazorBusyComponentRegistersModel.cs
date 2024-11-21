@@ -33,8 +33,6 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
             RegistersCache.Clear();
 
         req = [.. req.Where(x => x > 0 && !RegistersCache.Any(y => y.Id == x)).Distinct()];
-        if (!req.Any())
-            return;
 
         TPaginationRequestModel<RegistersSelectRequestBaseModel> reqData = new()
         {
@@ -42,6 +40,7 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
             {
                 OfferFilter = [.. req],
                 WarehouseId = warehouseId,
+                MinQuantity = 1,
             },
             PageNum = 0,
             PageSize = int.MaxValue,
