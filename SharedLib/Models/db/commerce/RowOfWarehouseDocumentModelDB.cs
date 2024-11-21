@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -9,6 +10,8 @@ namespace SharedLib;
 /// <summary>
 /// RowOfWarehouseDocumentModelDB
 /// </summary>
+[Index(nameof(WarehouseDocumentId), nameof(OfferId), IsUnique = true)]
+[Index(nameof(WarehouseDocumentId))]
 public class RowOfWarehouseDocumentModelDB : RowOfBaseDocumentModelDB
 {
     /// <summary>

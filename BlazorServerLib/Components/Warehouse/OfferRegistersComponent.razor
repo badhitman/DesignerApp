@@ -1,0 +1,33 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Остатки</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel T="RegistersSelectRequestBaseModel">Id</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortDirection="SortDirection.Ascending" SortLabel="Offer" T="RegistersSelectRequestBaseModel">Offer</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="RegistersSelectRequestBaseModel">Warehouse</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="RegistersSelectRequestBaseModel">Quantity</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Offer">
+            @context.Offer?.Name
+            <sup>@context.Goods?.Name</sup>
+        </MudTd>
+        <MudTd DataLabel="Warehouse">@context.WarehouseId</MudTd>
+        <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Данные отсутствуют</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Загрузка...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

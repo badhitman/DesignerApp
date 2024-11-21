@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
@@ -9,6 +10,8 @@ namespace SharedLib;
 /// <summary>
 /// Строка заказа (документа)
 /// </summary>
+[Index(nameof(AddressForOrderTabId), nameof(OfferId), IsUnique = true)]
+[Index(nameof(AddressForOrderTabId))]
 public class RowOfOrderDocumentModelDB : RowOfBaseDocumentModelDB
 {
     /// <summary>

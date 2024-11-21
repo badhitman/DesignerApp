@@ -154,6 +154,13 @@ public class CommerceImplementService(
         }
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        if (await context.RowsOfOrdersDocuments.AnyAsync(x => x.Id != req.Id && x.OrderDocumentId == req.OrderDocumentId && x.OfferId == req.OfferId))
+        {
+            res.AddError($"В документе не указан склад: удаление невозможно");
+            return res;
+        }
+
         var queryDocumentDb = from r in context.RowsOfOrdersDocuments.Where(x => x.Id == req.Id)
                               join d in context.OrdersDocuments on r.OrderDocumentId equals d.Id
                               join t in context.TabsAddressesForOrders on r.OrderDocumentId equals t.Id
@@ -163,16 +170,19 @@ public class CommerceImplementService(
             .Select(x => x.Document.StatusDocument)
             .FirstAsync();
 
-        int _rubricId = await context.TabsAddressesForOrders
-            .Where(x => x.Id == req.OrderDocumentId)
-            .Select(x => x.WarehouseId)
-            .FirstAsync();
+        int _warehouseId = await context.TabsAddressesForOrders.Where(x => x.Id == req.OrderDocumentId).Select(x => x.WarehouseId).FirstAsync();
+        bool conflict = await context.RowsOfOrdersDocuments.AnyAsync(x => x.Id != req.Id && x.AddressForOrderTabId == req.AddressForOrderTabId && x.OfferId == req.OfferId);
 
-        if (_rubricId == 0)
-        {
-            res.AddError($"В документе не указан склад");
+        List<Task> tasks = [];
+
+        if (_warehouseId == 0)
+            res.AddError($"В документе не указан склад: обновление невозможно");
+
+        if (conflict)
+            res.AddError($"В документе уже существует этот оффер. Установите ему требуемое количество.");
+
+        if (!res.Success())
             return res;
-        }
 
         RowOfOrderDocumentModelDB? rowDb = req.Id > 0
            ? await context.RowsOfOrdersDocuments.FirstAsync(x => x.Id == req.Id)
@@ -184,7 +194,7 @@ public class CommerceImplementService(
         {
             LockerName = nameof(OfferAvailabilityModelDB),
             LockerId = req.OfferId,
-            RubricId = _rubricId,
+            RubricId = _warehouseId,
         }];
 
         if (rowDb is not null && rowDb.OfferId != req.OfferId)
@@ -193,7 +203,7 @@ public class CommerceImplementService(
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
                 LockerId = rowDb.OfferId,
-                RubricId = _rubricId,
+                RubricId = _warehouseId,
             });
         }
 
@@ -214,16 +224,15 @@ public class CommerceImplementService(
 
         OfferAvailabilityModelDB? regOfferAv = await context
             .OffersAvailability
-            .FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.WarehouseId == _rubricId);
+            .FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.WarehouseId == _warehouseId);
 
-        List<Task> tasks = [];
         if (regOfferAv is null && orderDocStatus != StatusesDocumentsEnum.Canceled)
         {
             regOfferAv = new()
             {
                 OfferId = req.OfferId,
                 GoodsId = req.GoodsId,
-                WarehouseId = _rubricId,
+                WarehouseId = _warehouseId,
             };
 
             tasks.Add(Task.Run(async () => await context.AddAsync(regOfferAv)));
@@ -236,7 +245,7 @@ public class CommerceImplementService(
             {
                 OfferId = rowDb.OfferId,
                 GoodsId = rowDb.GoodsId,
-                WarehouseId = _rubricId,
+                WarehouseId = _warehouseId,
             };
         }
 
@@ -303,7 +312,7 @@ public class CommerceImplementService(
         await Task.WhenAll(tasks);
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
-        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
+        res.AddSuccess($"Обновление `строки документа-заказа` выполнено");
         return res;
     }
 
@@ -691,7 +700,7 @@ public class CommerceImplementService(
             .SetProperty(p => p.Version, Guid.NewGuid())
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
-        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
+        res.AddSuccess($"Обновление `документа-заказа` выполнено");
         return res;
     }
 
@@ -1066,10 +1075,9 @@ public class CommerceImplementService(
                                                                join d in context.WarehouseDocuments on r.WarehouseDocumentId equals d.Id
                                                                select d;
 
-        var whDoc = await queryDocumentDb
-            .Select(x => new { x.WarehouseId, x.IsDisabled })
-            .FirstAsync();
+        WarehouseDocumentRecord whDoc = await context.WarehouseDocuments.Where(x => x.Id == req.WarehouseDocumentId).Select(x => new WarehouseDocumentRecord(x.WarehouseId, x.IsDisabled)).FirstAsync();
 
+        List<Task> tasks = [];
         if (whDoc.WarehouseId == 0)
         {
             msg = "В документе не указан склад";
@@ -1077,6 +1085,17 @@ public class CommerceImplementService(
             res.AddError(msg);
             return res;
         }
+
+        if (await context.RowsOfWarehouseDocuments.AnyAsync(x => x.Id != req.Id && x.OfferId == req.OfferId && x.WarehouseDocumentId == req.WarehouseDocumentId))
+        {
+            msg = "В документе уже существует этот офер. Установите ему требуемое количество";
+            loggerRepo.LogError($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError(msg);
+            return res;
+        }
+
+        if (!res.Success())
+            return res;
 
         RowOfWarehouseDocumentModelDB? rowDb = req.Id > 0
             ? await context.RowsOfWarehouseDocuments.FirstAsync(x => x.Id == req.Id)
@@ -1117,8 +1136,6 @@ public class CommerceImplementService(
         OfferAvailabilityModelDB? regOfferAv = await context
             .OffersAvailability
             .FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.WarehouseId == whDoc.WarehouseId);
-
-        List<Task> tasks = [];
 
         if (regOfferAv is null && !whDoc.IsDisabled)
         {
@@ -1192,11 +1209,11 @@ public class CommerceImplementService(
                        .SetProperty(p => p.Quantity, req.Quantity).SetProperty(p => p.Version, Guid.NewGuid()))));
         }
         context.RemoveRange(lokers);
-        tasks.Add(context.SaveChangesAsync());
         await Task.WhenAll(tasks);
+        await context.SaveChangesAsync();
         await transaction.CommitAsync();
 
-        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
+        res.AddSuccess($"Обновление `строки складского документа` выполнено");
         return res;
     }
 
@@ -1282,11 +1299,11 @@ public class CommerceImplementService(
             .OffersAvailability
             .AsQueryable();
 
-        if (req.Payload.OfferFilter.HasValue && req.Payload.OfferFilter.Value > 0)
-            q = q.Where(x => x.OfferId == req.Payload.OfferFilter.Value);
+        if (req.Payload.OfferFilter is not null && req.Payload.OfferFilter.Length != 0)
+            q = q.Where(x => req.Payload.OfferFilter.Any(y => y == x.OfferId));
 
-        if (req.Payload.GoodsFilter.HasValue && req.Payload.GoodsFilter.Value > 0)
-            q = q.Where(x => x.GoodsId == req.Payload.GoodsFilter.Value);
+        if (req.Payload.GoodsFilter is not null && req.Payload.GoodsFilter.Length != 0)
+            q = q.Where(x => req.Payload.GoodsFilter.Any(y => y == x.GoodsId));
 
         var exQuery = from offerAv in q
                       join oj in context.OffersGoods on offerAv.OfferId equals oj.Id
@@ -1309,8 +1326,10 @@ public class CommerceImplementService(
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = await q.CountAsync(),
-                Response = [.. await pq.ToArrayAsync()],
+                Response = [.. await pq.Include(x => x.Goods).Include(x => x.Offer).ToArrayAsync()],
             },
         };
     }
 }
+
+internal record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);

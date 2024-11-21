@@ -7,10 +7,20 @@ namespace SharedLib;
 /// <summary>
 /// Registers select request base
 /// </summary>
-public class RegistersSelectRequestBaseModel : OffersSelectRequestBaseModel
+public class RegistersSelectRequestBaseModel
 {
     /// <summary>
     /// Склад
     /// </summary>
-    public required int WarehouseId { get; set; }
+    public int WarehouseId { get; set; }
+
+    /// <summary>
+    /// Фильтр по номенклатуре
+    /// </summary>
+    public int[]? GoodsFilter { get; set; }
+
+    /// <summary>
+    /// Фильтр по коммерческому предложению
+    /// </summary>
+    public int[]? OfferFilter { get; set; }
 }
