@@ -1,5 +1,5 @@
 ﻿@using MudBlazor
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentRubricsCachedModel
 
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
@@ -18,7 +18,7 @@
             @context.Offer?.Name
             <sup>@context.Goods?.Name</sup>
         </MudTd>
-        <MudTd DataLabel="Warehouse">@context.WarehouseId</MudTd>
+        <MudTd DataLabel="Warehouse">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
         <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
     </RowTemplate>
     <NoRecordsContent>

@@ -12,12 +12,8 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// OffersOfGoodsComponent
 /// </summary>
-public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseAuthModel
+public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
 {
-    [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
-
-
     /// <summary>
     /// CurrentGoods
     /// </summary>
@@ -50,16 +46,19 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentBaseAuthModel
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        await SetBusy();
-        
+        await SetBusy(token: token);
         TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
-        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
-        if (!res.Success() || res.Response?.Response is null)
-            return new TableData<OfferGoodModelDB>() { TotalItems = 0, Items = [] };
+        if (res.Success() && res.Response?.Response is not null)
+        {
+            await CacheRegistersOfferUpdate(res.Response.Response.Select(x => x.Id));
+            IsBusyProgress = false;
+            return new TableData<OfferGoodModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+        }
 
-        return new TableData<OfferGoodModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+        IsBusyProgress = false;
+        return new TableData<OfferGoodModelDB>() { TotalItems = 0, Items = [] };
     }
 
     bool _expanded;

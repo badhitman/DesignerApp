@@ -1,5 +1,5 @@
 ﻿@using MudBlazor
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentRubricsCachedModel
 
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
@@ -9,15 +9,17 @@
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="Id" T="WarehouseDocumentModelDB">Id</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="Name" T="WarehouseDocumentModelDB">Примечание</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="DeliveryData" T="WarehouseDocumentModelDB">Доставка</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="About" T="WarehouseDocumentModelDB">Создан/Обновлён</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel  T="WarehouseDocumentModelDB">Id</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortDirection="SortDirection.Ascending" SortLabel="Name" T="WarehouseDocumentModelDB">Примечание</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel  T="WarehouseDocumentModelDB">Доставка</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="WarehouseDocumentModelDB">Warehouse</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel  T="WarehouseDocumentModelDB">Создан/Обновлён</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id"><a href="/goods/warehouse/editing/@(context.Id)">@context.Id</a></MudTd>
         <MudTd DataLabel="Примечание"><a href="/goods/warehouse/editing/@(context.Id)">@context.Name</a></MudTd>
         <MudTd DataLabel="Доставка">@context.DeliveryDate.GetHumanDateTime()</MudTd>
+        <MudTd DataLabel="Warehouse">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
         <MudTd DataLabel="About">@context.CreatedAtUTC.GetHumanDateTime()/@context.LastAtUpdatedUTC.GetHumanDateTime()</MudTd>
     </RowTemplate>
     <NoRecordsContent>

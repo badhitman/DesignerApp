@@ -1307,6 +1307,9 @@ public class CommerceImplementService(
         if (req.Payload.GoodsFilter is not null && req.Payload.GoodsFilter.Length != 0)
             q = q.Where(x => req.Payload.GoodsFilter.Any(y => y == x.GoodsId));
 
+        if (req.Payload.WarehouseId > 0)
+            q = q.Where(x => req.Payload.WarehouseId == x.WarehouseId);
+
         var exQuery = from offerAv in q
                       join oj in context.OffersGoods on offerAv.OfferId equals oj.Id
                       select new { offerAv, OfferGood = oj };

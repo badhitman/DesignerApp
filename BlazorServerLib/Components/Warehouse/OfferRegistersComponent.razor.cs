@@ -12,14 +12,8 @@ namespace BlazorWebLib.Components.Warehouse;
 /// <summary>
 /// OfferRegistersComponent
 /// </summary>
-public partial class OfferRegistersComponent : BlazorBusyComponentBaseModel
+public partial class OfferRegistersComponent : BlazorBusyComponentRubricsCachedModel
 {
-    /// <summary>
-    /// CommRepo
-    /// </summary>
-    [Inject]
-    ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
-
     private MudTable<OfferAvailabilityModelDB>? table;
 
     /// <summary>
@@ -32,20 +26,23 @@ public partial class OfferRegistersComponent : BlazorBusyComponentBaseModel
         {
             Payload = new()
             {
-                 
+
             },
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>> rest = await CommRepo.OffersRegistersSelect(req);
-        await SetBusy(false, token: token);
+        TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>> rest = await CommerceRepo.OffersRegistersSelect(req);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
-        if (rest.Response is null)
-            return new TableData<OfferAvailabilityModelDB>() { TotalItems = 0, Items = [] };
+        if (rest.Response is not null)
+        {
+            await CacheRubricsUpdate(rest.Response.Response.Select(x => x.WarehouseId));
+            return new TableData<OfferAvailabilityModelDB>() { TotalItems = rest.Response.TotalRowsCount, Items = rest.Response.Response };
+        }
 
-        return new TableData<OfferAvailabilityModelDB>() { TotalItems = rest.Response.TotalRowsCount, Items = rest.Response.Response };
+        await SetBusy(false, token: token);
+        return new TableData<OfferAvailabilityModelDB>() { TotalItems = 0, Items = [] };
     }
 }

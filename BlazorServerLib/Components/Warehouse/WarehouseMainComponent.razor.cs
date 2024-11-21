@@ -12,14 +12,8 @@ namespace BlazorWebLib.Components.Warehouse;
 /// <summary>
 /// WarehouseMainComponent
 /// </summary>
-public partial class WarehouseMainComponent : BlazorBusyComponentBaseModel
+public partial class WarehouseMainComponent : BlazorBusyComponentRubricsCachedModel
 {
-    /// <summary>
-    /// CommRepo
-    /// </summary>
-    [Inject]
-    ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
-
     private MudTable<WarehouseDocumentModelDB>? table;
 
     private string? searchString = null;
@@ -42,14 +36,18 @@ public partial class WarehouseMainComponent : BlazorBusyComponentBaseModel
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>> rest = await CommRepo.WarehousesSelect(req);
+        TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>> rest = await CommerceRepo.WarehousesSelect(req);
         await SetBusy(false, token: token);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
-        if (rest.Response is null)
-            return new TableData<WarehouseDocumentModelDB>() { TotalItems = 0, Items = [] };
+        if (rest.Response is not null)
+        {
+            await CacheRubricsUpdate(rest.Response.Response.Select(x => x.WarehouseId));
+            return new TableData<WarehouseDocumentModelDB>() { TotalItems = rest.Response.TotalRowsCount, Items = rest.Response.Response };
+        }
 
-        return new TableData<WarehouseDocumentModelDB>() { TotalItems = rest.Response.TotalRowsCount, Items = rest.Response.Response };
+        await SetBusy(false, token: token);
+        return new TableData<WarehouseDocumentModelDB>() { TotalItems = 0, Items = [] };
     }
 
     private void OnSearch(string text)

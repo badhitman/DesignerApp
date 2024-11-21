@@ -1,5 +1,5 @@
 ﻿@using MudBlazor
-@inherits BlazorBusyComponentBaseAuthModel
+@inherits BlazorBusyComponentRegistersModel
 
 <style>
     td.mud-table-cell sup.bi, i.bi {
@@ -29,6 +29,7 @@
             <MudTh>Цена/Стоимость</MudTh>
             <MudTh>Кратность</MudTh>
             <MudTh>Ед. изм.</MudTh>
+            <MudTh>Остатки</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Goods">
@@ -51,6 +52,9 @@
             </MudTd>
             <MudTd DataLabel="Multiplicity">@context.Multiplicity</MudTd>
             <MudTd DataLabel="OfferUnit">@context.OfferUnit.DescriptionInfo()</MudTd>
+            <MudTd DataLabel="Остатки">
+                @RegistersCache.Where(x => x.OfferId == context.Id).Sum(x => x.Quantity)
+            </MudTd>
         </RowTemplate>
         <NoRecordsContent>
             <MudText>Данные отсутствуют</MudText>

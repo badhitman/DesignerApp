@@ -1,6 +1,6 @@
 ﻿@using MudBlazor
 
-@inherits BlazorBusyComponentBaseAuthModel
+@inherits BlazorBusyComponentRegistersModel
 
 <MudPaper Class="pa-4 mt-3">
     @if (CurrentUserSession!.IsAdmin)
@@ -22,12 +22,16 @@
         <HeaderContent>
             <MudTh>Имя</MudTh>
             <MudTh>Ед.изм.</MudTh>
+            <MudTh>Остатки</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Имя">
                 <a href="/goods/card/@context.Id">@context.Name</a>
             </MudTd>
             <MudTd DataLabel="Ед.изм.">@context.BaseUnit.DescriptionInfo()</MudTd>
+            <MudTd DataLabel="Остатки">
+                @RegistersCache.Where(x => x.GoodsId == context.Id).Sum(x => x.Quantity)
+            </MudTd>
         </RowTemplate>
         <NoRecordsContent>
             <MudText>Данные отсутствуют</MudText>
