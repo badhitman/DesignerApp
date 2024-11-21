@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegistersModel
 {
     /// <summary>
-    /// WarehouseId
+    /// Склад
     /// </summary>
     [Parameter, EditorRequired]
     public required int WarehouseId { get; set; }
@@ -41,14 +41,31 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
     OfferGoodModelDB? SelectedOffer { get; set; }
 
     int? _selectedOfferId;
-    int? SelectedOfferId
+    /// <summary>
+    /// SelectedOfferId
+    /// </summary>
+    public int? SelectedOfferId
     {
         get => _selectedOfferId;
         set
         {
             _selectedOfferId = value;
             SelectedOffer = AllOffers.FirstOrDefault(x => x.Id == value);
+            if (SelectedOffer is not null)
+                InvokeAsync(async () => await CacheRegistersOfferUpdate([SelectedOffer.Id], WarehouseId, true));
         }
+    }
+
+    int GetMaxValue()
+    {
+        return SelectedOffer is null
+            ? 0
+            : RegistersCache.Where(x => x.OfferId == SelectedOffer.Id && x.WarehouseId == WarehouseId).Sum(x => x.Quantity);
+    }
+
+    bool CanAdd()
+    {
+        return SelectedOffer is null || GetMaxValue() == 0;
     }
 
     IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentRows!.Contains(x.Id));
@@ -88,9 +105,29 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
         OnExpandAddingOffer();
     }
 
+    int? cacheId = null;
+
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            if (cacheId != SelectedOfferId && SelectedOffer is not null)
+            {
+                await CacheRegistersOfferUpdate([SelectedOffer.Id], WarehouseId, true);
+                cacheId = SelectedOfferId;
+                StateHasChanged();
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
     {
         SelectedOfferId = ActualOffers.FirstOrDefault()?.Id;
+        if (SelectedOffer is not null)
+            await CacheRegistersOfferUpdate([SelectedOffer.Id], WarehouseId, true);
+
+        cacheId = SelectedOfferId;
     }
 }

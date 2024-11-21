@@ -56,7 +56,6 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
     {
         CurrentTab.WarehouseId = selectedRubric?.Id ?? 0;
 
-
         if (DocumentUpdateHandler is not null)
             DocumentUpdateHandler();
 
