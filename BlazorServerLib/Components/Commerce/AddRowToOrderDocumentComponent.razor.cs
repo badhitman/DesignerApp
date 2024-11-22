@@ -58,6 +58,12 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
     [Parameter, EditorRequired]
     public required Action<OfferGoodActionModel> AddingOfferHandler { get; set; }
 
+    /// <summary>
+    /// Обработчик выбора Оффера
+    /// </summary>
+    [Parameter]
+    public Action<OfferGoodModelDB?>? SelectOfferHandler { get; set; }
+
 
     OfferGoodModelDB? SelectedOffer { get; set; }
 
@@ -74,6 +80,8 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
             SelectedOffer = AllOffers.FirstOrDefault(x => x.Id == value);
             if (SelectedOffer is not null && !ForceAdding)
                 InvokeAsync(async () => await CacheRegistersOfferUpdate([SelectedOffer.Id], WarehouseId, true));
+            if (SelectOfferHandler is not null)
+                SelectOfferHandler(SelectedOffer);
         }
     }
 

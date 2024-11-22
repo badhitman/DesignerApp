@@ -26,12 +26,10 @@
             Номенклатура
             @{
                 decimal sum_of_tab = CurrentTab.Rows!.Select(x => x.Offer!.Price * x.Quantity).Sum();
-                // int avOffer = this.RegistersCache.Where(x => x.WarehouseId == CurrentTab.WarehouseId && x.OfferId == addingDomRef?.SelectedOfferId).Sum(x => x.Quantity);
             }
             @if (sum_of_tab > 0)
             {
                 <text>: </text>
-
                 <span class="text-primary-emphasis">@sum_of_tab</span> <text>руб.</text>
             }
         </MudText>
@@ -39,7 +37,7 @@
         @if (!ReadOnly)
         {
             <div class="ms-3">
-                <AddRowToOrderDocumentComponent ForceAdding="ForceAdding" ShowPriceOffers="true" ShowRegistersOffersQuantity="true" @ref="addingDomRef" WarehouseId="CurrentTab.WarehouseId" AllOffers="allOffers" CurrentRows="CurrentTab.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
+                <AddRowToOrderDocumentComponent ForceAdding="ForceAdding" ShowPriceOffers="true" SelectOfferHandler="SelectOfferAction" ShowRegistersOffersQuantity="true" @ref="addingDomRef" WarehouseId="CurrentTab.WarehouseId" AllOffers="allOffers" CurrentRows="CurrentTab.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
             </div>
         }
     </ToolBarContent>

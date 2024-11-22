@@ -60,6 +60,13 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
         }
     }
 
+    async void SelectOfferAction(OfferGoodModelDB? offer)
+    {
+        await SetBusy();
+
+        await SetBusy(false);
+    }
+
     int GetMaxValue(RowOfOrderDocumentModelDB ctx)
     {
         return ForceAdding
