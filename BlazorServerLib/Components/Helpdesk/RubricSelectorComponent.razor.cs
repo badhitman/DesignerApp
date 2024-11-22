@@ -31,8 +31,8 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
     List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow { get; set; }
 
     /// <inheritdoc/>
-    [Parameter, EditorRequired]
-    public required int ParentRubric { get; set; }
+    [Parameter]
+    public int ParentRubric { get; set; }
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -88,9 +88,11 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
 
         await SetBusy();
         TResponseModel<List<RubricBaseModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = ownerRubricId, ContextName = ContextName });
-        await SetBusy(false);
+
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         CurrentRubrics = rest.Response;
+
+        await SetBusy(false);
     }
 
     /// <inheritdoc/>
@@ -103,7 +105,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         else
         {
             await SetBusy();
-            
+
             TResponseModel<List<RubricIssueHelpdeskModelDB>?> dump_rubric = await HelpdeskRepo.RubricRead(rubric_id);
             RubricMetadataShadow = dump_rubric.Response;
             SnackbarRepo.ShowMessagesResponse(dump_rubric.Messages);
