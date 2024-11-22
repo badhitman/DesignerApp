@@ -79,6 +79,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
 
     int GetOfferQuantity(OfferGoodModelDB opt)
     {
+
         return RegistersCache.Where(x => x.OfferId == opt.Id && (WarehouseId < 1 || x.WarehouseId == WarehouseId)).Sum(x => x.Quantity);
     }
 

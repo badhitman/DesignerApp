@@ -30,7 +30,12 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
     protected async Task CacheRegistersOfferUpdate(IEnumerable<int> req, int warehouseId = 0, bool ClearCache = false)
     {
         if (ClearCache)
-            RegistersCache.Clear();
+        {
+            lock (this)
+            {
+                RegistersCache.Clear();
+            }
+        }
 
         req = [.. req.Where(x => x > 0 && !RegistersCache.Any(y => y.Id == x)).Distinct()];
 
@@ -51,7 +56,12 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(rubrics.Messages);
         if (rubrics.Success() && rubrics.Response is not null && rubrics.Response.Response.Count != 0)
-            RegistersCache.AddRange(rubrics.Response.Response);
+        {
+            lock (this)
+            {
+                RegistersCache.AddRange(rubrics.Response.Response.Where(x => !RegistersCache.Any(y => y.Id == x.Id)));
+            }
+        }
     }
 
     /// <summary>
