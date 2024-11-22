@@ -802,7 +802,7 @@ public class CommerceImplementService(
                     .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
             }),
             ];
-        
+
         await Task.WhenAll(_tasks);
         await transaction.CommitAsync();
         res.AddSuccess("Запрос смены статуса заказа выполнен успешно");
@@ -891,8 +891,33 @@ public class CommerceImplementService(
                 {
                     OfferAvailabilityModelDB? registerOffer = registersOffersDb.FirstOrDefault(x => x.OfferId == rowOfDocument.OfferId && x.WarehouseId == warehouseDocumentDb.WarehouseId);
                     if (registerOffer is not null)
-                        _tasks.Add(context.OffersAvailability.Where(y => true).ExecuteUpdateAsync(set => set.SetProperty(p => p.Quantity, registerOffer.Quantity - rowOfDocument.Quantity)));
+                    {
+                        if (registerOffer.Quantity < rowOfDocument.Quantity)
+                        {
+                            msg = $"Количество сторно [offer: #{rowOfDocument.OfferId} '{rowOfDocument.Offer?.Name}'] больше баланса в БД: ";
+                            loggerRepo.LogError($"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+                            res.AddError($"{msg}. Баланс не может быть отрицательным");
+                            return;
+                        }
+
+                        _tasks.Add(context.OffersAvailability.Where(y => y.Id == registerOffer.Id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Quantity, registerOffer.Quantity - rowOfDocument.Quantity)));
+                    }
+                    else
+                    {
+                        msg = $"Количество сторно [offer: #{rowOfDocument.OfferId} '{rowOfDocument.Offer?.Name}'] не может быть списано (остаток 0): ";
+                        loggerRepo.LogError($"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+                        res.AddError($"{msg}. Баланс не может быть отрицательным");
+                        return;
+                    }
                 });
+                if (!res.Success())
+                {
+                    await transaction.RollbackAsync();
+                    msg = $"Не удалось выполнить обновить складской документ: ";
+                    loggerRepo.LogError($"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+                    res.AddError(msg);
+                    return res;
+                }
             }
             else
             {

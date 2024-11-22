@@ -25,6 +25,14 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
     public required TabAddressForOrderModelDb CurrentTab { get; set; }
 
 
+    /// <summary>
+    /// Если true - тогда можно добавлять офферы, которых нет в остатках.
+    /// Если false - тогда для добавления доступны только офферы на остатках
+    /// </summary>
+    [Parameter]
+    public bool ForceAdding { get; set; }
+
+
     AddRowToOrderDocumentComponent? addingDomRef;
     RowOfOrderDocumentModelDB? elementBeforeEdit;
     RubricSelectorComponent? ref_rubric;
@@ -50,6 +58,13 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
                 ref_rubric.StateHasChangedCall();
             }
         }
+    }
+
+    int GetMaxValue(RowOfOrderDocumentModelDB ctx)
+    {
+        return ForceAdding
+            ? int.MaxValue
+            : RegistersCache.Where(x => x.OfferId == ctx.OfferId && x.WarehouseId == CurrentTab.WarehouseId).Sum(x => x.Quantity);
     }
 
     void RubricSelectAction(RubricBaseModel? selectedRubric)

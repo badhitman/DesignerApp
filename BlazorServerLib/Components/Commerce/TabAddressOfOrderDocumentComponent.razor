@@ -39,7 +39,7 @@
         @if (!ReadOnly)
         {
             <div class="ms-3">
-                <AddRowToOrderDocumentComponent ShowPriceOffers="true" ShowRegistersOffersQuantity="true"  @ref="addingDomRef" WarehouseId="CurrentTab.WarehouseId" AllOffers="allOffers" CurrentRows="CurrentTab.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
+                <AddRowToOrderDocumentComponent ForceAdding="ForceAdding" ShowPriceOffers="true" ShowRegistersOffersQuantity="true" @ref="addingDomRef" WarehouseId="CurrentTab.WarehouseId" AllOffers="allOffers" CurrentRows="CurrentTab.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
             </div>
         }
     </ToolBarContent>
@@ -86,11 +86,14 @@
         <MudTd DataLabel="Name">
             @context?.Offer?.GetName()
         </MudTd>
+        <MudTd DataLabel="Остаток">
+            @(this.RegistersCache.Where(x => x.OfferId == context.OfferId && x.WarehouseId == CurrentTab.WarehouseId).Sum(x => x.Quantity))
+        </MudTd>
         <MudTd DataLabel="Price">
             @(context.Offer!.Price)
         </MudTd>
         <MudTd DataLabel="Quantity">
-            <MudNumericField @bind-Value="context!.Quantity" Required Min="1" />
+            <MudNumericField @bind-Value="context!.Quantity" Required Min="1" Max="GetMaxValue(context)" />
         </MudTd>
         <MudTd colspan="2">
             @(context!.Quantity * context.Offer!.Price)
