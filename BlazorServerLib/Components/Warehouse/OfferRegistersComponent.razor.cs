@@ -36,7 +36,7 @@ public partial class OfferRegistersComponent : BlazorBusyComponentRubricsCachedM
         {
             Payload = new()
             {
-
+                
             },
             PageNum = state.Page,
             PageSize = state.PageSize,
@@ -49,6 +49,7 @@ public partial class OfferRegistersComponent : BlazorBusyComponentRubricsCachedM
         if (rest.Response is not null)
         {
             await CacheRubricsUpdate(rest.Response.Response.Select(x => x.WarehouseId));
+            await SetBusy(false, token: token);
             return new TableData<OfferAvailabilityModelDB>() { TotalItems = rest.Response.TotalRowsCount, Items = rest.Response.Response };
         }
 

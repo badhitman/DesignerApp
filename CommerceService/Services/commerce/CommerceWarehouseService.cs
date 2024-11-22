@@ -553,15 +553,12 @@ public partial class CommerceImplementService : ICommerceService
 
         var exQuery = from offerAv in q
                       join oj in context.OffersGoods on offerAv.OfferId equals oj.Id
+                      join gj in context.Goods on offerAv.GoodsId equals gj.Id
                       select new { offerAv, OfferGood = oj };
 
-        IQueryable<OfferAvailabilityModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-           ? exQuery.OrderBy(x => x.OfferGood.Name).Select(x => x.offerAv)
-           : exQuery.OrderByDescending(x => x.OfferGood.Name).Select(x => x.offerAv);
-
-        IQueryable<OfferAvailabilityModelDB> pq = oq
-            .Skip(req.PageNum * req.PageSize)
-            .Take(req.PageSize);
+        var dbRes = req.SortingDirection == VerticalDirectionsEnum.Up
+           ? await exQuery.OrderBy(x => x.OfferGood.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()
+           : await exQuery.OrderByDescending(x => x.OfferGood.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync();
 
         return new()
         {
@@ -572,7 +569,7 @@ public partial class CommerceImplementService : ICommerceService
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = await q.CountAsync(),
-                Response = [.. await pq.Include(x => x.Goods).Include(x => x.Offer).ToArrayAsync()],
+                Response = [.. dbRes.Select(x=>x.offerAv)],
             },
         };
     }
