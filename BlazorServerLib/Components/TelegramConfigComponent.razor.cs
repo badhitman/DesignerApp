@@ -43,7 +43,10 @@ public partial class TelegramConfigComponent : BlazorBusyComponentBaseModel
         await SetBusy();
         TResponseModel<bool?> res_IsCommandModeTelegramBot = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterIsCommandModeTelegramBot);
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res_IsCommandModeTelegramBot.Messages);
+
+        if (!res_IsCommandModeTelegramBot.Success())
+            SnackbarRepo.ShowMessagesResponse(res_IsCommandModeTelegramBot.Messages);
+
         _isCommandModeTelegramBot = res_IsCommandModeTelegramBot.Response == true;
     }
 }
