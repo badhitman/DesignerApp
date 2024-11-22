@@ -481,6 +481,9 @@ public partial class CommerceImplementService : ICommerceService
             .WarehouseDocuments
             .AsQueryable();
 
+        if (req.Payload.DisabledOnly.HasValue)
+            q = q.Where(x => x.IsDisabled == req.Payload.DisabledOnly.Value);
+
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
             q = q.Where(x => x.NormalizedUpperName.Contains(req.Payload.SearchQuery.ToUpper()));
 
@@ -492,6 +495,10 @@ public partial class CommerceImplementService : ICommerceService
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
+
+        if (req.Payload.AfterDeliveryDate is not null)
+            q = q.Where(x => x.DeliveryDate >= req.Payload.AfterDeliveryDate || (x.DeliveryDate == DateTime.MinValue && x.DeliveryDate >= req.Payload.AfterDeliveryDate));
+
 
         IOrderedQueryable<WarehouseDocumentModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
            ? q.OrderBy(x => x.CreatedAtUTC)

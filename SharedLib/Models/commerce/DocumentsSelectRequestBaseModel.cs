@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Documents select request base
 /// </summary>
-public class DocumentsSelectRequestBaseModel: OffersSelectRequestBaseModel
+public class DocumentsSelectRequestBaseModel : OffersSelectRequestBaseModel
 {
     /// <summary>
     /// SearchQuery
