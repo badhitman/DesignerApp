@@ -53,6 +53,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     /// Выбранный чат
     /// </summary>
     public ChatTelegramModelDB? SelectedChat;
+    ChatSelectInputComponent? selectorInput;
 
     long initValue;
 
@@ -65,7 +66,7 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
 
     async void SelectChatHandler(ChatTelegramModelDB? selected)
     {
-        if (SelectedChat?.ChatTelegramId == selected?.ChatTelegramId || SelectedChat is null)
+        if (SelectedChat?.ChatTelegramId == selected?.ChatTelegramId || SelectedChat is null || initValue == selected?.ChatTelegramId)
         {
             SelectedChat = selected;
             StateHasChanged();
@@ -78,14 +79,23 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
         SelectedChat = selected;
 
         await SetBusy();
-
         TResponseModel<int> rest = await StorageRepo.SaveParameter(selected?.ChatTelegramId, KeyStorage, false);
-        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        StateHasChanged();
+        await SetBusy(false);
 
         if (ChatChangeHandler is not null)
             ChatChangeHandler(this);
+    }
+
+    long _sv = 0;
+    /// <inheritdoc/>
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender && selectorInput is not null && _sv != initValue)
+        {
+            _sv = initValue;
+            selectorInput.StateHasChangedCall();
+        }
     }
 
     /// <inheritdoc/>
@@ -93,11 +103,9 @@ public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
     {
         await SetBusy();
         TResponseModel<long?> rest = await StorageRepo.ReadParameter<long?>(KeyStorage);
-        IsBusyProgress = false;
-
         if (!rest.Success())
             SnackbarRepo.ShowMessagesResponse(rest.Messages);
-
         initValue = rest.Response ?? 0;
+        IsBusyProgress = false;
     }
 }

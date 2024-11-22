@@ -28,7 +28,6 @@ public partial class ChatSelectInputComponent : LazySelectorComponent<ChatTelegr
     public override async Task LoadPartData()
     {
         await SetBusy();
-        
         TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?> rest = await TelegramRepo
             .ChatsSelect(new()
             {
@@ -36,7 +35,7 @@ public partial class ChatSelectInputComponent : LazySelectorComponent<ChatTelegr
                 PageNum = PageNum,
                 PageSize = page_size,
             });
-        IsBusyProgress = false;
+
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Success() && rest.Response?.Response is not null)
         {
@@ -48,7 +47,18 @@ public partial class ChatSelectInputComponent : LazySelectorComponent<ChatTelegr
 
             PageNum++;
         }
-        StateHasChanged();
+        await SetBusy(false);
+    }
+
+    long _sc;
+    /// <inheritdoc/>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender && _sc != SelectedChat)
+        {
+            _sc = SelectedChat;
+            await ReadChat();
+        }
     }
 
     /// <inheritdoc/>
@@ -60,19 +70,24 @@ public partial class ChatSelectInputComponent : LazySelectorComponent<ChatTelegr
             SelectHandleAction(SelectedObject);
             return;
         }
+        await ReadChat();
+    }
 
+    async Task ReadChat()
+    {
         await SetBusy();
-        
+
         TResponseModel<ChatTelegramModelDB[]?> rest = await TelegramRepo.ChatsReadTelegram([SelectedChat]);
-        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null || rest.Response.Length == 0)
         {
+            await SetBusy(false);
             SnackbarRepo.Error($"Не найден запрашиваемый чат #{SelectedChat}");
             return;
         }
         SelectedObject = rest.Response.Single();
         _selectedValueText = SelectedObject.ToString();
         SelectHandleAction(SelectedObject);
+        await SetBusy(false);
     }
 }

@@ -21,6 +21,7 @@ public abstract class LazySelectorComponent<TRow> : BlazorBusyComponentBaseModel
     [Inject]
     protected IJSRuntime JS { get; set; } = default!;
 
+
     /// <summary>
     /// IsReadOnly
     /// </summary>
