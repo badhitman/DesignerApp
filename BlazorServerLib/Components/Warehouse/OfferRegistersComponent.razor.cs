@@ -16,6 +16,16 @@ public partial class OfferRegistersComponent : BlazorBusyComponentRubricsCachedM
 {
     private MudTable<OfferAvailabilityModelDB>? table;
 
+    async Task ReloadTable()
+    {
+        if (table is null)
+            return;
+
+        await SetBusy();
+        await table.ReloadServerData();
+        await SetBusy(false);
+    }
+
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
