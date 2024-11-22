@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// ExeCommandModel
+/// Запуск команды (bash/cmd)
 /// </summary>
 public class ExeCommandModel
 {

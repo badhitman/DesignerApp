@@ -62,6 +62,15 @@ chmod -R 777 /srv/services
 chown -R www-data:www-data /srv/git/builds
 chmod -R 777 /srv/git/builds
 
+chown -R www-data:www-data /srv/mongodb
+chmod -R 777 /srv/mongodb
+
+chown -R www-data:www-data /srv/redisdata
+chmod -R 777 /srv/redisdata
+
+chown -R www-data:www-data /srv/postgres
+chmod -R 777 /srv/postgres
+
 systemctl start comm.app.service web.app.service bus.app.service tg.app.service api.app.service hd.app.service constructor.app.service
 
 journalctl -f -u web.app.service
