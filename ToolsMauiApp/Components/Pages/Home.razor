@@ -6,21 +6,21 @@
 <div class="my-3">
     <div class="input-group">
         <span class="input-group-text">API</span>
-        <input disabled="@IsBusyProgress" type="password" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="configEdit.AccessToken" @bind-value:event="oninput">
-        <input disabled="@IsBusyProgress" type="text" aria-label="HOST API" class="form-control" placeholder="Адрес хоста API" @bind-value="configEdit.ApiAddress" @bind-value:event="oninput">
-        <button disabled="@(!CanSave || IsBusyProgress)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" @onclick="SaveConfig">Сохранить</button>
+        <input disabled="@(IsBusyProgress || HoldPage)" type="password" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="configEdit.AccessToken" @bind-value:event="oninput">
+        <input disabled="@(IsBusyProgress || HoldPage)" type="text" aria-label="HOST API" class="form-control" placeholder="Адрес хоста API" @bind-value="configEdit.ApiAddress" @bind-value:event="oninput">
+        <button disabled="@(!CanSave || IsBusyProgress || HoldPage)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" @onclick="SaveConfig">Сохранить</button>
         @if (!configEdit.Equals(MauiProgram.ConfigStore.Response))
         {
-            <button disabled="@IsBusyProgress" @onclick="() => configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!" class="btn btn-outline-warning" type="button">Отмена</button>
+            <button disabled="@(IsBusyProgress || HoldPage)" @onclick="() => configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!" class="btn btn-outline-warning" type="button">Отмена</button>
         }
-        <button @onclick="TestConnect" disabled="@(!configEdit.FullSets || IsBusyProgress)" class="btn btn-outline-@(configEdit.ConnectionSet ? "success" : "secondary")" type="button">Test</button>
+        <button @onclick="TestConnect" disabled="@(!configEdit.FullSets || IsBusyProgress || HoldPage)" class="btn btn-outline-@(configEdit.ConnectionSet ? "success" : "secondary")" type="button">Test</button>
     </div>
     <div class="row g-3 align-items-center my-1">
         <div class="col-auto">
             <label for="inputLocalDir" class="col-form-label">Локальная папка</label>
         </div>
         <div class="col-auto">
-            <input disabled="@IsBusyProgress" type="text" id="inputLocalDir" class="form-control" aria-describedby="localDirHelpInline" @bind-value="configEdit.LocalDirectory" @bind-value:event="oninput">
+            <input disabled="@(IsBusyProgress || HoldPage)" type="text" id="inputLocalDir" class="form-control" aria-describedby="localDirHelpInline" @bind-value="configEdit.LocalDirectory" @bind-value:event="oninput">
         </div>
         <div class="col-auto">
             <span id="localDirHelpInline" class="form-text">
@@ -33,7 +33,7 @@
             <label for="inputRemoteDir" class="col-form-label">Удалённая папка</label>
         </div>
         <div class="col-auto">
-            <input disabled="@IsBusyProgress" type="text" id="inputRemoteDir" class="form-control" aria-describedby="remoteHelpInline" @bind-value="configEdit.RemoteDirectory" @bind-value:event="oninput">
+            <input disabled="@(IsBusyProgress || HoldPage)" type="text" id="inputRemoteDir" class="form-control" aria-describedby="remoteHelpInline" @bind-value="configEdit.RemoteDirectory" @bind-value:event="oninput">
         </div>
         <div class="col-auto">
             <span id="remoteHelpInline" class="form-text">
@@ -78,7 +78,6 @@
                             </tr>
                         }
                     </tbody>
-
                 </table>
             }
         </MudTabPanel>
@@ -107,7 +106,7 @@
             }
             else
             {
-                <SyncFilesComponent />
+                <SyncFilesComponent ParentPage="this" />
             }
         </MudTabPanel>
     </MudTabs>

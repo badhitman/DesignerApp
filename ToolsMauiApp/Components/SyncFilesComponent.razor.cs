@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using SharedLib;
 using System.IO.Compression;
 using System.Security.Cryptography;
+using ToolsMauiApp.Components.Pages;
 
 namespace ToolsMauiApp.Components;
 
@@ -21,6 +22,13 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
     [Inject]
     IToolsSystemExtService ToolsExtRepo { get; set; } = default!;
+
+
+    /// <summary>
+    /// Home page
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required Home ParentPage { get; set; }
 
 
     TResponseModel<List<ToolsFilesResponseModel>>? localScan;
@@ -39,15 +47,23 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
             SnackbarRepo.Error("RemoteDirectory or LocalDirectory: is empty");
             return;
         }
+
+        await ParentPage.HoldPageUpdate(true);
+        await SetBusy();
+
         forDelete = null;
         forUpdateOrAdd = null;
+
         await Task.WhenAll([ReadLocalData(), ReadRemoteData()]);
+        await ParentPage.HoldPageUpdate(false);
+        await SetBusy(false);
+
         if (localScan?.Response is null || remoteScan?.Response is null)
         {
             SnackbarRepo.Error("localScan is null || remoteScan is null");
             return;
         }
-        await SetBusy();
+
         forDelete = remoteScan.Response
             .Where(x => !localScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName))
             .ToArray();
@@ -56,8 +72,6 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
             .Where(x => !remoteScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName))
             .Union(remoteScan.Response.Where(x => localScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName && !x.Equals(y))))
             .OrderByDescending(x => x.Size)];
-
-        await SetBusy(false);
     }
 
     async Task Send()
@@ -83,7 +97,9 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         if (forDelete.Length == 0 && forUpdateOrAdd.Length == 0)
             return;
 
+        await ParentPage.HoldPageUpdate(true);
         await SetBusy();
+
         MemoryStream ms;
 
         if (forDelete.Length != 0)
@@ -132,6 +148,8 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
             }
 
         await SyncRun();
+        await ParentPage.HoldPageUpdate(false);
+
         if (totalTransferData != 0)
             SnackbarRepo.Add($"Отправлено: {GlobalTools.SizeDataAsString(totalTransferData)}", MudBlazor.Severity.Info, c => c.DuplicatesBehavior = MudBlazor.SnackbarDuplicatesBehavior.Allow);
     }

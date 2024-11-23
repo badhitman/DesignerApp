@@ -21,6 +21,18 @@ public partial class Home : BlazorBusyComponentBaseModel
 
     bool CanSave => configEdit.FullSets && !configEdit.Equals(MauiProgram.ConfigStore.Response);
 
+    bool HoldPage = false;
+
+    /// <summary>
+    /// HoldPageUpdate
+    /// </summary>
+    public async Task HoldPageUpdate(bool _set)
+    {
+        HoldPage = _set;
+        await Task.Delay(1);
+        StateHasChanged();
+    }
+
     static string ColorStatus(ResultTypesEnum rt) => rt switch
     {
         ResultTypesEnum.Error => "danger",

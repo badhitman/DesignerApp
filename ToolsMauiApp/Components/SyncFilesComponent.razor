@@ -130,10 +130,10 @@
 <div class="d-grid gap-2 mt-3">
     @if (forDelete is null || forUpdateOrAdd is null)
     {
-        <button disabled="@(IsBusyProgress || remoteScanBusy || localScanBusy)" @onclick="SyncRun" class="btn btn-primary" type="button">Старт</button>
+        <button disabled="@(IsBusyProgress || remoteScanBusy || localScanBusy)" @onclick="SyncRun" class="btn btn-primary" type="button">@(IsBusyProgress ? "Подготовка..." : "Подготовить данные") </button>
     }
     else
     {
-        <button disabled="@(IsBusyProgress || (forDelete.Length == 0 && forUpdateOrAdd.Length == 0))" @onclick="Send" class="btn btn-primary" type="button">Отправить</button>
+        <button disabled="@(IsBusyProgress || (forDelete.Length == 0 && forUpdateOrAdd.Length == 0))" @onclick="Send" class="btn btn-primary" type="button">@(IsBusyProgress ? "Отправка..." : ((forDelete.Length == 0 && forUpdateOrAdd.Length == 0) ? "Папки синхронизированы." : "Отправить!"))</button>
     }
 </div>

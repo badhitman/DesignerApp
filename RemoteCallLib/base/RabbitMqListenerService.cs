@@ -36,10 +36,15 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
 
     static Dictionary<string, object>? ResponseQueueArguments;
 
-#if !DEBUG
+#if DEBUG
     private static readonly JsonSerializerSettings _sOpt = new()
     {
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+    };
+#else
+    private static readonly JsonSerializerOptions _sOpt = new ()
+    {
+           ReferenceHandler = ReferenceHandler.IgnoreCycles,
     };
 #endif
 
