@@ -52,13 +52,12 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
             .Where(x => !localScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName))
             .ToArray();
 
-        forUpdateOrAdd = localScan.Response
+        forUpdateOrAdd = [.. localScan.Response
             .Where(x => !remoteScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName))
             .Union(remoteScan.Response.Where(x => localScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName && !x.Equals(y))))
-            .ToArray();
+            .OrderByDescending(x => x.Size)];
 
         await SetBusy(false);
-
     }
 
     async Task Send()
@@ -115,7 +114,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
                     if (resUpd.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Error || x.TypeMessage >= ResultTypesEnum.Info))
                         SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
-                    
+
                     totalTransferData += ms.Length;
 
                     using FileStream stream = File.OpenRead(_fnT);

@@ -112,7 +112,7 @@
             <div class="card-body">
                 <h5 class="card-title"> Изменения файлов (@forUpdateOrAdd.Length шт. @GlobalTools.SizeDataAsString(forUpdateOrAdd.Sum(x => x.Size))):</h5>
                 <ul>
-                    @foreach (ToolsFilesResponseModel _tfd in forUpdateOrAdd.OrderByDescending(x => x.Size))
+                    @foreach (ToolsFilesResponseModel _tfd in forUpdateOrAdd)
                     {
                         ToolsFilesResponseModel? _localMd = localScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);
                         ToolsFilesResponseModel? _remoteMd = remoteScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);

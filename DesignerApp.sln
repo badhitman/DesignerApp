@@ -47,21 +47,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "etc", "etc", "{9C0D49D9-C7B9-4960-AF82-361448F4965A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{A7D9597F-4160-4A52-ADBD-078CFB815FA7}"
-	ProjectSection(SolutionItems) = preProject
-		devops\etc\nginx\api.iq-s.pro.conf = devops\etc\nginx\api.iq-s.pro.conf
-		devops\etc\nginx\iq-s.pro.conf = devops\etc\nginx\iq-s.pro.conf
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "systemd", "systemd", "{5B966126-26F6-4699-92C7-1F1A582A7EE3}"
 	ProjectSection(SolutionItems) = preProject
-		devops\etc\systemd\system\api.app.service = devops\etc\systemd\system\api.app.service
-		devops\etc\systemd\system\bus.app.service = devops\etc\systemd\system\bus.app.service
-		devops\etc\systemd\system\comm.app.service = devops\etc\systemd\system\comm.app.service
-		devops\etc\systemd\system\constructor.app.service = devops\etc\systemd\system\constructor.app.service
 		devops\etc\systemd\system\docker-compose-app.service = devops\etc\systemd\system\docker-compose-app.service
-		devops\etc\systemd\system\hd.app.service = devops\etc\systemd\system\hd.app.service
-		devops\etc\systemd\system\tg.app.service = devops\etc\systemd\system\tg.app.service
-		devops\etc\systemd\system\web.app.service = devops\etc\systemd\system\web.app.service
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "blank", "blank", "{72BC0AA4-50AF-4FB3-8214-ED2741EE3B4F}"
@@ -104,6 +93,40 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConstructorService", "ConstructorService\ConstructorService.csproj", "{96B0DA02-8148-4F5D-B98C-D12F9B595166}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolsMauiApp", "ToolsMauiApp\ToolsMauiApp.csproj", "{77DAC5F2-6E00-4C39-87A1-8CB450118360}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stage", "stage", "{CEF1BB59-528D-4BE0-AF5D-08FBB8C347A8}"
+	ProjectSection(SolutionItems) = preProject
+		devops\etc\systemd\system\api.app.stage.service = devops\etc\systemd\system\api.app.stage.service
+		devops\etc\systemd\system\bus.app.stage.service = devops\etc\systemd\system\bus.app.stage.service
+		devops\etc\systemd\system\comm.app.stage.service = devops\etc\systemd\system\comm.app.stage.service
+		devops\etc\systemd\system\constructor.app.stage.service = devops\etc\systemd\system\constructor.app.stage.service
+		devops\etc\systemd\system\hd.app.stage.service = devops\etc\systemd\system\hd.app.stage.service
+		devops\etc\systemd\system\tg.app.stage.service = devops\etc\systemd\system\tg.app.stage.service
+		devops\etc\systemd\system\web.app.stage.service = devops\etc\systemd\system\web.app.stage.service
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stage", "stage", "{F0BC75F0-8D08-49A1-B328-979660BF1CBA}"
+	ProjectSection(SolutionItems) = preProject
+		devops\etc\nginx\stage\api.staging.app = devops\etc\nginx\stage\api.staging.app
+		devops\etc\nginx\stage\web.staging.app = devops\etc\nginx\stage\web.staging.app
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prod", "prod", "{37D5BDC9-3D65-4F6C-BFA4-A5F8C880FC02}"
+	ProjectSection(SolutionItems) = preProject
+		devops\etc\nginx\api.app = devops\etc\nginx\api.app
+		devops\etc\nginx\web.app = devops\etc\nginx\web.app
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prod", "prod", "{1B873580-3AB0-498C-B6DC-A7F9ABFE7670}"
+	ProjectSection(SolutionItems) = preProject
+		devops\etc\systemd\system\api.app.service = devops\etc\systemd\system\api.app.service
+		devops\etc\systemd\system\bus.app.service = devops\etc\systemd\system\bus.app.service
+		devops\etc\systemd\system\comm.app.service = devops\etc\systemd\system\comm.app.service
+		devops\etc\systemd\system\constructor.app.service = devops\etc\systemd\system\constructor.app.service
+		devops\etc\systemd\system\hd.app.service = devops\etc\systemd\system\hd.app.service
+		devops\etc\systemd\system\tg.app.service = devops\etc\systemd\system\tg.app.service
+		devops\etc\systemd\system\web.app.service = devops\etc\systemd\system\web.app.service
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -228,6 +251,10 @@ Global
 		{23129EDA-1CBD-4592-9EE6-0A4EC3344DAC} = {90E71949-5CC1-4E9F-A5F2-DC59078B3849}
 		{05B73FB3-FCCC-4C41-9F80-FEED9D73CF43} = {90E71949-5CC1-4E9F-A5F2-DC59078B3849}
 		{96B0DA02-8148-4F5D-B98C-D12F9B595166} = {90E71949-5CC1-4E9F-A5F2-DC59078B3849}
+		{CEF1BB59-528D-4BE0-AF5D-08FBB8C347A8} = {5B966126-26F6-4699-92C7-1F1A582A7EE3}
+		{F0BC75F0-8D08-49A1-B328-979660BF1CBA} = {A7D9597F-4160-4A52-ADBD-078CFB815FA7}
+		{37D5BDC9-3D65-4F6C-BFA4-A5F8C880FC02} = {A7D9597F-4160-4A52-ADBD-078CFB815FA7}
+		{1B873580-3AB0-498C-B6DC-A7F9ABFE7670} = {5B966126-26F6-4699-92C7-1F1A582A7EE3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DBB18C2F-86F0-40C9-B9ED-1CA9D03EDDE3}

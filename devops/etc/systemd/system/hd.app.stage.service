@@ -1,0 +1,17 @@
+[Unit]
+Description=hd.app.stage.service
+
+[Service]
+WorkingDirectory=/srv/services.stage/HelpdeskService
+ExecStart=/usr/bin/dotnet /srv/services.stage/HelpdeskService/HelpdeskService.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-hd-app.stage
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Staging
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+Environment=TRANSMISSION_QUEUE_NAME_PREFIX=_stage
+
+[Install]
+WantedBy=multi-user.target

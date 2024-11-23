@@ -22,8 +22,14 @@ chown -R www-data:www-data /srv/postgres
 chmod -R 777 /srv/postgres
 
 
+# PROD
 ln -s /etc/nginx/sites-available/web.app /etc/nginx/sites-enabled/
 ln -s /etc/nginx/sites-available/api.app /etc/nginx/sites-enabled/
+
+# STAGING
+ln -s /etc/nginx/sites-available/web.staging.app /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/api.staging.app /etc/nginx/sites-enabled/
+
 
 systemctl reload nginx
 docker-compose up -d
@@ -50,18 +56,21 @@ dotnet publish -c Debug --output /srv/git/builds/Telegram.Bot.Polling /srv/git/D
 #  dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
 #  *** поэтому € его отдельно собираю локально, отправл€ю через sftp, распаковываю и продолжаю дальше буд-то команды корректно отработали
 
-systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service constructor.app.service hd.app.service
+systemctl stop web.app.stage.service comm.app.stage.service tg.app.stage.service api.app.stage.service bus.app.stage.service constructor.app.stage.service hd.app.stage.service
 
 # rm -r /srv/git/builds/*
-rm -r /srv/services/*
+rm -r /srv/services.stage/*
 
-cp -r /srv/git/builds/ApiRestService /srv/services/ApiRestService
-cp -r /srv/git/builds/StorageService /srv/services/StorageService
-cp -r /srv/git/builds/CommerceService /srv/services/CommerceService
-cp -r /srv/git/builds/HelpdeskService /srv/services/HelpdeskService
-cp -r /srv/git/builds/ConstructorService /srv/services/ConstructorService
-cp -r /srv/git/builds/Telegram.Bot.Polling /srv/services/Telegram.Bot.Polling
-cp -r /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
+cp -r /srv/git/builds/ApiRestService /srv/services.stage/ApiRestService
+cp -r /srv/git/builds/StorageService /srv/services.stage/StorageService
+cp -r /srv/git/builds/CommerceService /srv/services.stage/CommerceService
+cp -r /srv/git/builds/HelpdeskService /srv/services.stage/HelpdeskService
+cp -r /srv/git/builds/ConstructorService /srv/services.stage/ConstructorService
+cp -r /srv/git/builds/Telegram.Bot.Polling /srv/services.stage/Telegram.Bot.Polling
+cp -r /srv/git/builds/BlankBlazorApp /srv/services.stage/BlankBlazorApp
+
+chown -R www-data:www-data /srv/services.stage
+chmod -R 777 /srv/services.stage
 
 chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services

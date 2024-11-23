@@ -554,11 +554,11 @@ public partial class CommerceImplementService : ICommerceService
         var exQuery = from offerAv in q
                       join oj in context.OffersGoods on offerAv.OfferId equals oj.Id
                       join gj in context.Goods on offerAv.GoodsId equals gj.Id
-                      select new { offerAv, OfferGood = oj };
+                      select new { Register = offerAv, Offer = oj, Good = gj };
 
         var dbRes = req.SortingDirection == VerticalDirectionsEnum.Up
-           ? await exQuery.OrderBy(x => x.OfferGood.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()
-           : await exQuery.OrderByDescending(x => x.OfferGood.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync();
+           ? await exQuery.OrderBy(x => x.Offer.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()
+           : await exQuery.OrderByDescending(x => x.Offer.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync();
 
         return new()
         {
@@ -569,7 +569,7 @@ public partial class CommerceImplementService : ICommerceService
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = await q.CountAsync(),
-                Response = [.. dbRes.Select(x=>x.offerAv)],
+                Response = [.. dbRes.Select(x => x.Register)],
             },
         };
     }
