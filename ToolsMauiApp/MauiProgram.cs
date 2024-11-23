@@ -19,9 +19,17 @@ public static class MauiProgram
     /// </summary>
     private static string ConfigFilename = "config.ini";
     /// <summary>
+    /// INI file
+    /// </summary>
+    private static string CommandsFilename = "commands.ini";
+    /// <summary>
     /// ConfigPath
     /// </summary>
     public static string ConfigPath => Path.Combine(FileSystem.AppDataDirectory, ConfigFilename);
+    /// <summary>
+    /// ConfigPath
+    /// </summary>
+    public static string CommandsPath => Path.Combine(FileSystem.AppDataDirectory, CommandsFilename);
 
     /// <summary>
     /// SaveConfig
@@ -45,9 +53,35 @@ public static class MauiProgram
     }
 
     /// <summary>
+    /// SaveCommands
+    /// </summary>
+    public static async Task SaveCommands(List<ExeCommandModel> commands)
+    {
+        ExeCommands.Messages.Clear();
+        FileInfo _fi = new(CommandsPath);
+        ExeCommands.Response ??= [];
+        try
+        {
+            await File.WriteAllTextAsync(_fi.FullName, JsonConvert.SerializeObject(commands));
+            ExeCommands.Response = commands;
+            ExeCommands.AddInfo($"Записано: {_fi.FullName}");
+        }
+        catch (Exception ex)
+        {
+            ExeCommands.AddError($"Не удалось создать файл команд: {_fi.FullName}. Убедитесь, что есть права на запись");
+            ExeCommands.Messages.InjectException(ex);
+        }
+    }
+
+    /// <summary>
     /// ConfigStore
     /// </summary>
     public static TResponseModel<ConfigStoreModel> ConfigStore { get; private set; } = new();
+
+    /// <summary>
+    /// Exe Commands
+    /// </summary>
+    public static TResponseModel<List<ExeCommandModel>> ExeCommands { get; private set; } = new();
 
     /// <summary>
     /// CreateMauiApp
@@ -90,6 +124,44 @@ public static class MauiProgram
                 ConfigStore.Messages.InjectException(ex);
             }
         }
+
+        _fi = new(CommandsPath);
+        if (!_fi.Exists)
+        {
+            try
+            {
+                File.WriteAllText(_fi.FullName, JsonConvert.SerializeObject(new List<ExeCommandModel>() { }));
+                ConfigStore.AddInfo($"Создан файл команд: {_fi.FullName}");
+            }
+            catch (Exception ex)
+            {
+                ConfigStore.AddError($"Не удалось создать файл команд: {_fi.FullName}. Убедитесь, что есть права на запись");
+                ConfigStore.Messages.InjectException(ex);
+            }
+        }
+        else
+        {
+            try
+            {
+                List<ExeCommandModel>? _cs = JsonConvert.DeserializeObject<List<ExeCommandModel>>(File.ReadAllText(_fi.FullName));
+                if (_cs is null)
+                {
+                    File.WriteAllText(_fi.FullName, JsonConvert.SerializeObject(new List<ExeCommandModel>() { }));
+                    ConfigStore.AddWarning($"Создан новый (перезаписан) файл команд: {_fi.FullName}");
+                }
+                else
+                {
+                    ExeCommands.Response = _cs;
+                    ExeCommands.AddSuccess($"Прочитан файл команд: {_fi.FullName} (изменён: {_fi.LastWriteTime})");
+                }
+            }
+            catch (Exception ex)
+            {
+                ExeCommands.AddError($"Не удалось прочитать/десериализовать файл команд: {_fi.FullName}. Убедитесь, что есть права на доступ и формат файла корректный.");
+                ExeCommands.Messages.InjectException(ex);
+            }
+        }
+
 
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder.UseMauiApp<App>().ConfigureFonts(fonts =>

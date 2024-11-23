@@ -81,7 +81,7 @@
                 </table>
             }
         </MudTabPanel>
-        <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Отправка">
+        <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Отправка файлов">
             @if (checkDir is null)
             {
                 <figure class="text-center">
@@ -108,6 +108,9 @@
             {
                 <SyncFilesComponent ParentPage="this" />
             }
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Команды">
+            <ExeCommandsComponent ParentPage="this" />
         </MudTabPanel>
     </MudTabs>
 }

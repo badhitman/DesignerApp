@@ -21,6 +21,9 @@ chmod -R 777 /srv/mongodb
 chown -R www-data:www-data /srv/postgres
 chmod -R 777 /srv/postgres
 
+chown -R www-data:www-data /srv/db-backups
+chmod -R 777 /srv/db-backups
+
 
 # PROD
 ln -s /etc/nginx/sites-available/web.app /etc/nginx/sites-enabled/
