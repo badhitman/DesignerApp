@@ -11,7 +11,7 @@ SyslogIdentifier=dotnet-tg-app.stage
 User=www-data
 Environment=ASPNETCORE_ENVIRONMENT=Staging
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
-Environment=TRANSMISSION_QUEUE_NAME_PREFIX=_stage
+Environment=TransmissionQueueNamePrefix=_stage
 
 [Install]
 WantedBy=multi-user.target

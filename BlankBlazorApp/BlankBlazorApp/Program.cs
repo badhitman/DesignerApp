@@ -18,23 +18,17 @@ using System.Reflection;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // NLog: Setup NLog for Dependency injection
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
+string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? builder.Environment.EnvironmentName;
+logger.Warn($"init main: {_environmentName}");
 
-
-ConfigurationBuilder bc = new();
-bc.AddCommandLine(args);
-IConfigurationRoot cb = bc.Build();
-string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
 if (!string.IsNullOrWhiteSpace(_modePrefix))
     GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
 
-
-IWebHostEnvironment env = builder.Environment;
-logger.Warn($"init main: {env.EnvironmentName}");
 string curr_dir = Directory.GetCurrentDirectory();
 builder.Configuration.SetBasePath(curr_dir);
 string path_load = Path.Combine(curr_dir, "appsettings.json");
@@ -46,7 +40,7 @@ if (Path.Exists(path_load))
 else
     logger.Warn($"отсутсвует: {path_load}");
 
-path_load = Path.Combine(curr_dir, $"appsettings.{env.EnvironmentName}.json");
+path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
 if (Path.Exists(path_load))
 {
     logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
@@ -64,7 +58,7 @@ if (Path.Exists(path_load))
 else
     logger.Warn($"отсутсвует: {path_load}");
 
-path_load = Path.Combine(curr_dir, $"bottom-menu.{env.EnvironmentName}.json");
+path_load = Path.Combine(curr_dir, $"bottom-menu.{_environmentName}.json");
 if (Path.Exists(path_load))
 {
     logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");

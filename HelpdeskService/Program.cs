@@ -8,6 +8,7 @@ using DbcLib;
 using NLog;
 using HelpdeskService;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Hosting;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -20,36 +21,29 @@ builder.ConfigureLogging((lc, lb) =>
     lb.AddNLog();
 });
 builder.UseNLog();
-
-
-ConfigurationBuilder bc = new();
-bc.AddCommandLine(args);
-IConfigurationRoot cb = bc.Build();
-string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Other";
+logger.Warn($"init main: {_environmentName}");
+string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
 if (!string.IsNullOrWhiteSpace(_modePrefix))
     GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
 
+string curr_dir = Directory.GetCurrentDirectory();
+string path_load;
+
 builder.ConfigureHostConfiguration(configHost =>
 {
-    string curr_dir = Directory.GetCurrentDirectory();
     configHost.SetBasePath(curr_dir);
-    string path_load = Path.Combine(curr_dir, "appsettings.json");
+    path_load = Path.Combine(curr_dir, "appsettings.json");
     if (Path.Exists(path_load))
         configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+    else
+        logger.Warn($"отсутсвует секрет: {path_load}");
 
-#if DEBUG
-    path_load = Path.Combine(curr_dir, "appsettings.Development.json");
+    path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
     if (Path.Exists(path_load))
         configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
     else
-        logger.Warn($"отсутсвует: {path_load}");
-#else
-    path_load = Path.Combine(curr_dir, "appsettings.Production.json");
-    if (Path.Exists(path_load))
-        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
-    else
-        logger.Warn($"отсутсвует: {path_load}");
-#endif
+        logger.Warn($"отсутсвует секрет: {path_load}");
 
     // Secrets
     void ReadSecrets(string dirName)
@@ -73,6 +67,7 @@ builder.ConfigureHostConfiguration(configHost =>
         else
             logger.Warn($"Секреты `{dirName}` не найдены (совсем)");
     }
+
     ReadSecrets("secrets");
     if (!string.IsNullOrWhiteSpace(_modePrefix))
         ReadSecrets($"secrets{_modePrefix}");
@@ -82,8 +77,7 @@ builder.ConfigureHostConfiguration(configHost =>
 });
 
 builder.ConfigureServices((context, services) =>
-{
-    logger.Warn($"init main: {context.HostingEnvironment.EnvironmentName}");
+{    
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
     .Configure<HelpdeskConfigModel>(context.Configuration.GetSection("HelpdeskConfig"))

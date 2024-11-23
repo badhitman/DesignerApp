@@ -15,21 +15,16 @@ using NLog;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
-
-IHostEnvironment env = builder.Environment;
-logger.Warn($"init main: {env.EnvironmentName}");
-
 builder
     .Logging
     .ClearProviders()
     .AddNLog();
 
-ConfigurationBuilder bc = new();
-bc.AddCommandLine(args);
-IConfigurationRoot cb = bc.Build();
-string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? builder.Environment.EnvironmentName;
+logger.Warn($"init main: {_environmentName}");
+
+string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
 if (!string.IsNullOrWhiteSpace(_modePrefix))
     GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
 
@@ -44,19 +39,12 @@ if (Path.Exists(path_load))
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 else
     logger.Warn($"отсутсвует: {path_load}");
-#if DEBUG
-path_load = Path.Combine(curr_dir, "appsettings.Development.json");
+
+path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
 if (Path.Exists(path_load))
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 else
     logger.Warn($"отсутсвует: {path_load}");
-#else
-path_load = Path.Combine(curr_dir, "appsettings.Production.json");
-    if (Path.Exists(path_load))
-        builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
-    else
-        logger.Warn($"отсутсвует: {path_load}");
-#endif
 
 // Secrets
 void ReadSecrets(string dirName)

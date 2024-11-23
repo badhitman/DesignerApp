@@ -23,37 +23,29 @@ builder.ConfigureLogging((lc, lb) =>
     lb.AddNLog();
 });
 builder.UseNLog();
-string _modePrefix = "";
+string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Other";
+logger.Warn($"init main: {_environmentName}");
+string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+
+string curr_dir = Directory.GetCurrentDirectory();
+string path_load = Path.Combine(curr_dir, "appsettings.json");
+
 builder.ConfigureHostConfiguration(configHost =>
 {
-    ConfigurationBuilder bc = new();
-    bc.AddCommandLine(args);
-    IConfigurationRoot cb = bc.Build();
-    _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
-    if (!string.IsNullOrWhiteSpace(_modePrefix))
-        GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
-
-    string curr_dir = Directory.GetCurrentDirectory();
     configHost.SetBasePath(curr_dir);
-    string path_load = Path.Combine(curr_dir, "appsettings.json");
+    
     if (Path.Exists(path_load))
-        configHost.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
     else
         logger.Warn($"отсутсвует: {path_load}");
 
-#if DEBUG
-    path_load = Path.Combine(curr_dir, "appsettings.Development.json");
+    path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
     if (Path.Exists(path_load))
         configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
     else
         logger.Warn($"отсутсвует: {path_load}");
-#else
-    path_load = Path.Combine(curr_dir, "appsettings.Production.json");
-    if (Path.Exists(path_load))
-        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
-    else
-        logger.Warn($"отсутсвует: {path_load}");
-#endif
 
     // Secrets
     void ReadSecrets(string dirName)
@@ -86,8 +78,7 @@ builder.ConfigureHostConfiguration(configHost =>
 });
 
 builder.ConfigureServices((context, services) =>
-{
-    logger.Warn($"init main: {context.HostingEnvironment.EnvironmentName}");
+{    
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
     .Configure<BotConfiguration>(context.Configuration.GetSection(BotConfiguration.Configuration))
