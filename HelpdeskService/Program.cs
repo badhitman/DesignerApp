@@ -50,6 +50,13 @@ builder.ConfigureHostConfiguration(configHost =>
     configHost.AddCommandLine(args);
 });
 
+ConfigurationBuilder bc = new();
+bc.AddCommandLine(args);
+IConfigurationRoot cb = bc.Build();
+string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+
 builder.ConfigureServices((context, services) =>
 {
     logger.Warn($"init main: {context.HostingEnvironment.EnvironmentName}");
@@ -67,7 +74,7 @@ builder.ConfigureServices((context, services) =>
 
     services.AddOptions();
     services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
-    string connectionIdentityString = context.Configuration.GetConnectionString("HelpdeskConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
+    string connectionIdentityString = context.Configuration.GetConnectionString($"HelpdeskConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'HelpdeskConnection{_modePrefix}' not found.");
     services.AddDbContextFactory<HelpdeskContext>(opt =>
     {
         opt.UseNpgsql(connectionIdentityString);

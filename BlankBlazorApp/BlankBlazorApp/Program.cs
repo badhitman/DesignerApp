@@ -23,23 +23,6 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // NLog: Setup NLog for Dependency injection
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
-builder.Services.AddMudServices();
-
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
-
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
 
 IWebHostEnvironment env = builder.Environment;
 logger.Warn($"init main: {env.EnvironmentName}");
@@ -51,6 +34,8 @@ if (Path.Exists(path_load))
     logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 }
+else
+    logger.Warn($"отсутсвует: {path_load}");
 
 path_load = Path.Combine(curr_dir, $"appsettings.{env.EnvironmentName}.json");
 if (Path.Exists(path_load))
@@ -58,6 +43,8 @@ if (Path.Exists(path_load))
     logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 }
+else
+    logger.Warn($"отсутсвует: {path_load}");
 
 path_load = Path.Combine(curr_dir, $"bottom-menu.json");
 if (Path.Exists(path_load))
@@ -65,6 +52,8 @@ if (Path.Exists(path_load))
     logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 }
+else
+    logger.Warn($"отсутсвует: {path_load}");
 
 path_load = Path.Combine(curr_dir, $"bottom-menu.{env.EnvironmentName}.json");
 if (Path.Exists(path_load))
@@ -72,11 +61,16 @@ if (Path.Exists(path_load))
     logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 }
+else
+    logger.Warn($"отсутсвует: {path_load}");
 
 // Secrets
 string secretPath = Path.Combine("..", "secrets");
 for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
+{
+    logger.Warn($"файл секретов не найден (продолжение следует...): {secretPath}");
     secretPath = Path.Combine("..", secretPath);
+}
 
 if (Directory.Exists(secretPath))
 {
@@ -88,10 +82,17 @@ if (Directory.Exists(secretPath))
     }
 }
 else
-    logger.Warn("—екреты не найдены");
+    logger.Warn("—екреты не найдены (совсем)");
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
+
+ConfigurationBuilder bc = new();
+bc.AddCommandLine(args);
+IConfigurationRoot cb = bc.Build();
+string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
 
 builder.Services.AddOptions();
 builder.Services
@@ -106,13 +107,32 @@ NavMainMenuModel? mainNavMenu = builder.Configuration.GetSection("NavMenuConfig"
 mainNavMenu ??= new NavMainMenuModel() { NavMenuItems = [new NavItemModel() { HrefNav = "", Title = "Home", IsNavLinkMatchAll = true }] };
 builder.Services.AddCascadingValue(sp => mainNavMenu);
 
-string connectionIdentityString = builder.Configuration.GetConnectionString("IdentityConnection") ?? throw new InvalidOperationException("Connection string 'IdentityConnection' not found.");
+string connectionIdentityString = builder.Configuration.GetConnectionString($"IdentityConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'IdentityConnection{_modePrefix}' not found.");
 builder.Services.AddDbContextFactory<IdentityAppDbContext>(opt =>
     opt.UseNpgsql(connectionIdentityString));
 
-string connectionMainString = builder.Configuration.GetConnectionString("MainConnection") ?? throw new InvalidOperationException("Connection string 'MainConnection' not found.");
+string connectionMainString = builder.Configuration.GetConnectionString($"MainConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'MainConnection{_modePrefix}' not found.");
 builder.Services.AddDbContextFactory<MainDbAppContext>(opt =>
     opt.UseNpgsql(connectionMainString));
+
+builder.Services.AddMudServices();
+
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
+    .AddIdentityCookies();
+
 builder.Services.AddMemoryCache();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllers();

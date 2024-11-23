@@ -112,15 +112,17 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     zip.Dispose();
                     ms = new MemoryStream(File.ReadAllBytes(archive));
                     TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
+
+                    if (resUpd.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Error || x.TypeMessage >= ResultTypesEnum.Info))
+                        SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
+                    
                     totalTransferData += ms.Length;
+
                     using FileStream stream = File.OpenRead(_fnT);
                     _hash = Convert.ToBase64String(md5.ComputeHash(stream));
 
                     if (_hash != resUpd.Response)
                         SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{_fnT} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
-
-                    if (resUpd.Messages.Any(x => x.TypeMessage >= ResultTypesEnum.Info))
-                        SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
 
                     File.Delete(archive);
                 }

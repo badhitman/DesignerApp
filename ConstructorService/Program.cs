@@ -4,14 +4,14 @@
 
 using Transmission.Receives.constructor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NLog.Extensions.Logging;
+using ConstructorService;
 using RemoteCallLib;
 using SharedLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
-using Microsoft.Extensions.Options;
-using ConstructorService;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -53,13 +53,19 @@ else
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
 
+ConfigurationBuilder bc = new();
+bc.AddCommandLine(args);
+IConfigurationRoot cb = bc.Build();
+string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+
+builder.Services.AddOptions();
 
 builder.Services
    .Configure<ConstructorConfigModel>(builder.Configuration.GetSection("ConstructorConfig"));
 
-builder.Services.AddOptions();
-
-string connectionIdentityString = builder.Configuration.GetConnectionString("ConstructorConnection") ?? throw new InvalidOperationException("Connection string 'ConstructorConnection' not found.");
+string connectionIdentityString = builder.Configuration.GetConnectionString($"ConstructorConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'ConstructorConnection{_modePrefix}' not found.");
 builder.Services.AddDbContextFactory<ConstructorContext>(opt =>
 {
     opt.UseNpgsql(connectionIdentityString);

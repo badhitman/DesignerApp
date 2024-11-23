@@ -80,7 +80,7 @@ public class ToolsSystemService() : IToolsSystemService
     {
         TResponseModel<string> response = new();
 
-        DirectoryInfo di = new(remoteDirectory);
+        DirectoryInfo sdi, di = new(remoteDirectory);
         if (!di.Exists)
         {
             response.AddError("Папка отсутствует");
@@ -104,6 +104,11 @@ public class ToolsSystemService() : IToolsSystemService
                 _file = new(Path.Combine(di.FullName, entry.FullName.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar)));
                 if (_file.Exists)
                     _file.Delete();
+
+                sdi = new(Path.GetDirectoryName(_file.FullName)!);
+                if(!sdi.Exists)
+                    sdi.Create();
+
                 entry.ExtractToFile(_file.FullName);
 
                 using FileStream streamMd = File.OpenRead(_file.FullName);

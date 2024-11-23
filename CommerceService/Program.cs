@@ -54,6 +54,13 @@ else
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
 
+ConfigurationBuilder bc = new();
+bc.AddCommandLine(args);
+IConfigurationRoot cb = bc.Build();
+string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+
 builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
 ;
@@ -69,7 +76,7 @@ builder.Services.AddScoped<ICommerceService, CommerceImplementService>();
 builder.Services.AddSingleton<WebConfigModel>();
 builder.Services.AddOptions();
 builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
-string connectionIdentityString = builder.Configuration.GetConnectionString("CommerceConnection") ?? throw new InvalidOperationException("Connection string 'CommerceConnection' not found.");
+string connectionIdentityString = builder.Configuration.GetConnectionString($"CommerceConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CommerceConnection{_modePrefix}' not found.");
 builder.Services.AddDbContextFactory<CommerceContext>(opt =>
 {
     opt.UseNpgsql(connectionIdentityString);

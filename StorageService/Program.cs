@@ -1,14 +1,14 @@
-using DbcLib;
 using Microsoft.EntityFrameworkCore;
+using Transmission.Receives.storage;
 using Microsoft.Extensions.Options;
-using MongoDB.Driver;
-using NLog;
 using NLog.Extensions.Logging;
-using NLog.Web;
+using MongoDB.Driver;
+using StorageService;
 using RemoteCallLib;
 using SharedLib;
-using StorageService;
-using Transmission.Receives.storage;
+using NLog.Web;
+using DbcLib;
+using NLog;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -22,7 +22,7 @@ builder.ConfigureLogging((lc, lb) =>
     lb.AddNLog();
 });
 builder.UseNLog();
-
+string _modePrefix = "";
 builder.ConfigureHostConfiguration(configHost =>
 {
     string curr_dir = Directory.GetCurrentDirectory();
@@ -50,6 +50,13 @@ builder.ConfigureHostConfiguration(configHost =>
 
     configHost.AddEnvironmentVariables();
     configHost.AddCommandLine(args);
+
+    ConfigurationBuilder bc = new();
+    bc.AddCommandLine(args);
+    IConfigurationRoot cb = bc.Build();
+    _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+    if (!string.IsNullOrWhiteSpace(_modePrefix))
+        GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
 });
 
 builder.ConfigureServices((context, services) =>
@@ -72,7 +79,7 @@ builder.ConfigureServices((context, services) =>
 
     services.AddOptions();
 
-    string connectionIdentityString = context.Configuration.GetConnectionString("CloudParametersConnection") ?? throw new InvalidOperationException("Connection string 'CloudParametersConnection' not found.");
+    string connectionIdentityString = context.Configuration.GetConnectionString($"CloudParametersConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CloudParametersConnection{_modePrefix}' not found.");
     services.AddDbContextFactory<StorageContext>(opt =>
     opt.UseNpgsql(connectionIdentityString));
 

@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Newtonsoft.Json.Converters;
 using Microsoft.OpenApi.Models;
 using NLog.Extensions.Logging;
@@ -11,7 +12,6 @@ using RemoteCallLib;
 using SharedLib;
 using NLog.Web;
 using NLog;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
@@ -61,7 +61,14 @@ else
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
-builder.Services.AddTransient<UnhandledExceptionAttribute>();
+
+ConfigurationBuilder bc = new();
+bc.AddCommandLine(args);
+IConfigurationRoot cb = bc.Build();
+string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+
 builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
 .Configure<MongoConfigModel>(builder.Configuration.GetSection("MongoDB"))
@@ -69,6 +76,7 @@ builder.Services
 ;
 builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
+builder.Services.AddTransient<UnhandledExceptionAttribute>();
 builder.Services.AddAuthorization();
 
 //MongoConfigModel _jo = builder.Configuration.GetSection("MongoDB").Get<MongoConfigModel>() ?? throw new Exception("Отсутствует конфигурация MonoDB");

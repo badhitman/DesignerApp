@@ -104,7 +104,7 @@ public static partial class GlobalStaticConstants
     /// <summary>
     /// Префикс имени MQ очереди
     /// </summary>
-    public const string TransmissionQueueNamePrefix = "Transmission.Receives";
+    public static string TransmissionQueueNamePrefix { get; set; } = "Transmission.Receives";
 
     /// <summary>
     /// OrderDocumentName

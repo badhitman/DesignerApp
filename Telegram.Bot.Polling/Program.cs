@@ -23,20 +23,25 @@ builder.ConfigureLogging((lc, lb) =>
     lb.AddNLog();
 });
 builder.UseNLog();
-
+string _modePrefix = "";
 builder.ConfigureHostConfiguration(configHost =>
 {
     string curr_dir = Directory.GetCurrentDirectory();
     configHost.SetBasePath(curr_dir);
-    if (Path.Exists(Path.Combine(curr_dir, "appsettings.json")))
+    string path_load = Path.Combine(curr_dir, "appsettings.json");
+    if (Path.Exists(path_load))
         configHost.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+    else
+        logger.Warn($"отсутсвует: {path_load}");
 
 #if DEBUG
-    if (Path.Exists(Path.Combine(curr_dir, "appsettings.Development.json")))
-        configHost.AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
+    path_load = Path.Combine(curr_dir, "appsettings.Development.json");
+    if (Path.Exists(path_load))
+        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 #else
-    if (Path.Exists(Path.Combine(curr_dir, "appsettings.Production.json")))
-        configHost.AddJsonFile($"appsettings.Production.json", optional: true, reloadOnChange: true);
+    path_load = Path.Combine(curr_dir, "appsettings.Production.json");
+    if (Path.Exists(path_load))
+        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 #endif
 
     // Secrets
@@ -51,6 +56,13 @@ builder.ConfigureHostConfiguration(configHost =>
 
     configHost.AddEnvironmentVariables();
     configHost.AddCommandLine(args);
+
+    ConfigurationBuilder bc = new();
+    bc.AddCommandLine(args);
+    IConfigurationRoot cb = bc.Build();
+    _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+    if (!string.IsNullOrWhiteSpace(_modePrefix))
+        GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
 });
 
 builder.ConfigureServices((context, services) =>
@@ -68,8 +80,7 @@ builder.ConfigureServices((context, services) =>
     services.AddSingleton<TelegramBotConfigModel>();
     services.AddOptions();
 
-
-    string connectionIdentityString = context.Configuration.GetConnectionString("TelegramBotConnection") ?? throw new InvalidOperationException("Connection string 'HelpdeskConnection' not found.");
+    string connectionIdentityString = context.Configuration.GetConnectionString($"TelegramBotConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'TelegramBotConnection{_modePrefix}' not found.");
     services.AddDbContextFactory<TelegramBotContext>(opt =>
     {
         opt.UseNpgsql(connectionIdentityString);
