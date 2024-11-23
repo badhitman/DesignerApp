@@ -24,13 +24,7 @@
             foreach (ExeCommandModel rowCmd in MauiProgram.ExeCommands.Response)
             {
                 i++;
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">cmd</span>
-                    <input readonly type="text" class="form-control" aria-label="FileName" aria-describedby="FileName" value="@rowCmd.FileName">
-                    <input readonly type="text" class="form-control" aria-label="Arguments" aria-describedby="Arguments" value="@rowCmd.Arguments">
-                    <button @onclick="async () => await RunCommand(i)" class="btn btn-outline-secondary" type="button" id="button-addon2">Выполнить</button>
-                    <button @onclick="() => DeleteCommand(i)" class="btn btn-outline-primary" type="button" id="button-addon2">Удалить</button>
-                </div>
+                <RowCommandComponent @key="@($"r-{i}")" RowIndex="i" OwnerComponent="this" />
             }
         }
     </div>

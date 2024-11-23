@@ -27,18 +27,7 @@ public partial class ExeCommandsComponent : BlazorBusyComponentBaseModel
     public required Home ParentPage { get; set; }
 
     private ExeCommandModel newCommand = new() { FileName = "", Arguments = "" };
-
-    async Task RunCommand(int i)
-    {
-        await SetBusy();
-        TResponseModel<string> res = await ToolsExtRepo.ExeCommand(MauiProgram.ExeCommands.Response![i]);
-        await SetBusy(false);
-    }
-
-    void DeleteCommand(int i)
-    {
-        MauiProgram.ExeCommands.Response!.RemoveAt(i);
-    }
+        
 
     async Task AddNewCommand()
     {
