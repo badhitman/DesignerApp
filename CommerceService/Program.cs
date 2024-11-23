@@ -93,7 +93,7 @@ builder.Services
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("RedisConnectionString");
+    options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
     // options.InstanceName = "app.";
 });
 

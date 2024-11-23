@@ -95,8 +95,7 @@ builder.ConfigureServices((context, services) =>
     services.AddMemoryCache();
     services.AddStackExchangeRedisCache(options =>
     {
-        options.Configuration = context.Configuration.GetConnectionString("RedisConnectionString");
-        // options.InstanceName = "app.";
+        options.Configuration = context.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
     });
     services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
 

@@ -92,7 +92,7 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IArticlesService, ArticlesService>();
     services.AddStackExchangeRedisCache(options =>
     {
-        options.Configuration = context.Configuration.GetConnectionString("RedisConnectionString");
+        options.Configuration = context.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
         // options.InstanceName = "app.";
     });
 
