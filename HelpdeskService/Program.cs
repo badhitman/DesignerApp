@@ -21,34 +21,6 @@ builder.ConfigureLogging((lc, lb) =>
 });
 builder.UseNLog();
 
-builder.ConfigureHostConfiguration(configHost =>
-{
-    string curr_dir = Directory.GetCurrentDirectory();
-    configHost.SetBasePath(curr_dir);
-    if (Path.Exists(Path.Combine(curr_dir, "appsettings.json")))
-        configHost.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
-#if DEBUG
-    if (Path.Exists(Path.Combine(curr_dir, "appsettings.Development.json")))
-        configHost.AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
-#else
-    if (Path.Exists(Path.Combine(curr_dir, "appsettings.Production.json")))
-        configHost.AddJsonFile($"appsettings.Production.json", optional: true, reloadOnChange: true);
-#endif
-
-    // Secrets
-    string secretPath = Path.Combine("..", "secrets");
-    for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
-        secretPath = Path.Combine("..", secretPath);
-    if (Directory.Exists(secretPath))
-        foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
-            configHost.AddJsonFile(Path.GetFullPath(secret), optional: true, reloadOnChange: true);
-    else
-        logger.Warn("—екреты не найдены");
-
-    configHost.AddEnvironmentVariables();
-    configHost.AddCommandLine(args);
-});
 
 ConfigurationBuilder bc = new();
 bc.AddCommandLine(args);
@@ -56,6 +28,58 @@ IConfigurationRoot cb = bc.Build();
 string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
 if (!string.IsNullOrWhiteSpace(_modePrefix))
     GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+
+builder.ConfigureHostConfiguration(configHost =>
+{
+    string curr_dir = Directory.GetCurrentDirectory();
+    configHost.SetBasePath(curr_dir);
+    string path_load = Path.Combine(curr_dir, "appsettings.json");
+    if (Path.Exists(path_load))
+        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+
+#if DEBUG
+    path_load = Path.Combine(curr_dir, "appsettings.Development.json");
+    if (Path.Exists(path_load))
+        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+    else
+        logger.Warn($"отсутсвует: {path_load}");
+#else
+    path_load = Path.Combine(curr_dir, "appsettings.Production.json");
+    if (Path.Exists(path_load))
+        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+    else
+        logger.Warn($"отсутсвует: {path_load}");
+#endif
+
+    // Secrets
+    void ReadSecrets(string dirName)
+    {
+        string secretPath = Path.Combine("..", dirName);
+        for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
+        {
+            logger.Warn($"файл секретов не найден (продолжение следует...): {secretPath}");
+            secretPath = Path.Combine("..", secretPath);
+        }
+
+        if (Directory.Exists(secretPath))
+        {
+            foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
+            {
+                path_load = Path.GetFullPath(secret);
+                logger.Warn($"!secret load: {path_load}");
+                configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+            }
+        }
+        else
+            logger.Warn($"—екреты `{dirName}` не найдены (совсем)");
+    }
+    ReadSecrets("secrets");
+    if (!string.IsNullOrWhiteSpace(_modePrefix))
+        ReadSecrets($"secrets{_modePrefix}");
+
+    configHost.AddEnvironmentVariables();
+    configHost.AddCommandLine(args);
+});
 
 builder.ConfigureServices((context, services) =>
 {

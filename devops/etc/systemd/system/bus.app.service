@@ -2,8 +2,8 @@
 Description=bus.app.service
 
 [Service]
-WorkingDirectory=/srv/services/RemoteCallLib
-ExecStart=/usr/bin/dotnet /srv/services/RemoteCallLib/RemoteCallLib.dll
+WorkingDirectory=/srv/services/StorageService
+ExecStart=/usr/bin/dotnet /srv/services/StorageService/StorageService.dll
 Restart=always
 RestartSec=10
 KillSignal=SIGINT

@@ -24,6 +24,15 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
+
+ConfigurationBuilder bc = new();
+bc.AddCommandLine(args);
+IConfigurationRoot cb = bc.Build();
+string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+
+
 IWebHostEnvironment env = builder.Environment;
 logger.Warn($"init main: {env.EnvironmentName}");
 string curr_dir = Directory.GetCurrentDirectory();
@@ -65,34 +74,33 @@ else
     logger.Warn($"отсутсвует: {path_load}");
 
 // Secrets
-string secretPath = Path.Combine("..", "secrets");
-for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
+void ReadSecrets(string dirName)
 {
-    logger.Warn($"файл секретов не найден (продолжение следует...): {secretPath}");
-    secretPath = Path.Combine("..", secretPath);
-}
-
-if (Directory.Exists(secretPath))
-{
-    foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
+    string secretPath = Path.Combine("..", dirName);
+    for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
     {
-        path_load = Path.GetFullPath(secret);
-        logger.Warn($"!secret load: {path_load}");
-        builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+        logger.Warn($"файл секретов не найден (продолжение следует...): {secretPath}");
+        secretPath = Path.Combine("..", secretPath);
     }
+
+    if (Directory.Exists(secretPath))
+    {
+        foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
+        {
+            path_load = Path.GetFullPath(secret);
+            logger.Warn($"!secret load: {path_load}");
+            builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+        }
+    }
+    else
+        logger.Warn($"—екреты `{dirName}` не найдены (совсем)");
 }
-else
-    logger.Warn("—екреты не найдены (совсем)");
+ReadSecrets("secrets");
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    ReadSecrets($"secrets{_modePrefix}");
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
-
-ConfigurationBuilder bc = new();
-bc.AddCommandLine(args);
-IConfigurationRoot cb = bc.Build();
-string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
-if (!string.IsNullOrWhiteSpace(_modePrefix))
-    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
 
 builder.Services.AddOptions();
 builder.Services

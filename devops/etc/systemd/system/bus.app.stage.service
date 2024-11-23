@@ -2,8 +2,8 @@
 Description=bus.app.stage.service
 
 [Service]
-WorkingDirectory=/srv/services.stage/RemoteCallLib
-ExecStart=/usr/bin/dotnet /srv/services.stage/RemoteCallLib/RemoteCallLib.dll
+WorkingDirectory=/srv/services.stage/StorageService
+ExecStart=/usr/bin/dotnet /srv/services.stage/StorageService/StorageService.dll
 Restart=always
 RestartSec=10
 KillSignal=SIGINT

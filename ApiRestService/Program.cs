@@ -25,6 +25,15 @@ builder
     .ClearProviders()
     .AddNLog();
 
+ConfigurationBuilder bc = new();
+bc.AddCommandLine(args);
+IConfigurationRoot cb = bc.Build();
+string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+
+logger.Warn($"Префикс рабочего контура/контекста: {(string.IsNullOrWhiteSpace(_modePrefix) ? "НЕ ИСПОЛЬЗУЕТСЯ" : $"`{_modePrefix}`")}");
+
 string curr_dir = Directory.GetCurrentDirectory();
 builder.Configuration.SetBasePath(curr_dir);
 
@@ -35,6 +44,8 @@ if (Path.Exists(path_load))
     logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
     builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 }
+else
+    logger.Warn($"отсутсвует: {path_load}");
 
 path_load = Path.Combine(curr_dir, $"appsettings.{env.EnvironmentName}.json");
 if (Path.Exists(path_load))
@@ -42,32 +53,37 @@ if (Path.Exists(path_load))
     logger.Warn($"config load: {path_load}\n{File.ReadAllText(path_load)}");
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 }
+else
+    logger.Warn($"отсутсвует: {path_load}");
 
 // Secrets
-string secretPath = Path.Combine("..", "secrets");
-for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
-    secretPath = Path.Combine("..", secretPath);
-if (Directory.Exists(secretPath))
+void ReadSecrets(string dirName)
 {
-    foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
+    string secretPath = Path.Combine("..", dirName);
+    for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
     {
-        path_load = Path.GetFullPath(secret);
-        logger.Warn($"!secret load: {path_load}");
-        builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+        logger.Warn($"файл секретов не найден (продолжение следует...): {secretPath}");
+        secretPath = Path.Combine("..", secretPath);
     }
+
+    if (Directory.Exists(secretPath))
+    {
+        foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
+        {
+            path_load = Path.GetFullPath(secret);
+            logger.Warn($"!secret load: {path_load}");
+            builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+        }
+    }
+    else
+        logger.Warn($"Секреты `{dirName}` не найдены (совсем)");
 }
-else
-    logger.Warn("Секреты не найдены");
+ReadSecrets("secrets");
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    ReadSecrets($"secrets{_modePrefix}");
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
-
-ConfigurationBuilder bc = new();
-bc.AddCommandLine(args);
-IConfigurationRoot cb = bc.Build();
-string _modePrefix = cb[nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)] ?? "";
-if (!string.IsNullOrWhiteSpace(_modePrefix))
-    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
 
 builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
