@@ -25,6 +25,7 @@ builder.ConfigureLogging((lc, lb) =>
 builder.UseNLog();
 string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Other";
 logger.Warn($"init main: {_environmentName}");
+
 string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
 if (!string.IsNullOrWhiteSpace(_modePrefix))
     GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
