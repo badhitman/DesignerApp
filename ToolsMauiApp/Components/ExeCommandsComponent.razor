@@ -11,7 +11,7 @@
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Удалённые команды</h5>
-        <div class="input-group my-2">
+        <div class="input-group my-2 border border-warning">
             <span class="input-group-text">Новая команда:</span>
             <input @bind-value="@newCommand.FileName" @bind-value:event="oninput" type="text" aria-label="File Name" placeholder="FileName" class="form-control">
             <input @bind-value="@newCommand.Arguments" @bind-value:event="oninput" type="text" aria-label="Arguments" placeholder="Arguments" class="form-control">
@@ -32,7 +32,6 @@
 
                 }
             </ul>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Выполнить все</MudButton>
         }
     </div>
 </div>

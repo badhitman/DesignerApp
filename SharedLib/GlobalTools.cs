@@ -2,16 +2,16 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+using System.Collections.Specialized;
+using System.Text.RegularExpressions;
+using System.ComponentModel;
+using System.Globalization;
+using System.Diagnostics;
+using System.Reflection;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Globalization;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
 
 namespace SharedLib;
@@ -45,7 +45,7 @@ public static partial class GlobalTools
 
         using Process? process = Process.Start(psi);
 
-        if(process is null)
+        if (process is null)
             return GlobalStaticConstants.Routes.NULL_CONTROLLER_NAME;
 
         process.WaitForExit();
