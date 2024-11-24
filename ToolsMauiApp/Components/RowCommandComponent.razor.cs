@@ -51,7 +51,7 @@ public partial class RowCommandComponent : BlazorBusyComponentBaseModel
     {
         await SetBusy();
         await OwnerComponent.SetBusy();
-        MauiProgram.ExeCommands.Response![RowIndex] = CurrentCommand;
+        MauiProgram.ExeCommands.Response![RowIndex] = GlobalTools.CreateDeepCopy(CurrentCommand)!;
         await MauiProgram.SaveCommands(MauiProgram.ExeCommands.Response!);
         await OwnerComponent.SetBusy(false);
         await SetBusy(false);

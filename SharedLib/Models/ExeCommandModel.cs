@@ -22,11 +22,13 @@ public class ExeCommandModel
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
-        if (obj == null) 
+        if (obj == null)
             return false;
 
         if (obj is ExeCommandModel _ec)
-            return FileName.Equals(_ec.FileName) && Arguments.Equals(_ec.Arguments);
+            return
+                FileName.Equals(_ec.FileName) &&
+                Arguments.Equals(_ec.Arguments);
 
         return base.Equals(obj);
     }

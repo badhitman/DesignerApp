@@ -19,7 +19,7 @@
         <div class="col-auto">
             <label for="inputLocalDir" class="col-form-label">Локальная папка</label>
         </div>
-        <div class="col-auto">
+        <div class="col">
             <input disabled="@(IsBusyProgress || HoldPage)" type="text" id="inputLocalDir" class="form-control" aria-describedby="localDirHelpInline" @bind-value="configEdit.LocalDirectory" @bind-value:event="oninput">
         </div>
         <div class="col-auto">
@@ -32,7 +32,7 @@
         <div class="col-auto">
             <label for="inputRemoteDir" class="col-form-label">Удалённая папка</label>
         </div>
-        <div class="col-auto">
+        <div class="col">
             <input disabled="@(IsBusyProgress || HoldPage)" type="text" id="inputRemoteDir" class="form-control" aria-describedby="remoteHelpInline" @bind-value="configEdit.RemoteDirectory" @bind-value:event="oninput">
         </div>
         <div class="col-auto">

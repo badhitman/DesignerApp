@@ -23,6 +23,7 @@ services:
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - ./postgres:/var/lib/postgresql/data
+      - /srv/db-backups:/srv/db-backups
     ports:
       - 5432:5432
 
@@ -34,6 +35,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=dev
     volumes:
       - /srv/mongodb:/data/db
+      - /srv/db-backups:/srv/db-backups
     ports:
       - 27017:27017
 
