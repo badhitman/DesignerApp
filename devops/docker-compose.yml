@@ -24,6 +24,7 @@ services:
     volumes:
       - ./postgres:/var/lib/postgresql/data
       - /srv/db-backups:/srv/db-backups
+      - /srv/tmp/dumps:/srv/tmp/dumps
     ports:
       - 5432:5432
 
@@ -36,6 +37,7 @@ services:
     volumes:
       - /srv/mongodb:/data/db
       - /srv/db-backups:/srv/db-backups
+      - /srv/tmp/dumps:/srv/tmp/dumps
     ports:
       - 27017:27017
 
@@ -44,5 +46,7 @@ services:
     restart: always
     volumes:
       - /srv/redisdata:/data
+      - /srv/tmp/dumps:/srv/tmp/dumps
+      - /srv/db-backups:/srv/db-backups
     ports:
       - 6379:6379

@@ -1,1 +1,0 @@
-docker exec -t srv_mongodb_1 mongodump --db files-system -u dev -p dev --authenticationDatabase admin --out /srv/db-backups/mongodump/`date +"%Y-%m-%d"_"%H_%M_%S"`
