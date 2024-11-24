@@ -17,15 +17,22 @@
             <input @bind-value="@newCommand.Arguments" @bind-value:event="oninput" type="text" aria-label="Arguments" placeholder="Arguments" class="form-control">
             <button @onclick="AddNewCommand" disabled="@(string.IsNullOrEmpty(newCommand.FileName))" class="btn btn-outline-secondary" type="button" id="button-addon2">Создать</button>
         </div>
-
+        <hr />
         @if (MauiProgram.ExeCommands.Response is not null)
         {
             int i = -1;
-            foreach (ExeCommandModel rowCmd in MauiProgram.ExeCommands.Response)
-            {
-                i++;
-                <RowCommandComponent @key="@($"r-{i}")" RowIndex="i" OwnerComponent="this" />
-            }
+            <ul class="list-group list-group-flush">
+
+                @foreach (ExeCommandModel rowCmd in MauiProgram.ExeCommands.Response)
+                {
+                    i++;
+                    <li @key="@($"r-{i}")" class="list-group-item">
+                        <RowCommandComponent RowIndex="i" OwnerComponent="this" />
+                    </li>
+
+                }
+            </ul>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Выполнить все</MudButton>
         }
     </div>
 </div>

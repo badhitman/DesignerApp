@@ -1,9 +1,17 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 
-<div @key="@($"r-{RowIndex}")" class="input-group mb-3">
+<div @key="@($"r-{RowIndex}")" class="input-group">
     <span class="input-group-text" id="basic-addon1">cmd [@RowIndex]</span>
-    <input type="text" class="form-control" aria-label="FileName" aria-describedby="FileName" value="@MauiProgram.ExeCommands.Response![RowIndex].FileName">
-    <input type="text" class="form-control" aria-label="Arguments" aria-describedby="Arguments" value="@MauiProgram.ExeCommands.Response![RowIndex].Arguments">
-    <button @onclick="async () => await RunCommand(RowIndex)" class="btn btn-outline-secondary" type="button" id="button-addon2">Выполнить</button>
-    <button @onclick="() => DeleteCommand(RowIndex)" class="btn btn-outline-primary" type="button" id="button-addon2">Удалить</button>
+    <input @bind-value="@CurrentCommand.FileName" @bind-value:event="oninput" type="text" class="form-control" aria-label="FileName" aria-describedby="FileName" />
+    <input @bind-value="@CurrentCommand.Arguments" @bind-value:event="oninput" type="text" class="form-control" aria-label="Arguments" aria-describedby="Arguments" />
+    @if (!CurrentCommand.Equals(MauiProgram.ExeCommands.Response![RowIndex]))
+    {
+        <button title="Сохранить изменения" disabled="@string.IsNullOrWhiteSpace(CurrentCommand.FileName)" @onclick="SaveRow" class="btn btn-outline-success" type="button">Сохранить</button>
+        <button title="Отменить изменения" @onclick="CancelEdit" class="btn btn-outline-info" type="button">Отмена</button>
+    }
+    else
+    {
+        <button title="Выполнить команду на удалённом сервере" @onclick="RunCommand" class="btn btn-outline-primary" type="button">Выполнить</button>
+        <button title="Удалить команду" @onclick="DeleteCommand" class="btn btn-outline-secondary" type="button">Удалить</button>
+    }
 </div>

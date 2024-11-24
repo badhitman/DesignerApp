@@ -7,6 +7,9 @@ using SharedLib;
 
 namespace ToolsMauiApp.Components;
 
+/// <summary>
+/// RowCommandComponent
+/// </summary>
 public partial class RowCommandComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
@@ -14,35 +17,59 @@ public partial class RowCommandComponent : BlazorBusyComponentBaseModel
 
 
     /// <summary>
-    /// RowIndex
+    /// Row index
     /// </summary>
     [Parameter, EditorRequired]
     public int RowIndex { get; set; }
 
     /// <summary>
-    /// OwnerComponent
+    /// Owner component
     /// </summary>
     [Parameter, EditorRequired]
     public required ExeCommandsComponent OwnerComponent { get; set; }
 
-    async Task RunCommand(int i)
+
+    ExeCommandModel CurrentCommand = default!;
+
+
+    async Task RunCommand()
     {
         await SetBusy();
         await OwnerComponent.SetBusy();
-        TResponseModel<string> res = await ToolsExtRepo.ExeCommand(MauiProgram.ExeCommands.Response![i]);
+        TResponseModel<string> res = await ToolsExtRepo.ExeCommand(MauiProgram.ExeCommands.Response![RowIndex]);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
         await OwnerComponent.SetBusy(false);
     }
 
-    void DeleteCommand(int i)
+    void CancelEdit()
     {
-        MauiProgram.ExeCommands.Response!.RemoveAt(i);
+        CurrentCommand = GlobalTools.CreateDeepCopy(MauiProgram.ExeCommands.Response![RowIndex])!;
+    }
+
+    async Task SaveRow()
+    {
+        await SetBusy();
+        await OwnerComponent.SetBusy();
+        MauiProgram.ExeCommands.Response![RowIndex] = CurrentCommand;
+        await MauiProgram.SaveCommands(MauiProgram.ExeCommands.Response!);
+        await OwnerComponent.SetBusy(false);
+        await SetBusy(false);
+    }
+
+    async Task DeleteCommand()
+    {
+        await SetBusy();
+        await OwnerComponent.SetBusy();
+        MauiProgram.ExeCommands.Response!.RemoveAt(RowIndex);
+        await MauiProgram.SaveCommands(MauiProgram.ExeCommands.Response!);
+        await OwnerComponent.SetBusy(false);
+        await SetBusy(false);
     }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        
+        CurrentCommand = GlobalTools.CreateDeepCopy(MauiProgram.ExeCommands.Response![RowIndex])!;
     }
 }

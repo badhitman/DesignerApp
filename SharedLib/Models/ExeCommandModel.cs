@@ -18,4 +18,22 @@ public class ExeCommandModel
     /// Arguments
     /// </summary>
     public required string Arguments { get; set; }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj == null) 
+            return false;
+
+        if (obj is ExeCommandModel _ec)
+            return FileName.Equals(_ec.FileName) && Arguments.Equals(_ec.Arguments);
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return $"{FileName} {Arguments}".GetHashCode();
+    }
 }
