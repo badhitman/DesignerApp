@@ -269,6 +269,9 @@ Windows/Android [утилита для удалённого взаимодейс
 - Синхронизация (односторонняя) папок локальной (win/android) с удалённой (на сайте). Сверка файлов производится по имени, размеру и md5:hash файла. На сервер будут доставлены только новые или изменённые файлы, а недостающие будут удалены: локальная папка устройства будет спроецирована/клонирована в папку на сайте. Каждый файл отправляется отдельно (по одному за раз), а перед отправкой сжимается ZipFile (*System.IO.Compression*).
 - Удалённый вызов команд (shell/cmd)
 
+### STAGE контур
+Запуск нескольких копий решения внутри единой инфраструктуры.
+
 [^1]: Подробнее про реализацию MQ транспорта можно узнать [тут](https://github.com/badhitman/DesignerApp/tree/main/RemoteCallLib).
 
 [^2]: Имя обработчика ответов храниться в [контексте пользователя](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/Models/TelegramUserBaseModelDb.cs#L45). Подробнее [тут](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling#telegrambot-%D0%B4%D0%B8%D0%B0%D0%BB%D0%BE%D0%B3%D0%B8)
