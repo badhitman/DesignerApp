@@ -30,7 +30,7 @@ else
             <label class="form-check-label" for="exampleCheck1">@(editDocument.IsDisabled ? "Выключено (включить?)" : "Включено (выключить?)")</label>
         </div>
         <div class="d-grid gap-2 my-2">
-            <button @onclick="SaveDocument" disabled="@(!CanSave)" class="btn btn-primary" type="button">Сохранить</button>
+            <button @onclick="SaveDocument" disabled="@(!CanSave)" class="btn btn-primary" type="button">@(Id < 1 ? "Создать документ" : "Сохранить")</button>
         </div>
     </div>
     @if (Id > 0)
@@ -77,7 +77,7 @@ else
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Name">
-                    @context!.Offer!.GetName()
+                    <a href="/goods/offer-card/@context!.Offer!.Id">@context!.Offer!.GetName()</a>
                 </MudTd>
                 <MudTd DataLabel="Quantity">
                     @context!.Quantity

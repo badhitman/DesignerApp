@@ -20,6 +20,35 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     public string? QuantitiesTemplate { get; set; }
 
     /// <summary>
+    /// QuantitiesTemplateValidate
+    /// </summary>
+    public bool QuantitiesTemplateValidate
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(QuantitiesTemplate))
+                return true;
+
+            return QuantitiesTemplate.SplitToDecimalList().Count != 0 && 
+                string.Join(" ", QuantitiesTemplate.SplitToDecimalList()).Length == QuantitiesTemplate.Trim().Length;
+        }
+    }
+
+    /// <summary>
+    /// QuantitiesValues
+    /// </summary>
+    public System.Collections.Immutable.ImmutableList<decimal>? QuantitiesValues
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(QuantitiesTemplate))
+                return null;
+
+            return QuantitiesTemplate.SplitToDecimalList();
+        }
+    }
+
+    /// <summary>
     /// Номенклатура
     /// </summary>
     public GoodsModelDB? Goods { get; set; }
@@ -103,6 +132,6 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{IsDisabled}{GoodsId}{Id}{Name}({ShortName}){Price}{Multiplicity}{OfferUnit}".GetHashCode();
+        return $"{IsDisabled}{GoodsId}{Id}{Name}({ShortName}){Price}{Multiplicity}{OfferUnit}[{QuantitiesTemplate}]".GetHashCode();
     }
 }

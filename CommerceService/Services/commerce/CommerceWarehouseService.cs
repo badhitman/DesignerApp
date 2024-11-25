@@ -83,7 +83,6 @@ public partial class CommerceImplementService : ICommerceService
             }
         }
 
-        List<Task> _tasks = [];
         int[] _offersIds = [.. warehouseDocumentDb.Rows.Select(x => x.OfferId).Distinct()];
         List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
             .Where(x => _offersIds.Any(y => y == x.OfferId))
@@ -93,7 +92,7 @@ public partial class CommerceImplementService : ICommerceService
         {
             if (req.IsDisabled)
             {
-                warehouseDocumentDb.Rows.ForEach(rowOfDocument =>
+                warehouseDocumentDb.Rows.ForEach(async rowOfDocument =>
                 {
                     OfferAvailabilityModelDB? registerOffer = registersOffersDb.FirstOrDefault(x => x.OfferId == rowOfDocument.OfferId && x.WarehouseId == warehouseDocumentDb.WarehouseId);
                     if (registerOffer is not null)
@@ -106,7 +105,9 @@ public partial class CommerceImplementService : ICommerceService
                             return;
                         }
 
-                        _tasks.Add(context.OffersAvailability.Where(y => y.Id == registerOffer.Id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Quantity, registerOffer.Quantity - rowOfDocument.Quantity)));
+                        await context.OffersAvailability.Where(y => y.Id == registerOffer.Id)
+                         .ExecuteUpdateAsync(set => set
+                         .SetProperty(p => p.Quantity, registerOffer.Quantity - rowOfDocument.Quantity));
                     }
                     else
                     {
@@ -127,51 +128,46 @@ public partial class CommerceImplementService : ICommerceService
             }
             else
             {
-                warehouseDocumentDb.Rows.ForEach(rowOfDocument =>
+                List<OfferAvailabilityModelDB> offAvAdding = [];
+                warehouseDocumentDb.Rows.ForEach(async rowOfDocument =>
                 {
                     OfferAvailabilityModelDB? registerOffer = registersOffersDb.FirstOrDefault(x => x.OfferId == rowOfDocument.OfferId && x.WarehouseId == req.WarehouseId);
 
                     if (registerOffer is not null)
-                        _tasks.Add(context.OffersAvailability
-                            .Where(y => y.Id == registerOffer.Id)
-                            .ExecuteUpdateAsync(set => set.SetProperty(p => p.Quantity, registerOffer.Quantity + rowOfDocument.Quantity)));
+                        await context.OffersAvailability
+                             .Where(y => y.Id == registerOffer.Id)
+                             .ExecuteUpdateAsync(set => set.SetProperty(p => p.Quantity, registerOffer.Quantity + rowOfDocument.Quantity));
                     else
-                        _tasks.Add(Task.Run(async () =>
+                        offAvAdding.Add(new OfferAvailabilityModelDB()
                         {
-                            await context.OffersAvailability.AddAsync(new OfferAvailabilityModelDB()
-                            {
-                                WarehouseId = warehouseDocumentDb.WarehouseId,
-                                GoodsId = rowOfDocument.GoodsId,
-                                OfferId = rowOfDocument.OfferId,
-                                Quantity = rowOfDocument.Quantity,
-                            });
-                        }));
+                            WarehouseId = warehouseDocumentDb.WarehouseId,
+                            GoodsId = rowOfDocument.GoodsId,
+                            OfferId = rowOfDocument.OfferId,
+                            Quantity = rowOfDocument.Quantity,
+                        });
 
                     if (warehouseDocumentDb.WarehouseId != req.WarehouseId)
                     {
                         registerOffer = registersOffersDb.FirstOrDefault(x => x.OfferId == rowOfDocument.OfferId && x.WarehouseId == warehouseDocumentDb.WarehouseId);
 
                         if (registerOffer is not null)
-                            _tasks.Add(context.OffersAvailability.Where(y => y.Id == registerOffer.Id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Quantity, registerOffer.Quantity - rowOfDocument.Quantity)));
+                            await context.OffersAvailability.Where(y => y.Id == registerOffer.Id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Quantity, registerOffer.Quantity - rowOfDocument.Quantity));
                         else
-                            _tasks.Add(Task.Run(async () =>
+                            offAvAdding.Add(new()
                             {
-                                await context.OffersAvailability.AddAsync(new OfferAvailabilityModelDB()
-                                {
-                                    WarehouseId = warehouseDocumentDb.WarehouseId,
-                                    GoodsId = rowOfDocument.GoodsId,
-                                    OfferId = rowOfDocument.OfferId,
-                                    Quantity = -rowOfDocument.Quantity,
-                                });
-                            }));
+                                WarehouseId = warehouseDocumentDb.WarehouseId,
+                                GoodsId = rowOfDocument.GoodsId,
+                                OfferId = rowOfDocument.OfferId,
+                                Quantity = -rowOfDocument.Quantity,
+                            });
                     }
                 });
+                if (offAvAdding.Count != 0)
+                    await context.AddRangeAsync(offAvAdding);
             }
         }
 
-        _tasks.Add(Task.Run(async () =>
-        {
-            res.Response = await context.WarehouseDocuments
+        res.Response = await context.WarehouseDocuments
                 .Where(x => x.Id == req.Id)
                 .ExecuteUpdateAsync(set => set
                 .SetProperty(p => p.Name, req.Name)
@@ -181,13 +177,11 @@ public partial class CommerceImplementService : ICommerceService
                 .SetProperty(p => p.WarehouseId, req.WarehouseId)
                 .SetProperty(p => p.Version, Guid.NewGuid())
                 .SetProperty(p => p.LastAtUpdatedUTC, dtu));
-        }));
 
         if (offersLocked.Length != 0)
             context.RemoveRange(offersLocked);
 
         res.AddSuccess("Складской документ обновлён");
-        await Task.WhenAll(_tasks);
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
         return res;

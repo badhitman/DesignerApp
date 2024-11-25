@@ -63,7 +63,9 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">
-            <span title="id #@context!.Offer!.Id">@context.Offer.GetName()</span>
+            <a href="/goods/offer-card/@context!.Offer!.Id">
+                @context.Offer.GetName()
+            </a>
         </MudTd>
         <MudTd DataLabel="Остаток">
             @(this.RegistersCache.Where(x => x.OfferId == context.OfferId && x.WarehouseId == CurrentTab.WarehouseId).Sum(x => x.Quantity)) @(context.Offer?.OfferUnit.DescriptionInfo())
@@ -90,7 +92,22 @@
             @(context.Offer!.Price)
         </MudTd>
         <MudTd DataLabel="Quantity">
-            <MudNumericField @bind-Value="context!.Quantity" Required Min="1" Max="GetMaxValue(context)" />
+            @{
+                var _alowedValues = context.Offer?.QuantitiesValues;
+            }
+            @if (_alowedValues is null || _alowedValues.Count == 0 && !ForceAdding)
+            {
+                <MudNumericField @bind-Value="context!.Quantity" Required Min="1" Max="GetMaxValue(context)" />
+            }
+            else
+            {
+                <MudSelect T="decimal" Label="Количество" Required="true" @bind-Value="context!.Quantity">
+                    @foreach (decimal ql in _alowedValues)
+                    {
+                        <MudSelectItem Value="@ql" />
+                    }
+                </MudSelect>
+            }
         </MudTd>
         <MudTd colspan="2">
             @(context!.Quantity * context.Offer!.Price)

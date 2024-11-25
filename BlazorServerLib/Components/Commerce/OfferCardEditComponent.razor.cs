@@ -35,6 +35,7 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseAuthModel
         editOffer.IsDisabled != CurrentOffer.IsDisabled ||
         editOffer.ShortName != CurrentOffer.ShortName ||
         editOffer.Name != CurrentOffer.Name ||
+        editOffer.QuantitiesTemplate != CurrentOffer.QuantitiesTemplate ||
         editOffer.Price != CurrentOffer.Price ||
         editOffer.Multiplicity != CurrentOffer.Multiplicity ||
         editOffer.OfferUnit != CurrentOffer.OfferUnit;

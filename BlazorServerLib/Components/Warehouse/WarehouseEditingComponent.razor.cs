@@ -16,7 +16,7 @@ namespace BlazorWebLib.Components.Warehouse;
 public partial class WarehouseEditingComponent : OffersTableBaseComponent
 {
     [Inject]
-    ICommerceRemoteTransmissionService commRepo { get; set; } = default!;
+    ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
 
     [Inject]
     NavigationManager NavRepo { get; set; } = default!;
@@ -52,7 +52,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     {
         if (element is RowOfWarehouseDocumentModelDB _el)
         {
-            TResponseModel<int> res = await commRepo.RowForWarehouseUpdate(_el);
+            TResponseModel<int> res = await CommRepo.RowForWarehouseUpdate(_el);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
         }
         await ReadDocument();
@@ -62,7 +62,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     async Task SaveDocument()
     {
         await SetBusy();
-        TResponseModel<int> res = await commRepo.WarehouseUpdate(editDocument);
+        TResponseModel<int> res = await CommRepo.WarehouseUpdate(editDocument);
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (editDocument.Id < 1 && res.Response > 0)
@@ -115,7 +115,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
             return;
 
         await SetBusy();
-        TResponseModel<WarehouseDocumentModelDB[]> res = await commRepo.WarehousesRead([Id]);
+        TResponseModel<WarehouseDocumentModelDB[]> res = await CommRepo.WarehousesRead([Id]);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success() && res.Response is not null)
             CurrentDocument = res.Response.First();
@@ -155,7 +155,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
             };
 
             await SetBusy();
-            res = await commRepo.RowForWarehouseUpdate(_newRow);
+            res = await CommRepo.RowForWarehouseUpdate(_newRow);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
             await SetBusy(false);
             if (!res.Success())
@@ -169,7 +169,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         {
             CurrentDocument.Rows[exist_row].Quantity = +off.Quantity;
             await SetBusy();
-            res = await commRepo.RowForWarehouseUpdate(CurrentDocument.Rows[exist_row]);
+            res = await CommRepo.RowForWarehouseUpdate(CurrentDocument.Rows[exist_row]);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
             await SetBusy(false);
         }
@@ -211,7 +211,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         }
 
         await SetBusy();
-        TResponseModel<bool> res = await commRepo.RowsForWarehouseDelete([currentRow.Id]);
+        TResponseModel<bool> res = await CommRepo.RowsForWarehouseDelete([currentRow.Id]);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
         if (!res.Success())

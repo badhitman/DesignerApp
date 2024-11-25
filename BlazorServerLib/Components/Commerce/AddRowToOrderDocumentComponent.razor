@@ -21,7 +21,24 @@ else
                 </optgroup>
             }
         </select>
-        <MudNumericField Disabled="IsBusyProgress || CantAdd()" @bind-Value="QuantityValue" Variant="Variant.Text" Min="1" Max="GetMaxValue()" />
+
+        @{
+            var _alowedValues = SelectedOffer?.QuantitiesValues;
+        }
+        @if (_alowedValues is null || _alowedValues.Count == 0 || ForceAdding)
+        {
+            <MudNumericField Disabled="IsBusyProgress || CantAdd()" @bind-Value="QuantityValue" Variant="Variant.Text" Min="1" Max="GetMaxValue()" />
+        }
+        else
+        {
+            <MudSelect T="decimal" Required="true" @bind-Value="QuantityValue">
+                @foreach (decimal ql in _alowedValues)
+                {
+                    <MudSelectItem Value="@ql" />
+                }
+            </MudSelect>
+        }
+        
         @if (IsBusyProgress)
         {
             <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true" />

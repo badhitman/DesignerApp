@@ -1,5 +1,7 @@
 ﻿using System.Collections.Immutable;
+using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SharedLib;
 
@@ -16,10 +18,35 @@ public static class StringExtensions
     static readonly string[] splitDelimiters = [" ", "\n", "\r", "\t", ",", ";", "|", @"\n", @"\r", @"\t", "!"];
 
     /// <summary>
+    /// 
+    /// </summary>
+    public static ImmutableList<decimal> SplitToDecimalList(this string data)
+    {
+        static string _normString(string _raw)
+             => _raw
+             .Replace(".", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator)
+             .Replace(",", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
+
+        static decimal parseString(string _valString)
+        {
+            _valString = _normString(_valString);
+            if (decimal.TryParse(_valString, out decimal res))
+                return res;
+
+            return 0;
+        }
+
+        return [.. Regex.Split(data, @"\s+")
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(parseString)];
+    }
+
+    /// <summary>
     /// SplitToList
     /// </summary>
     public static ImmutableList<string> SplitToList(this string data)
         => SplitToListInternal(data, splitDelimiters);
+
     /// <summary>
     /// SplitToListWithoutSpace
     /// </summary>
@@ -29,7 +56,7 @@ public static class StringExtensions
     private static ImmutableList<string> SplitToListInternal(string data, string[] delimiters)
     {
         if (data == null || string.IsNullOrWhiteSpace(data))
-            return ImmutableList<string>.Empty;
+            return [];
 
         return [.. data
             .Split(delimiters, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)

@@ -78,6 +78,13 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
         {
             _selectedOfferId = value;
             SelectedOffer = AllOffers.FirstOrDefault(x => x.Id == value);
+
+            System.Collections.Immutable.ImmutableList<decimal>? _qv = SelectedOffer?.QuantitiesValues;
+            if (_qv is not null && _qv.Count != 0 && !ForceAdding)
+                QuantityValue = _qv.First();
+            else
+                QuantityValue = 1;
+
             if (SelectedOffer is not null && !ForceAdding)
                 InvokeAsync(async () => await CacheRegistersOfferUpdate([SelectedOffer.Id], WarehouseId, true));
             if (SelectOfferHandler is not null)
@@ -109,9 +116,15 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
     IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentRows!.Contains(x.Id));
 
     bool IsShowAddingOffer;
-    decimal QuantityValue { get; set; } = 1;
+    decimal QuantityValue { get; set; }
     private void OnExpandAddingOffer()
     {
+        System.Collections.Immutable.ImmutableList<decimal>? _qv = SelectedOffer?.QuantitiesValues;
+        if (!IsShowAddingOffer && _qv is not null && _qv.Count != 0 && !ForceAdding)
+            QuantityValue = _qv.First();
+        else
+            QuantityValue = 1;
+
         IsShowAddingOffer = !IsShowAddingOffer;
         if (IsShowAddingOffer)
         {

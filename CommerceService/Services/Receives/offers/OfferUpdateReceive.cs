@@ -7,6 +7,8 @@ using RemoteCallLib;
 using SharedLib;
 using DbcLib;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Transmission.Receives.commerce;
 
@@ -25,6 +27,19 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int?> res = new() { Response = 0 };
+
+        if (!string.IsNullOrWhiteSpace(req.QuantitiesTemplate))
+        {
+            var idss = req.QuantitiesTemplate.SplitToDecimalList();
+
+            if (idss.Count == 0)
+            {
+                res.AddError("Формат доступных значений не корректный");
+                return res;
+            }
+            req.QuantitiesTemplate = string.Join(" ", idss.Order());
+        }
+
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         DateTime dtu = DateTime.UtcNow;
         if (req.Id < 1)
