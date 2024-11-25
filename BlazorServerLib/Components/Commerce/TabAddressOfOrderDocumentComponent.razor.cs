@@ -70,10 +70,10 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
         await SetBusy(false);
     }
 
-    int GetMaxValue(RowOfOrderDocumentModelDB ctx)
+    decimal GetMaxValue(RowOfOrderDocumentModelDB ctx)
     {
         return ForceAdding
-            ? int.MaxValue
+            ? decimal.MaxValue
             : RegistersCache.Where(x => x.OfferId == ctx.OfferId && x.WarehouseId == CurrentTab.WarehouseId).Sum(x => x.Quantity);
     }
 

@@ -42,5 +42,5 @@ public abstract class RowOfBaseDocumentModelDB
     /// <summary>
     /// Количество
     /// </summary>
-    public int Quantity { get; set; }
+    public decimal Quantity { get; set; }
 }

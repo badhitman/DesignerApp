@@ -15,6 +15,11 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     public string? ShortName { get; set; }
 
     /// <summary>
+    /// Шаблон допустимых значений через пробел
+    /// </summary>
+    public string? QuantitiesTemplate { get; set; }
+
+    /// <summary>
     /// Номенклатура
     /// </summary>
     public GoodsModelDB? Goods { get; set; }
@@ -31,7 +36,7 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// Кратность к базовой единице товара
     /// </summary>
-    public uint Multiplicity { get; set; }
+    public decimal Multiplicity { get; set; }
 
     /// <summary>
     /// Цена за единицу <see cref="OfferUnit"/>
@@ -54,6 +59,8 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
                 off1.IsDisabled != off2.IsDisabled ||
                 off1.GoodsId != off2.GoodsId ||
                 off1.Name != off2.Name ||
+                off1.ShortName != off2.ShortName ||
+                off1.QuantitiesTemplate != off2.QuantitiesTemplate ||
                 off1.Price != off2.Price ||
                 off1.Multiplicity != off2.Multiplicity ||
                 off1.OfferUnit != off2.OfferUnit;
@@ -84,6 +91,8 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
                 off.GoodsId == GoodsId &&
                 off.Id == Id &&
                 off.Name == Name &&
+                off.QuantitiesTemplate == QuantitiesTemplate &&
+                off.ShortName == ShortName &&
                 off.Price == Price &&
                 off.Multiplicity == Multiplicity &&
                 off.OfferUnit == OfferUnit;
@@ -94,6 +103,6 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{IsDisabled}{GoodsId}{Id}{Name}{Price}{Multiplicity}{OfferUnit}".GetHashCode();
+        return $"{IsDisabled}{GoodsId}{Id}{Name}({ShortName}){Price}{Multiplicity}{OfferUnit}".GetHashCode();
     }
 }

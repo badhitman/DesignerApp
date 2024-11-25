@@ -85,16 +85,16 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
         }
     }
 
-    int GetOfferQuantity(OfferGoodModelDB opt)
+    decimal GetOfferQuantity(OfferGoodModelDB opt)
     {
 
         return RegistersCache.Where(x => x.OfferId == opt.Id && (WarehouseId < 1 || x.WarehouseId == WarehouseId)).Sum(x => x.Quantity);
     }
 
-    int GetMaxValue()
+    decimal GetMaxValue()
     {
         if (ForceAdding)
-            return int.MaxValue;
+            return decimal.MaxValue;
 
         return SelectedOffer is null
             ? 0
@@ -109,7 +109,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
     IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentRows!.Contains(x.Id));
 
     bool IsShowAddingOffer;
-    int QuantityValue { get; set; } = 1;
+    decimal QuantityValue { get; set; } = 1;
     private void OnExpandAddingOffer()
     {
         IsShowAddingOffer = !IsShowAddingOffer;

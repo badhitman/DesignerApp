@@ -27,10 +27,14 @@
                         {
                             <MudFab OnClick="() => editOffer = GlobalTools.CreateDeepCopy(CurrentOffer)!" title="Отменить изменение" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Surface" Size="Size.Small" Class="align-self-center" />
                         }
-                    </MudStack>
+                    </MudStack>                    
                     <MudSwitch Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.IsDisabled" Label="Отключение" Color="Color.Secondary" />
                     <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
                         <Authorized>
+                            <div class="input-group my-3">
+                                <span class="input-group-text" id="basic-tmpl-@editOffer.Id">Шаблон количества</span>
+                                <input @bind-value="editOffer.QuantitiesTemplate" @bind-value:event="oninput" type="text" class="form-control" placeholder="Значения через пробел" aria-label="Значения через пробел" aria-describedby="basic-tmpl-@editOffer.Id">
+                            </div>
                             <div class="card mt-3">
                                 <div class="card-body">
                                     <TinyMCE.Blazor.Editor @bind-Value="editOffer.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(OfferId < 1)" />

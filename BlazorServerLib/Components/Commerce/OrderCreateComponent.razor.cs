@@ -193,7 +193,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         DiscountsDetected.Clear();
         foreach (IGrouping<int, RowOfOrderDocumentModelDB> node in GroupingRows)
         {
-            int qnt = node.Sum(y => y.Quantity); // всего количество в заказе
+            decimal qnt = node.Sum(y => y.Quantity); // всего количество в заказе
             if (qnt <= 1 || !RulesCache.TryGetValue(node.Key, out PriceRuleForOfferModelDB[]? _rules) || _rules?.Any() != true)
                 continue;
 

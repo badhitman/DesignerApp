@@ -3,6 +3,7 @@ using System;
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.Commerce
 {
     [DbContext(typeof(CommerceContext))]
-    partial class CommerceContextModelSnapshot : ModelSnapshot
+    [Migration("20241125150939_CommerceContext022_2")]
+    partial class CommerceContext022_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,8 +136,8 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<int>("OfferId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("numeric");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.Property<int>("WarehouseId")
                         .HasColumnType("integer");
@@ -175,8 +178,8 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<DateTime>("LastAtUpdatedUTC")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("Multiplicity")
-                        .HasColumnType("numeric");
+                    b.Property<long>("Multiplicity")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -427,8 +430,8 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<decimal>("PriceRule")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("QuantityRule")
-                        .HasColumnType("numeric");
+                    b.Property<long>("QuantityRule")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -465,8 +468,8 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<int?>("OrderDocumentId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("numeric");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("Version")
                         .IsConcurrencyToken()
@@ -504,8 +507,8 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<int>("OfferId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("numeric");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("Version")
                         .IsConcurrencyToken()

@@ -32,6 +32,9 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             req = new()
             {
                 Name = req.Name,
+                QuantitiesTemplate = req.QuantitiesTemplate,
+                CreatedAtUTC = dtu,
+                Description = req.Description,
                 ShortName = req.ShortName,
                 IsDisabled = req.IsDisabled,
                 Multiplicity = req.Multiplicity,
@@ -52,6 +55,8 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, req.Name)
+            .SetProperty(p => p.Description, req.Description)
+            .SetProperty(p => p.QuantitiesTemplate, req.QuantitiesTemplate)
             .SetProperty(p => p.ShortName, req.ShortName)
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.Multiplicity, req.Multiplicity)

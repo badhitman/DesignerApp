@@ -420,7 +420,7 @@ public partial class CommerceImplementService : ICommerceService
                 return res;
             }
 
-            int _delta = req.Quantity - rowDb.Quantity;
+            decimal _delta = req.Quantity - rowDb.Quantity;
             if (_delta == 0)
                 res.AddInfo("Количество не изменилось");
             else if (regOfferAv is not null && !whDoc.IsDisabled)

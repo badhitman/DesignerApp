@@ -12,5 +12,5 @@ public class OfferGoodActionModel : OfferGoodModelDB
     /// <summary>
     /// Quantity
     /// </summary>
-    public int Quantity { get; set; }
+    public decimal Quantity { get; set; }
 }

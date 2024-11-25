@@ -24,7 +24,7 @@ public class PriceRuleForOfferModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// Количество, начиная с которого срабатывает правило для цены <see cref="PriceRule"/>
     /// </summary>
-    public uint QuantityRule { get; set; }
+    public decimal QuantityRule { get; set; }
 
     /// <summary>
     /// Цена за единицу при срабатывании правила <see cref="QuantityRule"/>

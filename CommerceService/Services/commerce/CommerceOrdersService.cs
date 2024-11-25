@@ -283,7 +283,7 @@ public partial class CommerceImplementService(
                 return res;
             }
 
-            int _delta = rowDb.Quantity - req.Quantity;
+            decimal _delta = rowDb.Quantity - req.Quantity;
             if (_delta == 0)
                 res.AddInfo("Количество не изменилось");
             else if (regOfferAv is not null && orderDocStatus != StatusesDocumentsEnum.Canceled)
