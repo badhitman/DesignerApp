@@ -26,10 +26,10 @@
         <MudTd DataLabel="Id">@context.Id</MudTd>
         <MudTd DataLabel="Offer">
             @context.Offer?.Name
-            <sup title="Номенклатура" class="font-monospace">@context.Goods?.Name</sup>
+            <sup title="Номенклатура" class="font-monospace text-info-emphasis">@context.Goods?.Name</sup>
         </MudTd>
         <MudTd DataLabel="Склад">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
-        <MudTd DataLabel="Кол-во">@context.Quantity</MudTd>
+        <MudTd DataLabel="Кол-во">@context.Quantity @context.Offer?.OfferUnit.DescriptionInfo()</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>
