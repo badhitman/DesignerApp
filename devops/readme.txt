@@ -79,6 +79,10 @@ cp -r /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
 chown -R www-data:www-data /srv/services
 chmod -R 777 /srv/services
 
+chown -R www-data:www-data /srv/tmp
+chmod -R 777 /srv/tmp
+
+
 systemctl start comm.app.service web.app.service bus.app.service tg.app.service api.app.service hd.app.service constructor.app.service
 
 journalctl -f -u constructor.app.service
