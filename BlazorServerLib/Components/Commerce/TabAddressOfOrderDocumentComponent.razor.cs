@@ -44,7 +44,7 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
         await base.OnInitializedAsync();
         await SetBusy();
         TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(0);
-        await this.CacheRegistersOfferUpdate(CurrentTab.Rows!.Select(x => x.OfferId), CurrentTab.WarehouseId, true);
+        await CacheRegistersOfferUpdate(CurrentTab.Rows!.Select(x => x.OfferId), CurrentTab.WarehouseId, true);
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         RubricMetadataShadow = res.Response;
