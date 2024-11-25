@@ -10,6 +10,11 @@ namespace SharedLib;
 public class OfferGoodModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
+    /// Короткое название
+    /// </summary>
+    public string? ShortName { get; set; }
+
+    /// <summary>
     /// Номенклатура
     /// </summary>
     public GoodsModelDB? Goods { get; set; }
@@ -57,9 +62,15 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// GetName
     /// </summary>
-    public string GetName() => string.IsNullOrWhiteSpace(Name)
-        ? $"{Goods?.Name} [{OfferUnit.DescriptionInfo().ToLower()}] (x{Multiplicity} {Goods?.BaseUnit.DescriptionInfo().ToLower()})"
-        : Name;
+    public string GetName()
+    {
+        if (!string.IsNullOrWhiteSpace(ShortName))
+            return ShortName;
+        else if (string.IsNullOrWhiteSpace(Name))
+            return $"{Goods?.Name} [{OfferUnit.DescriptionInfo().ToLower()}] (x{Multiplicity} {Goods?.BaseUnit.DescriptionInfo().ToLower()})";
+
+        return Name;
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)

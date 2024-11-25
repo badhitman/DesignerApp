@@ -24,9 +24,9 @@ chmod -R 777 /srv/postgres
 chown -R www-data:www-data /srv/db-backups
 chmod -R 777 /srv/db-backups
 
-chown -R www-data:www-data /srv/db-backups
-chmod -R 777 /srv/db-backups
 
+chown -R www-data:www-data /srv/Cloud.Disk
+chmod -R 777 /srv/Cloud.Disk
 
 
 # PROD

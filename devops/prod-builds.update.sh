@@ -1,5 +1,5 @@
 systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service constructor.app.service hd.app.service
-7z a /srv/services-snapshots/all_services_`date +%Y-%m-%d"_"%H_%M_%S`.7z /srv/services/*
+7z a /srv/Cloud.Disk/services-snapshots/all_services_`date +%Y-%m-%d"_"%H_%M_%S`.7z /srv/services/*
 rm -r /srv/services/*
 cp -r /srv/git/builds/ApiRestService /srv/services/ApiRestService
 cp -r /srv/git/builds/StorageService /srv/services/StorageService

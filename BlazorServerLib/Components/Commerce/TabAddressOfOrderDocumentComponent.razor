@@ -64,10 +64,9 @@
     <RowTemplate>
         <MudTd DataLabel="Name">
             <span title="id #@context!.Offer!.Id">@context.Offer.GetName()</span>
-
         </MudTd>
         <MudTd DataLabel="Остаток">
-            @(this.RegistersCache.Where(x => x.OfferId == context.OfferId && x.WarehouseId == CurrentTab.WarehouseId).Sum(x => x.Quantity))
+            @(this.RegistersCache.Where(x => x.OfferId == context.OfferId && x.WarehouseId == CurrentTab.WarehouseId).Sum(x => x.Quantity)) @(context.Offer?.OfferUnit.DescriptionInfo())
         </MudTd>
         <MudTd DataLabel="Price">
             @context!.Offer!.Price руб. (@($"{Math.Round(context!.Offer!.Price / context!.Offer.Multiplicity, 2)} р/{context.Goods!.BaseUnit.DescriptionInfo().ToLower()}"))

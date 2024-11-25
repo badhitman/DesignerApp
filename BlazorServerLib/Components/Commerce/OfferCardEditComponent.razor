@@ -11,8 +11,9 @@
         {
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                 <MudTabPanel Text="Основное">
+                    <MudTextField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Name" Label="Полное наименование" Variant="Variant.Outlined" Immediate ShrinkLabel></MudTextField>
                     <MudStack Row="true" Class="mb-3">
-                        <MudTextField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.Name" Label="Название" Variant="Variant.Outlined" Immediate ShrinkLabel></MudTextField>
+                        <MudTextField Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.ShortName" Label="Название (краткое)" Variant="Variant.Outlined" Immediate ShrinkLabel></MudTextField>
                         <MudSelect Disabled="(IsBusyProgress || !CurrentUserSession!.IsAdmin)" @bind-Value="editOffer.OfferUnit" Label="Единица измерения" Placeholder="Выбор ед.изм." Variant="Variant.Outlined">
                             @foreach (UnitsOfMeasurementEnum u in Enum.GetValues(typeof(UnitsOfMeasurementEnum)).Cast<UnitsOfMeasurementEnum>())
                             {
@@ -44,13 +45,13 @@
                                                                @ref="filesViewRef"
                                                                Title="Файлы"
                                                                ManageMode="true" />
-                                                               <hr/>
+                                    <hr />
                                     <TagsViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.OFFER_CONTROLLER_NAME])"
-                                               ManageMode="true"
-                                               PrefixPropertyName="@GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME"
-                                               PropertyName="@GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME"
-                                               Title="Теги"
-                                               OwnerPrimaryKey="@OfferId" />
+                                                       ManageMode="true"
+                                                       PrefixPropertyName="@GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME"
+                                                       PropertyName="@GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME"
+                                                       Title="Теги"
+                                                       OwnerPrimaryKey="@OfferId" />
                                 </div>
                             </div>
                         </Authorized>
@@ -59,15 +60,13 @@
                         </NotAuthorized>
                     </AuthorizeView>
                 </MudTabPanel>
-                
-                    <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
-                        <Authorized>
-                            <MudTabPanel Text="Заказы">
-                                <OrdersJournalComponent OfferFilter="editOffer.Id" />
-                            </MudTabPanel>
-                        </Authorized>
-                    </AuthorizeView>
-               
+                <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
+                    <Authorized>
+                        <MudTabPanel Text="Заказы">
+                            <OrdersJournalComponent OfferFilter="editOffer.Id" />
+                        </MudTabPanel>
+                    </Authorized>
+                </AuthorizeView>
             </MudTabs>
         }
     </div>

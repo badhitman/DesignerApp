@@ -33,6 +33,7 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseAuthModel
 
     bool CanSave =>
         editOffer.IsDisabled != CurrentOffer.IsDisabled ||
+        editOffer.ShortName != CurrentOffer.ShortName ||
         editOffer.Name != CurrentOffer.Name ||
         editOffer.Price != CurrentOffer.Price ||
         editOffer.Multiplicity != CurrentOffer.Multiplicity ||

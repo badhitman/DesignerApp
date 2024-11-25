@@ -29,9 +29,10 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
         DateTime dtu = DateTime.UtcNow;
         if (req.Id < 1)
         {
-            OfferGoodModelDB offer_db = new()
+            req = new()
             {
                 Name = req.Name,
+                ShortName = req.ShortName,
                 IsDisabled = req.IsDisabled,
                 Multiplicity = req.Multiplicity,
                 GoodsId = req.GoodsId,
@@ -40,10 +41,10 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 LastAtUpdatedUTC = dtu,
             };
 
-            await context.AddAsync(offer_db);
+            await context.AddAsync(req);
             await context.SaveChangesAsync();
             res.AddSuccess("Предложение добавлено");
-            res.Response = offer_db.Id;
+            res.Response = req.Id;
             return res;
         }
 
@@ -51,6 +52,7 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, req.Name)
+            .SetProperty(p => p.ShortName, req.ShortName)
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.Multiplicity, req.Multiplicity)
             .SetProperty(p => p.GoodsId, req.GoodsId)
