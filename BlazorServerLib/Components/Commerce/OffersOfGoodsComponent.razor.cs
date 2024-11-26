@@ -14,6 +14,9 @@ namespace BlazorWebLib.Components.Commerce;
 /// </summary>
 public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
 {
+    [Inject]
+    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo { get; set; } = default!;
+
     /// <summary>
     /// CurrentGoods
     /// </summary>
@@ -21,7 +24,78 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
     public required GoodsModelDB CurrentGoods { get; set; }
 
 
+    bool _hideMultiplicity;
+    bool HideMultiplicity
+    {
+        get => _hideMultiplicity;
+        set
+        {
+            _hideMultiplicity = value;
+            InvokeAsync(SaveHideMultiplicity);
+        }
+    }
+
+    bool _hideWorth;
+    bool HideWorth
+    {
+        get => _hideWorth;
+        set
+        {
+            _hideWorth = value;
+            InvokeAsync(SaveHideWorth);
+        }
+    }
+
     private MudTable<OfferGoodModelDB> table = default!;
+    bool _visibleChangeConfig;
+    readonly DialogOptions _dialogOptions = new()
+    {
+        FullWidth = true,
+        CloseButton = true
+    };
+
+    async void SaveHideWorth()
+    {
+        await SetBusy();
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(HideWorth, GlobalStaticConstants.CloudStorageMetadata.HideWorthOffers, true);
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        await table.ReloadServerData();
+    }
+
+    async void SaveHideMultiplicity()
+    {
+        await SetBusy();
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(HideMultiplicity, GlobalStaticConstants.CloudStorageMetadata.HideMultiplicityOffers, true);
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        await table.ReloadServerData();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await SetBusy();
+        TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.HideWorthOffers);
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+        else
+            _hideWorth = res.Response == true;
+
+        res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.HideMultiplicityOffers);
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+        else
+            _hideMultiplicity = res.Response == true;
+
+        await SetBusy(false);
+    }
+
+    void CancelChangeConfig()
+    {
+        _visibleChangeConfig = !_visibleChangeConfig;
+    }
 
     async void CreateOfferAction(OfferGoodModelDB sender)
     {

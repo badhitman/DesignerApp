@@ -201,6 +201,26 @@ public static partial class GlobalStaticConstants
             PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.ADD_ACTION_NAME),
         };
 
+        // 
+
+        /// <summary>
+        ///  Скрыть стоимость в списке оферов
+        /// </summary>
+        public static StorageMetadataModel HideWorthOffers => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            PropertyName = Path.Combine($"{Routes.WORTH_CONTROLLER_NAME}-{Routes.COLUMN_CONTROLLER_NAME}", Routes.OFFERS_CONTROLLER_NAME, Routes.HIDE_ACTION_NAME),
+        };
+
+        /// <summary>
+        ///  Скрыть кратность в списке оферов
+        /// </summary>
+        public static StorageMetadataModel HideMultiplicityOffers => new()
+        {
+            ApplicationName = Routes.COMMERCE_CONTROLLER_NAME,
+            PropertyName = Path.Combine($"{Routes.MULTIPLICITY_CONTROLLER_NAME}-{Routes.COLUMN_CONTROLLER_NAME}", Routes.OFFERS_CONTROLLER_NAME, Routes.HIDE_ACTION_NAME),
+        };
+
         /// <summary>
         /// ShowingTelegramArea
         /// </summary>
@@ -1073,6 +1093,11 @@ public static partial class GlobalStaticConstants
         public const string OFFERS_CONTROLLER_NAME = "offers";
 
         /// <summary>
+        /// Column
+        /// </summary>
+        public const string COLUMN_CONTROLLER_NAME = "column";
+
+        /// <summary>
         /// Registers
         /// </summary>
         public const string REGISTERS_CONTROLLER_NAME = "registers";
@@ -1188,6 +1213,11 @@ public static partial class GlobalStaticConstants
         public const string COMMAND_CONTROLLER_NAME = "command";
 
         /// <summary>
+        /// Worth
+        /// </summary>
+        public const string WORTH_CONTROLLER_NAME = "worth";
+
+        /// <summary>
         /// Directory
         /// </summary>
         public const string DIRECTORY_CONTROLLER_NAME = "directory";
@@ -1236,6 +1266,11 @@ public static partial class GlobalStaticConstants
         /// Commerce
         /// </summary>
         public const string COMMERCE_CONTROLLER_NAME = "commerce";
+
+        /// <summary>
+        /// Multiplicity
+        /// </summary>
+        public const string MULTIPLICITY_CONTROLLER_NAME = "multiplicity";
 
         /// <summary>
         /// Organization
@@ -1613,6 +1648,11 @@ public static partial class GlobalStaticConstants
         /// Show
         /// </summary>
         public const string SHOW_ACTION_NAME = "show";
+
+        /// <summary>
+        /// Hide
+        /// </summary>
+        public const string HIDE_ACTION_NAME = "hide";
 
         /// <summary>
         /// Mode

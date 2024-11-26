@@ -6,8 +6,7 @@
     @if (CurrentUserSession!.IsAdmin)
     {
         <MudStack Spacing="2">
-
-            <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Отмена" : "Создать")</MudButton>
+            <MudButton OnClick="OnExpandCollapseClick" Variant="Variant.Outlined">@(_expanded ? "Отмена" : "Создать")</MudButton>
             <MudCollapse Expanded="_expanded">
                 <GoodCreatingFormComponent GoodCreatingHandler="CreateGoodsAction" />
             </MudCollapse>

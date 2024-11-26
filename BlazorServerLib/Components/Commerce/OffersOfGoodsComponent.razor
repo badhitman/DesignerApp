@@ -8,11 +8,14 @@
     }
 </style>
 
-<MudPaper Class="pa-4 mt-3">
+<MudPaper Class="pa-4 mt-3 position-relative">
+    <span title="Настройка отображения" @onclick="CancelChangeConfig" style="cursor:pointer;" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bi bi-gear-fill">
+        <span class="visually-hidden">view config</span>
+    </span>
     <MudStack Spacing="2">
         @if (CurrentUserSession!.IsAdmin)
         {
-            <MudButton OnClick="OnExpandCollapseClick">@(_expanded ? "Отмена" : "Создать")</MudButton>
+            <MudButton OnClick="OnExpandCollapseClick" Variant="Variant.Outlined">@(_expanded ? "Отмена" : "Создать")</MudButton>
             <MudCollapse Expanded="_expanded">
                 <OfferCreatingFormComponent OfferCreatingHandler="CreateOfferAction" CurrentGoods="CurrentGoods" />
             </MudCollapse>
@@ -26,8 +29,11 @@
         <HeaderContent>
             <MudTh>Номенклатура</MudTh>
             <MudTh>Название</MudTh>
-            <MudTh>Цена/Стоимость</MudTh>
-            <MudTh>Кратность</MudTh>
+            <MudTh>Цена@(HideWorth ? "" : "/Стоимость")</MudTh>
+            @if (!HideMultiplicity)
+            {
+                <MudTh>Кратность</MudTh>
+            }
             <MudTh>Ед. изм.</MudTh>
             <MudTh>Остатки</MudTh>
         </HeaderContent>
@@ -44,13 +50,16 @@
             </MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Price">
-                @($"{context.Price}/{Math.Round(context.Price / context.Multiplicity, 2)}")
+                @($"{context.Price}{(HideWorth ? "" : $"/{Math.Round(context.Price / context.Multiplicity, 2)}")}")
                 @if (CurrentUserSession!.IsAdmin)
                 {
                     <PricesRulesForOfferComponent OfferGood="context" />
                 }
             </MudTd>
-            <MudTd DataLabel="Multiplicity">@context.Multiplicity</MudTd>
+            @if (!HideMultiplicity)
+            {
+                <MudTd DataLabel="Multiplicity">@context.Multiplicity</MudTd>
+            }
             <MudTd DataLabel="OfferUnit">@context.OfferUnit.DescriptionInfo()</MudTd>
             <MudTd DataLabel="Остатки">
                 @RegistersCache.Where(x => x.OfferId == context.Id).Sum(x => x.Quantity)
@@ -67,3 +76,35 @@
         </PagerContent>
     </MudTable>
 </MudPaper>
+<MudDialog @bind-Visible="_visibleChangeConfig" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Настройки отображения
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item my-2">
+                <h6 class="card-subtitle mb-2 text-body-secondary">Колонка кратности</h6>
+                <div class="hstack gap-3">
+                    <MudSwitch @bind-Value="HideMultiplicity" ThumbIcon="@(HideMultiplicity == false ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(HideMultiplicity == false ? Color.Success : Color.Error)">Кратность: отображение колонки</MudSwitch>
+                    <span class="text-info">
+                        @(HideMultiplicity == true ? "Колонка кратности скрыта" : "Колонка кратности отображается")
+                    </span>
+                </div>
+                <div class="form-text">
+                    Цена отображается не зависимо от настроек
+                </div>
+            </li>
+            <li class="list-group-item my-2">
+                <h6 class="card-subtitle mb-2 text-body-secondary">Стоимость</h6>
+                <div class="hstack gap-3">
+                    <MudSwitch @bind-Value="HideWorth" ThumbIcon="@(HideWorth == false ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(HideWorth == false ? Color.Success : Color.Error)">Отображение информации</MudSwitch>
+                    <span class="text-info">
+                        @(HideWorth == true ? "Стоимость не отображается" : "Стоимость отображается")
+                    </span>
+                </div>
+            </li>
+        </ul>
+    </DialogContent>
+</MudDialog>
