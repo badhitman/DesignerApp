@@ -111,4 +111,7 @@ else
             </figcaption>
         </figure>
     }
+    <hr />
+    <span>Описание:</span>
+    <TinyMCE.Blazor.Editor @bind-Value="editDocument.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" />
 }

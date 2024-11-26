@@ -31,6 +31,8 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     [Parameter, EditorRequired]
     public required int Id { get; set; }
 
+    Dictionary<string, object> editorConf = default!;
+    string images_upload_url = default!;
 
     WarehouseDocumentModelDB CurrentDocument = new() { DeliveryDate = DateTime.Now, Name = "Новый", NormalizedUpperName = "НОВЫЙ", Rows = [] };
     WarehouseDocumentModelDB editDocument = new() { DeliveryDate = DateTime.Now, Name = "Новый", NormalizedUpperName = "НОВЫЙ", Rows = [] };
@@ -81,6 +83,9 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{GlobalStaticConstants.Routes.WAREHOUSE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.BODY_CONTROLLER_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={GlobalStaticConstants.Routes.IMAGE_ACTION_NAME}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={Id}";
+        editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
+
         await SetBusy();
         _shouldRender = false;
         await base.OnInitializedAsync();
