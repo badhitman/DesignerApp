@@ -9,9 +9,11 @@
 </style>
 
 <MudPaper Class="pa-4 mt-3 position-relative">
-    <span title="Настройка отображения" @onclick="CancelChangeConfig" style="cursor:pointer;" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bi bi-gear-fill">
-        <span class="visually-hidden">view config</span>
-    </span>
+    <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.Admin}")">
+        <span title="Настройка отображения" @onclick="CancelChangeConfig" style="cursor:pointer;" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bi bi-gear-fill">
+            <span class="visually-hidden">view config</span>
+        </span>
+    </AuthorizeView>
     <MudStack Spacing="2">
         @if (CurrentUserSession!.IsAdmin)
         {

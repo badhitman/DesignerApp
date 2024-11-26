@@ -1,24 +1,19 @@
 ﻿@inherits BlazorBusyComponentBaseModel
 @using MudBlazor
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary mb-2">
+<nav class="bg-body-tertiary mb-2">
     <div class="container-fluid">
         <span class="navbar-brand" href="#">Фильтр: </span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <MudRadioGroup T="UsersAreasHelpdeskEnum?" Disabled="IsBusyProgress" @bind-Value="SelectedOption">
-                <MudRadio T="UsersAreasHelpdeskEnum?" Value="@UsersAreasHelpdeskEnum.Executor">Я исполнитель</MudRadio>
-                <MudRadio T="UsersAreasHelpdeskEnum?" Value="@UsersAreasHelpdeskEnum.Subscriber">Я подписчик</MudRadio>
-                <MudRadio T="UsersAreasHelpdeskEnum?" Value="@UsersAreasHelpdeskEnum.Main">Все</MudRadio>
-                <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
-                    <Authorized>
-                        <MudRadio T="UsersAreasHelpdeskEnum?" Value="null">root</MudRadio>
-                    </Authorized>
-                </AuthorizeView>
-            </MudRadioGroup>
-        </div>
+        <MudRadioGroup T="UsersAreasHelpdeskEnum?" Disabled="IsBusyProgress" @bind-Value="SelectedOption">
+            <MudRadio T="UsersAreasHelpdeskEnum?" Value="@UsersAreasHelpdeskEnum.Executor">Я исполнитель</MudRadio>
+            <MudRadio T="UsersAreasHelpdeskEnum?" Value="@UsersAreasHelpdeskEnum.Subscriber">Я подписчик</MudRadio>
+            <MudRadio T="UsersAreasHelpdeskEnum?" Value="@UsersAreasHelpdeskEnum.Main">Все</MudRadio>
+            <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
+                <Authorized>
+                    <MudRadio T="UsersAreasHelpdeskEnum?" Value="null">root</MudRadio>
+                </Authorized>
+            </AuthorizeView>
+        </MudRadioGroup>
     </div>
 </nav>
 
