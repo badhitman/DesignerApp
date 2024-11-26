@@ -121,7 +121,7 @@
                         _remoteMdSize = _remoteMd is null ? "" : GlobalTools.SizeDataAsString(_remoteMd.Size);
 
                         <li>
-                            @_tfd.ToString() L[@_localMdSize @_localMd?.Hash] R[@(_remoteMd is null ? "новый" : $"{_remoteMdSize} {_remoteMd?.Hash}")]
+                            @_tfd.ToString() L[@_localMd?.Size @_localMd?.Hash] R[@(_remoteMd is null ? "новый" : $"{_remoteMd.Size} {_remoteMd.Hash}")]
                         </li>
                     }
                 </ul>
