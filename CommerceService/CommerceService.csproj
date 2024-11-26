@@ -26,6 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\HtmlGenerator\HtmlGenerator.csproj" />
 		<ProjectReference Include="..\DBContextLibs\DbPostgreLib\DbPostgreLib.csproj" />
 		<ProjectReference Include="..\RemoteCallLib\RemoteCallLib.csproj" />
 	</ItemGroup>

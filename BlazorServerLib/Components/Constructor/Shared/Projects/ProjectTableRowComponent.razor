@@ -31,7 +31,7 @@
         }
         @if (IsMyProject)
         {
-            <MudIconButton Class="me-2" Color="@(ProjectRow.IsDisabled ? Color.Info : Color.Default)" Icon="@(ProjectRow.IsDisabled ? Icons.Material.Filled.FlashOff : Icons.Material.Filled.FlashOn)" aria-label="disable" Size="Size.Small" OnClick="DeleteProject"></MudIconButton>
+            <MudIconButton Class="me-2" Color="@(ProjectRow.IsDisabled ? Color.Info : Color.Default)" title="@(ProjectRow.IsDisabled ? "Выключен (включить?)" : "Включён (выключить?)")" Icon="@(ProjectRow.IsDisabled ? Icons.Material.Filled.FlashOff : Icons.Material.Filled.FlashOn)" aria-label="disable" Size="Size.Small" OnClick="DeleteProject"></MudIconButton>
             <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Size="Size.Small" title="Редактирование проекта" OnClick="EditProject"></MudIconButton>
         }
     </td>
