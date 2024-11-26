@@ -28,6 +28,12 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     [Parameter]
     public TreeViewOptionsModel? SelectedValuesChanged { get; set; }
 
+    /// <summary>
+    /// Без вложеных узлов
+    /// </summary>
+    [Parameter]
+    public bool SingleLevelMode { get; set; }
+
 
     List<TreeItemDataRubricModel> InitialTreeItems { get; set; } = [];
     void SelectedValuesChangeHandler(IReadOnlyCollection<RubricBaseModel?> SelectedValues)
@@ -52,12 +58,17 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
             else
                 mhp = MoveRowStatesEnum.Between;
 
-                return new TreeItemDataRubricModel(x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : SelectedValuesChanged is null ? Icons.Material.Filled.CropFree : Icons.Custom.Uncategorized.Folder )
-                { 
-                    MoveRowState = mhp, 
-                    Selected = SelectedValuesChanged?.SelectedNodes.Contains(x.Id) == true 
+            TreeItemDataRubricModel _ri = new (x, x.Id == 0 ? Icons.Material.Filled.PlaylistAdd : SelectedValuesChanged is null ? Icons.Material.Filled.CropFree : Icons.Custom.Uncategorized.Folder )
+                {
+                    MoveRowState = mhp,
+                    Selected = SelectedValuesChanged?.SelectedNodes.Contains(x.Id) == true
                 };
-            })];
+
+            if(SingleLevelMode)
+                _ri.Expandable = false;
+
+            return _ri;
+        })];
     }
 
     void ItemUpdAction(RubricBaseModel sender)
@@ -137,6 +148,9 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         TreeItemDataRubricModel findNode = FindNode(parentValue.Id, InitialTreeItems) ?? throw new Exception();
 
         findNode.Children = ConvertRubrics(rubrics)!;
+        //if ()
+        //    findNode.Children.ForEach(r => { r.Expandable = false; });
+
         return findNode.Children;
     }
 

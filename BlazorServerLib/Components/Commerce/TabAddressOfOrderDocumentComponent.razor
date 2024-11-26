@@ -9,17 +9,17 @@
     </CascadingValue>
 </div>
 <MudTable Hover="true"
-          ReadOnly="ReadOnly"
-          SortLabel="@(nameof(RowOfOrderDocumentModelDB.Goods.Name))"
-          CanCancelEdit="true"
-          Items="@CurrentTab.Rows"
-          RowEditPreview="RowEditPreviewHandler"
-          RowEditCommit="RowEditCommitHandler"
-          CancelEditIcon="@Icons.Material.Filled.Cancel"
-          CancelEditTooltip="Отменить изменение"
-          CommitEditTooltip="Сохранить изменения"
-          RowEditCancel="RowEditCancelHandler"
-          EditTrigger="@EditTrigger">
+ReadOnly="ReadOnly"
+SortLabel="@(nameof(RowOfOrderDocumentModelDB.Goods.Name))"
+CanCancelEdit="true"
+Items="@CurrentTab.Rows"
+RowEditPreview="RowEditPreviewHandler"
+RowEditCommit="RowEditCommitHandler"
+CancelEditIcon="@Icons.Material.Filled.Cancel"
+CancelEditTooltip="Отменить изменение"
+CommitEditTooltip="Сохранить изменения"
+RowEditCancel="RowEditCancelHandler"
+EditTrigger="@EditTrigger">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">
@@ -67,13 +67,20 @@
                 @context.Offer.GetName()
             </a>
         </MudTd>
+        @{
+            IQueryable<OfferAvailabilityModelDB> _q = RegistersCache.Where(x => x.OfferId == context.OfferId && x.WarehouseId == CurrentTab.WarehouseId).AsQueryable();
+            decimal _sum = !_q.Any()
+            ? decimal.MaxValue
+            : _q.Sum(x => x.Quantity);
+            bool warningRow = _sum < context!.Quantity;
+        }
         <MudTd DataLabel="Остаток">
-            @(this.RegistersCache.Where(x => x.OfferId == context.OfferId && x.WarehouseId == CurrentTab.WarehouseId).Sum(x => x.Quantity)) @(context.Offer?.OfferUnit.DescriptionInfo())
+            @_sum @(context.Offer?.OfferUnit.DescriptionInfo())
         </MudTd>
         <MudTd DataLabel="Price">
             @context!.Offer!.Price руб. (@($"{Math.Round(context!.Offer!.Price / context!.Offer.Multiplicity, 2)} р/{context.Goods!.BaseUnit.DescriptionInfo().ToLower()}"))
         </MudTd>
-        <MudTd DataLabel="Quantity">
+        <MudTd title="@(warningRow ? "Остатки меньше требуемого" : "")" Class="@(warningRow ? "mud-theme-warning" : "")" DataLabel="Quantity">
             @context!.Quantity
         </MudTd>
         <MudTd DataLabel="Sum">

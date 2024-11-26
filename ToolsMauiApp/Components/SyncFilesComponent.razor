@@ -116,9 +116,12 @@
                     {
                         ToolsFilesResponseModel? _localMd = localScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);
                         ToolsFilesResponseModel? _remoteMd = remoteScan?.Response?.FirstOrDefault(x => x.SafeScopeName == _tfd.SafeScopeName);
+                        string? _localMdSize =
+                        _localMd is null ? "" : GlobalTools.SizeDataAsString(_localMd.Size),
+                        _remoteMdSize = _remoteMd is null ? "" : GlobalTools.SizeDataAsString(_remoteMd.Size);
 
                         <li>
-                            @_tfd.ToString() L[@_localMd?.Size @_localMd?.Hash] R[@(_remoteMd is null ? "новый" : $"{_remoteMd?.Size} {_remoteMd?.Hash}")]
+                            @_tfd.ToString() L[@_localMdSize @_localMd?.Hash] R[@(_remoteMd is null ? "новый" : $"{_remoteMdSize} {_remoteMd?.Hash}")]
                         </li>
                     }
                 </ul>
