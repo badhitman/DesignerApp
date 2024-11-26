@@ -2,14 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DbcLib;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Newtonsoft.Json;
+using MongoDB.Driver;
 using RemoteCallLib;
+using MongoDB.Bson;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.storage;
 
@@ -21,17 +21,17 @@ public class ReadFileReceive(IMongoDatabase mongoFs,
     IHelpdeskRemoteTransmissionService hdRepo,
     IDbContextFactory<StorageContext> cloudParametersDbFactory,
     IWebRemoteTransmissionService webRepo)
-    : IResponseReceive<TAuthRequestModel<RequestFileReadModel>?, StorageFileResponseModel?>
+    : IResponseReceive<TAuthRequestModel<RequestFileReadModel>?, FileContentModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadFileReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<StorageFileResponseModel?>> ResponseHandleAction(TAuthRequestModel<RequestFileReadModel>? req)
+    public async Task<TResponseModel<FileContentModel?>> ResponseHandleAction(TAuthRequestModel<RequestFileReadModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<StorageFileResponseModel?> res = new();
+        TResponseModel<FileContentModel?> res = new();
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         StorageFileModelDB? file_db = await context
             .CloudFiles

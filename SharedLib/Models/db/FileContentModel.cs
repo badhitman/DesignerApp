@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// StorageFileResponseModel
+/// FileContentModel
 /// </summary>
-public class StorageFileResponseModel : StorageFileMiddleModel
+public class FileContentModel : StorageFileMiddleModel
 {
     /// <summary>
     /// Payload

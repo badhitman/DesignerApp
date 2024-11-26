@@ -46,7 +46,7 @@ public partial class ReadCloudFileMiddleware(RequestDelegate next)
         }
         Claim? userId = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
 
-        TResponseModel<StorageFileResponseModel> rest = await storeRepo
+        TResponseModel<FileContentModel> rest = await storeRepo
             .ReadFile(new TAuthRequestModel<RequestFileReadModel>()
             {
                 SenderActionUserId = userId?.Value ?? "",

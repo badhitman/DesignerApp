@@ -110,7 +110,7 @@ builder.ConfigureServices((context, services) =>
     .RegisterMqListener<SaveFileReceive, StorageImageMetadataModel?, StorageFileModelDB?>()
     .RegisterMqListener<TagSetReceive, TagSetModel?, bool?>()
     .RegisterMqListener<SetWebConfigReceive, WebConfigModel?, object?>()
-    .RegisterMqListener<ReadFileReceive, TAuthRequestModel<RequestFileReadModel>?, StorageFileResponseModel?>()
+    .RegisterMqListener<ReadFileReceive, TAuthRequestModel<RequestFileReadModel>?, FileContentModel?>()
     .RegisterMqListener<TagsSelectReceive, TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<TagModelDB>?>()
     .RegisterMqListener<FilesAreaGetMetadataReceive, FilesAreaMetadataRequestModel?, FilesAreaMetadataModel[]?>()
     .RegisterMqListener<FilesSelectReceive, TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<StorageFileModelDB>?>()

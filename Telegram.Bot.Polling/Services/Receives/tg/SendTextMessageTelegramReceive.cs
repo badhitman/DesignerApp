@@ -69,7 +69,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
             {
                 if (message.Files.Count == 1)
                 {
-                    FileAttachTelegramModel file = message.Files[0];
+                    FileAttachModel file = message.Files[0];
 
                     if (GlobalTools.IsImageFile(file.Name))
                     {

@@ -142,9 +142,9 @@ public class TelegramMessageIncomingReceive(
         return res;
     }
 
-    async Task<List<FileAttachTelegramModel>?> Files(TelegramIncomingMessageModel req)
+    async Task<List<FileAttachModel>?> Files(TelegramIncomingMessageModel req)
     {
-        List<FileAttachTelegramModel> files = [];
+        List<FileAttachModel> files = [];
         TResponseModel<byte[]?> data_res;
         //
         if (req.Audio is not null)

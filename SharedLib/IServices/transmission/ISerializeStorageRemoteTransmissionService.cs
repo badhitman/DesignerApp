@@ -32,7 +32,7 @@ public interface ISerializeStorageRemoteTransmissionService
     /// <summary>
     /// ReadFile
     /// </summary>
-    public Task<TResponseModel<StorageFileResponseModel>> ReadFile(TAuthRequestModel<RequestFileReadModel>? req);
+    public Task<TResponseModel<FileContentModel>> ReadFile(TAuthRequestModel<RequestFileReadModel>? req);
 
     /// <summary>
     /// Сохранить файл

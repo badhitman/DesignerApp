@@ -48,5 +48,5 @@ public class SendTextMessageTelegramBotModel
     /// <summary>
     /// Data
     /// </summary>
-    public List<FileAttachTelegramModel>? Files { get; set; }
+    public List<FileAttachModel>? Files { get; set; }
 }
