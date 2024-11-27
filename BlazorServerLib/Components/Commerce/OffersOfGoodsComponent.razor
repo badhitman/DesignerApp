@@ -43,30 +43,16 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Goods">
-                @if (CurrentUserSession!.IsAdmin)
-                {
-                    <a href="/goods/offer-card/@context.Id">@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</a>
-                }
-                else
-                {
-                    <span>@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</span>
-                }
+                <span>@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</span>
             </MudTd>
-
             <MudTd DataLabel="Name">
-                @context.Name
-                <sup>@context.QuantitiesTemplate</sup>
-            </MudTd>
-
-            <MudTd DataLabel="Name">
-                @context.Name
+                <a href="/goods/offer-card/@context.Id">@context.Name</a>
                 <AuthorizeView Context="col" Roles="@($"{GlobalStaticConstants.Roles.Admin}")">
                     <Authorized>
-                        <sup>@context.QuantitiesTemplate</sup>
+                        <sup class="text-secondary-emphasis">@context.QuantitiesTemplate</sup>
                     </Authorized>
                 </AuthorizeView>
             </MudTd>
-
             <MudTd DataLabel="Price">
                 @($"{context.Price}{(HideWorth ? "" : $"/{Math.Round(context.Price / context.Multiplicity, 2)}")}")
                 @if (CurrentUserSession!.IsAdmin)
