@@ -10,9 +10,11 @@
 
 <MudPaper Class="pa-4 mt-3 position-relative">
     <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.Admin}")">
-        <span title="Настройка отображения" @onclick="CancelChangeConfig" style="cursor:pointer;" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bi bi-gear-fill">
-            <span class="visually-hidden">view config</span>
-        </span>
+        <Authorized>
+            <span title="Настройка отображения" @onclick="CancelChangeConfig" style="cursor:pointer;" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bi bi-gear-fill">
+                <span class="visually-hidden">view config</span>
+            </span>
+        </Authorized>
     </AuthorizeView>
     <MudStack Spacing="2">
         @if (CurrentUserSession!.IsAdmin)
@@ -50,7 +52,21 @@
                     <span>@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</span>
                 }
             </MudTd>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
+
+            <MudTd DataLabel="Name">
+                @context.Name
+                <sup>@context.QuantitiesTemplate</sup>
+            </MudTd>
+
+            <MudTd DataLabel="Name">
+                @context.Name
+                <AuthorizeView Context="col" Roles="@($"{GlobalStaticConstants.Roles.Admin}")">
+                    <Authorized>
+                        <sup>@context.QuantitiesTemplate</sup>
+                    </Authorized>
+                </AuthorizeView>
+            </MudTd>
+
             <MudTd DataLabel="Price">
                 @($"{context.Price}{(HideWorth ? "" : $"/{Math.Round(context.Price / context.Multiplicity, 2)}")}")
                 @if (CurrentUserSession!.IsAdmin)

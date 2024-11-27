@@ -34,7 +34,10 @@ public class GetUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> i
         }
         string[] find_users_ids = [.. users_ids.Where(x => x != GlobalStaticConstants.Roles.System)];
         if (find_users_ids.Length == 0)
+        {
+            res.Response = [.. users_ids.Select(x => UserInfoModel.BuildSystem())];
             return res;
+        }
 
         string mem_token = $"{QueueName}-identity/{string.Join(",", find_users_ids)}";
         if (cache.TryGetValue(mem_token, out UserInfoModel[]? users_cache))

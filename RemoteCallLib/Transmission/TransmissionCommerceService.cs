@@ -117,5 +117,9 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
 
     /// <inheritdoc/>
     public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssues(OrdersByIssuesSelectRequestModel req)
-        => await rabbitClient.MqRemoteCall<OrderDocumentModelDB[]>(GlobalStaticConstants.TransmissionQueues.OrdersByIssuesGetReceive, req);    
+        => await rabbitClient.MqRemoteCall<OrderDocumentModelDB[]>(GlobalStaticConstants.TransmissionQueues.OrdersByIssuesGetReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<FileAttachModel>> OrderReportGet(TAuthRequestModel<int> req)
+        => await rabbitClient.MqRemoteCall<FileAttachModel>(GlobalStaticConstants.TransmissionQueues.OrderReportGetCommerceReceive, req);
 }

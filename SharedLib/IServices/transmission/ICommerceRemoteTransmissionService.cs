@@ -10,7 +10,12 @@ namespace SharedLib;
 public partial interface ICommerceRemoteTransmissionService
 {
     /// <summary>
-    /// StatusOrderChange
+    /// Order report get
+    /// </summary>
+    public Task<TResponseModel<FileAttachModel>> OrderReportGet(TAuthRequestModel<int> req);
+
+    /// <summary>
+    /// Status order change
     /// </summary>
     public Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel id);
 

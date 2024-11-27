@@ -54,7 +54,4 @@ else
 {
     <MudButton Class="mt-3" OnClick="OrderNull" Variant="Variant.Outlined" Color="Color.Secondary" FullWidth="true">Отмена заказа</MudButton>
 }
-@if (IsBusyProgress)
-{
-    <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="my-7" />
-}
+<MudButton Class="mt-3" OnClick="OrderReport" Variant="Variant.Filled" Color="Color.Default" FullWidth="true">Скачать заказ</MudButton>

@@ -46,6 +46,26 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
     bool ShowingAttachmentsOrderArea;
     List<RubricIssueHelpdeskModelDB> currentWarehouses = default!;
 
+    async Task OrderReport()
+    {
+        ArgumentNullException.ThrowIfNull(CurrentUserSession);
+        TAuthRequestModel<int> req = new()
+        {
+            Payload = Document.Id,
+            SenderActionUserId = CurrentUserSession.UserId
+        };
+        await SetBusy();
+        TResponseModel<FileAttachModel> res = await CommRepo.OrderReportGet(req);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        await SetBusy(false);
+        if (res.Success() && res.Response is not null && res.Response.Data.Length != 0)
+        {
+            using MemoryStream ms = new(res.Response.Data);
+            using DotNetStreamReference streamRef = new(stream: ms);
+            await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", res.Response.Name, streamRef);
+        }
+    }
+
     async Task OrderToCart()
     {
         OrderDocumentModelDB doc = GlobalTools.CreateDeepCopy(Document)!;

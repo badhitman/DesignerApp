@@ -8,6 +8,14 @@ using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
 using Microsoft.EntityFrameworkCore.Storage;
+using HtmlGenerator.html5.tables;
+using HtmlGenerator.html5.window;
+using PdfSharp.Pdf;
+using PdfSharp;
+using TheArtOfDev.HtmlRenderer.PdfSharp;
+using HtmlGenerator.html5.areas;
+using HtmlGenerator.html5.textual;
+using System.Text;
 
 namespace CommerceService;
 
@@ -70,6 +78,8 @@ public partial class CommerceImplementService(
             .Where(x => req.Any(y => x.Id == y));
 
         res.Response = await q
+            .Include(x => x.AddressesTabs!)
+            .ThenInclude(x => x.AddressOrganization)
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
@@ -806,6 +816,105 @@ public partial class CommerceImplementService(
         await Task.WhenAll(_tasks);
         await transaction.CommitAsync();
         res.AddSuccess("Запрос смены статуса заказа выполнен успешно");
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<FileAttachModel>> GetOrderReportFile(TAuthRequestModel<int> req)
+    {
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        TResponseModel<UserInfoModel[]?> rest = default!;
+        TResponseModel<OrderDocumentModelDB[]> orderData = default!;
+        List<Task> _taskList = [
+            Task.Run(async () => { rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]); }),
+            Task.Run(async () => { orderData = await OrdersRead([req.Payload]); })];
+
+        await Task.WhenAll(_taskList);
+
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+            return new() { Messages = rest.Messages };
+
+        TResponseModel<FileAttachModel> res = new();
+        if (!orderData.Success() || orderData.Response is null || orderData.Response.Length != 1)
+        {
+            res.AddRangeMessages(orderData.Messages);
+            return res;
+        }
+
+        OrderDocumentModelDB orderDb = orderData.Response[0];
+        UserInfoModel actor = rest.Response[0];
+        bool allowed = actor.IsAdmin || orderDb.AuthorIdentityUserId == actor.UserId || actor.UserId == GlobalStaticConstants.Roles.System;
+        if (!allowed && orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
+        {
+            TResponseModel<IssueHelpdeskModelDB[]> issueData = await hdRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
+            {
+                SenderActionUserId = req.SenderActionUserId,
+                Payload = new()
+                {
+                    IssuesIds = [orderDb.HelpdeskId.Value],
+                    IncludeSubscribersOnly = true,
+                }
+            });
+            if (!issueData.Success() || issueData.Response is null || issueData.Response.Length != 1)
+            {
+                res.AddRangeMessages(issueData.Messages);
+                return res;
+            }
+            IssueHelpdeskModelDB issueDb = issueData.Response[0];
+            if (actor.UserId != issueDb.AuthorIdentityUserId && actor.UserId != issueDb.ExecutorIdentityUserId && !issueDb.Subscribers!.Any(s => s.UserId == actor.UserId))
+            {
+                res.AddError("У вас не доступа к этому документу");
+                return res;
+            }
+        }
+        else if (!allowed)
+        {
+            res.AddError("У вас не доступа к этому документу");
+            return res;
+        }
+
+        string docName = $"Заказ #{orderDb.Id} '{orderDb.Name}'";
+        div wrapDiv = new();
+        wrapDiv.AddDomNode(new p(docName));
+
+        orderDb.AddressesTabs!.ForEach(aNode =>
+        {
+            div addressDiv = new();
+            addressDiv.AddDomNode(new p($"Адрес: `{aNode.AddressOrganization?.Name}`"));
+
+            table my_table = new() { css_style = "border: 1px solid black; width: 100%; border-collapse: collapse;" };
+            my_table.THead.AddColumn("Наименование").AddColumn("Цена").AddColumn("Кол-во").AddColumn("Сумма");
+
+            aNode.Rows?.ForEach(dr =>
+            {
+                my_table.TBody.AddRow([dr.Offer!.GetName(), dr.Offer.Price.ToString(), dr.Quantity.ToString(), dr.Amount.ToString()]);
+            });
+
+            addressDiv.AddDomNode(my_table);
+            wrapDiv.AddDomNode(addressDiv);
+        });
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        string test_s = $"<style>table, th, td {{border: 1px solid black;border-collapse: collapse;}}</style>{wrapDiv.GetHTML()}";
+        PdfDocument pdf = PdfGenerator.GeneratePdf(test_s, PageSize.A4);
+        pdf.AddPage();
+        using MemoryStream ms = new();
+
+        try
+        {
+            pdf.Save(ms);
+        }
+        catch (Exception ex)
+        {
+            loggerRepo.LogError(ex, "Ошибка создания PDF");
+        }
+
+        res.Response = new()
+        {
+            Data = ms.ToArray(),
+            ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("pdf")).Key,
+            Name = $"{docName}.pdf",
+        };
         return res;
     }
 }

@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// FileAttachTelegramModel
+/// FileAttachModel
 /// </summary>
 public class FileAttachModel
 {

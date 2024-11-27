@@ -7,6 +7,7 @@
 - WEB-Конструктор схем данных (формы, документы).
 - Интерфейс rest API (swagger) для внешних информационных систем (план обмена для [commerce](https://github.com/badhitman/DesignerApp/blob/main/CommerceService/INTEGRATION.md)).
 - ui пакеты: [MudBlazor 7](https://github.com/MudBlazor/MudBlazor/) и два WYSIWYG: [CKEditor](https://ckeditor.com/) и [TinyMCE](https://www.tiny.cloud). Важно: **CKEditor** не поддерживает вставку картинок, а **TinyMCE** имеет такую поддержу (в т.ч. локальное хранение файлов в MongoDB)
+- Win/Android [клиент доступа к Rest/Api](https://github.com/badhitman/DesignerApp?tab=readme-ov-file#tools-maui-app)
 
 Зависимости решения между проектами (в формате [Mermaid](https://mermaid.js.org)):
 

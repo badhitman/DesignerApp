@@ -10,6 +10,11 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
+    /// Get order report file
+    /// </summary>
+    public Task<TResponseModel<FileAttachModel>> GetOrderReportFile(TAuthRequestModel<int> req);
+
+    /// <summary>
     /// Смена статуса заказу
     /// </summary>
     public Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel req);
