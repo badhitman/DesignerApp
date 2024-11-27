@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
@@ -17,6 +18,10 @@
 		<PackageReference Include="StackExchange.Redis" Version="2.8.16" />
 		<ProjectReference Include="..\..\HtmlGenerator\HtmlGenerator.csproj" />
 	</ItemGroup>
+	<Target Name="CopyFilesAfterPublish" AfterTargets="AfterPublish">
+		<Copy SourceFiles="$(TargetDir)runtimes/linux-x64/native/libSkiaSharp.so" DestinationFolder="$([System.IO.Path]::GetFullPath('$(PublishDir)'))/bin/" />
+		<Copy SourceFiles="$(TargetDir)runtimes/linux-x64/native/libHarfBuzzSharp.so" DestinationFolder="$([System.IO.Path]::GetFullPath('$(PublishDir)'))/bin/" />
+	</Target>
 	<ItemGroup>
 		<ProjectReference Include="..\SharedLib\SharedLib.csproj" />
 	</ItemGroup>

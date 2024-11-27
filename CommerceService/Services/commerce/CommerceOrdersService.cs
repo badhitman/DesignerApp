@@ -12,7 +12,10 @@ using HtmlGenerator.html5.tables;
 using HtmlGenerator.html5.areas;
 using HtmlGenerator.html5.textual;
 using System.Text;
-using System.IO;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using HtmlAgilityPack;
 
 namespace CommerceService;
 
@@ -871,44 +874,236 @@ public partial class CommerceImplementService(
             return res;
         }
 
+
+
+
+
         string docName = $"Заказ {orderDb.Name} от {orderDb.CreatedAtUTC.GetHumanDateTime()}";
-        div wrapDiv = new();
-        wrapDiv.AddDomNode(new p(docName));
+        //div wrapDiv = new();
+        //wrapDiv.AddDomNode(new p(docName));
 
-        orderDb.AddressesTabs!.ForEach(aNode =>
-        {
-            div addressDiv = new();
-            addressDiv.AddDomNode(new p($"Адрес: `{aNode.AddressOrganization?.Name}`"));
+        //orderDb.AddressesTabs!.ForEach(aNode =>
+        //{
+        //    div addressDiv = new();
+        //    addressDiv.AddDomNode(new p($"Адрес: `{aNode.AddressOrganization?.Name}`"));
 
-            table my_table = new() { css_style = "border: 1px solid black; width: 100%; border-collapse: collapse;" };
-            my_table.THead.AddColumn("Наименование").AddColumn("Цена").AddColumn("Кол-во").AddColumn("Сумма");
+        //    table my_table = new() { css_style = "border: 1px solid black; width: 100%; border-collapse: collapse;" };
+        //    my_table.THead.AddColumn("Наименование").AddColumn("Цена").AddColumn("Кол-во").AddColumn("Сумма");
 
-            aNode.Rows?.ForEach(dr =>
-            {
-                my_table.TBody.AddRow([dr.Offer!.GetName(), dr.Offer.Price.ToString(), dr.Quantity.ToString(), dr.Amount.ToString()]);
-            });
-            addressDiv.AddDomNode(my_table);
-            addressDiv.AddDomNode(new p($"Итого: {aNode.Rows!.Sum(x => x.Amount)}") { css_style = "float: right;" });
-            wrapDiv.AddDomNode(addressDiv);
-        });
+        //    aNode.Rows?.ForEach(dr =>
+        //    {
+        //        my_table.TBody.AddRow([dr.Offer!.GetName(), dr.Offer.Price.ToString(), dr.Quantity.ToString(), dr.Amount.ToString()]);
+        //    });
+        //    addressDiv.AddDomNode(my_table);
+        //    addressDiv.AddDomNode(new p($"Итого: {aNode.Rows!.Sum(x => x.Amount)}") { css_style = "float: right;" });
+        //    wrapDiv.AddDomNode(addressDiv);
+        //});
 
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        string test_s = $"<style>table, th, td {{border: 1px solid black;border-collapse: collapse;}}</style>{wrapDiv.GetHTML()}";
+        //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        //string test_s = $"<style>table, th, td {{border: 1px solid black;border-collapse: collapse;}}</style>{wrapDiv.GetHTML()}";
 
-        using MemoryStream ms = new();
-
-        var writer = new StreamWriter(ms);
-        writer.Write(test_s);
-        writer.Flush();
-        ms.Position = 0;
+        //using MemoryStream ms = new();
+        //StreamWriter writer = new(ms);
+        //writer.Write(test_s);
+        //writer.Flush();
+        //ms.Position = 0;
 
         res.Response = new()
         {
-            Data = ms.ToArray(),
-            ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("pdf")).Key,
-            Name = $"{docName.Replace(":", "-").Replace(" ", "_")}.html",
+            Data = SaveAsExcel(orderDb),
+            ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("xlsx")).Key,
+            Name = $"{docName.Replace(":", "-").Replace(" ", "_")}.xlsx",
         };
         return res;
+    }
+
+
+    byte[] SaveAsExcel(OrderDocumentModelDB orderDb)
+    {
+        string docName = $"Заказ {orderDb.Name} от {orderDb.CreatedAtUTC.GetHumanDateTime()}";
+        using MemoryStream XLSStream = new();
+        SpreadsheetDocument document = SpreadsheetDocument.Create(XLSStream, SpreadsheetDocumentType.Workbook);
+        WorkbookPart workbookPart = document.AddWorkbookPart();
+        workbookPart.Workbook = new Workbook();
+        WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+
+        worksheetPart.Worksheet = new Worksheet(new SheetData());
+        WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
+
+        wbsp.Stylesheet = GenerateStyleSheet();
+        wbsp.Stylesheet.Save();
+
+        Columns lstColumns = worksheetPart.Worksheet.GetFirstChild<Columns>()!;
+        bool needToInsertColumns = false;
+        if (lstColumns == null)
+        {
+            lstColumns = new Columns();
+            needToInsertColumns = true;
+        }
+        //
+        lstColumns.Append(new Column() { Min = 1, Max = 1, Width = 100, CustomWidth = true, BestFit=true, });
+        lstColumns.Append(new Column() { Min = 2, Max = 2, Width = 8, CustomWidth = true, BestFit = true, });
+        lstColumns.Append(new Column() { Min = 3, Max = 3, Width = 8, CustomWidth = true, BestFit = true, });
+        lstColumns.Append(new Column() { Min = 4, Max = 4, Width = 15, CustomWidth = true, BestFit = true, });
+
+        if (needToInsertColumns)
+            worksheetPart.Worksheet.InsertAt(lstColumns, 0);
+
+        Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
+
+        orderDb.AddressesTabs!.ForEach(aNode =>
+        {
+            Sheet sheet = new()
+            {
+                Id = workbookPart.GetIdOfPart(worksheetPart),
+                SheetId = 1,
+                Name = aNode.AddressOrganization?.Name,
+            };
+
+            sheets.Append(sheet);
+            SheetData sheetData = (SheetData)worksheetPart.Worksheet.ChildElements.Where(x => x is SheetData).Last();
+
+            Row row = new() { RowIndex = 1 };
+            sheetData!.Append(row);
+
+            InsertCell(row, 1, "Наименование", CellValues.String, 1);
+            InsertCell(row, 2, "Цена", CellValues.String, 1);
+            InsertCell(row, 3, "Кол-во", CellValues.String, 1);
+            InsertCell(row, 4, "Сумма", CellValues.String, 1);
+
+            uint row_index = 2;
+            aNode.Rows?.ForEach(dr =>
+           {
+               row = new Row() { RowIndex = row_index++ };
+               sheetData.Append(row);
+
+               InsertCell(row, 1, dr.Offer!.GetName(), CellValues.String, 0);
+               InsertCell(row, 2, dr.Offer.Price.ToString(), CellValues.String, 0);
+               InsertCell(row, 3, dr.Quantity.ToString(), CellValues.String, 0);
+               InsertCell(row, 4, dr.Amount.ToString(), CellValues.String, 0);
+           });
+            row = new Row() { RowIndex = row_index++ };
+            sheetData.Append(row);
+            InsertCell(row, 1, "", CellValues.String, 0);
+            InsertCell(row, 2, "", CellValues.String, 0);
+            InsertCell(row, 3, "Итого:", CellValues.String, 0);
+            InsertCell(row, 4, aNode.Rows!.Sum(x => x.Amount).ToString(), CellValues.String, 0);
+        });
+
+        workbookPart.Workbook.Save();
+        document.Save();
+        //string fileName = $"{docName.Replace(":", "-").Replace(" ", "_")}-{DateTime.Now}.xlsx"; //$"{Regex.Replace(sheet.Name.ToString()?.Trim() ?? "error {6A1E2B61-277C-4B8C-94BD-D1B8EC6169AD}", @"\s", "_")}-{DateTime.Now}.xlsx";
+        XLSStream.Position = 0;
+        return XLSStream.ToArray();
+    }
+
+
+    static Stylesheet GenerateStyleSheet()
+    {
+        return new Stylesheet(
+            new Fonts(
+                new Font(                                                               // Стиль под номером 0 - Шрифт по умолчанию.
+                    new FontSize() { Val = 11 },
+                    new Color() { Rgb = new HexBinaryValue() { Value = "000000" } },
+                    new FontName() { Val = "Calibri" }),
+                new Font(                                                               // Стиль под номером 1 - Жирный шрифт Times New Roman.
+                    new Bold(),
+                    new FontSize() { Val = 11 },
+                    new Color() { Rgb = new HexBinaryValue() { Value = "000000" } },
+                    new FontName() { Val = "Times New Roman" }),
+                new Font(                                                               // Стиль под номером 2 - Обычный шрифт Times New Roman.
+                    new FontSize() { Val = 11 },
+                    new Color() { Rgb = new HexBinaryValue() { Value = "000000" } },
+                    new FontName() { Val = "Times New Roman" }),
+                new Font(                                                               // Стиль под номером 3 - Шрифт Times New Roman размером 14.
+                    new FontSize() { Val = 14 },
+                    new Color() { Rgb = new HexBinaryValue() { Value = "000000" } },
+        new FontName() { Val = "Times New Roman" })
+        ),
+        new Fills(
+                new Fill(                                                           // Стиль под номером 0 - Заполнение ячейки по умолчанию.
+        new PatternFill() { PatternType = PatternValues.None }),
+                new Fill(                                                           // Стиль под номером 1 - Заполнение ячейки серым цветом
+                    new PatternFill(
+                        new ForegroundColor() { Rgb = new HexBinaryValue() { Value = "FFAAAAAA" } }
+        )
+                    { PatternType = PatternValues.Solid }),
+        new Fill(                                                           // Стиль под номером 2 - Заполнение ячейки красным.
+                    new PatternFill(
+                        new ForegroundColor() { Rgb = new HexBinaryValue() { Value = "FFEFEFEF" } }
+                    )
+                    { PatternType = PatternValues.Solid })
+            )
+            ,
+            new Borders(
+                new Border(                                                         // Стиль под номером 0 - Грани.
+                    new LeftBorder(),
+                    new RightBorder(),
+                    new TopBorder(),
+                    new BottomBorder(),
+                    new DiagonalBorder()),
+                new Border(                                                         // Стиль под номером 1 - Грани
+                    new LeftBorder(
+                        new Color() { Auto = true }
+                    )
+                    { Style = BorderStyleValues.Medium },
+                    new RightBorder(
+                        new Color() { Indexed = (UInt32Value)64U }
+                    )
+                    { Style = BorderStyleValues.Medium },
+                    new TopBorder(
+                        new Color() { Auto = true }
+                    )
+                    { Style = BorderStyleValues.Medium },
+                    new BottomBorder(
+                        new Color() { Indexed = (UInt32Value)64U }
+                    )
+                    { Style = BorderStyleValues.Medium },
+                    new DiagonalBorder()),
+                new Border(                                                         // Стиль под номером 2 - Грани.
+                    new LeftBorder(
+                        new Color() { Auto = true }
+                    )
+                    { Style = BorderStyleValues.Thin },
+                    new RightBorder(
+                        new Color() { Indexed = (UInt32Value)64U }
+                    )
+                    { Style = BorderStyleValues.Thin },
+                    new TopBorder(
+                        new Color() { Auto = true }
+                    )
+                    { Style = BorderStyleValues.Thin },
+                    new BottomBorder(
+                        new Color() { Indexed = (UInt32Value)64U }
+                    )
+                    { Style = BorderStyleValues.Thin },
+                    new DiagonalBorder())
+            ),
+            new CellFormats(
+                new CellFormat() { FontId = 0, FillId = 0, BorderId = 0 },                          // Стиль под номером 0 - The default cell style.  (по умолчанию)
+                new CellFormat(new Alignment() { Horizontal = HorizontalAlignmentValues.Center, Vertical = VerticalAlignmentValues.Center, WrapText = true }) { FontId = 1, FillId = 2, BorderId = 1, ApplyFont = true },       // Стиль под номером 1 - Bold 
+                new CellFormat(new Alignment() { Horizontal = HorizontalAlignmentValues.Center, Vertical = VerticalAlignmentValues.Center, WrapText = true }) { FontId = 2, FillId = 0, BorderId = 2, ApplyFont = true },       // Стиль под номером 2 - REgular
+                new CellFormat() { FontId = 3, FillId = 0, BorderId = 2, ApplyFont = true, NumberFormatId = 4 },       // Стиль под номером 3 - Times Roman
+                new CellFormat() { FontId = 0, FillId = 2, BorderId = 0, ApplyFill = true },       // Стиль под номером 4 - Yellow Fill
+                new CellFormat(                                                                   // Стиль под номером 5 - Alignment
+                    new Alignment() { Horizontal = HorizontalAlignmentValues.Center, Vertical = VerticalAlignmentValues.Center }
+                )
+                { FontId = 0, FillId = 0, BorderId = 0, ApplyAlignment = true },
+                new CellFormat() { FontId = 0, FillId = 0, BorderId = 1, ApplyBorder = true },      // Стиль под номером 6 - Border
+                new CellFormat(new Alignment() { Horizontal = HorizontalAlignmentValues.Right, Vertical = VerticalAlignmentValues.Center, WrapText = true }) { FontId = 2, FillId = 0, BorderId = 2, ApplyFont = true, NumberFormatId = 4 }       // Стиль под номером 7 - Задает числовой формат полю.
+            )
+        );
+    }
+
+    static void InsertCell(Row row, int cell_num, string val, CellValues type, uint styleIndex)
+    {
+        Cell? refCell = null;
+        Cell newCell = new() { CellReference = cell_num.ToString() + ":" + row.RowIndex?.ToString(), StyleIndex = styleIndex };
+        row.InsertBefore(newCell, refCell);
+
+        newCell.CellValue = new CellValue(val);
+        newCell.DataType = new EnumValue<CellValues>(type);
+
     }
 }
 

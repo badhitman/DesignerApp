@@ -435,6 +435,7 @@ public static partial class GlobalTools
         {"application/postscript", new[]{"ps", "eps", "ai"}},
         {"application/rtf", new[]{"rtf"}},
         {"application/vnd.ms-excel", new[]{"xls"}},
+        {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", new[]{"xlsx"}},
         {"application/vnd.ms-powerpoint", new[]{"ppt"}},
         {"application/vnd.wap.wmlc", new[]{"wmlc"}},
         {"application/vnd.google-earth.kml+xml", new[]{"kml"}},
