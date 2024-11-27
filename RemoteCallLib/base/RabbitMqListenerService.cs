@@ -111,7 +111,7 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
             {
                 result_handler = new();
                 result_handler.Messages.InjectException(ex);
-                LoggerRepo.LogError(ex, $"Ошибка выполнения удалённой команды");
+                LoggerRepo.LogError(ex, $"Ошибка выполнения удалённой команды: {QueueName}");
             }
 
             if (!string.IsNullOrWhiteSpace(ea.BasicProperties.ReplyTo))

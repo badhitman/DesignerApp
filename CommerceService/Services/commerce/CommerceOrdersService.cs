@@ -9,13 +9,10 @@ using SharedLib;
 using DbcLib;
 using Microsoft.EntityFrameworkCore.Storage;
 using HtmlGenerator.html5.tables;
-using HtmlGenerator.html5.window;
-using PdfSharp.Pdf;
-using PdfSharp;
-using TheArtOfDev.HtmlRenderer.PdfSharp;
 using HtmlGenerator.html5.areas;
 using HtmlGenerator.html5.textual;
 using System.Text;
+using System.IO;
 
 namespace CommerceService;
 
@@ -874,7 +871,7 @@ public partial class CommerceImplementService(
             return res;
         }
 
-        string docName = $"Заказ #{orderDb.Id} '{orderDb.Name}'";
+        string docName = $"Заказ {orderDb.Name} от {orderDb.CreatedAtUTC.GetHumanDateTime()}";
         div wrapDiv = new();
         wrapDiv.AddDomNode(new p(docName));
 
@@ -890,30 +887,26 @@ public partial class CommerceImplementService(
             {
                 my_table.TBody.AddRow([dr.Offer!.GetName(), dr.Offer.Price.ToString(), dr.Quantity.ToString(), dr.Amount.ToString()]);
             });
-
             addressDiv.AddDomNode(my_table);
+            addressDiv.AddDomNode(new p($"Итого: {aNode.Rows!.Sum(x => x.Amount)}") { css_style = "float: right;" });
             wrapDiv.AddDomNode(addressDiv);
         });
+
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         string test_s = $"<style>table, th, td {{border: 1px solid black;border-collapse: collapse;}}</style>{wrapDiv.GetHTML()}";
-        PdfDocument pdf = PdfGenerator.GeneratePdf(test_s, PageSize.A4);
-        pdf.AddPage();
+
         using MemoryStream ms = new();
 
-        try
-        {
-            pdf.Save(ms);
-        }
-        catch (Exception ex)
-        {
-            loggerRepo.LogError(ex, "Ошибка создания PDF");
-        }
+        var writer = new StreamWriter(ms);
+        writer.Write(test_s);
+        writer.Flush();
+        ms.Position = 0;
 
         res.Response = new()
         {
             Data = ms.ToArray(),
             ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("pdf")).Key,
-            Name = $"{docName}.pdf",
+            Name = $"{docName.Replace(":", "-").Replace(" ", "_")}.html",
         };
         return res;
     }
