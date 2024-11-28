@@ -11,12 +11,12 @@ namespace SharedLib;
 public class StorageFileModelDB : StorageFileMiddleModel
 {
     /// <summary>
-    /// ToUpper
+    /// Нормализованное название (UPPER CASE)
     /// </summary>
     public string? NormalizedFileNameUpper { get; set; }
 
     /// <summary>
-    /// FileLength
+    /// Размер файла
     /// </summary>
     public long FileLength { get; set; }
 
@@ -31,7 +31,7 @@ public class StorageFileModelDB : StorageFileMiddleModel
     public string? ReferrerMain { get; set; }
 
     /// <summary>
-    /// AccessRules
+    /// Правила доступа к файлу
     /// </summary>
     public List<AccessFileRuleModelDB>? AccessRules { get; set; }
 }

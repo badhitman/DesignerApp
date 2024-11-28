@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IO.Compression;
 using System.Text;
 using SharedLib;
 
@@ -18,7 +17,7 @@ namespace ApiRestService.Controllers;
 public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
 {
     /// <summary>
-    /// GetDirectory
+    /// Выполнить команду shell/cmd
     /// </summary>
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
@@ -41,7 +40,7 @@ public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
     }
 
     /// <summary>
-    /// GetDirectory
+    /// Получить список файлов из директории
     /// </summary>
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
@@ -51,7 +50,7 @@ public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
         => toolsRepo.GetDirectory(req);
 
     /// <summary>
-    /// AttachmentForOrder
+    /// Обновить файл (или создать если его не существует)
     /// </summary>
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
@@ -77,7 +76,7 @@ public class ToolsController(IToolsSystemService toolsRepo) : ControllerBase
     }
 
     /// <summary>
-    /// AttachmentForOrder
+    /// Удалить файл
     /// </summary>
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>

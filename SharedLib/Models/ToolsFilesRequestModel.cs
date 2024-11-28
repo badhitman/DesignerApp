@@ -5,22 +5,17 @@
 namespace SharedLib;
 
 /// <summary>
-/// ToolsFilesRequestModel
+/// Запрос метаданных файлов из директории
 /// </summary>
 public class ToolsFilesRequestModel
 {
     /// <summary>
-    /// RemoteDirectory
+    /// Удалённая директория из которой запрашиваем данные
     /// </summary>
     public required string RemoteDirectory { get; set; }
 
     /// <summary>
-    /// CalculationVersion
-    /// </summary>
-    public bool CalculationVersion { get; set; }
-
-    /// <summary>
-    /// CalculationHash
+    /// Рассчитывать MD5 хеш файла
     /// </summary>
     public bool CalculationHash { get; set; }
 }

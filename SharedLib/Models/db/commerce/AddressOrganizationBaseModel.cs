@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// Адрес организации
+/// Адрес организации (базовая модель)
 /// </summary>
 public class AddressOrganizationBaseModel : EntryModel
 {

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// StorageFileMiddleModel
+/// Хранимый файл (локальное хранилище)
 /// </summary>
 [Index(nameof(PointId)), Index(nameof(AuthorIdentityId)), Index(nameof(FileName))]
 public class StorageFileMiddleModel : StorageBaseModelDB

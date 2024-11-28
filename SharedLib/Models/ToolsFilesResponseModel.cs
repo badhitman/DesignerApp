@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// ToolsFilesResponseModel
+/// Метаданные файла
 /// </summary>
 public class ToolsFilesResponseModel
 {

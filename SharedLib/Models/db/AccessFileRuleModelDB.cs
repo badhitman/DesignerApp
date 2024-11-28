@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// AccessFileRuleModelDB
+/// Правило доступа к файлу
 /// </summary>
 public class AccessFileRuleModelDB
 {

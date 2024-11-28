@@ -4,7 +4,9 @@
 
 namespace SharedLib;
 
-/// <inheritdoc/>
+/// <summary>
+/// Адрес организации
+/// </summary>
 public class AddressOrganizationModelDB : AddressOrganizationBaseModel
 {
     /// <summary>
