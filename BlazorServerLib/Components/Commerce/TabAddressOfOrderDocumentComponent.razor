@@ -102,7 +102,7 @@ EditTrigger="@EditTrigger">
             @{
                 var _alowedValues = context.Offer?.QuantitiesValues;
             }
-            @if (_alowedValues is null || _alowedValues.Count == 0 && !ForceAdding)
+            @if (_alowedValues is null || _alowedValues.Count == 0 || ForceAdding)
             {
                 <MudNumericField @bind-Value="context!.Quantity" Required Min="1" Max="GetMaxValue(context)" />
             }
