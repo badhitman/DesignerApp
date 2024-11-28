@@ -943,6 +943,12 @@ public partial class CommerceImplementService(
         wBookPart.Workbook = new Workbook();
         uint sheetId = 1;
         WorkbookPart workbookPart = spreadsheetDoc.WorkbookPart ?? spreadsheetDoc.AddWorkbookPart();
+
+        WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
+
+        wbsp.Stylesheet = GenerateStyleSheet();
+        wbsp.Stylesheet.Save();
+
         workbookPart.Workbook.Sheets = new Sheets();
 
         Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? workbookPart.Workbook.AppendChild(new Sheets());
@@ -971,11 +977,6 @@ public partial class CommerceImplementService(
 
             if (needToInsertColumns)
                 wSheetPart.Worksheet.InsertAt(lstColumns, 0);
-
-            WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
-
-            wbsp.Stylesheet = GenerateStyleSheet();
-            wbsp.Stylesheet.Save();
 
             Row topRow = new() { RowIndex = 2 };
             InsertCell(topRow, 1, $"Адрес доставки: {table.AddressOrganization?.Address}", CellValues.String, 0);
@@ -1023,6 +1024,12 @@ public partial class CommerceImplementService(
         wBookPart.Workbook = new Workbook();
         uint sheetId = 1;
         WorkbookPart workbookPart = spreadsheetDoc.WorkbookPart ?? spreadsheetDoc.AddWorkbookPart();
+
+        WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
+
+        wbsp.Stylesheet = GenerateStyleSheet();
+        wbsp.Stylesheet.Save();
+
         workbookPart.Workbook.Sheets = new Sheets();
 
         Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? workbookPart.Workbook.AppendChild(new Sheets());
@@ -1051,11 +1058,6 @@ public partial class CommerceImplementService(
 
             if (needToInsertColumns)
                 wSheetPart.Worksheet.InsertAt(lstColumns, 0);
-
-            WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
-
-            wbsp.Stylesheet = GenerateStyleSheet();
-            wbsp.Stylesheet.Save();
 
             Row topRow = new() { RowIndex = 2 };
             InsertCell(topRow, 1, $"Дата формирования: {DateTime.Now.GetHumanDateTime()}", CellValues.String, 0);
