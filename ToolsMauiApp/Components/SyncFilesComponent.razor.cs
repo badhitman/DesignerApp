@@ -177,7 +177,6 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         localScan = await ToolsLocalRepo.GetDirectory(new ToolsFilesRequestModel
         {
             RemoteDirectory = MauiProgram.ConfigStore.Response!.LocalDirectory!,
-            CalculationVersion = true,
             CalculationHash = true,
         });
         localScanBusy = false;
@@ -191,7 +190,6 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         remoteScan = await ToolsExtRepo.GetDirectory(new ToolsFilesRequestModel
         {
             RemoteDirectory = MauiProgram.ConfigStore.Response!.RemoteDirectory!,
-            CalculationVersion = true,
             CalculationHash = true,
         });
         remoteScanBusy = false;
