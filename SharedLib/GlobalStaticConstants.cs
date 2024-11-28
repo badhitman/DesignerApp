@@ -776,6 +776,9 @@ public static partial class GlobalStaticConstants
         public readonly static string OrderReportGetCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.REPORT_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string PriceFullFileGetCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.PRICE_CONTROLLER_NAME}-{Routes.FULL_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string WarehousesDocumentsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.WAREHOUSE_CONTROLLER_NAME}-{Routes.DOCUMENTS_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
@@ -1274,6 +1277,11 @@ public static partial class GlobalStaticConstants
         /// Report
         /// </summary>
         public const string REPORT_CONTROLLER_NAME = "report";
+
+        /// <summary>
+        /// Full
+        /// </summary>
+        public const string FULL_CONTROLLER_NAME = "full";
 
         /// <summary>
         /// Multiplicity

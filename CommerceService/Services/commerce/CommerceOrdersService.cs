@@ -15,7 +15,6 @@ using System.Text;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using HtmlAgilityPack;
 
 namespace CommerceService;
 
@@ -874,51 +873,62 @@ public partial class CommerceImplementService(
             return res;
         }
 
-
-
-
-
         string docName = $"Заказ {orderDb.Name} от {orderDb.CreatedAtUTC.GetHumanDateTime()}";
-        //div wrapDiv = new();
-        //wrapDiv.AddDomNode(new p(docName));
 
-        //orderDb.AddressesTabs!.ForEach(aNode =>
-        //{
-        //    div addressDiv = new();
-        //    addressDiv.AddDomNode(new p($"Адрес: `{aNode.AddressOrganization?.Name}`"));
-
-        //    table my_table = new() { css_style = "border: 1px solid black; width: 100%; border-collapse: collapse;" };
-        //    my_table.THead.AddColumn("Наименование").AddColumn("Цена").AddColumn("Кол-во").AddColumn("Сумма");
-
-        //    aNode.Rows?.ForEach(dr =>
-        //    {
-        //        my_table.TBody.AddRow([dr.Offer!.GetName(), dr.Offer.Price.ToString(), dr.Quantity.ToString(), dr.Amount.ToString()]);
-        //    });
-        //    addressDiv.AddDomNode(my_table);
-        //    addressDiv.AddDomNode(new p($"Итого: {aNode.Rows!.Sum(x => x.Amount)}") { css_style = "float: right;" });
-        //    wrapDiv.AddDomNode(addressDiv);
-        //});
-
-        //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        //string test_s = $"<style>table, th, td {{border: 1px solid black;border-collapse: collapse;}}</style>{wrapDiv.GetHTML()}";
-
-        //using MemoryStream ms = new();
-        //StreamWriter writer = new(ms);
-        //writer.Write(test_s);
-        //writer.Flush();
-        //ms.Position = 0;
-
-        res.Response = new()
+        try
         {
-            Data = SaveAsExcel(orderDb),
-            ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("xlsx")).Key,
-            Name = $"{docName.Replace(":", "-").Replace(" ", "_")}.xlsx",
-        };
+            res.Response = new()
+            {
+                Data = SaveOrderAsExcel(orderDb),
+                ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("xlsx")).Key,
+                Name = $"{docName.Replace(":", "-").Replace(" ", "_")}.xlsx",
+            };
+        }
+        catch (Exception ex)
+        {
+            loggerRepo.LogError(ex, $"Ошибка создания Excel документа: {docName}");
+            div wrapDiv = new();
+            wrapDiv.AddDomNode(new p(docName));
+
+            orderDb.AddressesTabs!.ForEach(aNode =>
+            {
+                div addressDiv = new();
+                addressDiv.AddDomNode(new p($"Адрес: `{aNode.AddressOrganization?.Name}`"));
+
+                table my_table = new() { css_style = "border: 1px solid black; width: 100%; border-collapse: collapse;" };
+                my_table.THead.AddColumn("Наименование").AddColumn("Цена").AddColumn("Кол-во").AddColumn("Сумма");
+
+                aNode.Rows?.ForEach(dr =>
+                {
+                    my_table.TBody.AddRow([dr.Offer!.GetName(), dr.Offer.Price.ToString(), dr.Quantity.ToString(), dr.Amount.ToString()]);
+                });
+                addressDiv.AddDomNode(my_table);
+                addressDiv.AddDomNode(new p($"Итого: {aNode.Rows!.Sum(x => x.Amount)}") { css_style = "float: right;" });
+                wrapDiv.AddDomNode(addressDiv);
+            });
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            string test_s = $"<style>table, th, td {{border: 1px solid black;border-collapse: collapse;}}</style>{wrapDiv.GetHTML()}";
+
+            using MemoryStream ms = new();
+            StreamWriter writer = new(ms);
+            writer.Write(test_s);
+            writer.Flush();
+            ms.Position = 0;
+
+            res.Response = new()
+            {
+                Data = ms.ToArray(),
+                ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("html")).Key,
+                Name = $"{docName.Replace(":", "-").Replace(" ", "_")}.html",
+            };
+        }
+
         return res;
     }
 
-
-    byte[] SaveAsExcel(OrderDocumentModelDB orderDb)
+    /// <inheritdoc/>
+    public byte[] SaveOrderAsExcel(OrderDocumentModelDB orderDb)
     {
         string docName = $"Заказ {orderDb.Name} от {orderDb.CreatedAtUTC.GetHumanDateTime()}";
         using MemoryStream XLSStream = new();
@@ -940,8 +950,8 @@ public partial class CommerceImplementService(
             lstColumns = new Columns();
             needToInsertColumns = true;
         }
-        //
-        lstColumns.Append(new Column() { Min = 1, Max = 1, Width = 100, CustomWidth = true, BestFit=true, });
+
+        lstColumns.Append(new Column() { Min = 1, Max = 1, Width = 100, CustomWidth = true, BestFit = true, });
         lstColumns.Append(new Column() { Min = 2, Max = 2, Width = 8, CustomWidth = true, BestFit = true, });
         lstColumns.Append(new Column() { Min = 3, Max = 3, Width = 8, CustomWidth = true, BestFit = true, });
         lstColumns.Append(new Column() { Min = 4, Max = 4, Width = 15, CustomWidth = true, BestFit = true, });
@@ -950,20 +960,24 @@ public partial class CommerceImplementService(
             worksheetPart.Worksheet.InsertAt(lstColumns, 0);
 
         Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
-
+        uint _sid = 1;
         orderDb.AddressesTabs!.ForEach(aNode =>
         {
             Sheet sheet = new()
             {
                 Id = workbookPart.GetIdOfPart(worksheetPart),
-                SheetId = 1,
+                SheetId = _sid++,
                 Name = aNode.AddressOrganization?.Name,
             };
 
             sheets.Append(sheet);
             SheetData sheetData = (SheetData)worksheetPart.Worksheet.ChildElements.Where(x => x is SheetData).Last();
 
-            Row row = new() { RowIndex = 1 };
+            Row row = new() { RowIndex = 2 };
+            sheetData!.Append(row);
+            InsertCell(row, 1, $"Адрес доставки: {aNode.AddressOrganization?.Address}", CellValues.String, 0);
+
+            row = new() { RowIndex = 4 };
             sheetData!.Append(row);
 
             InsertCell(row, 1, "Наименование", CellValues.String, 1);
@@ -971,7 +985,7 @@ public partial class CommerceImplementService(
             InsertCell(row, 3, "Кол-во", CellValues.String, 1);
             InsertCell(row, 4, "Сумма", CellValues.String, 1);
 
-            uint row_index = 2;
+            uint row_index = 5;
             aNode.Rows?.ForEach(dr =>
            {
                row = new Row() { RowIndex = row_index++ };
@@ -992,11 +1006,137 @@ public partial class CommerceImplementService(
 
         workbookPart.Workbook.Save();
         document.Save();
-        //string fileName = $"{docName.Replace(":", "-").Replace(" ", "_")}-{DateTime.Now}.xlsx"; //$"{Regex.Replace(sheet.Name.ToString()?.Trim() ?? "error {6A1E2B61-277C-4B8C-94BD-D1B8EC6169AD}", @"\s", "_")}-{DateTime.Now}.xlsx";
         XLSStream.Position = 0;
         return XLSStream.ToArray();
     }
 
+    /// <inheritdoc/>
+    public async Task<FileAttachModel> GetPriceFile()
+    {
+        string docName = $"Прайс на {DateTime.Now.GetHumanDateTime()}";
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        List<OfferGoodModelDB> offersAll = await context.OffersGoods
+            .Include(x => x.Goods)
+            .Include(x => x.Registers)
+            .ToListAsync();
+
+        if (offersAll.Count == 0)
+        {
+            loggerRepo.LogWarning($"Пустой прайс: {docName}");
+            return new()
+            {
+                Data = [],
+                ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("html")).Key,
+                Name = $"{docName.Replace(":", "-").Replace(" ", "_")}.html",
+            };
+        }
+
+        int[] rubricsIds = offersAll.SelectMany(x => x.Registers!).Select(x => x.WarehouseId).Distinct().ToArray();
+        TResponseModel<List<RubricIssueHelpdeskModelDB>?> rubricsDb = await hdRepo.RubricsGet(rubricsIds);
+
+        using MemoryStream XLSStream = new();
+        SpreadsheetDocument document = SpreadsheetDocument.Create(XLSStream, SpreadsheetDocumentType.Workbook);
+        
+        WorkbookPart workbookPart = document.AddWorkbookPart();
+        workbookPart.Workbook = new Workbook();
+        WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+
+        worksheetPart.Worksheet = new Worksheet(new SheetData());
+        WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
+
+        wbsp.Stylesheet = GenerateStyleSheet();
+        wbsp.Stylesheet.Save();
+
+        Columns lstColumns = worksheetPart.Worksheet.GetFirstChild<Columns>()!;
+        bool needToInsertColumns = false;
+        if (lstColumns == null)
+        {
+            lstColumns = new Columns();
+            needToInsertColumns = true;
+        }
+
+        lstColumns.Append(new Column() { Min = 1, Max = 1, Width = 100, CustomWidth = true, BestFit = true, });
+        lstColumns.Append(new Column() { Min = 2, Max = 2, Width = 8, CustomWidth = true, BestFit = true, });
+        lstColumns.Append(new Column() { Min = 3, Max = 3, Width = 8, CustomWidth = true, BestFit = true, });
+        lstColumns.Append(new Column() { Min = 4, Max = 4, Width = 15, CustomWidth = true, BestFit = true, });
+
+        if (needToInsertColumns)
+            worksheetPart.Worksheet.InsertAt(lstColumns, 0);
+
+        Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
+
+        List<IGrouping<GoodsModelDB?, OfferGoodModelDB>> gof = offersAll.GroupBy(x => x.Goods).ToList();
+        uint _sid = 1;
+        gof!.ForEach(aNode =>
+       {
+           Sheet sheet = new()
+           {
+               Id = workbookPart.GetIdOfPart(worksheetPart),
+               SheetId = _sid++,
+               Name = aNode.Key?.Name,
+           };
+
+           sheets.Append(sheet);
+           SheetData sheetData = (SheetData)worksheetPart.Worksheet.ChildElements.Where(x => x is SheetData).Last();
+
+           Row row = new() { RowIndex = 2 };
+           sheetData!.Append(row);
+           InsertCell(row, 1, $"Дата формирования: {DateTime.Now.GetHumanDateTime()}", CellValues.String, 0);
+
+           row = new() { RowIndex = 4 };
+           sheetData!.Append(row);
+
+           InsertCell(row, 1, "Наименование", CellValues.String, 1);
+           InsertCell(row, 2, "Цена", CellValues.String, 1);
+           InsertCell(row, 3, "Ед.изм.", CellValues.String, 1);
+           InsertCell(row, 4, "Остаток/Склад", CellValues.String, 1);
+
+           uint row_index = 5;
+           aNode.ToList()?.ForEach(dr =>
+          {
+              foreach (IGrouping<int, OfferAvailabilityModelDB> nodeG in dr.Registers!.GroupBy(x => x.WarehouseId))
+              {
+                  row = new Row() { RowIndex = row_index++ };
+                  sheetData.Append(row);
+
+                  InsertCell(row, 1, dr!.GetName(), CellValues.String, 0);
+                  InsertCell(row, 2, dr.Price.ToString(), CellValues.String, 0);
+                  InsertCell(row, 3, dr.OfferUnit.DescriptionInfo(), CellValues.String, 0);
+                  InsertCell(row, 4, $"{nodeG.Sum(x => x.Quantity)} /{rubricsDb.Response?.FirstOrDefault(r => r.Id == nodeG.Key)?.Name}", CellValues.String, 0);
+              }
+          });
+           row = new Row() { RowIndex = row_index++ };
+           sheetData.Append(row);
+           InsertCell(row, 1, "", CellValues.String, 0);
+           InsertCell(row, 2, "", CellValues.String, 0);
+           InsertCell(row, 3, "Итого:", CellValues.String, 0);
+           InsertCell(row, 4, aNode!.Sum(x => x.Registers!.Sum(y => y.Quantity)).ToString(), CellValues.String, 0);
+       });
+
+        workbookPart.Workbook.Save();
+        document.Save();
+        XLSStream.Position = 0;
+
+        try
+        {
+            return new()
+            {
+                Data = XLSStream.ToArray(),
+                ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("xlsx")).Key,
+                Name = $"{docName.Replace(":", "-").Replace(" ", "_")}.xlsx",
+            };
+        }
+        catch (Exception ex)
+        {
+            loggerRepo.LogError(ex, $"Ошибка создания Excel документа: {docName}");
+            return new()
+            {
+                Data = [],
+                ContentType = GlobalTools.ContentTypes.First(x => x.Value.Contains("html")).Key,
+                Name = $"{docName.Replace(":", "-").Replace(" ", "_")}.html",
+            };
+        }
+    }
 
     static Stylesheet GenerateStyleSheet()
     {

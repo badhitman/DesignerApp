@@ -2,8 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.Components;
 using BlazorLib;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
 using SharedLib;
 
@@ -14,6 +15,10 @@ namespace BlazorWebLib.Components.Commerce;
 /// </summary>
 public partial class GoodsManageComponent : BlazorBusyComponentRegistersModel
 {
+    [Inject]
+    IJSRuntime JsRuntimeRepo { get; set; } = default!;
+
+
     bool _expanded;
     MudTable<GoodsModelDB> tableRef = default!;
 
@@ -23,6 +28,20 @@ public partial class GoodsManageComponent : BlazorBusyComponentRegistersModel
         await tableRef.ReloadServerData();
         OnExpandCollapseClick();
         StateHasChanged();
+    }
+
+    async Task DownloadFullPrice()
+    {
+        await SetBusy();
+        TResponseModel<FileAttachModel> res = await CommerceRepo.PriceFullFileGet();
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        await SetBusy(false);
+        if (res.Success() && res.Response is not null && res.Response.Data.Length != 0)
+        {
+            using MemoryStream ms = new(res.Response.Data);
+            using DotNetStreamReference streamRef = new(stream: ms);
+            await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", res.Response.Name, streamRef);
+        }
     }
 
     /// <summary>

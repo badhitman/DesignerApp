@@ -12,6 +12,16 @@ public partial interface ICommerceService
     /// <summary>
     /// Get order report file
     /// </summary>
+    public Task<FileAttachModel> GetPriceFile();
+
+    /// <summary>
+    /// Сохранить заказ в виде файла Excel (*.xlsx)
+    /// </summary>
+    public byte[] SaveOrderAsExcel(OrderDocumentModelDB orderDb);
+
+    /// <summary>
+    /// Get order report file
+    /// </summary>
     public Task<TResponseModel<FileAttachModel>> GetOrderReportFile(TAuthRequestModel<int> req);
 
     /// <summary>

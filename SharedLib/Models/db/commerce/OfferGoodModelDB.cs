@@ -20,6 +20,11 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     public string? QuantitiesTemplate { get; set; }
 
     /// <summary>
+    /// Остатки
+    /// </summary>
+    public List<OfferAvailabilityModelDB>? Registers { get; set; }
+
+    /// <summary>
     /// QuantitiesTemplateValidate
     /// </summary>
     public bool QuantitiesTemplateValidate

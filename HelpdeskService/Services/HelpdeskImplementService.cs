@@ -8,11 +8,9 @@ using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Globalization;
-using System.Net.Http.Json;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
-using System.Collections.Generic;
 
 namespace HelpdeskService;
 

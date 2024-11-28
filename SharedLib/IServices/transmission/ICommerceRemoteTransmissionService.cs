@@ -10,6 +10,11 @@ namespace SharedLib;
 public partial interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// Price Full - file get
+    /// </summary>
+    public Task<TResponseModel<FileAttachModel>> PriceFullFileGet();
+
+    /// <summary>
     /// Order report get
     /// </summary>
     public Task<TResponseModel<FileAttachModel>> OrderReportGet(TAuthRequestModel<int> req);

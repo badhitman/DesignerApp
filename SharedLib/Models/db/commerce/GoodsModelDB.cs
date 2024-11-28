@@ -19,6 +19,12 @@ public class GoodsModelDB : EntrySwitchableUpdatedModel
     /// </summary>
     public List<OfferGoodModelDB>? Offers { get; set; }
 
+    /// <summary>
+    /// Остатки
+    /// </summary>
+    public List<OfferAvailabilityModelDB>? Registers { get; set; }
+
+
     /// <inheritdoc/>
     public static bool operator ==(GoodsModelDB off1, GoodsModelDB off2) => off1.Equals(off2);
 
