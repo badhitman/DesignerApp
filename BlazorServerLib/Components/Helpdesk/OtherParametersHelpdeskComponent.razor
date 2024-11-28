@@ -11,64 +11,31 @@
     <MudTabPanel Text="Home">
         <StringParameterStorageComponent Label="Заголовок" HelperText="Текст в левом верхнем углу" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.TitleMain" />
         <hr />
-
         <TinyMCEComponent Label="Home PUBLIC" HelperText="Публичная страница для НЕ авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePublic" />
         <hr />
         <TinyMCEComponent Label="Home PRIVATE" HelperText="Страница для авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate" />
     </MudTabPanel>
-    <MudTabPanel Text="Другое">
+    <MudTabPanel Text="Отображение">
         <ul class="list-group list-group-flush">
             <li class="list-group-item my-2">
-                <h6 class="card-subtitle mb-2 text-body-secondary">Ручное создание обращений-заявок в СЭД</h6>
-                <div class="hstack gap-3">
-                    <MudSwitch @bind-Value="ShowCreatingIssue" ThumbIcon="@(ShowCreatingIssue == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowCreatingIssue == true ? Color.Success : Color.Error)">Создание заявок</MudSwitch>
-                    <span class="text-info">
-                        @(ShowCreatingIssue == true ? "Кнопка создания обращения активна" : "Ручное создание обращений отключено")
-                    </span>
-                </div>
-                <div class="form-text">
-                    Создание заявок для заказов включено всегда (его отключить нельзя)
-                </div>
+                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue" Title="Ручное создание обращений-заявок в СЭД" Label="Создание заявок" HintTrue="Кнопка создания обращения активна" HintFalse="Ручное создание обращений отключено" />
             </li>
             <li class="list-group-item my-2">
-                <h6 class="card-subtitle mb-2 text-body-secondary">Отображение TG чатов в заявке</h6>
-                <div class="hstack gap-3">
-                    <MudSwitch @bind-Value="ShowingTelegramArea" ThumbIcon="@(ShowingTelegramArea == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowingTelegramArea == true ? Color.Success : Color.Error)">TG чаты в заявках</MudSwitch>
-                    <span class="text-info">
-                        @(ShowingTelegramArea == true ? "В заявке будет отображаться диалог связанных TG чатов" : "Чаты TG не отображаются в заявках")
-                    </span>
-                </div>
-                <div class="form-text">
-                    Основная панель диалога в заявке отображается в любом случае
-                </div>
+                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowingTelegramArea" Title="Отображение TG чатов в заявке" Label="TG чаты в заявках" HintTrue="В заявке будет отображаться диалог связанных TG чатов" HintFalse="Чаты TG не отображаются в заявках" />
             </li>
             <li class="list-group-item my-2">
-                <h6 class="card-subtitle mb-2 text-body-secondary">Отображение цены в селекторе номенклатуры в создании заказа</h6>
-                <div class="hstack gap-3">
-                    <MudSwitch @bind-Value="ShowingPriceSelectorOrder" ThumbIcon="@(ShowingPriceSelectorOrder == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowingPriceSelectorOrder == true ? Color.Success : Color.Error)">Цены при выборе номенклатуры в заказе</MudSwitch>
-                    <span class="text-info">
-                        @(ShowingPriceSelectorOrder == true ? "В заказе будет отображаться диалог прикрепления файлов" : "Вложения для заказов отключены")
-                    </span>
-                </div>
+                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowingPriceSelectorOrder" Title="Отображение цены в селекторе номенклатуры в создании заказа" Label="Цены при выборе номенклатуры в заказе" HintTrue="В заказе будет отображаться диалог прикрепления файлов" HintFalse="Вложения для заказов отключены" />
             </li>
             <li class="list-group-item my-2">
-                <h6 class="card-subtitle mb-2 text-body-secondary">Отображение панели вложений в заявках</h6>
-                <div class="hstack gap-3">
-                    <MudSwitch @bind-Value="ShowingAttachmentsOrderArea" ThumbIcon="@(ShowingAttachmentsOrderArea == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowingAttachmentsOrderArea == true ? Color.Success : Color.Error)">Вложения в заказах</MudSwitch>
-                    <span class="text-info">
-                        @(ShowingAttachmentsOrderArea == true ? "В заказе будет отображаться диалог прикрепления файлов" : "Вложения для заказов отключены")
-                    </span>
-                </div>
+                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsOrderArea" Title="Отображение панели вложений в заявках" Label="Вложения в заказах" HintTrue="В заказе будет отображаться диалог прикрепления файлов" HintFalse="Вложения для заказов отключены" />
             </li>
             <li class="list-group-item my-2">
-                <h6 class="card-subtitle mb-2 text-body-secondary">Отображение панели вложений в обращениях</h6>
-                <div class="hstack gap-3">
-                    <MudSwitch @bind-Value="ShowingAttachmentsIssueArea" ThumbIcon="@(ShowingAttachmentsIssueArea == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowingAttachmentsIssueArea == true ? Color.Success : Color.Error)">Вложения в обращениях</MudSwitch>
-                    <span class="text-info">
-                        @(ShowingAttachmentsIssueArea == true ? "В заявке будет отображаться диалог прикрепления файлов" : "Вложения для заявок отключены")
-                    </span>
-                </div>
+                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsIssuesArea" Title="Отображение панели вложений в обращениях" Label="Вложения в обращениях" HintTrue="В заявке будет отображаться диалог прикрепления файлов" HintFalse="Вложения для заявок отключены" />
             </li>
+        </ul>
+    </MudTabPanel>
+    <MudTabPanel Text="Другое">
+        <ul class="list-group list-group-flush">
             <li class="list-group-item my-2">
                 <h6 class="card-subtitle mb-2 text-body-secondary">Рубрика заказа</h6>
                 <div class="vstack gap-3">

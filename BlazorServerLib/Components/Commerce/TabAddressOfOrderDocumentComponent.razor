@@ -37,7 +37,7 @@
         @if (!ReadOnly)
         {
             <div class="ms-3">
-                <AddRowToOrderDocumentComponent ForceAdding="ForceAdding" ShowPriceOffers="false" SelectOfferHandler="SelectOfferAction" ShowRegistersOffersQuantity="true" @ref="addingDomRef" WarehouseId="CurrentTab.WarehouseId" AllOffers="allOffers" CurrentRows="CurrentTab.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
+                <AddRowToOrderDocumentComponent ForceAdding="ForceAdding" ShowPriceOffers="_showingPriceSelectorOrder" SelectOfferHandler="SelectOfferAction" ShowRegistersOffersQuantity="true" @ref="addingDomRef" WarehouseId="CurrentTab.WarehouseId" AllOffers="allOffers" CurrentRows="CurrentTab.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
             </div>
         }
     </ToolBarContent>
@@ -70,7 +70,7 @@
         @{
             IQueryable<OfferAvailabilityModelDB> _q = RegistersCache.Where(x => x.OfferId == context.OfferId && x.WarehouseId == CurrentTab.WarehouseId).AsQueryable();
             decimal _sum = !_q.Any()
-            ? decimal.MaxValue
+            ? 0
             : _q.Sum(x => x.Quantity);
             bool warningRow = _sum < context!.Quantity;
         }

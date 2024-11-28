@@ -1,0 +1,29 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<h6 class="card-subtitle mb-2 text-body-secondary">
+    @Title
+    @if (IsBusyProgress)
+    {
+        <sup>
+            <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+        </sup>
+    }
+</h6>
+<div class="stack gap-3">
+    <MudSwitch Disabled="IsBusyProgress" @bind-Value="StoreValue" ThumbIcon="@(StoreValue == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(StoreValue == true ? Color.Success : Color.Error)">
+        @Label
+    </MudSwitch>
+    @if (StoreValue && !string.IsNullOrWhiteSpace(HintTrue))
+    {
+        <span class="text-info">
+            @HintTrue
+        </span>
+    }
+    else if (!string.IsNullOrWhiteSpace(HintFalse))
+    {
+        <span class="text-info">
+            @HintFalse
+        </span>
+    }
+</div>

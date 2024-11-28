@@ -15,6 +15,9 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseComponent
 {
     [Inject]
+    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo { get; set; } = default!;
+
+    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
 
@@ -23,7 +26,6 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
     /// </summary>
     [Parameter, EditorRequired]
     public required TabAddressForOrderModelDb CurrentTab { get; set; }
-
 
     /// <summary>
     /// Если true - тогда можно добавлять офферы, которых нет в остатках.
@@ -37,17 +39,23 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
     RowOfOrderDocumentModelDB? elementBeforeEdit;
     RubricSelectorComponent? ref_rubric;
     List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow;
+    bool _showingPriceSelectorOrder;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         await SetBusy();
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(0);
-        await CacheRegistersOfferUpdate(CurrentTab.Rows!.Select(x => x.OfferId), CurrentTab.WarehouseId, true);
+
+        List<Task> tasks = [
+            Task.Run(async () => { TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(0); SnackbarRepo.ShowMessagesResponse(res.Messages); RubricMetadataShadow = res.Response; }),
+            CacheRegistersOfferUpdate(CurrentTab.Rows!.Select(x => x.OfferId), CurrentTab.WarehouseId, true),
+            Task.Run(async () => { TResponseModel<bool?> showingPriceSelectorOrder = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingPriceSelectorOrder); _showingPriceSelectorOrder = showingPriceSelectorOrder.Response == true; if (!showingPriceSelectorOrder.Success()) SnackbarRepo.ShowMessagesResponse(showingPriceSelectorOrder.Messages); }) ];
+
+        await Task.WhenAll(tasks);
+
         await SetBusy(false);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        RubricMetadataShadow = res.Response;
+
         if (RubricMetadataShadow is not null && RubricMetadataShadow.Count != 0)
         {
             RubricIssueHelpdeskModelDB current_element = RubricMetadataShadow.Last();
