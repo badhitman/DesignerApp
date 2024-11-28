@@ -180,7 +180,7 @@ public static partial class GlobalStaticConstants
         public static StorageMetadataModel ModeSelectingRubrics => new()
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            PropertyName = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"),
+            PropertyName = Path.Combine(Routes.RUBRIC_CONTROLLER_NAME, Routes.FORM_CONTROLLER_NAME, $"{Routes.MODE_CONTROLLER_NAME}-{Routes.SELECT_ACTION_NAME}"),
         };
 
         /// <summary>
@@ -237,6 +237,15 @@ public static partial class GlobalStaticConstants
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             PropertyName = Path.Combine(Routes.SHOW_ACTION_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.ATTACHMENT_CONTROLLER_NAME, Routes.AREAS_CONTROLLER_NAME),
+        };
+
+        /// <summary>
+        /// ShowingPriceSelectorOrder
+        /// </summary>
+        public static StorageMetadataModel ShowingPriceSelectorOrder => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.SHOW_ACTION_NAME, $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.PRICE_CONTROLLER_NAME}", $"{Routes.SELECT_ACTION_NAME}-{Routes.MODE_CONTROLLER_NAME}"),
         };
 
         /// <summary>
@@ -1669,11 +1678,6 @@ public static partial class GlobalStaticConstants
         /// Hide
         /// </summary>
         public const string HIDE_ACTION_NAME = "hide";
-
-        /// <summary>
-        /// Mode
-        /// </summary>
-        public const string MODE_ACTION_NAME = "mode";
 
         /// <summary>
         /// Отправить

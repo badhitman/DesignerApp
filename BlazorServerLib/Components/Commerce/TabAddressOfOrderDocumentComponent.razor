@@ -9,17 +9,17 @@
     </CascadingValue>
 </div>
 <MudTable Hover="true"
-ReadOnly="ReadOnly"
-SortLabel="@(nameof(RowOfOrderDocumentModelDB.Goods.Name))"
-CanCancelEdit="true"
-Items="@CurrentTab.Rows"
-RowEditPreview="RowEditPreviewHandler"
-RowEditCommit="RowEditCommitHandler"
-CancelEditIcon="@Icons.Material.Filled.Cancel"
-CancelEditTooltip="Отменить изменение"
-CommitEditTooltip="Сохранить изменения"
-RowEditCancel="RowEditCancelHandler"
-EditTrigger="@EditTrigger">
+          ReadOnly="ReadOnly"
+          SortLabel="@(nameof(RowOfOrderDocumentModelDB.Goods.Name))"
+          CanCancelEdit="true"
+          Items="@CurrentTab.Rows"
+          RowEditPreview="RowEditPreviewHandler"
+          RowEditCommit="RowEditCommitHandler"
+          CancelEditIcon="@Icons.Material.Filled.Cancel"
+          CancelEditTooltip="Отменить изменение"
+          CommitEditTooltip="Сохранить изменения"
+          RowEditCancel="RowEditCancelHandler"
+          EditTrigger="@EditTrigger">
 
     <ToolBarContent>
         <MudText Typo="Typo.h6">
@@ -37,7 +37,7 @@ EditTrigger="@EditTrigger">
         @if (!ReadOnly)
         {
             <div class="ms-3">
-                <AddRowToOrderDocumentComponent ForceAdding="ForceAdding" ShowPriceOffers="true" SelectOfferHandler="SelectOfferAction" ShowRegistersOffersQuantity="true" @ref="addingDomRef" WarehouseId="CurrentTab.WarehouseId" AllOffers="allOffers" CurrentRows="CurrentTab.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
+                <AddRowToOrderDocumentComponent ForceAdding="ForceAdding" ShowPriceOffers="false" SelectOfferHandler="SelectOfferAction" ShowRegistersOffersQuantity="true" @ref="addingDomRef" WarehouseId="CurrentTab.WarehouseId" AllOffers="allOffers" CurrentRows="CurrentTab.Rows!.Select(x=>x.OfferId).ToList()" AddingOfferHandler="AddingOfferAction" />
             </div>
         }
     </ToolBarContent>

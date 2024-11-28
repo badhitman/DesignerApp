@@ -19,35 +19,47 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
+
     RubricSelectorComponent? ref_rubric;
-    int? _RubricIssueForCreateOrder;
+    int? _rubricIssueForCreateOrder;
     List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow;
     void RubricSelectAction(RubricBaseModel? selectedRubric)
     {
-        _RubricIssueForCreateOrder = selectedRubric?.Id;
+        _rubricIssueForCreateOrder = selectedRubric?.Id;
         InvokeAsync(SaveRubric);
         StateHasChanged();
     }
 
-    bool _showCreateIssue;
-    bool ShowCreateIssue
+    bool _showCreatingIssue;
+    bool ShowCreatingIssue
     {
-        get => _showCreateIssue;
+        get => _showCreatingIssue;
         set
         {
-            _showCreateIssue = value;
-            InvokeAsync(SaveModeShowCreateIssue);
+            _showCreatingIssue = value;
+            InvokeAsync(SaveModeShowCreatingIssue);
         }
     }
 
-    bool _sowingTelegramArea;
+    bool _showingTelegramArea;
     bool ShowingTelegramArea
     {
-        get => _sowingTelegramArea;
+        get => _showingTelegramArea;
         set
         {
-            _sowingTelegramArea = value;
+            _showingTelegramArea = value;
             InvokeAsync(SaveModeShowingTelegramAreaIssue);
+        }
+    }
+
+    bool _showingPriceSelectorOrder;
+    bool ShowingPriceSelectorOrder
+    {
+        get => _showingPriceSelectorOrder;
+        set
+        {
+            _showingPriceSelectorOrder = value;
+            InvokeAsync(SaveModeShowingPriceSelector);
         }
     }
 
@@ -73,10 +85,11 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
         }
     }
 
-    async void SaveModeShowCreateIssue()
+
+    async void SaveModeShowCreatingIssue()
     {
         await SetBusy();
-        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreateIssue, GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue, true);
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreatingIssue, GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue, true);
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
@@ -92,43 +105,53 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
     async void SaveModeShowingAttachmentsOrderArea()
     {
         await SetBusy();
-        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreateIssue, GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsOrderArea, true);
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreatingIssue, GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsOrderArea, true);
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
+    async void SaveModeShowingPriceSelector()
+    {
+        await SetBusy();
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowingAttachmentsOrderArea, GlobalStaticConstants.CloudStorageMetadata.ShowingPriceSelectorOrder, true);
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+    }
+    // 
     async void SaveModeShowingAttachmentsIssueArea()
     {
         await SetBusy();
-        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreateIssue, GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsIssuesArea, true);
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(ShowCreatingIssue, GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsIssuesArea, true);
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
-
 
     async void SaveRubric()
     {
         await SetBusy();
-
-        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter(_RubricIssueForCreateOrder, GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder, true);
-        IsBusyProgress = false;
+        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter(_rubricIssueForCreateOrder, GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder, true);
+        await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-
-        StateHasChanged();
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await SetBusy();
-        TResponseModel<bool?> res_ShowCreatingIssue = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue);
+
+        TResponseModel<bool?> showCreatingIssue = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue);
+        _showCreatingIssue = showCreatingIssue.Success() && showCreatingIssue.Response == true;
+
+
+
+
         TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);
+        _rubricIssueForCreateOrder = res_RubricIssueForCreateOrder.Response;
         IsBusyProgress = false;
-        _RubricIssueForCreateOrder = res_RubricIssueForCreateOrder.Response;
-        if (ref_rubric is not null && _RubricIssueForCreateOrder.HasValue)
+        if (ref_rubric is not null && _rubricIssueForCreateOrder.HasValue)
         {
             await SetBusy();
-            TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(_RubricIssueForCreateOrder.Value);
+            TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(_rubricIssueForCreateOrder.Value);
             await SetBusy(false);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
             RubricMetadataShadow = res.Response;
@@ -141,7 +164,5 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
                 ref_rubric.StateHasChangedCall();
             }
         }
-
-        _showCreateIssue = res_ShowCreatingIssue.Success() && res_ShowCreatingIssue.Response == true;
     }
 }

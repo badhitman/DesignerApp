@@ -21,9 +21,9 @@
             <li class="list-group-item my-2">
                 <h6 class="card-subtitle mb-2 text-body-secondary">Ручное создание обращений-заявок в СЭД</h6>
                 <div class="hstack gap-3">
-                    <MudSwitch @bind-Value="ShowCreateIssue" ThumbIcon="@(ShowCreateIssue == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowCreateIssue == true ? Color.Success : Color.Error)">Создание заявок</MudSwitch>
+                    <MudSwitch @bind-Value="ShowCreatingIssue" ThumbIcon="@(ShowCreatingIssue == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowCreatingIssue == true ? Color.Success : Color.Error)">Создание заявок</MudSwitch>
                     <span class="text-info">
-                        @(ShowCreateIssue == true ? "Кнопка создания обращения активна" : "Ручное создание обращений отключено")
+                        @(ShowCreatingIssue == true ? "Кнопка создания обращения активна" : "Ручное создание обращений отключено")
                     </span>
                 </div>
                 <div class="form-text">
@@ -40,6 +40,15 @@
                 </div>
                 <div class="form-text">
                     Основная панель диалога в заявке отображается в любом случае
+                </div>
+            </li>
+            <li class="list-group-item my-2">
+                <h6 class="card-subtitle mb-2 text-body-secondary">Отображение цены в селекторе номенклатуры в создании заказа</h6>
+                <div class="hstack gap-3">
+                    <MudSwitch @bind-Value="ShowingPriceSelectorOrder" ThumbIcon="@(ShowingPriceSelectorOrder == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowingPriceSelectorOrder == true ? Color.Success : Color.Error)">Цены при выборе номенклатуры в заказе</MudSwitch>
+                    <span class="text-info">
+                        @(ShowingPriceSelectorOrder == true ? "В заказе будет отображаться диалог прикрепления файлов" : "Вложения для заказов отключены")
+                    </span>
                 </div>
             </li>
             <li class="list-group-item my-2">
@@ -65,7 +74,7 @@
                 <div class="vstack gap-3">
                     <CascadingValue Value="RubricSelectAction">
                         <CascadingValue Value="RubricMetadataShadow">
-                            <RubricSelectorComponent @ref="ref_rubric" Title="" ModeSelectingRubrics="ModesSelectRubricsEnum.AllowWithoutRubric" ShowDisabledRubrics="true" StartRubric="_RubricIssueForCreateOrder" />
+                            <RubricSelectorComponent @ref="ref_rubric" Title="" ModeSelectingRubrics="ModesSelectRubricsEnum.AllowWithoutRubric" ShowDisabledRubrics="true" StartRubric="_rubricIssueForCreateOrder" />
                         </CascadingValue>
                     </CascadingValue>
                 </div>
