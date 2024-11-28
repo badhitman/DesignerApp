@@ -997,6 +997,7 @@ public partial class CommerceImplementService(
                 InsertCell(row, 2, dr.Offer.Price.ToString(), CellValues.String, 0);
                 InsertCell(row, 3, dr.Quantity.ToString(), CellValues.String, 0);
                 InsertCell(row, 4, dr.Amount.ToString(), CellValues.String, 0);
+                sheetData.Append(row);
             }
             Row btRow = new() { RowIndex = row_index++ };
             InsertCell(btRow, 1, "", CellValues.String, 0);
@@ -1081,7 +1082,6 @@ public partial class CommerceImplementService(
                     InsertCell(row, 2, dr.Price.ToString(), CellValues.String, 0);
                     InsertCell(row, 3, dr.OfferUnit.DescriptionInfo(), CellValues.String, 0);
                     InsertCell(row, 4, $"{nodeG.Sum(x => x.Quantity)} /{rubricsDb?.FirstOrDefault(r => r.Id == nodeG.Key)?.Name}", CellValues.String, 0);
-
                 };
             }
             Row btRow = new() { RowIndex = row_index++ };
