@@ -77,13 +77,13 @@
         <MudTd DataLabel="Остаток">
             @_sum @(context.Offer?.OfferUnit.DescriptionInfo())
         </MudTd>
-        <MudTd DataLabel="Price">
-            @context!.Offer!.Price руб. (@($"{Math.Round(context!.Offer!.Price / context!.Offer.Multiplicity, 2)} р/{context.Goods!.BaseUnit.DescriptionInfo().ToLower()}"))
+        <MudTd DataLabel="Цена">
+            @($"{context!.Offer!.Price} р/{context.Offer!.OfferUnit.DescriptionInfo().ToLower()}")
         </MudTd>
-        <MudTd title="@(warningRow ? "Остатки меньше требуемого" : "")" Class="@(warningRow ? "mud-theme-warning" : "")" DataLabel="Quantity">
+        <MudTd title="@(warningRow ? "Остатки меньше требуемого" : "")" Class="@(warningRow ? "mud-theme-warning" : "")" DataLabel="Количество">
             @context!.Quantity
         </MudTd>
-        <MudTd DataLabel="Sum">
+        <MudTd DataLabel="Сумма">
             @(context!.Quantity * context.Offer!.Price)
         </MudTd>
         <MudTd><MudIconButton OnClick="() => DeleteRow(context.OfferId)" title="Удалить строку" Icon="@Icons.Material.Filled.Delete" aria-label="delete" Size="Size.Small" /></MudTd>
