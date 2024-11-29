@@ -974,179 +974,7 @@ public partial class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public byte[] SaveOrderAsExcel(OrderDocumentModelDB orderDb)
-    {
-        string docName = $"Заказ {orderDb.Name} от {orderDb.CreatedAtUTC.GetHumanDateTime()}";
-        using MemoryStream XLSStream = new();
-
-
-        WorkbookPart? wBookPart = null;
-
-        using SpreadsheetDocument spreadsheetDoc = SpreadsheetDocument.Create(XLSStream, SpreadsheetDocumentType.Workbook);
-
-        wBookPart = spreadsheetDoc.AddWorkbookPart();
-        wBookPart.Workbook = new Workbook();
-        uint sheetId = 1;
-        WorkbookPart workbookPart = spreadsheetDoc.WorkbookPart ?? spreadsheetDoc.AddWorkbookPart();
-
-        WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
-
-        wbsp.Stylesheet = GenerateStyleSheet();
-        wbsp.Stylesheet.Save();
-
-        workbookPart.Workbook.Sheets = new Sheets();
-
-        Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? workbookPart.Workbook.AppendChild(new Sheets());
-
-        foreach (var table in orderDb.AddressesTabs!)
-        {
-            WorksheetPart wSheetPart = wBookPart.AddNewPart<WorksheetPart>();
-            Sheet sheet = new() { Id = workbookPart.GetIdOfPart(wSheetPart), SheetId = sheetId, Name = table.AddressOrganization?.Name };
-            sheets.Append(sheet);
-
-            SheetData sheetData = new();
-            wSheetPart.Worksheet = new Worksheet(sheetData);
-
-            Columns lstColumns = wSheetPart.Worksheet.GetFirstChild<Columns>()!;
-            bool needToInsertColumns = false;
-            if (lstColumns == null)
-            {
-                lstColumns = new Columns();
-                needToInsertColumns = true;
-            }
-
-            lstColumns.Append(new Column() { Min = 1, Max = 1, Width = 100, CustomWidth = true, BestFit = true, });
-            lstColumns.Append(new Column() { Min = 2, Max = 2, Width = 8, CustomWidth = true, BestFit = true, });
-            lstColumns.Append(new Column() { Min = 3, Max = 3, Width = 8, CustomWidth = true, BestFit = true, });
-            lstColumns.Append(new Column() { Min = 4, Max = 4, Width = 15, CustomWidth = true, BestFit = true, });
-
-            if (needToInsertColumns)
-                wSheetPart.Worksheet.InsertAt(lstColumns, 0);
-
-            Row topRow = new() { RowIndex = 2 };
-            InsertCell(topRow, 1, $"Адрес доставки: {table.AddressOrganization?.Address}", CellValues.String, 0);
-            sheetData!.Append(topRow);
-
-            Row headerRow = new() { RowIndex = 4 };
-            InsertCell(headerRow, 1, "Наименование", CellValues.String, 1);
-            InsertCell(headerRow, 2, "Цена", CellValues.String, 1);
-            InsertCell(headerRow, 3, "Кол-во", CellValues.String, 1);
-            InsertCell(headerRow, 4, "Сумма", CellValues.String, 1);
-            sheetData.AppendChild(headerRow);
-
-            uint row_index = 5;
-            foreach (RowOfOrderDocumentModelDB dr in table.Rows!)
-            {
-                Row row = new() { RowIndex = row_index++ };
-                InsertCell(row, 1, dr.Offer!.GetName(), CellValues.String, 0);
-                InsertCell(row, 2, dr.Offer.Price.ToString(), CellValues.String, 0);
-                InsertCell(row, 3, dr.Quantity.ToString(), CellValues.String, 0);
-                InsertCell(row, 4, dr.Amount.ToString(), CellValues.String, 0);
-                sheetData.Append(row);
-            }
-            Row btRow = new() { RowIndex = row_index++ };
-            InsertCell(btRow, 1, "", CellValues.String, 0);
-            InsertCell(btRow, 2, "", CellValues.String, 0);
-            InsertCell(btRow, 3, "Итого:", CellValues.String, 0);
-            InsertCell(btRow, 4, table.Rows!.Sum(x => x.Amount).ToString(), CellValues.String, 0);
-            sheetData.Append(btRow);
-            sheetId++;
-        }
-
-        workbookPart.Workbook.Save();
-        spreadsheetDoc.Save();
-
-        XLSStream.Position = 0;
-        return XLSStream.ToArray();
-    }
-
-    private static byte[] ExportPrice(List<IGrouping<GoodsModelDB?, OfferGoodModelDB>> sourceTable, List<RubricIssueHelpdeskModelDB>? rubricsDb)
-    {
-        WorkbookPart? wBookPart = null;
-        using MemoryStream XLSStream = new();
-        using SpreadsheetDocument spreadsheetDoc = SpreadsheetDocument.Create(XLSStream, SpreadsheetDocumentType.Workbook);
-
-        wBookPart = spreadsheetDoc.AddWorkbookPart();
-        wBookPart.Workbook = new Workbook();
-        uint sheetId = 1;
-        WorkbookPart workbookPart = spreadsheetDoc.WorkbookPart ?? spreadsheetDoc.AddWorkbookPart();
-
-        WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
-
-        wbsp.Stylesheet = GenerateStyleSheet();
-        wbsp.Stylesheet.Save();
-
-        workbookPart.Workbook.Sheets = new Sheets();
-
-        Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? workbookPart.Workbook.AppendChild(new Sheets());
-
-        foreach (IGrouping<GoodsModelDB?, OfferGoodModelDB> table in sourceTable)
-        {
-            WorksheetPart wSheetPart = wBookPart.AddNewPart<WorksheetPart>();
-            Sheet sheet = new() { Id = workbookPart.GetIdOfPart(wSheetPart), SheetId = sheetId, Name = table.Key?.Name };
-            sheets.Append(sheet);
-
-            SheetData sheetData = new();
-            wSheetPart.Worksheet = new Worksheet(sheetData);
-
-            Columns lstColumns = wSheetPart.Worksheet.GetFirstChild<Columns>()!;
-            bool needToInsertColumns = false;
-            if (lstColumns == null)
-            {
-                lstColumns = new Columns();
-                needToInsertColumns = true;
-            }
-
-            lstColumns.Append(new Column() { Min = 1, Max = 1, Width = 100, CustomWidth = true, BestFit = true, });
-            lstColumns.Append(new Column() { Min = 2, Max = 2, Width = 8, CustomWidth = true, BestFit = true, });
-            lstColumns.Append(new Column() { Min = 3, Max = 3, Width = 8, CustomWidth = true, BestFit = true, });
-            lstColumns.Append(new Column() { Min = 4, Max = 4, Width = 15, CustomWidth = true, BestFit = true, });
-
-            if (needToInsertColumns)
-                wSheetPart.Worksheet.InsertAt(lstColumns, 0);
-
-            Row topRow = new() { RowIndex = 2 };
-            InsertCell(topRow, 1, $"Дата формирования: {DateTime.Now.GetHumanDateTime()}", CellValues.String, 0);
-            sheetData!.Append(topRow);
-
-            Row headerRow = new() { RowIndex = 4 };
-            InsertCell(headerRow, 1, "Наименование", CellValues.String, 1);
-            InsertCell(headerRow, 2, "Цена", CellValues.String, 1);
-            InsertCell(headerRow, 3, "Ед.изм.", CellValues.String, 1);
-            InsertCell(headerRow, 4, "Остаток/Склад", CellValues.String, 1);
-            sheetData.AppendChild(headerRow);
-
-            uint row_index = 5;
-            foreach (OfferGoodModelDB dr in table)
-            {
-                foreach (IGrouping<int, OfferAvailabilityModelDB> nodeG in dr.Registers!.GroupBy(x => x.WarehouseId))
-                {
-                    Row row = new() { RowIndex = row_index++ };
-                    sheetData.AppendChild(row);
-                    InsertCell(row, 1, dr!.GetName(), CellValues.String, 0);
-                    InsertCell(row, 2, dr.Price.ToString(), CellValues.String, 0);
-                    InsertCell(row, 3, dr.OfferUnit.DescriptionInfo(), CellValues.String, 0);
-                    InsertCell(row, 4, $"{nodeG.Sum(x => x.Quantity)} /{rubricsDb?.FirstOrDefault(r => r.Id == nodeG.Key)?.Name}", CellValues.String, 0);
-                };
-            }
-            Row btRow = new() { RowIndex = row_index++ };
-            InsertCell(btRow, 1, "", CellValues.String, 0);
-            InsertCell(btRow, 2, "", CellValues.String, 0);
-            InsertCell(btRow, 3, "Итого:", CellValues.String, 0);
-            InsertCell(btRow, 4, table!.Sum(x => x.Registers!.Sum(y => y.Quantity)).ToString(), CellValues.String, 0);
-            sheetData.Append(btRow);
-            sheetId++;
-        }
-
-        workbookPart.Workbook.Save();
-        spreadsheetDoc.Save();
-        XLSStream.Position = 0;
-
-        return XLSStream.ToArray();
-    }
-
-    /// <inheritdoc/>
-    public async Task<FileAttachModel> GetPriceFile()
+    public async Task<FileAttachModel> GetFullPriceFile()
     {
         string docName = $"Прайс на {DateTime.Now.GetHumanDateTime()}";
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
@@ -1191,8 +1019,178 @@ public partial class CommerceImplementService(
     }
 
 
+    static byte[] SaveOrderAsExcel(OrderDocumentModelDB orderDb)
+    {
+        string docName = $"Заказ {orderDb.Name} от {orderDb.CreatedAtUTC.GetHumanDateTime()}";
+        using MemoryStream XLSStream = new();
 
-    static Stylesheet GenerateStyleSheet()
+
+        WorkbookPart? wBookPart = null;
+
+        using SpreadsheetDocument spreadsheetDoc = SpreadsheetDocument.Create(XLSStream, SpreadsheetDocumentType.Workbook);
+
+        wBookPart = spreadsheetDoc.AddWorkbookPart();
+        wBookPart.Workbook = new Workbook();
+        uint sheetId = 1;
+        WorkbookPart workbookPart = spreadsheetDoc.WorkbookPart ?? spreadsheetDoc.AddWorkbookPart();
+
+        WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
+
+        wbsp.Stylesheet = GenerateExcelStyleSheet();
+        wbsp.Stylesheet.Save();
+
+        workbookPart.Workbook.Sheets = new Sheets();
+
+        Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? workbookPart.Workbook.AppendChild(new Sheets());
+
+        foreach (var table in orderDb.AddressesTabs!)
+        {
+            WorksheetPart wSheetPart = wBookPart.AddNewPart<WorksheetPart>();
+            Sheet sheet = new() { Id = workbookPart.GetIdOfPart(wSheetPart), SheetId = sheetId, Name = table.AddressOrganization?.Name };
+            sheets.Append(sheet);
+
+            SheetData sheetData = new();
+            wSheetPart.Worksheet = new Worksheet(sheetData);
+
+            Columns lstColumns = wSheetPart.Worksheet.GetFirstChild<Columns>()!;
+            bool needToInsertColumns = false;
+            if (lstColumns == null)
+            {
+                lstColumns = new Columns();
+                needToInsertColumns = true;
+            }
+
+            lstColumns.Append(new Column() { Min = 1, Max = 1, Width = 100, CustomWidth = true, BestFit = true, });
+            lstColumns.Append(new Column() { Min = 2, Max = 2, Width = 8, CustomWidth = true, BestFit = true, });
+            lstColumns.Append(new Column() { Min = 3, Max = 3, Width = 8, CustomWidth = true, BestFit = true, });
+            lstColumns.Append(new Column() { Min = 4, Max = 4, Width = 15, CustomWidth = true, BestFit = true, });
+
+            if (needToInsertColumns)
+                wSheetPart.Worksheet.InsertAt(lstColumns, 0);
+
+            Row topRow = new() { RowIndex = 2 };
+            InsertExcelCell(topRow, 1, $"Адрес доставки: {table.AddressOrganization?.Address}", CellValues.String, 0);
+            sheetData!.Append(topRow);
+
+            Row headerRow = new() { RowIndex = 4 };
+            InsertExcelCell(headerRow, 1, "Наименование", CellValues.String, 1);
+            InsertExcelCell(headerRow, 2, "Цена", CellValues.String, 1);
+            InsertExcelCell(headerRow, 3, "Кол-во", CellValues.String, 1);
+            InsertExcelCell(headerRow, 4, "Сумма", CellValues.String, 1);
+            sheetData.AppendChild(headerRow);
+
+            uint row_index = 5;
+            foreach (RowOfOrderDocumentModelDB dr in table.Rows!)
+            {
+                Row row = new() { RowIndex = row_index++ };
+                InsertExcelCell(row, 1, dr.Offer!.GetName(), CellValues.String, 0);
+                InsertExcelCell(row, 2, dr.Offer.Price.ToString(), CellValues.String, 0);
+                InsertExcelCell(row, 3, dr.Quantity.ToString(), CellValues.String, 0);
+                InsertExcelCell(row, 4, dr.Amount.ToString(), CellValues.String, 0);
+                sheetData.Append(row);
+            }
+            Row btRow = new() { RowIndex = row_index++ };
+            InsertExcelCell(btRow, 1, "", CellValues.String, 0);
+            InsertExcelCell(btRow, 2, "", CellValues.String, 0);
+            InsertExcelCell(btRow, 3, "Итого:", CellValues.String, 0);
+            InsertExcelCell(btRow, 4, table.Rows!.Sum(x => x.Amount).ToString(), CellValues.String, 0);
+            sheetData.Append(btRow);
+            sheetId++;
+        }
+
+        workbookPart.Workbook.Save();
+        spreadsheetDoc.Save();
+
+        XLSStream.Position = 0;
+        return XLSStream.ToArray();
+    }
+
+    static byte[] ExportPrice(List<IGrouping<GoodsModelDB?, OfferGoodModelDB>> sourceTable, List<RubricIssueHelpdeskModelDB>? rubricsDb)
+    {
+        WorkbookPart? wBookPart = null;
+        using MemoryStream XLSStream = new();
+        using SpreadsheetDocument spreadsheetDoc = SpreadsheetDocument.Create(XLSStream, SpreadsheetDocumentType.Workbook);
+
+        wBookPart = spreadsheetDoc.AddWorkbookPart();
+        wBookPart.Workbook = new Workbook();
+        uint sheetId = 1;
+        WorkbookPart workbookPart = spreadsheetDoc.WorkbookPart ?? spreadsheetDoc.AddWorkbookPart();
+
+        WorkbookStylesPart wbsp = workbookPart.AddNewPart<WorkbookStylesPart>();
+
+        wbsp.Stylesheet = GenerateExcelStyleSheet();
+        wbsp.Stylesheet.Save();
+
+        workbookPart.Workbook.Sheets = new Sheets();
+
+        Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? workbookPart.Workbook.AppendChild(new Sheets());
+
+        foreach (IGrouping<GoodsModelDB?, OfferGoodModelDB> table in sourceTable)
+        {
+            WorksheetPart wSheetPart = wBookPart.AddNewPart<WorksheetPart>();
+            Sheet sheet = new() { Id = workbookPart.GetIdOfPart(wSheetPart), SheetId = sheetId, Name = table.Key?.Name };
+            sheets.Append(sheet);
+
+            SheetData sheetData = new();
+            wSheetPart.Worksheet = new Worksheet(sheetData);
+
+            Columns lstColumns = wSheetPart.Worksheet.GetFirstChild<Columns>()!;
+            bool needToInsertColumns = false;
+            if (lstColumns == null)
+            {
+                lstColumns = new Columns();
+                needToInsertColumns = true;
+            }
+
+            lstColumns.Append(new Column() { Min = 1, Max = 1, Width = 100, CustomWidth = true, BestFit = true, });
+            lstColumns.Append(new Column() { Min = 2, Max = 2, Width = 8, CustomWidth = true, BestFit = true, });
+            lstColumns.Append(new Column() { Min = 3, Max = 3, Width = 8, CustomWidth = true, BestFit = true, });
+            lstColumns.Append(new Column() { Min = 4, Max = 4, Width = 15, CustomWidth = true, BestFit = true, });
+
+            if (needToInsertColumns)
+                wSheetPart.Worksheet.InsertAt(lstColumns, 0);
+
+            Row topRow = new() { RowIndex = 2 };
+            InsertExcelCell(topRow, 1, $"Дата формирования: {DateTime.Now.GetHumanDateTime()}", CellValues.String, 0);
+            sheetData!.Append(topRow);
+
+            Row headerRow = new() { RowIndex = 4 };
+            InsertExcelCell(headerRow, 1, "Наименование", CellValues.String, 1);
+            InsertExcelCell(headerRow, 2, "Цена", CellValues.String, 1);
+            InsertExcelCell(headerRow, 3, "Ед.изм.", CellValues.String, 1);
+            InsertExcelCell(headerRow, 4, "Остаток/Склад", CellValues.String, 1);
+            sheetData.AppendChild(headerRow);
+
+            uint row_index = 5;
+            foreach (OfferGoodModelDB dr in table)
+            {
+                foreach (IGrouping<int, OfferAvailabilityModelDB> nodeG in dr.Registers!.GroupBy(x => x.WarehouseId))
+                {
+                    Row row = new() { RowIndex = row_index++ };
+                    sheetData.AppendChild(row);
+                    InsertExcelCell(row, 1, dr!.GetName(), CellValues.String, 0);
+                    InsertExcelCell(row, 2, dr.Price.ToString(), CellValues.String, 0);
+                    InsertExcelCell(row, 3, dr.OfferUnit.DescriptionInfo(), CellValues.String, 0);
+                    InsertExcelCell(row, 4, $"{nodeG.Sum(x => x.Quantity)} /{rubricsDb?.FirstOrDefault(r => r.Id == nodeG.Key)?.Name}", CellValues.String, 0);
+                };
+            }
+            Row btRow = new() { RowIndex = row_index++ };
+            InsertExcelCell(btRow, 1, "", CellValues.String, 0);
+            InsertExcelCell(btRow, 2, "", CellValues.String, 0);
+            InsertExcelCell(btRow, 3, "Итого:", CellValues.String, 0);
+            InsertExcelCell(btRow, 4, table!.Sum(x => x.Registers!.Sum(y => y.Quantity)).ToString(), CellValues.String, 0);
+            sheetData.Append(btRow);
+            sheetId++;
+        }
+
+        workbookPart.Workbook.Save();
+        spreadsheetDoc.Save();
+        XLSStream.Position = 0;
+
+        return XLSStream.ToArray();
+    }
+
+    static Stylesheet GenerateExcelStyleSheet()
     {
         return new Stylesheet(
             new Fonts(
@@ -1289,7 +1287,7 @@ public partial class CommerceImplementService(
         );
     }
 
-    static void InsertCell(Row row, int cell_num, string val, CellValues type, uint styleIndex)
+    static void InsertExcelCell(Row row, int cell_num, string val, CellValues type, uint styleIndex)
     {
         Cell? refCell = null;
         Cell newCell = new() { CellReference = cell_num.ToString() + ":" + row.RowIndex?.ToString(), StyleIndex = styleIndex };
@@ -1301,10 +1299,10 @@ public partial class CommerceImplementService(
     }
 }
 
-internal record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);
+record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);
 
-internal record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row, OfferGoodModelDB Offer, GoodsModelDB Goods);
+record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row, OfferGoodModelDB Offer, GoodsModelDB Goods);
 
-internal record WarehouseRowDocumentRecord(int WarehouseId, RowOfOrderDocumentModelDB Row);
+record WarehouseRowDocumentRecord(int WarehouseId, RowOfOrderDocumentModelDB Row);
 
-internal record RowOrderDocumentRecord(int DocumentId, StatusesDocumentsEnum DocumentStatus, int OfferId, int GoodsId, decimal Quantity, int WarehouseId);
+record RowOrderDocumentRecord(int DocumentId, StatusesDocumentsEnum DocumentStatus, int OfferId, int GoodsId, decimal Quantity, int WarehouseId);

@@ -21,7 +21,7 @@ public class PriceFullFileGetReceive(ICommerceService commRepo)
     {
         return new()
         {
-            Response = await commRepo.GetPriceFile(),
+            Response = await commRepo.GetFullPriceFile(),
         };
     }
 }

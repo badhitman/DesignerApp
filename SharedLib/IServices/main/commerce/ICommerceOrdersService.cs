@@ -12,12 +12,7 @@ public partial interface ICommerceService
     /// <summary>
     /// Get full price file Excel (*.xlsx)
     /// </summary>
-    public Task<FileAttachModel> GetPriceFile();
-
-    /// <summary>
-    /// Сохранить заказ в виде файла Excel (*.xlsx)
-    /// </summary>
-    public byte[] SaveOrderAsExcel(OrderDocumentModelDB orderDb);
+    public Task<FileAttachModel> GetFullPriceFile();
 
     /// <summary>
     /// Get order report file
