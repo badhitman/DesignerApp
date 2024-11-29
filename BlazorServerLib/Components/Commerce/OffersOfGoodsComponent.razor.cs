@@ -25,15 +25,6 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
 
 
     bool _hideMultiplicity;
-    bool HideMultiplicity
-    {
-        get => _hideMultiplicity;
-        set
-        {
-            _hideMultiplicity = value;
-            InvokeAsync(SaveHideMultiplicity);
-        }
-    }
 
     bool _hideWorth;
     bool HideWorth
@@ -63,31 +54,17 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
         await table.ReloadServerData();
     }
 
-    async void SaveHideMultiplicity()
-    {
-        await SetBusy();
-        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(HideMultiplicity, GlobalStaticConstants.CloudStorageMetadata.HideMultiplicityOffers, true);
-        await SetBusy(false);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        await table.ReloadServerData();
-    }
-
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         await SetBusy();
-        TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.HideWorthOffers);
-        if (!res.Success())
-            SnackbarRepo.ShowMessagesResponse(res.Messages);
-        else
-            _hideWorth = res.Response == true;
 
-        res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.HideMultiplicityOffers);
-        if (!res.Success())
-            SnackbarRepo.ShowMessagesResponse(res.Messages);
-        else
-            _hideMultiplicity = res.Response == true;
+        List<Task> tasks = [
+            Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.HideWorthOffers); if (!res.Success()) SnackbarRepo.ShowMessagesResponse(res.Messages); else _hideWorth = res.Response == true; }),
+            Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.HideMultiplicityOffers); if (!res.Success()) SnackbarRepo.ShowMessagesResponse(res.Messages); else _hideMultiplicity = res.Response == true;})];
+
+        await Task.WhenAll(tasks);
 
         await SetBusy(false);
     }

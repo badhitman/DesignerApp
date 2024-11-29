@@ -1,4 +1,5 @@
-﻿@using MudBlazor
+﻿@using BlazorWebLib.Components.ParametersShared
+@using MudBlazor
 @inherits BlazorBusyComponentRegistersModel
 
 <style>
@@ -34,7 +35,7 @@
             <MudTh>Номенклатура</MudTh>
             <MudTh>Название</MudTh>
             <MudTh>Цена@(HideWorth ? "" : "/Стоимость")</MudTh>
-            @if (!HideMultiplicity)
+            @if (!_hideMultiplicity)
             {
                 <MudTh>Кратность</MudTh>
             }
@@ -60,7 +61,7 @@
                     <PricesRulesForOfferComponent OfferGood="context" />
                 }
             </MudTd>
-            @if (!HideMultiplicity)
+            @if (!_hideMultiplicity)
             {
                 <MudTd DataLabel="Multiplicity">@context.Multiplicity</MudTd>
             }
@@ -89,25 +90,10 @@
     <DialogContent>
         <ul class="list-group list-group-flush">
             <li class="list-group-item my-2">
-                <h6 class="card-subtitle mb-2 text-body-secondary">Колонка кратности</h6>
-                <div class="hstack gap-3">
-                    <MudSwitch @bind-Value="HideMultiplicity" ThumbIcon="@(HideMultiplicity == false ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(HideMultiplicity == false ? Color.Success : Color.Error)">Кратность: отображение колонки</MudSwitch>
-                    <span class="text-info">
-                        @(HideMultiplicity == true ? "Колонка кратности скрыта" : "Колонка кратности отображается")
-                    </span>
-                </div>
-                <div class="form-text">
-                    Цена отображается не зависимо от настроек
-                </div>
+                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.HideMultiplicityOffers" Title="Колонка кратности" Label="Кратность: отображение колонки" HintTrue="Колонка кратности скрыта" HintFalse="Колонка кратности отображается" />
             </li>
             <li class="list-group-item my-2">
-                <h6 class="card-subtitle mb-2 text-body-secondary">Стоимость</h6>
-                <div class="hstack gap-3">
-                    <MudSwitch @bind-Value="HideWorth" ThumbIcon="@(HideWorth == false ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(HideWorth == false ? Color.Success : Color.Error)">Отображение информации</MudSwitch>
-                    <span class="text-info">
-                        @(HideWorth == true ? "Стоимость не отображается" : "Стоимость отображается")
-                    </span>
-                </div>
+                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.HideWorthOffers" Title="Стоимость" Label="Отображение информации" HintTrue="Стоимость не отображается" HintFalse="Стоимость отображается" />
             </li>
         </ul>
     </DialogContent>
