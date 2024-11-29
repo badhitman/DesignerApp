@@ -1,4 +1,5 @@
-﻿@using MudBlazor
+﻿@using BlazorWebLib.Components.ParametersShared
+@using MudBlazor
 @inherits BlazorBusyComponentBaseModel
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
@@ -32,15 +33,7 @@
                 }
             </li>
             <li class="list-group-item">
-                <div class="hstack gap-3">
-                    <MudSwitch @bind-Value="ShowDisabledRubrics" ThumbIcon="@(ShowDisabledRubrics == true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowDisabledRubrics == true ? Color.Success : Color.Error)">Отображение деактивированных рубрик клиенту</MudSwitch>
-                    <span class="text-info">
-                        @(ShowDisabledRubrics == true ? "Элементы будут отображаться, но не доступны (disable) для выбора" : "Элементы будут скрыты")
-                    </span>
-                </div>
-                <div class="form-text">
-                    При создании обращения в процессе выбора рубрики неактивные категории/темы/рубрики можно скрыть, а можно отобразить без возможности их выбирать.
-                </div>
+                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ParameterShowDisabledRubrics" Title="Отображение деактивированных рубрик клиенту" Label="При создании обращения в процессе выбора рубрики неактивные категории/темы/рубрики можно скрыть, а можно отобразить без возможности их выбирать." HintTrue="Элементы будут отображаться, но не доступны (disable) для выбора" HintFalse="Элементы будут скрыты" />
             </li>
         </ul>
         <hr />

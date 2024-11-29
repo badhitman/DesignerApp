@@ -586,16 +586,13 @@ public partial class CommerceImplementService(
                         OfferAvailabilityModelDB? rowReg = registersOffersDb.FirstOrDefault(x => x.OfferId == rowDoc.OfferId && x.WarehouseId == tabAddr.WarehouseId);
                         if (rowReg is null)
                         {
-                            tasks.Add(Task.Run(async () =>
+                            await context.AddAsync(new OfferAvailabilityModelDB()
                             {
-                                await context.AddAsync(new OfferAvailabilityModelDB()
-                                {
-                                    WarehouseId = tabAddr.WarehouseId,
-                                    GoodsId = rowDoc.GoodsId,
-                                    OfferId = rowDoc.OfferId,
-                                    Quantity = rowDoc.Quantity,
-                                });
-                            }));
+                                WarehouseId = tabAddr.WarehouseId,
+                                GoodsId = rowDoc.GoodsId,
+                                OfferId = rowDoc.OfferId,
+                                Quantity = rowDoc.Quantity,
+                            });
                         }
                         else
                         {
@@ -604,8 +601,7 @@ public partial class CommerceImplementService(
                         }
                     }
                 }
-                await Task.WhenAll(tasks);
-                tasks.Clear();
+                
                 await context.SaveChangesAsync();
 
                 string subject_email = "Создан новый заказ";
@@ -1015,7 +1011,7 @@ public partial class CommerceImplementService(
         return XLSStream.ToArray();
     }
 
-    private byte[] ExportPrice(List<IGrouping<GoodsModelDB?, OfferGoodModelDB>> sourceTable, List<RubricIssueHelpdeskModelDB>? rubricsDb)
+    private static byte[] ExportPrice(List<IGrouping<GoodsModelDB?, OfferGoodModelDB>> sourceTable, List<RubricIssueHelpdeskModelDB>? rubricsDb)
     {
         WorkbookPart? wBookPart = null;
         using MemoryStream XLSStream = new();
