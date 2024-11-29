@@ -34,7 +34,7 @@
         <HeaderContent>
             <MudTh>Номенклатура</MudTh>
             <MudTh>Название</MudTh>
-            <MudTh>Цена@(HideWorth ? "" : "/Стоимость")</MudTh>
+            <MudTh>Цена@(_hideWorth ? "" : "/Стоимость")</MudTh>
             @if (!_hideMultiplicity)
             {
                 <MudTh>Кратность</MudTh>
@@ -55,7 +55,7 @@
                 </AuthorizeView>
             </MudTd>
             <MudTd DataLabel="Price">
-                @($"{context.Price}{(HideWorth ? "" : $"/{Math.Round(context.Price / context.Multiplicity, 2)}")}")
+                @($"{context.Price}{(_hideWorth ? "" : $"/{Math.Round(context.Price / context.Multiplicity, 2)}")}")
                 @if (CurrentUserSession!.IsAdmin)
                 {
                     <PricesRulesForOfferComponent OfferGood="context" />

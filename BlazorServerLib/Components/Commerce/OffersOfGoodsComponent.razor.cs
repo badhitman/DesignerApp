@@ -25,17 +25,7 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
 
 
     bool _hideMultiplicity;
-
     bool _hideWorth;
-    bool HideWorth
-    {
-        get => _hideWorth;
-        set
-        {
-            _hideWorth = value;
-            InvokeAsync(SaveHideWorth);
-        }
-    }
 
     private MudTable<OfferGoodModelDB> table = default!;
     bool _visibleChangeConfig;
@@ -44,15 +34,6 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
         FullWidth = true,
         CloseButton = true
     };
-
-    async void SaveHideWorth()
-    {
-        await SetBusy();
-        TResponseModel<int> res = await StorageTransmissionRepo.SaveParameter<bool?>(HideWorth, GlobalStaticConstants.CloudStorageMetadata.HideWorthOffers, true);
-        await SetBusy(false);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        await table.ReloadServerData();
-    }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
