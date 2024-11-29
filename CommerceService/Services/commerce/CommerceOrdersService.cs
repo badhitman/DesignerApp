@@ -452,12 +452,21 @@ public partial class CommerceImplementService(
             return res;
         }
 
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         string msg, waMsg;
         DateTime dtu = DateTime.UtcNow;
         req.LastAtUpdatedUTC = dtu;
+
+        OfferGoodModelDB?[] allOffersReq = req.AddressesTabs!
+            .SelectMany(x => x.Rows!)
+            .Select(x => x.Offer)
+            .DistinctBy(x => x!.Id)
+            .ToArray();
+
+        allOffersReq = GlobalTools.CreateDeepCopy(allOffersReq)!;
+
         req.PrepareForSave();
         List<Task> tasks;
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         if (req.Id < 1)
         {
             if (req.AddressesTabs is null || req.AddressesTabs.Count == 0)
@@ -531,8 +540,12 @@ public partial class CommerceImplementService(
             int[] _offersIds = [.. _offersOfDocument.Select(x => x.Row.OfferId)];
             List<OfferAvailabilityModelDB> registersOffersDb = default!;
             TResponseModel<int?> res_RubricIssueForCreateOrder = default!;
+            TResponseModel<string?>? CommerceNewOrderSubjectNotification = null, CommerceNewOrderBodyNotification = null, CommerceNewOrderBodyNotificationTelegram = null;
 
             tasks = [
+                Task.Run(async () => { CommerceNewOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification); }),
+                Task.Run(async () => { CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification); }),
+                Task.Run(async () => { CommerceNewOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram); }),
                 Task.Run(async () => { registersOffersDb = await context.OffersAvailability.Where(x => _offersIds.Any(y => y == x.OfferId)).ToListAsync();}),
                 Task.Run(async () => { res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder);})];
 
@@ -551,7 +564,6 @@ public partial class CommerceImplementService(
             }
 
             await Task.WhenAll(tasks);
-            tasks.Clear();
 
             req.CreatedAtUTC = dtu;
             try
@@ -559,6 +571,30 @@ public partial class CommerceImplementService(
                 await context.AddAsync(req);
                 await context.SaveChangesAsync();
                 res.Response = req.Id;
+
+                foreach (TabAddressForOrderModelDb tabAddr in req.AddressesTabs)
+                {
+                    foreach (RowOfOrderDocumentModelDB rowDoc in tabAddr.Rows!)
+                    {
+                        OfferAvailabilityModelDB? rowReg = registersOffersDb.FirstOrDefault(x => x.OfferId == rowDoc.OfferId && x.WarehouseId == tabAddr.WarehouseId);
+                        OfferGoodModelDB offerInfo = allOffersReq.First(x => x?.Id == rowDoc.OfferId)!;
+                        if (rowReg is null)
+                            res.AddError($"'{offerInfo.Name}' (склад: `{getRubrics.Response.First(x => x.Id == tabAddr.WarehouseId).Name}`) нет в наличии");
+                        else if (rowReg.Quantity < rowDoc.Quantity)
+                            res.AddError($"'{offerInfo.Name}' (склад: `{getRubrics.Response.First(x => x.Id == tabAddr.WarehouseId).Name}`) не достаточно. Текущий остаток: {rowReg.Quantity}");
+                        else
+                        {
+                            rowReg.Quantity -= rowDoc.Quantity;
+                            context.Update(rowReg);
+                        }
+                    }
+                }
+
+                if (!res.Success())
+                {
+                    await transaction.RollbackAsync();
+                    return res;
+                }
 
                 TAuthRequestModel<IssueUpdateRequestModel> issue_new = new()
                 {
@@ -579,45 +615,15 @@ public partial class CommerceImplementService(
                     return res;
                 }
 
-                foreach (TabAddressForOrderModelDb tabAddr in req.AddressesTabs)
-                {
-                    foreach (RowOfOrderDocumentModelDB rowDoc in tabAddr.Rows!)
-                    {
-                        OfferAvailabilityModelDB? rowReg = registersOffersDb.FirstOrDefault(x => x.OfferId == rowDoc.OfferId && x.WarehouseId == tabAddr.WarehouseId);
-                        if (rowReg is null)
-                        {
-                            await context.AddAsync(new OfferAvailabilityModelDB()
-                            {
-                                WarehouseId = tabAddr.WarehouseId,
-                                GoodsId = rowDoc.GoodsId,
-                                OfferId = rowDoc.OfferId,
-                                Quantity = rowDoc.Quantity,
-                            });
-                        }
-                        else
-                        {
-                            rowReg.Quantity -= rowDoc.Quantity;
-                            context.Update(rowReg);
-                        }
-                    }
-                }
-                
                 await context.SaveChangesAsync();
 
                 string subject_email = "Создан новый заказ";
                 DateTime _dt = DateTime.UtcNow.GetCustomTime();
                 string _dtAsString = $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
                 string _about_order = $"'{req.Name}' {_dtAsString}";
-                TResponseModel<string?>? CommerceNewOrderSubjectNotification = null, CommerceNewOrderBodyNotification = null, CommerceNewOrderBodyNotificationTelegram = null;
 
                 req.HelpdeskId = issue.Response;
                 context.Update(req);
-
-                tasks = [
-                    context.SaveChangesAsync(),
-                    Task.Run(async () => { CommerceNewOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification); }),
-                    Task.Run(async () => { CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification); }),
-                    Task.Run(async () => { CommerceNewOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram); })];
 
                 await Task.WhenAll(tasks);
                 tasks.Clear();
