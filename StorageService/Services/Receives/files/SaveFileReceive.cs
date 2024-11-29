@@ -4,6 +4,7 @@
 
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver.GridFS;
 using Newtonsoft.Json;
 using MongoDB.Driver;
@@ -12,7 +13,6 @@ using MongoDB.Bson;
 using ImageMagick;
 using SharedLib;
 using DbcLib;
-using Microsoft.Extensions.Options;
 
 namespace Transmission.Receives.storage;
 
@@ -24,7 +24,7 @@ public class SaveFileReceive(
     IMongoDatabase mongoFs,
     IHelpdeskRemoteTransmissionService HelpdeskRepo,
     ICommerceRemoteTransmissionService commRepo,
-IOptions<WebConfigModel> webConfig,
+    IOptions<WebConfigModel> webConfig,
     IDbContextFactory<StorageContext> cloudParametersDbFactory)
     : IResponseReceive<StorageImageMetadataModel?, StorageFileModelDB?>
 {
@@ -101,8 +101,7 @@ IOptions<WebConfigModel> webConfig,
                 PrefixPropertyName = GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME,
             });
         }
-        //AsyncServiceScope sp = spRepo.CreateAsyncScope();
-        //WebConfigModel webConfig = sp.ServiceProvider.GetRequiredService<WebConfigModel>();
+
         if (req.OwnerPrimaryKey.HasValue && req.OwnerPrimaryKey.Value > 0)
         {
             PulseRequestModel reqPulse;
@@ -134,8 +133,8 @@ IOptions<WebConfigModel> webConfig,
                                     SenderActionUserId = GlobalStaticConstants.Roles.System,
                                 }
                             };
-                            
-                            await HelpdeskRepo.PulsePush(reqPulse);
+
+                            await HelpdeskRepo.PulsePush(reqPulse, false);
                         }
                     }
                     break;
@@ -156,7 +155,7 @@ IOptions<WebConfigModel> webConfig,
                             SenderActionUserId = GlobalStaticConstants.Roles.System,
                         }
                     };
-                    await HelpdeskRepo.PulsePush(reqPulse);
+                    await HelpdeskRepo.PulsePush(reqPulse, false);
                     break;
             }
         }

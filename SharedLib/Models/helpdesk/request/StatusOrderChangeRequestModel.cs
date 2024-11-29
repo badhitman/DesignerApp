@@ -9,8 +9,5 @@ namespace SharedLib;
 /// </summary>
 public class StatusOrderChangeRequestModel : StatusChangeRequestModel
 {
-    /// <summary>
-    /// VersionDocument
-    /// </summary>
-    public required Guid VersionDocument { get; set; }
+
 }

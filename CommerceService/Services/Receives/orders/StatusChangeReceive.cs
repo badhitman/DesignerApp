@@ -14,14 +14,15 @@ namespace Transmission.Receives.commerce;
 public class StatusChangeReceive(ICommerceService commRepo, ILogger<StatusChangeReceive> LoggerRepo) : IResponseReceive<StatusOrderChangeRequestModel?, bool?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.StatusChangeOrderReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.StatusChangeOrderByHelpDeskDocumentIdReceive;
+
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> ResponseHandleAction(StatusOrderChangeRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
 
-        TResponseModel<bool> res = await commRepo.StatusOrderChange(req);
+        TResponseModel<bool> res = await commRepo.StatusesOrdersChangeByHelpdeskDocumentId(req);
         return new()
         {
             Messages = res.Messages,

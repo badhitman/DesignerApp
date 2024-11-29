@@ -19,23 +19,6 @@ public partial class TelegramConfigComponent : BlazorBusyComponentBaseModel
 
 
     bool _isCommandModeTelegramBot;
-    bool IsCommandModeTelegramBot
-    {
-        get => _isCommandModeTelegramBot;
-        set
-        {
-            _isCommandModeTelegramBot = value;
-            InvokeAsync(SaveMode);
-        }
-    }
-
-    async void SaveMode()
-    {
-        await SetBusy();
-        TResponseModel<int> res = await SerializeStorageRepo.SaveParameter<bool?>(IsCommandModeTelegramBot, GlobalStaticConstants.CloudStorageMetadata.ParameterIsCommandModeTelegramBot, false);
-        IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-    }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

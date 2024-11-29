@@ -36,14 +36,14 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
             }
         };
         await SetBusy();
-        TResponseModel<bool> send_pulse = await HelpdeskRepo.PulsePush(req_pulse);
+        await HelpdeskRepo.PulsePush(req_pulse, false);
         TResponseModel<int> add_msg_system = await HelpdeskRepo.MessageCreateOrUpdate(new()
         {
             SenderActionUserId = GlobalStaticConstants.Roles.System,
             Payload = new() { MessageText = $"<b>Пользователь {CurrentUserSession!.UserName} отправил сообщение Telegram пользователю user-tg#{msg.UserTelegramId}</b>: {msg.Message}", IssueId = Issue.Id }
         });
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(send_pulse.Messages);
+
         SnackbarRepo.ShowMessagesResponse(add_msg_system.Messages);
     }
 

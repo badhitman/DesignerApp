@@ -758,7 +758,7 @@ public static partial class GlobalStaticConstants
         public readonly static string ReadFileCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.FILE_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string StatusChangeOrderReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.STATUS_CONTROLLER_NAME}-for-{Routes.ORDER_CONTROLLER_NAME}", Routes.CHANGE_ACTION_NAME);
+        public readonly static string StatusChangeOrderByHelpDeskDocumentIdReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.STATUS_CONTROLLER_NAME}-for-{Routes.ORDER_CONTROLLER_NAME}", $"{Routes.CHANGE_ACTION_NAME}-{Routes.UPDATE_ACTION_NAME}");
 
         /// <inheritdoc/>
         public readonly static string GoodsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);

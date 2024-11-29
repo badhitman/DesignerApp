@@ -164,26 +164,14 @@ public partial class CommerceImplementService(
         }
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrderRowsQueryRecord> queryDocumentDb = from r in context.RowsOfOrdersDocuments
+                                                           join d in context.OrdersDocuments on r.OrderDocumentId equals d.Id
+                                                           join t in context.TabsAddressesForOrders.Where(x => x.Id == req.AddressForOrderTabId) on r.AddressForOrderTabId equals t.Id
+                                                           select new OrderRowsQueryRecord(d, t, r);
 
-        if (await context.RowsOfOrdersDocuments.AnyAsync(x => x.Id != req.Id && x.OrderDocumentId == req.OrderDocumentId && x.OfferId == req.OfferId))
-        {
-            res.AddError($"В документе не указан склад: удаление невозможно");
-            return res;
-        }
-
-        var queryDocumentDb = from r in context.RowsOfOrdersDocuments.Where(x => x.Id == req.Id)
-                              join d in context.OrdersDocuments on r.OrderDocumentId equals d.Id
-                              join t in context.TabsAddressesForOrders on r.OrderDocumentId equals t.Id
-                              select new { Document = d, TabAddress = t, Row = r };
-
-        StatusesDocumentsEnum orderDocStatus = await queryDocumentDb
-            .Select(x => x.Document.StatusDocument)
-            .FirstAsync();
-
-        int _warehouseId = await context.TabsAddressesForOrders.Where(x => x.Id == req.OrderDocumentId).Select(x => x.WarehouseId).FirstAsync();
-        bool conflict = await context.RowsOfOrdersDocuments.AnyAsync(x => x.Id != req.Id && x.AddressForOrderTabId == req.AddressForOrderTabId && x.OfferId == req.OfferId);
-
-        List<Task> tasks = [];
+        int _warehouseId = await queryDocumentDb.Select(x => x.TabAddress.WarehouseId).FirstAsync();
+        bool conflict = await context.RowsOfOrdersDocuments
+            .AnyAsync(x => x.Id != req.Id && x.AddressForOrderTabId == req.AddressForOrderTabId && x.OfferId == req.OfferId);
 
         if (_warehouseId == 0)
             res.AddError($"В документе не указан склад: обновление невозможно");
@@ -200,7 +188,7 @@ public partial class CommerceImplementService(
 
         using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
 
-        List<LockOffersAvailabilityModelDB> lokers = [new()
+        List<LockOffersAvailabilityModelDB> lockers = [new()
         {
             LockerName = nameof(OfferAvailabilityModelDB),
             LockerId = req.OfferId,
@@ -209,7 +197,7 @@ public partial class CommerceImplementService(
 
         if (rowDb is not null && rowDb.OfferId != req.OfferId)
         {
-            lokers.Add(new()
+            lockers.Add(new()
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
                 LockerId = rowDb.OfferId,
@@ -220,7 +208,7 @@ public partial class CommerceImplementService(
         string msg;
         try
         {
-            await context.AddRangeAsync(lokers);
+            await context.AddRangeAsync(lockers);
             await context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -231,6 +219,10 @@ public partial class CommerceImplementService(
             res.AddError($"{msg}{ex.Message}");
             return res;
         }
+
+        StatusesDocumentsEnum orderDocStatus = await queryDocumentDb
+            .Select(x => x.Document.StatusDocument)
+            .FirstAsync();
 
         OfferAvailabilityModelDB? regOfferAv = await context
             .OffersAvailability
@@ -244,8 +236,7 @@ public partial class CommerceImplementService(
                 GoodsId = req.GoodsId,
                 WarehouseId = _warehouseId,
             };
-
-            tasks.Add(Task.Run(async () => await context.AddAsync(regOfferAv)));
+            await context.AddAsync(regOfferAv);
         }
 
         OfferAvailabilityModelDB? regOfferAvStorno = null;
@@ -259,33 +250,36 @@ public partial class CommerceImplementService(
             };
         }
 
-        tasks.Add(queryDocumentDb.Select(x => x.Document).ExecuteUpdateAsync(set => set
-                            .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
-                            .SetProperty(p => p.Version, Guid.NewGuid())));
-
         DateTime dtu = DateTime.UtcNow;
         await context.OrdersDocuments
                 .Where(x => x.Id == req.OrderDocumentId)
-                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.Version, Guid.NewGuid())
+                .SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
         if (req.Id < 1)
         {
             if (regOfferAv is not null && orderDocStatus != StatusesDocumentsEnum.Canceled)
                 regOfferAv.Quantity -= req.Quantity;
+            else
+                res.AddError($"");
+
+            if (regOfferAvStorno is not null)
+            {
+                regOfferAvStorno.Quantity += req.Quantity;
+                await context.AddAsync(regOfferAvStorno);
+            }
 
             req.Version = Guid.NewGuid();
             await context.AddAsync(req);
             await context.SaveChangesAsync();
             res.AddSuccess("Товар добавлен к заказу");
             res.Response = req.Id;
-            return res;
         }
-
         else
         {
             if (rowDb!.Version != req.Version)
             {
-                await Task.WhenAll(tasks);
                 await transaction.RollbackAsync();
                 msg = "Строка документа была уже кем-то изменена";
                 loggerRepo.LogError($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
@@ -309,17 +303,21 @@ public partial class CommerceImplementService(
                 }
             }
 
-            tasks.Add(Task.Run(async () => res.Response = await context.RowsOfOrdersDocuments
+            res.Response = await context.RowsOfOrdersDocuments
                        .Where(x => x.Id == req.Id)
                        .ExecuteUpdateAsync(set => set
                        .SetProperty(p => p.Quantity, req.Quantity)
                        .SetProperty(p => p.Amount, req.Amount)
-                       .SetProperty(p => p.Version, Guid.NewGuid()))));
+                       .SetProperty(p => p.Version, Guid.NewGuid()));
         }
 
-        context.RemoveRange(lokers);
-        await context.SaveChangesAsync();
-        await Task.WhenAll(tasks);
+        if(!res.Success())
+        {
+            await transaction.RollbackAsync();
+            return res;
+        }
+
+        context.RemoveRange(lockers);
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
         res.AddSuccess($"Обновление `строки документа-заказа` выполнено");
@@ -329,32 +327,29 @@ public partial class CommerceImplementService(
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> RowsForOrderDelete(int[] req)
     {
-
         string msg;
+        req = [.. req.Distinct()];
         TResponseModel<bool> res = new() { Response = req.Any(x => x > 0) };
         if (!res.Response)
         {
             res.AddError("Пустой запрос");
             return res;
         }
-        req = [.. req.Distinct()];
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-
         IQueryable<RowOfOrderDocumentModelDB> mainQuery = context.RowsOfOrdersDocuments.Where(x => req.Any(y => y == x.Id));
-        var q = from r in mainQuery
-                join d in context.OrdersDocuments on r.OrderDocumentId equals d.Id
-                join t in context.TabsAddressesForOrders on r.AddressForOrderTabId equals t.Id
-                select new
-                {
-                    DocumentId = d.Id,
-                    DocumentStatus = d.StatusDocument,
-                    r.OfferId,
-                    r.GoodsId,
-                    r.Quantity,
-                    t.WarehouseId,
-                };
-        var _allOffersOfDocuments = await q
+        IQueryable<RowOrderDocumentRecord> q = from r in mainQuery
+                                               join d in context.OrdersDocuments on r.OrderDocumentId equals d.Id
+                                               join t in context.TabsAddressesForOrders on r.AddressForOrderTabId equals t.Id
+                                               select new RowOrderDocumentRecord(
+                                                   d.Id,
+                                                   d.StatusDocument,
+                                                   r.OfferId,
+                                                   r.GoodsId,
+                                                   r.Quantity,
+                                                   t.WarehouseId
+                                               );
+        RowOrderDocumentRecord[] _allOffersOfDocuments = await q
            .ToArrayAsync();
 
         if (_allOffersOfDocuments.Length == 0)
@@ -364,8 +359,8 @@ public partial class CommerceImplementService(
         }
 
         DateTime dtu = DateTime.UtcNow;
-
         LockOffersAvailabilityModelDB[] offersLocked = _allOffersOfDocuments
+            .DistinctBy(x => new { x.OfferId, x.WarehouseId })
             .Select(x => new LockOffersAvailabilityModelDB()
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
@@ -374,7 +369,7 @@ public partial class CommerceImplementService(
             })
             .ToArray();
 
-        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(IsolationLevel.Serializable);
 
         try
         {
@@ -390,43 +385,43 @@ public partial class CommerceImplementService(
             return res;
         }
 
-        int[] _offersIds = [.. _allOffersOfDocuments.Select(x => x.OfferId)];
+        int[] _offersIds = [.. _allOffersOfDocuments.Select(x => x.OfferId).Distinct()];
 
         List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
            .Where(x => _offersIds.Any(y => y == x.OfferId))
            .ToListAsync();
-        int[] documents_ids = [.. _allOffersOfDocuments.Select(x => x.DocumentId)];
-        List<Task> tasks = [.. documents_ids.Select(doc_id => context.OrdersDocuments.Where(x => x.Id == doc_id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Version, Guid.NewGuid()).SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)))];
+
+        int[] documents_ids = [.. _allOffersOfDocuments.Select(x => x.DocumentId).Distinct()];
+        await context.OrdersDocuments.Where(x => documents_ids.Any(y => y == x.Id)).ExecuteUpdateAsync(set => set.SetProperty(p => p.Version, Guid.NewGuid()).SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow));
 
         foreach (var rowEl in _allOffersOfDocuments.Where(x => x.DocumentStatus != StatusesDocumentsEnum.Canceled))
         {
             OfferAvailabilityModelDB? offerRegister = registersOffersDb.FirstOrDefault(x => x.OfferId == rowEl.OfferId && x.WarehouseId == rowEl.WarehouseId);
             if (offerRegister is not null)
             {
-                offerRegister.Quantity -= rowEl.Quantity;
+                offerRegister.Quantity += rowEl.Quantity;
                 context.Update(offerRegister);
             }
             else
-                tasks.Add(Task.Run(async () =>
+            {
+                offerRegister = new()
                 {
-                    await context.OffersAvailability.AddAsync(new()
-                    {
-                        WarehouseId = rowEl.WarehouseId,
-                        GoodsId = rowEl.GoodsId,
-                        OfferId = rowEl.OfferId,
-                        Quantity = -rowEl.Quantity,
-                    });
-                }));
-
+                    WarehouseId = rowEl.WarehouseId,
+                    GoodsId = rowEl.GoodsId,
+                    OfferId = rowEl.OfferId,
+                    Quantity = +rowEl.Quantity,
+                };
+                await context.OffersAvailability.AddAsync(offerRegister);
+                registersOffersDb.Add(offerRegister);
+            }
         }
 
         if (offersLocked.Length != 0)
             context.RemoveRange(offersLocked);
 
-        tasks.Add(context.SaveChangesAsync());
-        tasks.Add(Task.Run(async () => { res.Response = await context.RowsOfOrdersDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0; }));
+        await context.SaveChangesAsync();
+        res.Response = await context.RowsOfOrdersDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0;
 
-        await Task.WhenAll(tasks);
         await transaction.CommitAsync();
         res.AddSuccess("Команда удаления выполнена");
         return res;
@@ -464,7 +459,6 @@ public partial class CommerceImplementService(
 
         allOffersReq = GlobalTools.CreateDeepCopy(allOffersReq)!;
 
-        req.PrepareForSave();
         List<Task> tasks;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         if (req.Id < 1)
@@ -504,9 +498,9 @@ public partial class CommerceImplementService(
                 return res;
             }
 
+            req.Id = 0;
             req.CreatedAtUTC = dtu;
             req.LastAtUpdatedUTC = dtu;
-            req.Id = 0;
             req.Version = Guid.NewGuid();
             req.StatusDocument = StatusesDocumentsEnum.Created;
 
@@ -537,7 +531,7 @@ public partial class CommerceImplementService(
                 return res;
             }
 
-            int[] _offersIds = [.. _offersOfDocument.Select(x => x.Row.OfferId)];
+            int[] _offersIds = [.. allOffersReq.Select(x => x!.Id)];
             List<OfferAvailabilityModelDB> registersOffersDb = default!;
             TResponseModel<int?> res_RubricIssueForCreateOrder = default!;
             TResponseModel<string?>? CommerceNewOrderSubjectNotification = null, CommerceNewOrderBodyNotification = null, CommerceNewOrderBodyNotificationTelegram = null;
@@ -564,36 +558,43 @@ public partial class CommerceImplementService(
             }
 
             await Task.WhenAll(tasks);
+            tasks.Clear();
 
+            req.AddressesTabs.ForEach(tabAddr =>
+            {
+                tabAddr.Rows!.ForEach(rowDoc =>
+                {
+                    OfferAvailabilityModelDB? rowReg = registersOffersDb.FirstOrDefault(x => x.OfferId == rowDoc.OfferId && x.WarehouseId == tabAddr.WarehouseId);
+                    OfferGoodModelDB offerInfo = allOffersReq.First(x => x?.Id == rowDoc.OfferId)!;
+
+                    if (rowReg is null)
+                        res.AddError($"'{offerInfo.Name}' (склад: `{getRubrics.Response.First(x => x.Id == tabAddr.WarehouseId).Name}`) нет в наличии");
+                    else if (rowReg.Quantity < rowDoc.Quantity)
+                        res.AddError($"'{offerInfo.Name}' (склад: `{getRubrics.Response.First(x => x.Id == tabAddr.WarehouseId).Name}`) не достаточно. Текущий остаток: {rowReg.Quantity}");
+                });
+            });
+            if (!res.Success())
+            {
+                await transaction.RollbackAsync();
+                return res;
+            }
+
+            req.PrepareForSave();
             req.CreatedAtUTC = dtu;
             try
             {
                 await context.AddAsync(req);
-                await context.SaveChangesAsync();
                 res.Response = req.Id;
 
                 foreach (TabAddressForOrderModelDb tabAddr in req.AddressesTabs)
                 {
                     foreach (RowOfOrderDocumentModelDB rowDoc in tabAddr.Rows!)
                     {
-                        OfferAvailabilityModelDB? rowReg = registersOffersDb.FirstOrDefault(x => x.OfferId == rowDoc.OfferId && x.WarehouseId == tabAddr.WarehouseId);
+                        OfferAvailabilityModelDB rowReg = registersOffersDb.First(x => x.OfferId == rowDoc.OfferId && x.WarehouseId == tabAddr.WarehouseId);
                         OfferGoodModelDB offerInfo = allOffersReq.First(x => x?.Id == rowDoc.OfferId)!;
-                        if (rowReg is null)
-                            res.AddError($"'{offerInfo.Name}' (склад: `{getRubrics.Response.First(x => x.Id == tabAddr.WarehouseId).Name}`) нет в наличии");
-                        else if (rowReg.Quantity < rowDoc.Quantity)
-                            res.AddError($"'{offerInfo.Name}' (склад: `{getRubrics.Response.First(x => x.Id == tabAddr.WarehouseId).Name}`) не достаточно. Текущий остаток: {rowReg.Quantity}");
-                        else
-                        {
-                            rowReg.Quantity -= rowDoc.Quantity;
-                            context.Update(rowReg);
-                        }
+                        rowReg.Quantity -= rowDoc.Quantity;
+                        context.Update(rowReg);
                     }
-                }
-
-                if (!res.Success())
-                {
-                    await transaction.RollbackAsync();
-                    return res;
                 }
 
                 TAuthRequestModel<IssueUpdateRequestModel> issue_new = new()
@@ -615,21 +616,13 @@ public partial class CommerceImplementService(
                     return res;
                 }
 
-                await context.SaveChangesAsync();
+                req.HelpdeskId = issue.Response;
+                context.Update(req);
 
                 string subject_email = "Создан новый заказ";
                 DateTime _dt = DateTime.UtcNow.GetCustomTime();
                 string _dtAsString = $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
                 string _about_order = $"'{req.Name}' {_dtAsString}";
-
-                req.HelpdeskId = issue.Response;
-                context.Update(req);
-
-                await Task.WhenAll(tasks);
-                tasks.Clear();
-
-                if (CommerceNewOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
-                    subject_email = CommerceNewOrderSubjectNotification.Response;
 
                 string ReplaceTags(string raw, bool clearMd = false)
                 {
@@ -639,6 +632,9 @@ public partial class CommerceImplementService(
                     .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{_webConf.BaseUri}/issue-card/{req.HelpdeskId}" : $"<a href='{_webConf.BaseUri}/issue-card/{req.HelpdeskId}'>{_about_order}</a>")
                     .Replace(GlobalStaticConstants.HostAddress, clearMd ? _webConf.BaseUri : $"<a href='{_webConf.BaseUri}'>{_webConf.BaseUri}</a>");
                 }
+
+                if (CommerceNewOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
+                    subject_email = CommerceNewOrderSubjectNotification.Response;
 
                 subject_email = ReplaceTags(subject_email);
                 res.AddSuccess(subject_email);
@@ -717,36 +713,29 @@ public partial class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel req)
+    public async Task<TResponseModel<bool>> StatusesOrdersChangeByHelpdeskDocumentId(StatusOrderChangeRequestModel req)
     {
         string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        OrderDocumentModelDB orderDb = await context
+        OrderDocumentModelDB[] ordersDb = await context
             .OrdersDocuments
+            .Where(x => x.HelpdeskId == req.DocumentId && x.StatusDocument != req.Step)
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows)
-            .FirstAsync(x => x.Id == req.DocumentId);
+            .ToArrayAsync();
 
         TResponseModel<bool> res = new();
 
-        if (orderDb.StatusDocument == req.Step)
+        if (ordersDb.Length == 0)
         {
-            msg = $"Документу #{orderDb.Id} уже установлен нужный статус. Изменение не требуется";
+            msg = "Изменение не требуется (документы для обновления отсутствуют)";
             loggerRepo.LogInformation($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
             res.AddInfo($"{msg}. Перед редактированием обновите страницу (F5), что бы загрузить актуальную версию объекта");
             return res;
         }
 
-        if (orderDb.Version != req.VersionDocument)
-        {
-            msg = $"Документ #{orderDb.Id} был кем-то изменён (version concurent)";
-            loggerRepo.LogError($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
-            res.AddError($"{msg}. Перед редактированием обновите страницу (F5), что бы загрузить актуальную версию объекта");
-            return res;
-        }
-
-        var _allOffersOfDocuments = orderDb.AddressesTabs!
-                           .SelectMany(x => x.Rows!.Select(y => new { x.WarehouseId, Row = y }))
+        List<WarehouseRowDocumentRecord> _allOffersOfDocuments = ordersDb.SelectMany(x => x.AddressesTabs!)
+                           .SelectMany(x => x.Rows!.Select(y => new WarehouseRowDocumentRecord(x.WarehouseId, y)))
                            .ToList();
 
         if (_allOffersOfDocuments.Count == 0)
@@ -754,12 +743,14 @@ public partial class CommerceImplementService(
             res.Response = await context
                     .OrdersDocuments
                     .Where(x => x.HelpdeskId == req.DocumentId)
-                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.StatusDocument, req.Step)) != 0;
+                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)) != 0;
 
-            res.AddSuccess("Запрос смены статуса заказа выполнен успешно");
+            res.AddSuccess("Запрос смены статуса заказа выполнен (строки в документе отсутствуют)");
+            return res;
         }
 
         LockOffersAvailabilityModelDB[] offersLocked = _allOffersOfDocuments
+            .DistinctBy(x => new { x.WarehouseId, x.Row.OfferId })
             .Select(x => new LockOffersAvailabilityModelDB()
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
@@ -783,39 +774,66 @@ public partial class CommerceImplementService(
             return res;
         }
 
-        int[] _offersIds = [.. _allOffersOfDocuments.Select(x => x.Row.OfferId)];
+        int[] _offersIds = [.. _allOffersOfDocuments.Select(x => x.Row.OfferId).Distinct()];
         List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
            .Where(x => _offersIds.Any(y => y == x.OfferId))
+           .Include(x => x.Offer)
            .ToListAsync();
 
-        _allOffersOfDocuments.ForEach(offerEl =>
+        _allOffersOfDocuments.ForEach(async offerEl =>
         {
             int _i = registersOffersDb.FindIndex(y => y.WarehouseId == offerEl.WarehouseId && y.OfferId == offerEl.Row.OfferId);
 
             if (req.Step == StatusesDocumentsEnum.Canceled)
-                registersOffersDb[_i].Quantity += offerEl.Row.Quantity;
-            else if (orderDb.StatusDocument == StatusesDocumentsEnum.Canceled)
-                registersOffersDb[_i].Quantity -= offerEl.Row.Quantity;
+            {
+                if (_i < 0)
+                {
+                    OfferAvailabilityModelDB _newReg = new()
+                    {
+                        WarehouseId = offerEl.WarehouseId,
+                        GoodsId = offerEl.Row.GoodsId,
+                        OfferId = offerEl.Row.OfferId,
+                        Quantity = offerEl.Row.Quantity,
+                    };
+                    registersOffersDb.Add(_newReg);
+                    await context.AddAsync(_newReg);
+                }
+                else
+                    registersOffersDb[_i].Quantity += offerEl.Row.Quantity;
+            }
+            else
+            {
+                if (_i < 0)
+                    res.AddError($"Отсутствуют остатки [{offerEl.Row.Offer?.Name}] - списание {{{offerEl.Row.Quantity}}} невозможно");
+                else if (registersOffersDb[_i].Quantity < offerEl.Row.Quantity)
+                    res.AddError($"Недостаточно остатков [{offerEl.Row.Offer?.Name}] - списание {{{offerEl.Row.Quantity}}} отклонено");
+                else
+                    registersOffersDb[_i].Quantity -= offerEl.Row.Quantity;
+            }
         });
 
-        context.UpdateRange(registersOffersDb);
+        if (!res.Success())
+        {
+            await transaction.RollbackAsync();
+            msg = $"Отказ изменения статуса: не достаточно остатков!";
+            loggerRepo.LogError($"{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}\n{JsonConvert.SerializeObject(res, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError(msg);
+            return res;
+        }
+
+        context.UpdateRange(registersOffersDb.Where(x => x.Id > 0));
         if (offersLocked.Length != 0)
             context.RemoveRange(offersLocked);
 
-        List<Task> _tasks = [
-            context.SaveChangesAsync(),
-            Task.Run(async () => {
-            res.Response = await context
-                    .OrdersDocuments
-                    .Where(x => x.HelpdeskId == req.DocumentId)
-                    .ExecuteUpdateAsync(set => set
-                    .SetProperty(p => p.StatusDocument, req.Step)
-                    .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
-                    .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
-            }),
-            ];
+        await context.SaveChangesAsync();
+        res.Response = await context
+                            .OrdersDocuments
+                            .Where(x => x.HelpdeskId == req.DocumentId)
+                            .ExecuteUpdateAsync(set => set
+                            .SetProperty(p => p.StatusDocument, req.Step)
+                            .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
+                            .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
 
-        await Task.WhenAll(_tasks);
         await transaction.CommitAsync();
         res.AddSuccess("Запрос смены статуса заказа выполнен успешно");
         return res;
@@ -1259,3 +1277,9 @@ public partial class CommerceImplementService(
 }
 
 internal record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);
+
+internal record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row);
+
+internal record WarehouseRowDocumentRecord(int WarehouseId, RowOfOrderDocumentModelDB Row);
+
+internal record RowOrderDocumentRecord(int DocumentId, StatusesDocumentsEnum DocumentStatus, int OfferId, int GoodsId, decimal Quantity, int WarehouseId);

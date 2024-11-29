@@ -25,9 +25,13 @@ public partial interface ICommerceService
     public Task<TResponseModel<FileAttachModel>> GetOrderReportFile(TAuthRequestModel<int> req);
 
     /// <summary>
-    /// Смена статуса заказу
+    /// Смена статуса заказу по идентификатору HelpDesk документа
     /// </summary>
-    public Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel req);
+    /// <remarks>
+    /// В запросе нельзя указывать идентификатор заказа: только идентификатор HelpDesk документа.
+    /// Допускается ситуация, когда под одним идентификатором HelpDesk документа могут существовать несколько заказов (объединённые заказы).
+    /// </remarks>
+    public Task<TResponseModel<bool>> StatusesOrdersChangeByHelpdeskDocumentId(StatusOrderChangeRequestModel req);
 
     /// <summary>
     /// Rows for order delete
