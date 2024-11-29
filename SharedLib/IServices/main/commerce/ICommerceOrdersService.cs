@@ -10,7 +10,7 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
-    /// Get order report file
+    /// Get full price file Excel (*.xlsx)
     /// </summary>
     public Task<FileAttachModel> GetPriceFile();
 

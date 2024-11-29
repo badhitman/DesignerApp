@@ -167,13 +167,24 @@ public partial class CommerceImplementService(
         IQueryable<OrderRowsQueryRecord> queryDocumentDb = from r in context.RowsOfOrdersDocuments
                                                            join d in context.OrdersDocuments on r.OrderDocumentId equals d.Id
                                                            join t in context.TabsAddressesForOrders.Where(x => x.Id == req.AddressForOrderTabId) on r.AddressForOrderTabId equals t.Id
-                                                           select new OrderRowsQueryRecord(d, t, r);
+                                                           join o in context.OffersGoods on r.OfferId equals o.Id
+                                                           join g in context.Goods on r.GoodsId equals g.Id
+                                                           select new OrderRowsQueryRecord(d, t, r, o, g);
 
-        int _warehouseId = await queryDocumentDb.Select(x => x.TabAddress.WarehouseId).FirstAsync();
+        var commDataDb = await queryDocumentDb
+            .Select(x => new
+            {
+                x.TabAddress.WarehouseId,
+                x.Document.StatusDocument,
+                OfferName = x.Offer.Name,
+                GoodsName = x.Goods.Name,
+            })
+            .FirstAsync();
+
         bool conflict = await context.RowsOfOrdersDocuments
             .AnyAsync(x => x.Id != req.Id && x.AddressForOrderTabId == req.AddressForOrderTabId && x.OfferId == req.OfferId);
 
-        if (_warehouseId == 0)
+        if (commDataDb.WarehouseId == 0)
             res.AddError($"В документе не указан склад: обновление невозможно");
 
         if (conflict)
@@ -192,7 +203,7 @@ public partial class CommerceImplementService(
         {
             LockerName = nameof(OfferAvailabilityModelDB),
             LockerId = req.OfferId,
-            RubricId = _warehouseId,
+            RubricId = commDataDb.WarehouseId,
         }];
 
         if (rowDb is not null && rowDb.OfferId != req.OfferId)
@@ -201,7 +212,7 @@ public partial class CommerceImplementService(
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
                 LockerId = rowDb.OfferId,
-                RubricId = _warehouseId,
+                RubricId = commDataDb.WarehouseId,
             });
         }
 
@@ -219,22 +230,21 @@ public partial class CommerceImplementService(
             res.AddError($"{msg}{ex.Message}");
             return res;
         }
-
-        StatusesDocumentsEnum orderDocStatus = await queryDocumentDb
-            .Select(x => x.Document.StatusDocument)
-            .FirstAsync();
-
-        OfferAvailabilityModelDB? regOfferAv = await context
+        int[] _offersIds = [.. lockers.Select(x => x.LockerId)];
+        OfferAvailabilityModelDB[] regsOfferAv = await context
             .OffersAvailability
-            .FirstOrDefaultAsync(x => x.OfferId == req.OfferId && x.WarehouseId == _warehouseId);
+            .Where(x => _offersIds.Any(y => y == x.OfferId))
+            .Include(x => x.Offer)
+            .ToArrayAsync();
 
-        if (regOfferAv is null && orderDocStatus != StatusesDocumentsEnum.Canceled)
+        OfferAvailabilityModelDB? regOfferAv = regsOfferAv.FirstOrDefault(x => x.OfferId == req.OfferId && x.WarehouseId == commDataDb.WarehouseId);
+        if (regOfferAv is null && commDataDb.StatusDocument != StatusesDocumentsEnum.Canceled)
         {
             regOfferAv = new()
             {
                 OfferId = req.OfferId,
                 GoodsId = req.GoodsId,
-                WarehouseId = _warehouseId,
+                WarehouseId = commDataDb.WarehouseId,
             };
             await context.AddAsync(regOfferAv);
         }
@@ -242,12 +252,18 @@ public partial class CommerceImplementService(
         OfferAvailabilityModelDB? regOfferAvStorno = null;
         if (rowDb is not null && rowDb.OfferId != req.OfferId)
         {
-            regOfferAvStorno = new()
+            regOfferAvStorno = regsOfferAv.FirstOrDefault(x => x.OfferId == rowDb.OfferId && x.WarehouseId == commDataDb.WarehouseId);
+
+            if (regOfferAvStorno is null)
             {
-                OfferId = rowDb.OfferId,
-                GoodsId = rowDb.GoodsId,
-                WarehouseId = _warehouseId,
-            };
+                regOfferAvStorno = new()
+                {
+                    OfferId = rowDb.OfferId,
+                    GoodsId = rowDb.GoodsId,
+                    WarehouseId = commDataDb.WarehouseId,
+                };
+                await context.AddAsync(regOfferAvStorno);
+            }
         }
 
         DateTime dtu = DateTime.UtcNow;
@@ -259,15 +275,24 @@ public partial class CommerceImplementService(
 
         if (req.Id < 1)
         {
-            if (regOfferAv is not null && orderDocStatus != StatusesDocumentsEnum.Canceled)
-                regOfferAv.Quantity -= req.Quantity;
-            else
-                res.AddError($"");
+            if (regOfferAv is not null && commDataDb.StatusDocument != StatusesDocumentsEnum.Canceled)
+            {
+                if (regOfferAv.Quantity < req.Quantity)
+                    res.AddError($"Количество '{regOfferAv.Offer?.GetName()}' недостаточно: [{regOfferAv.Quantity}] < [{req.Quantity}]");
+                else
+                {
+                    regOfferAv.Quantity -= req.Quantity;
+                    context.OffersAvailability.Update(regOfferAv);
+                }
+            }
+            else if (regOfferAv is null && commDataDb.StatusDocument != StatusesDocumentsEnum.Canceled)
+                res.AddError($"Остаток ['{commDataDb.OfferName}' - '{commDataDb.GoodsName}'] отсутствует");
 
             if (regOfferAvStorno is not null)
             {
                 regOfferAvStorno.Quantity += req.Quantity;
-                await context.AddAsync(regOfferAvStorno);
+                if (regOfferAvStorno.Id > 0)
+                    context.Update(regOfferAvStorno);
             }
 
             req.Version = Guid.NewGuid();
@@ -287,10 +312,10 @@ public partial class CommerceImplementService(
                 return res;
             }
 
-            decimal _delta = rowDb.Quantity - req.Quantity;
+            decimal _delta = req.Quantity - rowDb.Quantity;
             if (_delta == 0)
                 res.AddInfo("Количество не изменилось");
-            else if (regOfferAv is not null && orderDocStatus != StatusesDocumentsEnum.Canceled)
+            else if (regOfferAv is not null && commDataDb.StatusDocument != StatusesDocumentsEnum.Canceled)
             {
                 regOfferAv.Quantity += _delta;
                 if (regOfferAv.Id > 0)
@@ -304,14 +329,14 @@ public partial class CommerceImplementService(
             }
 
             res.Response = await context.RowsOfOrdersDocuments
-                       .Where(x => x.Id == req.Id)
-                       .ExecuteUpdateAsync(set => set
-                       .SetProperty(p => p.Quantity, req.Quantity)
-                       .SetProperty(p => p.Amount, req.Amount)
-                       .SetProperty(p => p.Version, Guid.NewGuid()));
+              .Where(x => x.Id == req.Id)
+              .ExecuteUpdateAsync(set => set
+              .SetProperty(p => p.Quantity, req.Quantity)
+              .SetProperty(p => p.Amount, req.Amount)
+              .SetProperty(p => p.Version, Guid.NewGuid()));
         }
 
-        if(!res.Success())
+        if (!res.Success())
         {
             await transaction.RollbackAsync();
             return res;
@@ -1278,7 +1303,7 @@ public partial class CommerceImplementService(
 
 internal record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);
 
-internal record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row);
+internal record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row, OfferGoodModelDB Offer, GoodsModelDB Goods);
 
 internal record WarehouseRowDocumentRecord(int WarehouseId, RowOfOrderDocumentModelDB Row);
 
