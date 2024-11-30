@@ -14,7 +14,9 @@ using BlazorLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
+#if !DEBUG
 using System.Reflection;
+#endif
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -38,7 +40,7 @@ if (Path.Exists(path_load))
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 }
 else
-    logger.Warn($"отсутсвует: {path_load}");
+    logger.Warn($"отсутствует: {path_load}");
 
 path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
 if (Path.Exists(path_load))
@@ -47,7 +49,7 @@ if (Path.Exists(path_load))
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 }
 else
-    logger.Warn($"отсутсвует: {path_load}");
+    logger.Warn($"отсутствует: {path_load}");
 
 path_load = Path.Combine(curr_dir, $"bottom-menu.json");
 if (Path.Exists(path_load))
@@ -56,7 +58,7 @@ if (Path.Exists(path_load))
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 }
 else
-    logger.Warn($"отсутсвует: {path_load}");
+    logger.Warn($"отсутствует: {path_load}");
 
 path_load = Path.Combine(curr_dir, $"bottom-menu.{_environmentName}.json");
 if (Path.Exists(path_load))
@@ -65,7 +67,7 @@ if (Path.Exists(path_load))
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 }
 else
-    logger.Warn($"отсутсвует: {path_load}");
+    logger.Warn($"отсутствует: {path_load}");
 
 // Secrets
 void ReadSecrets(string dirName)
@@ -241,16 +243,13 @@ app.MapRazorComponents<App>()
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
-#if DEBUG
-
-#else
+#if !DEBUG
 Task? init_email_notify = null;
-
 try
 {
     init_email_notify = app.Services
         .GetRequiredService<IMailProviderService>()
-        .SendTechnicalEmailNotificationAsync($"init main: {Assembly.GetEntryAssembly()?.FullName}");
+        .SendTechnicalEmailNotificationAsync($"init main{(string.IsNullOrWhiteSpace(_modePrefix) ? "" : $" (prefix mode: {_modePrefix})")}: {Assembly.GetEntryAssembly()?.FullName}");
 
     if (init_email_notify is not null)
         await init_email_notify;

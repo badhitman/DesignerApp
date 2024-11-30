@@ -609,6 +609,7 @@ public partial class CommerceImplementService(
             try
             {
                 await context.AddAsync(req);
+                await context.SaveChangesAsync();
                 res.Response = req.Id;
 
                 foreach (TabAddressForOrderModelDb tabAddr in req.AddressesTabs)

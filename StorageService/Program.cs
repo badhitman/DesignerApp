@@ -40,7 +40,7 @@ builder.ConfigureHostConfiguration(configHost =>
     if (Path.Exists(path_load))
         configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
     else
-        logger.Warn($"отсутсвует: {path_load}");
+        logger.Warn($"отсутствует: {path_load}");
 
     // Secrets
     void ReadSecrets(string dirName)

@@ -108,10 +108,12 @@
             }
             else
             {
+                bool overLimit = false;
                 <MudSelect T="decimal" Label="Количество" Required="true" @bind-Value="context!.Quantity">
                     @foreach (decimal ql in _alowedValues)
                     {
-                        <MudSelectItem Value="@ql" />
+                        overLimit = overLimit || ql > GetMaxValue(context);
+                        <MudSelectItem Disabled="@overLimit" Value="@ql" />
                     }
                 </MudSelect>
             }

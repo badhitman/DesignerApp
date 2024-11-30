@@ -37,13 +37,13 @@ string path_load = Path.Combine(curr_dir, "appsettings.json");
 if (Path.Exists(path_load))
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 else
-    logger.Warn($"отсутсвует: {path_load}");
+    logger.Warn($"отсутствует: {path_load}");
 
 path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
 if (Path.Exists(path_load))
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 else
-    logger.Warn($"отсутсвует: {path_load}");
+    logger.Warn($"отсутствует: {path_load}");
 
 // Secrets
 void ReadSecrets(string dirName)

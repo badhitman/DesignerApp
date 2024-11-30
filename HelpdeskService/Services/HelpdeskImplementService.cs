@@ -1145,7 +1145,16 @@ public class HelpdeskImplementService(
 
                     TResponseModel<string?> CommerceNewMessageOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp);
                     if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
-                        wpMessage = CommerceNewMessageOrderBodyNotificationWhatsapp.Response;
+                        wpMessage = ReplaceTags(CommerceNewMessageOrderBodyNotificationWhatsapp.Response, true);
+
+                    string safeTextMessage = req.Payload.MessageText.Replace("<p>", "").Replace("</p>", "\n");
+                    
+                    safeTextMessage = safeTextMessage.Contains('>') || safeTextMessage.Contains('<') 
+                        ? "" 
+                        : safeTextMessage;
+
+                    if (safeTextMessage.Length > 128)
+                        safeTextMessage = $"{safeTextMessage[..125]}...";
 
                     IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
 
@@ -1157,31 +1166,23 @@ public class HelpdeskImplementService(
                     {
                         foreach (UserInfoModel u in users_notify.Response)
                         {
-                            if (u.TelegramId.HasValue)
-                            {
-                                TResponseModel<MessageComplexIdsModel?> tgs_res = await telegramRemoteRepo.SendTextMessageTelegram(new()
-                                {
-                                    Message = tg_message,
-                                    UserTelegramId = u.TelegramId!.Value
-                                });
-                            }
                             loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
-                            tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }));
+                            tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }, false));
 
                             if (u.TelegramId.HasValue)
                             {
                                 SendTextMessageTelegramBotModel tg_req = new()
                                 {
                                     From = subject_email,
-                                    Message = msg.Replace("<p>", "\n").Replace("</p>", ""),
+                                    Message = $"{tg_message}\n\n<code>{safeTextMessage}</code>".Trim(),
                                     UserTelegramId = u.TelegramId.Value,
                                     ParseModeName = "html"
                                 };
-                                tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req));
+                                tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req, false));
                             }
 
                             if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
-                                tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = ReplaceTags(wpMessage, true) }, false));
+                                tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = $"{ReplaceTags(wpMessage, true)}\n\n> {safeTextMessage}".Trim().TrimEnd('>').Trim() }, false));
                         }
                     }
 
