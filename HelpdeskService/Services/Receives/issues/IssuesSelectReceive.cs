@@ -48,10 +48,10 @@ public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFa
         switch (req.Payload.JournalMode)
         {
             case HelpdeskJournalModesEnum.ActualOnly:
-                q = q.Where(x => x.StepIssue <= StatusesDocumentsEnum.Progress);
+                q = q.Where(x => x.StatusDocument <= StatusesDocumentsEnum.Progress);
                 break;
             case HelpdeskJournalModesEnum.ArchiveOnly:
-                q = q.Where(x => x.StepIssue > StatusesDocumentsEnum.Progress);
+                q = q.Where(x => x.StatusDocument > StatusesDocumentsEnum.Progress);
                 break;
             default:
                 break;
@@ -78,8 +78,8 @@ public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFa
         }
 
         q = req.SortingDirection == VerticalDirectionsEnum.Up
-            ? q.OrderBy(x => x.CreatedAt)
-            : q.OrderByDescending(x => x.CreatedAt);
+            ? q.OrderBy(x => x.CreatedAtUTC)
+            : q.OrderByDescending(x => x.CreatedAtUTC);
 
         var inc = q
             .Skip(req.PageNum * req.PageSize)

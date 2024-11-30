@@ -11,7 +11,7 @@
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="@(nameof(IssueHelpdeskModel.CreatedAt))" T="IssueHelpdeskModel">Создан</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="@(nameof(IssueHelpdeskModel.CreatedAtUTC))" T="IssueHelpdeskModel">Создан</MudTableSortLabel></MudTh>
         <MudTh>Статус</MudTh>
         <MudTh>Тема</MudTh>
         <MudTh>Рубрика</MudTh>
@@ -27,10 +27,10 @@
     <RowTemplate>
         <MudTd DataLabel="Создан">
             <a href="@($"/issue-card/{context.Id}")">
-                @context.CreatedAt.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))<sup>@context.CreatedAt.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
+                @context.CreatedAtUTC.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))<sup>@context.CreatedAtUTC.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
             </a>
         </MudTd>
-        <MudTd DataLabel="Статус">@context.StepIssue.DescriptionInfo()</MudTd>
+        <MudTd DataLabel="Статус">StatusDocumentStepIssue.DescriptionInfo()</MudTd>
         <MudTd DataLabel="Тема">@context.Name</MudTd>
         <MudTd DataLabel="Рубрика">@context.RubricIssue?.Name</MudTd>
         @if (UserArea == UsersAreasHelpdeskEnum.Author)

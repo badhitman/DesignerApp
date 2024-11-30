@@ -32,7 +32,7 @@ else
 {
     foreach (IssueHelpdeskModel issue_element in Issues)
     {
-        <div class="card mb-2" @key="@($"{issue_element.Id}-{issue_element.StepIssue}")">
+        <div class="card mb-2" @key="@($"{issue_element.Id}-{issue_element.StatusDocument}")">
             <div class="card-body p-3">
                 <h6 class="card-title">@issue_element.Name</h6>
                 @if (issue_element.RubricIssue is not null)

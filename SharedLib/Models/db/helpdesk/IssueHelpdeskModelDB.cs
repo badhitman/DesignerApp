@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// IssueHelpdeskModelDB
 /// </summary>
-[Index(nameof(AuthorIdentityUserId), nameof(ExecutorIdentityUserId), nameof(LastUpdateAt), nameof(RubricIssueId), nameof(StepIssue)), Index(nameof(NormalizedNameUpper))]
+[Index(nameof(AuthorIdentityUserId), nameof(ExecutorIdentityUserId), nameof(LastUpdateAt), nameof(RubricIssueId), nameof(StatusDocument)), Index(nameof(NormalizedNameUpper))]
 public class IssueHelpdeskModelDB : IssueHelpdeskModel
 {
     /// <inheritdoc/>

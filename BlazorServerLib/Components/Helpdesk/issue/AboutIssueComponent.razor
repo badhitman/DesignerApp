@@ -39,7 +39,7 @@
 
             @{
                 CultureInfo ci = CultureInfo.GetCultureInfo("ru-RU");
-                DateTime dc = Issue.CreatedAt.GetCustomTime();
+                DateTime dc = Issue.CreatedAtUTC.GetCustomTime();
                 DateTime du = Issue.LastUpdateAt.GetCustomTime();
             }
             <dt>Создан:</dt>

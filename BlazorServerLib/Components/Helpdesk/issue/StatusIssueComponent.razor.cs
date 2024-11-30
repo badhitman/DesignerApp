@@ -22,10 +22,10 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
             res.AddRange(Enum.GetValues<StatusesDocumentsEnum>());
         else
         {
-            switch (Issue.StepIssue)
+            switch (Issue.StatusDocument)
             {
                 case StatusesDocumentsEnum.Created or StatusesDocumentsEnum.Reopen or StatusesDocumentsEnum.Pause or StatusesDocumentsEnum.Progress or StatusesDocumentsEnum.Check:
-                    res.AddRange([Issue.StepIssue, StatusesDocumentsEnum.Done, StatusesDocumentsEnum.Canceled]);
+                    res.AddRange([Issue.StatusDocument, StatusesDocumentsEnum.Done, StatusesDocumentsEnum.Canceled]);
                     break;
                 case StatusesDocumentsEnum.Done:
                     res.AddRange([StatusesDocumentsEnum.Done, StatusesDocumentsEnum.Reopen]);
@@ -65,6 +65,6 @@ public partial class StatusIssueComponent : IssueWrapBaseModel
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        IssueStep = Issue.StepIssue;
+        IssueStep = Issue.StatusDocument;
     }
 }

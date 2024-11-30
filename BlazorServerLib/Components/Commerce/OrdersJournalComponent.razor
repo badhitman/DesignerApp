@@ -36,7 +36,7 @@
         </MudTd>
         <MudTd DataLabel="Информация">@context.Name</MudTd>
         <MudTd DataLabel="Сумма">@context.TotalSumForRows()</MudTd>
-        <MudTd DataLabel="Статус">@hd_doc?.StepIssue.DescriptionInfo()</MudTd>
+        <MudTd DataLabel="Статус">@hd_doc?.StatusDocument.DescriptionInfo()</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>

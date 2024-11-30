@@ -50,7 +50,7 @@ else
 }
 
 <MudButton Class="mt-3" OnClick="OrderToCart" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Скопировать заказ в корзину</MudButton>
-@if (Issue.StepIssue == StatusesDocumentsEnum.Created)
+@if (Issue.StatusDocument == StatusesDocumentsEnum.Created)
 {
     <MudButton Class="mt-3" OnClick="OrderNull" Variant="Variant.Outlined" Color="Color.Secondary" FullWidth="true">Отмена заказа</MudButton>
 }

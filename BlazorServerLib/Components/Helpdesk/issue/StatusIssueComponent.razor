@@ -9,13 +9,13 @@
 <MudSelect ReadOnly="@(!CanEdit || IsBusyProgress)" @bind-Value="IssueStep" T="StatusesDocumentsEnum" Label="Статус" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
     @foreach (StatusesDocumentsEnum step in Steps())
     {
-        <MudSelectItem Class="@(step == Issue.StepIssue ? "text-success fw-bold" : "")" T="StatusesDocumentsEnum" Value="@step">
+        <MudSelectItem Class="@(step == Issue.StatusDocument ? "text-success fw-bold" : "")" T="StatusesDocumentsEnum" Value="@step">
             @step.DescriptionInfo()
         </MudSelectItem>
     }
 </MudSelect>
 
-@if (IssueStep != Issue.StepIssue)
+@if (IssueStep != Issue.StatusDocument)
 {
     <figure class="text-center">
         <blockquote class="blockquote">
@@ -27,6 +27,6 @@
     </figure>
     <div class="d-grid gap-2">
         <button disabled="@(!CanEdit || IsBusyProgress)" @onclick="SaveChange" class="btn btn-outline-primary" type="button">Подтвердить</button>
-        <button disabled="@(!CanEdit || IsBusyProgress)" @onclick="() => IssueStep = Issue.StepIssue" class="btn btn-outline-info" type="button">Отмена</button>
+        <button disabled="@(!CanEdit || IsBusyProgress)" @onclick="() => IssueStep = Issue.StatusDocument" class="btn btn-outline-info" type="button">Отмена</button>
     </div>
 }

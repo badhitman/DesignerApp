@@ -175,7 +175,7 @@ public class HelpdeskImplementService(
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IQueryable<IssueHelpdeskModelDB> q = context
             .Issues
-            .Where(x => x.ProjectId == req.Payload.ProjectId && x.StepIssue == req.Payload.Status)
+            .Where(x => x.ProjectId == req.Payload.ProjectId && x.StatusDocument == req.Payload.Status)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
@@ -192,8 +192,8 @@ public class HelpdeskImplementService(
             q = q.Where(x => x.AuthorIdentityUserId == req.Payload.FilterUserId || x.ExecutorIdentityUserId == req.Payload.FilterUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Payload.FilterUserId));
 
         IOrderedQueryable<IssueHelpdeskModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-            ? q.OrderBy(x => x.CreatedAt)
-            : q.OrderByDescending(x => x.CreatedAt);
+            ? q.OrderBy(x => x.CreatedAtUTC)
+            : q.OrderByDescending(x => x.CreatedAtUTC);
 
         List<IssueHelpdeskModelDB> data = await oq
             .Skip(req.PageNum * req.PageSize)
@@ -285,9 +285,9 @@ public class HelpdeskImplementService(
                 res.AddInfo("Исполнитель уже отсутствует");
             else
             {
-                if (issue_data.StepIssue >= StatusesDocumentsEnum.Progress)
+                if (issue_data.StatusDocument >= StatusesDocumentsEnum.Progress)
                 {
-                    res.AddError($"Обращение в статусе [{issue_data.StepIssue.DescriptionInfo()}]. После того как обращение переходит в работу (и далее) удалить исполнителя нельзя. Для открепления исполнителя поставьте обращение на паузу");
+                    res.AddError($"Обращение в статусе [{issue_data.StatusDocument.DescriptionInfo()}]. После того как обращение переходит в работу (и далее) удалить исполнителя нельзя. Для открепления исполнителя поставьте обращение на паузу");
                     return res;
                 }
 
@@ -376,7 +376,7 @@ public class HelpdeskImplementService(
                 res.AddSuccess(msg);
             }
         }
-        await ConsoleSegmentCacheEmpty(issue_data.StepIssue);
+        await ConsoleSegmentCacheEmpty(issue_data.StatusDocument);
         return res;
     }
 
@@ -434,9 +434,9 @@ public class HelpdeskImplementService(
                 RubricIssueId = issue_upd.Payload.RubricId,
                 NormalizedNameUpper = normalizedNameUpper,
                 NormalizedDescriptionUpper = normalizedDescriptionUpper,
-                StepIssue = StatusesDocumentsEnum.Created,
+                StatusDocument = StatusesDocumentsEnum.Created,
                 ProjectId = issue_upd.Payload.ProjectId,
-                CreatedAt = dtn,
+                CreatedAtUTC = dtn,
                 LastUpdateAt = dtn,
             };
 
@@ -469,7 +469,7 @@ public class HelpdeskImplementService(
                     {
                         IssueId = issue.Id,
                         PulseType = PulseIssuesTypesEnum.Status,
-                        Tag = issue.StepIssue.DescriptionInfo(),
+                        Tag = issue.StatusDocument.DescriptionInfo(),
                         Description = msg,
                     },
                     SenderActionUserId = GlobalStaticConstants.Roles.System,
@@ -478,20 +478,12 @@ public class HelpdeskImplementService(
                 IsMuteTelegram = true,
                 IsMuteWhatsapp = true,
             };
+            TResponseModel<long?> helpdesk_user_redirect_telegram_for_issue_rest = default!;
+            await Task.WhenAll([
+                PulsePush(p_req),
+                Task.Run(async () => { helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(GlobalStaticConstants.CloudStorageMetadata.HelpdeskNotificationTelegramForCreateIssue); }),
+                MessageUpdateOrCreate(new() { SenderActionUserId = GlobalStaticConstants.Roles.System, Payload = new() { MessageText = $"Пользователь `{actor.UserName}` создал новый запрос: {issue_upd.Payload.Name}", IssueId = issue.Id } })]);
 
-            await PulsePush(p_req);
-
-            await MessageUpdateOrCreate(new()
-            {
-                SenderActionUserId = GlobalStaticConstants.Roles.System,
-                Payload = new()
-                {
-                    MessageText = $"Пользователь `{actor.UserName}` создал новый запрос: {issue_upd.Payload.Name}",
-                    IssueId = issue.Id
-                }
-            });
-
-            TResponseModel<long?> helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(GlobalStaticConstants.CloudStorageMetadata.HelpdeskNotificationTelegramForCreateIssue);
             if (helpdesk_user_redirect_telegram_for_issue_rest.Success() && helpdesk_user_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_user_redirect_telegram_for_issue_rest.Response != 0)
             {
                 await telegramRemoteRepo.SendTextMessageTelegram(new()
@@ -499,7 +491,7 @@ public class HelpdeskImplementService(
                     Message = $"Создана новая заявка: #{issue.Id} '{issue.Name}'. Автор: {actor}",
                     From = "уведомление",
                     UserTelegramId = helpdesk_user_redirect_telegram_for_issue_rest.Response.Value,
-                });
+                }, false);
             }
         }
         else
@@ -530,8 +522,13 @@ public class HelpdeskImplementService(
                     IssueIds = [issue_upd.Payload.Id],
                 };
 
-                TResponseModel<OrderDocumentModelDB[]> comm_res = await commRepo.OrdersByIssues(req_comm);
-                TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                TResponseModel<TelegramBotConfigModel?> wc = default!;
+                TResponseModel<OrderDocumentModelDB[]> comm_res = default!;
+
+                await Task.WhenAll([
+                    Task.Run(async () => { comm_res = await commRepo.OrdersByIssues(req_comm); }),
+                    Task.Run(async () => { wc = await webTransmissionRepo.GetWebConfig(); })]);
+
                 msg = $"Документ (#{issue_upd.Payload.Id}) обновлён.";
                 if (comm_res.Success() && comm_res.Response is not null && comm_res.Response.Length != 0)
                 {
@@ -554,12 +551,10 @@ public class HelpdeskImplementService(
                         SenderActionUserId = issue_upd.SenderActionUserId,
                     }
                 };
-
-                await PulsePush(p_req);
-
+                List<Task> tasks = [PulsePush(p_req)];
                 if (issue_upd.SenderActionUserId != GlobalStaticConstants.Roles.System && issue.Subscribers?.Any(x => x.UserId == issue_upd.SenderActionUserId) != true)
                 {
-                    await SubscribeUpdate(new()
+                    tasks.Add(SubscribeUpdate(new()
                     {
                         SenderActionUserId = GlobalStaticConstants.Roles.System,
                         Payload = new()
@@ -569,13 +564,14 @@ public class HelpdeskImplementService(
                             UserId = actor.UserId,
                             IsSilent = false,
                         }
-                    });
+                    }));
                 }
+                await Task.WhenAll(tasks);
             }
             else
                 res.AddError($"У вас не достаточно прав для редактирования этого обращения #{issue_upd.Payload.Id} '{issue.Name}'");
         }
-        await ConsoleSegmentCacheEmpty(issue.StepIssue);
+        await ConsoleSegmentCacheEmpty(issue.StatusDocument);
         return res;
     }
 
@@ -687,7 +683,7 @@ public class HelpdeskImplementService(
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        if (issue_data.StepIssue == req.Payload.Step)
+        if (issue_data.StatusDocument == req.Payload.Step)
             res.AddInfo("Статус уже установлен");
         else
         {
@@ -700,14 +696,14 @@ public class HelpdeskImplementService(
                 return res;
             }
 
-            string msg = $"Статус успешно изменён с `{issue_data.StepIssue}` на `{req.Payload.Step}`";
+            string msg = $"Статус успешно изменён с `{issue_data.StatusDocument}` на `{req.Payload.Step}`";
 
             tasks.Add(context.Issues.Where(x => x.Id == issue_data.Id)
                 .ExecuteUpdateAsync(set => set
-                .SetProperty(p => p.StepIssue, req.Payload.Step)
+                .SetProperty(p => p.StatusDocument, req.Payload.Step)
                 .SetProperty(p => p.LastUpdateAt, DateTime.UtcNow)));
 
-            tasks.Add(ConsoleSegmentCacheEmpty(issue_data.StepIssue));
+            tasks.Add(ConsoleSegmentCacheEmpty(issue_data.StatusDocument));
             tasks.Add(ConsoleSegmentCacheEmpty(req.Payload.Step));
 
             res.AddSuccess(msg);
@@ -770,9 +766,9 @@ public class HelpdeskImplementService(
                     Task.Run(async () => {
                         string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
                         users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids); }),
-                    Task.Run(async () => { CommerceStatusChangeOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(issue_data.StepIssue)); }),
-                    Task.Run(async () => { CommerceStatusChangeOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(issue_data.StepIssue)); }),
-                    Task.Run(async () => { CommerceStatusChangeOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(issue_data.StepIssue)); })];
+                    Task.Run(async () => { CommerceStatusChangeOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(issue_data.StatusDocument)); }),
+                    Task.Run(async () => { CommerceStatusChangeOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(issue_data.StatusDocument)); }),
+                    Task.Run(async () => { CommerceStatusChangeOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(issue_data.StatusDocument)); })];
 
                 await Task.WhenAll(tasks);
 
@@ -813,7 +809,7 @@ public class HelpdeskImplementService(
                         {
                             if (CommerceStatusChangeOrderBodyNotificationWhatsapp is null)
                             {
-                                CommerceStatusChangeOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationWhatsapp(issue_data.StepIssue));
+                                CommerceStatusChangeOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationWhatsapp(issue_data.StatusDocument));
                                 if (CommerceStatusChangeOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationWhatsapp.Response))
                                     wp_message = CommerceStatusChangeOrderBodyNotificationWhatsapp.Response;
                             }
@@ -974,7 +970,7 @@ public class HelpdeskImplementService(
             }
         }
         res.Response = true;
-        await ConsoleSegmentCacheEmpty(issue_data.StepIssue);
+        await ConsoleSegmentCacheEmpty(issue_data.StatusDocument);
         return res;
     }
     #endregion
@@ -1016,6 +1012,7 @@ public class HelpdeskImplementService(
             res.AddError("У вас не достаточно прав");
             return res;
         }
+        List<Task> tasks = [];
         IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
         if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
         {
@@ -1034,7 +1031,7 @@ public class HelpdeskImplementService(
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         IssueMessageHelpdeskModelDB msg_db;
-        IssueReadMarkerHelpdeskModelDB? my_marker;
+        IssueReadMarkerHelpdeskModelDB? my_marker = null;
         DateTime dtn = DateTime.UtcNow;
         string msg;
         PulseRequestModel p_req;
@@ -1074,9 +1071,10 @@ public class HelpdeskImplementService(
                     IsMuteWhatsapp = true,
                 };
 
-                await PulsePush(p_req);
+                tasks = [PulsePush(p_req), Task.Run(async () => { my_marker = await context.IssueReadMarkers.FirstOrDefaultAsync(x => x.IssueId == req.Payload.IssueId && x.UserIdentityId == actor.UserId); })];
+                await Task.WhenAll(tasks);
+                tasks.Clear();
 
-                my_marker = await context.IssueReadMarkers.FirstOrDefaultAsync(x => x.IssueId == req.Payload.IssueId && x.UserIdentityId == actor.UserId);
                 if (my_marker is null)
                 {
                     my_marker = new()
@@ -1095,101 +1093,132 @@ public class HelpdeskImplementService(
                         .SetProperty(p => p.LastReadAt, dtn));
                 }
 
-                await context
+                tasks.Add(context
                     .IssueReadMarkers
                     .Where(x => x.IssueId == req.Payload.IssueId && x.Id != my_marker.Id)
-                    .ExecuteDeleteAsync();
+                    .ExecuteDeleteAsync());
 
                 OrdersByIssuesSelectRequestModel req_docs = new()
                 {
                     IssueIds = [issue_data.Id],
                 };
 
-                TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
-                if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
+                TResponseModel<TelegramBotConfigModel?> wc = default!;
+                TResponseModel<OrderDocumentModelDB[]> find_orders = default!;
+                TResponseModel<string?> CommerceNewMessageOrderBodyNotificationWhatsapp = default!, CommerceNewMessageOrderSubjectNotification = default!, CommerceNewMessageOrderBodyNotification = default!, CommerceNewMessageOrderBodyNotificationTelegram = default!;
+
+                string tg_message, wpMessage;
+                string subject_email = "Новое сообщение";
+                string _about_document = $"Обращение #{issue_data.Id} '{issue_data.Name}' ({issue_data.CreatedAtUTC.GetHumanDateTime()})";
+
+                string safeTextMessage = req.Payload.MessageText.Replace("<p>", "").Replace("</p>", "\n");
+
+                safeTextMessage = safeTextMessage.Contains('>') || safeTextMessage.Contains('<')
+                    ? ""
+                    : safeTextMessage;
+
+                if (safeTextMessage.Length > 128)
+                    safeTextMessage = $"{safeTextMessage[..125]}...";
+
+                tasks.Add(Task.Run(async () => { find_orders = await commRepo.OrdersByIssues(req_docs); }));
+                tasks.Add(Task.Run(async () => { wc = await webTransmissionRepo.GetWebConfig(); }));
+                tasks.Add(Task.Run(async () =>
                 {
-                    TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
-                    OrderDocumentModelDB order_obj = find_orders.Response[0];
-                    string _about_order = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
-
-                    string ReplaceTags(string raw, bool clearMd = false)
-                    {
-                        return raw.Replace(GlobalStaticConstants.OrderDocumentName, order_obj.Name)
-                        .Replace(GlobalStaticConstants.OrderDocumentDate, $"{order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}")
-                        .Replace(GlobalStaticConstants.OrderStatusInfo, issue_data.StepIssue.DescriptionInfo())
-                        .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}" : $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}'>{_about_order}</a>")
-                        .Replace(GlobalStaticConstants.HostAddress, clearMd ? wc.Response?.ClearBaseUri : $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
-                    }
-
-                    string subject_email = "Новое сообщение";
-                    TResponseModel<string?> CommerceNewMessageOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderSubjectNotification);
+                    CommerceNewMessageOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp);
+                }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    CommerceNewMessageOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram);
+                }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    CommerceNewMessageOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification);
+                }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    CommerceNewMessageOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderSubjectNotification);
                     if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
                         subject_email = CommerceNewMessageOrderSubjectNotification.Response;
-                    subject_email = ReplaceTags(subject_email);
+                }));
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+                subject_email = ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, subject_email);
+                IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
 
-                    msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.</p>" +
-                                        $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
-
-                    string tg_message = msg.Replace("<p>", "\n").Replace("</p>", ""),
-                        wpMessage = $"Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение. {wc.Response?.ClearBaseUri}";
-
-                    TResponseModel<string?> CommerceNewMessageOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification);
-                    if (CommerceNewMessageOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
-                        msg = CommerceNewMessageOrderBodyNotification.Response;
-                    msg = ReplaceTags(msg);
-
-                    TResponseModel<string?> CommerceNewMessageOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram);
-                    if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
-                        tg_message = CommerceNewMessageOrderBodyNotificationTelegram.Response;
-                    tg_message = ReplaceTags(tg_message);
-
-                    TResponseModel<string?> CommerceNewMessageOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp);
-                    if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
-                        wpMessage = ReplaceTags(CommerceNewMessageOrderBodyNotificationWhatsapp.Response, true);
-
-                    string safeTextMessage = req.Payload.MessageText.Replace("<p>", "").Replace("</p>", "\n");
-                    
-                    safeTextMessage = safeTextMessage.Contains('>') || safeTextMessage.Contains('<') 
-                        ? "" 
-                        : safeTextMessage;
-
-                    if (safeTextMessage.Length > 128)
-                        safeTextMessage = $"{safeTextMessage[..125]}...";
-
-                    IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
-
-                    List<Task> tasks = [];
-
-                    string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
-                    TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
-                    if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
-                    {
-                        foreach (UserInfoModel u in users_notify.Response)
-                        {
-                            loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
-                            tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }, false));
-
-                            if (u.TelegramId.HasValue)
-                            {
-                                SendTextMessageTelegramBotModel tg_req = new()
-                                {
-                                    From = subject_email,
-                                    Message = $"{tg_message}\n\n<code>{safeTextMessage}</code>".Trim(),
-                                    UserTelegramId = u.TelegramId.Value,
-                                    ParseModeName = "html"
-                                };
-                                tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req, false));
-                            }
-
-                            if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
-                                tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = $"{ReplaceTags(wpMessage, true)}\n\n> {safeTextMessage}".Trim().TrimEnd('>').Trim() }, false));
-                        }
-                    }
-
-                    if (tasks.Count != 0)
-                        await Task.WhenAll(tasks);
+                string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()]; ;
+                string ReplaceTags(string name, DateTime dateCreated, int helpdeskId, StatusesDocumentsEnum stepIssue, string raw, bool clearMd = false)
+                {
+                    return raw.Replace(GlobalStaticConstants.OrderDocumentName, name)
+                    .Replace(GlobalStaticConstants.OrderDocumentDate, $"{dateCreated.GetCustomTime().ToString("d", cultureInfo)} {dateCreated.GetCustomTime().ToString("t", cultureInfo)}")
+                    .Replace(GlobalStaticConstants.OrderStatusInfo, stepIssue.DescriptionInfo())
+                    .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{wc.Response?.ClearBaseUri}/issue-card/{helpdeskId}" : $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{helpdeskId}'>{_about_document}</a>")
+                    .Replace(GlobalStaticConstants.HostAddress, clearMd ? wc.Response?.ClearBaseUri : $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
                 }
 
+                if (!CommerceNewMessageOrderBodyNotification.Success() || string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
+                    msg = $"<p>Заявка '{issue_data.Name}' от [{issue_data.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.</p>";
+
+                if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
+                {
+                    OrderDocumentModelDB order_obj = find_orders.Response[0];
+                    _about_document = $"'{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
+                    subject_email = ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, subject_email);
+
+                    if (!CommerceNewMessageOrderBodyNotification.Success() || string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
+                        msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.</p>";
+                    tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
+
+                    wpMessage = $"Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение. {wc.Response?.ClearBaseUri}";
+
+                    msg = ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, msg);
+
+                    if (!CommerceNewMessageOrderBodyNotification.Success() || string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
+                        msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.</p>" +
+                                        $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
+
+                    if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
+                        tg_message = ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response);
+
+                    if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
+                        wpMessage = ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, true);
+
+                    wpMessage = $"{ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, wpMessage, true)}\n\n> {safeTextMessage}".Trim().TrimEnd('>').Trim();
+
+                    users_ids = [.. users_ids.Union([order_obj.AuthorIdentityUserId]).Distinct()];
+                }
+
+
+                tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
+                wpMessage = $"Заявка '{issue_data.Name}' от [{issue_data.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.";
+                msg = ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, msg);
+
+                TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
+                if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
+                {
+                    foreach (UserInfoModel u in users_notify.Response)
+                    {
+                        loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
+                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }, false));
+
+                        if (u.TelegramId.HasValue)
+                        {
+                            SendTextMessageTelegramBotModel tg_req = new()
+                            {
+                                From = subject_email,
+                                Message = $"{tg_message}\n\n<code>{safeTextMessage}</code>".Trim(),
+                                UserTelegramId = u.TelegramId.Value,
+                                ParseModeName = "html"
+                            };
+                            tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req, false));
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
+                            tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = wpMessage }, false));
+                    }
+                }
+
+                if (tasks.Count != 0)
+                    await Task.WhenAll(tasks);
             }
             else
                 await context
@@ -1210,13 +1239,6 @@ public class HelpdeskImplementService(
             }
             else
             {
-                res.Response = await context
-                    .IssuesMessages
-                    .Where(x => x.Id == msg_db.Id)
-                    .ExecuteUpdateAsync(set => set
-                    .SetProperty(p => p.MessageText, req.Payload.MessageText)
-                    .SetProperty(p => p.LastUpdateAt, dtn));
-
                 p_req = new()
                 {
                     Payload = new()
@@ -1235,13 +1257,22 @@ public class HelpdeskImplementService(
                     IsMuteWhatsapp = true,
                 };
 
-                await PulsePush(p_req);
-
+                tasks.Add(Task.Run(async () =>
+                {
+                    res.Response = await context
+                        .IssuesMessages
+                        .Where(x => x.Id == msg_db.Id)
+                        .ExecuteUpdateAsync(set => set
+                        .SetProperty(p => p.MessageText, req.Payload.MessageText)
+                        .SetProperty(p => p.LastUpdateAt, dtn));
+                }));
+                tasks.Add(PulsePush(p_req));
+                await Task.WhenAll(tasks);
                 msg = "Сообщение успешно обновлено";
                 res.AddSuccess(msg);
             }
         }
-        await ConsoleSegmentCacheEmpty(issue_data.StepIssue);
+        await ConsoleSegmentCacheEmpty(issue_data.StatusDocument);
         return res;
     }
 
@@ -1399,7 +1430,7 @@ public class HelpdeskImplementService(
             return res;
 
         IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
-        await cacheRepo.RemoveAsync(GlobalStaticConstants.Cache.ConsoleSegmentStatusToken(issue_data.StepIssue));
+        await cacheRepo.RemoveAsync(GlobalStaticConstants.Cache.ConsoleSegmentStatusToken(issue_data.StatusDocument));
 
         List<string> users_ids = [issue_data.AuthorIdentityUserId];
         if (!string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId))

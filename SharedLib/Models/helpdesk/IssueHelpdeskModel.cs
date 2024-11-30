@@ -9,13 +9,13 @@ namespace SharedLib;
 /// <summary>
 /// IssueHelpdeskModel
 /// </summary>
-[Index(nameof(LastUpdateAt)), Index(nameof(CreatedAt)), Index(nameof(StepIssue)), Index(nameof(NormalizedDescriptionUpper)), Index(nameof(AuthorIdentityUserId))]
+[Index(nameof(LastUpdateAt)), Index(nameof(CreatedAtUTC)), Index(nameof(StatusDocument)), Index(nameof(NormalizedDescriptionUpper)), Index(nameof(AuthorIdentityUserId))]
 public class IssueHelpdeskModel : EntryDescriptionModel
 {
     /// <summary>
     /// Шаг/статус обращения: "Создан", "В работе", "На проверке" и "Готово"
     /// </summary>
-    public StatusesDocumentsEnum StepIssue { get; set; }
+    public StatusesDocumentsEnum StatusDocument { get; set; }
 
     /// <summary>
     /// IdentityUserId
@@ -48,7 +48,7 @@ public class IssueHelpdeskModel : EntryDescriptionModel
     /// <summary>
     /// CreatedAt (UTC)
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAtUTC { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// LastUpdateAt
@@ -64,9 +64,9 @@ public class IssueHelpdeskModel : EntryDescriptionModel
         {
             AuthorIdentityUserId = sender.AuthorIdentityUserId,
             ExecutorIdentityUserId = sender.ExecutorIdentityUserId,
-            StepIssue = sender.StepIssue,
+            StatusDocument = sender.StatusDocument,
             Name = sender.Name,
-            CreatedAt = sender.CreatedAt,
+            CreatedAtUTC = sender.CreatedAtUTC,
             LastUpdateAt = sender.LastUpdateAt,
             Description = sender.Description,
             Id = sender.Id,

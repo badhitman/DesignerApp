@@ -169,7 +169,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
             return response;
         }
         IssueHelpdeskModelDB hd_obj = find_helpdesk.Response.Single();
-        if (hd_obj.StepIssue == Step)
+        if (hd_obj.StatusDocument == Step)
         {
             response.AddInfo("Статус уже установлен!");
             return response;
