@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
 using Microsoft.EntityFrameworkCore.Storage;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace CommerceService;
 
@@ -249,8 +250,10 @@ public partial class CommerceImplementService : ICommerceService
            .Where(x => _offersIds.Any(y => y == x.OfferId))
            .ToListAsync();
 
-        int[] documents_ids = [.. _allOffersOfDocuments.Select(x => x.DocumentId).Distinct()];
-        List<Task> tasks = [.. documents_ids.Select(doc_id => context.WarehouseDocuments.Where(x => x.Id == doc_id).ExecuteUpdateAsync(set => set.SetProperty(p => p.Version, Guid.NewGuid()).SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)))];
+        foreach (int doc_id in _allOffersOfDocuments.Select(x => x.DocumentId).Distinct())
+            await context.WarehouseDocuments.Where(x => x.Id == doc_id).ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.Version, Guid.NewGuid())
+            .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow));
 
         foreach (var rowEl in _allOffersOfDocuments.Where(x => !x.IsDisabled))
         {
@@ -261,24 +264,19 @@ public partial class CommerceImplementService : ICommerceService
                 context.Update(offerRegister);
             }
             else
-                tasks.Add(Task.Run(async () =>
+                await context.OffersAvailability.AddAsync(new()
                 {
-                    await context.OffersAvailability.AddAsync(new()
-                    {
-                        WarehouseId = rowEl.WarehouseId,
-                        GoodsId = rowEl.GoodsId,
-                        OfferId = rowEl.OfferId,
-                        Quantity = -rowEl.Quantity,
-                    });
-                }));
+                    WarehouseId = rowEl.WarehouseId,
+                    GoodsId = rowEl.GoodsId,
+                    OfferId = rowEl.OfferId,
+                    Quantity = -rowEl.Quantity,
+                });
         }
 
         if (offersLocked.Length != 0)
             context.RemoveRange(offersLocked);
 
-        tasks.Add(Task.Run(async () => res.Response = await context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0));
-
-        await Task.WhenAll(tasks);
+        res.Response = await context.RowsOfWarehouseDocuments.Where(x => req.Any(y => y == x.Id)).ExecuteDeleteAsync() != 0;
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
 
@@ -298,13 +296,13 @@ public partial class CommerceImplementService : ICommerceService
         }
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<WarehouseDocumentModelDB> queryDocumentDb = from r in context.RowsOfWarehouseDocuments.Where(x => x.Id == req.Id)
-                                                               join d in context.WarehouseDocuments on r.WarehouseDocumentId equals d.Id
-                                                               select d;
+        IQueryable<WarehouseDocumentModelDB> queryDocumentDb = context.WarehouseDocuments.Where(x => x.Id == req.WarehouseDocumentId);
 
-        WarehouseDocumentRecord whDoc = await context.WarehouseDocuments.Where(x => x.Id == req.WarehouseDocumentId).Select(x => new WarehouseDocumentRecord(x.WarehouseId, x.IsDisabled)).FirstAsync();
+        WarehouseDocumentRecord whDoc = await queryDocumentDb
+            .Select(x => new WarehouseDocumentRecord(x.WarehouseId, x.IsDisabled))
+            .FirstAsync();
 
-        List<Task> tasks = [];
+        // List<Task> tasks = [];
         if (whDoc.WarehouseId == 0)
         {
             msg = "В документе не указан склад";
@@ -329,7 +327,7 @@ public partial class CommerceImplementService : ICommerceService
             : null;
 
         using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
-        List<LockOffersAvailabilityModelDB> lokers = [new()
+        List<LockOffersAvailabilityModelDB> lockers = [new()
         {
             LockerName = nameof(OfferAvailabilityModelDB),
             LockerId = req.OfferId,
@@ -338,7 +336,7 @@ public partial class CommerceImplementService : ICommerceService
 
         if (rowDb is not null && rowDb.OfferId != req.OfferId)
         {
-            lokers.Add(new()
+            lockers.Add(new()
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
                 LockerId = rowDb.OfferId,
@@ -348,7 +346,7 @@ public partial class CommerceImplementService : ICommerceService
 
         try
         {
-            await context.AddRangeAsync(lokers);
+            await context.AddRangeAsync(lockers);
             await context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -373,7 +371,7 @@ public partial class CommerceImplementService : ICommerceService
                 WarehouseId = whDoc.WarehouseId,
             };
 
-            tasks.Add(Task.Run(async () => await context.AddAsync(regOfferAv)));
+            await context.AddAsync(regOfferAv);
         }
         OfferAvailabilityModelDB? regOfferAvStorno = null;
         if (rowDb is not null && rowDb.OfferId != req.OfferId)
@@ -386,9 +384,9 @@ public partial class CommerceImplementService : ICommerceService
             };
         }
 
-        tasks.Add(queryDocumentDb.ExecuteUpdateAsync(set => set
-            .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
-            .SetProperty(p => p.Version, Guid.NewGuid())));
+        await queryDocumentDb.ExecuteUpdateAsync(set => set
+             .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
+             .SetProperty(p => p.Version, Guid.NewGuid()));
 
         if (req.Id < 1)
         {
@@ -406,7 +404,6 @@ public partial class CommerceImplementService : ICommerceService
         {
             if (rowDb!.Version != req.Version)
             {
-                await Task.WhenAll(tasks);
                 await transaction.RollbackAsync();
                 msg = "Строка документа была уже кем-то изменена";
                 loggerRepo.LogError($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
@@ -430,19 +427,19 @@ public partial class CommerceImplementService : ICommerceService
                 }
             }
 
-            tasks.Add(Task.Run(async () => res.Response = await context.RowsOfWarehouseDocuments
+            res.Response = await context.RowsOfWarehouseDocuments
                        .Where(x => x.Id == req.Id)
                        .ExecuteUpdateAsync(set => set
-                       .SetProperty(p => p.Quantity, req.Quantity).SetProperty(p => p.Version, Guid.NewGuid()))));
+                       .SetProperty(p => p.Quantity, req.Quantity).SetProperty(p => p.Version, Guid.NewGuid()));
         }
-        context.RemoveRange(lokers);
-        await Task.WhenAll(tasks);
+        context.RemoveRange(lockers);
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
 
         res.AddSuccess($"Обновление `строки складского документа` выполнено");
         return res;
     }
+
 
     /// <inheritdoc/>
     public async Task<TResponseModel<WarehouseDocumentModelDB[]>> WarehouseDocumentsRead(int[] req)

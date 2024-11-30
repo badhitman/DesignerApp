@@ -40,7 +40,7 @@ main {
 
 @media (max-width: 640.98px) {
     .top-row {
-        justify-content: space-between;
+        justify-content: end;
     }
 
         .top-row ::deep a, .top-row ::deep .btn-link {

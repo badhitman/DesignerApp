@@ -12,9 +12,15 @@
 
     <main>
         <div class="top-row px-4">
+            @if (NavMainMenu.TopNavMenuItems?.Any() == true)
+            {
+                foreach (NavItemModel nav_item in NavMainMenu.TopNavMenuItems)
+                {
+                    <a href="@nav_item.HrefNav" target="_blank" class="@nav_item.CssClass px-1" title="@nav_item.Tooltip">@nav_item.Title</a>
+                }
+            }
             <a href="@GetRootDomain()" title="Документация" target="_blank" class="@(user?.IsAdmin == true ? "" : "visually-hidden")">API</a>
         </div>
-
         <article class="content px-4">
             @Body
         </article>
@@ -23,41 +29,7 @@
     {
         <nav class="navbar fixed-bottom bg-body-tertiary">
             <div class="container-fluid">
-                @foreach (NavItemModel nav_item in NavMainMenu.BottomNavMenuItems)
-                {
-                    if (string.IsNullOrWhiteSpace(nav_item.AuthorizeViewRoles))
-                    {
-                        <div class="nav-item px-3">
-                            <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll ? NavLinkMatch.All : NavLinkMatch.Prefix)">
-                                <span aria-hidden="true"></span> @nav_item.Title
-                            </NavLink>
-                        </div>
-                    }
-                    else if (nav_item.AuthorizeViewRoles.Trim().Equals("*"))
-                    {
-                        <AuthorizeView>
-                            <Authorized>
-                                <div class="nav-item px-3">
-                                    <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll ? NavLinkMatch.All : NavLinkMatch.Prefix)">
-                                        <span aria-hidden="true"></span> @nav_item.Title
-                                    </NavLink>
-                                </div>
-                            </Authorized>
-                        </AuthorizeView>
-                    }
-                    else
-                    {
-                        <AuthorizeView Roles="@nav_item.AuthorizeViewRoles">
-                            <Authorized>
-                                <div class="nav-item px-3">
-                                    <NavLink class="nav-link px-3" href="@(nav_item.HrefNav)" Match="@(nav_item.IsNavLinkMatchAll ? NavLinkMatch.All : NavLinkMatch.Prefix)">
-                                        <span aria-hidden="true"></span> @nav_item.Title
-                                    </NavLink>
-                                </div>
-                            </Authorized>
-                        </AuthorizeView>
-                    }
-                }
+                <NavMainMenuComponent NavMenuItems="NavMainMenu.BottomNavMenuItems" />
             </div>
         </nav>
     }

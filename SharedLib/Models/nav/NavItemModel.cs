@@ -28,4 +28,14 @@ public class NavItemModel
     /// Текст пункта меню
     /// </summary>
     public string Title { get; set; } = default!;
+
+    /// <summary>
+    /// Всплывающая подсказка
+    /// </summary>
+    public string? Tooltip { get; set; }
+
+    /// <summary>
+    /// CSS класс
+    /// </summary>
+    public string? CssClass { get; set; }
 }

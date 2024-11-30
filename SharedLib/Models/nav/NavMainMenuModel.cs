@@ -10,7 +10,12 @@ namespace SharedLib;
 public class NavMainMenuModel
 {
     /// <summary>
-    /// Элементы меню
+    /// Элементы меню (верхнее)
+    /// </summary>
+    public NavItemModel[] TopNavMenuItems { get; set; } = default!;
+
+    /// <summary>
+    /// Элементы меню (слева)
     /// </summary>
     public NavItemModel[] NavMenuItems { get; set; } = default!;
 
