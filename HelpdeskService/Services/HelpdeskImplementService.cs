@@ -1062,7 +1062,7 @@ public class HelpdeskImplementService(
                             IssueId = issue_data.Id,
                             PulseType = PulseIssuesTypesEnum.Messages,
                             Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
-                            Description = $"Пользователь `{actor.UserName}` добавил комментарий в обращение #{issue_data.Id} '{issue_data.Name}'",
+                            Description = $"Пользователь `{actor.UserName}` в обращение #{issue_data.Id} '{issue_data.Name}' добавил комментарий: {req.Payload.MessageText}",
                         },
                         SenderActionUserId = req.SenderActionUserId,
                     },

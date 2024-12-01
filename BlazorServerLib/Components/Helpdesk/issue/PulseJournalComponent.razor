@@ -23,7 +23,9 @@
         <MudTd DataLabel="Тип">@(UsersIdentityDump.FirstOrDefault(x => x.UserId == context.AuthorUserIdentityId)?.UserName ?? context.AuthorUserIdentityId)</MudTd>
         <MudTd DataLabel="Тип">@context.PulseType</MudTd>
         <MudTd DataLabel="Признак">@context.Tag</MudTd>
-        <MudTd DataLabel="Инфо">@context.Description</MudTd>
+        <MudTd DataLabel="Инфо">
+            @ms(context.Description)
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Не найдено ни одной записи</MudText>

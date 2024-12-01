@@ -23,12 +23,14 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
 
     private MudTable<PulseViewModel> table = default!;
 
+    MarkupString ms(string raw_html) => (MarkupString)raw_html;
+
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
     private async Task<TableData<PulseViewModel>> ServerReload(TableState state, CancellationToken token)
     {
-        await SetBusy();
+        await SetBusy(token: token);
         TResponseModel<TPaginationResponseModel<PulseViewModel>> rest = await HelpdeskRepo.PulseJournal(new TPaginationRequestModel<UserIssueModel>()
         {
             PageNum = state.Page,

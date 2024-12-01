@@ -15,8 +15,6 @@
                         console.debug(`editor.model.document.on 'change:data': ${data}`);
                         const el = document.createElement('div');
 
-                        // let pd = $(el).closest('#issue-messages-table-wrap').attr('id2','id3');
-                       
                         el.innerHTML = data;
                         if (el.innerText.trim() == '')
                             data = null;
