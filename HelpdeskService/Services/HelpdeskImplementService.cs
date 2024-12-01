@@ -11,6 +11,8 @@ using System.Globalization;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
+using HtmlAgilityPack;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 namespace HelpdeskService;
 
@@ -1112,14 +1114,20 @@ public class HelpdeskImplementService(
                     ? ""
                     : safeTextMessage;
 
+                if (string.IsNullOrWhiteSpace(safeTextMessage))
+                {
+                    HtmlDocument doc = new();
+                    doc.LoadHtml(req.Payload.MessageText);
+                    safeTextMessage = doc.DocumentNode.InnerText;
+                }
+                if (safeTextMessage.Length > 128)
+                    safeTextMessage = $"{safeTextMessage[..125]}...";
+
                 string subject_email = "Новое сообщение";
                 string _about_document = $"Обращение '{issue_data.Name}' от [{issue_data.CreatedAtUTC.GetHumanDateTime()}]";
                 string wpMessage = $"Заявка '{issue_data.Name}' от [{issue_data.CreatedAtUTC.GetHumanDateTime()}]: Пользователь `{actor.UserName}` добавил комментарий.";
                 msg = $"<p>{_about_document}: Пользователь `{actor.UserName}` добавил комментарий.</p>";
                 string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
-
-                if (safeTextMessage.Length > 128)
-                    safeTextMessage = $"{safeTextMessage[..125]}...";
 
                 tasks.Add(Task.Run(async () => { find_orders = await commRepo.OrdersByIssues(req_docs); }));
                 tasks.Add(Task.Run(async () => { wc = await webTransmissionRepo.GetWebConfig(); }));
@@ -1192,7 +1200,7 @@ public class HelpdeskImplementService(
                     foreach (UserInfoModel u in users_notify.Response)
                     {
                         loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
-                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }, false));
+                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = $"{msg}</hr>{req.Payload.MessageText}" }, false));
 
                         if (u.TelegramId.HasValue)
                         {
@@ -1242,7 +1250,7 @@ public class HelpdeskImplementService(
                             IssueId = issue_data.Id,
                             PulseType = PulseIssuesTypesEnum.Messages,
                             Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
-                            Description = $"Пользователь `{actor.UserName}` изменил комментарий #{msg_db.Id}.",
+                            Description = $"Пользователь <a href='/Users/Profiles/view-{actor.UserId}' target='_blank'>{actor.UserName}</a> изменил комментарий #{msg_db.Id}.<br /><dl><dt>старое:</dt><dd>{msg_db.MessageText}</dd><dt>новое:</dt><dd>{req.Payload.MessageText}</dd></dl>",
                         },
                         SenderActionUserId = req.SenderActionUserId,
                     },
@@ -1437,6 +1445,9 @@ public class HelpdeskImplementService(
         if (!rest.Success() || rest.Response is null || rest.Response.Length != users_ids.Count)
             return new() { Messages = rest.Messages };
 
+        HtmlDocument doc = new();
+        doc.LoadHtml(req.Payload.Payload.Description);
+
         List<Task> tasks = [];
         if (!req.IsMuteEmail || !req.IsMuteTelegram || !req.IsMuteWhatsapp)
             foreach (UserInfoModel user in rest.Response)
@@ -1458,7 +1469,7 @@ public class HelpdeskImplementService(
                 }
 
                 if (!string.IsNullOrWhiteSpace(user.PhoneNumber) && GlobalTools.IsPhoneNumber(user.PhoneNumber) && !req.IsMuteWhatsapp)
-                    tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = user.PhoneNumber, Text = req.Payload.Payload.Description }, false));
+                    tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = user.PhoneNumber, Text = doc.DocumentNode.InnerText }, false));
             }
 
         if (tasks.Count != 0)
