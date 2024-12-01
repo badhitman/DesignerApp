@@ -22,7 +22,7 @@
                     </div>
                 </div>
             }
-            <MudTable @ref="tableRef" ServerData="ServerReload" Dense="true" Hover="true">
+            <MudTable id="issue-messages-table-wrap" @ref="tableRef" ServerData="ServerReload" Dense="true" Hover="true">
                 <ToolBarContent>
                     <MudTextField Immediate="true" @bind-Value="searchStringQuery" Placeholder="Поиск по тексту" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 </ToolBarContent>

@@ -52,7 +52,7 @@ public class SendWappiMessageReceive(
 
         if (!response.IsSuccessStatusCode)
         {
-            string _msg = $"http err (wappi): {response.StatusCode}";
+            string _msg = $"http err (wappi): {response.StatusCode} ({response.Content.ReadAsStringAsync()})\n\n{JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}";
             _logger.LogError(_msg);
             res.AddError(_msg);
         }

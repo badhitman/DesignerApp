@@ -28,21 +28,13 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
     public required IssueMessagesComponent ParentListIssues { get; set; }
 
 
+    string images_upload_url = default!;
+    Dictionary<string, object> editorConf = default!;
+
+
     bool IsCreatingNewMessage => Message is null || Message.Id < 1;
 
     bool IsEditMode;
-
-    bool IsInitDelete;
-
-    Task TryDelete()
-    {
-        if (!IsInitDelete)
-        {
-            IsInitDelete = true;
-            //return;
-        }
-        return Task.CompletedTask;
-    }
 
     string? textMessage { get; set; }
 
@@ -124,6 +116,19 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
     protected override async void OnInitialized()
     {
         await base.OnInitializedAsync();
+
+        /*
+         <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME])"
+                                                                               PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_CONTROLLER_NAME"
+                                                                               PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
+                                                                               OwnerPrimaryKey="Id"
+                                                                               Title="Файлы"
+                                                                               ManageMode="true" />
+         */
+
+        images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MESSAGE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.IMAGE_ACTION_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Message?.Id}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={Issue.Id}";
+        editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
+
         if (Message is null || Message.Id < 1)
             IsEditMode = true;
 
