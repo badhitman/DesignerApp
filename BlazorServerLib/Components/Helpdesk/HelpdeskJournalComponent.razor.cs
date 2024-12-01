@@ -77,7 +77,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseAuthModel
         SetTab(this);
         await SetBusy();
         await ReadCurrentUser();
-        if(string.IsNullOrWhiteSpace(UserIdentityId))
+        if (string.IsNullOrWhiteSpace(UserIdentityId))
             UserIdentityId = CurrentUserSession!.UserId;
 
         IsBusyProgress = false;
@@ -88,7 +88,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseAuthModel
     /// </summary>
     private async Task<TableData<IssueHelpdeskModel>> ServerReload(TableState state, CancellationToken token)
     {
-        await SetBusy();
+        await SetBusy(token: token);
         await Task.Delay(1, token);
         TPaginationRequestModel<SelectIssuesRequestModel> req = new()
         {
@@ -125,7 +125,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseAuthModel
             return;
 
         await SetBusy();
-        
+
         TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentity(_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);

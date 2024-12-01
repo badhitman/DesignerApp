@@ -30,7 +30,7 @@
                 @context.CreatedAtUTC.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))<sup>@context.CreatedAtUTC.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
             </a>
         </MudTd>
-        <MudTd DataLabel="Статус">StatusDocumentStepIssue.DescriptionInfo()</MudTd>
+        <MudTd DataLabel="Статус">@context.StatusDocument.DescriptionInfo()</MudTd>
         <MudTd DataLabel="Тема">@context.Name</MudTd>
         <MudTd DataLabel="Рубрика">@context.RubricIssue?.Name</MudTd>
         @if (UserArea == UsersAreasHelpdeskEnum.Author)
