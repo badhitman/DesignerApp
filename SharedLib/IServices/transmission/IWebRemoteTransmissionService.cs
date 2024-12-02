@@ -22,7 +22,7 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Получить пользователей из Identity по их идентификаторам
     /// </summary>
-    public Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(string[] ids_users);
+    public Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(IEnumerable<string> ids_users);
 
     /// <summary>
     /// Поиск пользователей в Identity по их Telegram chat id

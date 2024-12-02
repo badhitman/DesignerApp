@@ -13,6 +13,7 @@ using SharedLib;
 using DbcLib;
 using HtmlAgilityPack;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using System.Linq;
 
 namespace HelpdeskService;
 
@@ -30,7 +31,6 @@ public class HelpdeskImplementService(
     ISerializeStorageRemoteTransmissionService StorageRepo,
     IWebRemoteTransmissionService webTransmissionRepo) : IHelpdeskService
 {
-    static readonly CultureInfo cultureInfo = new("ru-RU");
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 
     #region rubric
@@ -657,6 +657,36 @@ public class HelpdeskImplementService(
             return new() { Messages = issues_data.Messages };
 
         IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
+        StatusesDocumentsEnum prevStatus = issue_data.StatusDocument;
+        StatusesDocumentsEnum nextStatus = req.Payload.Step;
+
+        if (prevStatus == nextStatus)
+        {
+            res.AddInfo("Статус уже установлен");
+            await commRepo.StatusOrderChange(new() { DocumentId = issue_data.Id, Step = nextStatus, }, false);
+            return res;
+        }
+
+        if (string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId) &&
+            nextStatus >= StatusesDocumentsEnum.Progress &&
+            nextStatus != StatusesDocumentsEnum.Canceled)
+        {
+            res.AddError("Для перевода обращения в работу нужно сначала указать исполнителя");
+            return res;
+        }
+
+        List<string> users_ids = [issue_data.AuthorIdentityUserId];
+
+        users_ids = issue_data
+            .Subscribers!
+            .Where(x => !x.IsSilent)
+            .Select(x => x.UserId)
+            .Union([issue_data.AuthorIdentityUserId])
+            .Distinct()
+            .ToList();
+
+        if (!string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId))
+            users_ids.Add(issue_data.ExecutorIdentityUserId);
 
         if (!actor.IsAdmin &&
             issue_data.AuthorIdentityUserId != actor.UserId &&
@@ -667,7 +697,22 @@ public class HelpdeskImplementService(
             res.AddError("Не достаточно прав для смены статуса");
             return res;
         }
-        List<Task> tasks = [];
+
+        TResponseModel<UserInfoModel[]?>? users_notify = null;
+        TResponseModel<string?>
+            CommerceStatusChangeOrderSubjectNotification = default!,
+            CommerceStatusChangeOrderBodyNotification = default!,
+            CommerceStatusChangeOrderBodyNotificationWhatsapp = default!,
+            CommerceStatusChangeOrderBodyNotificationTelegram = default!;
+
+        TResponseModel<TelegramBotConfigModel?> wc = default!;
+        List<Task> tasks = [
+            Task.Run(async () => { CommerceStatusChangeOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(prevStatus)); }),
+            Task.Run(async () => { CommerceStatusChangeOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(prevStatus)); }),
+            Task.Run(async () => { CommerceStatusChangeOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(prevStatus)); }),
+            Task.Run(async () => { CommerceStatusChangeOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationWhatsapp(prevStatus)); }),
+            Task.Run(async () => { wc = await webTransmissionRepo.GetWebConfig(); })];
+
         if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
         {
             tasks.Add(SubscribeUpdate(new()
@@ -685,156 +730,114 @@ public class HelpdeskImplementService(
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        if (issue_data.StatusDocument == req.Payload.Step)
-            res.AddInfo("Статус уже установлен");
-        else
+        tasks.Add(context.Issues.Where(x => x.Id == issue_data.Id)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.StatusDocument, nextStatus)
+            .SetProperty(p => p.LastUpdateAt, DateTime.UtcNow)));
+
+        DateTime cdd = issue_data.CreatedAtUTC.GetCustomTime();
+        string _about_document = $"'{issue_data.Name}' {cdd.GetHumanDateTime()}";
+        string subject_email = "Изменение статуса документа";
+        if (CommerceStatusChangeOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderSubjectNotification.Response))
+            subject_email = IHelpdeskService.ReplaceTags(issue_data.Name, cdd, issue_data.Id, nextStatus, CommerceStatusChangeOrderSubjectNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+
+        string msg = $"<p>Заявка '{_about_document} [изменение статуса]: `{prevStatus.DescriptionInfo()}` → `{nextStatus.DescriptionInfo()}`" +
+                            $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
+
+        if (CommerceStatusChangeOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
+            msg = IHelpdeskService.ReplaceTags(issue_data.Name, cdd, issue_data.Id, nextStatus, CommerceStatusChangeOrderBodyNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+
+        string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
+        if (CommerceStatusChangeOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationTelegram.Response))
+            tg_message = IHelpdeskService.ReplaceTags(issue_data.Name, cdd, issue_data.Id, nextStatus, CommerceStatusChangeOrderBodyNotificationTelegram.Response, wc.Response?.ClearBaseUri, _about_document);
+
+        string wp_message = $"Заявка '{_about_document} [изменение статуса]: `{prevStatus.DescriptionInfo()}` → `{nextStatus.DescriptionInfo()}`" +
+                            $"{wc.Response?.ClearBaseUri}";
+
+        res.AddSuccess(msg);
+        res.Response = true;
+
+        PulseRequestModel p_req = new()
         {
-            if (string.IsNullOrWhiteSpace(issue_data.ExecutorIdentityUserId) &&
-                req.Payload.Step >= StatusesDocumentsEnum.Progress &&
-                req.Payload.Step != StatusesDocumentsEnum.Canceled)
+            Payload = new()
             {
-                res.AddError("Для перевода обращения в работу нужно сначала указать исполнителя");
-                await Task.WhenAll(tasks);
-                return res;
-            }
-
-            string msg = $"Статус успешно изменён с `{issue_data.StatusDocument}` на `{req.Payload.Step}`";
-
-            tasks.Add(context.Issues.Where(x => x.Id == issue_data.Id)
-                .ExecuteUpdateAsync(set => set
-                .SetProperty(p => p.StatusDocument, req.Payload.Step)
-                .SetProperty(p => p.LastUpdateAt, DateTime.UtcNow)));
-
-            tasks.Add(ConsoleSegmentCacheEmpty(issue_data.StatusDocument));
-            tasks.Add(ConsoleSegmentCacheEmpty(req.Payload.Step));
-
-            res.AddSuccess(msg);
-            res.Response = true;
-            PulseRequestModel p_req = new()
-            {
+                SenderActionUserId = req.SenderActionUserId,
                 Payload = new()
                 {
-                    SenderActionUserId = req.SenderActionUserId,
-                    Payload = new()
-                    {
-                        IssueId = issue_data.Id,
-                        PulseType = PulseIssuesTypesEnum.Status,
-                        Tag = req.Payload.Step.DescriptionInfo(),
-                        Description = msg,
-                    },
+                    IssueId = issue_data.Id,
+                    PulseType = PulseIssuesTypesEnum.Status,
+                    Tag = nextStatus.DescriptionInfo(),
+                    Description = msg,
                 },
-                IsMuteEmail = true,
-                IsMuteTelegram = true,
-                IsMuteWhatsapp = true,
-            };
+            },
+            IsMuteEmail = true,
+            IsMuteTelegram = true,
+            IsMuteWhatsapp = true,
+        };
+        tasks.Add(PulsePush(p_req));
 
-            OrdersByIssuesSelectRequestModel req_docs = new()
+        OrdersByIssuesSelectRequestModel req_docs = new()
+        {
+            IssueIds = [issue_data.Id],
+        };
+        TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
+        if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
+        {
+            tasks.Add(commRepo.StatusOrderChange(new() { DocumentId = issue_data.Id, Step = nextStatus, }));
+            OrderDocumentModelDB order_obj = find_orders.Response[0];
+            if (!users_ids.Contains(order_obj.AuthorIdentityUserId))
+                users_ids.Add(order_obj.AuthorIdentityUserId);
+
+            cdd = order_obj.CreatedAtUTC.GetCustomTime();
+            _about_document = $"'{order_obj.Name}' {cdd.GetHumanDateTime()}";
+
+            if (CommerceStatusChangeOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderSubjectNotification.Response))
+                subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderSubjectNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+
+            msg = $"<p>Заказ '{_about_document} [изменение статуса]: `{prevStatus}` → `{nextStatus}`" +
+                                $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
+
+            tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
+            wp_message = $"Заказ '{order_obj.Name}' от [{cdd.GetHumanDateTime()}] - {nextStatus.DescriptionInfo()}. " +
+                               $"{wc.Response?.ClearBaseUri}";
+
+            if (CommerceStatusChangeOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
+                msg = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderBodyNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+
+            if (CommerceStatusChangeOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationTelegram.Response))
+                tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderBodyNotificationTelegram.Response, wc.Response?.ClearBaseUri, _about_document);
+        }
+
+        users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
+        if (users_notify?.Success() == true && users_notify.Response is not null && users_notify.Response.Length != 0)
+        {
+            foreach (UserInfoModel u in users_notify.Response)
             {
-                IssueIds = [issue_data.Id],
-            };
-
-            TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
-            if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
-            {
-                TResponseModel<TelegramBotConfigModel?> wc = default!;
-                tasks.Add(commRepo.StatusOrderChange(new() { DocumentId = issue_data.Id, Step = req.Payload.Step, }));
-                tasks.Add(Task.Run(async () => { wc = await webTransmissionRepo.GetWebConfig(); }));
-
-                tasks.Add(PulsePush(p_req));
-                await Task.WhenAll(tasks);
-                tasks.Clear();
-
-                OrderDocumentModelDB order_obj = find_orders.Response[0];
-                DateTime cdd = order_obj.CreatedAtUTC.GetCustomTime();
-                string normCreatedAtUTC = $"{cdd.ToString("d", cultureInfo)} {cdd.ToString("t", cultureInfo)}";
-                string _about_order = $"'{order_obj.Name}' {normCreatedAtUTC}";
-                string ReplaceTags(string raw, bool clearMd = false)
+                tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }, false));
+                if (u.TelegramId.HasValue)
                 {
-                    return raw.Replace(GlobalStaticConstants.OrderDocumentName, order_obj.Name)
-                    .Replace(GlobalStaticConstants.OrderDocumentDate, $"{cdd.ToString("d", cultureInfo)} {cdd.ToString("t", cultureInfo)}")
-                    .Replace(GlobalStaticConstants.OrderStatusInfo, req.Payload.Step.DescriptionInfo())
-                    .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}" : $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{order_obj.HelpdeskId}'>{_about_order}</a>")
-                    .Replace(GlobalStaticConstants.HostAddress, clearMd ? wc.Response?.ClearBaseUri : $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
-                }
-                TResponseModel<UserInfoModel[]?>? users_notify = null;
-                TResponseModel<string?>?
-                    CommerceStatusChangeOrderSubjectNotification = null,
-                    CommerceStatusChangeOrderBodyNotification = null,
-                    CommerceStatusChangeOrderBodyNotificationWhatsapp = null,
-                    CommerceStatusChangeOrderBodyNotificationTelegram = null;
-                string subject_email = "Изменение статуса документа";
-
-                IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
-
-                tasks = [
-                    Task.Run(async () => {
-                        string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
-                        users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids); }),
-                    Task.Run(async () => { CommerceStatusChangeOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(issue_data.StatusDocument)); }),
-                    Task.Run(async () => { CommerceStatusChangeOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(issue_data.StatusDocument)); }),
-                    Task.Run(async () => { CommerceStatusChangeOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(issue_data.StatusDocument)); })];
-
-                await Task.WhenAll(tasks);
-
-                if (CommerceStatusChangeOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderSubjectNotification.Response))
-                    subject_email = CommerceStatusChangeOrderSubjectNotification.Response;
-                subject_email = ReplaceTags(subject_email);
-
-                msg = $"<p>Заказ '{order_obj.Name}' от [{normCreatedAtUTC}] - {req.Payload.Step.DescriptionInfo()}.</p>" +
-                                    $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
-
-                string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
-                string wp_message = $"Заказ '{order_obj.Name}' от [{normCreatedAtUTC}] - {req.Payload.Step.DescriptionInfo()}. " +
-                                    $"{wc.Response?.ClearBaseUri}";
-
-                if (CommerceStatusChangeOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
-                    msg = CommerceStatusChangeOrderBodyNotification.Response;
-                msg = ReplaceTags(msg);
-
-                if (CommerceStatusChangeOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationTelegram.Response))
-                    tg_message = CommerceStatusChangeOrderBodyNotificationTelegram.Response;
-                tg_message = ReplaceTags(tg_message);
-
-                if (users_notify?.Success() == true && users_notify.Response is not null && users_notify.Response.Length != 0)
-                {
-                    foreach (UserInfoModel u in users_notify.Response)
+                    tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(new()
                     {
-                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = msg }, false));
-                        if (u.TelegramId.HasValue)
-                        {
-                            tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(new()
-                            {
-                                Message = tg_message,
-                                UserTelegramId = u.TelegramId!.Value
-                            }, false));
-                        }
-                        loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
-                        if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
-                        {
-                            if (CommerceStatusChangeOrderBodyNotificationWhatsapp is null)
-                            {
-                                CommerceStatusChangeOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationWhatsapp(issue_data.StatusDocument));
-                                if (CommerceStatusChangeOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationWhatsapp.Response))
-                                    wp_message = CommerceStatusChangeOrderBodyNotificationWhatsapp.Response;
-                            }
-                            tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = ReplaceTags(wp_message, true) }, false));
-                        }
-                    }
+                        Message = tg_message,
+                        UserTelegramId = u.TelegramId!.Value
+                    }, false));
                 }
-                if (tasks.Count != 0)
-                    await Task.WhenAll(tasks);
-            }
-            else
-            {
-                p_req.IsMuteTelegram = false;
-                p_req.IsMuteWhatsapp = false;
-                p_req.IsMuteEmail = false;
+                loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
+                if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
+                {
+                    if (CommerceStatusChangeOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationWhatsapp.Response))
+                        wp_message = CommerceStatusChangeOrderBodyNotificationWhatsapp.Response;
 
-                tasks.Add(PulsePush(p_req));
-                await Task.WhenAll(tasks);
-                tasks.Clear();
+                    tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = wp_message }, false));
+                }
             }
         }
+
+        tasks.Add(ConsoleSegmentCacheEmpty(prevStatus));
+        tasks.Add(ConsoleSegmentCacheEmpty(nextStatus));
+
+        await Task.WhenAll(tasks);
+
         return res;
     }
 
@@ -1146,25 +1149,25 @@ public class HelpdeskImplementService(
                 {
                     CommerceNewMessageOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp);
                     if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
-                        wpMessage = ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, true);
+                        wpMessage = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.Response?.ClearBaseUri, _about_document, true);
                 }));
                 tasks.Add(Task.Run(async () =>
                 {
                     CommerceNewMessageOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram);
                     if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
-                        tg_message = ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response);
+                        tg_message = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.Response?.ClearBaseUri, _about_document);
                 }));
                 tasks.Add(Task.Run(async () =>
                 {
                     CommerceNewMessageOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification);
                     if (CommerceNewMessageOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
-                        msg = ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotification.Response);
+                        msg = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.Response?.ClearBaseUri, _about_document);
                 }));
                 tasks.Add(Task.Run(async () =>
                 {
                     CommerceNewMessageOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderSubjectNotification);
                     if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
-                        subject_email = ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response);
+                        subject_email = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.Response?.ClearBaseUri, _about_document);
                 }));
                 await Task.WhenAll(tasks);
                 tasks.Clear();
@@ -1172,32 +1175,24 @@ public class HelpdeskImplementService(
                 IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
 
                 string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()]; ;
-                string ReplaceTags(string name, DateTime dateCreated, int helpdeskId, StatusesDocumentsEnum stepIssue, string raw, bool clearMd = false)
-                {
-                    return raw.Replace(GlobalStaticConstants.OrderDocumentName, name)
-                    .Replace(GlobalStaticConstants.OrderDocumentDate, $"{dateCreated.GetCustomTime().ToString("d", cultureInfo)} {dateCreated.GetCustomTime().ToString("t", cultureInfo)}")
-                    .Replace(GlobalStaticConstants.OrderStatusInfo, stepIssue.DescriptionInfo())
-                    .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{wc.Response?.ClearBaseUri}/issue-card/{helpdeskId}" : $"<a href='{wc.Response?.ClearBaseUri}/issue-card/{helpdeskId}'>{_about_document}</a>")
-                    .Replace(GlobalStaticConstants.HostAddress, clearMd ? wc.Response?.ClearBaseUri : $"<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>");
-                }
 
                 if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
                 {
                     OrderDocumentModelDB order_obj = find_orders.Response[0];
-                    _about_document = $"Заказ '{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", cultureInfo)}";
+                    _about_document = $"Заказ '{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", IHelpdeskService.cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", IHelpdeskService.cultureInfo)}";
                     if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
-                        subject_email = ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response);
+                        subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.Response?.ClearBaseUri, _about_document);
 
                     if (!CommerceNewMessageOrderBodyNotification.Success() || string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
                         msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.</p>";
                     else
-                        msg = ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotification.Response);
+                        msg = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.Response?.ClearBaseUri, _about_document);
 
                     if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
-                        tg_message = ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response);
+                        tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.Response?.ClearBaseUri, _about_document);
 
                     if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
-                        wpMessage = ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, true);
+                        wpMessage = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.Response?.ClearBaseUri, _about_document, true);
                     else
                         wpMessage = $"Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.";
 

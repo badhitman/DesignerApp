@@ -19,7 +19,7 @@ public static class DateTimeExtensions
 
     static CultureInfo cultureInfo = new CultureInfo("ru-RU");
     /// <summary>
-    /// GetHumanDateTime
+    /// Дата + время
     /// </summary>
     public static string GetHumanDateTime(this DateTime dateTime, string timeZone = "Europe/Moscow")
     {

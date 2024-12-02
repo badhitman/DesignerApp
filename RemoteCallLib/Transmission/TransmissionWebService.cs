@@ -16,7 +16,7 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
         => await rabbitClient.MqRemoteCall<TelegramBotConfigModel?>(GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(string[] ids_users)
+    public async Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(IEnumerable<string> ids_users)
         => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityReceive, ids_users);
 
     /// <inheritdoc/>

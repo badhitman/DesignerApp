@@ -650,19 +650,10 @@ public partial class CommerceImplementService(
                 string _dtAsString = $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
                 string _about_order = $"'{req.Name}' {_dtAsString}";
 
-                string ReplaceTags(string raw, bool clearMd = false)
-                {
-                    return raw.Replace(GlobalStaticConstants.OrderDocumentName, req.Name)
-                    .Replace(GlobalStaticConstants.OrderDocumentDate, $"{_dtAsString}")
-                    .Replace(GlobalStaticConstants.OrderStatusInfo, StatusesDocumentsEnum.Created.DescriptionInfo())
-                    .Replace(GlobalStaticConstants.OrderLinkAddress, clearMd ? $"{_webConf.BaseUri}/issue-card/{req.HelpdeskId}" : $"<a href='{_webConf.BaseUri}/issue-card/{req.HelpdeskId}'>{_about_order}</a>")
-                    .Replace(GlobalStaticConstants.HostAddress, clearMd ? _webConf.BaseUri : $"<a href='{_webConf.BaseUri}'>{_webConf.BaseUri}</a>");
-                }
-
                 if (CommerceNewOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
                     subject_email = CommerceNewOrderSubjectNotification.Response;
 
-                subject_email = ReplaceTags(subject_email);
+                subject_email = IHelpdeskService.ReplaceTags(req.Name, _dt, issue.Response, StatusesDocumentsEnum.Created, subject_email, _webConf.ClearBaseUri, _about_order);
                 res.AddSuccess(subject_email);
                 msg = $"<p>Заказ <b>'{issue_new.Payload.Name}' от [{_dtAsString}]</b> успешно создан.</p>" +
                         $"<p>/<a href='{_webConf.ClearBaseUri}'>{_webConf.ClearBaseUri}</a>/</p>";
@@ -672,11 +663,11 @@ public partial class CommerceImplementService(
 
                 if (CommerceNewOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotification.Response))
                     msg = CommerceNewOrderBodyNotification.Response;
-                msg = ReplaceTags(msg);
+                msg = IHelpdeskService.ReplaceTags(req.Name, _dt, issue.Response, StatusesDocumentsEnum.Created, msg, _webConf.ClearBaseUri, _about_order);
 
                 if (CommerceNewOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationTelegram.Response))
                     msg_for_tg = CommerceNewOrderBodyNotificationTelegram.Response;
-                msg_for_tg = ReplaceTags(msg_for_tg);
+                msg_for_tg = IHelpdeskService.ReplaceTags(req.Name, _dt, issue.Response, StatusesDocumentsEnum.Created, msg_for_tg, _webConf.ClearBaseUri, _about_order);
 
                 tasks = [webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg }, false)];
 
@@ -691,7 +682,7 @@ public partial class CommerceImplementService(
                         if (CommerceNewOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationWhatsapp.Response))
                             waMsg = CommerceNewOrderBodyNotificationWhatsapp.Response;
 
-                        await tgRepo.SendWappiMessage(new() { Number = actor.Response[0].PhoneNumber!, Text = ReplaceTags(waMsg, true) }, false);
+                        await tgRepo.SendWappiMessage(new() { Number = actor.Response[0].PhoneNumber!, Text = IHelpdeskService.ReplaceTags(req.Name, _dt, issue.Response, StatusesDocumentsEnum.Created, waMsg, _webConf.ClearBaseUri, _about_order, true) }, false);
                     }));
                 }
 

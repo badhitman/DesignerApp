@@ -113,8 +113,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.PriceRuleDeleteCommerceReceive, id);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel req)
-        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.StatusChangeOrderByHelpDeskDocumentIdReceive, req);
+    public async Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel req, bool waitResponse = true)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.StatusChangeOrderByHelpDeskDocumentIdReceive, req, waitResponse);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssues(OrdersByIssuesSelectRequestModel req)

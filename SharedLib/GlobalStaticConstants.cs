@@ -107,29 +107,29 @@ public static partial class GlobalStaticConstants
     public static string TransmissionQueueNamePrefix { get; set; } = "Transmission.Receives";
 
     /// <summary>
-    /// OrderDocumentName
+    /// DocumentName - property
     /// </summary>
-    public const string OrderDocumentName = "[OrderDocumentName]";
+    public const string DocumentNameProperty = "[DocumentNameProperty]";
 
     /// <summary>
-    /// OrderDocumentDate
+    /// DocumentDate - property
     /// </summary>
-    public const string OrderDocumentDate = "[OrderDocumentDate]";
+    public const string DocumentDateProperty = "[DocumentDateProperty]";
 
     /// <summary>
-    /// OrderStatusInfo
+    /// DocumentStatus - property
     /// </summary>
-    public const string OrderStatusInfo = "[OrderStatusInfo]";
+    public const string DocumentStatusProperty = "[DocumentStatusProperty]";
 
     /// <summary>
-    /// HostAddress
+    /// HostAddress - property
     /// </summary>
-    public const string HostAddress = "[HostAddress]";
+    public const string HostAddressProperty = "[HostAddressProperty]";
 
     /// <summary>
-    /// OrderLinkAddress
+    /// DocumentLinkAddressProperty
     /// </summary>
-    public const string OrderLinkAddress = "[OrderLinkAddress]";
+    public const string DocumentLinkAddressProperty = "[DocumentLinkAddressProperty]";
 
     /// <summary>
     /// Cloud storage metadata

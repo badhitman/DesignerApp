@@ -13,6 +13,12 @@
 ////        options.messages['unlike'] = options.message;
 ////    });
 
+function updateHeight(domId, setHeight) {
+    // console.warn(`domId:${domId}; setHeight:${setHeight};`);
+    //let sender = $(`#iframe:${domId}`);
+    //sender.height(setHeight);
+}
+
 function SetDotNetHelper(dotNetHelper) {
     window.dotNetHelper = dotNetHelper;
 }
@@ -24,6 +30,16 @@ function js_upload_handler(blobInfo, success, failure, progress) {
             success(data);
         });
 }
+
+window.FrameHeightUpdate = (() => {
+    return {
+        Reload(id) {
+            let iFrame = document.getElementById(`frame:${id}`);
+            $(iFrame).css('height', iFrame.contentWindow.document.body.scrollHeight * 1.1);
+            return iFrame.contentWindow.document.body.scrollHeight;
+        }
+    };
+})();
 
 window.BoundingClientRect = (() => {
     return {

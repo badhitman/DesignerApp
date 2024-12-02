@@ -39,7 +39,17 @@
         }
         else
         {
-            <iframe srcdoc="@DescriptionHtml" />
+            
+            <iframe id="@($"frame:{_guid}")" srcdoc="@($"<html lang=\"ru\" data-bs-theme=\"dark\"><head>" +
+                "<meta charset=\"utf-8\">" +
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+                "<link href=\"_content/MudBlazor/MudBlazor.min.css\" rel=\"stylesheet\">" +
+                $"<link rel=\"stylesheet\" href=\"/lib/bootstrap-icons/font/bootstrap-icons.min.css?version={GlobalStaticConstants.InitSalt}\">" +
+                $"<link rel=\"stylesheet\" href=\"/lib/jqueryui/jquery-ui.min.css?version={GlobalStaticConstants.InitSalt}\">" +
+                $"<link rel='stylesheet' href='/lib/bootstrap/css/bootstrap.min.css?version={GlobalStaticConstants.InitSalt}'>" +
+                $"</head><body id='{_guid}'><div id='body-wrap-area'>{DescriptionHtml}</div>" +
+                $"<script src=\"/lib/jquery/jquery.min.js?version={GlobalStaticConstants.InitSalt}\"></script>" +
+                "</body></html>")" />
         }
     </div>
 </div>

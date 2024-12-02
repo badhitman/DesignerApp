@@ -4,6 +4,7 @@
 
 using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using SharedLib;
 using System.ComponentModel;
 
@@ -14,6 +15,13 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 /// </summary>
 public partial class MessageOfIssueComponent : IssueWrapBaseModel
 {
+    /// <summary>
+    /// JS
+    /// </summary>
+    [Inject]
+    protected IJSRuntime JS { get; set; } = default!;
+
+
     /// <summary>
     /// Message 
     /// </summary>
@@ -30,7 +38,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
 
     string images_upload_url = default!;
     Dictionary<string, object> editorConf = default!;
-
+    private readonly string _guid = Guid.NewGuid().ToString();
 
     bool IsCreatingNewMessage => Message is null || Message.Id < 1;
 
@@ -117,15 +125,6 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
     {
         await base.OnInitializedAsync();
 
-        /*
-         <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME])"
-                                                                               PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_CONTROLLER_NAME"
-                                                                               PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
-                                                                               OwnerPrimaryKey="Id"
-                                                                               Title="Файлы"
-                                                                               ManageMode="true" />
-         */
-
         images_upload_url = $"{GlobalStaticConstants.TinyMCEditorUploadImage}{GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MESSAGE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.IMAGE_ACTION_NAME}?{nameof(StorageMetadataModel.PrefixPropertyName)}={Message?.Id}&{nameof(StorageMetadataModel.OwnerPrimaryKey)}={Issue.Id}";
         editorConf = GlobalStaticConstants.TinyMCEditorConf(images_upload_url);
 
@@ -140,5 +139,11 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
             _currentType = AuthorsTypesEnum.My;
         else if (Message?.AuthorUserId == Issue.ExecutorIdentityUserId)
             _currentType = AuthorsTypesEnum.Executor;
+    }
+
+/// <inheritdoc/>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeAsync<int>("FrameHeightUpdate.Reload", _guid);
     }
 }
