@@ -728,10 +728,6 @@ public class HelpdeskImplementService(
                 IsMuteWhatsapp = true,
             };
 
-            tasks.Add(PulsePush(p_req));
-            await Task.WhenAll(tasks);
-            tasks.Clear();
-
             OrdersByIssuesSelectRequestModel req_docs = new()
             {
                 IssueIds = [issue_data.Id],
@@ -740,8 +736,14 @@ public class HelpdeskImplementService(
             TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
             if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
             {
+                TResponseModel<TelegramBotConfigModel?> wc = default!;
                 tasks.Add(commRepo.StatusOrderChange(new() { DocumentId = issue_data.Id, Step = req.Payload.Step, }));
-                TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                tasks.Add(Task.Run(async () => { wc = await webTransmissionRepo.GetWebConfig(); }));
+
+                tasks.Add(PulsePush(p_req));
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+
                 OrderDocumentModelDB order_obj = find_orders.Response[0];
                 DateTime cdd = order_obj.CreatedAtUTC.GetCustomTime();
                 string normCreatedAtUTC = $"{cdd.ToString("d", cultureInfo)} {cdd.ToString("t", cultureInfo)}";
@@ -822,10 +824,19 @@ public class HelpdeskImplementService(
                 if (tasks.Count != 0)
                     await Task.WhenAll(tasks);
             }
+            else
+            {
+                p_req.IsMuteTelegram = false;
+                p_req.IsMuteWhatsapp = false;
+                p_req.IsMuteEmail = false;
+
+                tasks.Add(PulsePush(p_req));
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+            }
         }
         return res;
     }
-
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> SubscribeUpdate(TAuthRequestModel<SubscribeUpdateRequestModel> req)
