@@ -85,8 +85,20 @@
             }
             @if (!HideClaimsColumn)
             {
+                string _gd = Guid.NewGuid().ToString();
+                PushRowGuid(_gd);
                 <TemplateColumn Title="Claims" Align="Align.Right">
-                    @context.ClaimsAsString(";")
+                    <iframe srcdoc="@($"<html lang=\"ru\" data-bs-theme=\"dark\"><head>" +
+                "<meta charset=\"utf-8\">" +
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+                "<link href=\"_content/MudBlazor/MudBlazor.min.css\" rel=\"stylesheet\">" +
+                $"<link rel=\"stylesheet\" href=\"/lib/bootstrap-icons/font/bootstrap-icons.min.css?version={GlobalStaticConstants.InitSalt}\">" +
+                $"<link rel=\"stylesheet\" href=\"/lib/jqueryui/jquery-ui.min.css?version={GlobalStaticConstants.InitSalt}\">" +
+                $"<link rel='stylesheet' href='/lib/bootstrap/css/bootstrap.min.css?version={GlobalStaticConstants.InitSalt}'>" +
+                $"</head><body id='{_gd}'><div class='body-wrap-area'>{ClaimsHtml(context)}</div>" +
+                $"<script src=\"/lib/jquery/jquery.min.js?version={GlobalStaticConstants.InitSalt}\"></script>" +
+                "</body></html>")" />
+                    @* @context.ClaimsAsString(";") *@
                 </TemplateColumn>
             }
             @if (RolesMarkers is not null && RolesMarkers.Length != 0)

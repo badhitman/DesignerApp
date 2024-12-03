@@ -44,9 +44,9 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
 
     bool IsEditMode;
 
-    string? textMessage { get; set; }
+    string? TextMessage { get; set; }
 
-    bool canSave => (IsCreatingNewMessage || textMessage != Message?.MessageText) && !string.IsNullOrEmpty(textMessage);
+    bool CanSave => (IsCreatingNewMessage || TextMessage != Message?.MessageText) && !string.IsNullOrEmpty(TextMessage);
 
     MarkupString DescriptionHtml => (MarkupString)(Message?.MessageText ?? "");
 
@@ -84,8 +84,8 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
 
     async Task SaveMessage()
     {
-        if (string.IsNullOrWhiteSpace(textMessage))
-            throw new ArgumentNullException(nameof(textMessage));
+        if (string.IsNullOrWhiteSpace(TextMessage))
+            throw new ArgumentNullException(nameof(TextMessage));
 
         await SetBusy();
         TResponseModel<int> rest = await HelpdeskRepo
@@ -94,7 +94,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
                 SenderActionUserId = CurrentUserSession!.UserId,
                 Payload = new()
                 {
-                    MessageText = textMessage,
+                    MessageText = TextMessage,
                     IssueId = Issue.Id,
                     Id = Message?.Id ?? 0
                 }
@@ -108,7 +108,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
 
     void Cancel()
     {
-        textMessage = Message?.MessageText;
+        TextMessage = Message?.MessageText;
         if (Message is null || Message.Id < 1)
         {
             ParentListIssues.AddingNewMessage = false;
@@ -131,7 +131,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
         if (Message is null || Message.Id < 1)
             IsEditMode = true;
 
-        textMessage = Message?.MessageText;
+        TextMessage = Message?.MessageText;
 
         if (Message?.AuthorUserId == GlobalStaticConstants.Roles.System)
             _currentType = AuthorsTypesEnum.System;
@@ -141,7 +141,7 @@ public partial class MessageOfIssueComponent : IssueWrapBaseModel
             _currentType = AuthorsTypesEnum.Executor;
     }
 
-/// <inheritdoc/>
+    /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await JS.InvokeAsync<int>("FrameHeightUpdate.Reload", _guid);

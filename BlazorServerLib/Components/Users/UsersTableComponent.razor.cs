@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using System.Net.Mail;
 using BlazorLib;
 using SharedLib;
+using Microsoft.JSInterop;
 
 namespace BlazorWebLib.Components.Users;
 
@@ -15,6 +16,12 @@ namespace BlazorWebLib.Components.Users;
 /// </summary>
 public partial class UsersTableComponent : BlazorBusyComponentBaseModel
 {
+    /// <summary>
+    /// JS
+    /// </summary>
+    [Inject]
+    protected IJSRuntime JS { get; set; } = default!;
+
     /// <summary>
     /// UsersManageRepo
     /// </summary>
@@ -53,14 +60,48 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
     public EntryAltModel[]? RolesMarkers { get; set; }
 
 
-    PaginationState pagination = new() { ItemsPerPage = 15 };
-    string nameFilter = string.Empty;
+    private readonly PaginationState pagination = new() { ItemsPerPage = 15 };
+
     QuickGrid<UserInfoModel>? myGrid;
     int numResults;
     GridItemsProvider<UserInfoModel>? foodRecallProvider;
     string? added_user_email;
     IEnumerable<ResultMessage>? Messages;
     RoleInfoModel? RoleInfo;
+    private readonly Stack<string> RowsStack = [];
+
+    /// <inheritdoc/>
+    protected override void OnAfterRender(bool firstRender)
+    {
+        lock (RowsStack)
+        {
+            if (RowsStack.Count == 0)
+                return;
+
+            string row = RowsStack.Pop();
+            Task.Run(async () => { await JS.InvokeAsync<int>("FrameHeightUpdate.Reload", row); });
+        }
+    }
+
+    void PushRowGuid(string rowGuid)
+    {
+        lock (RowsStack)
+        {
+            if (RowsStack.Contains(rowGuid))
+                return;
+            RowsStack.Push(rowGuid);
+        }
+    }
+
+    //string? PopRowGuid()
+    //{
+    //    lock (RowsStack)
+    //    {
+    //        if (RowsStack.Count == 0)
+    //            return null;
+    //        return RowsStack.Pop();
+    //    }
+    //}
 
     static string LinkCssClass(UserInfoModel user)
     {
@@ -123,6 +164,17 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
             await myGrid.RefreshDataAsync();
     }
 
+    static MarkupString ClaimsHtml(UserInfoModel ctx)
+    {
+        if(ctx.Claims is null)
+            return (MarkupString)"<b>-не загружено-</b>";
+
+        if (ctx.Claims.Length == 0)
+            return (MarkupString)"<i>~ нет</i>";
+
+        return (MarkupString)ctx.ClaimsAsString(";");
+    }
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -139,7 +191,7 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
         {
             TPaginationStrictResponseModel<UserInfoModel> res = await UsersManageRepo.FindUsersAsync(new FindWithOwnedRequestModel()
             {
-                FindQuery = nameFilter,
+                FindQuery = string.Empty,
                 PageNum = pagination.CurrentPageIndex,
                 PageSize = pagination.ItemsPerPage,
                 OwnerId = RoleInfo?.Id
