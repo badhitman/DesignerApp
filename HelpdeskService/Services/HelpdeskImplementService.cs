@@ -7,13 +7,10 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System.Globalization;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
-using HtmlAgilityPack;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using System.Linq;
 
 namespace HelpdeskService;
 

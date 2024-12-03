@@ -1,8 +1,8 @@
 @using BlazorWebLib.Components.ParametersShared
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Authorization
 @using BlazorWebLib.Components.Telegram
 @using BlazorWebLib.Components.Users
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Web
 @using MudBlazor
 @using SharedLib
 
@@ -49,7 +49,6 @@
                                 </p>
                             </div>
                         </div>
-
                         <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                             @foreach (StatusesDocumentsEnum stepEnum in Enum.GetValues(typeof(StatusesDocumentsEnum)).Cast<StatusesDocumentsEnum>())
                             {
@@ -71,7 +70,6 @@
                                 </MudTabPanel>
                             }
                         </MudTabs>
-
                         <div class="card my-3">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-body-secondary">Новое сообщение</h6>
