@@ -4,7 +4,7 @@
     <div class="row gy-2 gx-3 align-items-center">
         <div class="col-md-10">
             <label for="inputSelect-@(DomID)" class="form-label">Тип справочника</label>
-            <select @bind="SelectedDirectoryField" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help" disabled="@(!ParentFormsPage.CanEditProject)">
+            <select @bind="SelectedDirectoryField" class="form-select" id="inputSelect-@(DomID)" aria-describedby="@(DomID)Help" disabled="@(IsBusyProgress || !ParentFormsPage.CanEditProject)">
                 @if (Entries is not null)
                 {
                     foreach (EntryModel e in Entries)
@@ -17,7 +17,7 @@
         </div>
         <div class="col-md-2" title="Выбор нескольких значений">
             <div class="form-check form-check-inline">
-                <input @bind="IsMultiDirectoryField" class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                <input @bind="IsMultiDirectoryField" class="form-check-input" type="checkbox" id="inlineCheckbox1" disabled="@IsBusyProgress">
                 <label class="form-check-label" for="inlineCheckbox1">Мульти-выбор</label>
             </div>
         </div>

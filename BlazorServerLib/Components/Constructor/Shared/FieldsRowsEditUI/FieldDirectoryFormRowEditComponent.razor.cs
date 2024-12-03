@@ -41,6 +41,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     [CascadingParameter, EditorRequired]
     public required ConstructorPage ParentFormsPage { get; set; }
 
+
     /// <inheritdoc/>
     protected IEnumerable<EntryModel>? Entries;
 
@@ -82,11 +83,8 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     protected override async Task OnInitializedAsync()
     {
         await SetBusy();
-        
         TResponseModel<EntryModel[]> rest = await ConstructorRepo.GetDirectories(new() { ProjectId = Form.ProjectId });
-        IsBusyProgress = false;
-
         Entries = rest.Response ?? throw new Exception();
-        StateHasChanged();
+        await SetBusy(false);
     }
 }
