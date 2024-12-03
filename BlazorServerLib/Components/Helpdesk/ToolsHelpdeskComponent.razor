@@ -41,11 +41,11 @@
                         <p class="text-warning">Учитывайте особенности парсера Email</p>
                         <div class="card my-3">
                             <div class="card-body">
-                                <h6 class="card-subtitle mb-2 text-body-secondary">Новый заказ</h6>
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Новый документ</h6>
                                 <p class="card-text">
                                     <StringParameterStorageComponent Label="Тема письма" HelperText="Subject Email" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification" />
                                     <hr />
-                                    <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification" HelperText="Текст Email при создании заказа" />
+                                    <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification" HelperText="Текст Email при создании документа" />
                                 </p>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                                             <p class="card-text">
                                                 <StringParameterStorageComponent Label="Тема письма" HelperText="Subject Email" KeyStorage="_kss" />
                                                 <hr />
-                                                <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="_ksb" HelperText="Текст Email при изменении статуса заказа" />
+                                                <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="_ksb" HelperText="Текст Email при изменении статуса документа" />
                                             </p>
                                         </div>
                                     </div>
@@ -78,7 +78,7 @@
                                 <p class="card-text">
                                     <StringParameterStorageComponent Label="Тема письма" HelperText="Subject Email" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderSubjectNotification" />
                                     <hr />
-                                    <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification" HelperText="Текст Email при появлении нового сообщения в заказе" />
+                                    <TextareaParameterStorageComponent Label="Текст письма" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification" HelperText="Текст Email при появлении нового сообщения в документе" />
                                 </p>
                             </div>
                         </div>
@@ -91,9 +91,9 @@
                         <p class="text-warning">Синтаксис должен соответствовать <a href="https://core.telegram.org/api/entities">TelegramBot API</a> </p>
                         <div class="card my-3">
                             <div class="card-body">
-                                <h6 class="card-subtitle mb-2 text-body-secondary">Новый заказ</h6>
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Новый документ</h6>
                                 <p class="card-text">
-                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram" HelperText="Текст TelegramBot уведомления при создании заказа" />
+                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram" HelperText="Текст TelegramBot уведомления при создании документа" />
                                 </p>
                             </div>
                         </div>
@@ -105,7 +105,7 @@
                                         <div class="card-body">
                                             <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
                                             <p class="card-text">
-                                                <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(stepEnum)" HelperText="Текст TelegramBot уведомления при изменении статуса заказа" />
+                                                <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationTelegram(stepEnum)" HelperText="Текст TelegramBot уведомления при изменении статуса документа" />
                                             </p>
                                         </div>
                                     </div>
@@ -116,7 +116,7 @@
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-body-secondary">Новое сообщение</h6>
                                 <p class="card-text">
-                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram" HelperText="Текст TelegramBot уведомления при добавлении комментария к заказу" />
+                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram" HelperText="Текст TelegramBot уведомления при добавлении комментария к документу" />
                                 </p>
                             </div>
                         </div>
@@ -129,9 +129,9 @@
                         <p class="text-warning">Синтаксис должен соответствовать Whatsapp</p>
                         <div class="card my-3">
                             <div class="card-body">
-                                <h6 class="card-subtitle mb-2 text-body-secondary">Новый заказ</h6>
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Новый документ</h6>
                                 <p class="card-text">
-                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationWhatsapp" HelperText="Текст Whatsap уведомления при создании заказа" />
+                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationWhatsapp" HelperText="Текст Whatsapp уведомления при создании документа" />
                                 </p>
                             </div>
                             <ul class="list-group list-group-flush">
@@ -157,17 +157,17 @@
 - Текст
                                     </pre>
                                 </li>
-                                <li class="list-group-item">
+                                <li class="list-group-item list-group-item-info">
                                     Нумерованный список - Чтобы добавить в сообщение нумерованный список, поставьте номер, точку и пробел перед каждой строкой текста:
                                     <pre>
 1. Текст
 2. Текст
                                     </pre>
                                 </li>
-                                <li class="list-group-item">
+                                <li class="list-group-item list-group-item-info">
                                     Цитирование - Чтобы добавить в сообщение цитату, поставьте угловую скобку и пробел перед текстом: > Текст
                                 </li>
-                                <li class="list-group-item">
+                                <li class="list-group-item list-group-item-info">
                                     Встроенный код - Чтобы добавить в сообщение встроенный код, поставьте обратный штрих с обеих сторон сообщения: `Текст`
                                 </li>
                             </ul>
@@ -180,7 +180,7 @@
                                         <div class="card-body">
                                             <h6 class="card-subtitle mb-2 text-body-secondary">Изменение статуса</h6>
                                             <p class="card-text">
-                                                <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationWhatsapp(stepEnum)" HelperText="Текст Whatsapp уведомления при изменении статуса заказа" />
+                                                <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotificationWhatsapp(stepEnum)" HelperText="Текст Whatsapp уведомления при изменении статуса документа" />
                                             </p>
                                         </div>
                                     </div>
@@ -191,7 +191,7 @@
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-body-secondary">Новое сообщение</h6>
                                 <p class="card-text">
-                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp" HelperText="Текст Whatsapp уведомления при добавлении комментария к заказу" />
+                                    <TextareaParameterStorageComponent Label="Текст сообщения" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp" HelperText="Текст Whatsapp уведомления при добавлении комментария к документу" />
                                 </p>
                             </div>
                         </div>
@@ -213,17 +213,17 @@
 
                 <dt class="col-sm-3">@GlobalStaticConstants.DocumentStatusProperty</dt>
                 <dd class="col-sm-9">
-                    <p>Статус заказа</p>
+                    <p>Статус документа.</p>
                 </dd>
 
                 <dt class="col-sm-3">@GlobalStaticConstants.DocumentLinkAddressProperty</dt>
                 <dd class="col-sm-9">
-                    <p>Ссылка на заказ</p>
+                    <p>Ссылка на документ.</p>
                 </dd>
 
                 <dt class="col-sm-3">@GlobalStaticConstants.HostAddressProperty</dt>
                 <dd class="col-sm-9">
-                    <p>Адрес сайта</p>
+                    <p>Адрес сайта.</p>
                 </dd>
             </dl>
         </div>

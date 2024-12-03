@@ -9,7 +9,7 @@ using Microsoft.JSInterop;
 namespace BlazorWebLib.Components.ParametersShared;
 
 /// <summary>
-/// TextareaParameterStorageComponent
+/// TEXTAREA - Хранимый параметр
 /// </summary>
 public partial class TextareaParameterStorageComponent : StringParameterStorageBaseComponent
 {
@@ -23,6 +23,7 @@ public partial class TextareaParameterStorageComponent : StringParameterStorageB
     [Parameter]
     public int RowsSize { get; set; } = 3;
 
+
     private void HandleOnChange(ChangeEventArgs args)
     {
         TextValue = args.Value?.ToString();
@@ -32,7 +33,7 @@ public partial class TextareaParameterStorageComponent : StringParameterStorageB
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        await JsRuntimeRepo.InvokeVoidAsync("autoGrowManage.registerGrow", KeyStorage.ToString(), DotNetObjectReference.Create(this));        
+        await JsRuntimeRepo.InvokeVoidAsync("autoGrowManage.registerGrow", KeyStorage.ToString(), DotNetObjectReference.Create(this));
     }
 
     /// <inheritdoc/>

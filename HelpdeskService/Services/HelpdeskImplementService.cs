@@ -387,8 +387,16 @@ public class HelpdeskImplementService(
     {
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(issue_upd)}");
         TResponseModel<int> res = new() { Response = 0 };
+        TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = default!;
+        TResponseModel<UserInfoModel[]?> users_rest = default!;
 
-        TResponseModel<UserInfoModel[]?> users_rest = await webTransmissionRepo.GetUsersIdentity([issue_upd.SenderActionUserId]);
+        List<Task> tasks = [
+            Task.Run(async () => { users_rest = await webTransmissionRepo.GetUsersIdentity([issue_upd.SenderActionUserId]); }),
+            Task.Run(async () => { res_ModeSelectingRubrics = await StorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics); }) ];
+
+        await Task.WhenAll(tasks);
+        tasks.Clear();
+
         if (!users_rest.Success() || users_rest.Response is null || users_rest.Response.Length != 1)
             return new() { Messages = users_rest.Messages };
 
@@ -407,7 +415,7 @@ public class HelpdeskImplementService(
         string msg;
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         PulseRequestModel p_req;
-        TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = await StorageRepo.ReadParameter<ModesSelectRubricsEnum?>(GlobalStaticConstants.CloudStorageMetadata.ModeSelectingRubrics);
+
         ModesSelectRubricsEnum _current_mode_rubric = res_ModeSelectingRubrics.Response ?? ModesSelectRubricsEnum.AllowWithoutRubric;
         if (_current_mode_rubric != ModesSelectRubricsEnum.AllowWithoutRubric)
         {
@@ -553,7 +561,7 @@ public class HelpdeskImplementService(
                         SenderActionUserId = issue_upd.SenderActionUserId,
                     }
                 };
-                List<Task> tasks = [PulsePush(p_req)];
+                tasks = [PulsePush(p_req)];
                 if (issue_upd.SenderActionUserId != GlobalStaticConstants.Roles.System && issue.Subscribers?.Any(x => x.UserId == issue_upd.SenderActionUserId) != true)
                 {
                     tasks.Add(SubscribeUpdate(new()
@@ -835,7 +843,6 @@ public class HelpdeskImplementService(
 
         tasks.Add(ConsoleSegmentCacheEmpty(prevStatus));
         tasks.Add(ConsoleSegmentCacheEmpty(nextStatus));
-
         await Task.WhenAll(tasks);
 
         return res;
@@ -1087,7 +1094,10 @@ public class HelpdeskImplementService(
                     IsMuteWhatsapp = true,
                 };
 
-                tasks = [PulsePush(p_req), Task.Run(async () => { my_marker = await context.IssueReadMarkers.FirstOrDefaultAsync(x => x.IssueId == req.Payload.IssueId && x.UserIdentityId == actor.UserId); })];
+                tasks = [
+                    PulsePush(p_req),
+                    Task.Run(async () => { my_marker = await context.IssueReadMarkers.FirstOrDefaultAsync(x => x.IssueId == req.Payload.IssueId && x.UserIdentityId == actor.UserId); })];
+
                 await Task.WhenAll(tasks);
                 tasks.Clear();
 
@@ -1242,9 +1252,7 @@ public class HelpdeskImplementService(
             if (msg_db.MessageText == req.Payload.MessageText)
                 res.AddInfo("Изменений нет");
             else if (!actor.IsAdmin && msg_db.AuthorUserId != actor.UserId)
-            {
                 res.AddError("Не достаточно прав");
-            }
             else
             {
                 p_req = new()
