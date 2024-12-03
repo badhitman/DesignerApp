@@ -15,25 +15,6 @@
         <hr />
         <TinyMCEComponent Label="Home PRIVATE" HelperText="Страница для авторизованных пользователей" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.HomePagePrivate" />
     </MudTabPanel>
-    <MudTabPanel Text="Отображение">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item my-2">
-                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowCreatingIssue" Title="Ручное создание обращений-заявок в СЭД" Label="Создание заявок" HintTrue="Кнопка создания обращения активна" HintFalse="Ручное создание обращений отключено" />
-            </li>
-            <li class="list-group-item my-2">
-                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowingTelegramArea" Title="Отображение TG чатов в заявке" Label="TG чаты в заявках" HintTrue="В заявке будет отображаться диалог связанных TG чатов" HintFalse="Чаты TG не отображаются в заявках" />
-            </li>
-            <li class="list-group-item my-2">
-                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowingPriceSelectorOrder" Title="Отображение цены в селекторе номенклатуры в создании заказа" Label="Цены при выборе номенклатуры в заказе" HintTrue="В заказе будет отображаться диалог прикрепления файлов" HintFalse="Вложения для заказов отключены" />
-            </li>
-            <li class="list-group-item my-2">
-                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsOrderArea" Title="Отображение панели вложений в заявках" Label="Вложения в заказах" HintTrue="В заказе будет отображаться диалог прикрепления файлов" HintFalse="Вложения для заказов отключены" />
-            </li>
-            <li class="list-group-item my-2">
-                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsIssuesArea" Title="Отображение панели вложений в обращениях" Label="Вложения в обращениях" HintTrue="В заявке будет отображаться диалог прикрепления файлов" HintFalse="Вложения для заявок отключены" />
-            </li>
-        </ul>
-    </MudTabPanel>
     <MudTabPanel Text="Другое">
         <ul class="list-group list-group-flush">
             <li class="list-group-item my-2">
