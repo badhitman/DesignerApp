@@ -42,7 +42,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
     public required ConstructorPage ParentFormsPage { get; set; }
 
     /// <inheritdoc/>
-    protected IEnumerable<EntryModel> Entries = default!;
+    protected IEnumerable<EntryModel>? Entries;
 
     /// <inheritdoc/>
     public string DomID => $"{Field.GetType().FullName}_{Field.Id}";
