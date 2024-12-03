@@ -26,6 +26,7 @@ public class StorageServiceImpl(
     /// <inheritdoc/>
     public async Task<T?[]> Find<T>(RequestStorageBaseModel req)
     {
+        req.Normalize();
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         string _tn = typeof(T).FullName ?? throw new Exception();
         StorageCloudParameterModelDB[] _dbd = await context
@@ -39,7 +40,8 @@ public class StorageServiceImpl(
     /// <inheritdoc/>
     public async Task<T?> Read<T>(StorageMetadataModel req)
     {
-        string mem_key = $"{req.PropertyName}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
+        req.Normalize();
+        string mem_key = $"{req.PropertyName}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}".Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
         if (cache.TryGetValue(mem_key, out T? sd))
             return sd;
 
@@ -73,7 +75,7 @@ public class StorageServiceImpl(
     {
         if (obj is null)
             throw new ArgumentNullException(nameof(obj));
-
+        set.Normalize();
         StorageCloudParameterModelDB _set = new()
         {
             ApplicationName = set.ApplicationName,
@@ -86,7 +88,7 @@ public class StorageServiceImpl(
         ResponseBaseModel res = await FlushParameter(_set, trimHistory);
         if (res.Success())
         {
-            string mem_key = $"{set.PropertyName}/{set.OwnerPrimaryKey}/{set.PrefixPropertyName}/{set.ApplicationName}";
+            string mem_key = $"{set.PropertyName}/{set.OwnerPrimaryKey}/{set.PrefixPropertyName}/{set.ApplicationName}".Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
             cache.Set(mem_key, obj, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
         }
     }
@@ -99,6 +101,7 @@ public class StorageServiceImpl(
         _set.Id = 0;
         await context.AddAsync(_set);
         bool success;
+        _set.Normalize();
         Random rnd = new();
         for (int i = 0; i < 5; i++)
         {
@@ -106,10 +109,10 @@ public class StorageServiceImpl(
             try
             {
                 await context.SaveChangesAsync();
-                string mem_key = $"{_set.PropertyName}/{_set.OwnerPrimaryKey}/{_set.PrefixPropertyName}/{_set.ApplicationName}";
+                string mem_key = $"{_set.PropertyName}/{_set.OwnerPrimaryKey}/{_set.PrefixPropertyName}/{_set.ApplicationName}".Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
                 cache.Remove(mem_key);
                 success = true;
-                res.AddSuccess($"Данные успешно сохранены{(i > 0 ? $" (на попытке [{i}])" : "")}: {_set.ApplicationName}/{_set.PropertyName}");
+                res.AddSuccess($"Данные успешно сохранены{(i > 0 ? $" (на попытке [{i}])" : "")}: {_set.ApplicationName}/{_set.PropertyName}".Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar));
                 res.Response = _set.Id;
             }
             catch (Exception ex)
@@ -165,7 +168,8 @@ public class StorageServiceImpl(
     /// <inheritdoc/>
     public async Task<TResponseModel<StorageCloudParameterPayloadModel?>> ReadParameter(StorageMetadataModel req)
     {
-        string mem_key = $"{req.PropertyName}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}";
+        req.Normalize();
+        string mem_key = $"{req.PropertyName}/{req.OwnerPrimaryKey}/{req.PrefixPropertyName}/{req.ApplicationName}".Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
         TResponseModel<StorageCloudParameterPayloadModel?> res = new();
         if (cache.TryGetValue(mem_key, out StorageCloudParameterPayloadModel? sd))
         {
@@ -215,6 +219,7 @@ public class StorageServiceImpl(
         BlockingCollection<ResultMessage> _messages = [];
         await Task.WhenAll(req.Select(x => Task.Run(async () =>
         {
+            x.Normalize();
             TResponseModel<StorageCloudParameterPayloadModel?> _subResult = await ReadParameter(x);
             if (_subResult.Success() && _subResult.Response is not null)
                 res.Add(_subResult.Response);
@@ -232,6 +237,7 @@ public class StorageServiceImpl(
     /// <inheritdoc/>
     public async Task<TResponseModel<FoundParameterModel[]?>> Find(RequestStorageBaseModel req)
     {
+        req.Normalize();
         TResponseModel<FoundParameterModel[]?> res = new();
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         StorageCloudParameterModelDB[] prop_db = await context

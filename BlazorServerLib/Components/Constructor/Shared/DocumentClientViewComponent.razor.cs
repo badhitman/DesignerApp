@@ -27,6 +27,7 @@ public partial class DocumentClientViewComponent : ComponentBase
     [CascadingParameter, EditorRequired]
     public bool InUse { get; set; } = default!;
 
+
     /// <summary>
     /// Информация
     /// </summary>

@@ -25,6 +25,16 @@ public class StorageMetadataModel : RequestStorageBaseModel
     /// <inheritdoc/>
     public override string ToString()
     {
+        Normalize();
         return $"{PrefixPropertyName}:{OwnerPrimaryKey}:{PropertyName}:{ApplicationName}";
+    }
+
+    /// <summary>
+    /// Normalize
+    /// </summary>
+    public override void Normalize()
+    {
+        base.Normalize();
+        PrefixPropertyName = PrefixPropertyName?.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
     }
 }

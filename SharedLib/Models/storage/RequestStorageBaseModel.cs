@@ -23,4 +23,11 @@ public class RequestStorageBaseModel
     /// </summary>
     public required string PropertyName { get; set; }
 
+    /// <summary>
+    /// Normalize
+    /// </summary>
+    public virtual void Normalize()
+    {
+        ApplicationName = ApplicationName.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+    }
 }

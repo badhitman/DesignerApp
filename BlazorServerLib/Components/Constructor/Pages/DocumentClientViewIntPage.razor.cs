@@ -28,7 +28,7 @@ public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseAuthMode
         await SetBusy();
         await ReadCurrentUser();
         
-        TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocument(new() { SessionId = DocumentId, IncludeExtra = false });
+        TResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.GetSessionDocument(new() { SessionId = DocumentId, IncludeExtra = true });
         IsBusyProgress = false;
 
         if (rest.Response is null)
