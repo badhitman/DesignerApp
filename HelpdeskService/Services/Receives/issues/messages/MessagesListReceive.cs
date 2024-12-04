@@ -56,8 +56,9 @@ public class MessagesListReceive(
 
         res.Response = await context
             .IssuesMessages
-            .Include(x => x.Votes)
             .Where(x => issues_ids.Any(y => y == x.IssueId))
+            .OrderByDescending(i => i.CreatedAt)
+            .Include(x => x.Votes)
             .ToArrayAsync();
 
         return res;
