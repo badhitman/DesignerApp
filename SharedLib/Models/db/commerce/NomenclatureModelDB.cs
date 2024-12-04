@@ -19,11 +19,6 @@ public class NomenclatureModelDB : UniversalLayerModel
     /// </summary>
     public List<OfferGoodModelDB>? Offers { get; set; }
 
-    /// <summary>
-    /// Остатки
-    /// </summary>
-    public List<OfferAvailabilityModelDB>? Registers { get; set; }
-
 
     /// <inheritdoc/>
     public static bool operator ==(NomenclatureModelDB off1, NomenclatureModelDB off2) => off1.Equals(off2);
