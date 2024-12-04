@@ -740,6 +740,9 @@ public class HelpdeskImplementService(
             .SetProperty(p => p.StatusDocument, nextStatus)
             .SetProperty(p => p.LastUpdateAt, DateTime.UtcNow)));
 
+        await Task.WhenAll(tasks);
+        tasks.Clear();
+
         DateTime cdd = issue_data.CreatedAtUTC.GetCustomTime();
         string _about_document = $"'{issue_data.Name}' {cdd.GetHumanDateTime()}";
         string subject_email = "Изменение статуса документа";
