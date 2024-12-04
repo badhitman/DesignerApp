@@ -62,7 +62,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         TResponseModel<bool?> res = await HelpdeskRepo.RubricMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        ReloadNodeHandle(ItemModel.ParentRubricId ?? 0);
+        ReloadNodeHandle(ItemModel.ParentId ?? 0);
     }
 
     async Task SaveRubric()
@@ -82,7 +82,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
             Name = ItemModel.Name,
             Description = ItemModel.Description,
             Id = ItemModel.Id,
-            ParentRubricId = ItemModel.ParentRubricId,
+            ParentId = ItemModel.ParentId,
             ProjectId = ItemModel.ProjectId,
             SortIndex = ItemModel.SortIndex,
             IsDisabled = ItemModel.IsDisabled,

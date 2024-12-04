@@ -166,7 +166,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         rest.Response = [.. rest.Response.OrderBy(x => x.SortIndex)];
 
         if (SelectedValuesChanged is null)
-            rest.Response.Add(new RubricBaseModel() { Name = "", SortIndex = uint.MaxValue, ParentRubricId = parent_id });
+            rest.Response.Add(new RubricBaseModel() { Name = "", SortIndex = uint.MaxValue, ParentId = parent_id });
 
         return rest.Response;
     }

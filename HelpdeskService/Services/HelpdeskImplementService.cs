@@ -45,7 +45,7 @@ public class HelpdeskImplementService(
         rubric.NormalizedNameUpper = rubric.Name.ToUpper();
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        if (await context.Rubrics.AnyAsync(x => x.Id != rubric.Id && x.ParentRubricId == rubric.ParentRubricId && x.Name == rubric.Name))
+        if (await context.Rubrics.AnyAsync(x => x.Id != rubric.Id && x.ParentId == rubric.ParentId && x.Name == rubric.Name))
         {
             res.AddError("Объект с таким именем уже существует в данном узле");
             return res;
@@ -55,7 +55,7 @@ public class HelpdeskImplementService(
         {
             uint[] six = await context
                             .Rubrics
-                            .Where(x => x.ParentRubricId == rubric.ParentRubricId)
+                            .Where(x => x.ParentId == rubric.ParentId)
                             .Select(x => x.SortIndex)
                             .ToArrayAsync();
 
@@ -101,7 +101,7 @@ public class HelpdeskImplementService(
 
         RubricIssueHelpdeskModelDB? lpi = await context
             .Rubrics
-            .Include(x => x.ParentRubric)
+            .Include(x => x.Parent)
             .FirstOrDefaultAsync(x => x.Id == rubricId);
 
         if (lpi is null)
@@ -112,13 +112,13 @@ public class HelpdeskImplementService(
 
         List<RubricIssueHelpdeskModelDB> ctrl = [lpi];
 
-        while (lpi.ParentRubric is not null)
+        while (lpi.Parent is not null)
         {
             ctrl.Add(await context
             .Rubrics
-            .Include(x => x.ParentRubric)
+            .Include(x => x.Parent)
             .ThenInclude(x => x!.NestedRubrics)
-            .FirstAsync(x => x.Id == lpi.ParentRubric.Id));
+            .FirstAsync(x => x.Id == lpi.Parent.Id));
             lpi = ctrl.Last();
         }
 
@@ -418,7 +418,7 @@ public class HelpdeskImplementService(
         {
             string[] sub_rubrics = await context
                         .Rubrics
-                        .Where(x => x.ParentRubricId == issue_upd.Payload.RubricId)
+                        .Where(x => x.ParentId == issue_upd.Payload.RubricId)
                         .Select(x => x.Name)
                         .ToArrayAsync();
 

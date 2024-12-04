@@ -54,7 +54,7 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
             {
                 RubricIssueHelpdeskModelDB current_element = RubricMetadataShadow.Last();
 
-                await ref_rubric.OwnerRubricSet(current_element.ParentRubricId ?? 0);
+                await ref_rubric.OwnerRubricSet(current_element.ParentId ?? 0);
                 await ref_rubric.SetRubric(current_element.Id, RubricMetadataShadow);
                 ref_rubric.StateHasChangedCall();
             }

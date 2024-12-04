@@ -39,16 +39,16 @@ public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFac
                 Description = x.Description,
                 Id = x.Id,
                 IsDisabled = x.IsDisabled,
-                ParentRubricId = x.ParentRubricId,
+                ParentId = x.ParentId,
                 ProjectId = x.ProjectId,
                 SortIndex = x.SortIndex,
             })
             .AsQueryable();
 
         if (req.Request < 1)
-            q = q.Where(x => x.ParentRubricId == null || x.ParentRubricId < 1);
+            q = q.Where(x => x.ParentId == null || x.ParentId < 1);
         else
-            q = q.Where(x => x.ParentRubricId == req.Request);
+            q = q.Where(x => x.ParentId == req.Request);
 
         res.Response = await q.ToArrayAsync();
         return res;

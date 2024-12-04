@@ -65,7 +65,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
                 Description = r.Description,
                 Id = r.Id,
                 IsDisabled = r.IsDisabled,
-                ParentRubricId = r.ParentRubricId,
+                ParentId = r.ParentId,
                 ProjectId = r.ProjectId,
                 SortIndex = r.SortIndex,
             };

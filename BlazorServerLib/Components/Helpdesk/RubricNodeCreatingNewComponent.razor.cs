@@ -42,7 +42,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
     string? rubricName;
 
     /// <inheritdoc/>
-    protected string DomID => $"rubric-create-for-{Item.Value?.ParentRubricId}";
+    protected string DomID => $"rubric-create-for-{Item.Value?.ParentId}";
 
     bool IsEdit => !string.IsNullOrWhiteSpace(rubricName);
 
@@ -52,11 +52,11 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
             throw new Exception();
 
         await SetBusy();
-        TResponseModel<int?> rest = await HelpdeskRepo.RubricCreateOrUpdate(new() { Name = rubricName, ParentRubricId = ItemModel.ParentRubricId > 0 ? ItemModel.ParentRubricId : null, ContextName = ContextName });
+        TResponseModel<int?> rest = await HelpdeskRepo.RubricCreateOrUpdate(new() { Name = rubricName, ParentId = ItemModel.ParentId > 0 ? ItemModel.ParentId : null, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
-        ReloadNodeHandle(Item.Value?.ParentRubricId ?? 0);
+        ReloadNodeHandle(Item.Value?.ParentId ?? 0);
     }
 
     /// <inheritdoc/>
@@ -65,7 +65,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
         ItemModel = new RubricIssueHelpdeskMiddleModel()
         {
             Name = "",
-            ParentRubricId = Item.Value?.ParentRubricId,
+            ParentId = Item.Value?.ParentId,
             ContextName = ContextName,
         };
     }

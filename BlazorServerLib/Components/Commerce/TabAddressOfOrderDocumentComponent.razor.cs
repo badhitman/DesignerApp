@@ -61,7 +61,7 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
             RubricIssueHelpdeskModelDB current_element = RubricMetadataShadow.Last();
             if (ref_rubric is not null)
             {
-                await ref_rubric.OwnerRubricSet(current_element.ParentRubricId ?? 0);
+                await ref_rubric.OwnerRubricSet(current_element.ParentId ?? 0);
                 await ref_rubric.SetRubric(current_element.Id, RubricMetadataShadow);
                 ref_rubric.StateHasChangedCall();
             }

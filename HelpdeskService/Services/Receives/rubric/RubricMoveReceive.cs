@@ -32,11 +32,11 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
         var data = await context
         .Rubrics
         .Where(x => x.Id == req.ObjectId)
-        .Select(x => new { x.Id, x.ParentRubricId, x.Name })
+        .Select(x => new { x.Id, x.ParentId, x.Name })
         .FirstAsync(x => x.Id == req.ObjectId);
 
         using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
-        LockUniqueTokenModelDB locker = new() { Token = $"rubric-sort-upd-{data.ParentRubricId}" };
+        LockUniqueTokenModelDB locker = new() { Token = $"rubric-sort-upd-{data.ParentId}" };
         try
         {
             await context.AddAsync(locker);
@@ -51,7 +51,7 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
 
         List<RubricIssueHelpdeskModelDB> all = await context
             .Rubrics
-            .Where(x => x.ParentRubricId == data.ParentRubricId)
+            .Where(x => x.ParentId == data.ParentId)
             .OrderBy(x => x.SortIndex)
             .ToListAsync();
 
