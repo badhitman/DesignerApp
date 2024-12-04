@@ -36,12 +36,12 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 
 
     List<TreeItemDataRubricModel> InitialTreeItems { get; set; } = [];
-    void SelectedValuesChangeHandler(IReadOnlyCollection<RubricBaseModel?> SelectedValues)
+    void SelectedValuesChangeHandler(IReadOnlyCollection<UniversalBaseModel?> SelectedValues)
     {
         SelectedValuesChanged?.SelectedValuesChangedHandler(SelectedValues);
     }
 
-    List<TreeItemData<RubricBaseModel>> ConvertRubrics(IEnumerable<RubricBaseModel> rubrics)
+    List<TreeItemData<UniversalBaseModel>> ConvertRubrics(IEnumerable<UniversalBaseModel> rubrics)
     {
         (uint min, uint max) = rubrics.Any(x => x.SortIndex != uint.MaxValue)
             ? (rubrics.Min(x => x.SortIndex), rubrics.Where(x => x.SortIndex != uint.MaxValue).Max(x => x.SortIndex))
@@ -71,7 +71,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         })];
     }
 
-    void ItemUpdAction(RubricBaseModel sender)
+    void ItemUpdAction(UniversalBaseModel sender)
     {
         TreeItemDataRubricModel findNode = FindNode(sender.Id, InitialTreeItems) ?? throw new Exception();
         findNode.Text = sender.Name;
@@ -80,7 +80,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
 
     async void ReloadNodeAction(int parent_id)
     {
-        List<RubricBaseModel> rubrics = await RequestRubrics(parent_id);
+        List<UniversalBaseModel> rubrics = await RequestRubrics(parent_id);
         if (parent_id > 0)
         {
             TreeItemDataRubricModel findNode = FindNode(parent_id, InitialTreeItems) ?? throw new Exception();
@@ -99,13 +99,13 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         if (res is not null)
             return res;
 
-        TreeItemDataRubricModel? FindChildNode(List<TreeItemData<RubricBaseModel?>> children)
+        TreeItemDataRubricModel? FindChildNode(List<TreeItemData<UniversalBaseModel?>> children)
         {
-            TreeItemData<RubricBaseModel?>? res_child = children.FirstOrDefault(x => x.Value?.Id == parent_id);
+            TreeItemData<UniversalBaseModel?>? res_child = children.FirstOrDefault(x => x.Value?.Id == parent_id);
             if (res_child is not null)
                 return (TreeItemDataRubricModel?)res_child;
 
-            foreach (TreeItemData<RubricBaseModel?> c in children)
+            foreach (TreeItemData<UniversalBaseModel?> c in children)
             {
                 if (c.Children is not null)
                 {
@@ -134,17 +134,17 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async void OnInitialized()
     {
-        List<RubricBaseModel> rubrics = await RequestRubrics();
+        List<UniversalBaseModel> rubrics = await RequestRubrics();
         InitialTreeItems = [.. ConvertRubrics(rubrics).Select(x => new TreeItemDataRubricModel(x))];
         await SetBusy(false);
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyCollection<TreeItemData<RubricBaseModel?>>> LoadServerData(RubricBaseModel? parentValue)
+    public async Task<IReadOnlyCollection<TreeItemData<UniversalBaseModel?>>> LoadServerData(UniversalBaseModel? parentValue)
     {
         ArgumentNullException.ThrowIfNull(parentValue);
 
-        List<RubricBaseModel> rubrics = await RequestRubrics(parentValue.Id);
+        List<UniversalBaseModel> rubrics = await RequestRubrics(parentValue.Id);
         TreeItemDataRubricModel findNode = FindNode(parentValue.Id, InitialTreeItems) ?? throw new Exception();
 
         findNode.Children = ConvertRubrics(rubrics)!;
@@ -154,10 +154,10 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         return findNode.Children;
     }
 
-    async Task<List<RubricBaseModel>> RequestRubrics(int? parent_id = null)
+    async Task<List<UniversalBaseModel>> RequestRubrics(int? parent_id = null)
     {
         await SetBusy();
-        TResponseModel<List<RubricBaseModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
+        TResponseModel<List<UniversalBaseModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null)
@@ -166,7 +166,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
         rest.Response = [.. rest.Response.OrderBy(x => x.SortIndex)];
 
         if (SelectedValuesChanged is null)
-            rest.Response.Add(new RubricBaseModel() { Name = "", SortIndex = uint.MaxValue, ParentId = parent_id });
+            rest.Response.Add(new UniversalBaseModel() { Name = "", SortIndex = uint.MaxValue, ParentId = parent_id });
 
         return rest.Response;
     }

@@ -43,7 +43,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
 
     bool CanSave => Id < 1 || !CurrentDocument.Equals(editDocument);
 
-    void RubricSelectAction(RubricBaseModel? selectedRubric)
+    void RubricSelectAction(UniversalBaseModel? selectedRubric)
     {
         editDocument.WarehouseId = selectedRubric?.Id ?? 0;
         StateHasChanged();

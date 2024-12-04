@@ -45,8 +45,8 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<int?>(GlobalStaticConstants.TransmissionQueues.RubricForIssuesUpdateHelpdeskReceive, issueTheme);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<List<RubricBaseModel>?>> RubricsList(RubricsListRequestModel req)
-        => await rabbitClient.MqRemoteCall<List<RubricBaseModel>?>(GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive, req);
+    public async Task<TResponseModel<List<UniversalBaseModel>?>> RubricsList(RubricsListRequestModel req)
+        => await rabbitClient.MqRemoteCall<List<UniversalBaseModel>?>(GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> RubricMove(RowMoveModel req)
@@ -55,7 +55,7 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
 
     #region issue
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<IssueUpdateRequestModel> issue)
+    public async Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<UniversalUpdateRequestModel> issue)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.IssueUpdateHelpdeskReceive, issue);
 
     /// <inheritdoc/>

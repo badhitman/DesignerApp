@@ -42,7 +42,7 @@ public interface IHelpdeskService
     /// <summary>
     /// Create (or update) Issue: Рубрика, тема и описание
     /// </summary>
-    public Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<IssueUpdateRequestModel> req);
+    public Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<UniversalUpdateRequestModel> req);
 
     /// <summary>
     /// Subscribe update - of context user

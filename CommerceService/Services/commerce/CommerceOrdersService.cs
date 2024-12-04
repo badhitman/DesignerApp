@@ -623,13 +623,13 @@ public partial class CommerceImplementService(
                     }
                 }
 
-                TAuthRequestModel<IssueUpdateRequestModel> issue_new = new()
+                TAuthRequestModel<UniversalUpdateRequestModel> issue_new = new()
                 {
                     SenderActionUserId = req.AuthorIdentityUserId,
                     Payload = new()
                     {
                         Name = req.Name,
-                        RubricId = res_RubricIssueForCreateOrder.Response,
+                        ParentId = res_RubricIssueForCreateOrder.Response,
                         Description = $"Новый заказ.\n{req.Information}".Trim(),
                     },
                 };

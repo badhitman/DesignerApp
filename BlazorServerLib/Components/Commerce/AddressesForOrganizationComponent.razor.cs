@@ -28,7 +28,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
     public required OrganizationModelDB Organization { get; set; }
 
 
-    RubricBaseModel? SelectedRubric;
+    UniversalBaseModel? SelectedRubric;
 
     Dictionary<int, List<RubricIssueHelpdeskModelDB>> RubriciesCached = [];
     string? addingAddress, addingContacts, addingName;
@@ -124,7 +124,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
         return value.LastOrDefault()?.Name;
     }
 
-    void RubricSelectAction(RubricBaseModel? selectedRubric)
+    void RubricSelectAction(UniversalBaseModel? selectedRubric)
     {
         SelectedRubric = selectedRubric;
         StateHasChanged();

@@ -40,7 +40,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<List<RubricBaseModel>?>> RubricsList(RubricsListRequestModel req);
+    public Task<TResponseModel<List<UniversalBaseModel>?>> RubricsList(RubricsListRequestModel req);
 
     /// <summary>
     /// Создать тему для обращений
@@ -72,7 +72,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Создать обращение
     /// </summary>
-    public Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<IssueUpdateRequestModel> issue);
+    public Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<UniversalUpdateRequestModel> issue);
 
     /// <summary>
     /// Прочитать данные обращения

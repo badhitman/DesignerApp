@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// Рубрики для обращений
+/// Universal base
 /// </summary>
 [Index(nameof(SortIndex), nameof(ParentId), IsUnique = true)]
-public class RubricBaseModel : EntryDescriptionSwitchableModel
+public class UniversalBaseModel : EntrySwitchableUpdatedModel
 {
     /// <inheritdoc/>
     public int ProjectId { get; set; }
@@ -36,18 +36,25 @@ public class RubricBaseModel : EntryDescriptionSwitchableModel
     {
         if (obj == null) return false;
 
-        if (obj is RubricBaseModel e)
-            return Name == e.Name && Description == e.Description && Id == e.Id && e.SortIndex == SortIndex && e.ParentId == ParentId && e.ProjectId == ProjectId && e.IsDisabled == IsDisabled;
+        if (obj is UniversalBaseModel e)
+            return 
+                Name == e.Name && 
+                Description == e.Description && 
+                Id == e.Id && 
+                e.SortIndex == SortIndex && 
+                e.ParentId == ParentId && 
+                e.ProjectId == ProjectId && 
+                e.IsDisabled == IsDisabled;
 
         return false;
     }
 
     /// <inheritdoc/>
-    public static bool operator ==(RubricBaseModel? e1, RubricBaseModel? e2)
+    public static bool operator ==(UniversalBaseModel? e1, UniversalBaseModel? e2)
         => (e1 is null && e2 is null) || (e1?.Id == e2?.Id && e1?.Name == e2?.Name && e1?.Description == e2?.Description && e1?.SortIndex == e2?.SortIndex && e1?.ParentId == e2?.ParentId && e1?.ProjectId == e2?.ProjectId && e1?.IsDisabled == e2?.IsDisabled);
 
     /// <inheritdoc/>
-    public static bool operator !=(RubricBaseModel? e1, RubricBaseModel? e2)
+    public static bool operator !=(UniversalBaseModel? e1, UniversalBaseModel? e2)
         => (e1 is null && e2 is not null) || (e1 is not null && e2 is null) || e1?.Id != e2?.Id || e1?.Name != e2?.Name || e1?.Description != e2?.Description || e1?.SortIndex != e2?.SortIndex || e1?.ParentId != e2?.ParentId || e1?.ProjectId != e2?.ProjectId || e1?.IsDisabled != e2?.IsDisabled;
 
     /// <inheritdoc/>
@@ -55,7 +62,7 @@ public class RubricBaseModel : EntryDescriptionSwitchableModel
         => $"{ProjectId}|{ParentId} {Id}/{SortIndex}/{IsDisabled} {Name} {Description}".GetHashCode();
 
     /// <inheritdoc/>
-    public void Update(RubricBaseModel sender)
+    public void Update(UniversalBaseModel sender)
     {
         ProjectId = sender.ProjectId;
         Name = sender.Name;

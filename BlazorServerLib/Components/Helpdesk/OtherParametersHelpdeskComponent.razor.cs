@@ -23,7 +23,7 @@ public partial class OtherParametersHelpdeskComponent : BlazorBusyComponentBaseM
     RubricSelectorComponent? ref_rubric;
     int? _rubricIssueForCreateOrder;
     List<RubricIssueHelpdeskModelDB>? RubricMetadataShadow;
-    void RubricSelectAction(RubricBaseModel? selectedRubric)
+    void RubricSelectAction(UniversalBaseModel? selectedRubric)
     {
         _rubricIssueForCreateOrder = selectedRubric?.Id;
         InvokeAsync(SaveRubric);

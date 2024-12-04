@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Номенклатура
 /// </summary>
-public class GoodsModelDB : EntrySwitchableUpdatedModel
+public class GoodsModelDB : UniversalLayerModel
 {
     /// <summary>
     /// Базовая единица измерения `Номенклатуры`
@@ -33,9 +33,16 @@ public class GoodsModelDB : EntrySwitchableUpdatedModel
     {
         return
                 off1.Id != off2.Id ||
-                off1.IsDisabled != off2.IsDisabled ||
                 off1.Name != off2.Name ||
-                off1.BaseUnit != off2.BaseUnit;
+                off1.BaseUnit != off2.BaseUnit ||
+                off1.ParentId != off2.ParentId ||
+                off1.ProjectId != off2.ProjectId ||
+                off1.SortIndex != off2.SortIndex ||
+                off1.IsDisabled != off2.IsDisabled ||
+                off1.Description != off2.Description ||
+                off1.ContextName != off2.ContextName ||
+                off1.CreatedAtUTC != off2.CreatedAtUTC ||
+                off1.NormalizedNameUpper != off2.NormalizedNameUpper;
     }
 
     /// <inheritdoc/>
@@ -46,10 +53,17 @@ public class GoodsModelDB : EntrySwitchableUpdatedModel
 
         if (obj is GoodsModelDB off)
             return
-                off.IsDisabled == IsDisabled &&
                 off.Id == Id &&
                 off.Name == Name &&
-                off.BaseUnit == BaseUnit;
+                off.BaseUnit == BaseUnit &&
+                off.ParentId == ParentId &&
+                off.ProjectId == ProjectId &&
+                off.SortIndex == SortIndex &&
+                off.IsDisabled == IsDisabled &&
+                off.Description == Description &&
+                off.ContextName == ContextName &&
+                off.CreatedAtUTC == CreatedAtUTC &&
+                off.NormalizedNameUpper == NormalizedNameUpper;
 
         return base.Equals(obj);
     }
@@ -57,6 +71,6 @@ public class GoodsModelDB : EntrySwitchableUpdatedModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{IsDisabled}{Id}{Name}{BaseUnit}".GetHashCode();
+        return $"{IsDisabled}|{Id}|{Name}|{BaseUnit}|{ParentId}|{ProjectId}|{SortIndex}|{ContextName}|{CreatedAtUTC}|{NormalizedNameUpper}|{Description}".GetHashCode();
     }
 }

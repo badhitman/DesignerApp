@@ -19,7 +19,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required Action<RubricBaseModel?> SelectRubricsHandle { get; set; }
+    public required Action<UniversalBaseModel?> SelectRubricsHandle { get; set; }
 
     /// <summary>
     /// StartRubric
@@ -57,7 +57,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
 
     RubricSelectorComponent? childSelector;
 
-    List<RubricBaseModel>? CurrentRubrics;
+    List<UniversalBaseModel>? CurrentRubrics;
 
     int _selectedRubricId;
     /// <summary>
@@ -87,7 +87,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         }
 
         await SetBusy();
-        TResponseModel<List<RubricBaseModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = ownerRubricId, ContextName = ContextName });
+        TResponseModel<List<UniversalBaseModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = ownerRubricId, ContextName = ContextName });
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         CurrentRubrics = rest.Response;

@@ -50,7 +50,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
 
     ModesSelectRubricsEnum ModeSelectingRubrics;
     bool ShowDisabledRubrics;
-    RubricBaseModel? SelectedRubric;
+    UniversalBaseModel? SelectedRubric;
 
     async Task CreateIssue()
     {
@@ -65,7 +65,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
             SenderActionUserId = UserIdentityId,
             Payload = new()
             {
-                RubricId = SelectedRubric?.Id,
+                ParentId = SelectedRubric?.Id,
                 Name = Name,
                 Description = Description,
             }
@@ -99,7 +99,7 @@ public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
         ModeSelectingRubrics = res_ModeSelectingRubrics.Response.Value;
     }
 
-    void RubricSelectAction(RubricBaseModel? selectedRubric)
+    void RubricSelectAction(UniversalBaseModel? selectedRubric)
     {
         SelectedRubric = selectedRubric;
         StateHasChanged();

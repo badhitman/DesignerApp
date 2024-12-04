@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// RubricLayerModel
+/// UniversalLayerModel
 /// </summary>
 [Index(nameof(NormalizedNameUpper)), Index(nameof(ContextName))]
-public class RubricLayerModel : RubricBaseModel
+public class UniversalLayerModel : UniversalBaseModel
 {
     /// <summary>
     /// Имя контекста для разделения различных селекторов независимо друг от друга

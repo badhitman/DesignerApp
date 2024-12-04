@@ -28,7 +28,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
-    public required TreeItemData<RubricBaseModel> Item { get; set; }
+    public required TreeItemData<UniversalBaseModel> Item { get; set; }
 
     /// <summary>
     /// Имя контекста
@@ -37,7 +37,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
     public string? ContextName { get; set; }
 
 
-    RubricBaseModel ItemModel = default!;
+    UniversalBaseModel ItemModel = default!;
 
     string? rubricName;
 

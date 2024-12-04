@@ -5,14 +5,14 @@
 namespace SharedLib;
 
 /// <summary>
-/// Issue Update Request
+/// Universal update - request
 /// </summary>
-public class IssueUpdateRequestModel : EntryDescriptionModel
+public class UniversalUpdateRequestModel : EntryDescriptionModel
 {
     /// <summary>
-    /// Rubric Issue
+    /// Parent ID
     /// </summary>
-    public required int? RubricId { get; set; }
+    public required int? ParentId { get; set; }
 
     /// <summary>
     /// ProjectId

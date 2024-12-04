@@ -380,7 +380,7 @@ public class HelpdeskImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<IssueUpdateRequestModel> issue_upd)
+    public async Task<TResponseModel<int>> IssueCreateOrUpdate(TAuthRequestModel<UniversalUpdateRequestModel> issue_upd)
     {
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(issue_upd)}");
         TResponseModel<int> res = new() { Response = 0 };
@@ -418,7 +418,7 @@ public class HelpdeskImplementService(
         {
             string[] sub_rubrics = await context
                         .Rubrics
-                        .Where(x => x.ParentId == issue_upd.Payload.RubricId)
+                        .Where(x => x.ParentId == issue_upd.Payload.ParentId)
                         .Select(x => x.Name)
                         .ToArrayAsync();
 
@@ -438,7 +438,7 @@ public class HelpdeskImplementService(
                 AuthorIdentityUserId = issue_upd.SenderActionUserId,
                 Name = issue_upd.Payload.Name.Trim(),
                 Description = issue_upd.Payload.Description,
-                RubricIssueId = issue_upd.Payload.RubricId,
+                RubricIssueId = issue_upd.Payload.ParentId,
                 NormalizedNameUpper = normalizedNameUpper,
                 NormalizedDescriptionUpper = normalizedDescriptionUpper,
                 StatusDocument = StatusesDocumentsEnum.Created,
@@ -519,7 +519,7 @@ public class HelpdeskImplementService(
                                 .SetProperty(b => b.Description, issue_upd.Payload.Description)
                                 .SetProperty(b => b.NormalizedNameUpper, normalizedNameUpper)
                                 .SetProperty(b => b.NormalizedDescriptionUpper, normalizedDescriptionUpper)
-                                .SetProperty(b => b.RubricIssueId, issue_upd.Payload.RubricId)
+                                .SetProperty(b => b.RubricIssueId, issue_upd.Payload.ParentId)
                                 .SetProperty(b => b.Name, issue_upd.Payload.Name)
                                 .SetProperty(b => b.LastUpdateAt, DateTime.UtcNow));
 

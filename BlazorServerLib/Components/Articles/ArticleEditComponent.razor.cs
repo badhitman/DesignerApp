@@ -68,7 +68,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
         orignArticle = res.Response.Single();
     }
 
-    async void SelectedRubricsChange(IReadOnlyCollection<RubricBaseModel?> req)
+    async void SelectedRubricsChange(IReadOnlyCollection<UniversalBaseModel?> req)
     {
         if (editArticle?.RubricsJoins is not null && !req.Any(x => !editArticle!.RubricsJoins.Any(y => y.RubricId == x?.Id)) && !editArticle.RubricsJoins.Any(x => !req.Any(y => y?.Id == x.RubricId)))
             return;

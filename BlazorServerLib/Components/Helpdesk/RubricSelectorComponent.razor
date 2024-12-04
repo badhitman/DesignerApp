@@ -30,7 +30,7 @@ else
             {
                 <option value="0" selected>Выбор элемента</option>
             }
-            @foreach (RubricBaseModel rubric in CurrentRubrics!.Where(x => ShowDisabledRubrics || !x.IsDisabled))
+            @foreach (UniversalBaseModel rubric in CurrentRubrics!.Where(x => ShowDisabledRubrics || !x.IsDisabled))
             {
                 <option disabled="@rubric.IsDisabled" value="@rubric.Id">@rubric.Name</option>
             }

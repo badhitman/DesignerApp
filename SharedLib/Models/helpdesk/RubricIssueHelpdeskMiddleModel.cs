@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Рубрика (прослойка IssueHelpdesk)
 /// </summary>
-public class RubricIssueHelpdeskMiddleModel : RubricLayerModel
+public class RubricIssueHelpdeskMiddleModel : UniversalLayerModel
 {
     /// <inheritdoc/>
     public List<RubricIssueHelpdeskModelDB>? NestedRubrics { get; set; }

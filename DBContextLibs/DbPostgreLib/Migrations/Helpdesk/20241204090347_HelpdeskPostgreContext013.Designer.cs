@@ -3,6 +3,7 @@ using System;
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.Helpdesk
 {
     [DbContext(typeof(HelpdeskContext))]
-    partial class HelpdeskContextModelSnapshot : ModelSnapshot
+    [Migration("20241204090347_HelpdeskPostgreContext013")]
+    partial class HelpdeskPostgreContext013
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -399,17 +402,11 @@ namespace DbPostgreLib.Migrations.Helpdesk
                     b.Property<string>("ContextName")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAtUTC")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTime>("LastAtUpdatedUTC")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
