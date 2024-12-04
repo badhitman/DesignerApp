@@ -27,7 +27,7 @@ public partial class ChatsWappiIssueComponent : IssueWrapBaseModel
             {
                 Payload = new()
                 {
-                    Description = $"Отправил сообщение в WhatsApp: {msg.Number}",
+                    Description = $"Отправил сообщение в WhatsApp: {msg.Number}<hr/>{msg.Text}",
                     IssueId = Issue.Id,
                     PulseType = PulseIssuesTypesEnum.Messages,
                     Tag = GlobalStaticConstants.Routes.WAPPI_CONTROLLER_NAME,

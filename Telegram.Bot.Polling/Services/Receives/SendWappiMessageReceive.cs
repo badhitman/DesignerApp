@@ -28,18 +28,23 @@ public class SendWappiMessageReceive(
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         TResponseModel<SendMessageResponseModel?> res = new();
 
-        TResponseModel<string?> wappiToken = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
-        TResponseModel<string?> wappiProfileId = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
+        TResponseModel<string?> wappiToken = default!, wappiProfileId = default!;
+
+        List<Task> tasks = [Task.Run(async () =>
+        {
+            wappiToken = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi);
+        }), Task.Run(async () =>
+        {
+            wappiProfileId = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
+        })];
+        await Task.WhenAll(tasks);
 
         if (!wappiToken.Success() || string.IsNullOrWhiteSpace(wappiToken.Response) || !wappiProfileId.Success() || string.IsNullOrWhiteSpace(wappiProfileId.Response))
         {
             _logger.LogError($"Не удалось отправить сообщение Wappi ({req}): не удалось прочитать настройки");
 
-            if (wappiToken.Messages.Count != 0)
-                res.AddRangeMessages(wappiToken.Messages);
-
-            if (wappiProfileId.Messages.Count != 0)
-                res.AddRangeMessages(wappiProfileId.Messages);
+            res.AddRangeMessages(wappiToken.Messages);
+            res.AddRangeMessages(wappiProfileId.Messages);
 
             return res;
         }
@@ -60,6 +65,7 @@ public class SendWappiMessageReceive(
         {
             string rj = await response.Content.ReadAsStringAsync();
             res.Response = JsonConvert.DeserializeObject<SendMessageResponseModel>(rj);
+            res.AddSuccess($"Сообщение успешно отправлено: {res.Response?.Status}");
         }
 
         return res;

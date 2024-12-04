@@ -1065,10 +1065,10 @@ public class HelpdeskImplementService(
                 MessageText = req.Payload.MessageText,
                 IssueId = req.Payload.IssueId,
             };
-            msg = "Сообщение успешно отправлено";
+            msg = "Сообщение успешно добавлено к документу";
             await context.AddAsync(msg_db);
             await context.SaveChangesAsync();
-            res.AddSuccess(msg);
+            res.AddInfo(msg);
 
             res.Response = msg_db.Id;
             if (actor.UserId != GlobalStaticConstants.Roles.System)
