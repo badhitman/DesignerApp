@@ -49,7 +49,7 @@ public partial class GoodsManageComponent : BlazorBusyComponentRegistersModel
     /// </summary>
     private async Task<TableData<NomenclatureModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-        TPaginationRequestModel<GoodsSelectRequestModel> req = new()
+        TPaginationRequestModel<NomenclaturesSelectRequestModel> req = new()
         {
             Payload = new(),
             PageNum = state.Page,

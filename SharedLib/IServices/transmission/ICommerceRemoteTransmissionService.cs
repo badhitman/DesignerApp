@@ -112,7 +112,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// GoodsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> GoodsSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req);
 
     /// <summary>
     /// Подбор организаций с параметрами запроса

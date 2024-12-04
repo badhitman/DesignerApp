@@ -13,13 +13,13 @@ namespace Transmission.Receives.commerce;
 /// GoodsSelectReceive
 /// </summary>
 public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<NomenclatureModelDB>?>
+: IResponseReceive<TPaginationRequestModel<NomenclaturesSelectRequestModel>?, TPaginationResponseModel<NomenclatureModelDB>?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.NomenclaturesSelectCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>?>> ResponseHandleAction(TPaginationRequestModel<GoodsSelectRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>?>> ResponseHandleAction(TPaginationRequestModel<NomenclaturesSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 

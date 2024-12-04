@@ -16,7 +16,7 @@ public class GoodsReadReceive(IDbContextFactory<CommerceContext> commerceDbFacto
 : IResponseReceive<int[]?, NomenclatureModelDB[]?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsReadCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.NomenclaturesReadCommerceReceive;
 
     /// <inheritdoc/>
     public async Task<TResponseModel<NomenclatureModelDB[]?>> ResponseHandleAction(int[]? req)

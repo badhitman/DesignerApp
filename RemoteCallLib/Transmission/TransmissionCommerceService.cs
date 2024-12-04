@@ -21,8 +21,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<NomenclatureModelDB>>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
+    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> GoodsSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<NomenclatureModelDB>>(GlobalStaticConstants.TransmissionQueues.NomenclaturesSelectCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> GoodUpdateReceive(NomenclatureModelDB req)
@@ -82,7 +82,7 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
 
     /// <inheritdoc/>
     public async Task<TResponseModel<NomenclatureModelDB[]>> GoodsRead(int[] ids)
-        => await rabbitClient.MqRemoteCall<NomenclatureModelDB[]>(GlobalStaticConstants.TransmissionQueues.GoodsReadCommerceReceive, ids);
+        => await rabbitClient.MqRemoteCall<NomenclatureModelDB[]>(GlobalStaticConstants.TransmissionQueues.NomenclaturesReadCommerceReceive, ids);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<OfferGoodModelDB[]>> OffersRead(int[] ids)

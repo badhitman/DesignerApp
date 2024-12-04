@@ -29,7 +29,7 @@ public class GoodsController(ICommerceRemoteTransmissionService commRepo) : Cont
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> OrdersSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> OrdersSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
         => await commRepo.GoodsSelect(req);
 
     /// <summary>

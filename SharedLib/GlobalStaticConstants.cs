@@ -770,10 +770,10 @@ public static partial class GlobalStaticConstants
         public readonly static string StatusChangeOrderByHelpDeskDocumentIdReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.HELPDESK_CONTROLLER_NAME, $"{Routes.STATUS_CONTROLLER_NAME}-for-{Routes.ORDER_CONTROLLER_NAME}", $"{Routes.CHANGE_ACTION_NAME}-{Routes.UPDATE_ACTION_NAME}");
 
         /// <inheritdoc/>
-        public readonly static string GoodsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+        public readonly static string NomenclaturesReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.NOMENCLATURES_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string GoodsSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.GOODS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+        public readonly static string NomenclaturesSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.NOMENCLATURES_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string OrdersSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDERS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
@@ -1050,6 +1050,16 @@ public static partial class GlobalStaticConstants
         /// Goods
         /// </summary>
         public const string GOODS_CONTROLLER_NAME = "goods";
+
+        /// <summary>
+        /// Nomenclature
+        /// </summary>
+        public const string NOMENCLATURE_CONTROLLER_NAME = "nomenclature";
+
+        /// <summary>
+        /// Nomenclatures
+        /// </summary>
+        public const string NOMENCLATURES_CONTROLLER_NAME = "nomenclatures";
 
         /// <summary>
         /// Orders
