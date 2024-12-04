@@ -1,0 +1,27 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <span class="navbar-brand">@Chat</span>
+        <button disabled="@IsBusyProgress" @onclick="() => NavbarToggle =! NavbarToggle" class="navbar-toggler@(NavbarToggle ? "" : " collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse@(NavbarToggle ? "" : " show")" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <span class="nav-link active" aria-current="page">Чат</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="my-3">
+    <label for="textSendMessageFormControlTextarea" class="form-label">Отправка сообщения</label>
+    <div class="input-group">
+        <textarea readonly="@IsBusyProgress" @bind:event="oninput" @bind="_textSendMessage" class="form-control" aria-label="With textarea" id="textSendMessageFormControlTextarea"></textarea>
+        <button @onclick="SendMessage" disabled="@(string.IsNullOrWhiteSpace(_textSendMessage) || IsBusyProgress)" class="btn btn-outline-@(string.IsNullOrWhiteSpace(_textSendMessage)?"secondary":"success") bi bi-send" type="button"></button>
+    </div>
+</div>

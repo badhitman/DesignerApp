@@ -1,0 +1,35 @@
+﻿@using BlazorWebLib.Components.Telegram
+@using MudBlazor
+@inherits IssueWrapBaseModel
+
+<div class="card">
+    <div class="card-body p-3">
+        <h5 class="card-title">Wappi</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">Чаты от имени WhatsApp</h6>
+
+        @if (chats is null || chats.Length == 0)
+        {
+            <figure class="text-center">
+                <blockquote class="blockquote">
+                    <p>Данных нет.</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    Чаты не найдены в <cite title="Telegram.Bot.Polling">TelegramBot</cite> службе
+                </figcaption>
+            </figure>
+        }
+        else
+        {
+            <CascadingValue Value="SendMessageWhatsAppAction">
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                    @foreach (string chat in chats)
+                    {
+                        <MudTabPanel Text="@(UsersIdentityDump.First(x => x.PhoneNumber == chat).UserName)">
+                            <WappiChatWrapComponent Chat="@chat" />
+                        </MudTabPanel>
+                    }
+                </MudTabs>
+            </CascadingValue>
+        }
+    </div>
+</div>

@@ -231,6 +231,15 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
+        /// ShowingWappiArea
+        /// </summary>
+        public static StorageMetadataModel ShowingWappiArea => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.SHOW_ACTION_NAME, Routes.WAPPI_CONTROLLER_NAME, Routes.AREAS_CONTROLLER_NAME),
+        };
+
+        /// <summary>
         /// ShowingAttachmentsOrderArea
         /// </summary>
         public static StorageMetadataModel ShowingAttachmentsOrderArea => new()

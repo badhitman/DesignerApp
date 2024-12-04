@@ -38,10 +38,4 @@ public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseAuthModel
     /// </summary>
     [CascadingParameter]
     public List<UserInfoModel> UsersIdentityDump { get; set; } = [];
-
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-    }
 }

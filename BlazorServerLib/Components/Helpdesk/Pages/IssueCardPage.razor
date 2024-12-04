@@ -67,10 +67,18 @@ else
                                             }
                                         </MudTabs>
                                     </div>
-                                    @if (ShowingTelegramArea && UsersIdentityDump.Any(x => x.TelegramId.HasValue))
-                                    {
-                                        <div><ChatsTelegramIssueComponent /></div>
-                                    }
+                                    <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
+                                        <Authorized>
+                                            @if (ShowingTelegramArea && UsersIdentityDump.Any(x => x.TelegramId.HasValue))
+                                            {
+                                                <ChatsTelegramIssueComponent />
+                                            }
+                                            @if (ShowingWappiArea && UsersIdentityDump.Any(x => !string.IsNullOrWhiteSpace(x.PhoneNumber) && GlobalTools.IsPhoneNumber(x.PhoneNumber)))
+                                            {
+                                                <ChatsWappiIssueComponent />
+                                            }
+                                        </Authorized>
+                                    </AuthorizeView>
                                 </div>
                             </div>
                             <div class="col-sm-3"><IssuePanelComponent /></div>

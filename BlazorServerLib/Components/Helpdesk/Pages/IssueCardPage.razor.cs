@@ -48,6 +48,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
 
     OrderDocumentModelDB[]? OrdersJournal;
     bool ShowingTelegramArea;
+    bool ShowingWappiArea;
     bool ShowingAttachmentsIssueArea;
 
     /// <inheritdoc/>
@@ -60,8 +61,13 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
         await SetBusy();
         TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingTelegramArea);
         ShowingTelegramArea = res.Response == true;
+        
         res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsIssuesArea);
         ShowingAttachmentsIssueArea = res.Response == true;
+
+        res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingWappiArea);
+        ShowingWappiArea = res.Response == true;
+
         await SetBusy(false);
     }
 

@@ -24,8 +24,11 @@ public static partial class GlobalTools
     /// <summary>
     /// IsPhoneNumber
     /// </summary>
-    public static bool IsPhoneNumber(string number)
+    public static bool IsPhoneNumber(string? number)
     {
+        if(string.IsNullOrWhiteSpace(number))
+            return false;
+
         return Regex.Match(number, @"^(\+?[0-9]{11})$").Success;
     }
 

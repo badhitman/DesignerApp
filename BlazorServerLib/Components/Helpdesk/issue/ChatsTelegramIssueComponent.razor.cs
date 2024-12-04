@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.issue;
@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
 {
     [Inject]
-    ITelegramRemoteTransmissionService tgRepo { get; set; } = default!;
+    ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
 
 
     ChatTelegramModelDB[]? chats = null;
@@ -42,18 +42,18 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
             SenderActionUserId = GlobalStaticConstants.Roles.System,
             Payload = new() { MessageText = $"<b>Пользователь {CurrentUserSession!.UserName} отправил сообщение Telegram пользователю user-tg#{msg.UserTelegramId}</b>: {msg.Message}", IssueId = Issue.Id }
         });
-        IsBusyProgress = false;
-
+        await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(add_msg_system.Messages);
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await SetBusy();
         await base.OnInitializedAsync();
         long[] chats_ids = [.. UsersIdentityDump.Where(x => x.TelegramId.HasValue).Select(x => x.TelegramId!.Value)];
-        await SetBusy();
-        TResponseModel<ChatTelegramModelDB[]?> rest_chats = await tgRepo.ChatsReadTelegram(chats_ids);
+
+        TResponseModel<ChatTelegramModelDB[]?> rest_chats = await TelegramRepo.ChatsReadTelegram(chats_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest_chats.Messages);
         chats = rest_chats.Response;
