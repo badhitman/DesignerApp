@@ -13,13 +13,13 @@ namespace Transmission.Receives.commerce;
 /// GoodsReadReceive
 /// </summary>
 public class GoodsReadReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<int[]?, GoodsModelDB[]?>
+: IResponseReceive<int[]?, NomenclatureModelDB[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsReadCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<GoodsModelDB[]?>> ResponseHandleAction(int[]? req)
+    public async Task<TResponseModel<NomenclatureModelDB[]?>> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();

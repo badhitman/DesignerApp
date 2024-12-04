@@ -52,7 +52,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// GoodsRead
     /// </summary>
-    public Task<TResponseModel<GoodsModelDB[]>> GoodsRead(int[] ids);
+    public Task<TResponseModel<NomenclatureModelDB[]>> GoodsRead(int[] ids);
 
     /// <summary>
     /// Прочитать данные адресов организаций по их идентификаторам
@@ -112,7 +112,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// GoodsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req);
 
     /// <summary>
     /// Подбор организаций с параметрами запроса
@@ -155,5 +155,5 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Обновить/Создать товар
     /// </summary>
-    public Task<TResponseModel<int>> GoodUpdateReceive(GoodsModelDB req);
+    public Task<TResponseModel<int>> GoodUpdateReceive(NomenclatureModelDB req);
 }

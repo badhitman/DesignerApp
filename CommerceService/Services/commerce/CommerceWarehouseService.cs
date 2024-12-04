@@ -499,7 +499,7 @@ public partial class CommerceImplementService : ICommerceService
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<WarehouseDocumentModelDB, GoodsModelDB?> inc_query = pq
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<WarehouseDocumentModelDB, NomenclatureModelDB?> inc_query = pq
             .Include(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
             .ThenInclude(x => x.Goods);

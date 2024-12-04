@@ -22,7 +22,7 @@ public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
     /// GoodCreatingHandler
     /// </summary>
     [Parameter, EditorRequired]
-    public required Action<GoodsModelDB> GoodCreatingHandler { get; set; }
+    public required Action<NomenclatureModelDB> GoodCreatingHandler { get; set; }
 
 
     UnitsOfMeasurementEnum UMeas { get; set; } = UnitsOfMeasurementEnum.Thing;
@@ -36,7 +36,7 @@ public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
         if (string.IsNullOrWhiteSpace(CreatingGoodsName))
             return;
 
-        GoodsModelDB new_obj = new()
+        NomenclatureModelDB new_obj = new()
         {
             Name = CreatingGoodsName,
             BaseUnit = UMeas,

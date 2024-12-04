@@ -32,7 +32,7 @@ public abstract class RowOfBaseDocumentModelDB
     /// <summary>
     /// Номенклатура
     /// </summary>
-    public GoodsModelDB? Goods { get; set; }
+    public NomenclatureModelDB? Goods { get; set; }
 
     /// <summary>
     /// Goods

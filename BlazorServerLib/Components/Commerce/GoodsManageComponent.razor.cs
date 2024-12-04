@@ -20,10 +20,10 @@ public partial class GoodsManageComponent : BlazorBusyComponentRegistersModel
 
 
     bool _expanded;
-    MudTable<GoodsModelDB> tableRef = default!;
+    MudTable<NomenclatureModelDB> tableRef = default!;
 
 
-    async void CreateGoodsAction(GoodsModelDB goods)
+    async void CreateGoodsAction(NomenclatureModelDB goods)
     {
         await tableRef.ReloadServerData();
         OnExpandCollapseClick();
@@ -47,7 +47,7 @@ public partial class GoodsManageComponent : BlazorBusyComponentRegistersModel
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
-    private async Task<TableData<GoodsModelDB>> ServerReload(TableState state, CancellationToken token)
+    private async Task<TableData<NomenclatureModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         TPaginationRequestModel<GoodsSelectRequestModel> req = new()
         {
@@ -58,22 +58,22 @@ public partial class GoodsManageComponent : BlazorBusyComponentRegistersModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         await SetBusy(token: token);
-        TResponseModel<TPaginationResponseModel<GoodsModelDB>> res = await CommerceRepo.GoodsSelect(req);
+        TResponseModel<TPaginationResponseModel<NomenclatureModelDB>> res = await CommerceRepo.GoodsSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         if (res.Success() && res.Response?.Response is not null)
         {
             await CacheRegistersGoodsUpdate(res.Response.Response.Select(x => x.Id));
             IsBusyProgress = false;
-            return new TableData<GoodsModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+            return new TableData<NomenclatureModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
         }
 
         IsBusyProgress = false;
 
         if (!res.Success() || res.Response?.Response is null)
-            return new TableData<GoodsModelDB>() { TotalItems = 0, Items = [] };
+            return new TableData<NomenclatureModelDB>() { TotalItems = 0, Items = [] };
 
-        return new TableData<GoodsModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+        return new TableData<NomenclatureModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
     }
 
     private void OnExpandCollapseClick()

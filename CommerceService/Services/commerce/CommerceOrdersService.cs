@@ -51,7 +51,7 @@ public partial class CommerceImplementService(
                 Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
             };
 
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = q
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, NomenclatureModelDB?> inc_query = q
             .Include(x => x.Organization)
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.AddressOrganization)
@@ -130,7 +130,7 @@ public partial class CommerceImplementService(
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, GoodsModelDB?> inc_query = pq
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, NomenclatureModelDB?> inc_query = pq
             .Include(x => x.Organization)
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.AddressOrganization)
@@ -988,7 +988,7 @@ public partial class CommerceImplementService(
 
         int[] rubricsIds = offersAll.SelectMany(x => x.Registers!).Select(x => x.WarehouseId).Distinct().ToArray();
         TResponseModel<List<RubricIssueHelpdeskModelDB>?> rubricsDb = await hdRepo.RubricsGet(rubricsIds);
-        List<IGrouping<GoodsModelDB?, OfferGoodModelDB>> gof = offersAll.GroupBy(x => x.Goods).Where(x => x.Any(y => y.Registers!.Any(z => z.Quantity > 0))).ToList();
+        List<IGrouping<NomenclatureModelDB?, OfferGoodModelDB>> gof = offersAll.GroupBy(x => x.Goods).Where(x => x.Any(y => y.Registers!.Any(z => z.Quantity > 0))).ToList();
         try
         {
             return new()
@@ -1097,7 +1097,7 @@ public partial class CommerceImplementService(
         return XLSStream.ToArray();
     }
 
-    static byte[] ExportPrice(List<IGrouping<GoodsModelDB?, OfferGoodModelDB>> sourceTable, List<RubricIssueHelpdeskModelDB>? rubricsDb)
+    static byte[] ExportPrice(List<IGrouping<NomenclatureModelDB?, OfferGoodModelDB>> sourceTable, List<RubricIssueHelpdeskModelDB>? rubricsDb)
     {
         WorkbookPart? wBookPart = null;
         using MemoryStream XLSStream = new();
@@ -1117,7 +1117,7 @@ public partial class CommerceImplementService(
 
         Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? workbookPart.Workbook.AppendChild(new Sheets());
 
-        foreach (IGrouping<GoodsModelDB?, OfferGoodModelDB> table in sourceTable)
+        foreach (IGrouping<NomenclatureModelDB?, OfferGoodModelDB> table in sourceTable)
         {
             WorksheetPart wSheetPart = wBookPart.AddNewPart<WorksheetPart>();
             Sheet sheet = new() { Id = workbookPart.GetIdOfPart(wSheetPart), SheetId = sheetId, Name = table.Key?.Name };
@@ -1293,7 +1293,7 @@ public partial class CommerceImplementService(
 
 record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);
 
-record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row, OfferGoodModelDB Offer, GoodsModelDB Goods);
+record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row, OfferGoodModelDB Offer, NomenclatureModelDB Goods);
 
 record WarehouseRowDocumentRecord(int WarehouseId, RowOfOrderDocumentModelDB Row);
 

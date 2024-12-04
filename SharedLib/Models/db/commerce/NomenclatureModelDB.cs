@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Номенклатура
 /// </summary>
-public class GoodsModelDB : UniversalLayerModel
+public class NomenclatureModelDB : UniversalLayerModel
 {
     /// <summary>
     /// Базовая единица измерения `Номенклатуры`
@@ -26,10 +26,10 @@ public class GoodsModelDB : UniversalLayerModel
 
 
     /// <inheritdoc/>
-    public static bool operator ==(GoodsModelDB off1, GoodsModelDB off2) => off1.Equals(off2);
+    public static bool operator ==(NomenclatureModelDB off1, NomenclatureModelDB off2) => off1.Equals(off2);
 
     /// <inheritdoc/>
-    public static bool operator !=(GoodsModelDB off1, GoodsModelDB off2)
+    public static bool operator !=(NomenclatureModelDB off1, NomenclatureModelDB off2)
     {
         return
                 off1.Id != off2.Id ||
@@ -51,7 +51,7 @@ public class GoodsModelDB : UniversalLayerModel
         if (obj is null)
             return false;
 
-        if (obj is GoodsModelDB off)
+        if (obj is NomenclatureModelDB off)
             return
                 off.Id == Id &&
                 off.Name == Name &&

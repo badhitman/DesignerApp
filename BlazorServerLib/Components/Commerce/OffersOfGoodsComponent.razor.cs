@@ -21,7 +21,7 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
     /// CurrentGoods
     /// </summary>
     [Parameter, EditorRequired]
-    public required GoodsModelDB CurrentGoods { get; set; }
+    public required NomenclatureModelDB CurrentGoods { get; set; }
 
 
     bool _hideMultiplicity;

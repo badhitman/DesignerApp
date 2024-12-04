@@ -21,11 +21,11 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<GoodsModelDB>>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
+    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> GoodsSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<NomenclatureModelDB>>(GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> GoodUpdateReceive(GoodsModelDB req)
+    public async Task<TResponseModel<int>> GoodUpdateReceive(NomenclatureModelDB req)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.GoodsUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
@@ -81,8 +81,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<AddressOrganizationModelDB[]>(GlobalStaticConstants.TransmissionQueues.AddressesOrganizationsReadCommerceReceive, ids);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<GoodsModelDB[]>> GoodsRead(int[] ids)
-        => await rabbitClient.MqRemoteCall<GoodsModelDB[]>(GlobalStaticConstants.TransmissionQueues.GoodsReadCommerceReceive, ids);
+    public async Task<TResponseModel<NomenclatureModelDB[]>> GoodsRead(int[] ids)
+        => await rabbitClient.MqRemoteCall<NomenclatureModelDB[]>(GlobalStaticConstants.TransmissionQueues.GoodsReadCommerceReceive, ids);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<OfferGoodModelDB[]>> OffersRead(int[] ids)

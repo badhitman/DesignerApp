@@ -132,7 +132,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
         }
     }
 
-    IEnumerable<IGrouping<GoodsModelDB?, OfferGoodModelDB>> OffersNodes => ActualOffers.GroupBy(x => x.Goods);
+    IEnumerable<IGrouping<NomenclatureModelDB?, OfferGoodModelDB>> OffersNodes => ActualOffers.GroupBy(x => x.Goods);
 
     void AddOffer()
     {

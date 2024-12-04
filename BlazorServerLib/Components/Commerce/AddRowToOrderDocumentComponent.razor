@@ -11,7 +11,7 @@ else
 {
     <div class="hstack gap-3">
         <select @bind="SelectedOfferId" class="form-select" aria-label="Добавить позиции в заказ">
-            @foreach (IGrouping<GoodsModelDB?, OfferGoodModelDB> opt_g in OffersNodes)
+            @foreach (IGrouping<NomenclatureModelDB?, OfferGoodModelDB> opt_g in OffersNodes)
             {
                 <optgroup label="@opt_g.Key!.Name">
                     @foreach (OfferGoodModelDB opt in opt_g)

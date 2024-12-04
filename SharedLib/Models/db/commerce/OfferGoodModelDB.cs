@@ -56,7 +56,7 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// Номенклатура
     /// </summary>
-    public GoodsModelDB? Goods { get; set; }
+    public NomenclatureModelDB? Goods { get; set; }
     /// <summary>
     /// GoodsId
     /// </summary>

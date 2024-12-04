@@ -24,8 +24,8 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseAuthModel
     public required int GoodsId { get; set; }
 
 
-    GoodsModelDB? CurrentGoods;
-    GoodsModelDB? editGoods;
+    NomenclatureModelDB? CurrentGoods;
+    NomenclatureModelDB? editGoods;
     FilesContextViewComponent? filesViewRef;
 
     string images_upload_url = default!;
@@ -61,7 +61,7 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseAuthModel
         if (CurrentUserSession is null)
             throw new Exception();
 
-        TResponseModel<GoodsModelDB[]> res = await CommerceRepo.GoodsRead([GoodsId]);
+        TResponseModel<NomenclatureModelDB[]> res = await CommerceRepo.GoodsRead([GoodsId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success() && res.Response is not null && res.Response.Length != 0)

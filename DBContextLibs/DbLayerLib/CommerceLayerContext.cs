@@ -53,7 +53,7 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// Товары
     /// </summary>
-    public DbSet<GoodsModelDB> Goods { get; set; } = default!;
+    public DbSet<NomenclatureModelDB> Goods { get; set; } = default!;
 
     /// <summary>
     /// ProductsOffers

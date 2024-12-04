@@ -14,7 +14,7 @@ namespace Transmission.Receives.commerce;
 /// Обновление номенклатуры
 /// </summary>
 public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<GoodsUpdateReceive> loggerRepo)
-    : IResponseReceive<GoodsModelDB?, int?>
+    : IResponseReceive<NomenclatureModelDB?, int?>
 {
     /// <summary>
     /// Обновление номенклатуры
@@ -24,7 +24,7 @@ public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
     /// <summary>
     /// Обновление номенклатуры
     /// </summary>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(GoodsModelDB? req)
+    public async Task<TResponseModel<int?>> ResponseHandleAction(NomenclatureModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         req.Name = req.Name.Trim();
@@ -32,7 +32,7 @@ public class GoodsUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
         TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         string msg, about = $"'{req.Name}' /{req.BaseUnit}";
-        GoodsModelDB? goods_db = await context.Goods.FirstOrDefaultAsync(x => x.Name == req.Name && x.BaseUnit == req.BaseUnit && x.Id != req.Id);
+        NomenclatureModelDB? goods_db = await context.Goods.FirstOrDefaultAsync(x => x.Name == req.Name && x.BaseUnit == req.BaseUnit && x.Id != req.Id);
         if (goods_db is not null)
         {
             msg = $"Ошибка создания Номенклатуры {about}. Такой объект уже существует #{goods_db.Id}. Требуется уникальное сочетание имени и единицы измерения";

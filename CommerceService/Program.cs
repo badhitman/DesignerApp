@@ -116,7 +116,7 @@ builder.Services
     .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
     .RegisterMqListener<AddressOrganizationUpdateReceive, AddressOrganizationBaseModel?, int?>()
     .RegisterMqListener<AddressOrganizationDeleteReceive, int?, bool?>()
-    .RegisterMqListener<GoodsUpdateReceive, GoodsModelDB?, int?>()
+    .RegisterMqListener<GoodsUpdateReceive, NomenclatureModelDB?, int?>()
     .RegisterMqListener<OrdersByIssuesGetReceive, OrdersByIssuesSelectRequestModel?, OrderDocumentModelDB[]?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
     .RegisterMqListener<PriceFullFileGetReceive, object?, FileAttachModel?>()
@@ -134,7 +134,7 @@ builder.Services
     .RegisterMqListener<PaymentDocumentUpdateReceive, PaymentDocumentBaseModel?, int?>()
     .RegisterMqListener<OrderUpdateReceive, OrderDocumentModelDB?, int?>()
     .RegisterMqListener<OffersReadReceive, int[]?, OfferGoodModelDB[]?>()
-    .RegisterMqListener<GoodsReadReceive, int[]?, GoodsModelDB[]?>()
+    .RegisterMqListener<GoodsReadReceive, int[]?, NomenclatureModelDB[]?>()
     .RegisterMqListener<AddressesOrganizationsReadReceive, int[]?, AddressOrganizationModelDB[]?>()
     .RegisterMqListener<PaymentDocumentDeleteReceive, int?, bool?>()
     .RegisterMqListener<RowsForOrderDeleteReceive, int[]?, bool?>()
@@ -143,7 +143,7 @@ builder.Services
     .RegisterMqListener<OrdersSelectReceive, TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>>?, TPaginationResponseModel<OrderDocumentModelDB>?>()
     .RegisterMqListener<OfferUpdateReceive, OfferGoodModelDB?, int?>()
     .RegisterMqListener<OffersSelectReceive, TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferGoodModelDB>?>()
-    .RegisterMqListener<GoodsSelectReceive, TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<GoodsModelDB>?>()
+    .RegisterMqListener<GoodsSelectReceive, TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<NomenclatureModelDB>?>()
     .RegisterMqListener<OrganizationsReadReceive, int[]?, OrganizationModelDB[]?>();
 #endregion
 

@@ -13,13 +13,13 @@ namespace Transmission.Receives.commerce;
 /// GoodsSelectReceive
 /// </summary>
 public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<GoodsModelDB>?>
+: IResponseReceive<TPaginationRequestModel<GoodsSelectRequestModel>?, TPaginationResponseModel<NomenclatureModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GoodsSelectCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>?>> ResponseHandleAction(TPaginationRequestModel<GoodsSelectRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>?>> ResponseHandleAction(TPaginationRequestModel<GoodsSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
@@ -28,14 +28,14 @@ public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFac
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<GoodsModelDB> q = context
+        IQueryable<NomenclatureModelDB> q = context
             .Goods
             .AsQueryable();
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
                 
-         IOrderedQueryable<GoodsModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+         IOrderedQueryable<NomenclatureModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
            ? q.OrderBy(x => x.CreatedAtUTC)
            : q.OrderByDescending(x => x.CreatedAtUTC);
          

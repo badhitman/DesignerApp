@@ -29,7 +29,7 @@ public class GoodsController(ICommerceRemoteTransmissionService commRepo) : Cont
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<TPaginationResponseModel<GoodsModelDB>>> OrdersSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> OrdersSelect(TPaginationRequestModel<GoodsSelectRequestModel> req)
         => await commRepo.GoodsSelect(req);
 
     /// <summary>
@@ -42,6 +42,6 @@ public class GoodsController(ICommerceRemoteTransmissionService commRepo) : Cont
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<GoodsModelDB[]>> GoodsRead(int[] req)
+    public async Task<TResponseModel<NomenclatureModelDB[]>> GoodsRead(int[] req)
         => await commRepo.GoodsRead(req);
 }
