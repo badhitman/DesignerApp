@@ -27,18 +27,17 @@ public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFac
             req.PageSize = 10;
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-
-        IQueryable<NomenclatureModelDB> q = context
-            .Goods
-            .AsQueryable();
+        IQueryable<NomenclatureModelDB> q = string.IsNullOrEmpty(req.Payload.ContextName)
+            ? context.Goods.Where(x => x.ContextName == null || x.ContextName == "").AsQueryable()
+            : context.Goods.Where(x => x.ContextName == req.Payload.ContextName).AsQueryable();
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
-                
-         IOrderedQueryable<NomenclatureModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-           ? q.OrderBy(x => x.CreatedAtUTC)
-           : q.OrderByDescending(x => x.CreatedAtUTC);
-         
+
+        IOrderedQueryable<NomenclatureModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.CreatedAtUTC)
+          : q.OrderByDescending(x => x.CreatedAtUTC);
+
         return new()
         {
             Response = new()
