@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Рубрики для обращений
 /// </summary>
-public class RubricIssueHelpdeskModelDB : RubricIssueHelpdeskMiddleModel
+public class RubricIssueHelpdeskModelDB : UniversalMiddleModel
 {
     /// <summary>
     /// Обращения в рубрике

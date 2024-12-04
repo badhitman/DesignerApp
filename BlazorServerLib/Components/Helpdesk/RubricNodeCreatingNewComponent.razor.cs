@@ -62,7 +62,7 @@ public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseMod
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        ItemModel = new RubricIssueHelpdeskMiddleModel()
+        ItemModel = new UniversalMiddleModel()
         {
             Name = "",
             ParentId = Item.Value?.ParentId,
