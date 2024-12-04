@@ -88,10 +88,6 @@ public class PassageMiddleware(RequestDelegate next)
     /// <inheritdoc/>
     public string ReadTokenFromRequest()
     {
-#if DEBUG
-        _loggerRepo?.LogWarning(JsonConvert.SerializeObject(_http_context?.Request.Headers));
-#endif
-
         if (_http_context is null)
             return "";
 
