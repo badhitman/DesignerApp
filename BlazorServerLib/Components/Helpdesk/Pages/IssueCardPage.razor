@@ -69,13 +69,13 @@ else
                                     </div>
                                     <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
                                         <Authorized>
-                                            @if (ShowingTelegramArea && UsersIdentityDump.Any(x => x.TelegramId.HasValue))
-                                            {
-                                                <ChatsTelegramIssueComponent />
-                                            }
                                             @if (ShowingWappiArea && UsersIdentityDump.Any(x => !string.IsNullOrWhiteSpace(x.PhoneNumber) && GlobalTools.IsPhoneNumber(x.PhoneNumber)))
                                             {
                                                 <ChatsWappiIssueComponent />
+                                            }
+                                            @if (ShowingTelegramArea && UsersIdentityDump.Any(x => x.TelegramId.HasValue))
+                                            {
+                                                <ChatsTelegramIssueComponent />
                                             }
                                         </Authorized>
                                     </AuthorizeView>
