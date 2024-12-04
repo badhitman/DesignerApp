@@ -10,6 +10,11 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
+    /// NomenclatureUpdate
+    /// </summary>
+    public Task<TResponseModel<int>> NomenclatureUpdate(NomenclatureModelDB nom);
+
+    /// <summary>
     /// Get full price file Excel (*.xlsx)
     /// </summary>
     public Task<FileAttachModel> GetFullPriceFile();

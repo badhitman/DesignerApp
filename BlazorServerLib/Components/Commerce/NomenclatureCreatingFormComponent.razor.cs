@@ -5,14 +5,13 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using MudBlazor;
 
 namespace BlazorWebLib.Components.Commerce;
 
 /// <summary>
-/// GoodCreatingFormComponent
+/// NomenclatureCreatingFormComponent
 /// </summary>
-public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
+public partial class NomenclatureCreatingFormComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
@@ -23,6 +22,12 @@ public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [Parameter, EditorRequired]
     public required Action<NomenclatureModelDB> GoodCreatingHandler { get; set; }
+
+    /// <summary>
+    /// ContextName
+    /// </summary>
+    [Parameter]
+    public string? ContextName { get; set; }
 
 
     UnitsOfMeasurementEnum UMeas { get; set; } = UnitsOfMeasurementEnum.Thing;
@@ -40,11 +45,13 @@ public partial class GoodCreatingFormComponent : BlazorBusyComponentBaseModel
         {
             Name = CreatingGoodsName,
             BaseUnit = UMeas,
+            ContextName = ContextName,
+            IsDisabled = true,
         };
 
         await SetBusy();
-        
-        TResponseModel<int> res = await CommerceRepo.GoodUpdateReceive(new_obj);
+
+        TResponseModel<int> res = await CommerceRepo.NomenclatureUpdateReceive(new_obj);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success() && res.Response > 0)

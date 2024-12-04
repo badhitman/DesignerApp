@@ -32,12 +32,12 @@ public abstract class RowOfBaseDocumentModelDB
     /// <summary>
     /// Номенклатура
     /// </summary>
-    public NomenclatureModelDB? Goods { get; set; }
+    public NomenclatureModelDB? Nomenclature { get; set; }
 
     /// <summary>
-    /// Goods
+    /// Nomenclature
     /// </summary>
-    public int GoodsId { get; set; }
+    public int NomenclatureId { get; set; }
 
     /// <summary>
     /// Количество

@@ -23,16 +23,16 @@
 ### Номенклатура
 
 Справочник номенклатуры
-![номенклатура](img/goods-list.png)
+![номенклатура](img/nomenclature-list.png)
 
 Торговые позиции по номенклатуре
-![offers list](img/goods-offers-list.png)
+![offers list](img/nomenclature-offers-list.png)
 
 Настройка торгового предложения
-![offer card](img/goods-offer-card.png)
+![offer card](img/nomenclature-offer-card.png)
 
 Настройка ценообразования
-![правила ценообразования](img/goods-offers-prices-rules.png)
+![правила ценообразования](img/nomenclature-offers-prices-rules.png)
 
 #### Уведомления (шаблоны)
 ![уведомления](img/notify-templates.png)

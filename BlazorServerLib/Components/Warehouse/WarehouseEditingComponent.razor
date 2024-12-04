@@ -38,7 +38,7 @@ else
         <MudTable Hover="true"
                   Loading="IsBusyProgress"
                   ReadOnly="ReadOnly"
-                  SortLabel="@(nameof(RowOfOrderDocumentModelDB.Goods.Name))"
+                  SortLabel="@(nameof(RowOfOrderDocumentModelDB.Nomenclature.Name))"
                   CanCancelEdit="true"
                   Items="@CurrentDocument.Rows"
                   RowEditPreview="RowEditPreviewHandler"
@@ -77,7 +77,7 @@ else
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Name">
-                    <a href="/goods/offer-card/@context!.Offer!.Id">@context!.Offer!.GetName()</a>
+                    <a href="/nomenclature/offer-card/@context!.Offer!.Id">@context!.Offer!.GetName()</a>
                 </MudTd>
                 <MudTd DataLabel="Quantity">
                     @context!.Quantity

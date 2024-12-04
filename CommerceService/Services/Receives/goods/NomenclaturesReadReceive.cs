@@ -10,9 +10,9 @@ using DbcLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// GoodsReadReceive
+/// NomenclaturesReadReceive
 /// </summary>
-public class GoodsReadReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class NomenclaturesReadReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
 : IResponseReceive<int[]?, NomenclatureModelDB[]?>
 {
     /// <inheritdoc/>

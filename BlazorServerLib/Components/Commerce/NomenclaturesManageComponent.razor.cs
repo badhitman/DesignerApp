@@ -2,21 +2,28 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Commerce;
 
 /// <summary>
-/// GoodsManageComponent
+/// NomenclaturesManageComponent
 /// </summary>
-public partial class GoodsManageComponent : BlazorBusyComponentRegistersModel
+public partial class NomenclaturesManageComponent : BlazorBusyComponentRegistersModel
 {
     [Inject]
     IJSRuntime JsRuntimeRepo { get; set; } = default!;
+
+
+    /// <summary>
+    /// ContextName
+    /// </summary>
+    [Parameter]
+    public string? ContextName { get; set; }
 
 
     bool _expanded;
@@ -51,14 +58,14 @@ public partial class GoodsManageComponent : BlazorBusyComponentRegistersModel
     {
         TPaginationRequestModel<NomenclaturesSelectRequestModel> req = new()
         {
-            Payload = new(),
+            Payload = new() { ContextName = ContextName },
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         await SetBusy(token: token);
-        TResponseModel<TPaginationResponseModel<NomenclatureModelDB>> res = await CommerceRepo.GoodsSelect(req);
+        TResponseModel<TPaginationResponseModel<NomenclatureModelDB>> res = await CommerceRepo.NomenclaturesSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         if (res.Success() && res.Response?.Response is not null)

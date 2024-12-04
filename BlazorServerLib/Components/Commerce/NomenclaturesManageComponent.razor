@@ -8,11 +8,10 @@
         <MudStack Spacing="2">
             <MudButton OnClick="OnExpandCollapseClick" Variant="Variant.Outlined">@(_expanded ? "Отмена" : "Создать")</MudButton>
             <MudCollapse Expanded="_expanded">
-                <GoodCreatingFormComponent GoodCreatingHandler="CreateGoodsAction" />
+                <NomenclatureCreatingFormComponent ContextName="@ContextName" GoodCreatingHandler="CreateGoodsAction" />
             </MudCollapse>
         </MudStack>
     }
-
     <MudTable Loading="IsBusyProgress" ServerData="ServerReload" @ref="tableRef" Dense="true" Hover="true">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Номенклатура</MudText>
@@ -25,11 +24,11 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Имя">
-                <a href="/goods/card/@context.Id">@context.Name</a>
+                <a href="/nomenclature/card/@context.Id">@context.Name</a>
             </MudTd>
             <MudTd DataLabel="Ед.изм.">@context.BaseUnit.DescriptionInfo()</MudTd>
             <MudTd DataLabel="Баланс">
-                @RegistersCache.Where(x => x.GoodsId == context.Id).Sum(x => x.Quantity)
+                @RegistersCache.Where(x => x.NomenclatureId == context.Id).Sum(x => x.Quantity)
             </MudTd>
         </RowTemplate>
         <NoRecordsContent>

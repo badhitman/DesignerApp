@@ -25,9 +25,9 @@
     <RowTemplate>
         <MudTd DataLabel="Id">@context.Id</MudTd>
         <MudTd DataLabel="Offer">
-            <a href="/goods/offer-card/@context.Offer?.Id">@context.Offer?.Name</a>
+            <a href="/nomenclature/offer-card/@context.Offer?.Id">@context.Offer?.Name</a>
             <sup title="Номенклатура" class="font-monospace text-info-emphasis">
-                <a href="/goods/card/@context.Goods?.Id" class="link-info">@context.Goods?.Name</a>
+                <a href="/nomenclature/card/@context.Nomenclature?.Id" class="link-info">@context.Nomenclature?.Name</a>
             </sup>
         </MudTd>
         <MudTd DataLabel="Склад">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>

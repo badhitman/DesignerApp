@@ -10,9 +10,9 @@ using DbcLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// GoodsSelectReceive
+/// NomenclaturesSelectReceive
 /// </summary>
-public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
+public class NomenclaturesSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
 : IResponseReceive<TPaginationRequestModel<NomenclaturesSelectRequestModel>?, TPaginationResponseModel<NomenclatureModelDB>?>
 {
     /// <inheritdoc/>
@@ -49,6 +49,6 @@ public class GoodsSelectReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 TotalRowsCount = await q.CountAsync(),
                 Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
             }
-        }; ;
+        };
     }
 }

@@ -10,7 +10,7 @@
 </div>
 <MudTable Hover="true"
           ReadOnly="ReadOnly"
-          SortLabel="@(nameof(RowOfOrderDocumentModelDB.Goods.Name))"
+          SortLabel="@(nameof(RowOfOrderDocumentModelDB.Nomenclature.Name))"
           CanCancelEdit="true"
           Items="@CurrentTab.Rows"
           RowEditPreview="RowEditPreviewHandler"
@@ -63,7 +63,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">
-            <a href="/goods/offer-card/@context!.Offer!.Id">
+            <a href="/nomenclature/offer-card/@context!.Offer!.Id">
                 @context.Offer.GetName()
             </a>
         </MudTd>

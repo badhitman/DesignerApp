@@ -47,7 +47,7 @@
                 <span>@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</span>
             </MudTd>
             <MudTd DataLabel="Name">
-                <a href="/goods/offer-card/@context.Id">@context.Name</a>
+                <a href="/nomenclature/offer-card/@context.Id">@context.Name</a>
                 <AuthorizeView Context="col" Roles="@($"{GlobalStaticConstants.Roles.Admin}")">
                     <Authorized>
                         <sup class="text-secondary-emphasis">@context.QuantitiesTemplate</sup>

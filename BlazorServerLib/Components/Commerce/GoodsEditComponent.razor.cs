@@ -40,7 +40,7 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseAuthModel
 
         await SetBusy();
 
-        TResponseModel<int> res = await CommerceRepo.GoodUpdateReceive(editGoods);
+        TResponseModel<int> res = await CommerceRepo.NomenclatureUpdateReceive(editGoods);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success())
@@ -61,7 +61,7 @@ public partial class GoodsEditComponent : BlazorBusyComponentBaseAuthModel
         if (CurrentUserSession is null)
             throw new Exception();
 
-        TResponseModel<NomenclatureModelDB[]> res = await CommerceRepo.GoodsRead([GoodsId]);
+        TResponseModel<NomenclatureModelDB[]> res = await CommerceRepo.NomenclaturesRead([GoodsId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success() && res.Response is not null && res.Response.Length != 0)

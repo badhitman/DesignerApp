@@ -142,7 +142,7 @@ public partial class CommerceImplementService : ICommerceService
                         offAvAdding.Add(new OfferAvailabilityModelDB()
                         {
                             WarehouseId = warehouseDocumentDb.WarehouseId,
-                            GoodsId = rowOfDocument.GoodsId,
+                            NomenclatureId = rowOfDocument.NomenclatureId,
                             OfferId = rowOfDocument.OfferId,
                             Quantity = rowOfDocument.Quantity,
                         });
@@ -157,7 +157,7 @@ public partial class CommerceImplementService : ICommerceService
                             offAvAdding.Add(new()
                             {
                                 WarehouseId = warehouseDocumentDb.WarehouseId,
-                                GoodsId = rowOfDocument.GoodsId,
+                                NomenclatureId = rowOfDocument.NomenclatureId,
                                 OfferId = rowOfDocument.OfferId,
                                 Quantity = -rowOfDocument.Quantity,
                             });
@@ -209,7 +209,7 @@ public partial class CommerceImplementService : ICommerceService
                     d.IsDisabled,
                     d.WarehouseId,
                     r.OfferId,
-                    r.GoodsId,
+                    r.NomenclatureId,
                     r.Quantity
                 };
 
@@ -267,7 +267,7 @@ public partial class CommerceImplementService : ICommerceService
                 await context.OffersAvailability.AddAsync(new()
                 {
                     WarehouseId = rowEl.WarehouseId,
-                    GoodsId = rowEl.GoodsId,
+                    NomenclatureId = rowEl.NomenclatureId,
                     OfferId = rowEl.OfferId,
                     Quantity = -rowEl.Quantity,
                 });
@@ -367,7 +367,7 @@ public partial class CommerceImplementService : ICommerceService
             regOfferAv = new()
             {
                 OfferId = req.OfferId,
-                GoodsId = req.GoodsId,
+                NomenclatureId = req.NomenclatureId,
                 WarehouseId = whDoc.WarehouseId,
             };
 
@@ -379,7 +379,7 @@ public partial class CommerceImplementService : ICommerceService
             regOfferAvStorno = new()
             {
                 OfferId = rowDb.OfferId,
-                GoodsId = rowDb.GoodsId,
+                NomenclatureId = rowDb.NomenclatureId,
                 WarehouseId = whDoc.WarehouseId,
             };
         }
@@ -482,7 +482,7 @@ public partial class CommerceImplementService : ICommerceService
             q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.OfferId == req.Payload.OfferFilter));
 
         if (req.Payload.GoodsFilter.HasValue && req.Payload.GoodsFilter.Value != 0)
-            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.GoodsId == req.Payload.GoodsFilter));
+            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.NomenclatureId == req.Payload.GoodsFilter));
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
@@ -537,14 +537,14 @@ public partial class CommerceImplementService : ICommerceService
             q = q.Where(x => req.Payload.OfferFilter.Any(y => y == x.OfferId));
 
         if (req.Payload.GoodsFilter is not null && req.Payload.GoodsFilter.Length != 0)
-            q = q.Where(x => req.Payload.GoodsFilter.Any(y => y == x.GoodsId));
+            q = q.Where(x => req.Payload.GoodsFilter.Any(y => y == x.NomenclatureId));
 
         if (req.Payload.WarehouseId > 0)
             q = q.Where(x => req.Payload.WarehouseId == x.WarehouseId);
 
         var exQuery = from offerAv in q
                       join oj in context.OffersGoods on offerAv.OfferId equals oj.Id
-                      join gj in context.Goods on offerAv.GoodsId equals gj.Id
+                      join gj in context.Goods on offerAv.NomenclatureId equals gj.Id
                       select new { Register = offerAv, Offer = oj, Good = gj };
 
         var dbRes = req.SortingDirection == VerticalDirectionsEnum.Up

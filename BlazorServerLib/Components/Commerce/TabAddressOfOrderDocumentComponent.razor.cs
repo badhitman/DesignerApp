@@ -123,8 +123,8 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
             {
                 AddressForOrderTab = CurrentTab,
                 AddressForOrderTabId = CurrentTab.Id,
-                Goods = off.Goods,
-                GoodsId = off.GoodsId,
+                Nomenclature = off.Goods,
+                NomenclatureId = off.GoodsId,
                 Offer = off,
                 OfferId = off.Id,
                 OrderDocument = CurrentTab.OrderDocument,

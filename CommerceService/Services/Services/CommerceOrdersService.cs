@@ -114,7 +114,7 @@ public partial class CommerceImplementService(
             q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.OfferId == req.Payload.Payload.OfferFilter));
 
         if (req.Payload.Payload.GoodsFilter.HasValue && req.Payload.Payload.GoodsFilter.Value != 0)
-            q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.GoodsId == req.Payload.Payload.GoodsFilter));
+            q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.NomenclatureId == req.Payload.Payload.GoodsFilter));
 
         if (req.Payload.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.Payload.AfterDateUpdate));
@@ -168,7 +168,7 @@ public partial class CommerceImplementService(
                                                            join d in context.OrdersDocuments on r.OrderDocumentId equals d.Id
                                                            join t in context.TabsAddressesForOrders.Where(x => x.Id == req.AddressForOrderTabId) on r.AddressForOrderTabId equals t.Id
                                                            join o in context.OffersGoods on r.OfferId equals o.Id
-                                                           join g in context.Goods on r.GoodsId equals g.Id
+                                                           join g in context.Goods on r.NomenclatureId equals g.Id
                                                            select new OrderRowsQueryRecord(d, t, r, o, g);
 
         var commDataDb = await queryDocumentDb
@@ -243,7 +243,7 @@ public partial class CommerceImplementService(
             regOfferAv = new()
             {
                 OfferId = req.OfferId,
-                GoodsId = req.GoodsId,
+                NomenclatureId = req.NomenclatureId,
                 WarehouseId = commDataDb.WarehouseId,
             };
             await context.AddAsync(regOfferAv);
@@ -259,7 +259,7 @@ public partial class CommerceImplementService(
                 regOfferAvStorno = new()
                 {
                     OfferId = rowDb.OfferId,
-                    GoodsId = rowDb.GoodsId,
+                    NomenclatureId = rowDb.NomenclatureId,
                     WarehouseId = commDataDb.WarehouseId,
                 };
                 await context.AddAsync(regOfferAvStorno);
@@ -370,7 +370,7 @@ public partial class CommerceImplementService(
                                                    d.Id,
                                                    d.StatusDocument,
                                                    r.OfferId,
-                                                   r.GoodsId,
+                                                   r.NomenclatureId,
                                                    r.Quantity,
                                                    t.WarehouseId
                                                );
@@ -432,7 +432,7 @@ public partial class CommerceImplementService(
                 offerRegister = new()
                 {
                     WarehouseId = rowEl.WarehouseId,
-                    GoodsId = rowEl.GoodsId,
+                    NomenclatureId = rowEl.GoodsId,
                     OfferId = rowEl.OfferId,
                     Quantity = +rowEl.Quantity,
                 };
@@ -808,7 +808,7 @@ public partial class CommerceImplementService(
                     OfferAvailabilityModelDB _newReg = new()
                     {
                         WarehouseId = offerEl.WarehouseId,
-                        GoodsId = offerEl.Row.GoodsId,
+                        NomenclatureId = offerEl.Row.NomenclatureId,
                         OfferId = offerEl.Row.OfferId,
                         Quantity = offerEl.Row.Quantity,
                     };
@@ -1010,6 +1010,59 @@ public partial class CommerceImplementService(
         }
     }
 
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> NomenclatureUpdate(NomenclatureModelDB nom)
+    {
+
+         nom.Name = nom.Name.Trim();
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(nom, GlobalStaticConstants.JsonSerializerSettings)}");
+        TResponseModel<int> res = new() { Response = 0 };
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        string msg, about = $"'{nom.Name}' /{nom.BaseUnit}";
+        NomenclatureModelDB? nomenclature_db = await context.Goods.FirstOrDefaultAsync(x => x.Name == nom.Name && x.BaseUnit == nom.BaseUnit && x.Id != nom.Id);
+        
+        if (nomenclature_db is not null)
+        {
+            msg = $"Ошибка создания Номенклатуры {about}. Такой объект уже существует #{nomenclature_db.Id}. Требуется уникальное сочетание имени и единицы измерения";
+            loggerRepo.LogWarning(msg);
+            res.AddError(msg);
+            return res;
+        }
+        DateTime dtu = DateTime.UtcNow;
+        nom.LastAtUpdatedUTC = dtu;
+
+        if (nom.Id < 1)
+        {
+            nom.CreatedAtUTC = dtu;
+            nomenclature_db = nom;
+            nom.SortIndex = await context.Goods.MaxAsync(x => x.SortIndex) + 1;
+
+            await context.AddAsync(nomenclature_db);
+            await context.SaveChangesAsync();
+            msg = $"Номенклатура {about} создана #{nomenclature_db.Id}";
+            loggerRepo.LogInformation(msg);
+            res.AddSuccess(msg);
+            res.Response = nomenclature_db.Id;
+            return res;
+        }
+
+        res.Response = await context.Goods
+            .Where(x => x.Id == nom.Id)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.Name, nom.Name)
+            .SetProperty(p => p.NormalizedNameUpper, nom.Name.ToUpper().Trim())
+            .SetProperty(p => p.Description, nom.Description)
+            .SetProperty(p => p.BaseUnit, nom.BaseUnit)
+            .SetProperty(p => p.IsDisabled, nom.IsDisabled)
+            .SetProperty(p => p.ContextName, nom.ContextName)
+            .SetProperty(p => p.ProjectId, nom.ProjectId)
+            .SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+        msg = $"Обновление номенклатуры {about} выполнено";
+        loggerRepo.LogInformation(msg);
+        res.AddSuccess(msg);
+        return res;
+    }
 
     static byte[] SaveOrderAsExcel(OrderDocumentModelDB orderDb)
     {
@@ -1288,7 +1341,7 @@ public partial class CommerceImplementService(
         newCell.CellValue = new CellValue(val);
         newCell.DataType = new EnumValue<CellValues>(type);
 
-    }
+    }    
 }
 
 record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);

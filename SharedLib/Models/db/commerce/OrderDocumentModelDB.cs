@@ -79,7 +79,7 @@ public class OrderDocumentModelDB : EntryUpdatedModel
                 y.Id = 0;
                 y.Amount = y.Quantity * y.Offer!.Price;
                 y.OrderDocument = this;
-                y.Goods = null;
+                y.Nomenclature = null;
                 y.Offer = null;
                 y.Version = Guid.NewGuid();
             });

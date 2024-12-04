@@ -16,8 +16,8 @@
         <MudTh>Атрибуты</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id"><a href="/goods/warehouse/editing/@(context.Id)">@context.Id</a></MudTd>
-        <MudTd DataLabel="Примечание"><a href="/goods/warehouse/editing/@(context.Id)">@context.Name</a></MudTd>
+        <MudTd DataLabel="Id"><a href="/nomenclature/warehouse/editing/@(context.Id)">@context.Id</a></MudTd>
+        <MudTd DataLabel="Примечание"><a href="/nomenclature/warehouse/editing/@(context.Id)">@context.Name</a></MudTd>
         <MudTd DataLabel="Доставка">@context.DeliveryDate.GetHumanDateTime()</MudTd>
         <MudTd DataLabel="Склад">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
         <MudTd DataLabel="Атрибуты">@context.CreatedAtUTC.GetHumanDateTime()/@context.LastAtUpdatedUTC.GetHumanDateTime()</MudTd>
@@ -33,5 +33,5 @@
     </PagerContent>
 </MudTable>
 <div class="d-grid gap-2 mt-3">
-    <a class="btn btn-primary" href="/goods/warehouse/editing" role="button">Создать новый документ</a>
+    <a class="btn btn-primary" href="/nomenclature/warehouse/editing" role="button">Создать новый документ</a>
 </div>

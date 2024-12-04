@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// OfferAvailabilityModelDB
 /// </summary>
-[Index(nameof(WarehouseId))]
+[Index(nameof(WarehouseId), nameof(OfferId), IsUnique = true)]
 public class OfferAvailabilityModelDB : RowOfBaseDocumentModelDB
 {
     /// <summary>

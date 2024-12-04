@@ -30,7 +30,7 @@ public class GoodsController(ICommerceRemoteTransmissionService commRepo) : Cont
     [LoggerNolog]
 #endif
     public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> OrdersSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
-        => await commRepo.GoodsSelect(req);
+        => await commRepo.NomenclaturesSelect(req);
 
     /// <summary>
     /// Чтение номенклатуры (по идентификаторам)
@@ -43,5 +43,5 @@ public class GoodsController(ICommerceRemoteTransmissionService commRepo) : Cont
     [LoggerNolog]
 #endif
     public async Task<TResponseModel<NomenclatureModelDB[]>> GoodsRead(int[] req)
-        => await commRepo.GoodsRead(req);
+        => await commRepo.NomenclaturesRead(req);
 }

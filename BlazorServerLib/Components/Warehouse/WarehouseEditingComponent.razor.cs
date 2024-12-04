@@ -68,7 +68,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (editDocument.Id < 1 && res.Response > 0)
-            NavRepo.NavigateTo($"/goods/warehouse/editing/{res.Response}");
+            NavRepo.NavigateTo($"/nomenclature/warehouse/editing/{res.Response}");
         else if (res.Success())
             await ReadDocument();
     }
@@ -153,7 +153,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         {
             RowOfWarehouseDocumentModelDB _newRow = new()
             {
-                GoodsId = off.GoodsId,
+                NomenclatureId = off.GoodsId,
                 OfferId = off.Id,
                 WarehouseDocumentId = CurrentDocument.Id,
                 Quantity = off.Quantity,

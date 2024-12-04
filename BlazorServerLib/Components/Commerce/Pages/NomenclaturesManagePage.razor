@@ -1,18 +1,18 @@
-﻿@page "/goods"
+﻿@page "/nomenclature"
 @using BlazorWebLib.Components.Helpdesk
 @using BlazorWebLib.Components.Warehouse
 @using MudBlazor
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize]
-<PageTitle>Номенклатура</PageTitle>
+<PageTitle>Товары</PageTitle>
 
-<AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager},{GlobalStaticConstants.Roles.Debug}")">
-    <Authorized>
-        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-            <MudTabPanel Text="Справочник">
-                <GoodsManageComponent />
-            </MudTabPanel>
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Справочник">
+        <NomenclaturesManageComponent />
+    </MudTabPanel>
+    <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager},{GlobalStaticConstants.Roles.Debug}")">
+        <Authorized>
             <MudTabPanel Text="Склады">
                 <MudPaper Class="ma-2" Elevation="3">
                     <RubricsManageComponent SingleLevelMode="true" ContextName="@GlobalStaticConstants.Routes.WAREHOUSE_CONTROLLER_NAME" />
@@ -24,9 +24,6 @@
             <MudTabPanel Text="Регистры">
                 <OfferRegistersComponent />
             </MudTabPanel>
-        </MudTabs>
-    </Authorized>
-    <NotAuthorized>
-        <GoodsManageComponent />
-    </NotAuthorized>
-</AuthorizeView>
+        </Authorized>
+    </AuthorizeView>
+</MudTabs>
