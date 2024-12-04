@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// UniversalMiddleModel
+/// RubricUniMiddleModel
 /// </summary>
-public class UniversalMiddleModel : UniversalLayerModel
+public class RubricUniMiddleModel : UniversalLayerModel
 {
     /// <inheritdoc/>
     public List<RubricIssueHelpdeskModelDB>? NestedRubrics { get; set; }
