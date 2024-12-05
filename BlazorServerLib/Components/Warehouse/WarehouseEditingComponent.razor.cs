@@ -144,7 +144,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
     }
 
     /// <inheritdoc/>
-    protected override async void AddingOfferAction(OfferGoodActionModel off)
+    protected override async void AddingOfferAction(OfferActionModel off)
     {
         CurrentDocument.Rows ??= [];
         int exist_row = CurrentDocument.Rows.FindIndex(x => x.OfferId == off.Id);
@@ -153,7 +153,7 @@ public partial class WarehouseEditingComponent : OffersTableBaseComponent
         {
             RowOfWarehouseDocumentModelDB _newRow = new()
             {
-                NomenclatureId = off.GoodsId,
+                NomenclatureId = off.NomenclatureId,
                 OfferId = off.Id,
                 WarehouseDocumentId = CurrentDocument.Id,
                 Quantity = off.Quantity,

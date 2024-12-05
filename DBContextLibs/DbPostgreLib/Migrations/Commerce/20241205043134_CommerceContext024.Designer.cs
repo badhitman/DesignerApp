@@ -3,6 +3,7 @@ using System;
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.Commerce
 {
     [DbContext(typeof(CommerceContext))]
-    partial class CommerceContextModelSnapshot : ModelSnapshot
+    [Migration("20241205043134_CommerceContext024")]
+    partial class CommerceContext024
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,7 +178,7 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.ToTable("OffersAvailability");
                 });
 
-            modelBuilder.Entity("SharedLib.OfferModelDB", b =>
+            modelBuilder.Entity("SharedLib.OfferGoodModelDB", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,6 +192,9 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<int>("GoodsId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -201,9 +207,6 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("NomenclatureId")
-                        .HasColumnType("integer");
 
                     b.Property<int>("OfferUnit")
                         .HasColumnType("integer");
@@ -219,11 +222,11 @@ namespace DbPostgreLib.Migrations.Commerce
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GoodsId");
+
                     b.HasIndex("IsDisabled");
 
                     b.HasIndex("Name");
-
-                    b.HasIndex("NomenclatureId");
 
                     b.ToTable("Offers");
                 });
@@ -684,7 +687,7 @@ namespace DbPostgreLib.Migrations.Commerce
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedLib.OfferModelDB", "Offer")
+                    b.HasOne("SharedLib.OfferGoodModelDB", "Offer")
                         .WithMany("Registers")
                         .HasForeignKey("OfferId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -695,15 +698,15 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Navigation("Offer");
                 });
 
-            modelBuilder.Entity("SharedLib.OfferModelDB", b =>
+            modelBuilder.Entity("SharedLib.OfferGoodModelDB", b =>
                 {
-                    b.HasOne("SharedLib.NomenclatureModelDB", "Nomenclature")
+                    b.HasOne("SharedLib.NomenclatureModelDB", "Goods")
                         .WithMany("Offers")
-                        .HasForeignKey("NomenclatureId")
+                        .HasForeignKey("GoodsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Nomenclature");
+                    b.Navigation("Goods");
                 });
 
             modelBuilder.Entity("SharedLib.OrderDocumentModelDB", b =>
@@ -730,7 +733,7 @@ namespace DbPostgreLib.Migrations.Commerce
 
             modelBuilder.Entity("SharedLib.PriceRuleForOfferModelDB", b =>
                 {
-                    b.HasOne("SharedLib.OfferModelDB", "Offer")
+                    b.HasOne("SharedLib.OfferGoodModelDB", "Offer")
                         .WithMany("PricesRules")
                         .HasForeignKey("OfferId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -753,7 +756,7 @@ namespace DbPostgreLib.Migrations.Commerce
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedLib.OfferModelDB", "Offer")
+                    b.HasOne("SharedLib.OfferGoodModelDB", "Offer")
                         .WithMany()
                         .HasForeignKey("OfferId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -780,7 +783,7 @@ namespace DbPostgreLib.Migrations.Commerce
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedLib.OfferModelDB", "Offer")
+                    b.HasOne("SharedLib.OfferGoodModelDB", "Offer")
                         .WithMany()
                         .HasForeignKey("OfferId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -834,7 +837,7 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Navigation("Offers");
                 });
 
-            modelBuilder.Entity("SharedLib.OfferModelDB", b =>
+            modelBuilder.Entity("SharedLib.OfferGoodModelDB", b =>
                 {
                     b.Navigation("PricesRules");
 

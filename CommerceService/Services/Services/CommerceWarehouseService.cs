@@ -454,7 +454,7 @@ public partial class CommerceImplementService : ICommerceService
         res.Response = await q
             .Include(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
-            .ThenInclude(x => x.Goods)
+            .ThenInclude(x => x.Nomenclature)
             .ToArrayAsync();
 
         return res;
@@ -481,8 +481,8 @@ public partial class CommerceImplementService : ICommerceService
         if (req.Payload.OfferFilter.HasValue && req.Payload.OfferFilter.Value != 0)
             q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.OfferId == req.Payload.OfferFilter));
 
-        if (req.Payload.GoodsFilter.HasValue && req.Payload.GoodsFilter.Value != 0)
-            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.NomenclatureId == req.Payload.GoodsFilter));
+        if (req.Payload.NomenclatureFilter.HasValue && req.Payload.NomenclatureFilter.Value != 0)
+            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.NomenclatureId == req.Payload.NomenclatureFilter));
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
@@ -502,7 +502,7 @@ public partial class CommerceImplementService : ICommerceService
         Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<WarehouseDocumentModelDB, NomenclatureModelDB?> inc_query = pq
             .Include(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
-            .ThenInclude(x => x.Goods);
+            .ThenInclude(x => x.Nomenclature);
 
         return new()
         {
@@ -536,15 +536,15 @@ public partial class CommerceImplementService : ICommerceService
         if (req.Payload.OfferFilter is not null && req.Payload.OfferFilter.Length != 0)
             q = q.Where(x => req.Payload.OfferFilter.Any(y => y == x.OfferId));
 
-        if (req.Payload.GoodsFilter is not null && req.Payload.GoodsFilter.Length != 0)
-            q = q.Where(x => req.Payload.GoodsFilter.Any(y => y == x.NomenclatureId));
+        if (req.Payload.NomenclatureFilter is not null && req.Payload.NomenclatureFilter.Length != 0)
+            q = q.Where(x => req.Payload.NomenclatureFilter.Any(y => y == x.NomenclatureId));
 
         if (req.Payload.WarehouseId > 0)
             q = q.Where(x => req.Payload.WarehouseId == x.WarehouseId);
 
         var exQuery = from offerAv in q
-                      join oj in context.OffersGoods on offerAv.OfferId equals oj.Id
-                      join gj in context.Goods on offerAv.NomenclatureId equals gj.Id
+                      join oj in context.Offers on offerAv.OfferId equals oj.Id
+                      join gj in context.Nomenclatures on offerAv.NomenclatureId equals gj.Id
                       select new { Register = offerAv, Offer = oj, Good = gj };
 
         var dbRes = req.SortingDirection == VerticalDirectionsEnum.Up

@@ -30,7 +30,7 @@ public abstract class OffersTableBaseComponent : BlazorBusyComponentRegistersMod
     /// <summary>
     /// allOffers
     /// </summary>    
-    protected List<OfferGoodModelDB>? allOffers;
+    protected List<OfferModelDB>? allOffers;
 
     /// <summary>
     /// editTrigger
@@ -67,13 +67,13 @@ public abstract class OffersTableBaseComponent : BlazorBusyComponentRegistersMod
         {
             PageNum = page_num,
             PageSize = 10,
-            SortBy = nameof(OfferGoodModelDB.Name),
+            SortBy = nameof(OfferModelDB.Name),
             SortingDirection = VerticalDirectionsEnum.Up,
             Payload = new()
         };
         await SetBusy();
 
-        TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
+        TResponseModel<TPaginationResponseModel<OfferModelDB>> res = await CommerceRepo.OffersSelect(req);
         await SetBusy(false);
         if (res.Success() && res.Response?.Response is not null && res.Response.Response.Count != 0)
         {
@@ -86,7 +86,7 @@ public abstract class OffersTableBaseComponent : BlazorBusyComponentRegistersMod
     /// <summary>
     /// AddingOfferAction
     /// </summary>
-    protected abstract void AddingOfferAction(OfferGoodActionModel off);
+    protected abstract void AddingOfferAction(OfferActionModel off);
 
     /// <summary>
     /// Происходит до начала редактирования строки.

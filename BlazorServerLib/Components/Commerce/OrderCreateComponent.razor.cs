@@ -166,7 +166,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             return;
 
         await SetBusy();
-        TResponseModel<OfferGoodModelDB[]> offersRes = await CommerceRepo.OffersRead(offersIds);
+        TResponseModel<OfferModelDB[]> offersRes = await CommerceRepo.OffersRead(offersIds);
         if (!offersRes.Success() || offersRes.Response is null || offersRes.Response.Length == 0)
         {
             SnackbarRepo.ShowMessagesResponse(offersRes.Messages);

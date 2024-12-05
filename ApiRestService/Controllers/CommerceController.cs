@@ -17,7 +17,7 @@ namespace ApiRestService.Controllers;
 #else
 [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
 #endif
-public class GoodsController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
+public class CommerceController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
 {
     /// <summary>
     /// Подбор номенклатуры (поиск по параметрам)
@@ -25,7 +25,7 @@ public class GoodsController(ICommerceRemoteTransmissionService commRepo) : Cont
     /// <remarks>
     /// Роли: <see cref="ExpressApiRolesEnum.OrdersReadCommerce"/>, <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-    [HttpPut($"/api/{GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}")]
+    [HttpPut($"/api/{GlobalStaticConstants.Routes.COMMERCE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.ORDERS_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}")]
 #if !DEBUG
     [LoggerNolog]
 #endif
@@ -38,10 +38,10 @@ public class GoodsController(ICommerceRemoteTransmissionService commRepo) : Cont
     /// <remarks>
     /// Роли: <see cref="ExpressApiRolesEnum.OrdersReadCommerce"/>, <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-    [HttpPut($"/api/{GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.READ_ACTION_NAME}")]
+    [HttpPut($"/api/{GlobalStaticConstants.Routes.COMMERCE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.NOMENCLATURES_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.READ_ACTION_NAME}")]
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<NomenclatureModelDB[]>> GoodsRead(int[] req)
+    public async Task<TResponseModel<NomenclatureModelDB[]>> NomenclaturesRead(int[] req)
         => await commRepo.NomenclaturesRead(req);
 }

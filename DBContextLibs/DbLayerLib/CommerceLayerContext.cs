@@ -4,7 +4,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using SharedLib;
-using System;
 
 namespace DbcLib;
 
@@ -53,12 +52,12 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// Номенклатура
     /// </summary>
-    public DbSet<NomenclatureModelDB> Goods { get; set; } = default!;
+    public DbSet<NomenclatureModelDB> Nomenclatures { get; set; } = default!;
 
     /// <summary>
-    /// ProductsOffers
+    /// Offers
     /// </summary>
-    public DbSet<OfferGoodModelDB> OffersGoods { get; set; } = default!;
+    public DbSet<OfferModelDB> Offers { get; set; } = default!;
 
     /// <summary>
     /// Правила формирования цены

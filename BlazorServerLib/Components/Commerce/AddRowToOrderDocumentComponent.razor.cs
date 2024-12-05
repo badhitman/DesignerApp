@@ -23,7 +23,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
     /// Все офферы
     /// </summary>
     [Parameter, EditorRequired]
-    public required List<OfferGoodModelDB> AllOffers { get; set; }
+    public required List<OfferModelDB> AllOffers { get; set; }
 
     /// <summary>
     /// Текущие/выбранные строки
@@ -56,16 +56,16 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
     /// Обработчик добавления оффера
     /// </summary>
     [Parameter, EditorRequired]
-    public required Action<OfferGoodActionModel> AddingOfferHandler { get; set; }
+    public required Action<OfferActionModel> AddingOfferHandler { get; set; }
 
     /// <summary>
     /// Обработчик выбора Оффера
     /// </summary>
     [Parameter]
-    public Action<OfferGoodModelDB?>? SelectOfferHandler { get; set; }
+    public Action<OfferModelDB?>? SelectOfferHandler { get; set; }
 
 
-    OfferGoodModelDB? SelectedOffer { get; set; }
+    OfferModelDB? SelectedOffer { get; set; }
 
     int? _selectedOfferId;
     /// <summary>
@@ -92,7 +92,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
         }
     }
 
-    decimal GetOfferQuantity(OfferGoodModelDB opt)
+    decimal GetOfferQuantity(OfferModelDB opt)
     {
         return RegistersCache.Where(x => x.OfferId == opt.Id && (WarehouseId < 1 || x.WarehouseId == WarehouseId)).Sum(x => x.Quantity);
     }
@@ -112,7 +112,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
         return !ForceAdding && (SelectedOffer is null || GetMaxValue() == 0);
     }
 
-    IEnumerable<OfferGoodModelDB> ActualOffers => AllOffers.Where(x => !CurrentRows!.Contains(x.Id));
+    IEnumerable<OfferModelDB> ActualOffers => AllOffers.Where(x => !CurrentRows!.Contains(x.Id));
 
     bool IsShowAddingOffer;
     decimal QuantityValue { get; set; }
@@ -132,20 +132,20 @@ public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegiste
         }
     }
 
-    IEnumerable<IGrouping<NomenclatureModelDB?, OfferGoodModelDB>> OffersNodes => ActualOffers.GroupBy(x => x.Goods);
+    IEnumerable<IGrouping<NomenclatureModelDB?, OfferModelDB>> OffersNodes => ActualOffers.GroupBy(x => x.Nomenclature);
 
     void AddOffer()
     {
-        AddingOfferHandler(new OfferGoodActionModel()
+        AddingOfferHandler(new OfferActionModel()
         {
             Name = SelectedOffer!.Name,
-            Goods = SelectedOffer.Goods,
+            Nomenclature = SelectedOffer.Nomenclature,
             Quantity = QuantityValue,
             Multiplicity = SelectedOffer.Multiplicity,
             OfferUnit = SelectedOffer.OfferUnit,
             Price = SelectedOffer.Price,
             IsDisabled = SelectedOffer.IsDisabled,
-            GoodsId = SelectedOffer.GoodsId,
+            NomenclatureId = SelectedOffer.NomenclatureId,
             Id = SelectedOffer.Id,
         });
         QuantityValue = 1;

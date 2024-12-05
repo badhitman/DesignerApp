@@ -16,13 +16,13 @@ namespace Transmission.Receives.commerce;
 /// OfferUpdateReceive
 /// </summary>
 public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OfferUpdateReceive> loggerRepo)
-    : IResponseReceive<OfferGoodModelDB?, int?>
+    : IResponseReceive<OfferModelDB?, int?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OfferUpdateCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(OfferGoodModelDB? req)
+    public async Task<TResponseModel<int?>> ResponseHandleAction(OfferModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
@@ -53,7 +53,7 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
                 ShortName = req.ShortName,
                 IsDisabled = req.IsDisabled,
                 Multiplicity = req.Multiplicity,
-                GoodsId = req.GoodsId,
+                NomenclatureId = req.NomenclatureId,
                 OfferUnit = req.OfferUnit,
                 Price = req.Price,
                 LastAtUpdatedUTC = dtu,
@@ -66,7 +66,7 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             return res;
         }
 
-        res.Response = await context.OffersGoods
+        res.Response = await context.Offers
             .Where(x => x.Id == req.Id)
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, req.Name)
@@ -75,7 +75,7 @@ public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFac
             .SetProperty(p => p.ShortName, req.ShortName)
             .SetProperty(p => p.IsDisabled, req.IsDisabled)
             .SetProperty(p => p.Multiplicity, req.Multiplicity)
-            .SetProperty(p => p.GoodsId, req.GoodsId)
+            .SetProperty(p => p.NomenclatureId, req.NomenclatureId)
             .SetProperty(p => p.OfferUnit, req.OfferUnit)
             .SetProperty(p => p.Price, req.Price)
             .SetProperty(p => p.LastAtUpdatedUTC, dtu));

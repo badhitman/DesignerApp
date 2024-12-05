@@ -45,7 +45,7 @@ public class OfferDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFac
             return res;
         }
 
-        res.Response = await context.OffersGoods.Where(x => x.Id == req).ExecuteDeleteAsync() > 0;
+        res.Response = await context.Offers.Where(x => x.Id == req).ExecuteDeleteAsync() > 0;
 
         if (res.Response == true)
         {

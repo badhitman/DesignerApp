@@ -17,7 +17,7 @@ public class OrdersByIssuesSelectRequestModel
     /// .Include(x => x.AddressesTabs)
     /// .ThenInclude(x => x.Rows)
     /// .ThenInclude(x => x.Offer)
-    /// .ThenInclude(x => x.Goods)
+    /// .ThenInclude(x => x.Nomenclature)
     /// </remarks>
     public bool IncludeExternalData { get; set; }
     

@@ -68,7 +68,7 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
         }
     }
 
-    async void SelectOfferAction(OfferGoodModelDB? offer)
+    async void SelectOfferAction(OfferModelDB? offer)
     {
         if (CurrentTab.Rows is null || CurrentTab.Rows.Count == 0)
             return;
@@ -114,7 +114,7 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
     }
 
     /// <inheritdoc/>
-    protected override void AddingOfferAction(OfferGoodActionModel off)
+    protected override void AddingOfferAction(OfferActionModel off)
     {
         CurrentTab.Rows ??= [];
         int exist_row = CurrentTab.Rows.FindIndex(x => x.OfferId == off.Id);
@@ -123,8 +123,8 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
             {
                 AddressForOrderTab = CurrentTab,
                 AddressForOrderTabId = CurrentTab.Id,
-                Nomenclature = off.Goods,
-                NomenclatureId = off.GoodsId,
+                Nomenclature = off.Nomenclature,
+                NomenclatureId = off.NomenclatureId,
                 Offer = off,
                 OfferId = off.Id,
                 OrderDocument = CurrentTab.OrderDocument,

@@ -18,10 +18,10 @@ public partial class NomenclatureCreatingFormComponent : BlazorBusyComponentBase
 
 
     /// <summary>
-    /// GoodCreatingHandler
+    /// NomenclatureCreatingHandler
     /// </summary>
     [Parameter, EditorRequired]
-    public required Action<NomenclatureModelDB> GoodCreatingHandler { get; set; }
+    public required Action<NomenclatureModelDB> NomenclatureCreatingHandler { get; set; }
 
     /// <summary>
     /// ContextName
@@ -32,18 +32,18 @@ public partial class NomenclatureCreatingFormComponent : BlazorBusyComponentBase
 
     UnitsOfMeasurementEnum UMeas { get; set; } = UnitsOfMeasurementEnum.Thing;
 
-    string? CreatingGoodsName { get; set; }
+    string? CreatingNomenclatureName { get; set; }
 
-    bool CanSave => !string.IsNullOrWhiteSpace(CreatingGoodsName);
+    bool CanSave => !string.IsNullOrWhiteSpace(CreatingNomenclatureName);
 
-    async Task CreateNewGoods()
+    async Task CreateNewNomenclature()
     {
-        if (string.IsNullOrWhiteSpace(CreatingGoodsName))
+        if (string.IsNullOrWhiteSpace(CreatingNomenclatureName))
             return;
 
         NomenclatureModelDB new_obj = new()
         {
-            Name = CreatingGoodsName,
+            Name = CreatingNomenclatureName,
             BaseUnit = UMeas,
             ContextName = ContextName,
             IsDisabled = true,
@@ -57,9 +57,9 @@ public partial class NomenclatureCreatingFormComponent : BlazorBusyComponentBase
         if (res.Success() && res.Response > 0)
         {
             new_obj.Id = res.Response;
-            GoodCreatingHandler(new_obj);
+            NomenclatureCreatingHandler(new_obj);
 
-            CreatingGoodsName = null;
+            CreatingNomenclatureName = null;
             UMeas = UnitsOfMeasurementEnum.Thing;
         }
     }

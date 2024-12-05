@@ -22,7 +22,7 @@ public abstract class RowOfBaseDocumentModelDB
     /// <summary>
     /// Торговое предложение
     /// </summary>
-    public OfferGoodModelDB? Offer { get; set; }
+    public OfferModelDB? Offer { get; set; }
 
     /// <summary>
     /// Offer

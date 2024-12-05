@@ -22,7 +22,7 @@
         {
             <MudButton OnClick="OnExpandCollapseClick" Variant="Variant.Outlined">@(_expanded ? "Отмена" : "Создать")</MudButton>
             <MudCollapse Expanded="_expanded">
-                <OfferCreatingFormComponent OfferCreatingHandler="CreateOfferAction" CurrentGoods="CurrentGoods" />
+                <OfferCreatingFormComponent OfferCreatingHandler="CreateOfferAction" CurrentNomenclature="CurrentNomenclature" />
             </MudCollapse>
         }
     </MudStack>
@@ -43,10 +43,10 @@
             <MudTh>Баланс</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Goods">
-                <span>@($"`{context.Goods?.Name}` ({context.Goods?.BaseUnit.DescriptionInfo()})")</span>
+            <MudTd DataLabel="Номенклатура">
+                <span>@($"`{context.Nomenclature?.Name}` ({context.Nomenclature?.BaseUnit.DescriptionInfo()})")</span>
             </MudTd>
-            <MudTd DataLabel="Name">
+            <MudTd DataLabel="Название">
                 <a href="/nomenclature/offer-card/@context.Id">@context.Name</a>
                 <AuthorizeView Context="col" Roles="@($"{GlobalStaticConstants.Roles.Admin}")">
                     <Authorized>
@@ -54,18 +54,18 @@
                     </Authorized>
                 </AuthorizeView>
             </MudTd>
-            <MudTd DataLabel="Price">
+            <MudTd DataLabel="Цена">
                 @($"{context.Price}{(_hideWorth ? "" : $"/{Math.Round(context.Price / context.Multiplicity, 2)}")}")
                 @if (CurrentUserSession!.IsAdmin)
                 {
-                    <PricesRulesForOfferComponent OfferGood="context" />
+                    <PricesRulesForOfferComponent Offer="context" />
                 }
             </MudTd>
             @if (!_hideMultiplicity)
             {
-                <MudTd DataLabel="Multiplicity">@context.Multiplicity</MudTd>
+                <MudTd DataLabel="Кратность">@context.Multiplicity</MudTd>
             }
-            <MudTd DataLabel="OfferUnit">@context.OfferUnit.DescriptionInfo()</MudTd>
+            <MudTd DataLabel="Ед. изм.">@context.OfferUnit.DescriptionInfo()</MudTd>
             <MudTd DataLabel="Баланс">
                 @RegistersCache.Where(x => x.OfferId == context.Id).Sum(x => x.Quantity)
             </MudTd>

@@ -17,7 +17,7 @@ public class NomenclatureModelDB : UniversalLayerModel
     /// <summary>
     /// Торговые предложения по Номенклатуре
     /// </summary>
-    public List<OfferGoodModelDB>? Offers { get; set; }
+    public List<OfferModelDB>? Offers { get; set; }
 
 
     /// <inheritdoc/>

@@ -28,8 +28,8 @@ public class NomenclaturesSelectReceive(IDbContextFactory<CommerceContext> comme
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         IQueryable<NomenclatureModelDB> q = string.IsNullOrEmpty(req.Payload.ContextName)
-            ? context.Goods.Where(x => x.ContextName == null || x.ContextName == "").AsQueryable()
-            : context.Goods.Where(x => x.ContextName == req.Payload.ContextName).AsQueryable();
+            ? context.Nomenclatures.Where(x => x.ContextName == null || x.ContextName == "").AsQueryable()
+            : context.Nomenclatures.Where(x => x.ContextName == req.Payload.ContextName).AsQueryable();
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);

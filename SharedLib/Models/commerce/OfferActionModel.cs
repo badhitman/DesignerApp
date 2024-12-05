@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// OfferGoodActionModel
+/// OfferActionModel
 /// </summary>
-public class OfferGoodActionModel : OfferGoodModelDB
+public class OfferActionModel : OfferModelDB
 {
     /// <summary>
     /// Quantity

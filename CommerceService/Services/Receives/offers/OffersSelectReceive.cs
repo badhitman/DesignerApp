@@ -14,13 +14,13 @@ namespace Transmission.Receives.commerce;
 /// OffersSelectReceive
 /// </summary>
 public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferGoodModelDB>?>
+: IResponseReceive<TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OfferGoodModelDB>?>> ResponseHandleAction(TPaginationRequestModel<OffersSelectRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<OfferModelDB>?>> ResponseHandleAction(TPaginationRequestModel<OffersSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
@@ -29,18 +29,18 @@ public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<OfferGoodModelDB> q = context
-            .OffersGoods
+        IQueryable<OfferModelDB> q = context
+            .Offers
             .AsQueryable();
 
-        if (req.Payload.GoodsFilter is not null && req.Payload.GoodsFilter.Length != 0)
-            q = q.Where(x => req.Payload.GoodsFilter.Any(y => y == x.GoodsId));
+        if (req.Payload.NomenclatureFilter is not null && req.Payload.NomenclatureFilter.Length != 0)
+            q = q.Where(x => req.Payload.NomenclatureFilter.Any(y => y == x.NomenclatureId));
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
 
         
-         IOrderedQueryable<OfferGoodModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+         IOrderedQueryable<OfferModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
            ? q.OrderBy(x => x.CreatedAtUTC)
            : q.OrderByDescending(x => x.CreatedAtUTC);
          
@@ -53,7 +53,7 @@ public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = await q.CountAsync(),
-                Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).Include(x => x.Goods).ToArrayAsync()]
+                Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).Include(x => x.Nomenclature).ToArrayAsync()]
             }
         };
     }

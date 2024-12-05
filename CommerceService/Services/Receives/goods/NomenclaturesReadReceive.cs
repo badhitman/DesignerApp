@@ -26,7 +26,7 @@ public class NomenclaturesReadReceive(IDbContextFactory<CommerceContext> commerc
         return new()
         {
             Response = await context
-            .Goods
+            .Nomenclatures
             .Where(x => req.Any(y => x.Id == y))
             .Include(x => x.Offers)
             .ToArrayAsync()

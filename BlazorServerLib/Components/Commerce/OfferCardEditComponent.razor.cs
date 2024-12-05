@@ -25,8 +25,8 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseAuthModel
     public int OfferId { get; set; }
 
 
-    OfferGoodModelDB CurrentOffer = default!;
-    OfferGoodModelDB editOffer = default!;
+    OfferModelDB CurrentOffer = default!;
+    OfferModelDB editOffer = default!;
     FilesContextViewComponent? filesViewRef;
     string images_upload_url = default!;
     Dictionary<string, object> editorConf = default!;
@@ -62,7 +62,7 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseAuthModel
 
         await SetBusy();
         await ReadCurrentUser();
-        TResponseModel<OfferGoodModelDB[]> res = await CommerceRepo.OffersRead([OfferId]);
+        TResponseModel<OfferModelDB[]> res = await CommerceRepo.OffersRead([OfferId]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         CurrentOffer = res.Response!.Single();

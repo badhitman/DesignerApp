@@ -1,6 +1,6 @@
 ﻿@inherits BlazorBusyComponentBaseAuthModel
 
-@if (editGoods is null)
+@if (editNomenclature is null)
 {
     <figure class="text-center">
         <blockquote class="blockquote">
@@ -17,8 +17,8 @@ else
         <div class="card-header">
             <div class="input-group mb-2">
                 <span class="input-group-text">Карточка номенклатуры</span>
-                <input @bind-value="editGoods.Name" disabled="@(!CurrentUserSession!.IsAdmin)" @bind-value:event="oninput" type="text" aria-label="First name" class="form-control">
-                <select disabled="@(!CurrentUserSession.IsAdmin)" @bind="editGoods.BaseUnit" class="form-select">
+                <input @bind-value="editNomenclature.Name" disabled="@(!CurrentUserSession!.IsAdmin)" @bind-value:event="oninput" type="text" aria-label="First name" class="form-control">
+                <select disabled="@(!CurrentUserSession.IsAdmin)" @bind="editNomenclature.BaseUnit" class="form-select">
                     @foreach (UnitsOfMeasurementEnum uom in Enum.GetValues(typeof(UnitsOfMeasurementEnum)).Cast<UnitsOfMeasurementEnum>())
                     {
                         <option value="@uom">@uom.DescriptionInfo()</option>
@@ -26,44 +26,44 @@ else
                 </select>
                 @if (CurrentUserSession.IsAdmin)
                 {
-                    <button @onclick="SaveGoods" disabled="@(!CanSave || !CurrentUserSession.IsAdmin)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" id="button-addon2">Сохранить</button>
+                    <button @onclick="SaveNomenclature" disabled="@(!CanSave || !CurrentUserSession.IsAdmin)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" id="button-addon2">Сохранить</button>
                     @if (CanSave)
                     {
-                        <button @onclick="() => editGoods = GlobalTools.CreateDeepCopy(CurrentGoods)" class="btn btn-outline-light" type="button" id="button-addon2">Отмена</button>
+                        <button @onclick="() => editNomenclature = GlobalTools.CreateDeepCopy(CurrentNomenclature)" class="btn btn-outline-light" type="button" id="button-addon2">Отмена</button>
                     }
                 }
             </div>
         </div>
         <div class="card-body">
-            <OffersOfGoodsComponent CurrentGoods="editGoods" />
+            <OffersComponent CurrentNomenclature="editNomenclature" />
             <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
                 <Authorized>
                     <div class="card mt-3">
                         <div class="card-body">
-                            <TinyMCE.Blazor.Editor @bind-Value="editGoods.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(GoodsId < 1)" />
+                            <TinyMCE.Blazor.Editor @bind-Value="editNomenclature.Description" ScriptSrc="@GlobalStaticConstants.TinyMCEditorScriptSrc" Conf="@editorConf" Disable="@(NomenclatureId < 1)" />
                         </div>
                     </div>
                     <div class="card mt-3">
                         <div class="card-body">
-                            <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME])"
+                            <FilesContextViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.NOMENCLATURE_CONTROLLER_NAME])"
                                                        Title="Файлы"
                                                        PropertyName="@GlobalStaticConstants.Routes.ATTACHMENT_CONTROLLER_NAME"
                                                        PrefixPropertyName="@GlobalStaticConstants.Routes.USER_CONTROLLER_NAME"
-                                                       OwnerPrimaryKey="GoodsId"
+                                                       OwnerPrimaryKey="NomenclatureId"
                                                        @ref="filesViewRef"
                                                        ManageMode="true" />
                             <hr />
-                            <TagsViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.GOODS_CONTROLLER_NAME])"
+                            <TagsViewComponent ApplicationsNames="@([GlobalStaticConstants.Routes.NOMENCLATURE_CONTROLLER_NAME])"
                                                ManageMode="true"
                                                PrefixPropertyName="@GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME"
                                                PropertyName="@GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME"
                                                Title="Теги"
-                                               OwnerPrimaryKey="@GoodsId" />
+                                               OwnerPrimaryKey="@NomenclatureId" />
                         </div>
                     </div>
                 </Authorized>
                 <NotAuthorized>
-                    @((MarkupString)(editGoods.Description ?? ""))
+                    @((MarkupString)(editNomenclature.Description ?? ""))
                 </NotAuthorized>
             </AuthorizeView>
         </div>

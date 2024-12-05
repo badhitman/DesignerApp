@@ -29,7 +29,7 @@ public class OffersController(ICommerceRemoteTransmissionService commRepo) : Con
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<TPaginationResponseModel<OfferGoodModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
         => await commRepo.OffersSelect(req);
 
     /// <summary>
@@ -42,6 +42,6 @@ public class OffersController(ICommerceRemoteTransmissionService commRepo) : Con
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<OfferGoodModelDB[]>> OffersRead(int[] req)
+    public async Task<TResponseModel<OfferModelDB[]>> OffersRead(int[] req)
         => await commRepo.OffersRead(req);
 }

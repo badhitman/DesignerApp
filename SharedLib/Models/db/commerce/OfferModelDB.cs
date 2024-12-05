@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Торговое предложение
 /// </summary>
-public class OfferGoodModelDB : EntrySwitchableUpdatedModel
+public class OfferModelDB : EntrySwitchableUpdatedModel
 {
     /// <summary>
     /// Короткое название
@@ -56,11 +56,11 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// Номенклатура
     /// </summary>
-    public NomenclatureModelDB? Goods { get; set; }
+    public NomenclatureModelDB? Nomenclature { get; set; }
     /// <summary>
-    /// GoodsId
+    /// Nomenclature
     /// </summary>
-    public int GoodsId { get; set; }
+    public int NomenclatureId { get; set; }
 
     /// <summary>
     /// Единица измерения предложения
@@ -83,15 +83,15 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     public List<PriceRuleForOfferModelDB>? PricesRules { get; set; }
 
     /// <inheritdoc/>
-    public static bool operator ==(OfferGoodModelDB off1, OfferGoodModelDB off2) => off1.Equals(off2);
+    public static bool operator ==(OfferModelDB off1, OfferModelDB off2) => off1.Equals(off2);
 
     /// <inheritdoc/>
-    public static bool operator !=(OfferGoodModelDB off1, OfferGoodModelDB off2)
+    public static bool operator !=(OfferModelDB off1, OfferModelDB off2)
     {
         return
                 off1.Id != off2.Id ||
                 off1.IsDisabled != off2.IsDisabled ||
-                off1.GoodsId != off2.GoodsId ||
+                off1.NomenclatureId != off2.NomenclatureId ||
                 off1.Name != off2.Name ||
                 off1.ShortName != off2.ShortName ||
                 off1.QuantitiesTemplate != off2.QuantitiesTemplate ||
@@ -108,7 +108,7 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
         if (!string.IsNullOrWhiteSpace(ShortName))
             return ShortName;
         else if (string.IsNullOrWhiteSpace(Name))
-            return $"{Goods?.Name} [{OfferUnit.DescriptionInfo().ToLower()}] (x{Multiplicity} {Goods?.BaseUnit.DescriptionInfo().ToLower()})";
+            return $"{Nomenclature?.Name} [{OfferUnit.DescriptionInfo().ToLower()}] (x{Multiplicity} {Nomenclature?.BaseUnit.DescriptionInfo().ToLower()})";
 
         return Name;
     }
@@ -119,10 +119,10 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
         if (obj is null)
             return false;
 
-        if (obj is OfferGoodModelDB off)
+        if (obj is OfferModelDB off)
             return
                 off.IsDisabled == IsDisabled &&
-                off.GoodsId == GoodsId &&
+                off.NomenclatureId == NomenclatureId &&
                 off.Id == Id &&
                 off.Name == Name &&
                 off.QuantitiesTemplate == QuantitiesTemplate &&
@@ -137,6 +137,6 @@ public class OfferGoodModelDB : EntrySwitchableUpdatedModel
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return $"{IsDisabled}{GoodsId}{Id}{Name}({ShortName}){Price}{Multiplicity}{OfferUnit}[{QuantitiesTemplate}]".GetHashCode();
+        return $"{IsDisabled}{NomenclatureId}{Id}{Name}({ShortName}){Price}{Multiplicity}{OfferUnit}[{QuantitiesTemplate}]".GetHashCode();
     }
 }

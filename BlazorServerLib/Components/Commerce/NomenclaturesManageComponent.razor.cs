@@ -30,7 +30,7 @@ public partial class NomenclaturesManageComponent : BlazorBusyComponentRegisters
     MudTable<NomenclatureModelDB> tableRef = default!;
 
 
-    async void CreateGoodsAction(NomenclatureModelDB goods)
+    async void CreateNomenclatureAction(NomenclatureModelDB nom)
     {
         await tableRef.ReloadServerData();
         OnExpandCollapseClick();

@@ -47,10 +47,10 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OffersRead
     /// </summary>
-    public Task<TResponseModel<OfferGoodModelDB[]>> OffersRead(int[] ids);
+    public Task<TResponseModel<OfferModelDB[]>> OffersRead(int[] ids);
 
     /// <summary>
-    /// GoodsRead
+    /// NomenclaturesRead
     /// </summary>
     public Task<TResponseModel<NomenclatureModelDB[]>> NomenclaturesRead(int[] ids);
 
@@ -107,10 +107,10 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OffersSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OfferGoodModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req);
 
     /// <summary>
-    /// GoodsSelect
+    /// NomenclaturesSelect
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req);
 
@@ -122,7 +122,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OrganizationUpdate
     /// </summary>
-    public Task<TResponseModel<int>> OfferUpdate(OfferGoodModelDB offer);
+    public Task<TResponseModel<int>> OfferUpdate(OfferModelDB offer);
 
     /// <summary>
     /// Обновление параметров организации. Юридические параметры не меняются, а формируется запрос на изменение, которое должна подтвердить сторонняя система

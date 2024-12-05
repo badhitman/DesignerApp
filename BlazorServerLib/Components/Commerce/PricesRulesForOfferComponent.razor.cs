@@ -22,10 +22,10 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseAuthM
 
 
     /// <summary>
-    /// OfferGood
+    /// Offer
     /// </summary>
     [Parameter, EditorRequired]
-    public required OfferGoodModelDB OfferGood { get; set; }
+    public required OfferModelDB Offer { get; set; }
 
 
     bool IsExpandPanel;
@@ -69,7 +69,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseAuthM
         //
         await SetBusy();
 
-        TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([OfferGood.Id]);
+        TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([Offer.Id]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         rules = res.Response ?? throw new Exception();

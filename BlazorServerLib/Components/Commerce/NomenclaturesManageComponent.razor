@@ -8,7 +8,7 @@
         <MudStack Spacing="2">
             <MudButton OnClick="OnExpandCollapseClick" Variant="Variant.Outlined">@(_expanded ? "Отмена" : "Создать")</MudButton>
             <MudCollapse Expanded="_expanded">
-                <NomenclatureCreatingFormComponent ContextName="@ContextName" GoodCreatingHandler="CreateGoodsAction" />
+                <NomenclatureCreatingFormComponent ContextName="@ContextName" NomenclatureCreatingHandler="CreateNomenclatureAction" />
             </MudCollapse>
         </MudStack>
     }

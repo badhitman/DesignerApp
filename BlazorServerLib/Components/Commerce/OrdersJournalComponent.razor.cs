@@ -38,7 +38,7 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
     /// Фильтр по номенклатуре
     /// </summary>
     [Parameter]
-    public int? GoodsFilter { get; set; }
+    public int? NomenclatureFilter { get; set; }
 
     /// <summary>
     /// Фильтр по торговому/коммерческому предложению
@@ -47,7 +47,7 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
     public int? OfferFilter { get; set; }
 
 
-    static CultureInfo cultureInfo = new CultureInfo("ru-RU");
+    private static readonly CultureInfo cultureInfo = new("ru-RU");
     List<OrderDocumentModelDB> documentsPartData = [];
     readonly List<IssueHelpdeskModelDB> IssuesCacheDump = [];
 
@@ -89,13 +89,13 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
                     IncludeExternalData = true,
                     OrganizationFilter = OrganizationFilter,
                     AddressForOrganizationFilter = AddressForOrganization,
-                    GoodsFilter = GoodsFilter,
+                    NomenclatureFilter = NomenclatureFilter,
                     OfferFilter = OfferFilter,
                 }
             }
         };
 
-        await SetBusy();
+        await SetBusy(token: token);
         
         TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommerceRepo.OrdersSelect(req);
         IsBusyProgress = false;

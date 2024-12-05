@@ -19,16 +19,16 @@ public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseModel
 
 
     /// <summary>
-    /// CurrentGoods
+    /// Current Nomenclature
     /// </summary>
     [Parameter, EditorRequired]
-    public required NomenclatureModelDB CurrentGoods { get; set; }
+    public required NomenclatureModelDB CurrentNomenclature { get; set; }
 
     /// <summary>
     /// OfferCreatingHandler
     /// </summary>
     [Parameter, EditorRequired]
-    public required Action<OfferGoodModelDB> OfferCreatingHandler { get; set; }
+    public required Action<OfferModelDB> OfferCreatingHandler { get; set; }
 
 
     UnitsOfMeasurementEnum UnitOffer { get; set; } = UnitsOfMeasurementEnum.None;
@@ -40,10 +40,10 @@ public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseModel
 
     async Task AddOffer()
     {
-        OfferGoodModelDB off = new()
+        OfferModelDB off = new()
         {
             Name = nameOffer ?? "",
-            GoodsId = CurrentGoods.Id,
+            NomenclatureId = CurrentNomenclature.Id,
             Multiplicity = multiplicityOffer,
             OfferUnit = UnitOffer,
             Price = priceOffer,

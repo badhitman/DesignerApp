@@ -17,5 +17,5 @@ public class OffersSelectRequestModel
     /// <summary>
     /// Идентификатор Номенклатуры
     /// </summary>
-    public int[]? GoodsFilter { get; set; }
+    public int[]? NomenclatureFilter { get; set; }
 }

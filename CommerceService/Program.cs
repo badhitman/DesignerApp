@@ -133,7 +133,7 @@ builder.Services
     .RegisterMqListener<PricesRulesGetForOffersReceive, int[]?, PriceRuleForOfferModelDB[]?>()
     .RegisterMqListener<PaymentDocumentUpdateReceive, PaymentDocumentBaseModel?, int?>()
     .RegisterMqListener<OrderUpdateReceive, OrderDocumentModelDB?, int?>()
-    .RegisterMqListener<OffersReadReceive, int[]?, OfferGoodModelDB[]?>()
+    .RegisterMqListener<OffersReadReceive, int[]?, OfferModelDB[]?>()
     .RegisterMqListener<NomenclaturesReadReceive, int[]?, NomenclatureModelDB[]?>()
     .RegisterMqListener<AddressesOrganizationsReadReceive, int[]?, AddressOrganizationModelDB[]?>()
     .RegisterMqListener<PaymentDocumentDeleteReceive, int?, bool?>()
@@ -141,8 +141,8 @@ builder.Services
     .RegisterMqListener<RowForOrderUpdateReceive, RowOfOrderDocumentModelDB?, int?>()
     .RegisterMqListener<OrdersReadReceive, int[]?, OrderDocumentModelDB[]?>()
     .RegisterMqListener<OrdersSelectReceive, TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>>?, TPaginationResponseModel<OrderDocumentModelDB>?>()
-    .RegisterMqListener<OfferUpdateReceive, OfferGoodModelDB?, int?>()
-    .RegisterMqListener<OffersSelectReceive, TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferGoodModelDB>?>()
+    .RegisterMqListener<OfferUpdateReceive, OfferModelDB?, int?>()
+    .RegisterMqListener<OffersSelectReceive, TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferModelDB>?>()
     .RegisterMqListener<NomenclaturesSelectReceive, TPaginationRequestModel<NomenclaturesSelectRequestModel>?, TPaginationResponseModel<NomenclatureModelDB>?>()
     .RegisterMqListener<OrganizationsReadReceive, int[]?, OrganizationModelDB[]?>();
 #endregion

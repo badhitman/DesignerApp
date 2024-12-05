@@ -80,7 +80,7 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
         {
             Payload = new()
             {
-                GoodsFilter = [.. req],
+                NomenclatureFilter = [.. req],
                 WarehouseId = warehouseId,
             },
             PageNum = 0,

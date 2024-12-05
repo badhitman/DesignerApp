@@ -15,7 +15,7 @@ public class PriceRuleForOfferModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// Offer
     /// </summary>
-    public OfferGoodModelDB? Offer { get; set; }
+    public OfferModelDB? Offer { get; set; }
     /// <summary>
     /// Offer
     /// </summary>

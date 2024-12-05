@@ -16,7 +16,7 @@ Content-Type: application/json
 		"afterDateUpdate": "2023-10-29T05:58:50.446Z",
 		"addressForOrganizationFilter": 0,
 		"organizationFilter": 0,
-		"goodsFilter": 0,
+		"nomenclatureFilter": 0,
 		"offerFilter": 0,
 		"includeExternalData": true
 	}
@@ -153,7 +153,7 @@ Content-Type: application/json
 		"afterDateUpdate": "2023-10-29T05:58:50.446Z",
 		"addressForOrganizationFilter": 0,
 		"organizationFilter": 0,
-		"goodsFilter": 0,
+		"nomenclatureFilter": 0,
 		"offerFilter": 0,
 		"includeExternalData": true
 	}
@@ -261,7 +261,7 @@ Content-Type: application/json
 					"orderDocument": null,
 					"orderDocumentId": 1,
 					"offer": {
-						"goods": {
+						"nomenclature": {
 							"baseUnit": "Thing",
 							"offers": [],
 							"lastAtUpdatedUTC": "2024-10-24T14:25:13.625921Z",
@@ -271,7 +271,7 @@ Content-Type: application/json
 							"id": 1,
 							"isDisabled": false
 						},
-						"goodsId": 1,
+						"nomenclatureId": 1,
 						"offerUnit": "Stack",
 						"multiplicity": 2,
 						"price": 800,
@@ -284,12 +284,12 @@ Content-Type: application/json
 						"isDisabled": false
 					},
 					"offerId": 1,
-					"goods": {
+					"nomenclature": {
 						"baseUnit": "Thing",
 						"offers": [
 							{
-								"goods": null,
-								"goodsId": 1,
+								"nomenclature": null,
+								"nomenclatureId": 1,
 								"offerUnit": "Stack",
 								"multiplicity": 2,
 								"price": 800,
@@ -309,7 +309,7 @@ Content-Type: application/json
 						"id": 1,
 						"isDisabled": false
 					},
-					"goodsId": 1,
+					"nomenclatureId": 1,
 					"quantity": 1
 				}
 			]
@@ -323,9 +323,9 @@ Content-Type: application/json
 	"isDisabled": false
 }
 ```
-У документа есть поле `addressesTabs`, которое представляет перечень адресов доставки по данному заказу. У каждого адреса доставки есть поле `rows` в котором хранятся строки/данные по номенклатуре, количеству и сумме заказа для конкретной строки документа. В каждой строке заказа есть оффер, который в свою очередь имеет ссылку на номенклатуру `goods`.
+У документа есть поле `addressesTabs`, которое представляет перечень адресов доставки по данному заказу. У каждого адреса доставки есть поле `rows` в котором хранятся строки/данные по номенклатуре, количеству и сумме заказа для конкретной строки документа. В каждой строке заказа есть оффер, который в свою очередь имеет ссылку на номенклатуру `nomenclature`.
 
-> Для возможности заказа одной и той же номенклатуры, но в разных фасовках (или по любому другому принципу) введено понятие оффера. У номенклатуры в ИС вовсе нет цены, а лишь базовая единица измерения, но у номенклатуры может быть сколь угодно офферов. У каждого оффера есть своя цена, своя единица измерения и кратность базовой единице номенклатуры. Таким образом для получения номенклатуры заказа нужно обратиться через оффер (к его номенклатуре в поле `goods`).
+> Для возможности заказа одной и той же номенклатуры, но в разных фасовках (или по любому другому принципу) введено понятие оффера. У номенклатуры в ИС вовсе нет цены, а лишь базовая единица измерения, но у номенклатуры может быть сколь угодно офферов. У каждого оффера есть своя цена, своя единица измерения и кратность базовой единице номенклатуры. Таким образом для получения номенклатуры заказа нужно обратиться через оффер (к его номенклатуре в поле `nomenclature`).
 
 ### Смена статуса заказу
 ``` shell

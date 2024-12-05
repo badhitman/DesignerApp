@@ -33,7 +33,7 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseAuthMod
     MudTable<NomenclatureModelDB> tableRef = default!;
 
 
-    async void CreateGoodsAction(NomenclatureModelDB goods)
+    async void CreateNomenclatureAction(NomenclatureModelDB nom)
     {
         await tableRef.ReloadServerData();
         OnExpandCollapseClick();
@@ -56,13 +56,6 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseAuthMod
         await SetBusy(token: token);
         TResponseModel<TPaginationResponseModel<NomenclatureModelDB>> res = await CommerceRepo.NomenclaturesSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-
-        //if (res.Success() && res.Response?.Response is not null)
-        //{
-        //    await CacheRegistersGoodsUpdate(res.Response.Response.Select(x => x.Id));
-        //    IsBusyProgress = false;
-        //    return new TableData<NomenclatureModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
-        //}
 
         IsBusyProgress = false;
 

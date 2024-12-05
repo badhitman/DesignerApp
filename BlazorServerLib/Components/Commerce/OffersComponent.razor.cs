@@ -10,24 +10,24 @@ using MudBlazor;
 namespace BlazorWebLib.Components.Commerce;
 
 /// <summary>
-/// OffersOfGoodsComponent
+/// OffersComponent
 /// </summary>
-public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
+public partial class OffersComponent : BlazorBusyComponentRegistersModel
 {
     [Inject]
     ISerializeStorageRemoteTransmissionService StorageTransmissionRepo { get; set; } = default!;
 
     /// <summary>
-    /// CurrentGoods
+    /// CurrentNomenclature
     /// </summary>
     [Parameter, EditorRequired]
-    public required NomenclatureModelDB CurrentGoods { get; set; }
+    public required NomenclatureModelDB CurrentNomenclature { get; set; }
 
 
     bool _hideMultiplicity;
     bool _hideWorth;
 
-    private MudTable<OfferGoodModelDB> table = default!;
+    private MudTable<OfferModelDB> table = default!;
     bool _visibleChangeConfig;
     readonly DialogOptions _dialogOptions = new()
     {
@@ -55,7 +55,7 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
         _visibleChangeConfig = !_visibleChangeConfig;
     }
 
-    async void CreateOfferAction(OfferGoodModelDB sender)
+    async void CreateOfferAction(OfferModelDB sender)
     {
         await table.ReloadServerData();
         OnExpandCollapseClick();
@@ -65,13 +65,13 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
-    private async Task<TableData<OfferGoodModelDB>> ServerReload(TableState state, CancellationToken token)
+    private async Task<TableData<OfferModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         TPaginationRequestModel<OffersSelectRequestModel> req = new()
         {
             Payload = new()
             {
-                GoodsFilter = [CurrentGoods.Id]
+                NomenclatureFilter = [CurrentNomenclature.Id]
             },
             PageNum = state.Page,
             PageSize = state.PageSize,
@@ -79,18 +79,18 @@ public partial class OffersOfGoodsComponent : BlazorBusyComponentRegistersModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         await SetBusy(token: token);
-        TResponseModel<TPaginationResponseModel<OfferGoodModelDB>> res = await CommerceRepo.OffersSelect(req);
+        TResponseModel<TPaginationResponseModel<OfferModelDB>> res = await CommerceRepo.OffersSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         if (res.Success() && res.Response?.Response is not null)
         {
             await CacheRegistersOfferUpdate(res.Response.Response.Select(x => x.Id));
             IsBusyProgress = false;
-            return new TableData<OfferGoodModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+            return new TableData<OfferModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
         }
 
         IsBusyProgress = false;
-        return new TableData<OfferGoodModelDB>() { TotalItems = 0, Items = [] };
+        return new TableData<OfferModelDB>() { TotalItems = 0, Items = [] };
     }
 
     bool _expanded;

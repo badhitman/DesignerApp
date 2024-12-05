@@ -26,18 +26,18 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> NomenclatureUpdateReceive(NomenclatureModelDB req)
-        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.GoodsUpdateCommerceReceive, req);
+        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.NomenclatureUpdateCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> OfferDelete(int req)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.OfferDeleteCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OfferGoodModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OfferGoodModelDB>>(GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive, req);
+    public async Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OfferModelDB>>(GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> OfferUpdate(OfferGoodModelDB offer)
+    public async Task<TResponseModel<int>> OfferUpdate(OfferModelDB offer)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.OfferUpdateCommerceReceive, offer);
 
     /// <inheritdoc/>
@@ -85,8 +85,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<NomenclatureModelDB[]>(GlobalStaticConstants.TransmissionQueues.NomenclaturesReadCommerceReceive, ids);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OfferGoodModelDB[]>> OffersRead(int[] ids)
-        => await rabbitClient.MqRemoteCall<OfferGoodModelDB[]>(GlobalStaticConstants.TransmissionQueues.OfferReadCommerceReceive, ids);
+    public async Task<TResponseModel<OfferModelDB[]>> OffersRead(int[] ids)
+        => await rabbitClient.MqRemoteCall<OfferModelDB[]>(GlobalStaticConstants.TransmissionQueues.OfferReadCommerceReceive, ids);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<PriceRuleForOfferModelDB[]>> PricesRulesGetForOffers(int[] ids)

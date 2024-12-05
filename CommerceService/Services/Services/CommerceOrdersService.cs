@@ -58,7 +58,7 @@ public partial class CommerceImplementService(
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
-            .ThenInclude(x => x.Goods);
+            .ThenInclude(x => x.Nomenclature);
 
         return new()
         {
@@ -83,7 +83,7 @@ public partial class CommerceImplementService(
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
-            .ThenInclude(x => x.Goods)
+            .ThenInclude(x => x.Nomenclature)
             .ToArrayAsync();
 
         return res;
@@ -113,8 +113,8 @@ public partial class CommerceImplementService(
         if (req.Payload.Payload.OfferFilter.HasValue && req.Payload.Payload.OfferFilter.Value != 0)
             q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.OfferId == req.Payload.Payload.OfferFilter));
 
-        if (req.Payload.Payload.GoodsFilter.HasValue && req.Payload.Payload.GoodsFilter.Value != 0)
-            q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.NomenclatureId == req.Payload.Payload.GoodsFilter));
+        if (req.Payload.Payload.NomenclatureFilter.HasValue && req.Payload.Payload.NomenclatureFilter.Value != 0)
+            q = q.Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.NomenclatureId == req.Payload.Payload.NomenclatureFilter));
 
         if (req.Payload.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.Payload.AfterDateUpdate));
@@ -137,7 +137,7 @@ public partial class CommerceImplementService(
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows!)
             .ThenInclude(x => x.Offer!)
-            .ThenInclude(x => x.Goods);
+            .ThenInclude(x => x.Nomenclature);
 
         return new()
         {
@@ -167,8 +167,8 @@ public partial class CommerceImplementService(
         IQueryable<OrderRowsQueryRecord> queryDocumentDb = from r in context.RowsOfOrdersDocuments
                                                            join d in context.OrdersDocuments on r.OrderDocumentId equals d.Id
                                                            join t in context.TabsAddressesForOrders.Where(x => x.Id == req.AddressForOrderTabId) on r.AddressForOrderTabId equals t.Id
-                                                           join o in context.OffersGoods on r.OfferId equals o.Id
-                                                           join g in context.Goods on r.NomenclatureId equals g.Id
+                                                           join o in context.Offers on r.OfferId equals o.Id
+                                                           join g in context.Nomenclatures on r.NomenclatureId equals g.Id
                                                            select new OrderRowsQueryRecord(d, t, r, o, g);
 
         var commDataDb = await queryDocumentDb
@@ -476,7 +476,7 @@ public partial class CommerceImplementService(
         DateTime dtu = DateTime.UtcNow;
         req.LastAtUpdatedUTC = dtu;
 
-        OfferGoodModelDB?[] allOffersReq = req.AddressesTabs!
+        OfferModelDB?[] allOffersReq = req.AddressesTabs!
             .SelectMany(x => x.Rows!)
             .Select(x => x.Offer)
             .DistinctBy(x => x!.Id)
@@ -590,7 +590,7 @@ public partial class CommerceImplementService(
                 tabAddr.Rows!.ForEach(rowDoc =>
                 {
                     OfferAvailabilityModelDB? rowReg = registersOffersDb.FirstOrDefault(x => x.OfferId == rowDoc.OfferId && x.WarehouseId == tabAddr.WarehouseId);
-                    OfferGoodModelDB offerInfo = allOffersReq.First(x => x?.Id == rowDoc.OfferId)!;
+                    OfferModelDB offerInfo = allOffersReq.First(x => x?.Id == rowDoc.OfferId)!;
 
                     if (rowReg is null)
                         res.AddError($"'{offerInfo.Name}' (склад: `{getRubrics.Response.First(x => x.Id == tabAddr.WarehouseId).Name}`) нет в наличии");
@@ -617,7 +617,7 @@ public partial class CommerceImplementService(
                     foreach (RowOfOrderDocumentModelDB rowDoc in tabAddr.Rows!)
                     {
                         OfferAvailabilityModelDB rowReg = registersOffersDb.First(x => x.OfferId == rowDoc.OfferId && x.WarehouseId == tabAddr.WarehouseId);
-                        OfferGoodModelDB offerInfo = allOffersReq.First(x => x?.Id == rowDoc.OfferId)!;
+                        OfferModelDB offerInfo = allOffersReq.First(x => x?.Id == rowDoc.OfferId)!;
                         rowReg.Quantity -= rowDoc.Quantity;
                         context.Update(rowReg);
                     }
@@ -970,8 +970,8 @@ public partial class CommerceImplementService(
     {
         string docName = $"Прайс на {DateTime.Now.GetHumanDateTime()}";
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        List<OfferGoodModelDB> offersAll = await context.OffersGoods
-            .Include(x => x.Goods)
+        List<OfferModelDB> offersAll = await context.Offers
+            .Include(x => x.Nomenclature)
             .Include(x => x.Registers)
             .ToListAsync();
 
@@ -988,7 +988,7 @@ public partial class CommerceImplementService(
 
         int[] rubricsIds = offersAll.SelectMany(x => x.Registers!).Select(x => x.WarehouseId).Distinct().ToArray();
         TResponseModel<List<RubricIssueHelpdeskModelDB>?> rubricsDb = await hdRepo.RubricsGet(rubricsIds);
-        List<IGrouping<NomenclatureModelDB?, OfferGoodModelDB>> gof = offersAll.GroupBy(x => x.Goods).Where(x => x.Any(y => y.Registers!.Any(z => z.Quantity > 0))).ToList();
+        List<IGrouping<NomenclatureModelDB?, OfferModelDB>> gof = offersAll.GroupBy(x => x.Nomenclature).Where(x => x.Any(y => y.Registers!.Any(z => z.Quantity > 0))).ToList();
         try
         {
             return new()
@@ -1019,7 +1019,7 @@ public partial class CommerceImplementService(
         TResponseModel<int> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         string msg, about = $"'{nom.Name}' /{nom.BaseUnit}";
-        NomenclatureModelDB? nomenclature_db = await context.Goods.FirstOrDefaultAsync(x => x.Name == nom.Name && x.BaseUnit == nom.BaseUnit && x.Id != nom.Id);
+        NomenclatureModelDB? nomenclature_db = await context.Nomenclatures.FirstOrDefaultAsync(x => x.Name == nom.Name && x.BaseUnit == nom.BaseUnit && x.Id != nom.Id);
         
         if (nomenclature_db is not null)
         {
@@ -1035,7 +1035,7 @@ public partial class CommerceImplementService(
         {
             nom.CreatedAtUTC = dtu;
             nomenclature_db = nom;
-            nom.SortIndex = await context.Goods.MaxAsync(x => x.SortIndex) + 1;
+            nom.SortIndex = await context.Nomenclatures.MaxAsync(x => x.SortIndex) + 1;
 
             await context.AddAsync(nomenclature_db);
             await context.SaveChangesAsync();
@@ -1046,7 +1046,7 @@ public partial class CommerceImplementService(
             return res;
         }
 
-        res.Response = await context.Goods
+        res.Response = await context.Nomenclatures
             .Where(x => x.Id == nom.Id)
             .ExecuteUpdateAsync(set => set
             .SetProperty(p => p.Name, nom.Name)
@@ -1150,7 +1150,7 @@ public partial class CommerceImplementService(
         return XLSStream.ToArray();
     }
 
-    static byte[] ExportPrice(List<IGrouping<NomenclatureModelDB?, OfferGoodModelDB>> sourceTable, List<RubricIssueHelpdeskModelDB>? rubricsDb)
+    static byte[] ExportPrice(List<IGrouping<NomenclatureModelDB?, OfferModelDB>> sourceTable, List<RubricIssueHelpdeskModelDB>? rubricsDb)
     {
         WorkbookPart? wBookPart = null;
         using MemoryStream XLSStream = new();
@@ -1170,7 +1170,7 @@ public partial class CommerceImplementService(
 
         Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? workbookPart.Workbook.AppendChild(new Sheets());
 
-        foreach (IGrouping<NomenclatureModelDB?, OfferGoodModelDB> table in sourceTable)
+        foreach (IGrouping<NomenclatureModelDB?, OfferModelDB> table in sourceTable)
         {
             WorksheetPart wSheetPart = wBookPart.AddNewPart<WorksheetPart>();
             Sheet sheet = new() { Id = workbookPart.GetIdOfPart(wSheetPart), SheetId = sheetId, Name = table.Key?.Name };
@@ -1207,7 +1207,7 @@ public partial class CommerceImplementService(
             sheetData.AppendChild(headerRow);
 
             uint row_index = 5;
-            foreach (OfferGoodModelDB dr in table)
+            foreach (OfferModelDB dr in table)
             {
                 foreach (IGrouping<int, OfferAvailabilityModelDB> nodeG in dr.Registers!.GroupBy(x => x.WarehouseId))
                 {
@@ -1346,7 +1346,7 @@ public partial class CommerceImplementService(
 
 record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);
 
-record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row, OfferGoodModelDB Offer, NomenclatureModelDB Goods);
+record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row, OfferModelDB Offer, NomenclatureModelDB Goods);
 
 record WarehouseRowDocumentRecord(int WarehouseId, RowOfOrderDocumentModelDB Row);
 
