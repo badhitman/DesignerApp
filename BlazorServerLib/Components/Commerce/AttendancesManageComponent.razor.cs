@@ -22,13 +22,6 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseAuthMod
     IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
 
-    /// <summary>
-    /// ContextName
-    /// </summary>
-    [Parameter]
-    public string? ContextName { get; set; }
-
-
     bool _expanded;
     MudTable<NomenclatureModelDB> tableRef = default!;
 
@@ -47,7 +40,7 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseAuthMod
     {
         TPaginationRequestModel<NomenclaturesSelectRequestModel> req = new()
         {
-            Payload = new() { ContextName = ContextName },
+            Payload = new() { ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME },
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortBy = state.SortLabel,

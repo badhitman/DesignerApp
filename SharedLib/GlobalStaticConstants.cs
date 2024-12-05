@@ -1674,6 +1674,11 @@ public static partial class GlobalStaticConstants
         public const string ATTACHMENT_CONTROLLER_NAME = "attachment";
 
         /// <summary>
+        /// Attendances
+        /// </summary>
+        public const string ATTENDANCES_CONTROLLER_NAME = "attendances";
+
+        /// <summary>
         /// Image
         /// </summary>
         public const string IMAGE_ACTION_NAME = "image";
