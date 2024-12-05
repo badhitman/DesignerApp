@@ -17,21 +17,25 @@
         <MudSpacer />
     </ToolBarContent>
     <HeaderContent>
-        <MudTh>Id</MudTh>
-        <MudTh><MudTableSortLabel SortLabel="Offer" T="OfferAvailabilityModelDB">Offer</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortLabel="Offer" T="OfferAvailabilityModelDB">Offer</MudTableSortLabel></MudTh>
         <MudTh>Склад</MudTh>
         <MudTh>Кол-во</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id">@context.Id</MudTd>
         <MudTd DataLabel="Offer">
             <a href="/nomenclature/offer-card/@context.Offer?.Id">@context.Offer?.Name</a>
             <sup title="Номенклатура" class="font-monospace text-info-emphasis">
                 <a href="/nomenclature/card/@context.Nomenclature?.Id" class="link-info">@context.Nomenclature?.Name</a>
             </sup>
         </MudTd>
-        <MudTd DataLabel="Склад">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
-        <MudTd DataLabel="Кол-во">@context.Quantity @context.Offer?.OfferUnit.DescriptionInfo()</MudTd>
+        <MudTd DataLabel="Склад">
+            @(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())
+        </MudTd>
+        <MudTd DataLabel="Кол-во">
+            <span class="text-@(context.Quantity< 0?"danger":"primary-emphasis")">
+                @context.Quantity <sup class="text-secondary-emphasis">@context.Offer?.OfferUnit.DescriptionInfo()</sup>
+            </span>
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>

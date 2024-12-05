@@ -5,7 +5,7 @@
 <MudPaper Class="pa-4 mt-3">
     @if (CurrentUserSession!.IsAdmin)
     {
-        <MudStack Spacing="2">
+        <MudStack Spacing="2" Class="pb-2">
             <MudButton OnClick="OnExpandCollapseClick" Variant="Variant.Outlined">@(_expanded ? "Отмена" : "Создать")</MudButton>
             <MudCollapse Expanded="_expanded">
                 <NomenclatureCreatingFormComponent ContextName="@ContextName" NomenclatureCreatingHandler="CreateNomenclatureAction" />

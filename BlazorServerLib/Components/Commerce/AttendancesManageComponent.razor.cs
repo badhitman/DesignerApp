@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using BlazorLib;
 using MudBlazor;
 using SharedLib;
@@ -17,9 +16,6 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseAuthMod
 {
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
-
-    [Inject]
-    IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
 
     bool _expanded;

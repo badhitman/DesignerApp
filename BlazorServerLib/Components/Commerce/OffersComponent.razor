@@ -17,7 +17,7 @@
             </span>
         </Authorized>
     </AuthorizeView>
-    <MudStack Spacing="2">
+    <MudStack Spacing="2" Class="pb-2">
         @if (CurrentUserSession!.IsAdmin)
         {
             <MudButton OnClick="OnExpandCollapseClick" Variant="Variant.Outlined">@(_expanded ? "Отмена" : "Создать")</MudButton>

@@ -17,7 +17,11 @@ public static class DateTimeExtensions
     public static DateTime GetCustomTime(this DateTime dateTime, string timeZone = "Europe/Moscow")
         => TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZone));
 
-    static CultureInfo cultureInfo = new CultureInfo("ru-RU");
+    /// <summary>
+    /// ru-RU: CultureInfo
+    /// </summary>
+    public static readonly CultureInfo cultureInfo = new("ru-RU");
+
     /// <summary>
     /// Дата + время
     /// </summary>
