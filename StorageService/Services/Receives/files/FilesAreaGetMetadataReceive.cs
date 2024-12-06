@@ -11,15 +11,28 @@ using DbcLib;
 namespace Transmission.Receives.storage;
 
 /// <summary>
-/// FilesAreaGetMetadataReceive
+/// Получить сводку (метаданные) по пространствам хранилища
 /// </summary>
+/// <remarks>
+/// Общий размер и количество группируется по AppName
+/// </remarks>
 public class FilesAreaGetMetadataReceive(ILogger<FilesSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
     : IResponseReceive<FilesAreaMetadataRequestModel?, FilesAreaMetadataModel[]?>
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получить сводку (метаданные) по пространствам хранилища
+    /// </summary>
+    /// <remarks>
+    /// Общий размер и количество группируется по AppName
+    /// </remarks>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FilesAreaGetMetadataReceive;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получить сводку (метаданные) по пространствам хранилища
+    /// </summary>
+    /// <remarks>
+    /// Общий размер и количество группируется по AppName
+    /// </remarks>
     public async Task<TResponseModel<FilesAreaMetadataModel[]?>> ResponseHandleAction(FilesAreaMetadataRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);

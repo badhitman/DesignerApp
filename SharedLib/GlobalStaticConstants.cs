@@ -968,7 +968,12 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string TagSetReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, Routes.TAG_CONTROLLER_NAME, Routes.SET_ACTION_NAME);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Получить сводку (метаданные) по пространствам хранилища
+        /// </summary>
+        /// <remarks>
+        /// Общий размер и количество группируется по AppName
+        /// </remarks>
         public readonly static string FilesAreaGetMetadataReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, $"{Routes.FILES_CONTROLLER_NAME}-{Routes.AREAS_CONTROLLER_NAME}", $"{Routes.GET_ACTION_NAME}-{Routes.METADATA_CONTROLLER_NAME}");
 
         /// <inheritdoc/>

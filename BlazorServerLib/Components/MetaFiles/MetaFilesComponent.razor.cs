@@ -3,9 +3,9 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 using BlazorLib;
 using SharedLib;
-using Newtonsoft.Json;
 
 namespace BlazorWebLib.Components.MetaFiles;
 
@@ -22,15 +22,20 @@ public partial class MetaFilesComponent : BlazorBusyComponentBaseAuthModel
 
 
     /// <summary>
-    /// SelectedAreas
+    /// Выбранные пространства (AppName`s)
     /// </summary>
     [Parameter]
     public string[]? SelectedAreas { get; set; }
 
 
-
     FilesAreaMetadataModel[] FilesAreaMetadata = [];
 
+    /// <summary>
+    /// Получить сводку (метаданные) по пространствам хранилища
+    /// </summary>
+    /// <remarks>
+    /// Общий размер и количество группируется по AppName
+    /// </remarks>
     private List<bool> _included = [];
 
     List<string>? reqNamesApps = null;
@@ -51,8 +56,8 @@ public partial class MetaFilesComponent : BlazorBusyComponentBaseAuthModel
     protected override async Task OnInitializedAsync()
     {
         _reqKey = SelectedAreas is null || SelectedAreas.Length == 0 ? null : JsonConvert.SerializeObject(SelectedAreas);
-        await ReadCurrentUser();
         await SetBusy();
+        await ReadCurrentUser();
         TResponseModel<FilesAreaMetadataModel[]> res = await FilesRepo.FilesAreaGetMetadata(new());
         await SetBusy(false);
         FilesAreaMetadata = res.Response ?? throw new Exception();

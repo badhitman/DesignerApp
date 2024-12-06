@@ -20,8 +20,11 @@ public interface ISerializeStorageRemoteTransmissionService
     public Task<TResponseModel<TPaginationResponseModel<TagModelDB>>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req);
 
     /// <summary>
-    /// FilesAreaGetMetadata
+    /// Получить сводку (метаданные) по пространствам хранилища
     /// </summary>
+    /// <remarks>
+    /// Общий размер и количество группируется по AppName
+    /// </remarks>
     public Task<TResponseModel<FilesAreaMetadataModel[]>> FilesAreaGetMetadata(FilesAreaMetadataRequestModel req);
 
     /// <summary>

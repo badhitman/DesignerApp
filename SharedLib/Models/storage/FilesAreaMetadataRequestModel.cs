@@ -5,12 +5,15 @@
 namespace SharedLib;
 
 /// <summary>
-/// FilesAreaMetadataRequestModel
+/// Получить сводку (метаданные) по пространствам хранилища
 /// </summary>
+/// <remarks>
+/// Общий размер и количество группируется по AppName
+/// </remarks>
 public class FilesAreaMetadataRequestModel
 {
     /// <summary>
-    /// ApplicationsNamesFilter
+    /// ApplicationsNames - filter
     /// </summary>
     public string[]? ApplicationsNamesFilter { get; set; }
 }
