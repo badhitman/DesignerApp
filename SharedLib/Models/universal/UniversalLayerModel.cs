@@ -10,6 +10,7 @@ namespace SharedLib;
 /// UniversalLayerModel
 /// </summary>
 [Index(nameof(NormalizedNameUpper)), Index(nameof(ContextName))]
+[Index(nameof(SortIndex), nameof(ParentId), nameof(ContextName), IsUnique = true)]
 public class UniversalLayerModel : UniversalBaseModel
 {
     /// <summary>

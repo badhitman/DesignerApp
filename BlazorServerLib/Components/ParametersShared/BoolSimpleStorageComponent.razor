@@ -16,13 +16,13 @@
     </MudSwitch>
     @if (StoreValue && !string.IsNullOrWhiteSpace(HintTrue))
     {
-        <span class="text-info">
+        <span class="text-success">
             @HintTrue
         </span>
     }
-    else if (!string.IsNullOrWhiteSpace(HintFalse))
+    else if (!StoreValue && !string.IsNullOrWhiteSpace(HintFalse))
     {
-        <span class="text-info">
+        <span class="text-info-emphasis">
             @HintFalse
         </span>
     }

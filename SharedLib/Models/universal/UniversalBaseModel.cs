@@ -9,7 +9,6 @@ namespace SharedLib;
 /// <summary>
 /// Universal base
 /// </summary>
-[Index(nameof(SortIndex), nameof(ParentId), IsUnique = true)]
 public class UniversalBaseModel : EntrySwitchableUpdatedModel
 {
     /// <inheritdoc/>

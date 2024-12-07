@@ -1013,14 +1013,13 @@ public partial class CommerceImplementService(
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> NomenclatureUpdate(NomenclatureModelDB nom)
     {
-
-         nom.Name = nom.Name.Trim();
+        nom.Name = nom.Name.Trim();
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(nom, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         string msg, about = $"'{nom.Name}' /{nom.BaseUnit}";
         NomenclatureModelDB? nomenclature_db = await context.Nomenclatures.FirstOrDefaultAsync(x => x.Name == nom.Name && x.BaseUnit == nom.BaseUnit && x.Id != nom.Id);
-        
+
         if (nomenclature_db is not null)
         {
             msg = $"Ошибка создания Номенклатуры {about}. Такой объект уже существует #{nomenclature_db.Id}. Требуется уникальное сочетание имени и единицы измерения";
@@ -1033,6 +1032,7 @@ public partial class CommerceImplementService(
 
         if (nom.Id < 1)
         {
+            nom.Id = 0;
             nom.CreatedAtUTC = dtu;
             nomenclature_db = nom;
             nom.SortIndex = await context.Nomenclatures.MaxAsync(x => x.SortIndex) + 1;
@@ -1341,7 +1341,7 @@ public partial class CommerceImplementService(
         newCell.CellValue = new CellValue(val);
         newCell.DataType = new EnumValue<CellValues>(type);
 
-    }    
+    }
 }
 
 record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);
