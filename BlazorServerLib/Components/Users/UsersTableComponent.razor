@@ -35,9 +35,9 @@
                     </div>
                     @if (context.AccessFailedCount > 0)
                     {
-                        <sup title="Количество неудачных попыток входа"> @(context.AccessFailedCount) ошибок</sup>
+                        <sup class="pe-2" title="Количество неудачных попыток входа"> @(context.AccessFailedCount) ошибок</sup>
                     }
-                    <span>@context.PhoneNumber</span>
+                    <code>@context.PhoneNumber</code>
                     @if (RoleInfo is not null && !string.IsNullOrWhiteSpace(context.Email))
                     {
                         <div class="px-2">
