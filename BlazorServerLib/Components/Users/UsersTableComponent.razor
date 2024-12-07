@@ -80,10 +80,10 @@
             @if (!HideRolesColumn)
             {
                 <TemplateColumn Title="Роли" Align="Align.Right">
-                    @context.RolesAsString(";")
+                    @context.RolesAsString("; ")
                 </TemplateColumn>
             }
-            @if (!HideClaimsColumn)
+            @if (!HideClaimsColumn && showClaimsUsers)
             {
                 string _gd = Guid.NewGuid().ToString();
                 PushRowGuid(_gd);

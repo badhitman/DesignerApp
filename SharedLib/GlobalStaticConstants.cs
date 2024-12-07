@@ -201,7 +201,14 @@ public static partial class GlobalStaticConstants
             PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.COMMAND_CONTROLLER_NAME, Routes.ADD_ACTION_NAME),
         };
 
-        // 
+        /// <summary>
+        /// Отображать колонку Claims в таблице пользователей
+        /// </summary>
+        public static StorageMetadataModel ShowClaimsUser => new()
+        {
+            ApplicationName = Routes.USERS_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.CLAIMS_CONTROLLER_NAME, Routes.SHOW_ACTION_NAME, Routes.COLUMN_CONTROLLER_NAME),
+        };
 
         /// <summary>
         ///  Скрыть стоимость в списке оферов
@@ -1065,6 +1072,11 @@ public static partial class GlobalStaticConstants
         /// Nomenclatures
         /// </summary>
         public const string NOMENCLATURES_CONTROLLER_NAME = "nomenclatures";
+
+        /// <summary>
+        /// Claims
+        /// </summary>
+        public const string CLAIMS_CONTROLLER_NAME = "claims";
 
         /// <summary>
         /// Orders

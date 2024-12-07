@@ -4,10 +4,10 @@
 
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System.Net.Mail;
 using BlazorLib;
 using SharedLib;
-using Microsoft.JSInterop;
 
 namespace BlazorWebLib.Components.Users;
 
@@ -16,6 +16,9 @@ namespace BlazorWebLib.Components.Users;
 /// </summary>
 public partial class UsersTableComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
+
     /// <summary>
     /// JS
     /// </summary>
@@ -69,10 +72,14 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
     IEnumerable<ResultMessage>? Messages;
     RoleInfoModel? RoleInfo;
     private readonly Stack<string> RowsStack = [];
+    bool showClaimsUsers;
 
     /// <inheritdoc/>
     protected override void OnAfterRender(bool firstRender)
     {
+        if (HideClaimsColumn || !showClaimsUsers)
+            return;
+
         lock (RowsStack)
         {
             if (RowsStack.Count == 0)
@@ -166,7 +173,7 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
 
     static MarkupString ClaimsHtml(UserInfoModel ctx)
     {
-        if(ctx.Claims is null)
+        if (ctx.Claims is null)
             return (MarkupString)"<b>-не загружено-</b>";
 
         if (ctx.Claims.Length == 0)
@@ -178,6 +185,10 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await SetBusy();
+        TResponseModel<bool?> res_ShowClaimsUsers = await SerializeStorageRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowClaimsUser);
+        showClaimsUsers = res_ShowClaimsUsers.Response == true;
+
         if (!string.IsNullOrWhiteSpace(OwnerRoleId))
         {
             TResponseModel<RoleInfoModel?> rest = await UsersManageRepo.GetRole(OwnerRoleId);
@@ -202,14 +213,14 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
                 string msg = "UsersInfo is null. error {B57C9FB4-FC33-44A1-90C7-E52C00A041EE}";
                 throw new Exception(msg);
             }
-
+            await SetBusy(false);
             if (numResults != res.TotalRowsCount)
             {
                 numResults = res.TotalRowsCount;
                 StateHasChanged();
             }
 
-            return GridItemsProviderResult.From<UserInfoModel>(res.Response, res.TotalRowsCount);
+            return GridItemsProviderResult.From(res.Response, res.TotalRowsCount);
         };
     }
 }
