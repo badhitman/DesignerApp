@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 
-namespace BlazorWebLib.Components;
+namespace BlazorWebLib.Components.WorkScheduleWeekday;
 
 /// <summary>
 /// WorkScheduleWeekdayComponent
@@ -19,14 +19,4 @@ public partial class WorkScheduleWeekdayComponent : BlazorBusyComponentBaseModel
     public required DayOfWeek Weekday { get; set; }
 
 
-
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
-    {
-        
-
-        /*
-         DayOfWeek.Sunday
-         */
-    }
 }

@@ -1,0 +1,17 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    @if (IsExpandAdding)
+    {
+        <MudTimePicker Label="Начало:" PickerVariant="PickerVariant.Dialog" Color="Color.Success" Rounded="true" Text="09:00" />
+        <MudTimePicker Class="me-2" Label="Конец:" PickerVariant="PickerVariant.Dialog" Color="Color.Secondary" Rounded="true" Text="18:00" />
+        <MudFab StartIcon="@Icons.Material.Filled.Cancel" Label="Отмена" OnClick="()=> IsExpandAdding = !IsExpandAdding" />
+        <MudFab Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" Label="Сохранить" OnClick="Save" />
+    }
+    else
+    {
+        <MudFab Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add" Label="Добавить период" OnClick="()=> IsExpandAdding = !IsExpandAdding" />
+    }
+</div>
