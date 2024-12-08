@@ -1,0 +1,18 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+<div class="d-flex justify-content-end">
+    @if (IsExpanded)
+    {
+        <MudDatePicker PickerVariant="PickerVariant.Dialog" Editable="true" @bind-Date="_date" Placeholder="Укажите дату" MinDate="DateTime.Today" />
+
+        <MudButtonGroup Class="ms-2">
+            <MudIconButton Disabled="_date is null || _date < DateTime.Today" OnClick="Save" Icon="@Icons.Material.Filled.Save" aria-label="add date work schedule" title="Добавить дату в календарь" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" />
+            <MudIconButton OnClick="() => IsExpanded = false" Icon="@Icons.Material.Filled.CancelPresentation" aria-label="Отмена" title="Отмена" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" />
+        </MudButtonGroup>
+    }
+    else
+    {
+        <MudIconButton OnClick="() => IsExpanded = true" Icon="@Icons.Material.Filled.PlaylistAdd" aria-label="add date work schedule" title="Добавить дату в календарь" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" />
+    }
+</div>

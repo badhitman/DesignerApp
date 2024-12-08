@@ -1,8 +1,6 @@
 ﻿@page "/attendances"
 
-@using BlazorWebLib.Components.WorkScheduleWeekday
-@using BlazorWebLib.Components.Warehouse
-@using BlazorWebLib.Components.Helpdesk
+@using BlazorWebLib.Components.Commerce.Attendances
 @using MudBlazor
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
@@ -17,29 +15,8 @@
     <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager},{GlobalStaticConstants.Roles.Debug}")">
         <Authorized>
             <MudTabPanel Text="График работы">
-                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Color="@Color.Primary">
-                    <MudTabPanel Text="Понедельник">
-                        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Monday" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Вторник">
-                        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Tuesday" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Среда">
-                        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Wednesday" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Четверг">
-                        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Thursday" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Пятница">
-                        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Friday" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Суббота">
-                        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Saturday" />
-                    </MudTabPanel>
-                    <MudTabPanel Text="Воскресенье">
-                        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Sunday" />
-                    </MudTabPanel>
-                </MudTabs>
+                <WorkScheduleComponent />
+                <WorkCalendarComponent />
             </MudTabPanel>
         </Authorized>
     </AuthorizeView>
