@@ -223,12 +223,6 @@ public static partial class GlobalTools
     }
 
     /// <summary>
-    /// Русская (ru-RU) CultureInfo
-    /// </summary>
-    public static CultureInfo RU => CultureInfo.GetCultureInfo("ru-RU");
-
-
-    /// <summary>
     /// Преобразовать размер файла в читаемый вид
     /// </summary>
     public static string SizeDataAsString(long SizeFile)

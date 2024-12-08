@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace SharedLib;
 
@@ -37,6 +38,12 @@ public static partial class GlobalStaticConstants
     /// </summary>
     public static JsonSerializerSettings JsonSerializerSettings
         => new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+
+
+    /// <summary>
+    /// Русская (ru-RU) CultureInfo
+    /// </summary>
+    public static readonly CultureInfo RU = CultureInfo.GetCultureInfo("ru-RU");
 
 
     static string? _initSalt;
