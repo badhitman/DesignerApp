@@ -17,5 +17,4 @@ public partial class WorkScheduleWeekdayComponent : BlazorBusyComponentBaseModel
     /// </summary>
     [Parameter, EditorRequired]
     public required DayOfWeek Weekday { get; set; }
-
 }

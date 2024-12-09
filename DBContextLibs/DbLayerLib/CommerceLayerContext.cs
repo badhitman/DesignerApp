@@ -34,6 +34,16 @@ public partial class CommerceLayerContext : DbContext
     }
 
     /// <summary>
+    /// WorksSchedules
+    /// </summary>
+    public DbSet<WorkScheduleModelDB> WorksSchedules { get; set; } = default!;
+
+    /// <summary>
+    /// WorksSchedulesCalendar
+    /// </summary>
+    public DbSet<WorkScheduleCalendarModelDB> WorksSchedulesCalendar { get; set; } = default!;
+
+    /// <summary>
     /// Organizations
     /// </summary>
     public DbSet<OrganizationModelDB> Organizations { get; set; } = default!;

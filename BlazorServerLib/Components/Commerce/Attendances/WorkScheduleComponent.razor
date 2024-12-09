@@ -5,25 +5,25 @@
 <div class="card">
     <div class="card-body">
         <MudTabs AlwaysShowScrollButtons="true" Elevation="4" Rounded="true" Color="@Color.Primary">
-            <MudTabPanel Text="Понедельник">
+            <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Monday)">
                 <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Monday" />
             </MudTabPanel>
-            <MudTabPanel Text="Вторник">
+            <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Tuesday)">
                 <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Tuesday" />
             </MudTabPanel>
-            <MudTabPanel Text="Среда">
+            <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Wednesday)">
                 <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Wednesday" />
             </MudTabPanel>
-            <MudTabPanel Text="Четверг">
+            <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Thursday)">
                 <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Thursday" />
             </MudTabPanel>
-            <MudTabPanel Text="Пятница">
+            <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Friday)">
                 <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Friday" />
             </MudTabPanel>
-            <MudTabPanel Text="Суббота">
+            <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Saturday)">
                 <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Saturday" />
             </MudTabPanel>
-            <MudTabPanel Text="Воскресенье">
+            <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Sunday)">
                 <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Sunday" />
             </MudTabPanel>
         </MudTabs>

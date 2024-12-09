@@ -10,29 +10,32 @@
         </div>
         <h6 class="card-subtitle mb-2 text-body-secondary">Установка графика работы на конкретные даты.</h6>
         <p class="card-text">Праздничные дни (или другие особые даты) можно внести в календарь. В такие дни базовый график работы будет переопределён персональным:</p>
-        <ol class="list-group list-group-numbered">
+        <ul class="list-group list-group">
             <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
-                    <div class="fw-bold">Subheading</div>
-                    Content for list item
+                    @{
+                        DateTime _ddt1 = DateTime.Today.AddDays(11), _ddt2 = DateTime.Today.AddDays(25), _ddt3 = DateTime.Today.AddDays(43);
+                    }
+                    <div class="fw-bold">@_ddt1.GetCustomTime().ToString("d", GlobalStaticConstants.RU)<sup class="text-danger-emphasis">@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(_ddt1.DayOfWeek)</sup></div>
+                    Праздник
                 </div>
-                <span class="badge text-bg-primary rounded-pill">14</span>
+                <span class="badge text-bg-danger rounded-pill">0</span>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
-                    <div class="fw-bold">Subheading</div>
-                    Content for list item
+                    <div class="fw-bold">@_ddt2.GetCustomTime().ToString("d", GlobalStaticConstants.RU) <sup class="text-success-emphasis">@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(_ddt2.DayOfWeek)</sup></div>
+                    Рабочий день
                 </div>
-                <span class="badge text-bg-primary rounded-pill">14</span>
+                <span class="badge text-bg-success rounded-pill">8</span>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
-                    <div class="fw-bold">Subheading</div>
-                    Content for list item
+                    <div class="fw-bold">@_ddt3.GetCustomTime().ToString("d", GlobalStaticConstants.RU) <sup class="text-warning-emphasis">@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(_ddt3.DayOfWeek)</sup></div>
+                    Короткий день
                 </div>
-                <span class="badge text-bg-primary rounded-pill">14</span>
+                <span class="badge text-bg-warning rounded-pill">4</span>
             </li>
-        </ol>
+        </ul>
         <div class="d-flex flex-column align-center">
             <MudPagination Size="Size.Small" BoundaryCount="1" MiddleCount="1" Count="22" @bind-Selected="@_selected" Class="mt-4" />
         </div>
