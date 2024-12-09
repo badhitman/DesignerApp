@@ -10,12 +10,12 @@
         {
             <MudTimePicker Label="Начало:" PickerVariant="PickerVariant.Dialog" Color="Color.Success" Rounded="true" Text="09:00" />
             <MudTimePicker Class="me-2" Label="Конец:" PickerVariant="PickerVariant.Dialog" Color="Color.Secondary" Rounded="true" Text="18:00" />
-            <MudFab StartIcon="@Icons.Material.Filled.Cancel" title="Отмена" OnClick="()=> IsExpandAdding = !IsExpandAdding" />
-            <MudFab Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" title="Сохранить" OnClick="Save" />
+            <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Cancel" title="Отмена" OnClick="()=> IsExpandAdding = !IsExpandAdding" />
+            <MudFab Size="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" title="Сохранить" OnClick="Save" />
         }
         else
         {
-            <MudFab Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add" title="Добавить период" OnClick="()=> IsExpandAdding = !IsExpandAdding" />
+            <MudFab Size="Size.Small" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add" title="Добавить период" OnClick="()=> IsExpandAdding = !IsExpandAdding" />
         }
     </div>
 </div>

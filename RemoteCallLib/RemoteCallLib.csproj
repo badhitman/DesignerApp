@@ -8,14 +8,14 @@
 
 	<ItemGroup>
 		<PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
-		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
 		<PackageReference Include="MongoDB.Driver.Core" Version="2.30.0" />
 		<PackageReference Include="MongoDB.Driver.GridFS" Version="2.30.0" />
 		<PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-		<PackageReference Include="StackExchange.Redis" Version="2.8.16" />
+		<PackageReference Include="StackExchange.Redis" Version="2.8.22" />
 		<ProjectReference Include="..\..\HtmlGenerator\HtmlGenerator.csproj" />
 	</ItemGroup>
 	<Target Name="CopyFilesAfterPublish" AfterTargets="AfterPublish">

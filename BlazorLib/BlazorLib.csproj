@@ -16,7 +16,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.10" />
 		<PackageReference Include="MudBlazor" Version="7.15.0" />
-		<PackageReference Include="HtmlAgilityPack" Version="1.11.70" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.71" />
 		<PackageReference Include="TinyMCE.Blazor" Version="2.0.0" />
 	</ItemGroup>
 
