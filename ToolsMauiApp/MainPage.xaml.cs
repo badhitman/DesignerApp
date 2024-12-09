@@ -1,15 +1,10 @@
-﻿namespace ToolsMauiApp;
-
-/// <summary>
-/// MainPage
-/// </summary>
-public partial class MainPage : ContentPage
+﻿namespace ToolsMauiApp
 {
-    /// <summary>
-    /// MainPage
-    /// </summary>
-    public MainPage()
+    public partial class MainPage : ContentPage
     {
-        InitializeComponent();
+        public MainPage()
+        {
+            InitializeComponent();
+        }
     }
 }
