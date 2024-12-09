@@ -34,7 +34,7 @@ public class AnswerToForwardModelDB
     /// <summary>
     /// Created At Utc
     /// </summary>
-    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAtUtc { get; set; }
 
     /// <summary>
     /// Пересланное сообщение

@@ -85,7 +85,7 @@ public class UserTelegramModelDB
     /// <summary>
     /// LastMessageUtc
     /// </summary>
-    public DateTime LastUpdateUtc { get; set; } = DateTime.UtcNow;
+    public DateTime LastUpdateUtc { get; set; }
 
     /// <summary>
     /// LastMessageId

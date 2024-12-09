@@ -27,12 +27,12 @@ public class IssueMessageHelpdeskModelDB : IssueMessageHelpdeskBaseModel
     /// <summary>
     /// CreatedAt
     /// </summary>
-    public required DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public required DateTime CreatedAt { get; set; }
 
     /// <summary>
     /// LastUpdateAt
     /// </summary>
-    public required DateTime LastUpdateAt { get; set; } = DateTime.UtcNow;
+    public required DateTime LastUpdateAt { get; set; }
 
     /// <summary>
     /// Отметки как ответ

@@ -32,7 +32,7 @@ public class IssueReadMarkerHelpdeskModelDB
     /// <summary>
     /// LastReadAt
     /// </summary>
-    public required DateTime LastReadAt { get; set; } = DateTime.UtcNow;
+    public required DateTime LastReadAt { get; set; }
 
     /// <summary>
     /// User Id (Identity)

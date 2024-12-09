@@ -56,7 +56,7 @@ public class ProjectModelDb : EntryDescriptionSwitchableModel
     /// <summary>
     /// Scheme: Last updated DateTime
     /// </summary>
-    public DateTime SchemeLastUpdated { get; set; } = DateTime.UtcNow;
+    public DateTime SchemeLastUpdated { get; set; }
 
     /// <summary>
     /// Проверка прав/возможности пользователю редактировать данные в рамках проекта

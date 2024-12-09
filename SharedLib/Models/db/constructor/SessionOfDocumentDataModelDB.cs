@@ -63,7 +63,7 @@ public class SessionOfDocumentDataModelDB : EntryDescriptionOwnedModel, ICloneab
     /// <summary>
     /// Дата создания
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
 
     /// <summary>
     /// Последнее обновление данных опроса/анкеты (последняя активность по вводу значений)

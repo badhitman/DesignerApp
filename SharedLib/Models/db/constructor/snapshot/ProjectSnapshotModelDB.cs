@@ -13,12 +13,12 @@ public class ProjectSnapshotModelDB : EntryConstructedModel
     public required string UserId { get; set; }
 
     /// <inheritdoc/>
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
 
     /// <summary>
     /// Token
     /// </summary>
-    public Guid Token { get; set; } = Guid.NewGuid();
+    public Guid Token { get; set; }
 
     /// <summary>
     /// Directories

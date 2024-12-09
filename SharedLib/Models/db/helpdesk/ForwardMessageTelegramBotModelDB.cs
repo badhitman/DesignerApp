@@ -34,7 +34,7 @@ public class ForwardMessageTelegramBotModelDB : ForwardMessageTelegramBotModel
     /// <summary>
     /// Created At Utc
     /// </summary>
-    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAtUtc { get; set; }
 
     /// <summary>
     /// Ответы на пересланный вопрос клиента

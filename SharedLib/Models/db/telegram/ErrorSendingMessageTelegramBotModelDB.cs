@@ -15,7 +15,7 @@ public class ErrorSendingMessageTelegramBotModelDB : IdSwitchableModel
     /// <summary>
     /// CreatedAtUtc
     /// </summary>
-    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAtUtc { get; set; }
 
     /// <summary>
     /// Chat

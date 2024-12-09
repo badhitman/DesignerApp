@@ -28,7 +28,7 @@ public class PulseIssueModelDB : PulseIssueBaseModel
     /// <summary>
     /// CreatedAt
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
 
     /// <summary>
     /// User Id (Identity)

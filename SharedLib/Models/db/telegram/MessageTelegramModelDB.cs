@@ -157,7 +157,7 @@ public class MessageTelegramModelDB
     /// <summary>
     /// CreatedAtUtc
     /// </summary>
-    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAtUtc { get; set; }
 
     /// <summary>
     /// Optional. Message is a photo, available sizes of the photo

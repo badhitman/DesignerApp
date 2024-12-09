@@ -48,12 +48,12 @@ public class IssueHelpdeskModel : EntryDescriptionModel
     /// <summary>
     /// CreatedAt (UTC)
     /// </summary>
-    public DateTime CreatedAtUTC { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAtUTC { get; set; }
 
     /// <summary>
     /// LastUpdateAt
     /// </summary>
-    public DateTime LastUpdateAt { get; set; } = DateTime.UtcNow;
+    public DateTime LastUpdateAt { get; set; }
 
     /// <summary>
     /// Build
