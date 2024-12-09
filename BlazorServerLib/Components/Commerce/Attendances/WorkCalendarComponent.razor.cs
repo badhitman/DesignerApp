@@ -11,5 +11,5 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 /// </summary>
 public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
 {
-
+    private int _selected = 11;
 }

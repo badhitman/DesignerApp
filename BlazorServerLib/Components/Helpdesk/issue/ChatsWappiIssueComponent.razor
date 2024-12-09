@@ -21,7 +21,7 @@
         else
         {
             <CascadingValue Value="SendMessageWhatsAppAction">
-                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-2">
                     @foreach (string chat in chats)
                     {
                         <MudTabPanel Text="@(UsersIdentityDump.First(x => x.PhoneNumber == chat).UserName)">

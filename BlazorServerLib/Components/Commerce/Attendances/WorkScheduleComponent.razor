@@ -1,28 +1,31 @@
-﻿@using BlazorWebLib.Components.WorkScheduleWeekday
-@using MudBlazor
+﻿@using MudBlazor
 
 @inherits BlazorBusyComponentBaseModel
 
-<MudTabs AlwaysShowScrollButtons="true" Elevation="4" Rounded="true" Color="@Color.Primary">
-    <MudTabPanel Text="Понедельник">
-        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Monday" />
-    </MudTabPanel>
-    <MudTabPanel Text="Вторник">
-        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Tuesday" />
-    </MudTabPanel>
-    <MudTabPanel Text="Среда">
-        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Wednesday" />
-    </MudTabPanel>
-    <MudTabPanel Text="Четверг">
-        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Thursday" />
-    </MudTabPanel>
-    <MudTabPanel Text="Пятница">
-        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Friday" />
-    </MudTabPanel>
-    <MudTabPanel Text="Суббота">
-        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Saturday" />
-    </MudTabPanel>
-    <MudTabPanel Text="Воскресенье">
-        <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Sunday" />
-    </MudTabPanel>
-</MudTabs>
+<div class="card">
+    <div class="card-body">
+        <MudTabs AlwaysShowScrollButtons="true" Elevation="4" Rounded="true" Color="@Color.Primary">
+            <MudTabPanel Text="Понедельник">
+                <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Monday" />
+            </MudTabPanel>
+            <MudTabPanel Text="Вторник">
+                <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Tuesday" />
+            </MudTabPanel>
+            <MudTabPanel Text="Среда">
+                <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Wednesday" />
+            </MudTabPanel>
+            <MudTabPanel Text="Четверг">
+                <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Thursday" />
+            </MudTabPanel>
+            <MudTabPanel Text="Пятница">
+                <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Friday" />
+            </MudTabPanel>
+            <MudTabPanel Text="Суббота">
+                <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Saturday" />
+            </MudTabPanel>
+            <MudTabPanel Text="Воскресенье">
+                <WorkScheduleWeekdayComponent Weekday="DayOfWeek.Sunday" />
+            </MudTabPanel>
+        </MudTabs>
+    </div>
+</div>

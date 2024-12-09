@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 
-namespace BlazorWebLib.Components.WorkScheduleWeekday;
+namespace BlazorWebLib.Components.Commerce.Attendances;
 
 /// <summary>
 /// WorkScheduleWeekdayComponent
