@@ -2,16 +2,15 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using System.IO.Compression;
 using System.Security.Cryptography;
-using System.Text;
+using System.IO.Compression;
 
 namespace SharedLib;
 
 /// <summary>
 /// ToolsSystemService
 /// </summary>
-public class ToolsSystemService() : IToolsSystemService
+public class ToolsSystemService : IToolsSystemService
 {
     /// <inheritdoc/>
     public Task<TResponseModel<List<ToolsFilesResponseModel>>> GetDirectory(ToolsFilesRequestModel req)
@@ -87,7 +86,7 @@ public class ToolsSystemService() : IToolsSystemService
             return Task.FromResult(response);
         }
 
-        string _file_name = Path.Combine(remoteDirectory, fileName);
+        string _file_name = Path.Combine(remoteDirectory.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar), fileName.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar));
         FileInfo _file = new(_file_name);
         if (_file.Exists)
             _file.Delete();
@@ -106,7 +105,7 @@ public class ToolsSystemService() : IToolsSystemService
                     _file.Delete();
 
                 sdi = new(Path.GetDirectoryName(_file.FullName)!);
-                if(!sdi.Exists)
+                if (!sdi.Exists)
                     sdi.Create();
 
                 entry.ExtractToFile(_file.FullName);
@@ -115,7 +114,7 @@ public class ToolsSystemService() : IToolsSystemService
                 response.Response = Convert.ToBase64String(md5.ComputeHash(streamMd));
             }
         }
-               
+
         File.Delete(_tmpFile);
 
         return Task.FromResult(response);
@@ -137,4 +136,5 @@ public class ToolsSystemService() : IToolsSystemService
 
         return Task.FromResult(res);
     }
+
 }

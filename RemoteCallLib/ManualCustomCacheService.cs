@@ -37,7 +37,7 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
         => await GetObjectAsync<T>(new MemCacheComplexKeyModel(id, pref), token);
 
     /// <inheritdoc/>
-    public async Task<T?> GetObjectAsync<T>(string mem_key, TimeSpan? expiry = null, CancellationToken token = default)
+    public async Task<T?> GetObjectAsync<T>(string mem_key,  CancellationToken token = default)
     {
         byte[]? br = await _cache.GetAsync(mem_key, token);
         if (br is null)
@@ -47,9 +47,33 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
 
         return res;
     }
+
+    /// <inheritdoc/>
+    public async Task<byte[]?> GetBytesAsync(string mem_key, CancellationToken token = default)
+    {
+        return await _cache.GetAsync(mem_key, token);
+    }
+
+    /// <inheritdoc/>
+    public async Task<byte[]?> GetBytesAsync(MemCacheComplexKeyModel mem_key, CancellationToken token = default)
+    {
+        return await GetBytesAsync(mem_key.ToString(), token);
+    }
+
+    /// <inheritdoc/>
+    public async Task<byte[]?> GetBytesAsync(MemCachePrefixModel pref, string id = "", CancellationToken token = default)
+    {
+        return await GetBytesAsync(new MemCacheComplexKeyModel(id, pref), token);
+    }
     #endregion
 
     #region set/update
+    /// <inheritdoc/>
+    public async Task WriteBytesAsync(MemCacheComplexKeyModel key, byte[] valueData, TimeSpan? expiry = null, CancellationToken token = default)
+    {
+        await _cache.SetAsync(key.ToString(), valueData, token: token);
+    }
+
     /// <inheritdoc/>
     public async Task<bool> SetStringAsync(MemCacheComplexKeyModel key, string value, TimeSpan? expiry = null, CancellationToken token = default)
     {
@@ -70,7 +94,7 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
         => await SetStringAsync(new MemCacheComplexKeyModel(id, pref), value, expiry, token);
 
     /// <inheritdoc/>
-    public async Task SetObject<T>(MemCacheComplexKeyModel key, T value, TimeSpan? expiry = null, CancellationToken token = default)
+    public async Task SetObjectAsync<T>(MemCacheComplexKeyModel key, T value, TimeSpan? expiry = null, CancellationToken token = default)
     {
         DistributedCacheEntryOptions? opt = expiry is null
             ? null
@@ -83,11 +107,11 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
     }
 
     /// <inheritdoc/>
-    public async Task SetObject<T>(MemCachePrefixModel pref, string id, T value, TimeSpan? expiry = null, CancellationToken token = default)
-        => await SetObject(new MemCacheComplexKeyModel(id, pref), value, token: token);
+    public async Task SetObjectAsync<T>(MemCachePrefixModel pref, string id, T value, TimeSpan? expiry = null, CancellationToken token = default)
+        => await SetObjectAsync(new MemCacheComplexKeyModel(id, pref), value, token: token);
 
     /// <inheritdoc/>
-    public async Task SetObject<T>(string mem_key, T value, TimeSpan? expiry = null, CancellationToken token = default)
+    public async Task SetObjectAsync<T>(string mem_key, T value, TimeSpan? expiry = null, CancellationToken token = default)
     {
         DistributedCacheEntryOptions? opt = expiry is null
            ? null
@@ -102,7 +126,7 @@ public class ManualCustomCacheService(IDistributedCache set_cache)
 
     #region remove
     /// <inheritdoc/>
-    public async Task<bool> RemoveAsync(MemCacheComplexKeyModel key) 
+    public async Task<bool> RemoveAsync(MemCacheComplexKeyModel key)
         => await RemoveAsync(key.ToString());
 
     /// <inheritdoc/>

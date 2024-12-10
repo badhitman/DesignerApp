@@ -85,9 +85,17 @@ builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
 .Configure<MongoConfigModel>(builder.Configuration.GetSection("MongoDB"))
 .Configure<RestApiConfigBaseModel>(builder.Configuration.GetSection("ApiAccess"))
+.Configure<PartUploadSessionConfigModel>(builder.Configuration.GetSection("PartUploadSessionConfig"))
 ;
+
 builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
+});
+builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
+
 builder.Services.AddTransient<UnhandledExceptionAttribute>();
 builder.Services.AddAuthorization();
 

@@ -1196,6 +1196,11 @@ public static partial class GlobalStaticConstants
         public const string SESSION_CONTROLLER_NAME = "session";
 
         /// <summary>
+        /// Part
+        /// </summary>
+        public const string PART_CONTROLLER_NAME = "part";
+
+        /// <summary>
         /// Sessions
         /// </summary>
         public const string SESSIONS_CONTROLLER_NAME = "sessions";
@@ -1279,6 +1284,11 @@ public static partial class GlobalStaticConstants
         /// Directory
         /// </summary>
         public const string DIRECTORY_CONTROLLER_NAME = "directory";
+
+        /// <summary>
+        /// Remote
+        /// </summary>
+        public const string REMOTE_CONTROLLER_NAME = "remote";
 
         /// <summary>
         /// cmd
@@ -1686,6 +1696,16 @@ public static partial class GlobalStaticConstants
         /// Update
         /// </summary>
         public const string UPDATE_ACTION_NAME = "update";
+
+        /// <summary>
+        /// Upload
+        /// </summary>
+        public const string UPLOAD_ACTION_NAME = "upload";
+
+        /// <summary>
+        /// Start
+        /// </summary>
+        public const string START_ACTION_NAME = "start";
 
         /// <summary>
         /// Request

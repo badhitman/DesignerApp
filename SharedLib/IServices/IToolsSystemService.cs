@@ -20,8 +20,11 @@ public interface IToolsSystemService
     public Task<TResponseModel<List<ToolsFilesResponseModel>>> GetDirectory(ToolsFilesRequestModel req);
 
     /// <summary>
-    /// UpdateFile
+    /// Обновить файл (или создать, если его нет)
     /// </summary>
+    /// <remarks>
+    /// Если файла не существует, то создаёт его. В противном случае перезаписывает/обновляет.
+    /// </remarks>
     public Task<TResponseModel<string>> UpdateFile(string fileScopeName, string remoteDirectory, byte[] bytes);
 
     /// <summary>

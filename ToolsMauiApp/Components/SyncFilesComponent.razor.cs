@@ -2,13 +2,13 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Storage;
 using Microsoft.AspNetCore.Components;
-using SharedLib;
-using System.IO.Compression;
-using System.Security.Cryptography;
 using ToolsMauiApp.Components.Pages;
+using CommunityToolkit.Maui.Storage;
+using CommunityToolkit.Maui.Alerts;
+using System.Security.Cryptography;
+using System.IO.Compression;
+using SharedLib;
 
 namespace ToolsMauiApp.Components;
 
@@ -21,7 +21,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
     IToolsSystemService ToolsLocalRepo { get; set; } = default!;
 
     [Inject]
-    IToolsSystemExtService ToolsExtRepo { get; set; } = default!;
+    IToolsSystemHTTPRestService ToolsExtRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -31,6 +31,10 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
     public required Home ParentPage { get; set; }
 
 
+    string? InfoAbout;
+
+    private string searchStringQuery = "";
+
     TResponseModel<List<ToolsFilesResponseModel>>? localScan;
     bool localScanBusy;
 
@@ -39,6 +43,23 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
     ToolsFilesResponseModel[]? forDelete;
     ToolsFilesResponseModel[]? forUpdateOrAdd;
+    bool IndeterminateProgress;
+    public double ValueProgress { get; set; }
+    long forUpdateOrAddSum;
+
+    private bool FilterFunc1(ToolsFilesResponseModel element) => SyncFilesComponent.FilterFunc(element, searchStringQuery);
+
+    private static bool FilterFunc(ToolsFilesResponseModel element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Hash?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true)
+            return true;
+
+        return false;
+    }
 
     async Task SyncRun()
     {
@@ -48,6 +69,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
             return;
         }
 
+        IndeterminateProgress = true;
         await ParentPage.HoldPageUpdate(true);
         await SetBusy();
 
@@ -72,6 +94,8 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
             .Where(x => !remoteScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName))
             .Union(remoteScan.Response.Where(x => localScan.Response.Any(y => x.SafeScopeName == y.SafeScopeName && !x.Equals(y))))
             .OrderByDescending(x => x.Size)];
+
+        forUpdateOrAddSum = forUpdateOrAdd.Sum(x => x.Size);
     }
 
     async Task Send()
@@ -97,23 +121,32 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         if (forDelete.Length == 0 && forUpdateOrAdd.Length == 0)
             return;
 
+        IndeterminateProgress = true;
+        ValueProgress = 0;
         await ParentPage.HoldPageUpdate(true);
         await SetBusy();
 
         MemoryStream ms;
 
         if (forDelete.Length != 0)
+        {
+            InfoAbout = "Удаление файлов...";
             foreach (ToolsFilesResponseModel tFile in forDelete)
                 await ToolsExtRepo.DeleteFile(new DeleteRemoteFileRequestModel()
                 {
                     RemoteDirectory = MauiProgram.ConfigStore.Response.RemoteDirectory,
                     SafeScopeName = tFile.SafeScopeName,
                 });
+            InfoAbout = $"Удалено файлов: {forDelete.Length} шт.";
+        }
 
         using MD5 md5 = MD5.Create();
         string _hash;
         long totalTransferData = 0;
+        IndeterminateProgress = false;
         if (forUpdateOrAdd.Length != 0)
+        {
+            InfoAbout = "Отправка файлов...";
             foreach (ToolsFilesResponseModel tFile in forUpdateOrAdd)
             {
                 try
@@ -126,26 +159,57 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     ZipArchiveEntry entry = zip.CreateEntryFromFile(_fnT, tFile.SafeScopeName);
                     zip.Dispose();
                     ms = new MemoryStream(File.ReadAllBytes(archive));
-                    TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
 
-                    if (resUpd.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Error || x.TypeMessage >= ResultTypesEnum.Info))
-                        SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
+                    TResponseModel<PartUploadSessionModel> sessionPartUpload = await ToolsExtRepo.PartUploadSessionStart(new PartUploadSessionStartRequestModel()
+                    {
+                        RemoteDirectory = MauiProgram.ConfigStore.Response.RemoteDirectory,
+                        FileSize = ms.Length,
+                    });
 
-                    totalTransferData += ms.Length;
+                    if (sessionPartUpload.Response is null || !sessionPartUpload.Success())
+                    {
+                        SnackbarRepo.Error($"Ошибка открытия сессии отправки файла: {sessionPartUpload.Message()}");
+                        return;
+                    }
 
-                    using FileStream stream = File.OpenRead(_fnT);
-                    _hash = Convert.ToBase64String(md5.ComputeHash(stream));
+                    //if (sessionPartUpload.Response.FilePartsMetadata.Count == 1)
+                    //{
+                    //    TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
 
-                    if (_hash != resUpd.Response)
-                        SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{_fnT} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
+                    //    if (resUpd.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Error || x.TypeMessage >= ResultTypesEnum.Info))
+                    //        SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
+
+                    //    totalTransferData += ms.Length;
+                    //    ValueProgress = totalTransferData / (forUpdateOrAddSum / 100);
+                    //    InfoAbout = $"Отправлено: {GlobalTools.SizeDataAsString(totalTransferData)}";
+
+                    //    using FileStream stream = File.OpenRead(_fnT);
+                    //    _hash = Convert.ToBase64String(md5.ComputeHash(stream));
+
+                    //    if (_hash != resUpd.Response)
+                    //        SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{_fnT} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
+                    //}
+                    //else
+                    //{
+                    foreach (FilePartMetadataModel fileMd in sessionPartUpload.Response.FilePartsMetadata)
+                    {
+                        ms.Position = fileMd.PartFilePositionStart;
+                        int _fs = (int)(fileMd.PartFilePositionEnd - fileMd.PartFilePositionStart);
+                        byte[] _buff = new byte[_fs];
+                        ms.Read(_buff, 0, _fs);
+                        ResponseBaseModel _subRest = await ToolsExtRepo.PartUpload(new SessionFileRequestModel(sessionPartUpload.Response.SessionId, fileMd.PartFileId, _buff, Path.GetFileName(tFile.FullName)));
+                    }
+                    //}
 
                     File.Delete(archive);
+
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                 }
             }
+        }
 
         await SyncRun();
         await ParentPage.HoldPageUpdate(false);

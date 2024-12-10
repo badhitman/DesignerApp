@@ -10,11 +10,44 @@ using SharedLib;
 namespace ToolsMauiApp;
 
 /// <summary>
-/// ToolsSystemService
+/// ToolsSystemHTTPRestService
 /// </summary>
-public class ToolsSystemExtService(IHttpClientFactory HttpClientFactory) : IToolsSystemExtService
+public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : IToolsSystemHTTPRestService
 {
     private static readonly string snh = nameof(ConfigStoreModel.RemoteDirectory);
+
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> PartUpload(SessionFileRequestModel req)
+    {
+        using HttpClient httpClient = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
+
+        MultipartFormDataContent form = new()
+        {
+            { new ByteArrayContent(req.Data, 0, req.Data.Length), "uploadedFile", Path.GetFileName(req.FileName) }
+        };
+
+        httpClient.DefaultRequestHeaders.Add($"{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}", Convert.ToBase64String(Encoding.UTF8.GetBytes(req.SessionId)));
+        httpClient.DefaultRequestHeaders.Add($"{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}", Convert.ToBase64String(Encoding.UTF8.GetBytes(req.FileId)));
+
+        string routeUri = $"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}";
+        HttpResponseMessage response = await httpClient.PostAsync(routeUri, form);
+
+        response.EnsureSuccessStatusCode();
+        httpClient.Dispose();
+        string rj = response.Content.ReadAsStringAsync().Result;
+
+        return JsonConvert.DeserializeObject<ResponseBaseModel>(rj)!;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<PartUploadSessionModel>> PartUploadSessionStart(PartUploadSessionStartRequestModel req)
+    {
+        using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
+        using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}-{GlobalStaticConstants.Routes.START_ACTION_NAME}", req);
+        string rj = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<TResponseModel<PartUploadSessionModel>>(rj)!;
+    }
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> DeleteFile(DeleteRemoteFileRequestModel req)
@@ -89,7 +122,6 @@ public class ToolsSystemExtService(IHttpClientFactory HttpClientFactory) : ITool
 
         MultipartFormDataContent form = new()
         {
-            //{ new StringContent(nameof(tFile.SafeScopeName)), tFile.SafeScopeName },
             { new ByteArrayContent(bytes, 0, bytes.Length), "uploadedFile", fileScopeName }
         };
 

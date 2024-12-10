@@ -17,7 +17,7 @@ public partial class ExeCommandsComponent : BlazorBusyComponentBaseModel
     IToolsSystemService ToolsLocalRepo { get; set; } = default!;
 
     [Inject]
-    IToolsSystemExtService ToolsExtRepo { get; set; } = default!;
+    IToolsSystemHTTPRestService ToolsExtRepo { get; set; } = default!;
 
 
     /// <summary>

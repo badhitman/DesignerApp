@@ -211,7 +211,7 @@ public class HelpdeskImplementService(
         };
 
         if (!string.IsNullOrWhiteSpace(cacheToken))
-            await cacheRepo.SetObject(cacheToken, res, TimeSpan.FromSeconds(hdConf.Value.ConsoleSegmentCacheLifetimeSeconds));
+            await cacheRepo.SetObjectAsync(cacheToken, res, TimeSpan.FromSeconds(hdConf.Value.ConsoleSegmentCacheLifetimeSeconds));
 
         return res;
     }

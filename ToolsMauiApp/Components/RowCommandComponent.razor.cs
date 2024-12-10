@@ -13,7 +13,7 @@ namespace ToolsMauiApp.Components;
 public partial class RowCommandComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IToolsSystemExtService ToolsExtRepo { get; set; } = default!;
+    IToolsSystemHTTPRestService ToolsExtRepo { get; set; } = default!;
 
 
     /// <summary>

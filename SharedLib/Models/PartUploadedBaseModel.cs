@@ -5,12 +5,12 @@
 namespace SharedLib;
 
 /// <summary>
-/// IToolsSystemExtService
+/// PartUploadedBaseModel
 /// </summary>
-public interface IToolsSystemExtService : IToolsSystemService
+public class PartUploadedBaseModel
 {
     /// <summary>
-    /// GetMe
+    /// SessionId
     /// </summary>
-    public Task<TResponseModel<ExpressProfileResponseModel>> GetMe();
+    public required string SessionId { get; set; }
 }
