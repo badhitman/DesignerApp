@@ -10,12 +10,14 @@
 		<PublishTrimmed>true</PublishTrimmed>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <RunAOTCompilation>True</RunAOTCompilation>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <RunAOTCompilation>false</RunAOTCompilation>
+		<WasmStripILAfterAOT>false</WasmStripILAfterAOT>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <RunAOTCompilation>True</RunAOTCompilation>
+		<WasmStripILAfterAOT>True</WasmStripILAfterAOT>
 	</PropertyGroup>
 
 	<ItemGroup>
