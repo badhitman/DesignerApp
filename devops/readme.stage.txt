@@ -1,6 +1,6 @@
 STAGING
 
-systemctl stop web.app.stage.service comm.app.stage.service tg.app.stage.service api.app.stage.service bus.app.stage.service constructor.app.stage.service hd.app.stage.service
+systemctl stop api.app.stage.service web.app.stage.service comm.app.stage.service tg.app.stage.service bus.app.stage.service constructor.app.stage.service hd.app.stage.service
 
 # rm -r /srv/git/builds/*
 rm -r /srv/services.stage/*
