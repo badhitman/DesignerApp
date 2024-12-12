@@ -162,7 +162,7 @@
 <div class="d-grid gap-2 mt-3">
     @if (forDelete is null || forUpdateOrAdd is null)
     {
-        <button disabled="@(IsBusyProgress || remoteScanBusy || localScanBusy)" @onclick="SyncRun" class="btn btn-primary" type="button">@(IsBusyProgress ? "Подготовка..." : "Подготовить данные") </button>
+        <button disabled="@(IsBusyProgress || remoteScanBusy || localScanBusy)" @onclick="SyncRun" class="btn btn-primary" type="button">@(IsBusyProgress ? "Сравнение данных..." : "Сравнить содержимое папок") </button>
     }
     else
     {

@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// SessionFileRequestModel
 /// </summary>
-public class SessionFileRequestModel(string sessionId, string fileId, byte[] data, string fileName) : SessionFileTokensModel(sessionId, fileId)
+public class SessionFileRequestModel(string sessionId, string fileId, byte[] data, string fileName, uint partFileIndex) : SessionFileTokensModel(sessionId, fileId)
 {
     /// <summary>
     /// Data
@@ -18,4 +18,9 @@ public class SessionFileRequestModel(string sessionId, string fileId, byte[] dat
     /// File name
     /// </summary>
     public string FileName { get; set; } = fileName;
+
+    /// <summary>
+    /// Номер (порядковый) порции данных
+    /// </summary>
+    public uint PartFileIndex { get; set; } = partFileIndex;
 }

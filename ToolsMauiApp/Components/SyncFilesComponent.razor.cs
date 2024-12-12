@@ -145,8 +145,8 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         }
 
         using MD5 md5 = MD5.Create();
-        string _hash;
-        long totalTransferData = 0;
+        //string _hash;
+        long totalTransferData = 0, totalReadData = 0;
         IndeterminateProgress = false;
         StateHasChanged();
         if (forUpdateOrAdd.Length != 0)
@@ -156,6 +156,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
             foreach (ToolsFilesResponseModel tFile in forUpdateOrAdd)
             {
                 _cntFiles++;
+                totalReadData += tFile.Size;
                 try
                 {
                     string archive = Path.GetTempFileName();
@@ -181,8 +182,8 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     }
 
                     totalTransferData += ms.Length;
-                    ValueProgress = totalTransferData / (forUpdateOrAddSum / 100);
-                    InfoAbout = $"Отправлено: {_cntFiles} файлов ({GlobalTools.SizeDataAsString(totalTransferData)})";
+                    ValueProgress = totalReadData / (forUpdateOrAddSum / 100);
+                    InfoAbout = $"Отправлено файлов: {_cntFiles} шт. (~{GlobalTools.SizeDataAsString(totalReadData)} zip:{GlobalTools.SizeDataAsString(totalTransferData)})";
 
                     //if (sessionPartUpload.Response.FilePartsMetadata.Count == 1)
                     //{
@@ -190,8 +191,6 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
                     //    if (resUpd.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Error || x.TypeMessage >= ResultTypesEnum.Info))
                     //        SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
-
-
 
                     //    using FileStream stream = File.OpenRead(_fnT);
                     //    _hash = Convert.ToBase64String(md5.ComputeHash(stream));
@@ -201,18 +200,17 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     //}
                     //else
                     //{
-                    foreach (FilePartMetadataModel fileMd in sessionPartUpload.Response.FilePartsMetadata)
-                    {
-                        ms.Position = fileMd.PartFilePositionStart;
-                        byte[] _buff = new byte[fileMd.PartFileSize];
-                        ms.Read(_buff, 0, _buff.Length);
-                        ResponseBaseModel _subRest = await ToolsExtRepo.PartUpload(new SessionFileRequestModel(sessionPartUpload.Response.SessionId, fileMd.PartFileId, _buff, Path.GetFileName(tFile.FullName)));
-                        if (!_subRest.Success())
-                            SnackbarRepo.ShowMessagesResponse(_subRest.Messages);
+                        foreach (FilePartMetadataModel fileMd in sessionPartUpload.Response.FilePartsMetadata)
+                        {
+                            ms.Position = fileMd.PartFilePositionStart;
+                            byte[] _buff = new byte[fileMd.PartFileSize];
+                            ms.Read(_buff, 0, _buff.Length);
+                            ResponseBaseModel _subRest = await ToolsExtRepo.PartUpload(new SessionFileRequestModel(sessionPartUpload.Response.SessionId, fileMd.PartFileId, _buff, Path.GetFileName(tFile.FullName), fileMd.PartFileIndex));
+                            if (!_subRest.Success())
+                                SnackbarRepo.ShowMessagesResponse(_subRest.Messages);
 
-
-                        StateHasChanged();
-                    }
+                            StateHasChanged();
+                        }
                     //}
 
                     File.Delete(archive);

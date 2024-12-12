@@ -30,7 +30,7 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
     public async Task<ResponseBaseModel> PartUpload(IFormFile uploadedFile, [FromHeader(Name = $"{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}")] string sessionToken, [FromHeader(Name = $"{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}")] string fileToken)
     {
         if (uploadedFile is null || uploadedFile.Length == 0)
-            return ResponseBaseModel.CreateError("Данные файла отсутствуют");
+            return ResponseBaseModel.CreateError($"Данные файла отсутствуют - {nameof(PartUpload)}");
 
         sessionToken = Encoding.UTF8.GetString(Convert.FromBase64String(sessionToken));
         fileToken = Encoding.UTF8.GetString(Convert.FromBase64String(fileToken));
@@ -43,14 +43,22 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
         string _file_name = Path.Combine(sessionUploadPart.RemoteDirectory, uploadedFile.FileName.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar).Trim());
         using MemoryStream ms = new();
         uploadedFile.OpenReadStream().CopyTo(ms);
+        FilePartMetadataModel currentPartMetadata = sessionUploadPart.FilePartsMetadata.First(x => x.PartFileId == fileToken);
 
         if (sessionUploadPart.FilePartsMetadata.Count == 1)
+        {
+            await Task.WhenAll([
+                Task.Run(async () => { await memCache.RemoveAsync(new MemCacheComplexKeyModel(fileToken, PartUploadCacheFilesMarkersPrefix)); }),
+                Task.Run(async () => { await memCache.RemoveAsync(new MemCacheComplexKeyModel(fileToken, PartUploadCacheFilesDumpsPrefix)); }),
+                Task.Run(async () => { await memCache.RemoveAsync(new MemCacheComplexKeyModel(sessionToken, PartUploadCacheSessionsPrefix)); })]);
+            
             return await toolsRepo.UpdateFile(_file_name, sessionUploadPart.RemoteDirectory, ms.ToArray());
+        }
         else
         {
-            FilePartMetadataModel currentPartMetadata = sessionUploadPart.FilePartsMetadata.First(x => x.PartFileId == fileToken);
+            
             FilePartMetadataModel[] partsFiles = sessionUploadPart.FilePartsMetadata
-                .SkipWhile(x => x.PartFileId.Equals(fileToken))
+                .Where(x => !x.PartFileId.Equals(fileToken))
                 .ToArray();
 
             int _countMarkers = 0;
@@ -61,8 +69,13 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
                     Interlocked.Increment(ref _countMarkers);
             })));
 
-
-            if (_countMarkers == 0)
+            if (_countMarkers != 0)
+            {
+                await Task.WhenAll([
+                    Task.Run(async () => { await memCache.SetStringAsync(PartUploadCacheFilesMarkersPrefix, fileToken,DateTime.Now.ToString(), TimeSpan.FromSeconds(сonfigPartUploadSession.Value.PartUploadSessionTimeoutSeconds)); }),
+                    Task.Run(async () => { await memCache.WriteBytesAsync(new MemCacheComplexKeyModel(fileToken,PartUploadCacheFilesDumpsPrefix), ms.ToArray(), TimeSpan.FromSeconds(сonfigPartUploadSession.Value.PartUploadSessionTimeoutSeconds)); })]);
+            }
+            else
             {
                 ResponseBaseModel response = new();
                 ConcurrentDictionary<string, byte[]> filesDumps = [];
@@ -139,6 +152,7 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
             SessionId = Guid.NewGuid().ToString(),
 
             RemoteDirectory = _di.FullName,
+            FileName = req.FileName
         };
 
         long scaleFileSize = req.FileSize;
@@ -179,7 +193,7 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
 
         if (uploadedFile is null || uploadedFile.Length == 0)
         {
-            response.AddError("Данные файла отсутствуют");
+            response.AddError($"Данные файла отсутствуют - {nameof(FileUpdateOrCreate)}");
             return response;
         }
 
