@@ -9,6 +9,7 @@ using CommunityToolkit.Maui.Alerts;
 using System.Security.Cryptography;
 using System.IO.Compression;
 using SharedLib;
+using Microsoft.Extensions.Logging;
 
 namespace ToolsMauiApp.Components;
 
@@ -17,6 +18,9 @@ namespace ToolsMauiApp.Components;
 /// </summary>
 public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 {
+    [Inject]
+    ILogger<SyncFilesComponent> LoggerRepo { get; set; } = default!;
+
     [Inject]
     IToolsSystemService ToolsLocalRepo { get; set; } = default!;
 
@@ -176,6 +180,10 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                         return;
                     }
 
+                    totalTransferData += ms.Length;
+                    ValueProgress = totalTransferData / (forUpdateOrAddSum / 100);
+                    InfoAbout = $"Отправлено: {_cntFiles} файлов ({GlobalTools.SizeDataAsString(totalTransferData)})";
+
                     //if (sessionPartUpload.Response.FilePartsMetadata.Count == 1)
                     //{
                     //    TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
@@ -183,10 +191,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     //    if (resUpd.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Error || x.TypeMessage >= ResultTypesEnum.Info))
                     //        SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
 
-                    //    totalTransferData += ms.Length;
-                    //    ValueProgress = totalTransferData / (forUpdateOrAddSum / 100);
-                    //    InfoAbout = $"Отправлено: {GlobalTools.SizeDataAsString(totalTransferData)}";
-                    //    StateHasChanged();
+
 
                     //    using FileStream stream = File.OpenRead(_fnT);
                     //    _hash = Convert.ToBase64String(md5.ComputeHash(stream));
@@ -196,31 +201,28 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     //}
                     //else
                     //{
-                    
                     foreach (FilePartMetadataModel fileMd in sessionPartUpload.Response.FilePartsMetadata)
                     {
                         ms.Position = fileMd.PartFilePositionStart;
-                        //int _fs = (int)(fileMd.PartFileSize - fileMd.PartFilePositionStart);
                         byte[] _buff = new byte[fileMd.PartFileSize];
                         ms.Read(_buff, 0, _buff.Length);
                         ResponseBaseModel _subRest = await ToolsExtRepo.PartUpload(new SessionFileRequestModel(sessionPartUpload.Response.SessionId, fileMd.PartFileId, _buff, Path.GetFileName(tFile.FullName)));
                         if (!_subRest.Success())
                             SnackbarRepo.ShowMessagesResponse(_subRest.Messages);
 
-                        totalTransferData += _buff.Length;
-                        ValueProgress = totalTransferData / (forUpdateOrAddSum / 100);
-                        InfoAbout = $"отправлено файлов: {_cntFiles} ({GlobalTools.SizeDataAsString(totalTransferData)})";
+
                         StateHasChanged();
                     }
                     //}
 
                     File.Delete(archive);
-
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    SnackbarRepo.Add(ex.Message, MudBlazor.Severity.Error, c => c.DuplicatesBehavior = MudBlazor.SnackbarDuplicatesBehavior.Allow);
+                    LoggerRepo.LogError(ex, $"Ошибка отправки порции данных: {tFile}");
                 }
+                StateHasChanged();
             }
         }
 
