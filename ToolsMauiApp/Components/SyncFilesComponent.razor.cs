@@ -148,8 +148,10 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         if (forUpdateOrAdd.Length != 0)
         {
             InfoAbout = "Отправка файлов...";
+            int _cntFiles = 0;
             foreach (ToolsFilesResponseModel tFile in forUpdateOrAdd)
             {
+                _cntFiles++;
                 try
                 {
                     string archive = Path.GetTempFileName();
@@ -194,10 +196,9 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     //}
                     //else
                     //{
-                    int _cntFiles = 0;
+                    
                     foreach (FilePartMetadataModel fileMd in sessionPartUpload.Response.FilePartsMetadata)
                     {
-                        _cntFiles++;
                         ms.Position = fileMd.PartFilePositionStart;
                         //int _fs = (int)(fileMd.PartFileSize - fileMd.PartFilePositionStart);
                         byte[] _buff = new byte[fileMd.PartFileSize];
