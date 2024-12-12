@@ -27,7 +27,7 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
     /// Загрузка порции файла
     /// </summary>
     [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}")]
-    public async Task<ResponseBaseModel> PartUpload(IFormFile uploadedFile, [FromHeader(Name = $"{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}")] string sessionToken, [FromHeader(Name = $"{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}")] string fileToken)
+    public async Task<ResponseBaseModel> PartUpload(IFormFile uploadedFile, [FromQuery(Name = $"{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}")] string sessionToken, [FromQuery(Name = $"{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}")] string fileToken)
     {
         if (uploadedFile is null || uploadedFile.Length == 0)
             return ResponseBaseModel.CreateError($"Данные файла отсутствуют - {nameof(PartUpload)}");
@@ -185,7 +185,7 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
     /// </remarks>
     [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}")]
-    public async Task<TResponseModel<string>> FileUpdateOrCreate(IFormFile uploadedFile, [FromHeader(Name = $"{GlobalStaticConstants.Routes.REMOTE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}")] string remoteDirectory)
+    public async Task<TResponseModel<string>> FileUpdateOrCreate(IFormFile uploadedFile, [FromQuery(Name = $"{GlobalStaticConstants.Routes.REMOTE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}")] string remoteDirectory)
     {
         TResponseModel<string> response = new();
         remoteDirectory = Encoding.UTF8.GetString(Convert.FromBase64String(remoteDirectory));

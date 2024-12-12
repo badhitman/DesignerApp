@@ -19,7 +19,7 @@ chmod -R 777 /srv/services.stage
 chown -R www-data:www-data /srv/git/builds
 chmod -R 777 /srv/git/builds
 
-systemctl start comm.app.stage.service web.app.stage.service bus.app.stage.service tg.app.stage.service api.app.stage.service hd.app.stage.service constructor.app.stage.service
+systemctl start api.app.stage.service comm.app.stage.service web.app.stage.service bus.app.stage.service tg.app.stage.service hd.app.stage.service constructor.app.stage.service
 
 
 journalctl -f -u web.app.stage.service

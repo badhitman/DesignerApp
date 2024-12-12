@@ -14,7 +14,7 @@ namespace ToolsMauiApp;
 /// </summary>
 public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : IToolsSystemHTTPRestService
 {
-    private static readonly string snh = nameof(ConfigStoreModel.RemoteDirectory);
+    //private static readonly string snh = nameof(ConfigStoreModel.RemoteDirectory);
 
 
     /// <inheritdoc/>
@@ -27,10 +27,11 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
             { new ByteArrayContent(req.Data, 0, req.Data.Length), "uploadedFile", Path.GetFileName(req.FileName) }
         };
 
-        httpClient.DefaultRequestHeaders.Add($"{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}", Convert.ToBase64String(Encoding.UTF8.GetBytes(req.SessionId)));
-        httpClient.DefaultRequestHeaders.Add($"{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}", Convert.ToBase64String(Encoding.UTF8.GetBytes(req.FileId)));
-
         string routeUri = $"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}";
+
+        routeUri += $"?{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}={Convert.ToBase64String(Encoding.UTF8.GetBytes(req.SessionId))}";
+        routeUri += $"&{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}={Convert.ToBase64String(Encoding.UTF8.GetBytes(req.FileId))}";
+
         HttpResponseMessage response = await httpClient.PostAsync(routeUri, form);
 
         response.EnsureSuccessStatusCode();
@@ -125,10 +126,9 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
             { new ByteArrayContent(bytes, 0, bytes.Length), "uploadedFile", fileScopeName }
         };
 
-        if (!httpClient.DefaultRequestHeaders.Any(x => x.Key == snh))
-            httpClient.DefaultRequestHeaders.Add(snh, Convert.ToBase64String(Encoding.UTF8.GetBytes(remoteDirectory)));
-
         string routeUri = $"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}";
+        routeUri += $"?{GlobalStaticConstants.Routes.REMOTE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}={Convert.ToBase64String(Encoding.UTF8.GetBytes(remoteDirectory))}";
+
         HttpResponseMessage response = await httpClient.PostAsync(routeUri, form);
 
         response.EnsureSuccessStatusCode();

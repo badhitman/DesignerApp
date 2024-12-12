@@ -76,8 +76,8 @@ cp -r /srv/git/builds/ConstructorService /srv/services/ConstructorService
 cp -r /srv/git/builds/Telegram.Bot.Polling /srv/services/Telegram.Bot.Polling
 cp -r /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
 
-chown -R www-data:www-data /srv/services
-chmod -R 777 /srv/services
+chown -R www-data:www-data /srv/services.stage
+chmod -R 777 /srv/services.stage
 
 chown -R www-data:www-data /srv/tmp
 chmod -R 777 /srv/tmp

@@ -145,7 +145,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         }
 
         using MD5 md5 = MD5.Create();
-        //string _hash;
+        string _hash;
         long totalTransferData = 0, totalReadData = 0;
         IndeterminateProgress = false;
         StateHasChanged();
@@ -153,7 +153,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         {
             InfoAbout = "Отправка файлов...";
             int _cntFiles = 0;
-            foreach (ToolsFilesResponseModel tFile in forUpdateOrAdd)
+            foreach (ToolsFilesResponseModel tFile in forUpdateOrAdd)//.OrderBy(x => x.Size)
             {
                 _cntFiles++;
                 totalReadData += tFile.Size;
@@ -185,21 +185,21 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     ValueProgress = totalReadData / (forUpdateOrAddSum / 100);
                     InfoAbout = $"Отправлено файлов: {_cntFiles} шт. (~{GlobalTools.SizeDataAsString(totalReadData)} zip:{GlobalTools.SizeDataAsString(totalTransferData)})";
 
-                    //if (sessionPartUpload.Response.FilePartsMetadata.Count == 1)
-                    //{
-                    //    TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
+                    if (sessionPartUpload.Response.FilePartsMetadata.Count == 1)
+                    {
+                        TResponseModel<string> resUpd = await ToolsExtRepo.UpdateFile(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory, ms.ToArray());
 
-                    //    if (resUpd.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Error || x.TypeMessage >= ResultTypesEnum.Info))
-                    //        SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
+                        if (resUpd.Messages.Any(x => x.TypeMessage == ResultTypesEnum.Error || x.TypeMessage >= ResultTypesEnum.Info))
+                            SnackbarRepo.ShowMessagesResponse(resUpd.Messages);
 
-                    //    using FileStream stream = File.OpenRead(_fnT);
-                    //    _hash = Convert.ToBase64String(md5.ComputeHash(stream));
+                        using FileStream stream = File.OpenRead(_fnT);
+                        _hash = Convert.ToBase64String(md5.ComputeHash(stream));
 
-                    //    if (_hash != resUpd.Response)
-                    //        SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{_fnT} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
-                    //}
-                    //else
-                    //{
+                        if (_hash != resUpd.Response)
+                            SnackbarRepo.Error($"Hash file conflict `{tFile.FullName}`: L[{_hash}]{_fnT} R[{Path.Combine(tFile.SafeScopeName, MauiProgram.ConfigStore.Response.RemoteDirectory)}]");
+                    }
+                    else
+                    {
                         foreach (FilePartMetadataModel fileMd in sessionPartUpload.Response.FilePartsMetadata)
                         {
                             ms.Position = fileMd.PartFilePositionStart;
@@ -211,7 +211,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
                             StateHasChanged();
                         }
-                    //}
+                    }
 
                     File.Delete(archive);
                 }
