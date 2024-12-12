@@ -144,6 +144,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         string _hash;
         long totalTransferData = 0;
         IndeterminateProgress = false;
+        StateHasChanged();
         if (forUpdateOrAdd.Length != 0)
         {
             InfoAbout = "Отправка файлов...";
@@ -183,6 +184,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     //    totalTransferData += ms.Length;
                     //    ValueProgress = totalTransferData / (forUpdateOrAddSum / 100);
                     //    InfoAbout = $"Отправлено: {GlobalTools.SizeDataAsString(totalTransferData)}";
+                    //    StateHasChanged();
 
                     //    using FileStream stream = File.OpenRead(_fnT);
                     //    _hash = Convert.ToBase64String(md5.ComputeHash(stream));
@@ -192,19 +194,22 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     //}
                     //else
                     //{
+                    int _cntFiles = 0;
                     foreach (FilePartMetadataModel fileMd in sessionPartUpload.Response.FilePartsMetadata)
                     {
+                        _cntFiles++;
                         ms.Position = fileMd.PartFilePositionStart;
-                        int _fs = (int)(fileMd.PartFileSize - fileMd.PartFilePositionStart);
-                        byte[] _buff = new byte[_fs];
-                        ms.Read(_buff, 0, _fs);
+                        //int _fs = (int)(fileMd.PartFileSize - fileMd.PartFilePositionStart);
+                        byte[] _buff = new byte[fileMd.PartFileSize];
+                        ms.Read(_buff, 0, _buff.Length);
                         ResponseBaseModel _subRest = await ToolsExtRepo.PartUpload(new SessionFileRequestModel(sessionPartUpload.Response.SessionId, fileMd.PartFileId, _buff, Path.GetFileName(tFile.FullName)));
                         if (!_subRest.Success())
                             SnackbarRepo.ShowMessagesResponse(_subRest.Messages);
 
-                        totalTransferData += _fs;
+                        totalTransferData += _buff.Length;
                         ValueProgress = totalTransferData / (forUpdateOrAddSum / 100);
-                        InfoAbout = $"Отправлено: {GlobalTools.SizeDataAsString(totalTransferData)}";
+                        InfoAbout = $"отправлено файлов: {_cntFiles} ({GlobalTools.SizeDataAsString(totalTransferData)})";
+                        StateHasChanged();
                     }
                     //}
 

@@ -1,11 +1,11 @@
 ﻿@using SharedLib
 @inherits BlazorBusyComponentBaseModel
 
-<h4>Синхронизация папок<sup>@InfoAbout</sup></h4>
+<h4>Синхронизация папок <sup class="font-monospace">@InfoAbout</sup></h4>
 
 @if (IsBusyProgress)
 {
-        <MudProgressLinear Color="Color.Primary" Indeterminate="IndeterminateProgress" Class="my-3" Value="ValueProgress" />
+    <MudProgressLinear Color="Color.Primary" Indeterminate="IndeterminateProgress" Class="my-3" Value="ValueProgress" />
 }
 
 <div class="row row-cols-1 row-cols-md-2 g-4">
@@ -15,29 +15,29 @@
                 <h5 class="card-title">Локальный каталог</h5>
                 @if (localScanBusy)
                 {
-                        <div class="text-center">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Загрузка...</span>
-                            </div>
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Загрузка...</span>
                         </div>
+                    </div>
                 }
                 else if (localScan?.Response is not null)
                 {
-                        <dl class="row">
-                            <dt class="col-sm-3">Файлов всего</dt>
-                            <dd class="col-sm-9">@localScan.Response.Count</dd>
+                    <dl class="row">
+                        <dt class="col-sm-3">Файлов всего</dt>
+                        <dd class="col-sm-9">@localScan.Response.Count</dd>
 
-                            <dt class="col-sm-3">Размер</dt>
-                            <dd class="col-sm-9">
+                        <dt class="col-sm-3">Размер</dt>
+                        <dd class="col-sm-9">
                             @GlobalTools.SizeDataAsString(localScan.Response.Sum(x => x.Size))
-                            </dd>
-                        </dl>
+                        </dd>
+                    </dl>
                 }
                 else
                 {
-                        <p class="card-text">
-                            Данные отсутствуют.
-                        </p>
+                    <p class="card-text">
+                        Данные отсутствуют.
+                    </p>
                 }
             </div>
         </div>
@@ -48,29 +48,29 @@
                 <h5 class="card-title">Удалённый каталог</h5>
                 @if (remoteScanBusy)
                 {
-                        <div class="text-center">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Загрузка...</span>
-                            </div>
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Загрузка...</span>
                         </div>
+                    </div>
                 }
                 else if (remoteScan?.Response is not null)
                 {
-                        <dl class="row">
-                            <dt class="col-sm-3">Файлов всего</dt>
-                            <dd class="col-sm-9">@remoteScan.Response.Count</dd>
+                    <dl class="row">
+                        <dt class="col-sm-3">Файлов всего</dt>
+                        <dd class="col-sm-9">@remoteScan.Response.Count</dd>
 
-                            <dt class="col-sm-3">Размер</dt>
-                            <dd class="col-sm-9">
+                        <dt class="col-sm-3">Размер</dt>
+                        <dd class="col-sm-9">
                             @GlobalTools.SizeDataAsString(remoteScan.Response.Sum(x => x.Size))
-                            </dd>
-                        </dl>
+                        </dd>
+                    </dl>
                 }
                 else
                 {
-                        <p class="card-text">
-                            Данные отсутствуют.
-                        </p>
+                    <p class="card-text">
+                        Данные отсутствуют.
+                    </p>
                 }
             </div>
         </div>
@@ -81,34 +81,34 @@
 {
     if (forDelete.Length == 0)
     {
-                <p class="card-text">
-                    Удаления файлов не требуется.
-                </p>
+        <p class="card-text">
+            Удаления файлов не требуется.
+        </p>
     }
     else
     {
-                <div class="card">
-                    <div class="card-body">
-                        <MudTable Items="@forDelete.OrderBy(x => x.ScopeName)" Dense="true" Hover="true" Bordered="true" Striped="true" Filter="new Func<ToolsFilesResponseModel,bool>(FilterFunc1)">
-                            <ToolBarContent>
-                                <MudText Typo="Typo.h6">Удаление файлов (@forDelete.Length шт. @GlobalTools.SizeDataAsString(forDelete.Sum(x => x.Size))):</MudText>
-                                <MudSpacer />
-                                <MudTextField @bind-Value="searchStringQuery" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                            </ToolBarContent>
-                            <HeaderContent>
-                                <MudTh>SafeScopeName</MudTh>
-                                <MudTh>Hash</MudTh>
-                                <MudTh>Size</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="SafeScopeName">@context.SafeScopeName</MudTd>
-                                <MudTd DataLabel="Hash">@context.Hash</MudTd>
-                                <MudTd DataLabel="Size">@GlobalTools.SizeDataAsString(context.Size)</MudTd>
-                            </RowTemplate>
-                            <PagerContent>
-                                <MudTablePager />
-                            </PagerContent>
-                        </MudTable>
+        <div class="card">
+            <div class="card-body">
+                <MudTable Items="@forDelete.OrderBy(x => x.ScopeName)" Dense="true" Hover="true" Bordered="true" Striped="true" Filter="new Func<ToolsFilesResponseModel,bool>(FilterFunc1)">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Удаление файлов (@forDelete.Length шт. @GlobalTools.SizeDataAsString(forDelete.Sum(x => x.Size))):</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchStringQuery" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>SafeScopeName</MudTh>
+                        <MudTh>Hash</MudTh>
+                        <MudTh>Size</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="SafeScopeName">@context.SafeScopeName</MudTd>
+                        <MudTd DataLabel="Hash">@context.Hash</MudTd>
+                        <MudTd DataLabel="Size">@GlobalTools.SizeDataAsString(context.Size)</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
 
                 @* <ul>
                     @foreach (ToolsFilesResponseModel _tfd in forDelete.OrderBy(x => x.ScopeName))
@@ -116,37 +116,36 @@
                         <li>@_tfd.ToString()</li>
                     }
                 </ul> *@
-                    </div>
-                </div>
+            </div>
+        </div>
     }
-
     if (forUpdateOrAdd.Length == 0)
     {
-                <p class="card-text">
-                    Изменённых или новых файлов нет.
-                </p>
+        <p class="card-text">
+            Изменённых или новых файлов нет.
+        </p>
     }
     else
     {
-                <div class="card">
-                    <div class="card-body">
-                        <MudTable Items="@forUpdateOrAdd.OrderBy(x => x.ScopeName)" Dense="true" Hover="true" Bordered="true" Striped="true" Filter="new Func<ToolsFilesResponseModel,bool>(FilterFunc1)">
-                            <ToolBarContent>
-                                <MudText Typo="Typo.h6">
-                                    Изменения файлов
-                                    <sup>
-                                        (@forUpdateOrAdd.Length шт. @GlobalTools.SizeDataAsString(forUpdateOrAddSum)):
-                                    </sup>
-                                </MudText>
-                                <MudSpacer />
-                                <MudTextField @bind-Value="searchStringQuery" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                            </ToolBarContent>
-                            <HeaderContent>
-                                <MudTh>SafeScopeName</MudTh>
-                                <MudTh>Hash</MudTh>
-                                <MudTh>Size</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
+        <div class="card">
+            <div class="card-body">
+                <MudTable Items="@forUpdateOrAdd.OrderBy(x => x.ScopeName)" Dense="true" Hover="true" Bordered="true" Striped="true" Filter="new Func<ToolsFilesResponseModel,bool>(FilterFunc1)">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">
+                            Изменения файлов
+                            <sup>
+                                (@forUpdateOrAdd.Length шт. @GlobalTools.SizeDataAsString(forUpdateOrAddSum)):
+                            </sup>
+                        </MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchStringQuery" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>SafeScopeName</MudTh>
+                        <MudTh>Hash</MudTh>
+                        <MudTh>Size</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
                         @{
                             ToolsFilesResponseModel? _localMd = localScan?.Response?.FirstOrDefault(x => x.SafeScopeName == context.SafeScopeName);
                             ToolsFilesResponseModel? _remoteMd = remoteScan?.Response?.FirstOrDefault(x => x.SafeScopeName == context.SafeScopeName);
@@ -154,14 +153,14 @@
                             _localMd is null ? "" : GlobalTools.SizeDataAsString(_localMd.Size),
                             _remoteMdSize = _remoteMd is null ? "" : GlobalTools.SizeDataAsString(_remoteMd.Size);
                         }
-                                <MudTd DataLabel="SafeScopeName">@context.SafeScopeName</MudTd>
-                                <MudTd DataLabel="Hash">@($"L[{_localMd?.Size} {_localMd?.Hash}] R[{(_remoteMd is null ? "новый" : $"{_remoteMd.Size} {_remoteMd.Hash}")}]")</MudTd>
-                                <MudTd DataLabel="Size">@GlobalTools.SizeDataAsString(context.Size)</MudTd>
-                            </RowTemplate>
-                            <PagerContent>
-                                <MudTablePager />
-                            </PagerContent>
-                        </MudTable>
+                        <MudTd DataLabel="SafeScopeName">@context.SafeScopeName</MudTd>
+                        <MudTd DataLabel="Hash">@($"L[{_localMd?.Size} {_localMd?.Hash}] R[{(_remoteMd is null ? "новый" : $"{_remoteMd.Size} {_remoteMd.Hash}")}]")</MudTd>
+                        <MudTd DataLabel="Size">@GlobalTools.SizeDataAsString(context.Size)</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
 
 
                 @* <ul>
@@ -178,18 +177,18 @@
                         </li>
                     }
                 </ul> *@
-                    </div>
-                </div>
+            </div>
+        </div>
     }
 }
 
 <div class="d-grid gap-2 mt-3">
     @if (forDelete is null || forUpdateOrAdd is null)
     {
-            <button disabled="@(IsBusyProgress || remoteScanBusy || localScanBusy)" @onclick="SyncRun" class="btn btn-primary" type="button">@(IsBusyProgress ? "Подготовка..." : "Подготовить данные") </button>
+        <button disabled="@(IsBusyProgress || remoteScanBusy || localScanBusy)" @onclick="SyncRun" class="btn btn-primary" type="button">@(IsBusyProgress ? "Подготовка..." : "Подготовить данные") </button>
     }
     else
     {
-            <button disabled="@(IsBusyProgress || (forDelete.Length == 0 && forUpdateOrAdd.Length == 0))" @onclick="Send" class="btn btn-primary" type="button">@(IsBusyProgress ? "Отправка..." : ((forDelete.Length == 0 && forUpdateOrAdd.Length == 0) ? "Папки синхронизированы." : "Отправить!"))</button>
+        <button disabled="@(IsBusyProgress || (forDelete.Length == 0 && forUpdateOrAdd.Length == 0))" @onclick="Send" class="btn btn-primary" type="button">@(IsBusyProgress ? "Отправка..." : ((forDelete.Length == 0 && forUpdateOrAdd.Length == 0) ? "Папки синхронизированы." : "Отправить!"))</button>
     }
 </div>
