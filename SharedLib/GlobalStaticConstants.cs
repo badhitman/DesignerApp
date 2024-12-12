@@ -1778,6 +1778,11 @@ public static partial class GlobalStaticConstants
         public const string MARK_ACTION_NAME = "mark";
 
         /// <summary>
+        /// Dump
+        /// </summary>
+        public const string DUMP_ACTION_NAME = "dump";
+
+        /// <summary>
         /// Vote
         /// </summary>
         public const string VOTE_ACTION_NAME = "vote";

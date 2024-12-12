@@ -164,6 +164,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     {
                         RemoteDirectory = MauiProgram.ConfigStore.Response.RemoteDirectory,
                         FileSize = ms.Length,
+                        FileName = tFile.SafeScopeName,
                     });
 
                     if (sessionPartUpload.Response is null || !sessionPartUpload.Success())
@@ -194,10 +195,16 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     foreach (FilePartMetadataModel fileMd in sessionPartUpload.Response.FilePartsMetadata)
                     {
                         ms.Position = fileMd.PartFilePositionStart;
-                        int _fs = (int)(fileMd.PartFilePositionEnd - fileMd.PartFilePositionStart);
+                        int _fs = (int)(fileMd.PartFileSize - fileMd.PartFilePositionStart);
                         byte[] _buff = new byte[_fs];
                         ms.Read(_buff, 0, _fs);
                         ResponseBaseModel _subRest = await ToolsExtRepo.PartUpload(new SessionFileRequestModel(sessionPartUpload.Response.SessionId, fileMd.PartFileId, _buff, Path.GetFileName(tFile.FullName)));
+                        if (!_subRest.Success())
+                            SnackbarRepo.ShowMessagesResponse(_subRest.Messages);
+
+                        totalTransferData += _fs;
+                        ValueProgress = totalTransferData / (forUpdateOrAddSum / 100);
+                        InfoAbout = $"Отправлено: {GlobalTools.SizeDataAsString(totalTransferData)}";
                     }
                     //}
 

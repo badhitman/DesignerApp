@@ -18,4 +18,9 @@ public class PartUploadSessionStartRequestModel
     /// RemoteDirectory
     /// </summary>
     public required string RemoteDirectory { get; set; }
+
+    /// <summary>
+    /// FileName
+    /// </summary>
+    public required string FileName { get; set; }
 }

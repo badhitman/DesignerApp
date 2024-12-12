@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using SharedLib;
 using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 
 namespace ApiRestService.Controllers;
 
@@ -19,6 +20,7 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
 {
     static readonly MemCachePrefixModel PartUploadCacheSessionsPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.SESSIONS_CONTROLLER_NAME);
     static readonly MemCachePrefixModel PartUploadCacheFilesMarkersPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.MARK_ACTION_NAME);
+    static readonly MemCachePrefixModel PartUploadCacheFilesDumpsPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.DUMP_ACTION_NAME);
 
 
     /// <summary>
@@ -33,27 +35,24 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
         sessionToken = Encoding.UTF8.GetString(Convert.FromBase64String(sessionToken));
         fileToken = Encoding.UTF8.GetString(Convert.FromBase64String(fileToken));
 
-        using MemoryStream ms = new();
-        uploadedFile.OpenReadStream().CopyTo(ms);
-
         PartUploadSessionModel? sessionUploadPart = await memCache.GetObjectAsync<PartUploadSessionModel>(new MemCacheComplexKeyModel(sessionToken, PartUploadCacheSessionsPrefix));
 
         if (sessionUploadPart is null)
             return ResponseBaseModel.CreateError("Сессия не найдена");
 
-        FilePartMetadataModel currentPartMetadata = sessionUploadPart.FilePartsMetadata.First(x => x.PartFileId == fileToken);
+        string _file_name = Path.Combine(sessionUploadPart.RemoteDirectory, uploadedFile.FileName.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar).Trim());
+        using MemoryStream ms = new();
+        uploadedFile.OpenReadStream().CopyTo(ms);
 
-        FilePartMetadataModel[] partsFiles = sessionUploadPart.FilePartsMetadata
-            .SkipWhile(x => x.PartFileId.Equals(fileToken))
-            .ToArray();
-
-        if (partsFiles.Length == 0)
-        {
-            string _file_name = Path.Combine(sessionUploadPart.RemoteDirectory, uploadedFile.FileName.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar).Trim());
+        if (sessionUploadPart.FilePartsMetadata.Count == 1)
             return await toolsRepo.UpdateFile(_file_name, sessionUploadPart.RemoteDirectory, ms.ToArray());
-        }
         else
         {
+            FilePartMetadataModel currentPartMetadata = sessionUploadPart.FilePartsMetadata.First(x => x.PartFileId == fileToken);
+            FilePartMetadataModel[] partsFiles = sessionUploadPart.FilePartsMetadata
+                .SkipWhile(x => x.PartFileId.Equals(fileToken))
+                .ToArray();
+
             int _countMarkers = 0;
             await Task.WhenAll(partsFiles.Select(x => Task.Run(async () =>
             {
@@ -62,9 +61,56 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
                     Interlocked.Increment(ref _countMarkers);
             })));
 
+
             if (_countMarkers == 0)
             {
+                ResponseBaseModel response = new();
+                ConcurrentDictionary<string, byte[]> filesDumps = [];
 
+                await Task.WhenAll(partsFiles.Select(x => Task.Run(async () =>
+                {
+                    byte[]? rawBytes = await memCache.GetBytesAsync(new MemCacheComplexKeyModel(x.PartFileId, PartUploadCacheFilesDumpsPrefix));
+                    if (rawBytes is null)
+                    {
+                        lock (response)
+                        {
+                            response.AddError($"Ошибка склеивания порций файлов: в кеше отсутствует порция {x.PartFileId}");
+                        }
+                        return;
+                    }
+                    else if (!filesDumps.TryAdd(x.PartFileId, rawBytes))
+                    {
+                        lock (response)
+                        {
+                            response.AddError($"Ошибка склеивания порций файлов: не удалось разместить порцию данных {x.PartFileId} в ConcurrentDictionary<string, byte[]>");
+                        }
+                        return;
+                    }
+
+                })));
+                if (!response.Success())
+                    return response;
+
+                filesDumps.TryAdd(fileToken, ms.ToArray());
+                ms.Position = 0;
+                foreach (FilePartMetadataModel _fileDump in sessionUploadPart.FilePartsMetadata.OrderBy(x => x.PartFileIndex))
+                {
+                    if (!filesDumps.TryGetValue(_fileDump.PartFileId, out byte[]? partBytes) || partBytes is null)
+                        response.AddError($"Ошибка извлечения дампа порции данных: {_fileDump.PartFileId}");
+
+                    if (!response.Success())
+                        break;
+
+                    await ms.WriteAsync(partBytes);
+                }
+                if (!response.Success())
+                    return response;
+                // 
+                await Task.WhenAll(partsFiles.Select(x => Task.Run(async () => { await memCache.RemoveAsync(new MemCacheComplexKeyModel(x.PartFileId, PartUploadCacheFilesMarkersPrefix)); }))
+                    .Union([Task.Run(async () => { await memCache.RemoveAsync(new MemCacheComplexKeyModel(sessionToken, PartUploadCacheSessionsPrefix)); })])
+                    .Union(partsFiles.Select(x => Task.Run(async () => { await memCache.RemoveAsync(new MemCacheComplexKeyModel(x.PartFileId, PartUploadCacheFilesDumpsPrefix)); }))));
+
+                return await toolsRepo.UpdateFile(_file_name, sessionUploadPart.RemoteDirectory, ms.ToArray());
             }
         }
 
@@ -107,11 +153,11 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
             {
                 PartFileId = Guid.NewGuid().ToString(),
                 PartFilePositionStart = req.FileSize - scaleFileSize, //i * сonfigPartUploadSession.Value.PartUploadSize,
-                PartFilePositionEnd = (i + 1) * Math.Min(scaleFileSize, сonfigPartUploadSession.Value.PartUploadSize),
+                PartFileSize = Math.Min(scaleFileSize, сonfigPartUploadSession.Value.PartUploadSize),
                 PartFileIndex = i,
             };
             res.Response.FilePartsMetadata.Add(_rq);
-            scaleFileSize -= _rq.PartFilePositionEnd - _rq.PartFilePositionStart;
+            scaleFileSize -= _rq.PartFileSize;
         }
 
         await memCache.SetObjectAsync(new MemCacheComplexKeyModel(res.Response.SessionId, PartUploadCacheSessionsPrefix), res.Response, TimeSpan.FromSeconds(сonfigPartUploadSession.Value.PartUploadSessionTimeoutSeconds));

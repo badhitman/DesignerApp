@@ -27,5 +27,12 @@ public class FilePartMetadataModel
     /// <summary>
     /// PartFile Position End
     /// </summary>
-    public required long PartFilePositionEnd { get; set; }
+    public required long PartFileSize { get; set; }
+
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"№{PartFileIndex} [{PartFilePositionStart} -> {PartFileSize}] `{PartFileId}`";
+    }
 }
