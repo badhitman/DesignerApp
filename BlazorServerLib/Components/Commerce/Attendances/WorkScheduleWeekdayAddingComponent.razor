@@ -9,13 +9,13 @@
         @if (IsExpandAdding)
         {
             <MudTimePicker Label="Начало:" PickerVariant="PickerVariant.Dialog" Color="Color.Success" Rounded="true" @bind-Time="StartPart" />
-            <MudTimePicker Class="me-2" Label="Конец:" PickerVariant="PickerVariant.Dialog" Color="Color.Secondary" Rounded="true" @bind-Time="EndPart" />
-            <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Cancel" title="Отмена" OnClick="() => IsExpandAdding = !IsExpandAdding" />
+            <MudTimePicker Label="Конец:" PickerVariant="PickerVariant.Dialog" Color="Color.Secondary" Rounded="true" @bind-Time="EndPart" Class="me-2" />
+            <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Cancel" title="Отмена" OnClick="() => IsExpandAdding = false" />
             <MudFab Size="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" title="Сохранить" OnClick="Save" Disabled="EndPart is null || StartPart is null || EndPart > StartPart" />
         }
         else
         {
-            <MudFab Size="Size.Small" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add" title="Добавить период" OnClick="()=> IsExpandAdding = !IsExpandAdding" />
+            <MudFab Size="Size.Small" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Add" title="Добавить период" OnClick="() => IsExpandAdding = true" />
         }
     </div>
 </div>

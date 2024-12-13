@@ -3,6 +3,8 @@
 ////////////////////////////////////////////////
 
 using BlazorLib;
+using Microsoft.AspNetCore.Components;
+using SharedLib;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
@@ -11,5 +13,22 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 /// </summary>
 public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
 {
+    /// <summary>
+    /// Offer
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required OfferModelDB? Offer { get; set; }
+
+
     private int _selected = 11;
+
+    /// <summary>
+    /// Reload
+    /// </summary>
+    public async Task Reload()
+    {
+        await SetBusy();
+
+        await SetBusy(false);
+    }
 }

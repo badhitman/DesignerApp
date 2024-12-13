@@ -1,0 +1,17 @@
+﻿@using MudBlazor
+
+@inherits BlazorBusyComponentBaseModel
+
+<li class="list-group-item d-flex justify-content-between align-items-start">
+    <div class="ms-2">
+        <div class="hstack gap-3">
+            <div class="p-2"><MudTextField T="TimeSpan" Label="Начало" InputType="InputType.Time" /></div>
+            <div class="p-2"><MudTextField T="TimeSpan" Label="Конец" InputType="InputType.Time" /></div>
+            <div class="p-2"><MudTextField @bind-Value="TextValue" Label="Примечание" Variant="Variant.Text"></MudTextField></div>
+            <MudSwitch @bind-Value="_checked3" ThumbIcon="@(_checked3==true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(_checked3==true ? Color.Success : Color.Error)">@(_checked3 ? "Включено" : "Отключено")</MudSwitch>
+        </div>
+    </div>
+    <MudSpacer />
+    <MudFab Color="Color.Surface" StartIcon="@Icons.Material.Filled.Save" Class="me-1" />
+    @* <span class="badge text-bg-danger rounded-pill">0</span> *@
+</li>

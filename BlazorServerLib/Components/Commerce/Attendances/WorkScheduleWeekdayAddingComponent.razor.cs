@@ -9,7 +9,7 @@ using SharedLib;
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
 /// <summary>
-/// WorkScheduleWeekdayAddingComponent
+/// Добавление/Создание WorkSchedule для Weekday
 /// </summary>
 public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBaseModel
 {
@@ -23,18 +23,24 @@ public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBas
     [Parameter, EditorRequired]
     public required DayOfWeek Weekday { get; set; }
 
+    /// <summary>
+    /// Создание/добавление нового WorkSchedule
+    /// </summary>
+    [Parameter]
+    public required Action<WorkScheduleModelDB>? AddingWorkScheduleHandle { get; set; }
+
 
     bool IsExpandAdding;
 
     /// <summary>
     /// StartPart
     /// </summary>
-    TimeSpan? StartPart = new TimeSpan(09, 00, 00);
+    TimeSpan? StartPart = new(09, 00, 00);
 
     /// <summary>
     /// EndPart
     /// </summary>
-    TimeSpan? EndPart = new TimeSpan(18, 00, 00);
+    TimeSpan? EndPart = new(18, 00, 00);
 
 
     async Task Save()
@@ -42,10 +48,23 @@ public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBas
         if (EndPart is null || StartPart is null)
             return;
 
+        WorkScheduleModelDB ws = new()
+        {
+            Name = "",
+            EndPart = EndPart.Value,
+            StartPart = StartPart.Value,
+            Weekday = Weekday
+        };
+
         await SetBusy();
-        TResponseModel<int> res = await CommerceRepo.WorkScheduleUpdate(new WorkScheduleModelDB() { Name = "", EndPart = EndPart.Value, StartPart = StartPart.Value, Weekday = Weekday });
+        TResponseModel<int> res = await CommerceRepo.WorkScheduleUpdate(ws);
+        ws.Id = res.Response;
+        if (res.Success() && ws.Id != 0 && AddingWorkScheduleHandle is not null)
+        {
+            IsExpandAdding = !IsExpandAdding;
+            AddingWorkScheduleHandle(ws);
+        }
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        IsExpandAdding = !IsExpandAdding;
     }
 }

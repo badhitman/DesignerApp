@@ -12,7 +12,6 @@ using SharedLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
-using Microsoft.Extensions.Options;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -121,6 +120,15 @@ builder.Services
     .RegisterMqListener<NomenclatureUpdateReceive, NomenclatureModelDB?, int?>()
     .RegisterMqListener<OrdersByIssuesGetReceive, OrdersByIssuesSelectRequestModel?, OrderDocumentModelDB[]?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
+
+    .RegisterMqListener<WorkScheduleUpdateReceive, WorkScheduleModelDB?, int?>()
+    .RegisterMqListener<WorkSchedulesSelectReceive, TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WorkScheduleModelDB>?>()
+    .RegisterMqListener<WorkScheduleReadReceive, int[]?, WorkScheduleModelDB[]?>()
+
+    .RegisterMqListener<WorkScheduleCalendarUpdateReceive, WorkScheduleCalendarModelDB?, int?>()
+    .RegisterMqListener<WorkScheduleCalendarsSelectReceive, TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>?, TPaginationResponseModel<WorkScheduleCalendarModelDB>?>()
+    .RegisterMqListener<WorkScheduleCalendarsReadReceive, int[]?, WorkScheduleCalendarModelDB[]?>()
+
     .RegisterMqListener<PriceFullFileGetReceive, object?, FileAttachModel?>()
     .RegisterMqListener<OrderReportGetReceive, TAuthRequestModel<int>?, FileAttachModel?>()
     .RegisterMqListener<OffersRegistersSelectReceive, TPaginationRequestModel<RegistersSelectRequestBaseModel>?, TPaginationResponseModel<OfferAvailabilityModelDB>?>()

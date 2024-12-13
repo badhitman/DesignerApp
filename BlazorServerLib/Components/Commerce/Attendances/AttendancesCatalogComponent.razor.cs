@@ -10,9 +10,9 @@ using SharedLib;
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
 /// <summary>
-/// AttendancesManageComponent
+/// AttendancesCatalogComponent
 /// </summary>
-public partial class AttendancesManageComponent : BlazorBusyComponentBaseAuthModel
+public partial class AttendancesCatalogComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
