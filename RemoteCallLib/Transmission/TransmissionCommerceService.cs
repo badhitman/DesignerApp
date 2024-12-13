@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DocumentFormat.OpenXml.Drawing;
 using SharedLib;
 
 namespace RemoteCallLib;
@@ -127,4 +126,28 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
     /// <inheritdoc/>
     public async Task<TResponseModel<FileAttachModel>> PriceFullFileGet()
         => await rabbitClient.MqRemoteCall<FileAttachModel>(GlobalStaticConstants.TransmissionQueues.PriceFullFileGetCommerceReceive);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> WorkScheduleUpdate(WorkScheduleModelDB work)
+        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.WorkScheduleUpdateCommerceReceive, work);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<WorkScheduleModelDB>>> WorkSchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<WorkScheduleModelDB>>(GlobalStaticConstants.TransmissionQueues.WorkSchedulesSelectCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<WorkScheduleModelDB[]>> WorkSchedulesRead(int[] req)
+        => await rabbitClient.MqRemoteCall<WorkScheduleModelDB[]>(GlobalStaticConstants.TransmissionQueues.WorkSchedulesReadCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> WorkScheduleCalendarUpdate(WorkScheduleCalendarModelDB work)
+        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarUpdateCommerceReceive, work);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<WorkScheduleCalendarModelDB>>> WorkScheduleCalendarsSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<WorkScheduleCalendarModelDB>>(GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarsSelectCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<WorkScheduleCalendarModelDB[]>> WorkScheduleCalendarsRead(int[] req)
+        => await rabbitClient.MqRemoteCall<WorkScheduleCalendarModelDB[]>(GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarsReadCommerceReceive, req);
 }

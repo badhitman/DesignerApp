@@ -15,7 +15,7 @@ public class WarehouseDocumentsSelectRequestModel : DocumentsSelectRequestBaseMo
     public bool? DisabledOnly { get; set; }
 
     /// <summary>
-    /// Дата обновления должна быть не меньше указанной
+    /// Дата доставки должна быть не меньше указанной
     /// </summary>
     public DateTime? AfterDeliveryDate { get; set; }
 }

@@ -45,7 +45,15 @@
 
 <body>
     <Routes />
-    <script src="_framework/blazor.web.js"></script>
+    <script src="_framework/blazor.web.js" autostart="false"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          Blazor.start().then(function () {console.warn("Blazor started!")});
+          /* 
+          Blazor.start({ssr: { }, circuit: { }, webAssembly: { }});
+          */
+        });
+    </script>
     <script src="/lib/jquery/jquery.min.js?version=@GlobalStaticConstants.InitSalt"></script>
     <script src="/lib/jqueryui/jquery-ui.min.js?version=@GlobalStaticConstants.InitSalt"></script>
     <script src="/js/ckeditor5/ckeditor.js?version=@GlobalStaticConstants.InitSalt"></script>
@@ -67,6 +75,12 @@
             $("div.ui-tooltip").hide();
         };
     </script>
+    <div id="components-reconnect-modal">
+        Возникла проблема со связью!
+        (Текущая попытка переподключения:
+        <span id="components-reconnect-current-attempt"></span> /
+        <span id="components-reconnect-max-retries"></span>)
+    </div>
 </body>
 </html>
 

@@ -787,7 +787,21 @@ public static partial class GlobalStaticConstants
         public readonly static string NomenclaturesReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.NOMENCLATURES_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string WorkScheduleCalendarsReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.WORKSCHEDULES_CONTROLLER_NAME}-{Routes.CALENDAR_CONTROLLER_NAME}", Routes.READ_ACTION_NAME);
+
+        /// <summary>
+        /// WorkSchedulesReadCommerceReceive
+        /// </summary>
+        public readonly static string WorkSchedulesReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.WORKSCHEDULES_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string NomenclaturesSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.NOMENCLATURES_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string WorkScheduleCalendarsSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.WORKSCHEDULES_CONTROLLER_NAME}-{Routes.CALENDAR_CONTROLLER_NAME}", Routes.SELECT_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string WorkSchedulesSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.WORKSCHEDULES_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string OrdersSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDERS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
@@ -838,6 +852,19 @@ public static partial class GlobalStaticConstants
         /// Обновление номенклатуры
         /// </summary>
         public readonly static string NomenclatureUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.NOMENCLATURE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string WorkScheduleCalendarUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.WORKSCHEDULE_CONTROLLER_NAME}-{Routes.CALENDAR_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
+
+        /// <summary>
+        /// Attendance Update
+        /// </summary>
+        public readonly static string AttendanceUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ATTENDANCE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
+
+        /// <summary>
+        /// WorkSchedule Update
+        /// </summary>
+        public readonly static string WorkScheduleUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.WORKSCHEDULE_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string OrderUpdateCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
@@ -1721,6 +1748,26 @@ public static partial class GlobalStaticConstants
         /// Attendances
         /// </summary>
         public const string ATTENDANCES_CONTROLLER_NAME = "attendances";
+
+        /// <summary>
+        /// Attendance
+        /// </summary>
+        public const string ATTENDANCE_CONTROLLER_NAME = "attendance";
+
+        /// <summary>
+        /// Calendar
+        /// </summary>
+        public const string CALENDAR_CONTROLLER_NAME = "calendar";
+
+        /// <summary>
+        /// WorkSchedule
+        /// </summary>
+        public const string WORKSCHEDULE_CONTROLLER_NAME = "workschedule";
+
+        /// <summary>
+        /// WorkSchedules
+        /// </summary>
+        public const string WORKSCHEDULES_CONTROLLER_NAME = "workschedules";
 
         /// <summary>
         /// Image

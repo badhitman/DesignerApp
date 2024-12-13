@@ -14,6 +14,7 @@ using BlazorLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
+using BlazorWebLib;
 #if !DEBUG
 using System.Reflection;
 #endif
@@ -97,6 +98,9 @@ if (!string.IsNullOrWhiteSpace(_modePrefix))
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
+
+builder.Services.AddIdleCircuitHandler(options =>
+    options.IdleTimeout = TimeSpan.FromMinutes(5));
 
 builder.Services.AddOptions();
 builder.Services
@@ -210,6 +214,12 @@ builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUser
 #endregion
 
 WebApplication app = builder.Build();
+
+//app.Use(async (context, next) =>
+//{
+//    context.Response.Headers.Append("Content-Security-Policy", "{POLICY STRING}");
+//    await next();
+//});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -5,7 +5,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// Commerce
+/// Warehouse
 /// </summary>
 public partial interface ICommerceService
 {
