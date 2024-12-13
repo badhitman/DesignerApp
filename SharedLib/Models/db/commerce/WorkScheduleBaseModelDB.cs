@@ -38,10 +38,10 @@ public class WorkScheduleBaseModelDB : UniversalLayerModel
     /// <summary>
     /// StartPart
     /// </summary>
-    public required TimeOnly StartPart { get; set; }
+    public required TimeSpan StartPart { get; set; }
 
     /// <summary>
     /// EndPart
     /// </summary>
-    public required TimeOnly EndPart { get; set; }
+    public required TimeSpan EndPart { get; set; }
 }

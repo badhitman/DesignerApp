@@ -8,10 +8,11 @@
     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
         @if (IsExpandAdding)
         {
-            <MudTimePicker Label="Начало:" PickerVariant="PickerVariant.Dialog" Color="Color.Success" Rounded="true" Text="09:00" />
-            <MudTimePicker Class="me-2" Label="Конец:" PickerVariant="PickerVariant.Dialog" Color="Color.Secondary" Rounded="true" Text="18:00" />
+            <MudTextField @bind-Value="NameValue" Label="Название" Variant="Variant.Text"></MudTextField>
+            <MudTimePicker Label="Начало:" PickerVariant="PickerVariant.Dialog" Color="Color.Success" Rounded="true" Text="09:00" @bind-Time="StartPart" />
+            <MudTimePicker Class="me-2" Label="Конец:" PickerVariant="PickerVariant.Dialog" Color="Color.Secondary" Rounded="true" Text="18:00" @bind-Time="EndPart" />
             <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Cancel" title="Отмена" OnClick="()=> IsExpandAdding = !IsExpandAdding" />
-            <MudFab Size="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" title="Сохранить" OnClick="Save" />
+            <MudFab Size="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" title="Сохранить" OnClick="Save" Disabled="EndPart is null || StartPart is null || string.IsNullOrWhiteSpace(NameValue)" />
         }
         else
         {
