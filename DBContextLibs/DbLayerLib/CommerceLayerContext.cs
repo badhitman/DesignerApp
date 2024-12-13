@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SharedLib;
 
 namespace DbcLib;
@@ -31,6 +32,22 @@ public partial class CommerceLayerContext : DbContext
 #if DEBUG
         options.LogTo(Console.WriteLine);
 #endif
+    }
+
+    /// <inheritdoc/>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        TimeSpanToTicksConverter converter = new();
+
+        modelBuilder
+            .Entity<WorkScheduleBaseModelDB>()
+            .Property(e => e.StartPart)
+            .HasConversion(converter);
+
+        modelBuilder
+           .Entity<WorkScheduleBaseModelDB>()
+           .Property(e => e.EndPart)
+           .HasConversion(converter);
     }
 
     /// <summary>

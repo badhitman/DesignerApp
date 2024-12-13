@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
@@ -29,25 +29,23 @@ public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBas
     /// <summary>
     /// StartPart
     /// </summary>
-    TimeSpan? StartPart;
+    TimeSpan? StartPart = new TimeSpan(09, 00, 00);
 
     /// <summary>
     /// EndPart
     /// </summary>
-    TimeSpan? EndPart;
-
-    string? NameValue;
+    TimeSpan? EndPart = new TimeSpan(18, 00, 00);
 
 
     async Task Save()
     {
-        if (EndPart is null || StartPart is null || string.IsNullOrWhiteSpace(NameValue))
+        if (EndPart is null || StartPart is null)
             return;
 
         await SetBusy();
-        var res = await CommerceRepo.WorkScheduleUpdate(new WorkScheduleModelDB() { Name = NameValue, EndPart = EndPart.Value, StartPart = StartPart.Value, Weekday = Weekday });
+        TResponseModel<int> res = await CommerceRepo.WorkScheduleUpdate(new WorkScheduleModelDB() { Name = "", EndPart = EndPart.Value, StartPart = StartPart.Value, Weekday = Weekday });
         await SetBusy(false);
-
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsExpandAdding = !IsExpandAdding;
     }
 }
