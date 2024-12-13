@@ -36,4 +36,9 @@ public class ErrorSendingMessageTelegramBotModelDB : IdSwitchableModel
     /// Признак того, что ошибка возникла не в процессе отправки, а в процессе изменения существующего сообщения Telegram
     /// </summary>
     public bool IsEditing { get; set; }
+
+    /// <summary>
+    /// ErrorCode
+    /// </summary>
+    public int? ErrorCode { get; set; }
 }

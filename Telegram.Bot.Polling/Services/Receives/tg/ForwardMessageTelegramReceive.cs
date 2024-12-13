@@ -10,6 +10,7 @@ using Telegram.Bot;
 using SharedLib;
 using DbcLib;
 using Newtonsoft.Json;
+using Telegram.Bot.Exceptions;
 
 namespace Transmission.Receives.telegram;
 
@@ -17,7 +18,7 @@ namespace Transmission.Receives.telegram;
 /// Переслать сообщение пользователю через TelegramBot ForwardMessageTelegramReceive
 /// </summary>
 public class ForwardMessageTelegramReceive(
-    ITelegramBotClient _botClient, 
+    ITelegramBotClient _botClient,
     ILogger<ForwardMessageTelegramReceive> loggerRepo,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
     StoreTelegramService storeTgRepo)
@@ -46,12 +47,19 @@ public class ForwardMessageTelegramReceive(
         }
         catch (Exception ex)
         {
+            int? errorCode = null;
+            if (ex is ApiRequestException _are)
+                errorCode = _are.ErrorCode;
+            else if (ex is RequestException _re)
+                errorCode = (int?)_re.HttpStatusCode;
+
             using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
             await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB()
             {
                 ChatId = message.DestinationChatId,
                 Message = ex.Message,
                 ExceptionTypeName = ex.GetType().FullName,
+                ErrorCode = errorCode,
             });
             await context.SaveChangesAsync();
 

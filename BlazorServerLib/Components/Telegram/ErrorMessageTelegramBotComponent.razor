@@ -11,6 +11,7 @@
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="CreatedAtUtc" T="ErrorSendingMessageTelegramBotModelDB">Date</MudTableSortLabel></MudTh>
         <MudTh>Type</MudTh>
+        <MudTh>Code</MudTh>
         <MudTh>Message</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -20,6 +21,7 @@
             </span>
         </MudTd>
         <MudTd DataLabel="Type">@context.ExceptionTypeName</MudTd>
+        <MudTd DataLabel="Code">@context.ErrorCode</MudTd>
         <MudTd DataLabel="Message">@context.Message</MudTd>
     </RowTemplate>
     <NoRecordsContent>

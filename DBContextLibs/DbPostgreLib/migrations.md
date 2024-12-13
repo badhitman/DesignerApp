@@ -14,7 +14,7 @@ Update-Database -Context HelpdeskContext -Project DbPostgreLib -StartupProject H
 ```
 
 ```
-Add-Migration TelegramBotContext003 -Context TelegramBotContext -Project DbPostgreLib -StartupProject Telegram.Bot.Polling
+Add-Migration TelegramBotContext004 -Context TelegramBotContext -Project DbPostgreLib -StartupProject Telegram.Bot.Polling
 Update-Database -Context TelegramBotContext -Project DbPostgreLib -StartupProject Telegram.Bot.Polling
 ```
 

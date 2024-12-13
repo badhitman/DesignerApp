@@ -13,6 +13,7 @@ using RemoteCallLib;
 using Telegram.Bot;
 using SharedLib;
 using DbcLib;
+using Telegram.Bot.Exceptions;
 
 namespace Transmission.Receives.telegram;
 
@@ -138,11 +139,18 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
         catch (Exception ex)
         {
             using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
+            int? errorCode = null;
+            if (ex is ApiRequestException _are)
+                errorCode = _are.ErrorCode;
+            else if (ex is RequestException _re)
+                errorCode = (int?)_re.HttpStatusCode;
+
             await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB()
             {
                 ChatId = message.UserTelegramId,
                 Message = $"{ex.Message}\n\n{JsonConvert.SerializeObject(message)}",
-                ExceptionTypeName = ex.GetType().FullName
+                ExceptionTypeName = ex.GetType().FullName,
+                ErrorCode = errorCode
             });
             await context.SaveChangesAsync();
 
