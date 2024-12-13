@@ -22,5 +22,5 @@ public abstract class IdSwitchableModel
     /// <summary>
     /// Объект отключён
     /// </summary>
-    public bool IsDisabled { get; set; } = false;
+    public bool IsDisabled { get; set; }
 }

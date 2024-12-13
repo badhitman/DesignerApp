@@ -12,6 +12,7 @@ using SharedLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
+using Microsoft.Extensions.Options;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -97,6 +98,7 @@ builder.Services.AddDbContextFactory<CommerceContext>(opt =>
 
 #if DEBUG
     opt.EnableSensitiveDataLogging(true);
+    // opt.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 #endif
 });
 
