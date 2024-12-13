@@ -22,6 +22,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
     SharedLib <|-- CodegeneratorLib
     SharedLib <|-- IdentityLib
     SharedLib <|-- DbLayerLib
+    SharedLib <|-- ToolsMauiApp
     SharedLib : Общие модели
     IdentityLib <|-- ServerLib
     DbPostgreLib <|-- ServerLib
@@ -102,6 +103,9 @@ note for DbPostgreLib "Если используется другая СУБД, 
     }
     class ApiRestService{
         @Микросервис        
+    }
+    class ToolsMauiApp{
+      @Win/Android Клиент
     }
 ```
 
