@@ -18,4 +18,9 @@ public class OffersSelectRequestModel
     /// Идентификатор Номенклатуры
     /// </summary>
     public int[]? NomenclatureFilter { get; set; }
+
+    /// <summary>
+    /// ContextName
+    /// </summary>
+    public required string? ContextName { get; set; }
 }

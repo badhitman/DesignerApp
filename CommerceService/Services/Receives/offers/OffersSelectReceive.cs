@@ -33,6 +33,10 @@ public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
             .Offers
             .AsQueryable();
 
+        //q = string.IsNullOrWhiteSpace(req.Payload.ContextName)
+        //    ?q.Where(x=>x.)
+        //    :;
+
         if (req.Payload.NomenclatureFilter is not null && req.Payload.NomenclatureFilter.Length != 0)
             q = q.Where(x => req.Payload.NomenclatureFilter.Any(y => y == x.NomenclatureId));
 

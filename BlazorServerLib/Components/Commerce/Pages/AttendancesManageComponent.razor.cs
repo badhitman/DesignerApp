@@ -71,6 +71,9 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseModel
             SortBy = nameof(OfferModelDB.Name),
             SortingDirection = VerticalDirectionsEnum.Up,
             Payload = new()
+            {
+                ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME
+            }
         };
         await SetBusy();
 
