@@ -36,13 +36,13 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
 
     async void AddingWorkScheduleAction(WorkScheduleModelDB? sender)
     {
-        await Reload(0);
+        await LoadData(0);
     }
 
     /// <summary>
     /// Reload
     /// </summary>
-    public async Task Reload(int pageNum)
+    public async Task LoadData(int pageNum)
     {
         if (pageNum == 0)
             WorkSchedules.Clear();
@@ -59,19 +59,18 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
             PageNum = pageNum
         };
         TResponseModel<TPaginationResponseModel<WorkScheduleModelDB>> res = await CommerceRepo.WorkSchedulesSelect(req);
-
-        await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response?.Response is not null)
         {
             TotalElementsCount = res.Response.TotalRowsCount;
             WorkSchedules.AddRange(res.Response.Response);
         }
+        await SetBusy(false);
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await Reload(0);
+        await LoadData(0);
     }
 }

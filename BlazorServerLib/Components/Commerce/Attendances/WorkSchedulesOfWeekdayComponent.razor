@@ -3,6 +3,8 @@
 
 @inherits BlazorBusyComponentBaseModel
 
+
+
 @if (IsBusyProgress)
 {
     <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" data-cn="@this.GetType().Name" />
@@ -14,13 +16,13 @@
     <WorkScheduleWeekdayAddingComponent Weekday="Weekday" AddingWorkScheduleHandle="AddingWorkScheduleAction" />
 </div>
 <ul class="list-group">
-    @foreach (WorkScheduleModelDB _ws in WorkSchedules)
+    @foreach (WorkScheduleModelDB _ws in WorkSchedules.OrderBy(x => x.StartPart))
     {
         <WorkScheduleForWeekdayComponent WorkSchedule="_ws" />
     }
-    @if (TotalElementsCount < WorkSchedules.Count)
+    @if (TotalElementsCount > WorkSchedules.Count)
     {
-        <li class="list-group-item d-flex justify-content-center">
+        <li @onclick="async () => { await LoadData((WorkSchedules.Count / 10)); }" class="list-group-item d-flex justify-content-center">
             Загрузить ещё...
         </li>
     }

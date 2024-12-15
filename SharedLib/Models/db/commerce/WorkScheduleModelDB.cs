@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
@@ -16,4 +17,8 @@ public class WorkScheduleModelDB : WorkScheduleBaseModelDB
     /// День недели
     /// </summary>
     public required DayOfWeek Weekday { get; set; }
+
+    /// <inheritdoc/>
+    [Required(AllowEmptyStrings = true, ErrorMessage = "Поле наименования обязательно для заполнения")]
+    public override required string Name { get => base.Name; set => base.Name = value; }
 }

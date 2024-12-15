@@ -12,7 +12,7 @@ public class NomenclatureModelDB : UniversalLayerModel
     /// <summary>
     /// Базовая единица измерения `Номенклатуры`
     /// </summary>
-    public UnitsOfMeasurementEnum BaseUnit { get; set; } = UnitsOfMeasurementEnum.Thing;
+    public UnitsOfMeasurementEnum BaseUnit { get; set; }
 
     /// <summary>
     /// Торговые предложения по Номенклатуре

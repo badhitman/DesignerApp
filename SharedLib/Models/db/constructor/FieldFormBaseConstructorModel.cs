@@ -19,7 +19,7 @@ public abstract class FieldFormBaseConstructorModel : FieldFormBaseLowConstructo
     public TypesFieldsFormsEnum TypeField { get; set; }
 
     /// <summary>
-    /// Метаданне типа значения (параметры/ограничения)
+    /// Метаданные типа значения (параметры/ограничения)
     /// </summary>
     public string? MetadataValueType { get; set; }
 

@@ -11,7 +11,7 @@
             <MudTimePicker Label="Начало:" PickerVariant="PickerVariant.Dialog" Color="Color.Success" Rounded="true" @bind-Time="StartPart" />
             <MudTimePicker Label="Конец:" PickerVariant="PickerVariant.Dialog" Color="Color.Secondary" Rounded="true" @bind-Time="EndPart" Class="me-2" />
             <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Cancel" title="Отмена" OnClick="() => IsExpandAdding = false" />
-            <MudFab Size="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" title="Сохранить" OnClick="Save" Disabled="EndPart is null || StartPart is null || EndPart > StartPart" />
+            <MudFab Size="Size.Small" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" title="Сохранить" OnClick="Save" Disabled="EndPart is null || StartPart is null || EndPart < StartPart" />
         }
         else
         {

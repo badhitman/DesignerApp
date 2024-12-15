@@ -12,16 +12,10 @@ namespace SharedLib;
 public enum UnitsOfMeasurementEnum
 {
     /// <summary>
-    /// None
-    /// </summary>
-    [Description("-нет-")]
-    None = 0,
-
-    /// <summary>
     /// Штука
     /// </summary>
     [Description("шт.")]
-    Thing = 10,
+    Thing = 0,
 
     /// <summary>
     /// Кипа
@@ -40,4 +34,10 @@ public enum UnitsOfMeasurementEnum
     /// </summary>
     [Description("Коробка")]
     Box = 40,
+
+    /// <summary>
+    /// None
+    /// </summary>
+    [Description("-нет-")]
+    None = int.MaxValue,
 }

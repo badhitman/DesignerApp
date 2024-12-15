@@ -18,4 +18,19 @@ public partial class WorkScheduleForWeekdayComponent : BlazorBusyComponentBaseMo
     /// </summary>
     [Parameter, EditorRequired]
     public required WorkScheduleModelDB WorkSchedule { get; set; }
+
+    bool IsEdited => WorkSchedule.IsDisabled != workScheduleEdit.IsDisabled || 
+        WorkSchedule.StartPart != workScheduleEdit.StartPart ||
+        WorkSchedule.EndPart != workScheduleEdit.EndPart ||
+        WorkSchedule.Name != workScheduleEdit.Name ||
+        WorkSchedule.Description != workScheduleEdit.Description
+        ;
+
+    WorkScheduleModelDB workScheduleEdit { get; set; } = default!;
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        workScheduleEdit = GlobalTools.CreateDeepCopy(WorkSchedule)!;
+    }
 }

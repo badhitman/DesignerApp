@@ -2,8 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
-
 namespace SharedLib;
 
 /// <summary>

@@ -38,6 +38,12 @@ public partial class CommerceLayerContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         TimeSpanToTicksConverter converter = new();
+        DateOnlyToStringConverter converter2 = new();
+
+        modelBuilder
+           .Entity<WorkScheduleCalendarModelDB>()
+           .Property(e => e.DateScheduleCalendar)
+           .HasConversion(converter2);
 
         modelBuilder
             .Entity<WorkScheduleBaseModelDB>()
@@ -127,7 +133,6 @@ public partial class CommerceLayerContext : DbContext
     /// Строки заказов
     /// </summary>
     public DbSet<RowOfOrderDocumentModelDB> RowsOfOrdersDocuments { get; set; } = default!;
-
 
     /// <summary>
     /// Payments documents

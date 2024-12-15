@@ -3,6 +3,7 @@ using System;
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.Commerce
 {
     [DbContext(typeof(CommerceContext))]
-    partial class CommerceContextModelSnapshot : ModelSnapshot
+    [Migration("20241215113650_CommerceContext029")]
+    partial class CommerceContext029
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -665,7 +668,7 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.ToTable("WarehouseDocuments");
                 });
 
-            modelBuilder.Entity("SharedLib.WorkScheduleBaseModelDB", b =>
+            modelBuilder.Entity("SharedLib.WorkScheduleCalendarModelDB", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -679,13 +682,11 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Property<DateTime>("CreatedAtUTC")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateOnly>("DateScheduleCalendar")
+                        .HasColumnType("date");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(34)
-                        .HasColumnType("character varying(34)");
 
                     b.Property<long>("EndPart")
                         .HasColumnType("bigint");
@@ -728,6 +729,8 @@ namespace DbPostgreLib.Migrations.Commerce
 
                     b.HasIndex("ContextName");
 
+                    b.HasIndex("DateScheduleCalendar");
+
                     b.HasIndex("ExecutorIdentityUserId");
 
                     b.HasIndex("IsDisabled");
@@ -745,36 +748,90 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.HasIndex("SortIndex", "ParentId", "ContextName")
                         .IsUnique();
 
-                    b.ToTable("WorkScheduleBaseModelDB");
-
-                    b.HasDiscriminator().HasValue("WorkScheduleBaseModelDB");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("SharedLib.WorkScheduleCalendarModelDB", b =>
-                {
-                    b.HasBaseType("SharedLib.WorkScheduleBaseModelDB");
-
-                    b.Property<string>("DateScheduleCalendar")
-                        .IsRequired()
-                        .HasColumnType("character varying(10)");
-
-                    b.HasIndex("DateScheduleCalendar");
-
-                    b.HasDiscriminator().HasValue("WorkScheduleCalendarModelDB");
+                    b.ToTable("WorksSchedulesCalendar");
                 });
 
             modelBuilder.Entity("SharedLib.WorkScheduleModelDB", b =>
                 {
-                    b.HasBaseType("SharedLib.WorkScheduleBaseModelDB");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContextName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<long>("EndPart")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ExecutorIdentityUserId")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastAtUpdatedUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("NomenclatureId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("NormalizedNameUpper")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("OfferId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("SortIndex")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("StartPart")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Weekday")
                         .HasColumnType("integer");
 
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContextName");
+
+                    b.HasIndex("ExecutorIdentityUserId");
+
+                    b.HasIndex("IsDisabled");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("NomenclatureId");
+
+                    b.HasIndex("NormalizedNameUpper");
+
+                    b.HasIndex("OfferId");
+
                     b.HasIndex("Weekday");
 
-                    b.HasDiscriminator().HasValue("WorkScheduleModelDB");
+                    b.HasIndex("StartPart", "EndPart");
+
+                    b.HasIndex("SortIndex", "ParentId", "ContextName")
+                        .IsUnique();
+
+                    b.ToTable("WorksSchedules");
                 });
 
             modelBuilder.Entity("SharedLib.AddressOrganizationModelDB", b =>
@@ -941,7 +998,22 @@ namespace DbPostgreLib.Migrations.Commerce
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("SharedLib.WorkScheduleBaseModelDB", b =>
+            modelBuilder.Entity("SharedLib.WorkScheduleCalendarModelDB", b =>
+                {
+                    b.HasOne("SharedLib.NomenclatureModelDB", "Nomenclature")
+                        .WithMany()
+                        .HasForeignKey("NomenclatureId");
+
+                    b.HasOne("SharedLib.OfferModelDB", "Offer")
+                        .WithMany()
+                        .HasForeignKey("OfferId");
+
+                    b.Navigation("Nomenclature");
+
+                    b.Navigation("Offer");
+                });
+
+            modelBuilder.Entity("SharedLib.WorkScheduleModelDB", b =>
                 {
                     b.HasOne("SharedLib.NomenclatureModelDB", "Nomenclature")
                         .WithMany()

@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace SharedLib;
 
 /// <summary>
@@ -27,6 +29,7 @@ public class OfferModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// QuantitiesTemplateValidate
     /// </summary>
+    [NotMapped]
     public bool QuantitiesTemplateValidate
     {
         get
@@ -42,6 +45,7 @@ public class OfferModelDB : EntrySwitchableUpdatedModel
     /// <summary>
     /// QuantitiesValues
     /// </summary>
+    [NotMapped]
     public System.Collections.Immutable.ImmutableList<decimal>? QuantitiesValues
     {
         get

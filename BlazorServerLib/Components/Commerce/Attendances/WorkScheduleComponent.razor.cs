@@ -31,7 +31,7 @@ public partial class WorkScheduleComponent : BlazorBusyComponentBaseModel
             return;
 
         await SetBusy();
-        await WorkSchedulesOfWeekday_ref.Reload(0);
+        await WorkSchedulesOfWeekday_ref.LoadData(0);
         await SetBusy(false);
     }
 }
