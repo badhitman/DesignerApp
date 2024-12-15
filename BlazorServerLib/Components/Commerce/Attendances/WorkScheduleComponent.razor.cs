@@ -16,16 +16,22 @@ public partial class WorkScheduleComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Offer
     /// </summary>
-    [Parameter, EditorRequired]
+    [CascadingParameter, EditorRequired]
     public required OfferModelDB? Offer { get; set; }
+
+
+    WorkSchedulesOfWeekdayComponent? WorkSchedulesOfWeekday_ref;
 
     /// <summary>
     /// Reload
     /// </summary>
     public async Task Reload()
     {
-        await SetBusy();
+        if (WorkSchedulesOfWeekday_ref is null)
+            return;
 
+        await SetBusy();
+        await WorkSchedulesOfWeekday_ref.Reload(0);
         await SetBusy(false);
     }
 }

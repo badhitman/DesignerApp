@@ -19,13 +19,15 @@
 </div>
 
 <MudTabs Elevation="2" ApplyEffectsToContainer="true" PanelClass="pa-2" Color="@Color.Success">
-    <MudTabPanel Text="Расписание">
-        <WorkScheduleComponent @ref="_workSchedule" Offer="SelectedOffer" />
-    </MudTabPanel>
-    <MudTabPanel Text="Календарь">
-        <WorkCalendarComponent @ref="_workCalendar" Offer="SelectedOffer" />
-    </MudTabPanel>
-    <MudTabPanel Text="Исполнители">
-        Исполнители
-    </MudTabPanel>
+    <CascadingValue Value="SelectedOffer">
+        <MudTabPanel Text="Расписание">
+            <WorkScheduleComponent @ref="_workSchedule" />
+        </MudTabPanel>
+        <MudTabPanel Text="Календарь">
+            <WorkCalendarComponent @ref="_workCalendar" />
+        </MudTabPanel>
+        <MudTabPanel Text="Исполнители">
+            Исполнители
+        </MudTabPanel>
+    </CascadingValue>
 </MudTabs>

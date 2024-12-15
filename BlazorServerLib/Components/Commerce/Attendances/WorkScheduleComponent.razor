@@ -6,25 +6,25 @@
     <div class="card-body">
         <MudTabs AlwaysShowScrollButtons="true" Elevation="4" Rounded="true" Color="@Color.Primary">
             <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Monday)">
-                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Monday" />
+                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Monday" @ref="WorkSchedulesOfWeekday_ref" />
             </MudTabPanel>
             <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Tuesday)">
-                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Tuesday" />
+                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Tuesday" @ref="WorkSchedulesOfWeekday_ref" />
             </MudTabPanel>
             <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Wednesday)">
-                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Wednesday" />
+                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Wednesday" @ref="WorkSchedulesOfWeekday_ref" />
             </MudTabPanel>
             <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Thursday)">
-                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Thursday" />
+                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Thursday" @ref="WorkSchedulesOfWeekday_ref" />
             </MudTabPanel>
             <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Friday)">
-                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Friday" />
+                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Friday" @ref="WorkSchedulesOfWeekday_ref" />
             </MudTabPanel>
             <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Saturday)">
-                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Saturday" />
+                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Saturday" @ref="WorkSchedulesOfWeekday_ref" />
             </MudTabPanel>
             <MudTabPanel Text="@GlobalStaticConstants.RU.DateTimeFormat.GetDayName(DayOfWeek.Sunday)">
-                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Sunday" />
+                <WorkSchedulesOfWeekdayComponent Weekday="DayOfWeek.Sunday" @ref="WorkSchedulesOfWeekday_ref" />
             </MudTabPanel>
         </MudTabs>
     </div>

@@ -26,6 +26,12 @@ public abstract class OffersTableBaseComponent : BlazorBusyComponentRegistersMod
     [Parameter]
     public Action? DocumentUpdateHandler { get; set; }
 
+    /// <summary>
+    /// ContextName
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string? ContextName { get; set; }
+
 
     /// <summary>
     /// allOffers
@@ -70,6 +76,9 @@ public abstract class OffersTableBaseComponent : BlazorBusyComponentRegistersMod
             SortBy = nameof(OfferModelDB.Name),
             SortingDirection = VerticalDirectionsEnum.Up,
             Payload = new()
+            {
+                ContextName = ContextName
+            }
         };
         await SetBusy();
 

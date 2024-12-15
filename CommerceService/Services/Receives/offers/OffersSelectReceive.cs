@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
-using System.Linq;
 
 namespace Transmission.Receives.commerce;
 
@@ -29,13 +28,9 @@ public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<OfferModelDB> q = context
-            .Offers
-            .AsQueryable();
-
-        //q = string.IsNullOrWhiteSpace(req.Payload.ContextName)
-        //    ?q.Where(x=>x.)
-        //    :;
+        IQueryable<OfferModelDB> q = from o in context.Offers
+                                     join n in context.Nomenclatures.Where(x => x.ContextName == req.Payload.ContextName) on o.NomenclatureId equals n.Id
+                                     select o;
 
         if (req.Payload.NomenclatureFilter is not null && req.Payload.NomenclatureFilter.Length != 0)
             q = q.Where(x => req.Payload.NomenclatureFilter.Any(y => y == x.NomenclatureId));
@@ -43,11 +38,10 @@ public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFa
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
 
-        
-         IOrderedQueryable<OfferModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-           ? q.OrderBy(x => x.CreatedAtUTC)
-           : q.OrderByDescending(x => x.CreatedAtUTC);
-         
+        IOrderedQueryable<OfferModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.CreatedAtUTC)
+          : q.OrderByDescending(x => x.CreatedAtUTC);
+
         return new()
         {
             Response = new()

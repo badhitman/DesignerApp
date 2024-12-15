@@ -13,6 +13,15 @@
     <div class="mx-auto"></div>
     <WorkScheduleWeekdayAddingComponent Weekday="Weekday" AddingWorkScheduleHandle="AddingWorkScheduleAction" />
 </div>
-<ul class="list-group list-group">
-    <WorkScheduleForWeekdayComponent />
+<ul class="list-group">
+    @foreach (WorkScheduleModelDB _ws in WorkSchedules)
+    {
+        <WorkScheduleForWeekdayComponent WorkSchedule="_ws" />
+    }
+    @if (TotalElementsCount < WorkSchedules.Count)
+    {
+        <li class="list-group-item d-flex justify-content-center">
+            Загрузить ещё...
+        </li>
+    }
 </ul>

@@ -16,36 +16,62 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
+
     /// <summary>
     /// Weekday
     /// </summary>
     [Parameter, EditorRequired]
     public required DayOfWeek Weekday { get; set; }
 
+    /// <summary>
+    /// Offer
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required OfferModelDB? Offer { get; set; }
+
+
+    List<WorkScheduleModelDB> WorkSchedules = [];
+
+    int TotalElementsCount;
 
     async void AddingWorkScheduleAction(WorkScheduleModelDB? sender)
     {
-        await Reload();
+        await Reload(0);
     }
 
-    async Task Reload()
+    /// <summary>
+    /// Reload
+    /// </summary>
+    public async Task Reload(int pageNum)
     {
-        TPaginationRequestModel<WorkSchedulesSelectRequestModel> req = new() 
-        {
-             Payload = new WorkSchedulesSelectRequestModel()
-             {
-                  //OfferFilter = 
-             }
-        };
+        if (pageNum == 0)
+            WorkSchedules.Clear();
 
         await SetBusy();
+
+        TPaginationRequestModel<WorkSchedulesSelectRequestModel> req = new()
+        {
+            Payload = new WorkSchedulesSelectRequestModel()
+            {
+                OfferFilter = Offer?.Id,
+                Weekdays = [Weekday]
+            },
+            PageNum = pageNum
+        };
         TResponseModel<TPaginationResponseModel<WorkScheduleModelDB>> res = await CommerceRepo.WorkSchedulesSelect(req);
+
         await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (res.Response?.Response is not null)
+        {
+            TotalElementsCount = res.Response.TotalRowsCount;
+            WorkSchedules.AddRange(res.Response.Response);
+        }
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await Reload();
+        await Reload(0);
     }
 }

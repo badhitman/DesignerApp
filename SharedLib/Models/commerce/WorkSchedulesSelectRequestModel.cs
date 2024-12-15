@@ -13,4 +13,9 @@ public class WorkSchedulesSelectRequestModel : DocumentsSelectRequestBaseModel
     /// DisabledOnly
     /// </summary>
     public bool? DisabledOnly { get; set; }
+
+    /// <summary>
+    /// Weekday`s
+    /// </summary>
+    public DayOfWeek[]? Weekdays { get; set; }
 }

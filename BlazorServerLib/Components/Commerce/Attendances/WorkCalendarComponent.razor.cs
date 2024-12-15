@@ -16,7 +16,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     /// <summary>
     /// Offer
     /// </summary>
-    [Parameter, EditorRequired]
+    [CascadingParameter, EditorRequired]
     public required OfferModelDB? Offer { get; set; }
 
 

@@ -71,7 +71,8 @@ public partial class OffersComponent : BlazorBusyComponentRegistersModel
         {
             Payload = new()
             {
-                NomenclatureFilter = [CurrentNomenclature.Id]
+                NomenclatureFilter = [CurrentNomenclature.Id],
+                ContextName = CurrentNomenclature.ContextName,
             },
             PageNum = state.Page,
             PageSize = state.PageSize,

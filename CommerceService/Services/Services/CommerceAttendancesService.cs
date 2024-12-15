@@ -62,6 +62,9 @@ public partial class CommerceImplementService : ICommerceService
             .WorksSchedules.Where(x => x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter)
             .AsQueryable();
 
+        if (req.Payload.Weekdays is not null && req.Payload.Weekdays.Length != 0)
+            q = q.Where(x => req.Payload.Weekdays.Any(y => y == x.Weekday));
+
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
 

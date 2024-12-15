@@ -2,7 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.Components;
 using BlazorLib;
+using SharedLib;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
@@ -11,6 +13,9 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 /// </summary>
 public partial class WorkScheduleForWeekdayComponent : BlazorBusyComponentBaseModel
 {
-    string? TextValue { get; set; }
-    bool _checked3 = false;
+    /// <summary>
+    /// WorkSchedule
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required WorkScheduleModelDB WorkSchedule { get; set; }
 }
