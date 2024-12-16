@@ -1,0 +1,23 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Услуги</h5>
+        <div class="input-group mb-1 mt-2">
+            <label class="input-group-text" for="select-offer">Offer</label>
+            <select @bind="SelectedOfferId" class="form-select" aria-label="Выбор услуги" id="select-offer">
+                @foreach (IGrouping<NomenclatureModelDB?, OfferModelDB> opt_g in OffersNodes)
+                {
+                    <optgroup label="@opt_g.Key!.Name">
+                        @foreach (OfferModelDB opt in opt_g)
+                        {
+                            <option value="@opt.Id">@opt.GetName()</option>
+                        }
+                    </optgroup>
+                }
+            </select>
+        </div>
+        <MudDatePicker PickerVariant="PickerVariant.Static" Orientation="Orientation.Landscape" Date="@(DateTime.Today.AddDays(1))" />
+    </div>
+</div>

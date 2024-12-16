@@ -2,17 +2,13 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorWebLib.Components.Commerce.Attendances;
-using Microsoft.AspNetCore.Components;
 using BlazorLib;
+using Microsoft.AspNetCore.Components;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Commerce.Pages;
+namespace BlazorWebLib.Components.Commerce.Attendances;
 
-/// <summary>
-/// AttendancesManageComponent
-/// </summary>
-public partial class AttendancesManageComponent : BlazorBusyComponentBaseModel
+public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseModel
 {
     /// <summary>
     /// Commerce
@@ -34,21 +30,15 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseModel
             _selectedOfferId = value;
             SelectedOffer = AllOffers.First(x => x.Id == value);
 
-            if (_workSchedule is not null)
-                InvokeAsync(async () => await _workSchedule.Reload(SelectedOffer));
+            //if (_workSchedule is not null)
+            //    InvokeAsync(async () => await _workSchedule.Reload(SelectedOffer));
 
-            if (_workCalendar is not null)
-                InvokeAsync(async () => await _workCalendar.Reload(SelectedOffer));
+            //if (_workCalendar is not null)
+            //    InvokeAsync(async () => await _workCalendar.Reload(SelectedOffer));
         }
     }
     List<OfferModelDB> AllOffers { get; set; } = [];
     IGrouping<NomenclatureModelDB?, OfferModelDB>[] OffersNodes => AllOffers.GroupBy(x => x.Nomenclature).ToArray();
-
-
-
-    WorkScheduleComponent? _workSchedule;
-    WorkCalendarComponent? _workCalendar;
-
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -62,7 +52,7 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseModel
     protected async Task LoadOffers(int page_num)
     {
         if (page_num == 0)
-            AllOffers = [new() { Name = "Глобально", Nomenclature = new() { Name = "Стандарт" } }];
+            AllOffers.Clear();
 
         TPaginationRequestModel<OffersSelectRequestModel> req = new()
         {
