@@ -135,6 +135,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         if (forDelete.Length != 0)
         {
             InfoAbout = "Удаление файлов...";
+            await SetBusy();
             foreach (ToolsFilesResponseModel tFile in forDelete)
                 await ToolsExtRepo.DeleteFile(new DeleteRemoteFileRequestModel()
                 {
@@ -142,6 +143,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
                     SafeScopeName = tFile.SafeScopeName,
                 });
             InfoAbout = $"Удалено файлов: {forDelete.Length} шт.";
+            await SetBusy();
         }
 
         using MD5 md5 = MD5.Create();
