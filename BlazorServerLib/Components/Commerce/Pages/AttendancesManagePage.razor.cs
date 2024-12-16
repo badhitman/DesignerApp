@@ -30,5 +30,9 @@ public partial class AttendancesManagePage : BlazorBusyComponentBaseModel
     /// Обработчик выбора Оффера
     /// </summary>
     [Parameter]
-    public Action<OfferModelDB?>? SelectOfferHandler { get; set; }    
+    public Action<OfferModelDB?>? SelectOfferHandler { get; set; }
+
+
+    static readonly EntryAltModel[] showMarkersRoles = [new() { Id = GlobalStaticConstants.Roles.AttendancesExecutor, Name = "Исполнитель", },
+    new() { Id = GlobalStaticConstants.Roles.CommerceClient, Name = "Покупатель", }];
 }

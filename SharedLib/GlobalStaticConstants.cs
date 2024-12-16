@@ -2008,6 +2008,11 @@ public static partial class GlobalStaticConstants
         /// CommerceClient
         /// </summary>
         public const string CommerceClient = "CommerceClient";
+
+        /// <summary>
+        /// AttendancesExecutor
+        /// </summary>
+        public const string AttendancesExecutor = "AttendancesExecutor";
         #endregion
     }
 

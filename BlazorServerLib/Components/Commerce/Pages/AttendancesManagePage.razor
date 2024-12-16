@@ -1,6 +1,7 @@
 ﻿@page "/attendances"
 
 @using BlazorWebLib.Components.Commerce.Attendances
+@using BlazorWebLib.Components.Users
 @using MudBlazor
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
@@ -22,6 +23,9 @@
         <Authorized>
             <MudTabPanel Text="График работы">
                 <AttendancesManageComponent />
+            </MudTabPanel>
+            <MudTabPanel Text="Права">
+                <UsersTableComponent HideClaimsColumn="true" HideRolesColumn="true" RolesMarkers="@showMarkersRoles" RolesManageKit="@showMarkersRoles.Select(x => x.Id).Union([GlobalStaticConstants.Roles.CommerceManager, GlobalStaticConstants.Roles.CommerceClient, GlobalStaticConstants.Roles.Debug])" />
             </MudTabPanel>
         </Authorized>
     </AuthorizeView>

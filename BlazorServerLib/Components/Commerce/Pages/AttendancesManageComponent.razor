@@ -1,4 +1,5 @@
 ﻿@using BlazorWebLib.Components.Commerce.Attendances
+@using BlazorWebLib.Components.Users
 @using MudBlazor
 
 @inherits BlazorBusyComponentBaseModel
@@ -25,6 +26,6 @@
         </MudTabPanel>
         <MudTabPanel Text="Календарь">
             <WorkCalendarComponent @ref="_workCalendar" />
-        </MudTabPanel>
+        </MudTabPanel>        
     </CascadingValue>
 </MudTabs>

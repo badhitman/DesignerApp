@@ -70,13 +70,6 @@
                 </div>
             </TemplateColumn>
 
-            @if (RolesManageKit is not null && RolesManageKit.Any())
-            {
-                <TemplateColumn Title="Доступ" Align="Align.Right">
-                    <RolesManageKitComponent RolesManageKit="RolesManageKit" User="context" />
-                </TemplateColumn>
-            }
-
             @if (!HideRolesColumn)
             {
                 <TemplateColumn Title="Роли" Align="Align.Right">
@@ -109,6 +102,13 @@
                         @(context.Roles?.Contains(ch.Id) == true ? "ДА" : "")
                     </TemplateColumn>
                 }
+            }
+
+            @if (RolesManageKit is not null && RolesManageKit.Any())
+            {
+                <TemplateColumn Title="Доступ" Align="Align.Right">
+                    <RolesManageKitComponent RolesManageKit="RolesManageKit" User="context" />
+                </TemplateColumn>
             }
         </QuickGrid>
         <Paginator State="@pagination" />
