@@ -7,17 +7,17 @@
         <div class="hstack">
             <h5 class="card-title d-none d-md-block d-lg-block d-xl-block d-xxl-block">Календарь</h5>
             <div class="mx-auto"></div>
-            <WorkCalendarAddDateComponent WorkCalendarAddDateHandle="WorkCalendarAddDateAction" />
+            <WorkCalendarAddDateComponent WorkCalendarAddDateHandle="WorkCalendarReloadDateAction" />
         </div>
         <h6 class="card-subtitle mb-2 text-body-secondary">Установка графика работы на конкретные даты.</h6>
         <p class="card-text">Праздничные дни (или другие особые даты) можно внести в календарь. В такие дни базовый график работы будет переопределён персональным:</p>
 
         @foreach (IGrouping<DateOnly, WorkScheduleCalendarModelDB> gel in worksSchedulesCalendars.OrderBy(x => x.DateScheduleCalendar).GroupBy(x => x.DateScheduleCalendar))
         {
-            <ul class="list-group list-group mb-2">
+            <ul class="list-group list-group mb-2" @key="gel.Key">
                 @foreach (WorkScheduleCalendarModelDB el in gel.OrderBy(x => x.StartPart).ThenByDescending(x => x.Name))
                 {
-                    <WorkCalendarElementComponent WorkScheduleCalendar="el" @key="el.Id" />
+                    <WorkCalendarElementComponent WorkScheduleCalendar="el" @key="el.Id" WorkCalendarReloadDateHandler="WorkCalendarReloadDateAction" />
                 }
             </ul>
         }

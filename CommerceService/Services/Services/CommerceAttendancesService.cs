@@ -49,7 +49,6 @@ public partial class CommerceImplementService : ICommerceService
                 .SetProperty(p => p.IsDisabled, req.IsDisabled)
                 .SetProperty(p => p.StartPart, req.StartPart)
                 .SetProperty(p => p.EndPart, req.EndPart)
-                .SetProperty(p => p.IsDisabled, req.IsDisabled)
                 .SetProperty(p => p.Name, req.Name));
         }
 

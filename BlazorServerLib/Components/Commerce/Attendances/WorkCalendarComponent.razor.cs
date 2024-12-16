@@ -59,9 +59,9 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
         await Reload(OfferCurrent);
     }
 
-    async void WorkCalendarAddDateAction()
+    async void WorkCalendarReloadDateAction()
     {
-        _selectedPage = 0;
+        _selectedPage = 1;
         await Reload(OfferCurrent);
     }
 

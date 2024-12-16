@@ -26,6 +26,11 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required WorkScheduleCalendarModelDB WorkScheduleCalendar { get; set; }
 
+    /// <summary>
+    /// WorkCalendarReloadDateHandler
+    /// </summary>
+    [Parameter]
+    public Action? WorkCalendarReloadDateHandler { get; set; }
 
     WorkScheduleCalendarModelDB editWorkScheduleCalendar = default!;
     DateTime WorkScheduleDate 
@@ -36,7 +41,6 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
             editWorkScheduleCalendar.DateScheduleCalendar = DateOnly.FromDateTime(value);
         }
     }
-
 
     bool IsEdited => WorkScheduleCalendar.IsDisabled != editWorkScheduleCalendar.IsDisabled ||
         WorkScheduleCalendar.StartPart != editWorkScheduleCalendar.StartPart ||
@@ -52,6 +56,8 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
         WorkScheduleCalendar = GlobalTools.CreateDeepCopy(editWorkScheduleCalendar)!;
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (WorkCalendarReloadDateHandler is not null)
+            WorkCalendarReloadDateHandler();
     }
 
     /// <inheritdoc/>
