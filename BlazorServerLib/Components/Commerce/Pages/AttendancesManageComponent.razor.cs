@@ -32,13 +32,13 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseModel
         set
         {
             _selectedOfferId = value;
-            SelectedOffer = AllOffers.FirstOrDefault(x => x.Id == value);
-
+            SelectedOffer = AllOffers.First(x => x.Id == value);
+            
             if (_workSchedule is not null)
-                InvokeAsync(_workSchedule.Reload);
+                InvokeAsync(async () => await _workSchedule.Reload(SelectedOffer));
 
             if (_workCalendar is not null)
-                InvokeAsync(_workCalendar.Reload);
+                InvokeAsync(async () => await _workCalendar.Reload(SelectedOffer));
         }
     }
 

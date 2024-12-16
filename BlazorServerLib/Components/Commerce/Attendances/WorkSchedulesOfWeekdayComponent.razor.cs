@@ -29,6 +29,7 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
     [CascadingParameter, EditorRequired]
     public required OfferModelDB? Offer { get; set; }
 
+    OfferModelDB? OfferCurrent;
 
     private readonly List<WorkScheduleModelDB> WorkSchedules = [];
 
@@ -36,16 +37,17 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
 
     async void AddingWorkScheduleAction(WorkScheduleModelDB? sender)
     {
-        await LoadData(0);
+        await LoadData(0, OfferCurrent);
     }
 
     /// <summary>
     /// Reload
     /// </summary>
-    public async Task LoadData(int pageNum)
+    public async Task LoadData(int pageNum, OfferModelDB? selectedOffer)
     {
         if (pageNum == 0)
             WorkSchedules.Clear();
+        OfferCurrent = selectedOffer;
 
         await SetBusy();
 
@@ -53,11 +55,14 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
         {
             Payload = new WorkSchedulesSelectRequestModel()
             {
-                OfferFilter = Offer?.Id,
                 Weekdays = [Weekday]
             },
             PageNum = pageNum
         };
+
+        if (OfferCurrent is not null && OfferCurrent.Id != 0)
+            req.Payload.OfferFilter = OfferCurrent.Id;
+
         TResponseModel<TPaginationResponseModel<WorkScheduleModelDB>> res = await CommerceRepo.WorkSchedulesSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response?.Response is not null)
@@ -71,6 +76,7 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await LoadData(0);
+        OfferCurrent = Offer;
+        await LoadData(0, OfferCurrent);
     }
 }

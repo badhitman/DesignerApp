@@ -28,6 +28,15 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
 
 
     WorkScheduleCalendarModelDB editWorkScheduleCalendar = default!;
+    DateTime WorkScheduleDate 
+    { 
+        get=> editWorkScheduleCalendar.DateScheduleCalendar.ToDateTime(new TimeOnly(0,0,0)); 
+        set
+        {
+            editWorkScheduleCalendar.DateScheduleCalendar = DateOnly.FromDateTime(value);
+        }
+    }
+
 
     bool IsEdited => WorkScheduleCalendar.IsDisabled != editWorkScheduleCalendar.IsDisabled ||
         WorkScheduleCalendar.StartPart != editWorkScheduleCalendar.StartPart ||

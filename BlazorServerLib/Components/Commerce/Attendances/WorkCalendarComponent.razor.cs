@@ -26,7 +26,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     [CascadingParameter, EditorRequired]
     public required OfferModelDB? Offer { get; set; }
 
-
+    OfferModelDB? OfferCurrent;
     int _selectedPage = 1;
     int selectedPage
     {
@@ -37,7 +37,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
 
             _selectedPage = value;
             if (nu)
-                InvokeAsync(Reload);
+                InvokeAsync(async () => await Reload(OfferCurrent));
         }
     }
 
@@ -55,30 +55,35 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await Reload();
+        OfferCurrent = Offer;
+        await Reload(OfferCurrent);
     }
 
     async void WorkCalendarAddDateAction()
     {
         _selectedPage = 0;
-        await Reload();
+        await Reload(OfferCurrent);
     }
 
     /// <summary>
     /// Reload
     /// </summary>
-    public async Task Reload()
+    public async Task Reload(OfferModelDB? selectedOffer)
     {
+        OfferCurrent = selectedOffer;
         TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req = new()
         {
             Payload = new()
             {
-                OfferFilter = Offer?.Id,
+                // OfferFilter = OfferCurrent?.Id,
                 ActualOnly = true,
             },
             PageNum = _selectedPage - 1,
         };
-        
+
+        if (OfferCurrent is not null && OfferCurrent.Id > 0)
+            req.Payload.OfferFilter = OfferCurrent.Id;
+
         await SetBusy();
         TResponseModel<TPaginationResponseModel<WorkScheduleCalendarModelDB>> res = await CommerceRepo.WorkScheduleCalendarsSelect(req);
 

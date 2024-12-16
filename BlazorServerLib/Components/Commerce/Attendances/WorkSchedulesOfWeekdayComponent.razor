@@ -3,8 +3,6 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-
-
 @if (IsBusyProgress)
 {
     <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" data-cn="@this.GetType().Name" />
@@ -22,7 +20,7 @@
     }
     @if (TotalElementsCount > WorkSchedules.Count)
     {
-        <li @onclick="async () => { await LoadData((WorkSchedules.Count / 10)); }" class="list-group-item d-flex justify-content-center">
+        <li @onclick="async () => { await LoadData((WorkSchedules.Count / 10), OfferCurrent); }" class="list-group-item d-flex justify-content-center">
             Загрузить ещё...
         </li>
     }
