@@ -12,7 +12,7 @@ namespace SharedLib;
 /// </summary>
 [Index(nameof(AddressForOrderTabId), nameof(OfferId), IsUnique = true)]
 [Index(nameof(AddressForOrderTabId))]
-public class RowOfOrderDocumentModelDB : RowOfBaseDocumentModelDB
+public class RowOfOrderDocumentModelDB : RowOfMiddleDocumentModel
 {
     /// <summary>
     /// Адрес доставки (из документа заказа)

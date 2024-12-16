@@ -3,15 +3,13 @@
 ////////////////////////////////////////////////
 
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib;
 
 /// <summary>
-/// RowOfBaseDocumentModelDB
+/// RowOfBaseDocumentModel
 /// </summary>
-[Index(nameof(Quantity))]
-public abstract class RowOfBaseDocumentModelDB
+public abstract class RowOfBaseDocumentModel
 {
     /// <summary>
     /// Идентификатор/Key
@@ -38,9 +36,4 @@ public abstract class RowOfBaseDocumentModelDB
     /// Nomenclature
     /// </summary>
     public int NomenclatureId { get; set; }
-
-    /// <summary>
-    /// Количество
-    /// </summary>
-    public decimal Quantity { get; set; }
 }

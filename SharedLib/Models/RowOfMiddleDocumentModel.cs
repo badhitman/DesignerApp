@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// OfferAvailabilityModelDB
+/// RowOfMiddleDocumentModel
 /// </summary>
-[Index(nameof(WarehouseId), nameof(OfferId), IsUnique = true)]
-public class OfferAvailabilityModelDB : RowOfMiddleDocumentModel
+[Index(nameof(Quantity))]
+public abstract class RowOfMiddleDocumentModel : RowOfBaseDocumentModel
 {
     /// <summary>
-    /// Склад
+    /// Количество
     /// </summary>
-    public required int WarehouseId { get; set; }
+    public decimal Quantity { get; set; }
 }

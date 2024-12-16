@@ -12,7 +12,7 @@ namespace SharedLib;
 /// </summary>
 [Index(nameof(WarehouseDocumentId), nameof(OfferId), IsUnique = true)]
 [Index(nameof(WarehouseDocumentId))]
-public class RowOfWarehouseDocumentModelDB : RowOfBaseDocumentModelDB
+public class RowOfWarehouseDocumentModelDB : RowOfMiddleDocumentModel
 {
     /// <summary>
     /// WarehouseDocument

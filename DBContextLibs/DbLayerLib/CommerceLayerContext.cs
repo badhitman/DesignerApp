@@ -118,6 +118,15 @@ public partial class CommerceLayerContext : DbContext
     /// </summary>
     public DbSet<LockOffersAvailabilityModelDB> LockerOffersAvailability { get; set; } = default!;
 
+    /// <summary>
+    /// OrdersAttendances
+    /// </summary>
+    public DbSet<OrderAttendanceModelDB> OrdersAttendances { get; set; } = default!;
+
+    /// <summary>
+    /// RowsOfOrdersAttendances
+    /// </summary>
+    public DbSet<RowOfAttendanceModelDB> RowsOfOrdersAttendances { get; set; } = default!;
 
     /// <summary>
     /// Orders
