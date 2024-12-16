@@ -5,7 +5,7 @@
 
 <div class="input-group mb-1 mt-2">
     <label class="input-group-text" for="select-offer">Offer</label>
-    <select @bind="SelectedOfferId" class="form-select" aria-label="Добавить позиции в заказ" id="select-offer">
+    <select @bind="SelectedOfferId" class="form-select" aria-label="Выбор услуги" id="select-offer">
         @foreach (IGrouping<NomenclatureModelDB?, OfferModelDB> opt_g in OffersNodes)
         {
             <optgroup label="@opt_g.Key!.Name">

@@ -16,9 +16,9 @@
     <WorkScheduleWeekdayAddingComponent Weekday="Weekday" AddingWorkScheduleHandle="AddingWorkScheduleAction" />
 </div>
 <ul class="list-group">
-    @foreach (WorkScheduleModelDB _ws in WorkSchedules.OrderBy(x => x.StartPart))
+    @foreach (WorkScheduleModelDB _ws in WorkSchedules.OrderBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC))
     {
-        <WorkScheduleForWeekdayComponent WorkSchedule="_ws" />
+        <WorkScheduleForWeekdayComponent WorkSchedule="_ws" @key="_ws.Id" />
     }
     @if (TotalElementsCount > WorkSchedules.Count)
     {

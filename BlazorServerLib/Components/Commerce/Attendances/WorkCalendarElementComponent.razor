@@ -1,0 +1,20 @@
+﻿@using MudBlazor
+@inherits BlazorBusyComponentBaseModel
+
+<li class="list-group-item d-flex justify-content-between align-items-start">
+    <div class="ms-2">
+        <div class="hstack gap-3">
+            <div class="p-2"><MudTextField T="TimeSpan" Label="Начало" InputType="InputType.Time" @bind-Value="editWorkScheduleCalendar.StartPart" Immediate="true" /></div>
+            <div class="p-2"><MudTextField T="TimeSpan" Label="Конец" InputType="InputType.Time" @bind-Value="editWorkScheduleCalendar.EndPart" Immediate="true" /></div>
+            <div class="p-2"><MudTextField @bind-Value="editWorkScheduleCalendar.Name" Label="Примечание" Variant="Variant.Text" Immediate="true" /></div>
+            <MudSwitch @bind-Value="editWorkScheduleCalendar.IsDisabled" ThumbIcon="@(editWorkScheduleCalendar.IsDisabled ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(WorkScheduleCalendar.IsDisabled ? Color.Success : Color.Error)">@(WorkScheduleCalendar.IsDisabled ? "Включено" : "Отключено")</MudSwitch>
+        </div>
+    </div>
+    <MudSpacer />
+    <MudFab Disabled="!IsEdited" Color="IsEdited ? Color.Success : Color.Surface" StartIcon="@Icons.Material.Filled.Save" OnClick="SaveScheduleCalendar" />
+    @if (IsEdited)
+    {
+        <MudFab Color="Color.Surface" EndIcon="@Icons.Material.Filled.Cancel" Class="mx-1" OnClick="() => editWorkScheduleCalendar = GlobalTools.CreateDeepCopy(WorkScheduleCalendar)!" />
+    }
+    @* <span class="badge text-bg-danger rounded-pill">0</span> *@
+</li>

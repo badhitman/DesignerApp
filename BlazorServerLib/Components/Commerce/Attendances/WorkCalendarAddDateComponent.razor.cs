@@ -2,7 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.Components;
 using BlazorLib;
+using SharedLib;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
@@ -11,13 +13,48 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 /// </summary>
 public partial class WorkCalendarAddDateComponent : BlazorBusyComponentBaseModel
 {
+    /// <summary>
+    /// Commerce
+    /// </summary>
+    [Inject]
+    protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+
+
+    /// <summary>
+    /// WorkCalendarAddDateHandle
+    /// </summary>
+    [Parameter]
+    public Action? WorkCalendarAddDateHandle { get; set; }
+
+
     bool IsExpanded;
     private DateTime? _date = DateTime.Today;
 
+    /// <summary>
+    /// StartPart
+    /// </summary>
+    TimeSpan? StartPart = new(09, 00, 00);
+
+    /// <summary>
+    /// EndPart
+    /// </summary>
+    TimeSpan? EndPart = new(18, 00, 00);
+
     async Task Save()
     {
-        await SetBusy();
+        if (_date is null || EndPart is null || StartPart is null)
+            return;
 
+        await SetBusy();
+        TResponseModel<int> res = await CommerceRepo.WorkScheduleCalendarUpdate(new WorkScheduleCalendarModelDB()
+        {
+            DateScheduleCalendar = DateOnly.FromDateTime(_date.Value),
+            EndPart = EndPart.Value,
+            Name = "",
+            StartPart = StartPart.Value,
+        });
         await SetBusy(false);
+        if (WorkCalendarAddDateHandle is not null)
+            WorkCalendarAddDateHandle();
     }
 }

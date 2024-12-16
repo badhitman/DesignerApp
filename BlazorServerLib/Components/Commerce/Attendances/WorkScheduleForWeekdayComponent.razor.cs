@@ -14,23 +14,45 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 public partial class WorkScheduleForWeekdayComponent : BlazorBusyComponentBaseModel
 {
     /// <summary>
+    /// Commerce
+    /// </summary>
+    [Inject]
+    protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+
+
+    /// <summary>
     /// WorkSchedule
     /// </summary>
     [Parameter, EditorRequired]
     public required WorkScheduleModelDB WorkSchedule { get; set; }
 
-    bool IsEdited => WorkSchedule.IsDisabled != workScheduleEdit.IsDisabled || 
-        WorkSchedule.StartPart != workScheduleEdit.StartPart ||
-        WorkSchedule.EndPart != workScheduleEdit.EndPart ||
-        WorkSchedule.Name != workScheduleEdit.Name ||
-        WorkSchedule.Description != workScheduleEdit.Description
-        ;
+    WorkScheduleModelDB WorkScheduleEdit { get; set; } = default!;
 
-    WorkScheduleModelDB workScheduleEdit { get; set; } = default!;
+
+    bool IsEdited => WorkSchedule.IsDisabled != WorkScheduleEdit.IsDisabled ||
+        WorkSchedule.StartPart != WorkScheduleEdit.StartPart ||
+        WorkSchedule.EndPart != WorkScheduleEdit.EndPart ||
+        WorkSchedule.Name != WorkScheduleEdit.Name ||
+        WorkSchedule.Description != WorkScheduleEdit.Description;
+
+
+    async Task SaveSchedule()
+    {
+        await SetBusy();
+        TResponseModel<int> res = await CommerceRepo.WorkScheduleUpdate(WorkScheduleEdit);
+        if (res.Success())
+        {
+            WorkScheduleEdit.LastAtUpdatedUTC = DateTime.UtcNow;
+            WorkSchedule = GlobalTools.CreateDeepCopy(WorkScheduleEdit)!;
+        }
+
+        await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+    }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        workScheduleEdit = GlobalTools.CreateDeepCopy(WorkSchedule)!;
+        WorkScheduleEdit = GlobalTools.CreateDeepCopy(WorkSchedule)!;
     }
 }

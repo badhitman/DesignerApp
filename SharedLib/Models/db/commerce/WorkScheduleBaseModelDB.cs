@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
@@ -39,10 +40,12 @@ public class WorkScheduleBaseModelDB : UniversalLayerModel
     /// <summary>
     /// StartPart
     /// </summary>
+    [Required]
     public required TimeSpan StartPart { get; set; }
 
     /// <summary>
     /// EndPart
     /// </summary>
+    [Required]
     public required TimeSpan EndPart { get; set; }
 }

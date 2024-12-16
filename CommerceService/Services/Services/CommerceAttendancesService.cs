@@ -27,9 +27,6 @@ public partial class CommerceImplementService : ICommerceService
         req.Name = req.Name.Trim();
         req.Description = req.Description?.Trim();
         req.NormalizedNameUpper = req.Name.ToUpper();
-        req.SortIndex = 0;
-        req.Nomenclature = null;
-        req.Offer = null;
         req.LastAtUpdatedUTC = DateTime.UtcNow;
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
@@ -43,8 +40,14 @@ public partial class CommerceImplementService : ICommerceService
         }
         else
         {
-            context.Update(req);
-            res.Response = await context.SaveChangesAsync();
+            res.Response = await context.WorksSchedules
+                .Where(w => w.Id == req.Id)
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.NormalizedNameUpper, req.NormalizedNameUpper)
+                .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
+                .SetProperty(p => p.Description, req.Description)
+                .SetProperty(p => p.IsDisabled, req.IsDisabled)
+                .SetProperty(p => p.Name, req.Name));
         }
 
         return res;
@@ -69,8 +72,8 @@ public partial class CommerceImplementService : ICommerceService
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
 
         IOrderedQueryable<WorkScheduleModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-           ? q.OrderBy(x => x.StartPart)
-           : q.OrderByDescending(x => x.StartPart);
+           ? q.OrderBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
+           : q.OrderByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
 
         IQueryable<WorkScheduleModelDB> pq = oq
             .Skip(req.PageNum * req.PageSize)
@@ -127,24 +130,29 @@ public partial class CommerceImplementService : ICommerceService
         req.Name = req.Name.Trim();
         req.Description = req.Description?.Trim();
         req.NormalizedNameUpper = req.Name.ToUpper();
-        req.SortIndex = 0;
-        req.Nomenclature = null;
-        req.Offer = null;
-        req.LastAtUpdatedUTC = DateTime.UtcNow;
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         if (req.Id < 1)
         {
             req.Id = 0;
-            req.CreatedAtUTC = req.LastAtUpdatedUTC;
+            req.CreatedAtUTC = DateTime.UtcNow;
+            req.LastAtUpdatedUTC = DateTime.UtcNow;
             context.Add(req);
             await context.SaveChangesAsync();
             res.Response = req.Id;
         }
         else
         {
-            context.Update(req);
-            res.Response = await context.SaveChangesAsync();
+            res.Response = await context.WorksSchedulesCalendar
+                .Where(x => x.Id == req.Id)
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.Name, req.Name)
+                .SetProperty(p => p.Description, req.Description)
+                .SetProperty(p => p.EndPart, req.EndPart)
+                .SetProperty(p => p.StartPart, req.StartPart)
+                .SetProperty(p => p.DateScheduleCalendar, req.DateScheduleCalendar)
+                .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
+                .SetProperty(p => p.NormalizedNameUpper, req.NormalizedNameUpper));
         }
 
         return res;
@@ -158,17 +166,19 @@ public partial class CommerceImplementService : ICommerceService
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
+        DateOnly _dtp = DateOnly.FromDateTime(DateTime.UtcNow);
+
         IQueryable<WorkScheduleCalendarModelDB> q = context
             .WorksSchedulesCalendar
-            .Where(x => x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter)
+            .Where(x => x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter && (!req.Payload.ActualOnly || x.DateScheduleCalendar >= _dtp))
             .AsQueryable();
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
 
         IOrderedQueryable<WorkScheduleCalendarModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-           ? q.OrderBy(x => x.DateScheduleCalendar).ThenBy(x => x.StartPart)
-           : q.OrderByDescending(x => x.DateScheduleCalendar).ThenByDescending(x => x.StartPart);
+           ? q.OrderBy(x => x.DateScheduleCalendar).ThenBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
+           : q.OrderByDescending(x => x.DateScheduleCalendar).ThenByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
 
         IQueryable<WorkScheduleCalendarModelDB> pq = oq
             .Skip(req.PageNum * req.PageSize)

@@ -5,17 +5,17 @@
 <li class="list-group-item d-flex justify-content-between align-items-start">
     <div class="ms-2">
         <div class="hstack gap-3">
-            <div class="p-2"><MudTextField T="TimeSpan" Label="Начало" InputType="InputType.Time" @bind-Value="workScheduleEdit.StartPart" /></div>
-            <div class="p-2"><MudTextField T="TimeSpan" Label="Конец" InputType="InputType.Time" @bind-Value="workScheduleEdit.EndPart" /></div>
-            <div class="p-2"><MudTextField @bind-Value="workScheduleEdit.Name" Label="Примечание" Variant="Variant.Text"></MudTextField></div>
-            <MudSwitch @bind-Value="workScheduleEdit.IsDisabled" ThumbIcon="@(workScheduleEdit.IsDisabled ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(workScheduleEdit.IsDisabled ? Color.Success : Color.Error)">@(workScheduleEdit.IsDisabled ? "Включено" : "Отключено")</MudSwitch>
+            <div class="p-2"><MudTextField T="TimeSpan" Label="Начало" InputType="InputType.Time" @bind-Value="WorkScheduleEdit.StartPart" Immediate="true" /></div>
+            <div class="p-2"><MudTextField T="TimeSpan" Label="Конец" InputType="InputType.Time" @bind-Value="WorkScheduleEdit.EndPart" Immediate="true" /></div>
+            <div class="p-2"><MudTextField @bind-Value="WorkScheduleEdit.Name" Label="Примечание" Variant="Variant.Text" Immediate="true" /></div>
+            <MudSwitch @bind-Value="WorkScheduleEdit.IsDisabled" ThumbIcon="@(WorkScheduleEdit.IsDisabled ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(WorkScheduleEdit.IsDisabled ? Color.Success : Color.Error)">@(WorkScheduleEdit.IsDisabled ? "Включено" : "Отключено")</MudSwitch>
         </div>
     </div>
     <MudSpacer />
-    <MudFab Disabled="!IsEdited" Color="Color.Surface" StartIcon="@Icons.Material.Filled.Save" />
+    <MudFab Disabled="!IsEdited" Color="IsEdited ? Color.Success : Color.Surface" StartIcon="@Icons.Material.Filled.Save" OnClick="SaveSchedule" />
     @if (IsEdited)
     {
-        <MudFab Color="Color.Surface" EndIcon="@Icons.Material.Filled.Cancel" Class="mx-1" @onclick="() => workScheduleEdit = GlobalTools.CreateDeepCopy(WorkSchedule)!" />
+        <MudFab Color="Color.Surface" EndIcon="@Icons.Material.Filled.Cancel" Class="mx-1" OnClick="() => WorkScheduleEdit = GlobalTools.CreateDeepCopy(WorkSchedule)!" />
     }
     @* <span class="badge text-bg-danger rounded-pill">0</span> *@
 </li>

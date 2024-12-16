@@ -30,7 +30,7 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
     public required OfferModelDB? Offer { get; set; }
 
 
-    List<WorkScheduleModelDB> WorkSchedules = [];
+    private readonly List<WorkScheduleModelDB> WorkSchedules = [];
 
     int TotalElementsCount;
 

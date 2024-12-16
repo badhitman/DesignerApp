@@ -13,4 +13,9 @@ public class WorkScheduleCalendarsSelectRequestModel : DocumentsSelectRequestBas
     /// DisabledOnly
     /// </summary>
     public bool? DisabledOnly { get; set; }
+
+    /// <summary>
+    /// ActualOnly
+    /// </summary>
+    public bool ActualOnly { get; set; }
 }
