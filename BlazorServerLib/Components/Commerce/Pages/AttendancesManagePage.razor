@@ -21,7 +21,7 @@
     </MudTabPanel>
     <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager},{GlobalStaticConstants.Roles.Debug}")">
         <Authorized>
-            <MudTabPanel Text="График работы">
+            <MudTabPanel Text="Управление">
                 <AttendancesManageComponent />
             </MudTabPanel>
             <MudTabPanel Text="Права">

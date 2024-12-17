@@ -21,4 +21,9 @@ public class UserOrganizationModelDB : PersonalEntrySwitchableUpdatedModel
     /// Организация
     /// </summary>
     public int OrganizationId { get; set; }
+
+    /// <summary>
+    /// Статус
+    /// </summary>
+    public UsersOrganizationsStatusesEnum UserStatus { get; set; }
 }

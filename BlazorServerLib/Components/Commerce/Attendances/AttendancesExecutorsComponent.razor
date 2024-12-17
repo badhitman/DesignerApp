@@ -1,0 +1,31 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<h3>AttendancesExecutorsComponent</h3>
+
+@code {
+    /// <summary>
+    /// Commerce
+    /// </summary>
+    [Inject]
+    protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+
+
+    /// <summary>
+    /// Offer
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required OfferModelDB? Offer { get; set; }
+
+    OfferModelDB? OfferCurrent;
+
+    /// <summary>
+    /// Reload
+    /// </summary>
+    public async Task Reload(OfferModelDB? selectedOffer)
+    {
+        OfferCurrent = selectedOffer;
+        await SetBusy();
+
+        await SetBusy(false);
+    }
+}
