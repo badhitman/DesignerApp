@@ -279,7 +279,7 @@ Windows/Android [утилита для удалённого взаимодейс
 - [Клиент синхронизации папок](https://github.com/badhitman/DesignerApp/tree/main/ToolsMauiApp) готовые сборки доставит на сервер в папку `/srv/git/builds`. Инструмент определит изменения на уровне файлов, а на сервер будет переданы только изменившиеся или новые файлы
 - Обновляем стенд для проверки работоспособности скриптом [stage-builds.update.sh](https://github.com/badhitman/DesignerApp/blob/main/devops/stage-builds.update.sh)
 - В случае удачной проверки стенда - следует снова пересобрать локально, но уже с ключом `-c Release`![build release](./img/build-release.png) и повторно доставить файлы на сервер клиентом синхронизации папок
-- Обновление рабочих сборок скриптом [prod-builds.update.sh](https://github.com/badhitman/DesignerApp/blob/main/devops/prod-builds.update.sh). Скрипт обновления сборок служб делает копию (архив) текущих файлов решения в отдельную папку `/srv/Cloud.Disk/services-snapshots/` и только потом обновляет релиз и запускает службы
+- Обновление рабочих сборок скриптом [prod-builds.update.sh](https://github.com/badhitman/DesignerApp/blob/main/devops/prod-builds.update.sh). Скрипт обновления сборок служб делает копию (архив) текущих файлов решения в отдельную папку `/srv/Cloud.Disk/services-snapshots/`, после чего обновляет **prod релиз** и запускает службы
 
 [^1]: Подробнее про реализацию MQ транспорта можно узнать [тут](https://github.com/badhitman/DesignerApp/tree/main/RemoteCallLib).
 
