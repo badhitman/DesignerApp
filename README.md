@@ -275,11 +275,11 @@ Windows/Android [утилита для удалённого взаимодейс
 Запуск нескольких копий решения внутри единой инфраструктуры. Можно на одной общей инфраструктуре (Redis, Mongo, Postgres, RabbitMQ) запустить несколько копий решения таким образом что бы они друг другу не мешали. Для этого нужно указать/придумать префикс нового контура (имя) и предусмотреть под это имя строки подключения к СУБД и Redis. RabbitMQ автоматически по имени контура будет добавлять префиксы к именам очередей, а Mongo используется только для хранилища файлов. Подобная практика не рекомендуется в реальных проектах, но иногда этот приём может потребоваться, например в целях тестирования.
 
 ### Ручная доставка приложения
-- сборка локально: [build-win.ps1](https://github.com/badhitman/DesignerApp/blob/main/devops/build-win.ps1) (скрипт соберёт в папку `C:\Users\User\Documents\publish`). Для тестирования сборку нужно запускать с ключом `-c Debug`![build debug](./img/build-debug.png)
-- [клиентом синхронизации папок](https://github.com/badhitman/DesignerApp/tree/main/ToolsMauiApp) готовые сборки доставляется на сервер в папку `/srv/git/builds`
-- обновляем стенд для проверки работоспособности скриптом [stage-builds.update.sh](https://github.com/badhitman/DesignerApp/blob/main/devops/stage-builds.update.sh)
-- в случае удачной проверки стенда - нужно пересобрать локально с ключом `-c Release`![build release](./img/build-release.png)
-- обновление рабочих сборок скриптом [prod-builds.update.sh](https://github.com/badhitman/DesignerApp/blob/main/devops/prod-builds.update.sh). Скрипт обновления сборок следом после остановки служб делает копию (архив) текущих сборок в отдельную папку `/srv/Cloud.Disk/services-snapshots/` и только потом обновляет релиз и запускает службы
+- Локальная сборка: [build-win.ps1](https://github.com/badhitman/DesignerApp/blob/main/devops/build-win.ps1) (скрипт соберёт серверные службы в папку `C:\Users\User\Documents\publish`). Для тестирования сборку следует запускать с ключом `-c Debug`![build debug](./img/build-debug.png)
+- [Клиент синхронизации папок](https://github.com/badhitman/DesignerApp/tree/main/ToolsMauiApp) готовые сборки доставит на сервер в папку `/srv/git/builds`. Инструмент определит изменения на уровне файлов, а на сервер будет переданы только изменившиеся или новые файлы
+- Обновляем стенд для проверки работоспособности скриптом [stage-builds.update.sh](https://github.com/badhitman/DesignerApp/blob/main/devops/stage-builds.update.sh)
+- В случае удачной проверки стенда - нужно снова пересобрать локально, но уже с ключом `-c Release`![build release](./img/build-release.png) и повторно доставить файлы на сервер клиентом синхронизации папок
+- Обновление рабочих сборок скриптом [prod-builds.update.sh](https://github.com/badhitman/DesignerApp/blob/main/devops/prod-builds.update.sh). Скрипт обновления сборок служб делает копию (архив) текущих файлов решения в отдельную папку `/srv/Cloud.Disk/services-snapshots/` и только потом обновляет релиз и запускает службы
 
 [^1]: Подробнее про реализацию MQ транспорта можно узнать [тут](https://github.com/badhitman/DesignerApp/tree/main/RemoteCallLib).
 
