@@ -3,85 +3,84 @@
 
 <h3>Пользователи @(RoleInfo is null ? "" : $"в роли: {RoleInfo.Name}")</h3>
 
-<div class="row">
-    @if (RoleInfo is not null)
-    {
-        <div class="input-group input-group-sm mb-3">
-            <span class="input-group-text">Добавить пользователя</span>
-            <input @bind-value="added_user_email" @bind-value:event="oninput" type="text" class="form-control" aria-label="Имя создаваемой роли">
-            <button disabled="@(string.IsNullOrWhiteSpace(added_user_email))" @onclick="AddRoleToUser" class="btn btn-outline-secondary" type="button">
-                Включить пользователя в роль
-            </button>
-        </div>
-    }
-    <div class="grid">
-        <QuickGrid ItemsProvider="@foodRecallProvider" Pagination="@pagination" @ref="myGrid">
-            <TemplateColumn Title="Email">
-                @{
-                    string lock_user_css_link = LinkCssClass(context);
-                    bool isFakeEmail = false;
-                }
-                <div class="hstack">
-                    <div class="px-2">
-                        @if (!MailAddress.TryCreate(context.Email, out MailAddress? resMail) || resMail.Host.Equals(GlobalStaticConstants.FakeHost) == true)
-                        {
-                            isFakeEmail = true;
-                            <span class="font-monospace" title="@GlobalStaticConstants.FakeHost">no-email</span>
-                        }
-                        else
-                        {
-                            <NavLink class="@lock_user_css_link" href="@($"/Users/Profiles/view-{context.UserId}")">@($"{context.Email}{(context.UserName?.Equals(context.Email) == true ? "" : $"(user name: {context.UserName})")}")</NavLink>
-                        }
-                    </div>
-                    @if (context.AccessFailedCount > 0)
-                    {
-                        <sup class="pe-2" title="Количество неудачных попыток входа"> @(context.AccessFailedCount) ошибок</sup>
-                    }
-                    <code>@context.PhoneNumber</code>
-                    @if (RoleInfo is not null && !string.IsNullOrWhiteSpace(context.Email))
-                    {
-                        <div class="px-2">
-                            <span @onclick="() => DeleteUser(context.Email)" title="исключить пользователя из роли" class="my-btn badge text-bg-danger">
-                                исключить из роли {<b>@RoleInfo.Name</b>}
-                            </span>
-                        </div>
-                    }
-                    @if (!isFakeEmail)
-                    {
-                        <span class="bi bi-envelope-@(context.EmailConfirmed ? "check-fill text-success" : "x text-warning") mx-1" title="email @(context.EmailConfirmed ? "" : "НЕ")подтверждён"></span>
-                    }
-                    @if (context.TelegramId.HasValue)
-                    {
-                        <TelegramSendMessageComponent TelegramId="context.TelegramId.Value" />
-                        <RemoveTelegramJoinComponent TelegramUserId="context.TelegramId.Value" />
-                    }
-                    @if (string.IsNullOrWhiteSpace(lock_user_css_link))
-                    {
-                        <span @onclick="() => SetUserLock(context.UserId, string.IsNullOrWhiteSpace(lock_user_css_link))" title="заблокировать пользователя" class="my-btn mx-2 badge text-bg-warning">
-                            заблокировать
-                        </span>
-                    }
-                    else
-                    {
-                        <span @onclick="() => SetUserLock(context.UserId, string.IsNullOrWhiteSpace(lock_user_css_link))" title="разблокировать пользователя" class="my-btn mx-2 badge text-bg-success rounded-pill">
-                            разблокировать
-                        </span>
-                    }
-                </div>
-            </TemplateColumn>
+@if (RoleInfo is not null)
+{
+    <div class="input-group input-group-sm mb-3">
+        <span class="input-group-text">Добавить пользователя</span>
+        <input @bind-value="added_user_email" @bind-value:event="oninput" type="text" class="form-control" aria-label="Имя создаваемой роли">
+        <button disabled="@(string.IsNullOrWhiteSpace(added_user_email))" @onclick="AddRoleToUser" class="btn btn-outline-secondary" type="button">
+            Включить пользователя в роль
+        </button>
+    </div>
+}
 
-            @if (!HideRolesColumn)
+<QuickGrid ItemsProvider="@foodRecallProvider" Pagination="@pagination" @ref="myGrid">
+    <TemplateColumn Title="Email">
+        @{
+            string lock_user_css_link = LinkCssClass(context);
+            bool isFakeEmail = false;
+        }
+        <div class="hstack">
+            <div class="px-2">
+                @if (!MailAddress.TryCreate(context.Email, out MailAddress? resMail) || resMail.Host.Equals(GlobalStaticConstants.FakeHost) == true)
+                {
+                    isFakeEmail = true;
+                    <span class="font-monospace" title="@GlobalStaticConstants.FakeHost">no-email</span>
+                }
+                else
+                {
+                    <NavLink class="@lock_user_css_link" href="@($"/Users/Profiles/view-{context.UserId}")">@($"{context.Email}{(context.UserName?.Equals(context.Email) == true ? "" : $"(user name: {context.UserName})")}")</NavLink>
+                }
+            </div>
+            @if (context.AccessFailedCount > 0)
             {
-                <TemplateColumn Title="Роли" Align="Align.Right">
-                    @context.RolesAsString("; ")
-                </TemplateColumn>
+                <sup class="pe-2" title="Количество неудачных попыток входа"> @(context.AccessFailedCount) ошибок</sup>
             }
-            @if (!HideClaimsColumn && showClaimsUsers)
+            <code>@context.PhoneNumber</code>
+            @if (RoleInfo is not null && !string.IsNullOrWhiteSpace(context.Email))
             {
-                string _gd = Guid.NewGuid().ToString();
-                PushRowGuid(_gd);
-                <TemplateColumn Title="Claims" Align="Align.Right">
-                    <iframe id="@($"frame:{_gd}")" srcdoc="@($"<html lang=\"ru\" data-bs-theme=\"dark\"><head>" +
+                <div class="px-2">
+                    <span @onclick="() => DeleteUser(context.Email)" title="исключить пользователя из роли" class="my-btn badge text-bg-danger">
+                        исключить из роли {<b>@RoleInfo.Name</b>}
+                    </span>
+                </div>
+            }
+            @if (!isFakeEmail)
+            {
+                <span class="bi bi-envelope-@(context.EmailConfirmed ? "check-fill text-success" : "x text-warning") mx-1" title="email @(context.EmailConfirmed ? "" : "НЕ")подтверждён"></span>
+            }
+            @if (context.TelegramId.HasValue)
+            {
+                <TelegramSendMessageComponent TelegramId="context.TelegramId.Value" />
+                <RemoveTelegramJoinComponent TelegramUserId="context.TelegramId.Value" />
+            }
+            @if (string.IsNullOrWhiteSpace(lock_user_css_link))
+            {
+                <span @onclick="() => SetUserLock(context.UserId, string.IsNullOrWhiteSpace(lock_user_css_link))" title="заблокировать пользователя" class="my-btn mx-2 badge text-bg-warning">
+                    заблокировать
+                </span>
+            }
+            else
+            {
+                <span @onclick="() => SetUserLock(context.UserId, string.IsNullOrWhiteSpace(lock_user_css_link))" title="разблокировать пользователя" class="my-btn mx-2 badge text-bg-success rounded-pill">
+                    разблокировать
+                </span>
+            }
+        </div>
+    </TemplateColumn>
+
+    @if (!HideRolesColumn)
+    {
+        <TemplateColumn Title="Роли" Align="Align.Right">
+            @context.RolesAsString("; ")
+        </TemplateColumn>
+    }
+    @if (!HideClaimsColumn && showClaimsUsers)
+    {
+        string _gd = Guid.NewGuid().ToString();
+        PushRowGuid(_gd);
+        <TemplateColumn Title="Claims" Align="Align.Right">
+            <iframe id="@($"frame:{_gd}")" srcdoc="@($"<html lang=\"ru\" data-bs-theme=\"dark\"><head>" +
                 "<meta charset=\"utf-8\">" +
                 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
                 "<link href=\"_content/MudBlazor/MudBlazor.min.css\" rel=\"stylesheet\">" +
@@ -91,29 +90,28 @@
                 $"</head><body id='{_gd}'><div class='body-wrap-area'>{ClaimsHtml(context)}</div>" +
                 @* $"<script src=\"/lib/jquery/jquery.min.js?version={GlobalStaticConstants.InitSalt}\"></script>" + *@
                 "</body></html>")" />
-                    @* @context.ClaimsAsString(";") *@
-                </TemplateColumn>
-            }
-            @if (RolesMarkers is not null && RolesMarkers.Length != 0)
-            {
-                foreach (EntryAltModel ch in RolesMarkers)
-                {
-                    <TemplateColumn Title="@ch.Name" Align="Align.Right">
-                        @(context.Roles?.Contains(ch.Id) == true ? "ДА" : "")
-                    </TemplateColumn>
-                }
-            }
+            @* @context.ClaimsAsString(";") *@
+        </TemplateColumn>
+    }
+    @if (RolesMarkers is not null && RolesMarkers.Length != 0)
+    {
+        foreach (EntryAltModel ch in RolesMarkers)
+        {
+            <TemplateColumn Title="@ch.Name" Align="Align.Right">
+                @(context.Roles?.Contains(ch.Id) == true ? "ДА" : "")
+            </TemplateColumn>
+        }
+    }
 
-            @if (RolesManageKit is not null && RolesManageKit.Any())
-            {
-                <TemplateColumn Title="Доступ" Align="Align.Right">
-                    <RolesManageKitComponent RolesManageKit="RolesManageKit" User="context" />
-                </TemplateColumn>
-            }
-        </QuickGrid>
-        <Paginator State="@pagination" />
-    </div>
-</div>
+    @if (RolesManageKit is not null && RolesManageKit.Any())
+    {
+        <TemplateColumn Title="Доступ" Align="Align.Right">
+            <RolesManageKitComponent RolesManageKit="RolesManageKit" User="context" />
+        </TemplateColumn>
+    }
+</QuickGrid>
+<Paginator State="@pagination" />
+
 @if (Messages is not null)
 {
     <div class="alert alert-primary" role="alert">
