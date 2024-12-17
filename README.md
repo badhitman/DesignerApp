@@ -275,10 +275,10 @@ Windows/Android [утилита для удалённого взаимодейс
 Запуск нескольких копий решения внутри единой инфраструктуры. Можно на одной общей инфраструктуре (Redis, Mongo, Postgres, RabbitMQ) запустить несколько копий решения таким образом что бы они друг другу не мешали. Для этого нужно указать/придумать префикс нового контура (имя) и предусмотреть под это имя строки подключения к СУБД и Redis. RabbitMQ автоматически по имени контура будет добавлять префиксы к именам очередей, а Mongo используется только для хранилища файлов. Подобная практика не рекомендуется в реальных проектах, но иногда этот приём может потребоваться, например в целях тестирования.
 
 ### Ручная доставка приложения
-- сборка локально: https://github.com/badhitman/DesignerApp/blob/main/devops/build-win.ps1 (скрипт соберёт в папку `C:\Users\User\Documents\publish`)
+- сборка локально: [build-win.ps1](https://github.com/badhitman/DesignerApp/blob/main/devops/build-win.ps1) (скрипт соберёт в папку `C:\Users\User\Documents\publish`)
 - [клиентом синхронизации папок](https://github.com/badhitman/DesignerApp/tree/main/ToolsMauiApp) готовые билды доставляется на сервер в папку `/srv/git/builds`
-- обновляем стенд для проверки работоспособности [скриптом](https://github.com/badhitman/DesignerApp/blob/main/devops/stage-builds.update.sh)
-- если сборка прошла проверку на стенде - обновляем рабочие билды [скриптом](https://github.com/badhitman/DesignerApp/blob/main/devops/prod-builds.update.sh). Скрипт билда следом после остановки служб делает копию текущих сборок в отдельную папку `/srv/Cloud.Disk/services-snapshots/`.
+- обновляем стенд для проверки работоспособности скриптом [stage-builds.update.sh](https://github.com/badhitman/DesignerApp/blob/main/devops/stage-builds.update.sh)
+- если сборка прошла проверку на стенде - обновляем рабочие билды скриптом [prod-builds.update.sh](https://github.com/badhitman/DesignerApp/blob/main/devops/prod-builds.update.sh). Скрипт билда следом после остановки служб делает копию (архив) текущих сборок в отдельную папку `/srv/Cloud.Disk/services-snapshots/`.
 
 [^1]: Подробнее про реализацию MQ транспорта можно узнать [тут](https://github.com/badhitman/DesignerApp/tree/main/RemoteCallLib).
 
