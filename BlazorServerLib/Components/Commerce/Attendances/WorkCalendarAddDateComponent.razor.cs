@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
+using MudBlazor;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
@@ -40,6 +41,8 @@ public partial class WorkCalendarAddDateComponent : BlazorBusyComponentBaseModel
     /// </summary>
     TimeSpan? EndPart = new(18, 00, 00);
 
+    uint QueueCapacity;
+
     async Task Save()
     {
         if (_date is null || EndPart is null || StartPart is null)
@@ -50,8 +53,9 @@ public partial class WorkCalendarAddDateComponent : BlazorBusyComponentBaseModel
         {
             DateScheduleCalendar = DateOnly.FromDateTime(_date.Value),
             EndPart = EndPart.Value,
-            Name = "",
             StartPart = StartPart.Value,
+            QueueCapacity = QueueCapacity,
+            Name = "",
         });
         await SetBusy(false);
         if (WorkCalendarAddDateHandle is not null)

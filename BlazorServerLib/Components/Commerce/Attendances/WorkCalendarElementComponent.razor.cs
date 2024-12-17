@@ -45,6 +45,7 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
     bool IsEdited => WorkScheduleCalendar.IsDisabled != editWorkScheduleCalendar.IsDisabled ||
         WorkScheduleCalendar.StartPart != editWorkScheduleCalendar.StartPart ||
         WorkScheduleCalendar.EndPart != editWorkScheduleCalendar.EndPart ||
+        WorkScheduleCalendar.QueueCapacity != editWorkScheduleCalendar.QueueCapacity ||
         WorkScheduleCalendar.Name != editWorkScheduleCalendar.Name ||
         WorkScheduleCalendar.DateScheduleCalendar != editWorkScheduleCalendar.DateScheduleCalendar ||
         WorkScheduleCalendar.Description != editWorkScheduleCalendar.Description;

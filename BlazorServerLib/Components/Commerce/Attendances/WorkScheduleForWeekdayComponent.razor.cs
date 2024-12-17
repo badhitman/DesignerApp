@@ -32,6 +32,7 @@ public partial class WorkScheduleForWeekdayComponent : BlazorBusyComponentBaseMo
     bool IsEdited => WorkSchedule.IsDisabled != WorkScheduleEdit.IsDisabled ||
         WorkSchedule.StartPart != WorkScheduleEdit.StartPart ||
         WorkSchedule.EndPart != WorkScheduleEdit.EndPart ||
+        WorkSchedule.QueueCapacity != WorkScheduleEdit.QueueCapacity ||
         WorkSchedule.Name != WorkScheduleEdit.Name ||
         WorkSchedule.Description != WorkScheduleEdit.Description;
 

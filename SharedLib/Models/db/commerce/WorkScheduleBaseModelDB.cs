@@ -48,4 +48,9 @@ public class WorkScheduleBaseModelDB : UniversalLayerModel
     /// </summary>
     [Required]
     public required TimeSpan EndPart { get; set; }
+
+    /// <summary>
+    /// Ёмкость очереди (0 - безлимитное)
+    /// </summary>
+    public uint QueueCapacity { get; set; }
 }

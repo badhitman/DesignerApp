@@ -49,6 +49,7 @@ public partial class CommerceImplementService : ICommerceService
                 .SetProperty(p => p.IsDisabled, req.IsDisabled)
                 .SetProperty(p => p.StartPart, req.StartPart)
                 .SetProperty(p => p.EndPart, req.EndPart)
+                .SetProperty(p => p.QueueCapacity, req.QueueCapacity)
                 .SetProperty(p => p.Name, req.Name));
         }
 
@@ -151,6 +152,7 @@ public partial class CommerceImplementService : ICommerceService
                 .SetProperty(p => p.Name, req.Name)
                 .SetProperty(p => p.Description, req.Description)
                 .SetProperty(p => p.IsDisabled, req.IsDisabled)
+                .SetProperty(p => p.QueueCapacity, req.QueueCapacity)
                 .SetProperty(p => p.EndPart, req.EndPart)
                 .SetProperty(p => p.StartPart, req.StartPart)
                 .SetProperty(p => p.DateScheduleCalendar, req.DateScheduleCalendar)

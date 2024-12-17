@@ -8,6 +8,9 @@ using SharedLib;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
+/// <summary>
+/// CreateOrderAttendancesComponent
+/// </summary>
 public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseModel
 {
     /// <summary>

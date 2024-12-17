@@ -29,6 +29,7 @@ public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBas
     [Parameter]
     public required Action<WorkScheduleModelDB>? AddingWorkScheduleHandle { get; set; }
 
+    bool CantSave => EndPart is null || StartPart is null || EndPart < StartPart;
 
     bool IsExpandAdding;
 
@@ -42,6 +43,7 @@ public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBas
     /// </summary>
     TimeSpan? EndPart = new(18, 00, 00);
 
+    uint QueueCapacity;
 
     async Task Save()
     {
@@ -53,7 +55,8 @@ public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBas
             Name = "",
             EndPart = EndPart.Value,
             StartPart = StartPart.Value,
-            Weekday = Weekday
+            Weekday = Weekday,
+            QueueCapacity = QueueCapacity,
         };
 
         await SetBusy();
