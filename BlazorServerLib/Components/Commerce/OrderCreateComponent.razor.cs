@@ -404,13 +404,14 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
 
     async Task OrganizationReset()
     {
-        TPaginationRequestModel<OrganizationsSelectRequestModel> req = new()
+        TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req = new()
         {
             Payload = new()
             {
                 ForUserIdentityId = CurrentUserSession!.IsAdmin ? null : CurrentUserSession!.UserId,
                 IncludeExternalData = true,
             },
+            SenderActionUserId = CurrentUserSession.UserId,
             PageNum = 0,
             PageSize = int.MaxValue,
             SortBy = nameof(OrderDocumentModelDB.Name),

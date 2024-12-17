@@ -114,9 +114,9 @@ builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService
 builder.Services
     .RegisterMqListener<OrganizationSetLegalReceive, OrganizationLegalModel?, bool?>()
     .RegisterMqListener<OrganizationUpdateReceive, TAuthRequestModel<OrganizationModelDB>?, int?>()
-    .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
+    .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestAuthModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
     .RegisterMqListener<AddressOrganizationUpdateReceive, AddressOrganizationBaseModel?, int?>()
-    .RegisterMqListener<AddressOrganizationDeleteReceive, int?, bool?>()
+    .RegisterMqListener<AddressOrganizationDeleteReceive, int?, object?>()
     .RegisterMqListener<NomenclatureUpdateReceive, NomenclatureModelDB?, int?>()
     .RegisterMqListener<OrdersByIssuesGetReceive, OrdersByIssuesSelectRequestModel?, OrderDocumentModelDB[]?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()

@@ -7,7 +7,7 @@ using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Commerce;
+namespace BlazorWebLib.Components.Commerce.Organizations;
 
 /// <summary>
 /// OrganizationEditComponent

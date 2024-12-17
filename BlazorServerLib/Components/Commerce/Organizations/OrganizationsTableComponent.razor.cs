@@ -7,7 +7,7 @@ using BlazorLib;
 using MudBlazor;
 using SharedLib;
 
-namespace BlazorWebLib.Components.Commerce;
+namespace BlazorWebLib.Components.Commerce.Organizations;
 
 /// <summary>
 /// OrganizationsTableComponent
@@ -61,11 +61,10 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
         else if (!string.IsNullOrWhiteSpace(UserId))
         {
             await SetBusy();
-
             TResponseModel<UserInfoModel[]?> user_res = await WebRepo.GetUsersIdentity([UserId]);
-            IsBusyProgress = false;
             SnackbarRepo.ShowMessagesResponse(user_res.Messages);
             CurrentViewUser = user_res.Response?.FirstOrDefault();
+            await SetBusy(false);
         }
     }
 
@@ -74,21 +73,24 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
     /// </summary>
     private async Task<TableData<OrganizationModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-        TPaginationRequestModel<OrganizationsSelectRequestModel> req = new()
+        if (CurrentUserSession is null)
+            return new TableData<OrganizationModelDB>() { TotalItems = 0, Items = [] };
+
+        TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req = new()
         {
             Payload = new()
             {
                 ForUserIdentityId = _filterUser,
             },
+            SenderActionUserId = CurrentUserSession.UserId,
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        await SetBusy();
-
+        await SetBusy(token: token);
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
-        IsBusyProgress = false;
+        await SetBusy(false, token: token);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         if (!res.Success() || res.Response?.Response is null)

@@ -4,7 +4,10 @@
 
 <MudTable Loading="IsBusyProgress" ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Юридические лица: (@(CurrentViewUser is null ? "Все" : CurrentViewUser.Email))</MudText>
+        <MudText Typo="Typo.h6">
+            Юридические лица: (@(CurrentViewUser is null ? "Все" : CurrentViewUser.Email))
+            <sup class="@(IsBusyProgress ? "spinner-grow spinner-grow-sm text-primary" : "bi bi-arrow-clockwise")" style="cursor: pointer;" @onclick="table.ReloadServerData"></sup>
+        </MudText>
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortLabel="@(nameof(OrganizationModelDB.Name))" T="OrganizationModelDB">Название</MudTableSortLabel></MudTh>

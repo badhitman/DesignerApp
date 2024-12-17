@@ -10,6 +10,7 @@ namespace SharedLib;
 /// Связь пользователя с организацией
 /// </summary>
 [Index(nameof(OrganizationId), nameof(UserPersonIdentityId), IsUnique = true)]
+[Index(nameof(UserStatus))]
 public class UserOrganizationModelDB : PersonalEntrySwitchableUpdatedModel
 {
     /// <summary>

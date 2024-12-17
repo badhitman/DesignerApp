@@ -55,7 +55,7 @@ public class OfferDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFac
         }
         else
         {
-            msg = $"Оффер #{req} отсутствует в БД. Возможн, он был удалён ранее";
+            msg = $"Оффер #{req} отсутствует в БД. Возможно, он был удалён ранее";
             res.AddInfo(msg);
             loggerRepo.LogWarning($"{msg}. Оффер #{req} удалён");
         }

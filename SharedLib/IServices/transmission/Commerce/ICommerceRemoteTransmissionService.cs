@@ -117,7 +117,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Подбор организаций с параметрами запроса
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestModel<OrganizationsSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
 
     /// <summary>
     /// OrganizationUpdate
@@ -145,7 +145,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Удалить адрес организации
     /// </summary>
-    public Task<TResponseModel<bool>> AddressOrganizationDelete(int req);
+    public Task<ResponseBaseModel> AddressOrganizationDelete(int req);
 
     /// <summary>
     /// Обновить/Создать адрес организации
