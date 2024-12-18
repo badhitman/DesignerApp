@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using DocumentFormat.OpenXml.Drawing;
 using SharedLib;
 
 namespace RemoteCallLib;
@@ -52,7 +53,7 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<OrganizationModelDB[]>(GlobalStaticConstants.TransmissionQueues.OrganizationsReadCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<UniversalSelectRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OrganizationModelDB>>(GlobalStaticConstants.TransmissionQueues.OrganizationsSelectCommerceReceive, req);
 
     /// <inheritdoc/>
@@ -150,4 +151,16 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
     /// <inheritdoc/>
     public async Task<TResponseModel<WorkScheduleCalendarModelDB[]>> WorkScheduleCalendarsRead(int[] req)
         => await rabbitClient.MqRemoteCall<WorkScheduleCalendarModelDB[]>(GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarsReadCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UniversalSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<UserOrganizationModelDB>>(GlobalStaticConstants.TransmissionQueues.OrganizationsUsersSelectCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> UserOrganizationUpdate(TAuthRequestModel<UserOrganizationModelDB> org)
+        => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.OrganizationUserUpdateOrCreateCommerceReceive, org);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<UserOrganizationModelDB[]>> UsersOrganizationsRead(int[] organizations_ids)
+        => await rabbitClient.MqRemoteCall<UserOrganizationModelDB[]>(GlobalStaticConstants.TransmissionQueues.OrganizationsUsersReadCommerceReceive, organizations_ids);
 }

@@ -162,7 +162,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<UniversalSelectRequestModel> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
@@ -361,5 +361,90 @@ public partial class CommerceImplementService : ICommerceService
         }
 
         return res;
+    }
+
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> UserOrganizationUpdate(TAuthRequestModel<UserOrganizationModelDB> req)
+    {
+        TResponseModel<int> res = new() { Response = 0 };
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        if (req.Payload.Id < 1)
+        {
+            await context.AddAsync(req.Payload);
+            await context.SaveChangesAsync();
+            res.AddSuccess("Адрес добавлен");
+            res.Response = req.Payload.Id;
+            return res;
+        }
+
+        res.Response = await context.OrganizationsUsers
+                        .Where(x => x.Id == req.Payload.Id)
+                        .ExecuteUpdateAsync(set => set
+                        .SetProperty(p => p.UserStatus, req.Payload.UserStatus)
+                        .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow));
+
+        res.AddSuccess($"Обновление `{nameof(UserOrganizationUpdate)}` выполнено");
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<UserOrganizationModelDB[]>> UsersOrganizationsRead(int[] req)
+    {
+        TResponseModel<UserOrganizationModelDB[]> res = new();
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        res.Response = await context
+            .OrganizationsUsers
+            .Where(x => req.Any(y => y == x.Id))
+            .Include(x => x.Organization!)
+            .ThenInclude(x => x.Users)
+            .ToArrayAsync();
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UniversalSelectRequestModel> req)
+    {
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        IQueryable<UserOrganizationModelDB> q = context
+            .OrganizationsUsers
+            .AsQueryable();
+
+        if (req.Payload.AfterDateUpdate is not null)
+            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.ForUserIdentityId))
+            q = q.Where(x => context.OrganizationsUsers.Any(y => y.OrganizationId == x.Id && y.UserPersonIdentityId == req.Payload.ForUserIdentityId));
+
+        q = req.SortingDirection == VerticalDirectionsEnum.Up
+            ? q.OrderBy(x => x.LastAtUpdatedUTC)
+            : q.OrderByDescending(x => x.LastAtUpdatedUTC);
+
+        IQueryable<UserOrganizationModelDB> pq = q
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize);
+
+        var extQ = pq
+            .Include(x => x.Organization!)
+            .ThenInclude(x => x.Users);
+
+        return new()
+        {
+            Response = new()
+            {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = req.Payload.IncludeExternalData ? [.. await extQ.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
+            }
+        };
     }
 }

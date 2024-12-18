@@ -76,7 +76,7 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
         if (CurrentUserSession is null)
             return new TableData<OrganizationModelDB>() { TotalItems = 0, Items = [] };
 
-        TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req = new()
+        TPaginationRequestAuthModel<UniversalSelectRequestModel> req = new()
         {
             Payload = new()
             {

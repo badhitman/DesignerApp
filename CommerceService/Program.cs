@@ -114,12 +114,15 @@ builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService
 builder.Services
     .RegisterMqListener<OrganizationSetLegalReceive, OrganizationLegalModel?, bool?>()
     .RegisterMqListener<OrganizationUpdateReceive, TAuthRequestModel<OrganizationModelDB>?, int?>()
-    .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestAuthModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
+    .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestAuthModel<UniversalSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
     .RegisterMqListener<AddressOrganizationUpdateReceive, AddressOrganizationBaseModel?, int?>()
     .RegisterMqListener<AddressOrganizationDeleteReceive, int?, object?>()
     .RegisterMqListener<NomenclatureUpdateReceive, NomenclatureModelDB?, int?>()
     .RegisterMqListener<OrdersByIssuesGetReceive, OrdersByIssuesSelectRequestModel?, OrderDocumentModelDB[]?>()
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
+    .RegisterMqListener<UserOrganizationUpdateReceive, TAuthRequestModel<UserOrganizationModelDB>?, int?>()
+    .RegisterMqListener<UsersOrganizationsReadReceive, int[]?, UserOrganizationModelDB[]?>()
+    .RegisterMqListener<UsersOrganizationsSelectReceive, TPaginationRequestAuthModel<UniversalSelectRequestModel>?, TPaginationResponseModel<UserOrganizationModelDB>?>()
 
     .RegisterMqListener<WorkScheduleUpdateReceive, WorkScheduleModelDB?, int?>()
     .RegisterMqListener<WorkSchedulesSelectReceive, TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WorkScheduleModelDB>?>()

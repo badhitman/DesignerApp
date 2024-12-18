@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// Подбор организаций с параметризованным запросом-фильтром
+/// UniversalSelectRequestModel
 /// </summary>
-public class OrganizationsSelectRequestModel
+public class UniversalSelectRequestModel
 {
     /// <summary>
     /// Идентификатор пользователя (Identity Id)
