@@ -36,7 +36,7 @@ public record UserInfoModel : UserInfoMainModel
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{this.UserName} {this.GivenName} {this.Surname} {this.Email}";
+        return $"{UserName} {GivenName} {Surname} {Email}";
     }
 
     /// <inheritdoc/>

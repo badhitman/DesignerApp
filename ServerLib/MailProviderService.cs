@@ -19,17 +19,32 @@ public class MailProviderService(IOptions<SmtpConfigModel> _config, ILogger<Mail
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SendEmailAsync(string email, string subject, string message, string mimekit_format = "html")
     {
-        if (!System.Net.Mail.MailAddress.TryCreate(email, out System.Net.Mail.MailAddress? mail) || mail is null)
-            return ResponseBaseModel.CreateError("Не корректный Email");
+        if (email != "*")
+        {
+            if (!System.Net.Mail.MailAddress.TryCreate(email, out System.Net.Mail.MailAddress? mail) || mail is null)
+                return ResponseBaseModel.CreateError("Не корректный Email");
 
-        if (mail.Host == GlobalStaticConstants.FakeHost)
-            return ResponseBaseModel.CreateInfo("Заглушка: email host");
-
-        TextFormat format = (TextFormat)Enum.Parse(typeof(TextFormat), mimekit_format, true);
+            if (mail.Host == GlobalStaticConstants.FakeHost)
+                return ResponseBaseModel.CreateInfo("Заглушка: email host");
+        }
+        else if (_config.Value.EmailNotificationRecipients.Length == 0)
+        {
+            string _msg = $"Ошибка отправки технического уведомления: не установлены получатели [{nameof(_config.Value.EmailNotificationRecipients)}]";
+            loggerRepo.LogError(_msg);
+            return ResponseBaseModel.CreateError(_msg);
+        }
+        
+        TextFormat format = Enum.Parse<TextFormat>(mimekit_format, true);
         MimeMessage? emailMessage = new();
 
         emailMessage.From.Add(new MailboxAddress(_config.Value.PublicName, _config.Value.Email));
-        emailMessage.To.Add(new MailboxAddress(string.Empty, email));
+        
+        if (email == "*")
+            foreach (string _mail in _config.Value.EmailNotificationRecipients)
+                emailMessage.To.Add(new MailboxAddress(string.Empty, _mail));
+        else
+            emailMessage.To.Add(new MailboxAddress(string.Empty, email));
+
         emailMessage.Subject = subject;
         emailMessage.Body = new TextPart(format)
         {

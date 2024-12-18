@@ -216,35 +216,54 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<OrganizationModelDB> _q = context
+        OrganizationModelDB? duple;
+        UserInfoModel actor = default!;
+        await Task.WhenAll([
+            Task.Run(async () => 
+            {
+                TResponseModel<UserInfoModel[]?> userFind = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+                actor = userFind.Response!.First();
+                }),
+            Task.Run(async () => { duple = await context.Organizations.FirstOrDefaultAsync(x => x.INN == req.Payload.INN || x.OGRN == req.Payload.OGRN || (x.BankBIC == req.Payload.BankBIC && x.CurrentAccount == req.Payload.CurrentAccount && x.CorrespondentAccount == req.Payload.CorrespondentAccount)); })
+            ]);
+
+        duple = await context
                 .Organizations
-                .Where(x => x.INN == req.Payload.INN || x.OGRN == req.Payload.OGRN || (x.BankBIC == req.Payload.BankBIC && x.CurrentAccount == req.Payload.CurrentAccount && x.CorrespondentAccount == req.Payload.CorrespondentAccount))
-                .AsQueryable();
+                .FirstOrDefaultAsync(x => x.INN == req.Payload.INN || x.OGRN == req.Payload.OGRN || (x.BankBIC == req.Payload.BankBIC && x.CurrentAccount == req.Payload.CurrentAccount && x.CorrespondentAccount == req.Payload.CorrespondentAccount));
 
         if (req.Payload.Id < 1)
         {
-            OrganizationModelDB? duple = await _q
-                .FirstOrDefaultAsync();
-
             if (duple is not null)
             {
-                IQueryable<UserOrganizationModelDB> sq = context
+                UserOrganizationModelDB? sq = await context
                     .OrganizationsUsers
-                    .Where(x => x.UserPersonIdentityId == req.SenderActionUserId && x.OrganizationId == duple.Id);
+                    .FirstOrDefaultAsync(x => x.UserPersonIdentityId == req.SenderActionUserId && x.OrganizationId == duple.Id);
 
-                if (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && req.SenderActionUserId != GlobalStaticConstants.Roles.System && !await sq.AnyAsync())
+                if (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && req.SenderActionUserId != GlobalStaticConstants.Roles.System && sq is not null)
                 {
                     await context.AddAsync(new UserOrganizationModelDB()
                     {
                         LastAtUpdatedUTC = DateTime.UtcNow,
                         UserPersonIdentityId = req.SenderActionUserId,
                         OrganizationId = duple.Id,
+                        UserStatus = UsersOrganizationsStatusesEnum.None,
                     });
-                    await context.SaveChangesAsync();
-                    res.AddSuccess($"Вы добавлены к управлению компанией");
-                }
 
-                res.AddWarning($"Компания уже существует");
+                    await Task.WhenAll([
+                        context.SaveChangesAsync(),
+                        Task.Run(async () =>
+                        {
+                            await webTransmissionRepo.SendEmail(new SendEmailRequestModel()
+                            {
+                                TextMessage = $"В компанию `{sq}` добавлен сотрудник: {actor}",
+                                Email = "*",
+                                Subject = "Новый сотрудник" }, false); })
+                        ]);
+
+                    res.AddSuccess($"Вы добавлены к управлению компанией, но требуется подтверждение администратором");
+                }
+                else
+                    res.AddWarning($"Компания уже существует. Требуется подтверждение администратором");
                 return res;
             }
 
