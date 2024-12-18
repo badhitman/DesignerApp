@@ -74,4 +74,10 @@ public class OrganizationLegalModel : EntryDescriptionSwitchableModel
     /// </summary>
     [Required]
     public required string BankBIC { get; set; }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{Name} (ИНН:{INN})";
+    }
 }

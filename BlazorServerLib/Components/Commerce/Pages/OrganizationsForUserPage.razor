@@ -1,6 +1,7 @@
 ﻿@page "/organizations/{UserId}"
 @page "/organizations"
 
+@using BlazorWebLib.Components.Commerce.Attendances
 @using BlazorWebLib.Components.Commerce.Organizations
 @using MudBlazor
 
@@ -18,8 +19,8 @@
                     <a class="btn btn-outline-success" href="/organizations/edit/0" role="button">Создать</a>
                 </div>
             </MudTabPanel>
-            <MudTabPanel Text="Права">
-                <UsersOrganizationsComponent />
+            <MudTabPanel Text="Сотрудники">
+                <AttendancesExecutorsComponent />
             </MudTabPanel>
         </MudTabs>
     </Authorized>

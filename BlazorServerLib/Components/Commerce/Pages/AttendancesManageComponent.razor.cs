@@ -38,8 +38,6 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseModel
                 InvokeAsync(async () => await _workSchedule.Reload(SelectedOffer));
             if (_workCalendar is not null)
                 InvokeAsync(async () => await _workCalendar.Reload(SelectedOffer));
-            if (_workExecutors is not null)
-                InvokeAsync(async () => await _workExecutors.Reload(SelectedOffer));
         }
     }
     List<OfferModelDB> AllOffers { get; set; } = [];
@@ -48,7 +46,6 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseModel
 
     WorkScheduleComponent? _workSchedule;
     WorkCalendarComponent? _workCalendar;
-    AttendancesExecutorsComponent? _workExecutors;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

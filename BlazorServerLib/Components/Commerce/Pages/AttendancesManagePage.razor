@@ -23,7 +23,7 @@
         <Authorized>
             <MudTabPanel Text="Управление">
                 <AttendancesManageComponent />
-            </MudTabPanel>
+            </MudTabPanel>            
             <MudTabPanel Text="Права">
                 <UsersTableComponent HideClaimsColumn="true" HideRolesColumn="true" RolesMarkers="@showMarkersRoles" RolesManageKit="@showMarkersRoles.Select(x => x.Id).Union([GlobalStaticConstants.Roles.CommerceManager, GlobalStaticConstants.Roles.CommerceClient, GlobalStaticConstants.Roles.Debug])" />
             </MudTabPanel>

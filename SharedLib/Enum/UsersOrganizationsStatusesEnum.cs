@@ -12,15 +12,15 @@ namespace SharedLib;
 public enum UsersOrganizationsStatusesEnum
 {
     /// <summary>
-    /// None
+    /// Отключён
     /// </summary>
-    [Description("None")]
+    [Description("Отключён")]
     None = 0,
 
     /// <summary>
     /// Обычный сотрудник
     /// </summary>
-    [Description("Обычный сотрудник")]
+    [Description("Сотрудник")]
     SimpleUnit = 10,
 
     /// <summary>

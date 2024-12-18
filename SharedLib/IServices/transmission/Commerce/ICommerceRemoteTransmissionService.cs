@@ -160,7 +160,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// UsersOrganizationsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UniversalSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req);
 
     /// <summary>
     /// UserOrganizationUpdate

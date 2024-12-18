@@ -17,7 +17,7 @@ public partial interface ICommerceService
     /// <summary>
     /// UsersOrganizations select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UniversalSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req);
 
     /// <summary>
     /// UsersOrganizations read

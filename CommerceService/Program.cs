@@ -122,7 +122,7 @@ builder.Services
     .RegisterMqListener<OfferDeleteReceive, int?, bool?>()
     .RegisterMqListener<UserOrganizationUpdateReceive, TAuthRequestModel<UserOrganizationModelDB>?, int?>()
     .RegisterMqListener<UsersOrganizationsReadReceive, int[]?, UserOrganizationModelDB[]?>()
-    .RegisterMqListener<UsersOrganizationsSelectReceive, TPaginationRequestAuthModel<UniversalSelectRequestModel>?, TPaginationResponseModel<UserOrganizationModelDB>?>()
+    .RegisterMqListener<UsersOrganizationsSelectReceive, TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest>?, TPaginationResponseModel<UserOrganizationModelDB>?>()
 
     .RegisterMqListener<WorkScheduleUpdateReceive, WorkScheduleModelDB?, int?>()
     .RegisterMqListener<WorkSchedulesSelectReceive, TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WorkScheduleModelDB>?>()
