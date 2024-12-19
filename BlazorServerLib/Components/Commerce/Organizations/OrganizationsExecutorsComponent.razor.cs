@@ -7,12 +7,12 @@ using BlazorLib;
 using SharedLib;
 using MudBlazor;
 
-namespace BlazorWebLib.Components.Commerce.Attendances;
+namespace BlazorWebLib.Components.Commerce.Organizations;
 
 /// <summary>
-/// AttendancesExecutorsComponent
+/// OrganizationsExecutorsComponent
 /// </summary>
-public partial class AttendancesExecutorsComponent : BlazorBusyComponentUsersCachedModel
+public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersCachedModel
 {
     /// <summary>
     /// Commerce
@@ -23,6 +23,7 @@ public partial class AttendancesExecutorsComponent : BlazorBusyComponentUsersCac
     /// <summary>
     /// Organization
     /// </summary>
+    [Parameter]
     public int? OrganizationId { get; set; }
 
     /// <summary>

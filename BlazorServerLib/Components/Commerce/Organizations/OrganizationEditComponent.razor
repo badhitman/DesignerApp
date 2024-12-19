@@ -161,6 +161,21 @@ else
         <MudTabPanel Disabled="@(OrganizationId <= 0)" Text="Заказы">
             <OrdersJournalComponent OrganizationFilter="currentOrg.Id" />
         </MudTabPanel>
+        <AuthorizeView Roles="@($"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.CommerceManager},{GlobalStaticConstants.Roles.Debug}")">
+            <Authorized>
+                <MudTabPanel Text="Сотрудники">
+                    <OrganizationsExecutorsComponent OrganizationId="OrganizationId" />
+                </MudTabPanel>
+            </Authorized>
+            <NotAuthorized>
+                @if (!string.IsNullOrWhiteSpace(CurrentUserSession?.UserId) && currentOrg.Users?.Any(x => x.UserStatus == UsersOrganizationsStatusesEnum.Manager && x.UserPersonIdentityId == CurrentUserSession.UserId) == true)
+                {
+                    <MudTabPanel Text="Сотрудники">
+                        <OrganizationsExecutorsComponent OrganizationId="OrganizationId" />
+                    </MudTabPanel>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
     </MudTabs>
 
 }

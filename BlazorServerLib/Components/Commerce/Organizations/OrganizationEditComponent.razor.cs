@@ -40,7 +40,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = CurrentUserSession!.UserId };
         await SetBusy();
-        
+
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -82,7 +82,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
             req.Name = editOrg.NewName;
 
         await SetBusy();
-        
+
         TResponseModel<bool> res = await CommerceRepo.OrganizationSetLegal(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -96,7 +96,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
 
         TAuthRequestModel<OrganizationModelDB> req = new() { Payload = editOrg!, SenderActionUserId = CurrentUserSession!.UserId };
         await SetBusy();
-        
+
         TResponseModel<int> res = await CommerceRepo.OrganizationUpdate(req);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -116,11 +116,10 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
             return;
 
         await SetBusy();
-        
         TResponseModel<OrganizationModelDB[]> res = await CommerceRepo.OrganizationsRead([OrganizationId.Value]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        currentOrg = res.Response?.FirstOrDefault();
+        currentOrg = res.Response!.Single();
         if (currentOrg is not null && (currentOrg.Users?.Any(x => x.UserPersonIdentityId == CurrentUserSession!.UserId) != true && !CurrentUserSession!.IsAdmin && CurrentUserSession!.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Contains(x)) != true))
         {
             currentOrg = null;
