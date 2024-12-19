@@ -391,9 +391,18 @@ public partial class CommerceImplementService : ICommerceService
 
         if (req.Payload.Id < 1)
         {
+            UserOrganizationModelDB? dl = await context.OrganizationsUsers
+                .FirstOrDefaultAsync(x => x.OrganizationId == req.Payload.OrganizationId && x.UserPersonIdentityId == req.Payload.UserPersonIdentityId);
+
+            if (dl is not null)
+            {
+                res.AddInfo($"Пользователь уже существует: {dl.UserStatus.DescriptionInfo()}");
+                return res;
+            }
+
             await context.AddAsync(req.Payload);
             await context.SaveChangesAsync();
-            res.AddSuccess("Адрес добавлен");
+            res.AddSuccess("Пользователь добавлен");
             res.Response = req.Payload.Id;
             return res;
         }

@@ -515,6 +515,11 @@ public static partial class GlobalStaticConstants
         /// </summary>
         public readonly static string GetUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, Routes.GET_ACTION_NAME);
 
+        /// <summary>
+        /// Получить пользователей из Identity по их Email
+        /// </summary>
+        public readonly static string GetUsersOfIdentityByEmailReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, $"{Routes.GET_ACTION_NAME}-by-{Routes.EMAIL_CONTROLLER_NAME}");
+
         /// <inheritdoc/>
         public readonly static string SelectUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 

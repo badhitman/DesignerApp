@@ -207,6 +207,7 @@ builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUser
     .RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>()
     .RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModel>()
     .RegisterMqListener<GetUsersOfIdentityReceive, string[], UserInfoModel[]>()
+    .RegisterMqListener<GetUsersIdentityByEmailReceive, string[], UserInfoModel[]>()
     .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, bool>()
     .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], UserInfoModel[]>()
     .RegisterMqListener<SetRoleForUserReceive, SetRoleFoeUserRequestModel, string[]>()

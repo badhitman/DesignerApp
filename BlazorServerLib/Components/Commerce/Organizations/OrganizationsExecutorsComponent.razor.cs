@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using System.Net.Mail;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
@@ -20,11 +21,21 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
     [Inject]
     protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
+    [Inject]
+    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+
+
+    /// <summary>
+    /// CanAdding
+    /// </summary>
+    [Parameter]
+    public bool CanAdding { get; set; }
+
     /// <summary>
     /// Organization
     /// </summary>
     [Parameter]
-    public int? OrganizationId { get; set; }
+    public OrganizationModelDB? Organization { get; set; }
 
     /// <summary>
     /// Offer
@@ -33,6 +44,7 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
     public required OfferModelDB? Offer { get; set; }
 
 
+    string? AddingUserEmail;
     MudTable<UserOrganizationModelDB> tableRef = default!;
     readonly Dictionary<string, UsersOrganizationsStatusesEnum> UsersOrganizationsStatuses = [];
 
@@ -45,6 +57,39 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
             _options = value;
             InvokeAsync(tableRef.ReloadServerData);
         }
+    }
+
+    async Task AddNewExecutor()
+    {
+        if (!MailAddress.TryCreate(AddingUserEmail, out _) || Organization is null || CurrentUserSession is null)
+            return;
+        await SetBusy();
+
+        TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentityByEmails([AddingUserEmail]);
+
+        if (!res.Success() || res.Response is null || res.Response.Length != 1)
+        {
+            SnackbarRepo.Error("Ошибка добавления пользователя");
+            return;
+        }
+
+        TAuthRequestModel<UserOrganizationModelDB> req = new()
+        {
+            Payload = new()
+            {
+                UserPersonIdentityId = res.Response[0].UserId,
+                UserStatus = UsersOrganizationsStatusesEnum.None,
+                OrganizationId = Organization.Id,
+            },
+            SenderActionUserId = CurrentUserSession.UserId,
+        };
+        TResponseModel<int> sr = await CommerceRepo.UserOrganizationUpdate(req);
+        SnackbarRepo.ShowMessagesResponse(sr.Messages);
+        AddingUserEmail = "";
+
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        await SetBusy(false);
+        await tableRef.ReloadServerData();
     }
 
     private UserOrganizationModelDB? elementBeforeEdit;
@@ -118,7 +163,7 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
             Payload = new()
             {
                 UsersOrganizationsStatusesFilter = Options?.Select(x => UsersOrganizationsStatuses[x]).ToArray(),
-                IncludeExternalData = !OrganizationId.HasValue || OrganizationId.Value < 1,
+                IncludeExternalData = Organization is null || Organization.Id < 1,
             },
             SenderActionUserId = CurrentUserSession.UserId,
             PageNum = state.Page,
@@ -127,8 +172,8 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
 
-        if (OrganizationId.HasValue && OrganizationId.Value > 0)
-            req.Payload.OrganizationsFilter = [OrganizationId.Value];
+        if (Organization is not null && Organization.Id > 0)
+            req.Payload.OrganizationsFilter = [Organization.Id];
 
         await SetBusy(token: token);
         TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>> res = await CommerceRepo.UsersOrganizationsSelect(req);

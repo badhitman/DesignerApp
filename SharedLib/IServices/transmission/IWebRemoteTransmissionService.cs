@@ -25,6 +25,11 @@ public interface IWebRemoteTransmissionService
     public Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(IEnumerable<string> ids_users);
 
     /// <summary>
+    /// Получить пользователей из Identity по их Email`s
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentityByEmails(IEnumerable<string> ids_emails);
+
+    /// <summary>
     /// Поиск пользователей в Identity по их Telegram chat id
     /// </summary>
     public Task<TResponseModel<UserInfoModel[]?>> GetUserIdentityByTelegram(long[] ids_users);

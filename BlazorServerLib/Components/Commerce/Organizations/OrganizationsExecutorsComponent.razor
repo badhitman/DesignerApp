@@ -1,4 +1,5 @@
 ﻿@using MudBlazor
+@using System.Net.Mail
 
 @inherits BlazorBusyComponentUsersCachedModel
 
@@ -9,58 +10,108 @@
     }
 </MudSelect>
 
-<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="tableRef" Loading="IsBusyProgress" AllowUnsorted="false" CanCancelEdit="true"
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" RowEditCommit="ItemHasBeenCommitted">
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">Сотрудники компаний</MudText>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh>User</MudTh>
-        @if (OrganizationId.HasValue && OrganizationId.Value > 0)
-        {
-            <MudTh><MudTableSortLabel SortLabel="Status" InitialDirection="SortDirection.Ascending" T="UserOrganizationModelDB">Status</MudTableSortLabel></MudTh>
-        }
-        else
-        {
-            <MudTh><MudTableSortLabel SortLabel="Organization" InitialDirection="SortDirection.Ascending" T="UserOrganizationModelDB">Organization</MudTableSortLabel></MudTh>
-            <MudTh>Status</MudTh>
-        }
-        <MudTh>Updated</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="User">@(UsersCache.FirstOrDefault(x => x.UserId == context.UserPersonIdentityId)?.ToString() ?? context.UserPersonIdentityId)</MudTd>
-        @if (!OrganizationId.HasValue || OrganizationId.Value < 1)
-        {
-            <MudTd DataLabel="Organization">@context.Organization!.ToString()</MudTd>
-        }
-        <MudTd Class="@GetCssColor(context.UserStatus)" DataLabel="Status">@context.UserStatus.DescriptionInfo()</MudTd>
-        <MudTd DataLabel="Updated">@context.LastAtUpdatedUTC.GetCustomTime()</MudTd>
-    </RowTemplate>
-    <RowEditingTemplate>
-        @if (!OrganizationId.HasValue || OrganizationId.Value < 1)
-        {
-            <MudTd DataLabel="Organization">@context.Organization!.ToString()</MudTd>
-        }
-        <MudTd DataLabel="User">@(UsersCache.FirstOrDefault(x => x.UserId == context.UserPersonIdentityId)?.ToString() ?? context.UserPersonIdentityId)</MudTd>
-        <MudTd DataLabel="Status">
-            <MudSelect @bind-Value="context.UserStatus">
-                @foreach (var state in UsersOrganizationsStatuses)
-                {
-                    <MudSelectItem Value="state.Value">@state.Value.DescriptionInfo()</MudSelectItem>
-                }
-            </MudSelect>
-        </MudTd>
-        <MudTd DataLabel="Updated">
-            @context.LastAtUpdatedUTC.GetCustomTime()
-        </MudTd>
-    </RowEditingTemplate>
-    <NoRecordsContent>
-        <MudText>Соответствующих записей не найдено</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>Загрузка...</MudText>
-    </LoadingContent>
-    <PagerContent>
-        <MudTablePager />
-    </PagerContent>
-</MudTable>
+@if (CurrentUserSession?.IsAdmin == true || Organization?.Users?.Any(x => x.UserPersonIdentityId == CurrentUserSession?.UserId && x.UserStatus == UsersOrganizationsStatusesEnum.Manager) == true)
+{
+    <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="tableRef" Loading="IsBusyProgress" AllowUnsorted="false" CanCancelEdit="true" RowEditCommit="ItemHasBeenCommitted"
+              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Сотрудники компаний</MudText>
+            @if (CanAdding && Organization is not null)
+            {
+                <MudSpacer />
+                <div class="hstack gap-3">
+                    <MudTextField @bind-Value="AddingUserEmail" Label="Новый сотрудник" Variant="Variant.Text" Immediate="true"></MudTextField>
+                    <MudFab OnClick="AddNewExecutor" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" Disabled="@(string.IsNullOrWhiteSpace(AddingUserEmail) || !MailAddress.TryCreate(AddingUserEmail, out _))" />
+                </div>
+            }
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>User</MudTh>
+            @if (Organization is not null && Organization.Id > 0)
+            {
+                <MudTh><MudTableSortLabel SortLabel="Status" InitialDirection="SortDirection.Ascending" T="UserOrganizationModelDB">Status</MudTableSortLabel></MudTh>
+            }
+            else
+            {
+                <MudTh><MudTableSortLabel SortLabel="Organization" InitialDirection="SortDirection.Ascending" T="UserOrganizationModelDB">Organization</MudTableSortLabel></MudTh>
+                <MudTh>Status</MudTh>
+            }
+            <MudTh>Updated</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="User">@(UsersCache.FirstOrDefault(x => x.UserId == context.UserPersonIdentityId)?.ToString() ?? context.UserPersonIdentityId)</MudTd>
+            @if (Organization is null || Organization.Id < 1)
+            {
+                <MudTd DataLabel="Organization"><a href="/organizations/edit/@context.OrganizationId">@context.Organization!.ToString()</a></MudTd>
+            }
+            <MudTd Class="@GetCssColor(context.UserStatus)" DataLabel="Status">@context.UserStatus.DescriptionInfo()</MudTd>
+            <MudTd DataLabel="Updated">@context.LastAtUpdatedUTC.GetCustomTime()</MudTd>
+        </RowTemplate>
+        <RowEditingTemplate>
+            @if (Organization is null || Organization.Id < 1)
+            {
+                <MudTd DataLabel="Organization">@context.Organization!.ToString()</MudTd>
+            }
+            <MudTd DataLabel="User">@(UsersCache.FirstOrDefault(x => x.UserId == context.UserPersonIdentityId)?.ToString() ?? context.UserPersonIdentityId)</MudTd>
+            <MudTd DataLabel="Status">
+                <MudSelect @bind-Value="context.UserStatus">
+                    @foreach (var state in UsersOrganizationsStatuses)
+                    {
+                        <MudSelectItem Value="state.Value">@state.Value.DescriptionInfo()</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudTd>
+            <MudTd DataLabel="Updated">
+                @context.LastAtUpdatedUTC.GetCustomTime()
+            </MudTd>
+        </RowEditingTemplate>
+        <NoRecordsContent>
+            <MudText>Соответствующих записей не найдено</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Загрузка...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}
+else
+{
+    <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="tableRef" Loading="IsBusyProgress" AllowUnsorted="false">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Сотрудники компаний</MudText>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>User</MudTh>
+            @if (Organization is not null && Organization.Id > 0)
+            {
+                <MudTh><MudTableSortLabel SortLabel="Status" InitialDirection="SortDirection.Ascending" T="UserOrganizationModelDB">Status</MudTableSortLabel></MudTh>
+            }
+            else
+            {
+                <MudTh><MudTableSortLabel SortLabel="Organization" InitialDirection="SortDirection.Ascending" T="UserOrganizationModelDB">Organization</MudTableSortLabel></MudTh>
+                <MudTh>Status</MudTh>
+            }
+            <MudTh>Updated</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="User">@(UsersCache.FirstOrDefault(x => x.UserId == context.UserPersonIdentityId)?.ToString() ?? context.UserPersonIdentityId)</MudTd>
+            @if (Organization is null || Organization.Id < 1)
+            {
+                <MudTd DataLabel="Organization"><a href="/organizations/edit/@context.OrganizationId">@context.Organization!.ToString()</a></MudTd>
+            }
+            <MudTd Class="@GetCssColor(context.UserStatus)" DataLabel="Status">@context.UserStatus.DescriptionInfo()</MudTd>
+            <MudTd DataLabel="Updated">@context.LastAtUpdatedUTC.GetCustomTime()</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>Соответствующих записей не найдено</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Загрузка...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}

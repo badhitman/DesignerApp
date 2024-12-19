@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class ExecutorIssueComponent : IssueWrapBaseModel
 {
     [Inject]
-    IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
+    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
     [Inject]
     IWebRemoteTransmissionService WebRemoteTransmissionRepo { get; set; } = default!;
@@ -38,7 +38,8 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
         if (!string.IsNullOrWhiteSpace(editExecutorEmail))
         {
             await SetBusy();
-            user_by_email = await UsersProfilesRepo.FindByEmailAsync(editExecutorEmail);
+            TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentityByEmails([editExecutorEmail]);
+            user_by_email = res.Response?.FirstOrDefault();
             IsBusyProgress = false;
             if (user_by_email is null)
             {
