@@ -25,11 +25,11 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
     protected List<OfferAvailabilityModelDB> RegistersCache = [];
 
     /// <summary>
-    /// CacheRegistersOfferUpdate
+    /// CacheRegistersUpdate
     /// </summary>
-    protected async Task CacheRegistersOfferUpdate(IEnumerable<int> req, int warehouseId = 0, bool ClearCache = false)
+    protected async Task CacheRegistersUpdate(IEnumerable<int> offers, IEnumerable<int> goods, int warehouseId = 0, bool clearCache = false)
     {
-        if (ClearCache)
+        if (clearCache)
         {
             lock (this)
             {
@@ -37,13 +37,18 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
             }
         }
 
-        req = [.. req.Where(x => x > 0 && !RegistersCache.Any(y => y.Id == x)).Distinct()];
+        offers = [.. offers.Where(x => x > 0 && !RegistersCache.Any(y => y.Id == x)).Distinct()];
+        goods = [.. goods.Where(x => x > 0 && !RegistersCache.Any(y => y.Id == x)).Distinct()];
+
+        if (!goods.Any() || !offers.Any())
+            return;
 
         TPaginationRequestModel<RegistersSelectRequestBaseModel> reqData = new()
         {
             Payload = new()
             {
-                OfferFilter = [.. req],
+                OfferFilter = [.. offers],
+                NomenclatureFilter = [.. goods],
                 WarehouseId = warehouseId,
                 MinQuantity = 1,
             },
@@ -62,36 +67,5 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
                 RegistersCache.AddRange(rubrics.Response.Response.Where(x => !RegistersCache.Any(y => y.Id == x.Id)));
             }
         }
-    }
-
-    /// <summary>
-    /// CacheRegistersGoodsUpdate
-    /// </summary>
-    protected async Task CacheRegistersGoodsUpdate(IEnumerable<int> req, int warehouseId = 0, bool ClearCache = false)
-    {
-        if (ClearCache)
-            RegistersCache.Clear();
-
-        req = [.. req.Where(x => x > 0 && !RegistersCache.Any(y => y.Id == x)).Distinct()];
-        if (!req.Any())
-            return;
-
-        TPaginationRequestModel<RegistersSelectRequestBaseModel> reqData = new()
-        {
-            Payload = new()
-            {
-                NomenclatureFilter = [.. req],
-                WarehouseId = warehouseId,
-            },
-            PageNum = 0,
-            PageSize = int.MaxValue,
-            SortingDirection = VerticalDirectionsEnum.Up,
-        };
-        await SetBusy();
-        TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>> rubrics = await CommerceRepo.OffersRegistersSelect(reqData);
-        await SetBusy(false);
-        SnackbarRepo.ShowMessagesResponse(rubrics.Messages);
-        if (rubrics.Success() && rubrics.Response is not null && rubrics.Response.Response.Count != 0)
-            RegistersCache.AddRange(rubrics.Response.Response);
     }
 }

@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using static MudBlazor.CategoryTypes;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
 /// <summary>
 /// AttendancesExecutorsComponent
 /// </summary>
-public partial class AttendancesExecutorsComponent : BlazorBusyComponentBaseAuthModel
+public partial class AttendancesExecutorsComponent : BlazorBusyComponentUsersCachedModel
 {
     /// <summary>
     /// Commerce
@@ -63,7 +62,8 @@ public partial class AttendancesExecutorsComponent : BlazorBusyComponentBaseAuth
 
     string GetCssColor(UsersOrganizationsStatusesEnum stat)
     {
-        return stat switch{
+        return stat switch
+        {
             UsersOrganizationsStatusesEnum.None => "text-warning",
             UsersOrganizationsStatusesEnum.SimpleUnit => "text-success-emphasis",
             UsersOrganizationsStatusesEnum.Manager => "text-primary",
@@ -123,10 +123,12 @@ public partial class AttendancesExecutorsComponent : BlazorBusyComponentBaseAuth
         };
         await SetBusy(token: token);
         TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>> res = await CommerceRepo.UsersOrganizationsSelect(req);
-        await SetBusy(false, token);
+        //await SetBusy(false, token);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (!res.Success() || res.Response is null)
             return new TableData<UserOrganizationModelDB>() { TotalItems = 0, Items = [] };
+
+        await CacheUsersUpdate(res.Response.Response.Select(x => x.UserPersonIdentityId));
 
         // Return the data
         return new TableData<UserOrganizationModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };

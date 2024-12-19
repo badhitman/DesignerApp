@@ -45,7 +45,10 @@ public abstract class BlazorBusyComponentRubricsCachedModel : BlazorBusyComponen
         TResponseModel<List<RubricIssueHelpdeskModelDB>?> rubrics = await HelpdeskRepo.RubricsGet(rubricsIds);
         SnackbarRepo.ShowMessagesResponse(rubrics.Messages);
         if (rubrics.Success() && rubrics.Response is not null && rubrics.Response.Count != 0)
-            RubricsCache.AddRange(rubrics.Response);
+            lock (RubricsCache)
+            {
+                RubricsCache.AddRange(rubrics.Response.Where(x => !RubricsCache.Any(y => y.Id == x.Id)));
+            }
 
         await SetBusy(false);
     }

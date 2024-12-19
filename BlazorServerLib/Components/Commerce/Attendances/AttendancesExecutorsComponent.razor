@@ -1,6 +1,6 @@
 ﻿@using MudBlazor
 
-@inherits BlazorBusyComponentBaseAuthModel
+@inherits BlazorBusyComponentUsersCachedModel
 
 <MudSelect T="string" Label="Разрешения" MultiSelection="true" HelperText="Права пользователя" @bind-SelectedValues="Options">
     @foreach (var element in UsersOrganizationsStatuses)
@@ -16,16 +16,19 @@
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortLabel="Organization" InitialDirection="SortDirection.Ascending" T="UserOrganizationModelDB">Organization</MudTableSortLabel></MudTh>
+        <MudTh>User</MudTh>
         <MudTh>Status</MudTh>
         <MudTh>Updated</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Organization">@context.Organization!.ToString()</MudTd>
+        <MudTd DataLabel="User">@(UsersCache.FirstOrDefault(x => x.UserId == context.UserPersonIdentityId)?.ToString() ?? context.UserPersonIdentityId)</MudTd>
         <MudTd Class="@GetCssColor(context.UserStatus)" DataLabel="Status">@context.UserStatus.DescriptionInfo()</MudTd>
         <MudTd DataLabel="Updated">@context.LastAtUpdatedUTC.GetCustomTime()</MudTd>
     </RowTemplate>
     <RowEditingTemplate>
-        <MudTd DataLabel="Organization"></MudTd>
+        <MudTd DataLabel="Organization">@context.Organization!.ToString()</MudTd>
+        <MudTd DataLabel="User">@(UsersCache.FirstOrDefault(x => x.UserId == context.UserPersonIdentityId)?.ToString() ?? context.UserPersonIdentityId)</MudTd>
         <MudTd DataLabel="Status">
             <MudSelect @bind-Value="context.UserStatus">
                 @foreach (var state in UsersOrganizationsStatuses)

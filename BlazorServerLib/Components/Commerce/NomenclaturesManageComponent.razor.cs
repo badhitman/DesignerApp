@@ -70,7 +70,7 @@ public partial class NomenclaturesManageComponent : BlazorBusyComponentRegisters
 
         if (res.Success() && res.Response?.Response is not null)
         {
-            await CacheRegistersGoodsUpdate(res.Response.Response.Select(x => x.Id));
+            await CacheRegistersUpdate(offers: [], goods: res.Response.Response.Select(x => x.Id));
             IsBusyProgress = false;
             return new TableData<NomenclatureModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
         }

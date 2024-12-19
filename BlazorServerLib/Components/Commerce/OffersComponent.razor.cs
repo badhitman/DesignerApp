@@ -85,7 +85,7 @@ public partial class OffersComponent : BlazorBusyComponentRegistersModel
 
         if (res.Success() && res.Response?.Response is not null)
         {
-            await CacheRegistersOfferUpdate(res.Response.Response.Select(x => x.Id));
+            await CacheRegistersUpdate(offers: res.Response.Response.Select(x => x.Id),goods: []);
             IsBusyProgress = false;
             return new TableData<OfferModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
         }
