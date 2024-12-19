@@ -20,6 +20,10 @@ public partial class AttendancesExecutorsComponent : BlazorBusyComponentUsersCac
     [Inject]
     protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
+    /// <summary>
+    /// Organization
+    /// </summary>
+    public int? OrganizationId { get; set; }
 
     /// <summary>
     /// Offer
@@ -60,7 +64,7 @@ public partial class AttendancesExecutorsComponent : BlazorBusyComponentUsersCac
         };
     }
 
-    string GetCssColor(UsersOrganizationsStatusesEnum stat)
+    static string GetCssColor(UsersOrganizationsStatusesEnum stat)
     {
         return stat switch
         {
@@ -112,8 +116,8 @@ public partial class AttendancesExecutorsComponent : BlazorBusyComponentUsersCac
         {
             Payload = new()
             {
-                UsersOrganizationsFilter = Options?.Select(x => UsersOrganizationsStatuses[x]).ToArray(),
-                IncludeExternalData = true,
+                UsersOrganizationsStatusesFilter = Options?.Select(x => UsersOrganizationsStatuses[x]).ToArray(),
+                IncludeExternalData = !OrganizationId.HasValue || OrganizationId.Value < 1,
             },
             SenderActionUserId = CurrentUserSession.UserId,
             PageNum = state.Page,
@@ -121,6 +125,10 @@ public partial class AttendancesExecutorsComponent : BlazorBusyComponentUsersCac
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
+
+        if (OrganizationId.HasValue && OrganizationId.Value > 0)
+            req.Payload.OrganizationsFilter = [OrganizationId.Value];
+
         await SetBusy(token: token);
         TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>> res = await CommerceRepo.UsersOrganizationsSelect(req);
         //await SetBusy(false, token);

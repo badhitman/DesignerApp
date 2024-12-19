@@ -219,7 +219,7 @@ public partial class CommerceImplementService : ICommerceService
         OrganizationModelDB? duple;
         UserInfoModel actor = default!;
         await Task.WhenAll([
-            Task.Run(async () => 
+            Task.Run(async () =>
             {
                 TResponseModel<UserInfoModel[]?> userFind = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
                 actor = userFind.Response!.First();
@@ -431,19 +431,28 @@ public partial class CommerceImplementService : ICommerceService
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<UserOrganizationModelDB> q = req.Payload.UsersOrganizationsFilter is not null && req.Payload.UsersOrganizationsFilter.Length > 0
-            ? context.OrganizationsUsers.Where(x => req.Payload.UsersOrganizationsFilter.Any(y => y == x.UserStatus))
+        IQueryable<UserOrganizationModelDB> q = req.Payload.UsersOrganizationsStatusesFilter is not null && req.Payload.UsersOrganizationsStatusesFilter.Length > 0
+            ? context.OrganizationsUsers.Where(x => req.Payload.UsersOrganizationsStatusesFilter.Any(y => y == x.UserStatus))
             : context.OrganizationsUsers.AsQueryable();
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
 
-        //if (!string.IsNullOrWhiteSpace(req.Payload.ForUserIdentityId))
-        //    q = q.Where(x => context.OrganizationsUsers.Any(y => y.OrganizationId == x.Id && y.UserPersonIdentityId == req.Payload.ForUserIdentityId));
-
-        q = req.SortingDirection == VerticalDirectionsEnum.Up
+        if (req.Payload.OrganizationsFilter is not null && req.Payload.OrganizationsFilter.Length != 0)
+        {
+            q = q.Where(x => req.Payload.OrganizationsFilter.Any(y => y == x.OrganizationId));
+            q = req.SortingDirection == VerticalDirectionsEnum.Up
+            ? q.OrderBy(x => x.UserStatus)
+            : q.OrderByDescending(x => x.UserStatus);
+        }
+        else
+        {
+            q = req.SortingDirection == VerticalDirectionsEnum.Up
             ? q.OrderBy(x => x.Organization!.Name)
             : q.OrderByDescending(x => x.Organization!.Name);
+        }
+
+
 
         IQueryable<UserOrganizationModelDB> pq = q
             .Skip(req.PageNum * req.PageSize)

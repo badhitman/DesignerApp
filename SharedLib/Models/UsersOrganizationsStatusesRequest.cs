@@ -12,5 +12,10 @@ public class UsersOrganizationsStatusesRequest : UniversalSelectRequestModel
     /// <summary>
     /// UsersOrganizationsFilter
     /// </summary>
-    public UsersOrganizationsStatusesEnum[]? UsersOrganizationsFilter { get; set; }
+    public UsersOrganizationsStatusesEnum[]? UsersOrganizationsStatusesFilter { get; set; }
+
+    /// <summary>
+    /// Организации (фильтр)
+    /// </summary>
+    public int[]? OrganizationsFilter {  get; set; }
 }
