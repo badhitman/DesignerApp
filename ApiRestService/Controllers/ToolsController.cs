@@ -32,6 +32,9 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
         if (uploadedFile is null || uploadedFile.Length == 0)
             return ResponseBaseModel.CreateError($"Данные файла отсутствуют - {nameof(PartUpload)}");
 
+        if (uploadedFile.Length > сonfigPartUploadSession.Value.PartUploadSize)
+            return ResponseBaseModel.CreateError($"Пакет данных слишком велик");
+
         sessionToken = Encoding.UTF8.GetString(Convert.FromBase64String(sessionToken));
         fileToken = Encoding.UTF8.GetString(Convert.FromBase64String(fileToken));
 
