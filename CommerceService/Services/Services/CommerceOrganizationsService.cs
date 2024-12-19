@@ -164,14 +164,22 @@ public partial class CommerceImplementService : ICommerceService
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<UniversalSelectRequestModel> req)
     {
+        TResponseModel<UserInfoModel[]?> res = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        if (!res.Success() || res.Response?.Length != 1)
+            return new()
+            {
+                Messages = res.Messages,
+            };
+        UserInfoModel actor = res.Response[0];
         if (req.PageSize < 10)
             req.PageSize = 10;
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrganizationModelDB> q = context.Organizations.AsQueryable();
+        if (!actor.IsAdmin)
+        {
 
-        IQueryable<OrganizationModelDB> q = context
-            .Organizations
-            .AsQueryable();
+        }
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
