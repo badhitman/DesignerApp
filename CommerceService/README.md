@@ -34,6 +34,11 @@
 Настройка ценообразования
 ![правила ценообразования](img/nomenclature-offers-prices-rules.png)
 
+#### Расписание (график работы)
+![недельный график работы](img/work-schedule-weekly.png)
+Календарь
+![расписание на конкретную дату](img/work-schedule-calendar.png)
+
 #### Уведомления (шаблоны)
 ![уведомления](img/notify-templates.png)
 

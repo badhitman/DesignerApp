@@ -177,9 +177,7 @@ public partial class CommerceImplementService : ICommerceService
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         IQueryable<OrganizationModelDB> q = context.Organizations.AsQueryable();
         if (!actor.IsAdmin)
-        {
-
-        }
+            q = q.Where(x => context.OrganizationsUsers.Any(y => y.OrganizationId == x.Id && y.UserStatus > UsersOrganizationsStatusesEnum.None && y.UserPersonIdentityId == req.SenderActionUserId));
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
