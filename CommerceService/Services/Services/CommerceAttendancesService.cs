@@ -14,6 +14,12 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<WorkSchedulesViewModel>>> WorkSchedulesFind(TPaginationRequestModel<WorkSchedulesFindRequestModel> req)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<int>> WorkScheduleUpdate(WorkScheduleModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
@@ -224,5 +230,5 @@ public partial class CommerceImplementService : ICommerceService
             .ToArrayAsync();
 
         return res;
-    }    
+    }
 }

@@ -7,6 +7,11 @@ namespace SharedLib;
 public partial interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// WorkSchedulesFind
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<WorkSchedulesViewModel>>> WorkSchedulesFind(TPaginationRequestModel<WorkSchedulesFindRequestModel> req);
+    
+    /// <summary>
     /// WorkScheduleUpdate
     /// </summary>
     public Task<TResponseModel<int>> WorkScheduleUpdate(WorkScheduleModelDB work);

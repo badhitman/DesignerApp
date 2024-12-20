@@ -2,9 +2,12 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
+using MudBlazor;
+using static MudBlazor.CategoryTypes;
+using System.Net.Http;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
@@ -20,6 +23,21 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
     protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
 
+    private DateRange _dateRange = new(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    private TableGroupDefinition<WorkSchedulesViewModel> _groupDefinition = new()
+    {
+        GroupName = "Date",
+        Indentation = false,
+        Expandable = false,
+        Selector = (e) => e.Date
+    };
+
+    private async Task<TableData<WorkSchedulesViewModel>> ServerReload(TableState state, CancellationToken token)
+    {
+        
+        return new TableData<WorkSchedulesViewModel>() { TotalItems = 0, Items = [] };
+    }
+
     OfferModelDB? SelectedOffer { get; set; }
     int? _selectedOfferId;
     /// <summary>
@@ -32,16 +50,18 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
         {
             _selectedOfferId = value;
             SelectedOffer = AllOffers.First(x => x.Id == value);
-
-            //if (_workSchedule is not null)
-            //    InvokeAsync(async () => await _workSchedule.Reload(SelectedOffer));
-
-            //if (_workCalendar is not null)
-            //    InvokeAsync(async () => await _workCalendar.Reload(SelectedOffer));
         }
     }
     List<OfferModelDB> AllOffers { get; set; } = [];
     IGrouping<NomenclatureModelDB?, OfferModelDB>[] OffersNodes => AllOffers.GroupBy(x => x.Nomenclature).ToArray();
+
+    static bool IsDateDisabledHandler(DateTime dt)
+        => DateOnly.FromDateTime(dt) < DateOnly.FromDateTime(DateTime.Now);
+
+    static string AdditionalDateClassesHandler(DateTime dt)
+    {
+        return dt.DayOfWeek == 0 ? "red-text text-accent-4" : "";
+    }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -69,7 +89,6 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
             }
         };
         await SetBusy();
-
         TResponseModel<TPaginationResponseModel<OfferModelDB>> res = await CommerceRepo.OffersSelect(req);
         await SetBusy(false);
         if (res.Success() && res.Response?.Response is not null && res.Response.Response.Count != 0)

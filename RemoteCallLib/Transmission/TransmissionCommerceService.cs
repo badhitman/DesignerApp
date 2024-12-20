@@ -13,16 +13,20 @@ namespace RemoteCallLib;
 public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerceRemoteTransmissionService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<WorkSchedulesViewModel>>> WorkSchedulesFind(TPaginationRequestModel<WorkSchedulesFindRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<WorkSchedulesViewModel>>(GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<NomenclatureModelDB>>(GlobalStaticConstants.TransmissionQueues.NomenclaturesSelectCommerceReceive, req);
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> AddressOrganizationDelete(int req)
         => await rabbitClient.MqRemoteCall<object>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationDeleteCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> AddressOrganizationUpdate(AddressOrganizationBaseModel req)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive, req);
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<NomenclatureModelDB>>(GlobalStaticConstants.TransmissionQueues.NomenclaturesSelectCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> NomenclatureUpdateReceive(NomenclatureModelDB req)

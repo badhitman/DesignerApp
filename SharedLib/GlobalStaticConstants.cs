@@ -803,6 +803,9 @@ public static partial class GlobalStaticConstants
         public readonly static string NomenclaturesSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.NOMENCLATURES_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string WorksSchedulesFindCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.WORKSCHEDULES_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
+
+        /// <inheritdoc/>
         public readonly static string WorkScheduleCalendarsSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.WORKSCHEDULES_CONTROLLER_NAME}-{Routes.CALENDAR_CONTROLLER_NAME}", Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>

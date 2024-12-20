@@ -114,3 +114,7 @@ main>div.top-row {
 #components-reconnect-modal {
     transition: visibility 0s linear 1000ms;
 }
+
+#select-range-dt .mud-picker .mud-paper .mud-picker-container .mud-toolbar {
+    max-width: 250px;
+}
