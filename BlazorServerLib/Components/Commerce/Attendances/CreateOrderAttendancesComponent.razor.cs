@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using static MudBlazor.CategoryTypes;
-using System.Net.Http;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
@@ -34,8 +32,31 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
 
     private async Task<TableData<WorkSchedulesViewModel>> ServerReload(TableState state, CancellationToken token)
     {
-        
-        return new TableData<WorkSchedulesViewModel>() { TotalItems = 0, Items = [] };
+        if (_dateRange.Start is null || _dateRange.End is null || _selectedOfferId is null)
+            return new TableData<WorkSchedulesViewModel>() { TotalItems = 0, Items = [] };
+
+        TPaginationRequestModel<WorkSchedulesFindRequestModel> req = new()
+        {
+            PageNum = state.Page,
+            PageSize = state.PageSize,
+            SortBy = state.SortLabel,
+            SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
+            Payload = new()
+            {
+                StartDate = DateOnly.FromDateTime(_dateRange.Start.Value),
+                EndDate = DateOnly.FromDateTime(_dateRange.End.Value),
+                OffersFilter = [_selectedOfferId.Value]
+            }
+        };
+        await SetBusy(token: token);
+        TResponseModel<TPaginationResponseModel<WorkSchedulesViewModel>> res = await CommerceRepo.WorkSchedulesFind(req);
+        await SetBusy(false, token: token);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+
+        if (!res.Success() || res.Response?.Response is null)
+            return new TableData<WorkSchedulesViewModel>() { TotalItems = 0, Items = [] };
+
+        return new TableData<WorkSchedulesViewModel>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
     }
 
     OfferModelDB? SelectedOffer { get; set; }
