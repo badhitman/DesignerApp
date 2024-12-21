@@ -64,7 +64,7 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// WorksSchedulesCalendar
     /// </summary>
-    public DbSet<WorkScheduleCalendarModelDB> WorksSchedulesCalendar { get; set; } = default!;
+    public DbSet<WorkScheduleCalendarModelDB> WorksSchedulesCalendars { get; set; } = default!;
 
 
 
@@ -87,7 +87,6 @@ public partial class CommerceLayerContext : DbContext
     /// Подрядчики
     /// </summary>
     public DbSet<OrganizationContractorModel> ContractorsOrganizations { get; set; } = default!;
-
 
 
     /// <summary>

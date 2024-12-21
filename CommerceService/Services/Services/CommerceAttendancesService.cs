@@ -14,7 +14,7 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<WorkSchedulesFindResponseModel>> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
+    public async Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
     {
         List<DayOfWeek> weeks = [];
         List<DateOnly> dates = [];
@@ -25,13 +25,13 @@ public partial class CommerceImplementService : ICommerceService
             if (weeks.Count != 7 && !weeks.Contains(dt.DayOfWeek))
                 weeks.Add(dt.DayOfWeek);
         }
-
+        WorkSchedulesFindResponseModel res = new(req.StartDate, req.EndDate);
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         //
-        WorkScheduleModelDB[] qW = weeks.Count == 0 ? [] : await context.WorksSchedules.Where(x => x.ContextName == req.ContextName && weeks.Contains(x.Weekday)).ToArrayAsync();
-        WorkScheduleCalendarModelDB[] qC = dates.Count == 0 ? [] : await context.WorksSchedulesCalendar.Where(x => x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar)).ToArrayAsync();
+        res.Schedules = weeks.Count == 0 ? [] : await context.WorksSchedules.Where(x => x.ContextName == req.ContextName && weeks.Contains(x.Weekday)).ToArrayAsync();
+        res.Calendars = dates.Count == 0 ? [] : await context.WorksSchedulesCalendars.Where(x => x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar)).ToArrayAsync();
 
-        throw new NotImplementedException();
+        return res;
     }
 
     /// <inheritdoc/>
@@ -167,7 +167,7 @@ public partial class CommerceImplementService : ICommerceService
         }
         else
         {
-            res.Response = await context.WorksSchedulesCalendar
+            res.Response = await context.WorksSchedulesCalendars
                 .Where(x => x.Id == req.Id)
                 .ExecuteUpdateAsync(set => set
                 .SetProperty(p => p.Name, req.Name)
@@ -195,7 +195,7 @@ public partial class CommerceImplementService : ICommerceService
         DateOnly _dtp = DateOnly.FromDateTime(DateTime.UtcNow);
 
         IQueryable<WorkScheduleCalendarModelDB> q = context
-            .WorksSchedulesCalendar
+            .WorksSchedulesCalendars
             .Where(x => x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter && (!req.Payload.ActualOnly || x.DateScheduleCalendar >= _dtp))
             .AsQueryable();
 
@@ -236,7 +236,7 @@ public partial class CommerceImplementService : ICommerceService
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         IQueryable<WorkScheduleCalendarModelDB> q = context
-            .WorksSchedulesCalendar
+            .WorksSchedulesCalendars
             .Where(x => req.Any(y => x.Id == y));
 
         res.Response = await q

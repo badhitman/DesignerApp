@@ -19,24 +19,3 @@ public class WorkSchedulesFindRequestModel : WorkSchedulesFindBaseModel
     /// </summary>
     public int[]? OffersFilter { get; set; }
 }
-
-/// <summary>
-/// WorkSchedulesFindResponseModel
-/// </summary>
-public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
-{
-    /// <summary>
-    /// Schedules
-    /// </summary>
-    public WorkScheduleModelDB[]? Schedules { get; set; }
-
-    /// <summary>
-    /// Calendars
-    /// </summary>
-    public WorkScheduleCalendarModelDB[]? Calendars { get; set; }
-
-    /// <summary>
-    /// WorkSchedulesViews
-    /// </summary>
-    public WorkSchedulesViewModel[] WorkSchedulesViews() => [];
-}

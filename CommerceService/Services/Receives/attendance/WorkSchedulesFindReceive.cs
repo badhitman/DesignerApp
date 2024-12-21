@@ -20,12 +20,11 @@ public class WorkSchedulesFindReceive(ICommerceService commerceRepo)
     public async Task<TResponseModel<WorkSchedulesFindResponseModel?>> ResponseHandleAction(WorkSchedulesFindRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<WorkSchedulesFindResponseModel> ws = await commerceRepo.WorkSchedulesFind(req);
+        WorkSchedulesFindResponseModel ws = await commerceRepo.WorkSchedulesFind(req);
 
         return new()
         {
-            Response = ws.Response,
-            Messages = ws.Messages,
+            Response = ws,
         };
     }
 }

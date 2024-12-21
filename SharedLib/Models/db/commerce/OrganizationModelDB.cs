@@ -8,7 +8,7 @@ namespace SharedLib;
 /// Организация
 /// </summary>
 public class OrganizationModelDB : OrganizationLegalModel
-{
+{    
     /// <summary>
     /// Дата последнего обновления
     /// </summary>
@@ -79,6 +79,11 @@ public class OrganizationModelDB : OrganizationLegalModel
     /// Users
     /// </summary>
     public List<UserOrganizationModelDB>? Users { get; set; }
+    
+    /// <summary>
+    /// Подрядчики (организации)
+    /// </summary>
+    public List<OrganizationContractorModel>? Contractors { get; set; }
 
     /// <summary>
     /// Addresses

@@ -86,6 +86,12 @@ public class OfferModelDB : EntrySwitchableUpdatedModel
     /// </summary>
     public List<PriceRuleForOfferModelDB>? PricesRules { get; set; }
 
+    /// <summary>
+    /// Подрядчики (организации)
+    /// </summary>
+    public List<OrganizationContractorModel>? Contractors { get; set; }
+
+
     /// <inheritdoc/>
     public static bool operator ==(OfferModelDB off1, OfferModelDB off2) => off1.Equals(off2);
 
