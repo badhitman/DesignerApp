@@ -11,7 +11,7 @@ namespace SharedLib;
 /// </summary>
 [Index(nameof(OrganizationId), nameof(UserPersonIdentityId), IsUnique = true)]
 [Index(nameof(UserStatus))]
-public class UserOrganizationModelDB : PersonalEntrySwitchableUpdatedModel
+public class UserOrganizationModelDB : PersonalEntryUpdatedModel
 {
     /// <summary>
     /// Организация

@@ -2,7 +2,7 @@
 @using BlazorWebLib.Components.Users
 @using MudBlazor
 
-@inherits BlazorBusyComponentBaseModel
+@inherits BlazorBusyComponentBaseAuthModel
 
 <div class="input-group mb-1 mt-2">
     <label class="input-group-text" for="select-offer">Offer</label>
@@ -26,6 +26,9 @@
         </MudTabPanel>
         <MudTabPanel Text="Календарь">
             <WorkCalendarComponent @ref="_workCalendar" />
-        </MudTabPanel>        
+        </MudTabPanel>
+        <MudTabPanel Text="Организации">
+            <WorksSchedulersOrganizationsComponent @ref="workOrganizations" />
+        </MudTabPanel>
     </CascadingValue>
 </MudTabs>

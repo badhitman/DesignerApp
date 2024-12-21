@@ -12,7 +12,7 @@ public partial interface ICommerceService
     /// <summary>
     /// WorkSchedulesSelect find
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<WorkSchedulesViewModel>>> WorkSchedulesFind(TPaginationRequestModel<WorkSchedulesFindRequestModel> req);
+    public Task<TResponseModel<WorkSchedulesViewModel[]>> WorkSchedulesFind(WorkSchedulesFindRequestModel req);
 
     /// <summary>
     /// WorkScheduleUpdate

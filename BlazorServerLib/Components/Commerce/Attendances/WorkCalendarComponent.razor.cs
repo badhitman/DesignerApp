@@ -27,6 +27,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     public required OfferModelDB? Offer { get; set; }
 
     OfferModelDB? OfferCurrent;
+
     int _selectedPage = 1;
     int selectedPage
     {

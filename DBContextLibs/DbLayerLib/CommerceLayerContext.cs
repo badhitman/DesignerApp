@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore;
 using SharedLib;
 
 namespace DbcLib;
@@ -66,6 +66,8 @@ public partial class CommerceLayerContext : DbContext
     /// </summary>
     public DbSet<WorkScheduleCalendarModelDB> WorksSchedulesCalendar { get; set; } = default!;
 
+
+
     /// <summary>
     /// Organizations
     /// </summary>
@@ -80,6 +82,12 @@ public partial class CommerceLayerContext : DbContext
     /// OrganizationsUsers
     /// </summary>
     public DbSet<UserOrganizationModelDB> OrganizationsUsers { get; set; } = default!;
+
+    /// <summary>
+    /// Подрядчики
+    /// </summary>
+    public DbSet<OrganizationContractorModel> ContractorsOrganizations { get; set; } = default!;
+
 
 
     /// <summary>
@@ -97,7 +105,6 @@ public partial class CommerceLayerContext : DbContext
     /// </summary>
     public DbSet<PriceRuleForOfferModelDB> PricesRules { get; set; } = default!;
 
-
     /// <summary>
     /// Документы поступления
     /// </summary>
@@ -107,6 +114,8 @@ public partial class CommerceLayerContext : DbContext
     /// Rows of warehouse documents
     /// </summary>
     public DbSet<RowOfWarehouseDocumentModelDB> RowsOfWarehouseDocuments { get; set; } = default!;
+
+
 
     /// <summary>
     /// Offers availability
@@ -118,6 +127,8 @@ public partial class CommerceLayerContext : DbContext
     /// </summary>
     public DbSet<LockOffersAvailabilityModelDB> LockerOffersAvailability { get; set; } = default!;
 
+
+
     /// <summary>
     /// OrdersAttendances
     /// </summary>
@@ -127,6 +138,7 @@ public partial class CommerceLayerContext : DbContext
     /// RowsOfOrdersAttendances
     /// </summary>
     public DbSet<RowOfAttendanceModelDB> RowsOfOrdersAttendances { get; set; } = default!;
+
 
     /// <summary>
     /// Orders
@@ -142,6 +154,8 @@ public partial class CommerceLayerContext : DbContext
     /// Строки заказов
     /// </summary>
     public DbSet<RowOfOrderDocumentModelDB> RowsOfOrdersDocuments { get; set; } = default!;
+
+
 
     /// <summary>
     /// Payments documents

@@ -114,7 +114,7 @@ builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService
 builder.Services
     .RegisterMqListener<OrganizationSetLegalReceive, OrganizationLegalModel?, bool?>()
     .RegisterMqListener<OrganizationUpdateReceive, TAuthRequestModel<OrganizationModelDB>?, int?>()
-    .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestAuthModel<UniversalSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
+    .RegisterMqListener<OrganizationsSelectReceive, TPaginationRequestAuthModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>()
     .RegisterMqListener<AddressOrganizationUpdateReceive, AddressOrganizationBaseModel?, int?>()
     .RegisterMqListener<AddressOrganizationDeleteReceive, int?, object?>()
     .RegisterMqListener<NomenclatureUpdateReceive, NomenclatureModelDB?, int?>()
@@ -142,7 +142,7 @@ builder.Services
     .RegisterMqListener<RowForWarehouseDocumentUpdateReceive, RowOfWarehouseDocumentModelDB?, int?>()
     .RegisterMqListener<StatusChangeReceive, StatusOrderChangeRequestModel?, bool?>()
     .RegisterMqListener<PriceRuleDeleteReceive, int?, bool?>()
-    .RegisterMqListener<WorkSchedulesFindReceive, TPaginationRequestModel<WorkSchedulesFindRequestModel>?, TPaginationResponseModel<WorkSchedulesViewModel>?>()
+    .RegisterMqListener<WorkSchedulesFindReceive, WorkSchedulesFindRequestModel?, WorkSchedulesViewModel[]?>()
     .RegisterMqListener<PriceRuleUpdateReceive, PriceRuleForOfferModelDB?, int?>()
     .RegisterMqListener<PricesRulesGetForOffersReceive, int[]?, PriceRuleForOfferModelDB[]?>()
     .RegisterMqListener<PaymentDocumentUpdateReceive, PaymentDocumentBaseModel?, int?>()

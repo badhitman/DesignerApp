@@ -15,7 +15,7 @@
     <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="tableRef" Loading="IsBusyProgress" AllowUnsorted="false" CanCancelEdit="true" RowEditCommit="ItemHasBeenCommitted"
               RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Сотрудники компаний</MudText>
+            <MudText Typo="Typo.h6">Сотрудники @(Organization is null ? "(все)" : $": {Organization}")</MudText>
             @if (CanAdding && Organization is not null)
             {
                 <MudSpacer />
@@ -66,7 +66,7 @@
             </MudTd>
         </RowEditingTemplate>
         <NoRecordsContent>
-            <MudText>Соответствующих записей не найдено</MudText>
+            <MudText>Ни чего не найдено</MudText>
         </NoRecordsContent>
         <LoadingContent>
             <MudText>Загрузка...</MudText>
@@ -80,7 +80,7 @@ else
 {
     <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="tableRef" Loading="IsBusyProgress" AllowUnsorted="false">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Сотрудники компаний</MudText>
+            <MudText Typo="Typo.h6">Сотрудники @(Organization is null ? "(все)" : $": {Organization}")</MudText>
         </ToolBarContent>
         <HeaderContent>
             <MudTh>User</MudTh>

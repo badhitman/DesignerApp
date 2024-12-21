@@ -404,7 +404,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
 
     async Task OrganizationReset()
     {
-        TPaginationRequestAuthModel<UniversalSelectRequestModel> req = new()
+        TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req = new()
         {
             Payload = new()
             {

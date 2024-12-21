@@ -10,7 +10,7 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 /// <summary>
 /// WorkScheduleComponent
 /// </summary>
-public partial class WorkScheduleComponent : BlazorBusyComponentBaseModel
+public partial class WorkScheduleComponent : BlazorBusyComponentBaseAuthModel
 {
     WorkSchedulesOfWeekdayComponent? WorkSchedulesOfWeekday_ref;
 

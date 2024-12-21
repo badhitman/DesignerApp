@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Commerce.Pages;
 /// <summary>
 /// AttendancesManageComponent
 /// </summary>
-public partial class AttendancesManageComponent : BlazorBusyComponentBaseModel
+public partial class AttendancesManageComponent : BlazorBusyComponentBaseAuthModel
 {
     /// <summary>
     /// Commerce
@@ -38,19 +38,21 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseModel
                 InvokeAsync(async () => await _workSchedule.Reload(SelectedOffer));
             if (_workCalendar is not null)
                 InvokeAsync(async () => await _workCalendar.Reload(SelectedOffer));
+            if (workOrganizations is not null)
+                InvokeAsync(async () => await workOrganizations.Reload(SelectedOffer));
         }
     }
     List<OfferModelDB> AllOffers { get; set; } = [];
     IGrouping<NomenclatureModelDB?, OfferModelDB>[] OffersNodes => AllOffers.GroupBy(x => x.Nomenclature).ToArray();
 
-
     WorkScheduleComponent? _workSchedule;
     WorkCalendarComponent? _workCalendar;
+    WorksSchedulersOrganizationsComponent? workOrganizations;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await LoadOffers(0);
+        await Task.WhenAll([LoadOffers(0), ReadCurrentUser()]);
     }
 
     /// <summary>

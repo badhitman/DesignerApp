@@ -10,14 +10,19 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
-    /// UserOrganization update
+    /// ContractorsOrganizationsFind
     /// </summary>
-    public Task<TResponseModel<int>> UserOrganizationUpdate(TAuthRequestModel<UserOrganizationModelDB> req);
+    public Task<OrganizationContractorModel[]> ContractorsOrganizationsFind(ContractorsOrganizationsRequestModel req);
 
     /// <summary>
     /// UsersOrganizations select
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req);
+
+    /// <summary>
+    /// UserOrganization update
+    /// </summary>
+    public Task<TResponseModel<int>> UserOrganizationUpdate(TAuthRequestModel<UserOrganizationModelDB> req);
 
     /// <summary>
     /// UsersOrganizations read
@@ -32,7 +37,7 @@ public partial interface ICommerceService
     /// <summary>
     /// Organizations select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<UniversalSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
 
     /// <summary>
     /// Organizations read

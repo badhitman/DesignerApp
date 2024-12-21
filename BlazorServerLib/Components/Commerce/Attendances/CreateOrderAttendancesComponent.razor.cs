@@ -21,42 +21,33 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
     protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
 
-    private DateRange _dateRange = new(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
-    private TableGroupDefinition<WorkSchedulesViewModel> _groupDefinition = new()
+    IEnumerable<WorkSchedulesViewModel>? Elements;
+
+    DateRange _dateRange = new(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    TableGroupDefinition<WorkSchedulesViewModel> _groupDefinition = new()
     {
-        GroupName = "Date",
+        GroupName = "Дата",
         Indentation = false,
         Expandable = false,
         Selector = (e) => e.Date
     };
 
-    private async Task<TableData<WorkSchedulesViewModel>> ServerReload(TableState state, CancellationToken token)
+    async Task ServerReload()
     {
         if (_dateRange.Start is null || _dateRange.End is null || _selectedOfferId is null)
-            return new TableData<WorkSchedulesViewModel>() { TotalItems = 0, Items = [] };
+            return;
 
-        TPaginationRequestModel<WorkSchedulesFindRequestModel> req = new()
+        WorkSchedulesFindRequestModel req = new()
         {
-            PageNum = state.Page,
-            PageSize = state.PageSize,
-            SortBy = state.SortLabel,
-            SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
-            Payload = new()
-            {
-                StartDate = DateOnly.FromDateTime(_dateRange.Start.Value),
-                EndDate = DateOnly.FromDateTime(_dateRange.End.Value),
-                OffersFilter = [_selectedOfferId.Value]
-            }
+            StartDate = DateOnly.FromDateTime(_dateRange.Start.Value),
+            EndDate = DateOnly.FromDateTime(_dateRange.End.Value),
+            OffersFilter = [_selectedOfferId.Value]
         };
-        await SetBusy(token: token);
-        TResponseModel<TPaginationResponseModel<WorkSchedulesViewModel>> res = await CommerceRepo.WorkSchedulesFind(req);
-        await SetBusy(false, token: token);
+        await SetBusy();
+        TResponseModel<WorkSchedulesViewModel[]> res = await CommerceRepo.WorkSchedulesFind(req);
+        Elements = res.Response;
+        await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-
-        if (!res.Success() || res.Response?.Response is null)
-            return new TableData<WorkSchedulesViewModel>() { TotalItems = 0, Items = [] };
-
-        return new TableData<WorkSchedulesViewModel>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
     }
 
     OfferModelDB? SelectedOffer { get; set; }
@@ -69,8 +60,12 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
         get => _selectedOfferId;
         set
         {
+            if (_selectedOfferId == value)
+                return;
+
             _selectedOfferId = value;
             SelectedOffer = AllOffers.First(x => x.Id == value);
+            InvokeAsync(ServerReload);
         }
     }
     List<OfferModelDB> AllOffers { get; set; } = [];
@@ -88,6 +83,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
     protected override async Task OnInitializedAsync()
     {
         await LoadOffers(0);
+        SelectedOfferId = AllOffers.FirstOrDefault()?.Id;
     }
 
     /// <summary>

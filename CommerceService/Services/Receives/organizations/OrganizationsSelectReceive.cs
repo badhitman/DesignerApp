@@ -11,13 +11,13 @@ namespace Transmission.Receives.commerce;
 /// OrganizationsSelectReceive
 /// </summary>
 public class OrganizationsSelectReceive(ICommerceService commerceRepo)
-    : IResponseReceive<TPaginationRequestAuthModel<UniversalSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>
+    : IResponseReceive<TPaginationRequestAuthModel<OrganizationsSelectRequestModel>?, TPaginationResponseModel<OrganizationModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrganizationsSelectCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>?>> ResponseHandleAction(TPaginationRequestAuthModel<UniversalSelectRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>?>> ResponseHandleAction(TPaginationRequestAuthModel<OrganizationsSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await commerceRepo.OrganizationsSelect(req);

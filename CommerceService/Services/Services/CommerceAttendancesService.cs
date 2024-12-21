@@ -14,52 +14,24 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WorkSchedulesViewModel>>> WorkSchedulesFind(TPaginationRequestModel<WorkSchedulesFindRequestModel> req)
+    public async Task<TResponseModel<WorkSchedulesViewModel[]>> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
     {
-        throw new NotImplementedException();
-    }
+        List<DayOfWeek> weeks = [];
+        List<DateOnly> dates = [];
 
-    /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WorkScheduleUpdate(WorkScheduleModelDB req)
-    {
-        TResponseModel<int> res = new() { Response = 0 };
-        ValidateReportModel ck = GlobalTools.ValidateObject(req);
-        if (!ck.IsValid)
+        for (DateOnly dt = req.StartDate; dt <= req.EndDate; dt = dt.AddDays(1))
         {
-            res.Messages.InjectException(ck.ValidationResults);
-            return res;
+            dates.Add(dt);
+            if (weeks.Count != 7 && !weeks.Contains(dt.DayOfWeek))
+                weeks.Add(dt.DayOfWeek);
         }
-
-        req.Name = req.Name.Trim();
-        req.Description = req.Description?.Trim();
-        req.NormalizedNameUpper = req.Name.ToUpper();
-        req.LastAtUpdatedUTC = DateTime.UtcNow;
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        if (req.Id < 1)
-        {
-            req.Id = 0;
-            req.CreatedAtUTC = req.LastAtUpdatedUTC;
-            context.Add(req);
-            await context.SaveChangesAsync();
-            res.Response = req.Id;
-        }
-        else
-        {
-            res.Response = await context.WorksSchedules
-                .Where(w => w.Id == req.Id)
-                .ExecuteUpdateAsync(set => set
-                .SetProperty(p => p.NormalizedNameUpper, req.NormalizedNameUpper)
-                .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
-                .SetProperty(p => p.Description, req.Description)
-                .SetProperty(p => p.IsDisabled, req.IsDisabled)
-                .SetProperty(p => p.StartPart, req.StartPart)
-                .SetProperty(p => p.EndPart, req.EndPart)
-                .SetProperty(p => p.QueueCapacity, req.QueueCapacity)
-                .SetProperty(p => p.Name, req.Name));
-        }
+        //
+        WorkScheduleModelDB[] qW = weeks.Count == 0 ? [] : await context.WorksSchedules.Where(x => x.ContextName == req.ContextName && weeks.Contains(x.Weekday)).ToArrayAsync();
+        WorkScheduleCalendarModelDB[] qC = dates.Count == 0 ? [] : await context.WorksSchedulesCalendar.Where(x => x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar)).ToArrayAsync();
 
-        return res;
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
@@ -104,6 +76,49 @@ public partial class CommerceImplementService : ICommerceService
                 Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
             },
         };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> WorkScheduleUpdate(WorkScheduleModelDB req)
+    {
+        TResponseModel<int> res = new() { Response = 0 };
+        ValidateReportModel ck = GlobalTools.ValidateObject(req);
+        if (!ck.IsValid)
+        {
+            res.Messages.InjectException(ck.ValidationResults);
+            return res;
+        }
+
+        req.Name = req.Name.Trim();
+        req.Description = req.Description?.Trim();
+        req.NormalizedNameUpper = req.Name.ToUpper();
+        req.LastAtUpdatedUTC = DateTime.UtcNow;
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        if (req.Id < 1)
+        {
+            req.Id = 0;
+            req.CreatedAtUTC = req.LastAtUpdatedUTC;
+            context.Add(req);
+            await context.SaveChangesAsync();
+            res.Response = req.Id;
+        }
+        else
+        {
+            res.Response = await context.WorksSchedules
+                .Where(w => w.Id == req.Id)
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.NormalizedNameUpper, req.NormalizedNameUpper)
+                .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
+                .SetProperty(p => p.Description, req.Description)
+                .SetProperty(p => p.IsDisabled, req.IsDisabled)
+                .SetProperty(p => p.StartPart, req.StartPart)
+                .SetProperty(p => p.EndPart, req.EndPart)
+                .SetProperty(p => p.QueueCapacity, req.QueueCapacity)
+                .SetProperty(p => p.Name, req.Name));
+        }
+
+        return res;
     }
 
     /// <inheritdoc/>

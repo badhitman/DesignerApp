@@ -25,17 +25,7 @@ public class WorkSchedulesFindRequestModel
     public string? ContextName { get; set; }
 
     /// <summary>
-    /// Исполнители
-    /// </summary>
-    public string[]? ExecutorsIdentitiesUsersFilter { get; set; }
-
-    /// <summary>
     /// Offers
     /// </summary>
     public int[]? OffersFilter { get; set; }
-
-    /// <summary>
-    /// Включая данные по занятым слотам
-    /// </summary>
-    public bool IncludeOverLimitQueueCapacity { get; set; }
 }

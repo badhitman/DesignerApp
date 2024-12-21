@@ -2,16 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
 /// <summary>
-/// Авторские данные
+/// OrganizationContractorModel
 /// </summary>
-[Index(nameof(UserPersonIdentityId))]
-public class PersonalEntrySwitchableUpdatedModel
+public class OrganizationContractorModel
 {
     /// <summary>
     /// Идентификатор/Key
@@ -20,12 +18,21 @@ public class PersonalEntrySwitchableUpdatedModel
     public int Id { get; set; }
 
     /// <summary>
-    /// Пользователь (Identity Id)
+    /// Организация
     /// </summary>
-    public required string UserPersonIdentityId { get; set; }
+    public OrganizationModelDB? Organization { get; set; }
 
     /// <summary>
-    /// Дата последнего обновления
+    /// Организация
     /// </summary>
-    public DateTime LastAtUpdatedUTC { get; set; }
+    public int OrganizationId { get; set; }
+
+    /// <summary>
+    /// Offer
+    /// </summary>
+    public OfferModelDB? Offer { get; set; }
+    /// <summary>
+    /// Offer
+    /// </summary>
+    public int? OfferId { get; set; }
 }

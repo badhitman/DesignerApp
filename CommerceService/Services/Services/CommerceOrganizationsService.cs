@@ -14,6 +14,20 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
+    public async Task<OrganizationContractorModel[]> ContractorsOrganizationsFind(ContractorsOrganizationsRequestModel req)
+    {
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrganizationContractorModel> q = req.OfferFilter is null
+            ? context.ContractorsOrganizations.Where(x => x.OfferId == null)
+            : context.ContractorsOrganizations.Where(x => x.OfferId == null || x.OfferId == req.OfferFilter);
+
+        if (req.OrganizationsFilter is not null && req.OrganizationsFilter.Length != 0)
+            q = q.Where(x => req.OrganizationsFilter.Contains(x.OrganizationId));
+
+        return await q.ToArrayAsync();
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<AddressOrganizationModelDB[]>> AddressesOrganizationsRead(int[] organizationsIds)
     {
         TResponseModel<AddressOrganizationModelDB[]> res = new();
@@ -162,7 +176,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<UniversalSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req)
     {
         TResponseModel<UserInfoModel[]?> res = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!res.Success() || res.Response?.Length != 1)
