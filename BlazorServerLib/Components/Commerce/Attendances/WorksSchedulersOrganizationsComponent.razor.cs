@@ -24,13 +24,28 @@ public partial class WorksSchedulersOrganizationsComponent : BlazorBusyComponent
     [CascadingParameter, EditorRequired]
     public required OfferModelDB? Offer { get; set; }
 
+
     OfferModelDB? OfferCurrent;
-    private MudTable<OrganizationModelDB>? table;
+    MudTable<OrganizationModelDB>? table;
+
+    async Task SetContract(OrganizationModelDB org)
+    {
+        await SetBusy();
+
+        await SetBusy(false);
+        if (table is not null)
+            await table.ReloadServerData();
+    }
+
+    string GetContractBtn(OrganizationModelDB org)
+    {
+        return "link";
+    }
 
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
-    private async Task<TableData<OrganizationModelDB>> ServerReload(TableState state, CancellationToken token)
+    async Task<TableData<OrganizationModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         if (CurrentUserSession is null)
             return new TableData<OrganizationModelDB>() { TotalItems = 0, Items = [] };
@@ -39,8 +54,8 @@ public partial class WorksSchedulersOrganizationsComponent : BlazorBusyComponent
         {
             Payload = new()
             {
-                // ForUserIdentityId = _filterUser,
-                
+                IncludeExternalData = true,
+                OffersFilter = OfferCurrent is null ? null : [OfferCurrent.Id],
             },
             SenderActionUserId = CurrentUserSession.UserId,
             PageNum = state.Page,

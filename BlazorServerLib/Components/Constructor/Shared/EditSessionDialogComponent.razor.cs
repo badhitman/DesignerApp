@@ -37,7 +37,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
     public required SessionOfDocumentDataModelDB Session { get; set; }
 
 
-    string UrlSession => $"{NavManagerRepo.BaseUri}{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{Session.SessionToken}";
+    string UrlSession => $"{NavManagerRepo.BaseUri}{GlobalStaticConstants.Routes.QUESTIONNAIRE_ACTION_NAME}/{GlobalStaticConstants.Routes.SESSION_ACTION_NAME}/{Session.SessionToken}";
 
     /// <inheritdoc/>
     protected async Task ClipboardCopyHandle()

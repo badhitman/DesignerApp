@@ -56,7 +56,7 @@
                         @if (string.IsNullOrEmpty(context.SessionToken) || context.SessionStatus == SessionsStatusesEnum.None)
                         {
                             <MudChip T="string" Variant="Variant.Outlined" Size="Size.Small">
-                                <NavLink title="Доступ к заполнению заблокирован" class="nav-link text-muted" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/protected/{context.Id}")">
+                                <NavLink title="Доступ к заполнению заблокирован" class="nav-link text-muted" href="@($"{GlobalStaticConstants.Routes.QUESTIONNAIRE_ACTION_NAME}/{GlobalStaticConstants.Routes.SESSION_ACTION_NAME}/protected/{context.Id}")">
                                     Аннулирован
                                 </NavLink>
                             </MudChip>
@@ -64,7 +64,7 @@
                         else if (context.SessionStatus == SessionsStatusesEnum.Sended)
                         {
                             <MudChip T="string" Icon="@Icons.Material.Outlined.CircleNotifications" Color="Color.Info" Size="Size.Small">
-                                <NavLink title="Данные отправлены на проверку администратору" class="nav-link text-light" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{context.SessionToken}")">
+                                <NavLink title="Данные отправлены на проверку администратору" class="nav-link text-light" href="@($"{GlobalStaticConstants.Routes.QUESTIONNAIRE_ACTION_NAME}/{GlobalStaticConstants.Routes.SESSION_ACTION_NAME}/{context.SessionToken}")">
                                     Проверка
                                 </NavLink>
                             </MudChip>
@@ -72,7 +72,7 @@
                         else if (context.SessionStatus == SessionsStatusesEnum.Accepted)
                         {
                             <MudChip T="string" Icon="@Icons.Material.Filled.VerifiedUser" Color="Color.Success" Variant="Variant.Outlined" Size="Size.Small">
-                                <NavLink title="Анкета принята" class="nav-link text-secondary" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{context.SessionToken}")">
+                                <NavLink title="Анкета принята" class="nav-link text-secondary" href="@($"{GlobalStaticConstants.Routes.QUESTIONNAIRE_ACTION_NAME}/{GlobalStaticConstants.Routes.SESSION_ACTION_NAME}/{context.SessionToken}")">
                                     Принято
                                 </NavLink>
                             </MudChip>
@@ -81,7 +81,7 @@
                         {
                             <div class="hstack">
                                 <div>
-                                    <NavLink class="nav-link text-secondary" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/protected/{context.Id}")">
+                                    <NavLink class="nav-link text-secondary" href="@($"{GlobalStaticConstants.Routes.QUESTIONNAIRE_ACTION_NAME}/{GlobalStaticConstants.Routes.SESSION_ACTION_NAME}/protected/{context.Id}")">
                                         Просрочен
                                     </NavLink>
                                 </div>
@@ -96,7 +96,7 @@
                         {
                             <div class="hstack">
                                 <div>
-                                    <NavLink class="nav-link" href="@($"{ControllersAndActionsStatic.QUESTIONNAIRE_ACTION_NAME}/{ControllersAndActionsStatic.SESSION_ACTION_NAME}/{context.SessionToken}")">
+                                    <NavLink class="nav-link" href="@($"{GlobalStaticConstants.Routes.QUESTIONNAIRE_ACTION_NAME}/{GlobalStaticConstants.Routes.SESSION_ACTION_NAME}/{context.SessionToken}")">
                                         В работе <sup title="дата/время создания" class="ms-3"> (<LastUpdateViewComponent LastUpdateDate="context.DeadlineDate" Reverse="true" />)</sup>
                                     </NavLink>
                                 </div>
