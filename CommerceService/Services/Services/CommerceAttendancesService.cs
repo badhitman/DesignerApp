@@ -14,7 +14,7 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<WorkSchedulesViewModel[]>> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
+    public async Task<TResponseModel<WorkSchedulesFindResponseModel>> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
     {
         List<DayOfWeek> weeks = [];
         List<DateOnly> dates = [];

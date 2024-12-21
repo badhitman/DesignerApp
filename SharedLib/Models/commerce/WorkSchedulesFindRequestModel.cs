@@ -7,18 +7,8 @@ namespace SharedLib;
 /// <summary>
 /// WorkSchedulesFindRequestModel
 /// </summary>
-public class WorkSchedulesFindRequestModel
+public class WorkSchedulesFindRequestModel : WorkSchedulesFindBaseModel
 {
-    /// <summary>
-    /// Start date
-    /// </summary>
-    public DateOnly StartDate { get; set; }
-
-    /// <summary>
-    /// End date
-    /// </summary>
-    public DateOnly EndDate { get; set; }
-
     /// <summary>
     /// Имя контекста для разделения различных селекторов независимо друг от друга
     /// </summary>
@@ -28,4 +18,25 @@ public class WorkSchedulesFindRequestModel
     /// Offers
     /// </summary>
     public int[]? OffersFilter { get; set; }
+}
+
+/// <summary>
+/// WorkSchedulesFindResponseModel
+/// </summary>
+public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
+{
+    /// <summary>
+    /// Schedules
+    /// </summary>
+    public WorkScheduleModelDB[]? Schedules { get; set; }
+
+    /// <summary>
+    /// Calendars
+    /// </summary>
+    public WorkScheduleCalendarModelDB[]? Calendars { get; set; }
+
+    /// <summary>
+    /// WorkSchedulesViews
+    /// </summary>
+    public WorkSchedulesViewModel[] WorkSchedulesViews() => [];
 }

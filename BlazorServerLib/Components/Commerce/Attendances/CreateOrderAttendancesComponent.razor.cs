@@ -44,10 +44,10 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
             OffersFilter = [_selectedOfferId.Value]
         };
         await SetBusy();
-        TResponseModel<WorkSchedulesViewModel[]> res = await CommerceRepo.WorkSchedulesFind(req);
-        Elements = res.Response;
-        await SetBusy(false);
+        TResponseModel<WorkSchedulesFindResponseModel> res = await CommerceRepo.WorkSchedulesFind(req);
+        Elements = res.Response?.WorkSchedulesViews();
         SnackbarRepo.ShowMessagesResponse(res.Messages);
+        await SetBusy(false);
     }
 
     OfferModelDB? SelectedOffer { get; set; }
@@ -82,7 +82,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await LoadOffers(0);
+        await Task.WhenAll([ServerReload(), LoadOffers(0)]);
         SelectedOfferId = AllOffers.FirstOrDefault()?.Id;
     }
 
