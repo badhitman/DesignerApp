@@ -199,7 +199,7 @@ public partial class CommerceImplementService(
 
         using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
 
-        List<LockOffersAvailabilityModelDB> lockers = [new()
+        List<LockTransactionModelDB> lockers = [new()
         {
             LockerName = nameof(OfferAvailabilityModelDB),
             LockerId = req.OfferId,
@@ -384,9 +384,9 @@ public partial class CommerceImplementService(
         }
 
         DateTime dtu = DateTime.UtcNow;
-        LockOffersAvailabilityModelDB[] offersLocked = _allOffersOfDocuments
+        LockTransactionModelDB[] offersLocked = _allOffersOfDocuments
             .DistinctBy(x => new { x.OfferId, x.WarehouseId })
-            .Select(x => new LockOffersAvailabilityModelDB()
+            .Select(x => new LockTransactionModelDB()
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
                 LockerId = x.OfferId,
@@ -535,7 +535,7 @@ public partial class CommerceImplementService(
 
             using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
 
-            LockOffersAvailabilityModelDB[] offersLocked = _offersOfDocument.Select(x => new LockOffersAvailabilityModelDB()
+            LockTransactionModelDB[] offersLocked = _offersOfDocument.Select(x => new LockTransactionModelDB()
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
                 LockerId = x.Row.OfferId,
@@ -766,9 +766,9 @@ public partial class CommerceImplementService(
             return res;
         }
 
-        LockOffersAvailabilityModelDB[] offersLocked = _allOffersOfDocuments
+        LockTransactionModelDB[] offersLocked = _allOffersOfDocuments
             .DistinctBy(x => new { x.WarehouseId, x.Row.OfferId })
-            .Select(x => new LockOffersAvailabilityModelDB()
+            .Select(x => new LockTransactionModelDB()
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
                 LockerId = x.Row.OfferId,

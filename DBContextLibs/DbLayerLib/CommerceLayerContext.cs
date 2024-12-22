@@ -57,35 +57,38 @@ public partial class CommerceLayerContext : DbContext
     }
 
     /// <summary>
-    /// WorksSchedules
+    /// Расписание (по дням недели)
     /// </summary>
     public DbSet<WorkScheduleModelDB> WorksSchedules { get; set; } = default!;
 
     /// <summary>
-    /// WorksSchedulesCalendar
+    /// Расписание на определённую дату (приоритетное)
     /// </summary>
     public DbSet<WorkScheduleCalendarModelDB> WorksSchedulesCalendars { get; set; } = default!;
 
 
 
     /// <summary>
-    /// Organizations
+    /// Организации
     /// </summary>
     public DbSet<OrganizationModelDB> Organizations { get; set; } = default!;
 
     /// <summary>
-    /// AddressesOrganizations
+    /// Адреса организации (филиалы/офисы)
     /// </summary>
     public DbSet<AddressOrganizationModelDB> AddressesOrganizations { get; set; } = default!;
 
     /// <summary>
-    /// OrganizationsUsers
+    /// Сотрудники компаний
     /// </summary>
     public DbSet<UserOrganizationModelDB> OrganizationsUsers { get; set; } = default!;
 
     /// <summary>
     /// Подрядчики
     /// </summary>
+    /// <remarks>
+    /// Связь организации с офером
+    /// </remarks>
     public DbSet<OrganizationContractorModel> ContractorsOrganizations { get; set; } = default!;
 
 
@@ -117,14 +120,14 @@ public partial class CommerceLayerContext : DbContext
 
 
     /// <summary>
-    /// Offers availability
+    /// Регистры учёта остатков оферов в разрезе складов (топиков)
     /// </summary>
     public DbSet<OfferAvailabilityModelDB> OffersAvailability { get; set; } = default!;
 
     /// <summary>
     /// Locker offers availability
     /// </summary>
-    public DbSet<LockOffersAvailabilityModelDB> LockerOffersAvailability { get; set; } = default!;
+    public DbSet<LockTransactionModelDB> LockerOffersAvailability { get; set; } = default!;
 
 
 

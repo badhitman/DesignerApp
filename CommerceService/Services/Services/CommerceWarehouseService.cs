@@ -62,9 +62,9 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        LockOffersAvailabilityModelDB[] offersLocked = warehouseDocumentDb.Rows!.Count == 0
+        LockTransactionModelDB[] offersLocked = warehouseDocumentDb.Rows!.Count == 0
             ? []
-            : warehouseDocumentDb.Rows.Select(x => new LockOffersAvailabilityModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = req.WarehouseId }).ToArray();
+            : warehouseDocumentDb.Rows.Select(x => new LockTransactionModelDB() { LockerName = nameof(OfferAvailabilityModelDB), LockerId = x.OfferId, RubricId = req.WarehouseId }).ToArray();
 
         using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
         if (offersLocked.Length != 0)
@@ -221,8 +221,8 @@ public partial class CommerceImplementService : ICommerceService
             res.AddWarning($"Данные не найдены. Метод удаления [{nameof(RowsForWarehouseDocumentDelete)}] не может выполнить команду.");
             return res;
         }
-        LockOffersAvailabilityModelDB[] offersLocked = _allOffersOfDocuments
-            .Select(x => new LockOffersAvailabilityModelDB()
+        LockTransactionModelDB[] offersLocked = _allOffersOfDocuments
+            .Select(x => new LockTransactionModelDB()
             {
                 LockerName = nameof(OfferAvailabilityModelDB),
                 LockerId = x.OfferId,
@@ -327,7 +327,7 @@ public partial class CommerceImplementService : ICommerceService
             : null;
 
         using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
-        List<LockOffersAvailabilityModelDB> lockers = [new()
+        List<LockTransactionModelDB> lockers = [new()
         {
             LockerName = nameof(OfferAvailabilityModelDB),
             LockerId = req.OfferId,

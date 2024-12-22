@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 namespace SharedLib;
 
 /// <summary>
-/// LockOffersAvailabilityModelDB
+/// LockTransactionModelDB
 /// </summary>
 [Index(nameof(LockerId), nameof(LockerName), nameof(RubricId), IsUnique = true)]
-public class LockOffersAvailabilityModelDB
+public class LockTransactionModelDB
 {
     /// <summary>
     /// Идентификатор/Key

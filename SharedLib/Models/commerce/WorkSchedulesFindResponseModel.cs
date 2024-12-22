@@ -4,10 +4,6 @@
 
 namespace SharedLib;
 
-/*
- WorkSchedulesFindResponseModel
- */
-
 /// <summary>
 /// WorkSchedulesFindResponseModel
 /// </summary>
@@ -40,5 +36,20 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// WorkSchedulesViews
     /// </summary>
-    public WorkSchedulesViewModel[] WorkSchedulesViews() => [];
+    public List<WorkSchedulesViewModel> WorkSchedulesViews()
+    {
+        List<WorkSchedulesViewModel> res = [];
+        //WorkSchedulesViewModel _el;
+        //for (DateOnly dt = StartDate; dt <= EndDate; dt = dt.AddDays(1))
+        //{
+        //    _el = new()
+        //    {
+        //        Date = dt,                 
+        //    };
+
+        //    res.Add(_el);
+        //}
+
+        return res;
+    }
 }

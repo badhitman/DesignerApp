@@ -15,11 +15,6 @@ public class WorkSchedulesViewModel
     public DateOnly Date { get; set; }
 
     /// <summary>
-    /// Name
-    /// </summary>
-    public string? Name { get; set; }
-
-    /// <summary>
     /// Offer
     /// </summary>
     public OfferModelDB? Offer { get; set; }
