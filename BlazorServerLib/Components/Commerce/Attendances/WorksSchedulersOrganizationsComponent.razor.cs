@@ -30,7 +30,7 @@ public partial class WorksSchedulersOrganizationsComponent : BlazorBusyComponent
 
     async Task SetContract(OrganizationModelDB org)
     {
-        if (CurrentUserSession is null)
+        if (IsBusyProgress || CurrentUserSession is null)
             return;
 
         TAuthRequestModel<OrganizationOfferToggleModel> req = new()

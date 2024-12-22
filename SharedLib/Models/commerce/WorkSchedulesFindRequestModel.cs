@@ -17,5 +17,5 @@ public class WorkSchedulesFindRequestModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// Offers
     /// </summary>
-    public int[]? OffersFilter { get; set; }
+    public required int[] OffersFilter { get; set; }
 }

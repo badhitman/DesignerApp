@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
 
@@ -14,9 +15,26 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
+    public async Task<OrganizationContractorModel[]> ContractorsOrganizationsFind(ContractorsOrganizationsRequestModel req)
+    {
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrganizationContractorModel> q = req.OfferFilter is null
+            ? context.ContractorsOrganizations.Where(x => x.OfferId == null)
+            : context.ContractorsOrganizations.Where(x => x.OfferId == null || x.OfferId == req.OfferFilter);
+
+        if (req.OrganizationsFilter is not null && req.OrganizationsFilter.Length != 0)
+            q = q.Where(x => req.OrganizationsFilter.Contains(x.OrganizationId));
+
+        return await q.ToArrayAsync();
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool>> OrganizationOfferContractUpdate(TAuthRequestModel<OrganizationOfferToggleModel> req)
     {
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        if (req.Payload.OfferId < 1)
+            req.Payload.OfferId = null;
 
         if (req.Payload.SetValue)
         {
@@ -29,7 +47,22 @@ public partial class CommerceImplementService : ICommerceService
                 };
             }
             await context.ContractorsOrganizations.AddAsync(new() { OfferId = req.Payload.OfferId, OrganizationId = req.Payload.OrganizationId });
-            await context.SaveChangesAsync();
+
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                string msg = $"Ошибка создания контракта [{JsonConvert.SerializeObject(req)}]";
+                loggerRepo.LogError(ex, msg);
+                return new()
+                {
+                    Messages = [new() { Text = $"{msg}: {ex.Message}", TypeMessage = ResultTypesEnum.Error }],
+                    Response = false,
+                };
+            }
+
             return new()
             {
                 Messages = [new() { Text = "Контракт создан", TypeMessage = ResultTypesEnum.Success }],
@@ -52,20 +85,6 @@ public partial class CommerceImplementService : ICommerceService
                 Response = await context.ContractorsOrganizations.Where(x => x.OrganizationId == req.Payload.OrganizationId && x.OfferId == req.Payload.OfferId).ExecuteDeleteAsync() > 0,
             };
         }
-    }
-
-    /// <inheritdoc/>
-    public async Task<OrganizationContractorModel[]> ContractorsOrganizationsFind(ContractorsOrganizationsRequestModel req)
-    {
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<OrganizationContractorModel> q = req.OfferFilter is null
-            ? context.ContractorsOrganizations.Where(x => x.OfferId == null)
-            : context.ContractorsOrganizations.Where(x => x.OfferId == null || x.OfferId == req.OfferFilter);
-
-        if (req.OrganizationsFilter is not null && req.OrganizationsFilter.Length != 0)
-            q = q.Where(x => req.OrganizationsFilter.Contains(x.OrganizationId));
-
-        return await q.ToArrayAsync();
     }
 
     /// <inheritdoc/>

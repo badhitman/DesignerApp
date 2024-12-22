@@ -33,6 +33,11 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     public WorkScheduleCalendarModelDB[]? Calendars { get; set; }
 
     /// <summary>
+    /// OrganizationsContracts
+    /// </summary>
+    public OrganizationContractorModel[]? OrganizationsContracts { get; set; }
+
+    /// <summary>
     /// WorkSchedulesViews
     /// </summary>
     public WorkSchedulesViewModel[] WorkSchedulesViews() => [];

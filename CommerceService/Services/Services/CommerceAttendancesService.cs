@@ -28,8 +28,15 @@ public partial class CommerceImplementService : ICommerceService
         WorkSchedulesFindResponseModel res = new(req.StartDate, req.EndDate);
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         //
-        res.Schedules = weeks.Count == 0 ? [] : await context.WorksSchedules.Where(x => x.ContextName == req.ContextName && weeks.Contains(x.Weekday)).ToArrayAsync();
-        res.Calendars = dates.Count == 0 ? [] : await context.WorksSchedulesCalendars.Where(x => x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar)).ToArrayAsync();
+        res.Schedules = weeks.Count == 0
+            ? []
+            : await context.WorksSchedules.Where(x => x.ContextName == req.ContextName && weeks.Contains(x.Weekday)).ToArrayAsync();
+
+        res.Calendars = dates.Count == 0
+            ? []
+            : await context.WorksSchedulesCalendars.Where(x => x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar)).ToArrayAsync();
+
+        res.OrganizationsContracts = await context.ContractorsOrganizations.Where(x => x.OfferId == null || req.OffersFilter.Any(y => y == x.OfferId)).ToArrayAsync();
 
         return res;
     }
