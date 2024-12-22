@@ -30,16 +30,94 @@ public partial class WorksSchedulersOrganizationsComponent : BlazorBusyComponent
 
     async Task SetContract(OrganizationModelDB org)
     {
+        if (CurrentUserSession is null)
+            return;
+
+        TAuthRequestModel<OrganizationOfferToggleModel> req = new()
+        {
+            SenderActionUserId = CurrentUserSession.UserId,
+            Payload = new()
+            {
+                OrganizationId = org.Id,
+                OfferId = Offer?.Id,
+            }
+        };
         await SetBusy();
 
+        if (Offer is null || Offer.Id < 1)
+            req.Payload.SetValue = org.Contractors?.Any(x => x.OrganizationId == org.Id && (x.OfferId == null || x.OfferId < 1)) != true;
+        else
+            req.Payload.SetValue = org.Contractors?.Any(x => x.OrganizationId == org.Id && x.OfferId.HasValue && x.OfferId == Offer.Id) != true;
+
+        TResponseModel<bool> res = await CommerceRepo.OrganizationOfferContractUpdate(req);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
         if (table is not null)
             await table.ReloadServerData();
     }
 
-    string GetContractBtn(OrganizationModelDB org)
+    string GetContractCss(OrganizationModelDB org)
     {
-        return "link";
+        string css;
+
+        if (Offer is null || Offer.Id < 1)
+            css = org.Contractors?
+                .Any(x => x.OfferId == null && x.OrganizationId == org.Id) == true ? "success" : "secondary";
+        else
+            css = org.Contractors?
+                .Any(x => x.OfferId == Offer.Id && x.OrganizationId == org.Id) == true ? "success" : "secondary";
+
+        return css;
+    }
+
+    string GetContractTitle(OrganizationModelDB org)
+    {
+        string title;
+
+        if (Offer is null || Offer.Id < 1)
+            title = org.Contractors?
+                .Any(x => x.OfferId == null && x.OrganizationId == org.Id) == true ? "глобальное выдано. отозвать?" : "глобального нет. предоставить?";
+        else
+            title = org.Contractors?
+                .Any(x => x.OfferId == Offer.Id && x.OrganizationId == org.Id) == true ? "локальное выдано. отозвать?" : "локального нет. предоставить?";
+
+        return title;
+    }
+
+    string GetContractInfo(OrganizationModelDB org)
+    {
+        string title;
+        IQueryable<OrganizationContractorModel>? q;
+        if (Offer is null || Offer.Id < 1)
+        {
+            q = org.Contractors?
+                .Where(x => x.OfferId != null && x.OrganizationId == org.Id)
+                .AsQueryable();
+
+            title = q?.Any() == true ? $"(+локальные: {string.Join("; ", q.Select(x => x.Offer!.Name))};)" : "";
+        }
+        else
+        {
+            q = org.Contractors?
+                .Where(x => x.OrganizationId == org.Id)
+                .AsQueryable();
+
+            title = q?
+                .Any(x => x.OfferId == null) == true ? "(+глобально!" : "";
+
+            if (q?.Any(x => x.OfferId.HasValue && x.OfferId != Offer.Id) == true)
+            {
+                string _pr = string.Join(";", q.Where(x => x.OfferId.HasValue && x.OfferId != Offer.Id).Select(x => x.Offer!.Name));
+                if (string.IsNullOrEmpty(title))
+                    title = $"(ещё локальные:{_pr})";
+                else
+                    title += $" и локальные:{_pr})";
+            }
+            else if (!string.IsNullOrEmpty(title))
+                title += ")";
+        }
+
+        return title;
     }
 
     /// <summary>

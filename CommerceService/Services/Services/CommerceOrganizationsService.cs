@@ -14,6 +14,47 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> OrganizationOfferContractUpdate(TAuthRequestModel<OrganizationOfferToggleModel> req)
+    {
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        if (req.Payload.SetValue)
+        {
+            if (await context.ContractorsOrganizations.AnyAsync(x => x.OrganizationId == req.Payload.OrganizationId && x.OfferId == req.Payload.OfferId))
+            {
+                return new()
+                {
+                    Messages = [new() { Text = "Контракт уже установлен", TypeMessage = ResultTypesEnum.Info }],
+                    Response = false,
+                };
+            }
+            await context.ContractorsOrganizations.AddAsync(new() { OfferId = req.Payload.OfferId, OrganizationId = req.Payload.OrganizationId });
+            await context.SaveChangesAsync();
+            return new()
+            {
+                Messages = [new() { Text = "Контракт создан", TypeMessage = ResultTypesEnum.Success }],
+                Response = true,
+            };
+        }
+        else
+        {
+            if (!await context.ContractorsOrganizations.AnyAsync(x => x.OrganizationId == req.Payload.OrganizationId && x.OfferId == req.Payload.OfferId))
+            {
+                return new()
+                {
+                    Messages = [new() { Text = "Контракта нет", TypeMessage = ResultTypesEnum.Info }],
+                    Response = false,
+                };
+            }
+            return new()
+            {
+                Messages = [new() { Text = "Контракт удалён", TypeMessage = ResultTypesEnum.Success }],
+                Response = await context.ContractorsOrganizations.Where(x => x.OrganizationId == req.Payload.OrganizationId && x.OfferId == req.Payload.OfferId).ExecuteDeleteAsync() > 0,
+            };
+        }
+    }
+
+    /// <inheritdoc/>
     public async Task<OrganizationContractorModel[]> ContractorsOrganizationsFind(ContractorsOrganizationsRequestModel req)
     {
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
@@ -207,9 +248,11 @@ public partial class CommerceImplementService : ICommerceService
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrganizationModelDB, List<UserOrganizationModelDB>?> extQ = pq
+        var extQ = pq
             .Include(x => x.Addresses)
-            .Include(x => x.Users);
+            .Include(x => x.Users)
+            .Include(x => x.Contractors!)
+            .ThenInclude(x => x.Offer);
 
         return new()
         {

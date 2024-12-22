@@ -3,24 +3,32 @@
 @inherits BlazorBusyComponentBaseAuthModel
 
 <style>
-    .btn-link {
+    .link {
         cursor: pointer;
     }
 </style>
 
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Организации</MudText>
+        <MudText Typo="Typo.h6">Организации <sup>(оказание услуг)</sup></MudText>
         <MudSpacer />
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="Name" T="OrganizationModelDB">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="INN" T="OrganizationModelDB">INN</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortLabel="Name" T="OrganizationModelDB">Name</MudTableSortLabel></MudTh>
+        <MudTh>INN</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">
+            @{
+                string _css = GetContractCss(context);
+            }
             @context.Name
-            <sup class="btn-link link-underline-secondary link-secondary" @onclick="async () => await SetContract(context)">@GetContractBtn(context)</sup>
+            <sup class="btn-link link-underline-@_css link-@_css link" @onclick="async () => await SetContract(context)">
+                @GetContractTitle(context)
+            </sup>
+            <sup class="mt-1">
+                @GetContractInfo(context)
+            </sup>
         </MudTd>
         <MudTd DataLabel="INN">
             @context.INN

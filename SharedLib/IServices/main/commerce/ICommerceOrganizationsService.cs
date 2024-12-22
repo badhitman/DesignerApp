@@ -10,6 +10,11 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
+    /// OrganizationOfferContractUpdate
+    /// </summary>
+    public Task<TResponseModel<bool>> OrganizationOfferContractUpdate(TAuthRequestModel<OrganizationOfferToggleModel> req);
+
+    /// <summary>
     /// ContractorsOrganizationsFind
     /// </summary>
     public Task<OrganizationContractorModel[]> ContractorsOrganizationsFind(ContractorsOrganizationsRequestModel req);

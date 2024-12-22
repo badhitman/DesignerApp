@@ -3,12 +3,14 @@
 ////////////////////////////////////////////////
 
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib;
 
 /// <summary>
 /// OrganizationContractorModel
 /// </summary>
+[Index(nameof(OrganizationId), nameof(OfferId), IsUnique = true)]
 public class OrganizationContractorModel
 {
     /// <summary>

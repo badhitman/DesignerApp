@@ -353,6 +353,11 @@ public static partial class GlobalStaticConstants
         public const string ORGANIZATIONS_CONTROLLER_NAME = "organizations";
 
         /// <summary>
+        /// Contract
+        /// </summary>
+        public const string CONTRACT_CONTROLLER_NAME = "contract";
+
+        /// <summary>
         /// Delivery
         /// </summary>
         public const string DELIVERY_CONTROLLER_NAME = "delivery";
