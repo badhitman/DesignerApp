@@ -33,9 +33,9 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
     public Action? WorkCalendarReloadDateHandler { get; set; }
 
     CalendarScheduleModelDB editWorkScheduleCalendar = default!;
-    DateTime WorkScheduleDate 
-    { 
-        get=> editWorkScheduleCalendar.DateScheduleCalendar.ToDateTime(new TimeOnly(0,0,0)); 
+    DateTime WorkScheduleDate
+    {
+        get => editWorkScheduleCalendar.DateScheduleCalendar.ToDateTime(new TimeOnly(0, 0, 0));
         set
         {
             editWorkScheduleCalendar.DateScheduleCalendar = DateOnly.FromDateTime(value);

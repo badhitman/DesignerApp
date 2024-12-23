@@ -18,10 +18,6 @@ public class WorkSchedulesViewModel
     /// Offer
     /// </summary>
     public OfferModelDB? Offer { get; set; }
-    /// <summary>
-    /// Offer
-    /// </summary>
-    public int? OfferId { get; set; }
 
     /// <summary>
     /// Ёмкость очереди (0 - безлимитное)

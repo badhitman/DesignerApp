@@ -15,7 +15,7 @@
 		<PackageReference Include="MongoDB.Driver.Core" Version="2.30.0" />
 		<PackageReference Include="MongoDB.Driver.GridFS" Version="2.30.0" />
 		<PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-		<PackageReference Include="StackExchange.Redis" Version="2.8.22" />
+		<PackageReference Include="StackExchange.Redis" Version="2.8.24" />
 		<ProjectReference Include="..\..\HtmlGenerator\HtmlGenerator.csproj" />
 	</ItemGroup>
 	<Target Name="CopyFilesAfterPublish" AfterTargets="AfterPublish">

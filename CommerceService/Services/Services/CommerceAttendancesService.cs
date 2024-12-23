@@ -37,9 +37,16 @@ public partial class CommerceImplementService : ICommerceService
                 res.Schedules = await context.WeeklySchedules
                     .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && weeks.Contains(x.Weekday))
                     .ToArrayAsync();
-                    }),
-                    Task.Run(async ()=> {
-                    using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+             }),
+            Task.Run(async ()=> {
+                using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+                //
+                res.Offers = await context.Offers
+                    .Where(x => !x.IsDisabled && context.Nomenclatures.Any(y => y.Id == x.NomenclatureId && y.ContextName == req.ContextName))
+                    .ToArrayAsync();
+             }),
+             Task.Run(async ()=> {
+                using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
                 IQueryable<OrderAttendanceModelDB> q = context
                     .OrdersAttendances
                     .Where(x => x.ContextName == req.ContextName && x.DateExecute >= req.StartDate && x.DateExecute <= req.EndDate)
@@ -73,7 +80,7 @@ public partial class CommerceImplementService : ICommerceService
                     .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar))
                     .ToArrayAsync();
             })
-            ]);
+        ]);
 
         return res;
     }
@@ -87,7 +94,7 @@ public partial class CommerceImplementService : ICommerceService
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         IQueryable<WeeklyScheduleModelDB> q = context
-            .WeeklySchedules.Where(x => x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter)
+            .WeeklySchedules.Where(x => x.ContextName == req.Payload.ContextName && x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter)
             .AsQueryable();
 
         if (req.Payload.Weekdays is not null && req.Payload.Weekdays.Length != 0)

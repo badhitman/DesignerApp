@@ -18,4 +18,9 @@ public class WorkSchedulesSelectRequestModel : DocumentsSelectRequestBaseModel
     /// Weekday`s
     /// </summary>
     public DayOfWeek[]? Weekdays { get; set; }
+
+    /// <summary>
+    /// ContextName
+    /// </summary>
+    public required string ContextName { get; set; }
 }

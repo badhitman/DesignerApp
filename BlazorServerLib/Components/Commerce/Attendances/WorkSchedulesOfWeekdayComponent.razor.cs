@@ -55,7 +55,8 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
         {
             Payload = new WorkSchedulesSelectRequestModel()
             {
-                Weekdays = [Weekday]
+                Weekdays = [Weekday],
+                ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
             },
             PageNum = pageNum
         };

@@ -57,6 +57,7 @@ public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBas
             StartPart = StartPart.Value,
             Weekday = Weekday,
             QueueCapacity = QueueCapacity,
+            ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
         };
 
         await SetBusy();

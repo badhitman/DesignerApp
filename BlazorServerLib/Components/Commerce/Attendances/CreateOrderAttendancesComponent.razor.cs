@@ -41,11 +41,12 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
         {
             StartDate = DateOnly.FromDateTime(_dateRange.Start.Value),
             EndDate = DateOnly.FromDateTime(_dateRange.End.Value),
-            OffersFilter = [_selectedOfferId.Value]
+            OffersFilter = [_selectedOfferId.Value],
+            ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
         };
         await SetBusy();
         TResponseModel<WorkSchedulesFindResponseModel> res = await CommerceRepo.WorkSchedulesFind(req);
-        Elements = res.Response?.WorkSchedulesViews();
+        Elements = res.Response?.WorksSchedulesViews();
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
     }
