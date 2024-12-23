@@ -69,7 +69,7 @@ public partial class CommerceImplementService : ICommerceService
             }),
             Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-                res.Calendars = await context.WorksSchedulesCalendars
+                res.Calendars = await context.CalendarsSchedules
                     .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar))
                     .ToArrayAsync();
             })
@@ -211,7 +211,7 @@ public partial class CommerceImplementService : ICommerceService
         }
         else
         {
-            res.Response = await context.WorksSchedulesCalendars
+            res.Response = await context.CalendarsSchedules
                 .Where(x => x.Id == req.Id)
                 .ExecuteUpdateAsync(set => set
                 .SetProperty(p => p.Name, req.Name)
@@ -239,7 +239,7 @@ public partial class CommerceImplementService : ICommerceService
         DateOnly _dtp = DateOnly.FromDateTime(DateTime.UtcNow);
 
         IQueryable<CalendarScheduleModelDB> q = context
-            .WorksSchedulesCalendars
+            .CalendarsSchedules
             .Where(x => x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter && (!req.Payload.ActualOnly || x.DateScheduleCalendar >= _dtp))
             .AsQueryable();
 
@@ -280,7 +280,7 @@ public partial class CommerceImplementService : ICommerceService
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         IQueryable<CalendarScheduleModelDB> q = context
-            .WorksSchedulesCalendars
+            .CalendarsSchedules
             .Where(x => req.Any(y => x.Id == y));
 
         res.Response = await q

@@ -64,7 +64,7 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// Расписание на определённую дату (приоритетное)
     /// </summary>
-    public DbSet<CalendarScheduleModelDB> WorksSchedulesCalendars { get; set; } = default!;
+    public DbSet<CalendarScheduleModelDB> CalendarsSchedules { get; set; } = default!;
 
 
 
