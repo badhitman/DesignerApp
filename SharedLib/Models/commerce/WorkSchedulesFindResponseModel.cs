@@ -34,6 +34,11 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     public OrganizationContractorModel[]? OrganizationsContracts { get; set; }
 
     /// <summary>
+    /// OrdersAttendances
+    /// </summary>
+    public OrderAttendanceModelDB[]? OrdersAttendances { get; set; }
+
+    /// <summary>
     /// WorkSchedulesViews
     /// </summary>
     public List<WorkSchedulesViewModel> WorkSchedulesViews()

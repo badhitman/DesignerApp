@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
@@ -10,7 +12,39 @@ namespace SharedLib;
 public class OrderAttendanceModelDB : OrderDocumentBaseModelDB
 {
     /// <summary>
-    /// Rows
+    /// Торговое предложение
     /// </summary>
-    public List<RowOfAttendanceModelDB>? Rows { get; set; }
+    public OfferModelDB? Offer { get; set; }
+
+    /// <summary>
+    /// Offer
+    /// </summary>
+    public int OfferId { get; set; }
+
+    /// <summary>
+    /// Номенклатура
+    /// </summary>
+    public NomenclatureModelDB? Nomenclature { get; set; }
+
+    /// <summary>
+    /// Nomenclature
+    /// </summary>
+    public int NomenclatureId { get; set; }
+
+    /// <summary>
+    /// DateAttendance
+    /// </summary>
+    public required DateOnly DateAttendance { get; set; }
+
+    /// <summary>
+    /// StartPart
+    /// </summary>
+    [Required]
+    public required TimeSpan StartPart { get; set; }
+
+    /// <summary>
+    /// EndPart
+    /// </summary>
+    [Required]
+    public required TimeSpan EndPart { get; set; }
 }

@@ -17,12 +17,8 @@ public partial class CommerceImplementService : ICommerceService
     public async Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
     {
         WorkSchedulesFindResponseModel res = new(req.StartDate, req.EndDate);
-
-        if(res.StartDate> res.EndDate)
-        {
-            //res.
+        if (res.StartDate > res.EndDate)
             return res;
-        }
 
         List<DayOfWeek> weeks = [];
         List<DateOnly> dates = [];

@@ -136,11 +136,6 @@ public partial class CommerceLayerContext : DbContext
     /// </summary>
     public DbSet<OrderAttendanceModelDB> OrdersAttendances { get; set; } = default!;
 
-    /// <summary>
-    /// RowsOfOrdersAttendances
-    /// </summary>
-    public DbSet<RowOfAttendanceModelDB> RowsOfOrdersAttendances { get; set; } = default!;
-
 
     /// <summary>
     /// Заказы товаров со складов
