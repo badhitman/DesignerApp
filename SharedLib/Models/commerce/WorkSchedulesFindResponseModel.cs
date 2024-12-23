@@ -44,16 +44,19 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     public List<WorkSchedulesViewModel> WorkSchedulesViews()
     {
         List<WorkSchedulesViewModel> res = [];
-        //WorkSchedulesViewModel _el;
-        //for (DateOnly dt = StartDate; dt <= EndDate; dt = dt.AddDays(1))
-        //{
-        //    _el = new()
-        //    {
-        //        Date = dt,                 
-        //    };
+        
+        for (DateOnly dt = StartDate; dt <= EndDate; dt = dt.AddDays(1))
+        {
+            WorkScheduleModelDB[]? w_sch = Schedules?.Where(x=>x.Weekday == dt.DayOfWeek).ToArray();
+            WorkScheduleCalendarModelDB[]? d_sch = Calendars?.Where(x=>x.DateScheduleCalendar == dt).ToArray();
 
-        //    res.Add(_el);
-        //}
+            //WorkSchedulesViewModel _el = new()
+            //{
+            //    Date = dt,                 
+            //};
+
+            //res.Add(_el);
+        }
 
         return res;
     }
