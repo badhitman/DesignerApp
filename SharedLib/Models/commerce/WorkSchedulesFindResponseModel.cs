@@ -36,7 +36,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// OrdersAttendances
     /// </summary>
-    public OrderAttendanceModelDB[]? OrdersAttendances { get; set; }
+    public OrderAnonModelDB[]? OrdersAttendances { get; set; }
 
     /// <summary>
     /// WorkSchedulesViews

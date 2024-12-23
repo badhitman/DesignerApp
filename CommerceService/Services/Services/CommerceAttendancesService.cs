@@ -30,23 +30,50 @@ public partial class CommerceImplementService : ICommerceService
                 weeks.Add(dt.DayOfWeek);
         }
 
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        //
-        res.Schedules = await context.WorksSchedules
-            .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && weeks.Contains(x.Weekday))
-            .ToArrayAsync();
+        await Task.WhenAll([
+            Task.Run(async ()=> {
+                using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+                //
+                res.Schedules = await context.WorksSchedules
+                    .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && weeks.Contains(x.Weekday))
+                    .ToArrayAsync();
+                    }),
+                    Task.Run(async ()=> {
+                    using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+                IQueryable<OrderAttendanceModelDB> q = context
+                    .OrdersAttendances
+                    .Where(x => x.ContextName == req.ContextName && x.DateExecute >= req.StartDate && x.DateExecute <= req.EndDate)
+                    .Where(x => req.OffersFilter.Any(y => y == x.OfferId))
+                    ;
 
-        res.Calendars = await context.WorksSchedulesCalendars
-            .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar))
-            .ToArrayAsync();
-
-        res.OrganizationsContracts = await context
-            .ContractorsOrganizations
-            .Where(x => x.OfferId == null || req.OffersFilter.Any(y => y == x.OfferId))
-            .Include(x => x.Offer)
-            .Include(x => x.Organization!)
-            .ThenInclude(x => x.Users)
-            .ToArrayAsync();
+                res.OrdersAttendances = await q
+                    .Include(x => x.Offer!)
+                    .ThenInclude(x => x.Nomenclature)
+                    .Select(x => new OrderAnonModelDB()
+                    {
+                        DateExecute = x.DateExecute,
+                        StartPart = x.StartPart,
+                        EndPart = x.EndPart,
+                        Offer = x.Offer!,
+                    }).ToArrayAsync();
+            }),
+            Task.Run(async ()=> {
+                using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+                res.OrganizationsContracts = await context
+                    .ContractorsOrganizations
+                    .Where(x => x.OfferId == null || req.OffersFilter.Any(y => y == x.OfferId))
+                    .Include(x => x.Offer)
+                    .Include(x => x.Organization!)
+                    .ThenInclude(x => x.Users)
+                    .ToArrayAsync();
+            }),
+            Task.Run(async ()=> {
+                using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+                res.Calendars = await context.WorksSchedulesCalendars
+                    .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar))
+                    .ToArrayAsync();
+            })
+            ]);
 
         return res;
     }

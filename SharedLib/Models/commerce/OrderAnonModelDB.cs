@@ -7,29 +7,15 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// OrderAttendancesModelDB
+/// OrderAnonModelDB
 /// </summary>
-public class OrderAttendanceModelDB : OrderDocumentBaseModelDB
+public class OrderAnonModelDB
 {
     /// <summary>
     /// Торговое предложение
     /// </summary>
-    public OfferModelDB? Offer { get; set; }
-
-    /// <summary>
-    /// Offer
-    /// </summary>
-    public int OfferId { get; set; }
-
-    /// <summary>
-    /// Номенклатура
-    /// </summary>
-    public NomenclatureModelDB? Nomenclature { get; set; }
-
-    /// <summary>
-    /// Nomenclature
-    /// </summary>
-    public int NomenclatureId { get; set; }
+    [Required]
+    public required OfferModelDB Offer { get; set; }
 
     /// <summary>
     /// DateExecute
@@ -48,9 +34,4 @@ public class OrderAttendanceModelDB : OrderDocumentBaseModelDB
     /// </summary>
     [Required]
     public required TimeOnly EndPart { get; set; }
-
-    /// <summary>
-    /// Имя контекста для разделения различных селекторов независимо друг от друга
-    /// </summary>
-    public string? ContextName { get; set; }
 }
