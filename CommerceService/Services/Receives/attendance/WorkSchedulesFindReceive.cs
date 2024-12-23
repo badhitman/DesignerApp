@@ -11,16 +11,16 @@ namespace Transmission.Receives.commerce;
 /// WorkSchedulesFindReceive
 /// </summary>
 public class WorkSchedulesFindReceive(ICommerceService commerceRepo) 
-    : IResponseReceive<WorkSchedulesFindRequestModel?, WeeklyScheduleModelDB?>
+    : IResponseReceive<WorkSchedulesFindRequestModel?, WorkSchedulesFindResponseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WeeklyScheduleModelDB?>> ResponseHandleAction(WorkSchedulesFindRequestModel? req)
+    public async Task<TResponseModel<WorkSchedulesFindResponseModel?>> ResponseHandleAction(WorkSchedulesFindRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        WeeklyScheduleModelDB ws = await commerceRepo.WorkSchedulesFind(req);
+        WorkSchedulesFindResponseModel ws = await commerceRepo.WorkSchedulesFind(req);
 
         return new()
         {

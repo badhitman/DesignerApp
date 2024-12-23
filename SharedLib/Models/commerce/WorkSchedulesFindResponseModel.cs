@@ -5,14 +5,14 @@
 namespace SharedLib;
 
 /// <summary>
-/// WeeklyScheduleModelDB
+/// WorkSchedulesFindResponseModel
 /// </summary>
-public class WeeklyScheduleModelDB : WorkSchedulesFindBaseModel
+public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
 {
     /// <summary>
-    /// WeeklyScheduleModelDB
+    /// WorkSchedulesFindResponseModel
     /// </summary>
-    public WeeklyScheduleModelDB(DateOnly start, DateOnly end)
+    public WorkSchedulesFindResponseModel(DateOnly start, DateOnly end)
     {
         StartDate = start;
         EndDate = end;

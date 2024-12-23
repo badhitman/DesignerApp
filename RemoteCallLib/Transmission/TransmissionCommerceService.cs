@@ -16,8 +16,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.OrganizationOfferContractUpdateOrCreateCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WeeklyScheduleModelDB>> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
-        => await rabbitClient.MqRemoteCall<WeeklyScheduleModelDB>(GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive, req);
+    public async Task<TResponseModel<WorkSchedulesFindResponseModel>> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
+        => await rabbitClient.MqRemoteCall<WorkSchedulesFindResponseModel>(GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)

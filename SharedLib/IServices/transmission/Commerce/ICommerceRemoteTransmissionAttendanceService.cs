@@ -14,7 +14,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkSchedulesFind
     /// </summary>
-    public Task<TResponseModel<WeeklyScheduleModelDB>> WorkSchedulesFind(WorkSchedulesFindRequestModel req);
+    public Task<TResponseModel<WorkSchedulesFindResponseModel>> WorkSchedulesFind(WorkSchedulesFindRequestModel req);
     
     /// <summary>
     /// WorkScheduleUpdate

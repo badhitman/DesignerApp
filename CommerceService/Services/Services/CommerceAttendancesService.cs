@@ -14,9 +14,9 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
-    public async Task<WeeklyScheduleModelDB> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
+    public async Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
     {
-        WeeklyScheduleModelDB res = new(req.StartDate, req.EndDate);
+        WorkSchedulesFindResponseModel res = new(req.StartDate, req.EndDate);
         if (res.StartDate > res.EndDate)
             return res;
 
