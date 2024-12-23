@@ -32,11 +32,6 @@ public class OrderAttendanceModelDB : OrderDocumentBaseModelDB
     public int NomenclatureId { get; set; }
 
     /// <summary>
-    /// DateAttendance
-    /// </summary>
-    public required DateOnly DateAttendance { get; set; }
-
-    /// <summary>
     /// StartPart
     /// </summary>
     [Required]
