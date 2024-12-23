@@ -34,7 +34,7 @@ public partial class CommerceImplementService : ICommerceService
             Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
                 //
-                res.Schedules = await context.WorksSchedules
+                res.Schedules = await context.WeeklySchedules
                     .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && weeks.Contains(x.Weekday))
                     .ToArrayAsync();
                     }),
@@ -79,15 +79,15 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WorkScheduleModelDB>>> WorkSchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WorkSchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<WorkScheduleModelDB> q = context
-            .WorksSchedules.Where(x => x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter)
+        IQueryable<WeeklyScheduleModelDB> q = context
+            .WeeklySchedules.Where(x => x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter)
             .AsQueryable();
 
         if (req.Payload.Weekdays is not null && req.Payload.Weekdays.Length != 0)
@@ -96,15 +96,15 @@ public partial class CommerceImplementService : ICommerceService
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
 
-        IOrderedQueryable<WorkScheduleModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<WeeklyScheduleModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
            ? q.OrderBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
            : q.OrderByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
 
-        IQueryable<WorkScheduleModelDB> pq = oq
+        IQueryable<WeeklyScheduleModelDB> pq = oq
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<WorkScheduleModelDB, NomenclatureModelDB?> inc_query = pq
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<WeeklyScheduleModelDB, NomenclatureModelDB?> inc_query = pq
             .Include(x => x.Offer)
             .Include(x => x.Nomenclature);
 
@@ -123,7 +123,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WorkScheduleUpdate(WorkScheduleModelDB req)
+    public async Task<TResponseModel<int>> WorkScheduleUpdate(WeeklyScheduleModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
         ValidateReportModel ck = GlobalTools.ValidateObject(req);
@@ -149,7 +149,7 @@ public partial class CommerceImplementService : ICommerceService
         }
         else
         {
-            res.Response = await context.WorksSchedules
+            res.Response = await context.WeeklySchedules
                 .Where(w => w.Id == req.Id)
                 .ExecuteUpdateAsync(set => set
                 .SetProperty(p => p.NormalizedNameUpper, req.NormalizedNameUpper)
@@ -166,14 +166,14 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WorkScheduleModelDB[]>> WorkSchedulesRead(int[] req)
+    public async Task<TResponseModel<WeeklyScheduleModelDB[]>> WorkSchedulesRead(int[] req)
     {
-        TResponseModel<WorkScheduleModelDB[]> res = new();
+        TResponseModel<WeeklyScheduleModelDB[]> res = new();
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<WorkScheduleModelDB> q = context
-            .WorksSchedules
+        IQueryable<WeeklyScheduleModelDB> q = context
+            .WeeklySchedules
             .Where(x => req.Any(y => x.Id == y));
 
         res.Response = await q

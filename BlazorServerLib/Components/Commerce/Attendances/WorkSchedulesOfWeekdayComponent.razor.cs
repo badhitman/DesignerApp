@@ -31,11 +31,11 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
 
     OfferModelDB? OfferCurrent;
 
-    private readonly List<WorkScheduleModelDB> WorkSchedules = [];
+    private readonly List<WeeklyScheduleModelDB> WorkSchedules = [];
 
     int TotalElementsCount;
 
-    async void AddingWorkScheduleAction(WorkScheduleModelDB? sender)
+    async void AddingWorkScheduleAction(WeeklyScheduleModelDB? sender)
     {
         await LoadData(0, OfferCurrent);
     }
@@ -63,7 +63,7 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
         if (OfferCurrent is not null && OfferCurrent.Id != 0)
             req.Payload.OfferFilter = OfferCurrent.Id;
 
-        TResponseModel<TPaginationResponseModel<WorkScheduleModelDB>> res = await CommerceRepo.WorkSchedulesSelect(req);
+        TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>> res = await CommerceRepo.WorkSchedulesSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response?.Response is not null)
         {

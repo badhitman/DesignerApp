@@ -19,17 +19,17 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkScheduleUpdate
     /// </summary>
-    public Task<TResponseModel<int>> WorkScheduleUpdate(WorkScheduleModelDB work);
+    public Task<TResponseModel<int>> WorkScheduleUpdate(WeeklyScheduleModelDB work);
 
     /// <summary>
     /// WorkSchedulesSelect select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<WorkScheduleModelDB>>> WorkSchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WorkSchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req);
 
     /// <summary>
     /// WorkSchedulesRead read
     /// </summary>
-    public Task<TResponseModel<WorkScheduleModelDB[]>> WorkSchedulesRead(int[] req);
+    public Task<TResponseModel<WeeklyScheduleModelDB[]>> WorkSchedulesRead(int[] req);
 
     /// <summary>
     /// WorkScheduleCalendarUpdate

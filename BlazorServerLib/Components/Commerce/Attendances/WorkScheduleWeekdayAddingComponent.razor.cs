@@ -27,7 +27,7 @@ public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBas
     /// Создание/добавление нового WorkSchedule
     /// </summary>
     [Parameter]
-    public required Action<WorkScheduleModelDB>? AddingWorkScheduleHandle { get; set; }
+    public required Action<WeeklyScheduleModelDB>? AddingWorkScheduleHandle { get; set; }
 
     bool CantSave => EndPart is null || StartPart is null || EndPart < StartPart;
 
@@ -50,7 +50,7 @@ public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBas
         if (EndPart is null || StartPart is null)
             return;
 
-        WorkScheduleModelDB ws = new()
+        WeeklyScheduleModelDB ws = new()
         {
             Name = "",
             EndPart = EndPart.Value,

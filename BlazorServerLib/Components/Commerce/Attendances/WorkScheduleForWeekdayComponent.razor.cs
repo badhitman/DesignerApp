@@ -24,9 +24,9 @@ public partial class WorkScheduleForWeekdayComponent : BlazorBusyComponentBaseMo
     /// WorkSchedule
     /// </summary>
     [Parameter, EditorRequired]
-    public required WorkScheduleModelDB WorkSchedule { get; set; }
+    public required WeeklyScheduleModelDB WorkSchedule { get; set; }
 
-    WorkScheduleModelDB WorkScheduleEdit { get; set; } = default!;
+    WeeklyScheduleModelDB WorkScheduleEdit { get; set; } = default!;
 
 
     bool IsEdited => WorkSchedule.IsDisabled != WorkScheduleEdit.IsDisabled ||

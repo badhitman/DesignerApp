@@ -11,16 +11,16 @@ namespace Transmission.Receives.commerce;
 /// WorkSchedulesSelectReceive
 /// </summary>
 public class WorkSchedulesSelectReceive(ICommerceService commerceRepo) 
-    : IResponseReceive<TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WorkScheduleModelDB>?>
+    : IResponseReceive<TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WeeklyScheduleModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.WorkSchedulesSelectCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WorkScheduleModelDB>?>> ResponseHandleAction(TPaginationRequestModel<WorkSchedulesSelectRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>?>> ResponseHandleAction(TPaginationRequestModel<WorkSchedulesSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<TPaginationResponseModel<WorkScheduleModelDB>> ws = await commerceRepo.WorkSchedulesSelect(req);
+        TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>> ws = await commerceRepo.WorkSchedulesSelect(req);
 
         return new()
         {

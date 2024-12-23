@@ -59,7 +59,7 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// Расписание (по дням недели)
     /// </summary>
-    public DbSet<WorkScheduleModelDB> WorksSchedules { get; set; } = default!;
+    public DbSet<WeeklyScheduleModelDB> WeeklySchedules { get; set; } = default!;
 
     /// <summary>
     /// Расписание на определённую дату (приоритетное)

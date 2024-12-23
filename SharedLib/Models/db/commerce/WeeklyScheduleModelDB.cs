@@ -2,16 +2,16 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace SharedLib;
 
 /// <summary>
-/// WorkScheduleModelDB
+/// WeeklyScheduleModelDB
 /// </summary>
 [Index(nameof(Weekday))]
-public class WorkScheduleModelDB : WorkScheduleBaseModelDB
+public class WeeklyScheduleModelDB : WorkScheduleBaseModelDB
 {
     /// <summary>
     /// День недели
