@@ -51,7 +51,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     /// </summary>
     int middleCount = 1;
     int countPages = 0;
-    List<WorkScheduleCalendarModelDB> worksSchedulesCalendars = [];
+    List<CalendarScheduleModelDB> worksSchedulesCalendars = [];
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -86,7 +86,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
             req.Payload.OfferFilter = OfferCurrent.Id;
 
         await SetBusy();
-        TResponseModel<TPaginationResponseModel<WorkScheduleCalendarModelDB>> res = await CommerceRepo.WorkScheduleCalendarsSelect(req);
+        TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>> res = await CommerceRepo.WorkScheduleCalendarsSelect(req);
 
         if (res.Response is not null)
         {

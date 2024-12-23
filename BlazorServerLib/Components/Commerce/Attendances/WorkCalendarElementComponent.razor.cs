@@ -24,7 +24,7 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
     /// WorkScheduleCalendar
     /// </summary>
     [Parameter, EditorRequired]
-    public required WorkScheduleCalendarModelDB WorkScheduleCalendar { get; set; }
+    public required CalendarScheduleModelDB WorkScheduleCalendar { get; set; }
 
     /// <summary>
     /// WorkCalendarReloadDateHandler
@@ -32,7 +32,7 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
     [Parameter]
     public Action? WorkCalendarReloadDateHandler { get; set; }
 
-    WorkScheduleCalendarModelDB editWorkScheduleCalendar = default!;
+    CalendarScheduleModelDB editWorkScheduleCalendar = default!;
     DateTime WorkScheduleDate 
     { 
         get=> editWorkScheduleCalendar.DateScheduleCalendar.ToDateTime(new TimeOnly(0,0,0)); 

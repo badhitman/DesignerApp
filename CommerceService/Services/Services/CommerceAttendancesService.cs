@@ -185,7 +185,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WorkScheduleCalendarUpdate(WorkScheduleCalendarModelDB req)
+    public async Task<TResponseModel<int>> WorkScheduleCalendarUpdate(CalendarScheduleModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
         ValidateReportModel ck = GlobalTools.ValidateObject(req);
@@ -229,7 +229,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WorkScheduleCalendarModelDB>>> WorkScheduleCalendarsSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> WorkScheduleCalendarsSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
@@ -238,7 +238,7 @@ public partial class CommerceImplementService : ICommerceService
 
         DateOnly _dtp = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        IQueryable<WorkScheduleCalendarModelDB> q = context
+        IQueryable<CalendarScheduleModelDB> q = context
             .WorksSchedulesCalendars
             .Where(x => x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter && (!req.Payload.ActualOnly || x.DateScheduleCalendar >= _dtp))
             .AsQueryable();
@@ -246,15 +246,15 @@ public partial class CommerceImplementService : ICommerceService
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
 
-        IOrderedQueryable<WorkScheduleCalendarModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<CalendarScheduleModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
            ? q.OrderBy(x => x.DateScheduleCalendar).ThenBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
            : q.OrderByDescending(x => x.DateScheduleCalendar).ThenByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
 
-        IQueryable<WorkScheduleCalendarModelDB> pq = oq
+        IQueryable<CalendarScheduleModelDB> pq = oq
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
 
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<WorkScheduleCalendarModelDB, NomenclatureModelDB?> inc_query = pq
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<CalendarScheduleModelDB, NomenclatureModelDB?> inc_query = pq
             .Include(x => x.Offer)
             .Include(x => x.Nomenclature);
 
@@ -273,13 +273,13 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WorkScheduleCalendarModelDB[]>> WorkScheduleCalendarsRead(int[] req)
+    public async Task<TResponseModel<CalendarScheduleModelDB[]>> WorkScheduleCalendarsRead(int[] req)
     {
-        TResponseModel<WorkScheduleCalendarModelDB[]> res = new();
+        TResponseModel<CalendarScheduleModelDB[]> res = new();
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        IQueryable<WorkScheduleCalendarModelDB> q = context
+        IQueryable<CalendarScheduleModelDB> q = context
             .WorksSchedulesCalendars
             .Where(x => req.Any(y => x.Id == y));
 

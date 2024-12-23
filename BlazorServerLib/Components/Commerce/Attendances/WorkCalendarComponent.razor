@@ -12,10 +12,10 @@
         <h6 class="card-subtitle mb-2 text-body-secondary">Установка графика работы на конкретные даты.</h6>
         <p class="card-text">Праздничные дни (или другие особые даты) можно внести в календарь. В такие дни базовый график работы будет переопределён персональным:</p>
 
-        @foreach (IGrouping<DateOnly, WorkScheduleCalendarModelDB> gel in worksSchedulesCalendars.OrderBy(x => x.DateScheduleCalendar).GroupBy(x => x.DateScheduleCalendar))
+        @foreach (IGrouping<DateOnly, CalendarScheduleModelDB> gel in worksSchedulesCalendars.OrderBy(x => x.DateScheduleCalendar).GroupBy(x => x.DateScheduleCalendar))
         {
             <ul class="list-group list-group mb-2" @key="gel.Key">
-                @foreach (WorkScheduleCalendarModelDB el in gel.OrderBy(x => x.StartPart).ThenByDescending(x => x.Name))
+                @foreach (CalendarScheduleModelDB el in gel.OrderBy(x => x.StartPart).ThenByDescending(x => x.Name))
                 {
                     <WorkCalendarElementComponent WorkScheduleCalendar="el" @key="el.Id" WorkCalendarReloadDateHandler="WorkCalendarReloadDateAction" />
                 }

@@ -148,16 +148,16 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<WeeklyScheduleModelDB[]>(GlobalStaticConstants.TransmissionQueues.WorkSchedulesReadCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WorkScheduleCalendarUpdate(WorkScheduleCalendarModelDB work)
+    public async Task<TResponseModel<int>> WorkScheduleCalendarUpdate(CalendarScheduleModelDB work)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarUpdateCommerceReceive, work);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WorkScheduleCalendarModelDB>>> WorkScheduleCalendarsSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<WorkScheduleCalendarModelDB>>(GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarsSelectCommerceReceive, req);
+    public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> WorkScheduleCalendarsSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<CalendarScheduleModelDB>>(GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarsSelectCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WorkScheduleCalendarModelDB[]>> WorkScheduleCalendarsRead(int[] req)
-        => await rabbitClient.MqRemoteCall<WorkScheduleCalendarModelDB[]>(GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarsReadCommerceReceive, req);
+    public async Task<TResponseModel<CalendarScheduleModelDB[]>> WorkScheduleCalendarsRead(int[] req)
+        => await rabbitClient.MqRemoteCall<CalendarScheduleModelDB[]>(GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarsReadCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req)

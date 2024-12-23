@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// Обновление WorkScheduleCalendar
 /// </summary>
 public class WorkScheduleCalendarUpdateReceive(ICommerceService commerceRepo, ILogger<WorkScheduleCalendarUpdateReceive> loggerRepo)
-    : IResponseReceive<WorkScheduleCalendarModelDB?, int?>
+    : IResponseReceive<CalendarScheduleModelDB?, int?>
 {
     /// <summary>
     /// Обновление WorkScheduleCalendar
@@ -22,7 +22,7 @@ public class WorkScheduleCalendarUpdateReceive(ICommerceService commerceRepo, IL
     /// <summary>
     /// Обновление WorkScheduleCalendar
     /// </summary>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(WorkScheduleCalendarModelDB? req)
+    public async Task<TResponseModel<int?>> ResponseHandleAction(CalendarScheduleModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         

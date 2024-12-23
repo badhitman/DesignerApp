@@ -8,10 +8,10 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// WorkScheduleCalendarModelDB
+/// CalendarScheduleModelDB
 /// </summary>
 [Index(nameof(DateScheduleCalendar))]
-public class WorkScheduleCalendarModelDB : WorkScheduleBaseModelDB
+public class CalendarScheduleModelDB : WorkScheduleBaseModelDB
 {
     /// <summary>
     /// Дата

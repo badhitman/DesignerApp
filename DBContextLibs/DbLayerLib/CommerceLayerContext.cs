@@ -41,7 +41,7 @@ public partial class CommerceLayerContext : DbContext
         DateOnlyToStringConverter converter2 = new();
 
         modelBuilder
-           .Entity<WorkScheduleCalendarModelDB>()
+           .Entity<CalendarScheduleModelDB>()
            .Property(e => e.DateScheduleCalendar)
            .HasConversion(converter2);
 
@@ -64,7 +64,7 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// Расписание на определённую дату (приоритетное)
     /// </summary>
-    public DbSet<WorkScheduleCalendarModelDB> WorksSchedulesCalendars { get; set; } = default!;
+    public DbSet<CalendarScheduleModelDB> WorksSchedulesCalendars { get; set; } = default!;
 
 
 

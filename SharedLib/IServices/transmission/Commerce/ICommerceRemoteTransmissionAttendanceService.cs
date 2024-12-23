@@ -34,15 +34,15 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkScheduleCalendarUpdate
     /// </summary>
-    public Task<TResponseModel<int>> WorkScheduleCalendarUpdate(WorkScheduleCalendarModelDB work);
+    public Task<TResponseModel<int>> WorkScheduleCalendarUpdate(CalendarScheduleModelDB work);
 
     /// <summary>
     /// WorkScheduleCalendarsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<WorkScheduleCalendarModelDB>>> WorkScheduleCalendarsSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> WorkScheduleCalendarsSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req);
 
     /// <summary>
     /// WorkScheduleCalendarsRead
     /// </summary>
-    public Task<TResponseModel<WorkScheduleCalendarModelDB[]>> WorkScheduleCalendarsRead(int[] req);
+    public Task<TResponseModel<CalendarScheduleModelDB[]>> WorkScheduleCalendarsRead(int[] req);
 }

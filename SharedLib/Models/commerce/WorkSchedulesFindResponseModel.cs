@@ -26,7 +26,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// Calendars
     /// </summary>
-    public WorkScheduleCalendarModelDB[]? Calendars { get; set; }
+    public CalendarScheduleModelDB[]? Calendars { get; set; }
 
     /// <summary>
     /// OrganizationsContracts
@@ -48,7 +48,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
         for (DateOnly dt = StartDate; dt <= EndDate; dt = dt.AddDays(1))
         {
             WeeklyScheduleModelDB[]? w_sch = Schedules?.Where(x=>x.Weekday == dt.DayOfWeek).ToArray();
-            WorkScheduleCalendarModelDB[]? d_sch = Calendars?.Where(x=>x.DateScheduleCalendar == dt).ToArray();
+            CalendarScheduleModelDB[]? d_sch = Calendars?.Where(x=>x.DateScheduleCalendar == dt).ToArray();
 
             //WorkSchedulesViewModel _el = new()
             //{

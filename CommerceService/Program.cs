@@ -128,9 +128,9 @@ builder.Services
     .RegisterMqListener<WorkSchedulesSelectReceive, TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WeeklyScheduleModelDB>?>()
     .RegisterMqListener<WorkScheduleReadReceive, int[]?, WeeklyScheduleModelDB[]?>()
 
-    .RegisterMqListener<WorkScheduleCalendarUpdateReceive, WorkScheduleCalendarModelDB?, int?>()
-    .RegisterMqListener<WorkScheduleCalendarsSelectReceive, TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>?, TPaginationResponseModel<WorkScheduleCalendarModelDB>?>()
-    .RegisterMqListener<WorkScheduleCalendarsReadReceive, int[]?, WorkScheduleCalendarModelDB[]?>()
+    .RegisterMqListener<WorkScheduleCalendarUpdateReceive, CalendarScheduleModelDB?, int?>()
+    .RegisterMqListener<WorkScheduleCalendarsSelectReceive, TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>?, TPaginationResponseModel<CalendarScheduleModelDB>?>()
+    .RegisterMqListener<WorkScheduleCalendarsReadReceive, int[]?, CalendarScheduleModelDB[]?>()
 
     .RegisterMqListener<PriceFullFileGetReceive, object?, FileAttachModel?>()
     .RegisterMqListener<OrderReportGetReceive, TAuthRequestModel<int>?, FileAttachModel?>()
