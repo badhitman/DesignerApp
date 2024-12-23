@@ -16,6 +16,14 @@ public partial class CommerceImplementService : ICommerceService
     /// <inheritdoc/>
     public async Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
     {
+        WorkSchedulesFindResponseModel res = new(req.StartDate, req.EndDate);
+
+        if(res.StartDate> res.EndDate)
+        {
+            //res.
+            return res;
+        }
+
         List<DayOfWeek> weeks = [];
         List<DateOnly> dates = [];
 
@@ -26,7 +34,6 @@ public partial class CommerceImplementService : ICommerceService
                 weeks.Add(dt.DayOfWeek);
         }
 
-        WorkSchedulesFindResponseModel res = new(req.StartDate, req.EndDate);
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         //
         res.Schedules = await context.WorksSchedules
