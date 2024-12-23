@@ -44,7 +44,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
             OffersFilter = [_selectedOfferId.Value]
         };
         await SetBusy();
-        TResponseModel<WorkSchedulesFindResponseModel> res = await CommerceRepo.WorkSchedulesFind(req);
+        TResponseModel<WeeklyScheduleModelDB> res = await CommerceRepo.WorkSchedulesFind(req);
         Elements = res.Response?.WorkSchedulesViews();
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
