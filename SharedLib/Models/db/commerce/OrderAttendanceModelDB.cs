@@ -40,11 +40,11 @@ public class OrderAttendanceModelDB : OrderDocumentBaseModelDB
     /// StartPart
     /// </summary>
     [Required]
-    public required TimeSpan StartPart { get; set; }
+    public required DateTime StartPart { get; set; }
 
     /// <summary>
     /// EndPart
     /// </summary>
     [Required]
-    public required TimeSpan EndPart { get; set; }
+    public required DateTime EndPart { get; set; }
 }
