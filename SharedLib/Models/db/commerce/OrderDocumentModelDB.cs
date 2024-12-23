@@ -45,4 +45,10 @@ public class OrderDocumentModelDB : OrderDocumentBaseModelDB
 
         return AddressesTabs.Sum(x => x.Rows!.Sum(y => y.Quantity * y.Offer!.Price));
     }
+
+    /// <inheritdoc/>
+    public static OrderDocumentModelDB NewEmpty(string authorIdentityUserId)
+    {
+        return new() { AuthorIdentityUserId = authorIdentityUserId, Name = "Новый" };
+    }
 }

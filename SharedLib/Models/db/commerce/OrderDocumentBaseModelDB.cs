@@ -11,12 +11,6 @@ namespace SharedLib;
 /// </summary>
 public class OrderDocumentBaseModelDB : EntryUpdatedModel
 {
-    /// <inheritdoc/>
-    public static OrderDocumentModelDB NewEmpty(string authorIdentityUserId)
-    {
-        return new() { AuthorIdentityUserId = authorIdentityUserId, Name = "Новый" };
-    }
-
     /// <summary>
     /// Шаг/статус обращения: "Создан", "В работе", "На проверке" и "Готово"
     /// </summary>

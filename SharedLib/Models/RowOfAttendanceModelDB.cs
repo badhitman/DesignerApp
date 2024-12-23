@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// RowOfAttendanceModel
+/// RowOfAttendanceModelDB
 /// </summary>
 public class RowOfAttendanceModelDB : RowOfBaseDocumentModel
 {

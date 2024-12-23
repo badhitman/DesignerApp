@@ -9,5 +9,8 @@ namespace SharedLib;
 /// </summary>
 public class OrderAttendanceModelDB : OrderDocumentBaseModelDB
 {
-
+    /// <summary>
+    /// Rows
+    /// </summary>
+    public List<RowOfAttendanceModelDB>? Rows { get; set; }
 }

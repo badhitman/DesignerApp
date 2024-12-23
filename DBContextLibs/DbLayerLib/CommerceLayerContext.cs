@@ -127,12 +127,12 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// Locker offers availability
     /// </summary>
-    public DbSet<LockTransactionModelDB> LockerOffersAvailability { get; set; } = default!;
+    public DbSet<LockTransactionModelDB> LockersTransactions { get; set; } = default!;
 
 
 
     /// <summary>
-    /// OrdersAttendances
+    /// Заказы на услуги (бронь/запись)
     /// </summary>
     public DbSet<OrderAttendanceModelDB> OrdersAttendances { get; set; } = default!;
 
@@ -143,7 +143,7 @@ public partial class CommerceLayerContext : DbContext
 
 
     /// <summary>
-    /// Orders
+    /// Заказы товаров со складов
     /// </summary>
     public DbSet<OrderDocumentModelDB> OrdersDocuments { get; set; } = default!;
 
