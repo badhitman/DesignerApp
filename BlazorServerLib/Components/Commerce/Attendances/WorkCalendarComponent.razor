@@ -5,7 +5,13 @@
 <div class="card my-2">
     <div class="card-body">
         <div class="hstack">
-            <h5 class="card-title d-none d-md-block d-lg-block d-xl-block d-xxl-block">Календарь</h5>
+            <h5 class="card-title d-none d-md-block d-lg-block d-xl-block d-xxl-block">
+                Календарь
+                @if (IsBusyProgress)
+                {
+                    <sup class="spinner-grow spinner-grow-sm text-primary"></sup>
+                }
+            </h5>
             <div class="mx-auto"></div>
             <WorkCalendarAddDateComponent WorkCalendarAddDateHandle="WorkCalendarReloadDateAction" />
         </div>

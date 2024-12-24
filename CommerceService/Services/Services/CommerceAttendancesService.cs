@@ -257,6 +257,10 @@ public partial class CommerceImplementService : ICommerceService
             .Include(x => x.Offer)
             .Include(x => x.Nomenclature);
 
+        CalendarScheduleModelDB[] res = req.Payload.IncludeExternalData 
+            ? await inc_query.ToArrayAsync() 
+            : await pq.ToArrayAsync();
+
         return new()
         {
             Response = new()
@@ -266,7 +270,7 @@ public partial class CommerceImplementService : ICommerceService
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = await q.CountAsync(),
-                Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
+                Response = [..res]
             },
         };
     }

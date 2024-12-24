@@ -20,12 +20,7 @@ public class CalendarsSchedulesSelectReceive(ICommerceService commerceRepo)
     public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>?>> ResponseHandleAction(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-
-        if (req.PageSize < 10)
-            req.PageSize = 10;
-
         TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>> wc = await commerceRepo.CalendarSchedulesSelect(req);
-
         return new()
         {
             Response = wc.Response,
