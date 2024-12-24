@@ -20,7 +20,7 @@ public class WorkScheduleReadReceive(ICommerceService commerceRepo)
     public async Task<TResponseModel<WeeklyScheduleModelDB[]?>> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<WeeklyScheduleModelDB[]> wc = await commerceRepo.WorkSchedulesRead(req);
+        TResponseModel<WeeklyScheduleModelDB[]> wc = await commerceRepo.WeeklySchedulesRead(req);
         return new()
         {
             Response = wc.Response,

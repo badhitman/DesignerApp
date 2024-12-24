@@ -20,7 +20,7 @@ public class WorkSchedulesSelectReceive(ICommerceService commerceRepo)
     public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>?>> ResponseHandleAction(TPaginationRequestModel<WorkSchedulesSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>> ws = await commerceRepo.WorkSchedulesSelect(req);
+        TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>> ws = await commerceRepo.WeeklySchedulesSelect(req);
 
         return new()
         {

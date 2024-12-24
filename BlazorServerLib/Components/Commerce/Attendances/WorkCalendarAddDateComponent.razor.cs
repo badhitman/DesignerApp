@@ -57,6 +57,7 @@ public partial class WorkCalendarAddDateComponent : BlazorBusyComponentBaseModel
             QueueCapacity = QueueCapacity,
             Name = "",
             ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
+            IsDisabled = true,
         });
         await SetBusy(false);
         if (WorkCalendarAddDateHandle is not null)

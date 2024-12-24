@@ -26,7 +26,7 @@ public class WorkScheduleUpdateReceive(ICommerceService commerceRepo, ILogger<Wo
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<int> res = await commerceRepo.WorkScheduleUpdate(req);
+        TResponseModel<int> res = await commerceRepo.WeeklyScheduleUpdate(req);
         return new()
         {
             Messages = res.Messages,

@@ -24,7 +24,7 @@ public class WorkScheduleCalendarsSelectReceive(ICommerceService commerceRepo)
         if (req.PageSize < 10)
             req.PageSize = 10;
 
-        TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>> wc = await commerceRepo.WorkScheduleCalendarsSelect(req);
+        TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>> wc = await commerceRepo.CalendarSchedulesSelect(req);
 
         return new()
         {

@@ -39,7 +39,7 @@ public partial class CommerceImplementService : ICommerceService
                     .ToListAsync();
              }),
              Task.Run(async ()=> {
-                using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();                
+                using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
                 res.OrdersAttendances = await context
                     .OrdersAttendances
                     .Where(x => x.ContextName == req.ContextName && x.DateExecute >= req.StartDate && x.DateExecute <= req.EndDate)
@@ -76,7 +76,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WorkSchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
@@ -120,7 +120,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WorkScheduleUpdate(WeeklyScheduleModelDB req)
+    public async Task<TResponseModel<int>> WeeklyScheduleUpdate(WeeklyScheduleModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
         ValidateReportModel ck = GlobalTools.ValidateObject(req);
@@ -138,6 +138,7 @@ public partial class CommerceImplementService : ICommerceService
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         if (req.Id < 1)
         {
+            req.IsDisabled = true;
             req.Id = 0;
             req.CreatedAtUTC = req.LastAtUpdatedUTC;
             context.Add(req);
@@ -163,7 +164,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WeeklyScheduleModelDB[]>> WorkSchedulesRead(int[] req)
+    public async Task<TResponseModel<WeeklyScheduleModelDB[]>> WeeklySchedulesRead(int[] req)
     {
         TResponseModel<WeeklyScheduleModelDB[]> res = new();
 
@@ -182,7 +183,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WorkScheduleCalendarUpdate(CalendarScheduleModelDB req)
+    public async Task<TResponseModel<int>> CalendarScheduleUpdate(CalendarScheduleModelDB req)
     {
         TResponseModel<int> res = new() { Response = 0 };
         ValidateReportModel ck = GlobalTools.ValidateObject(req);
@@ -199,6 +200,7 @@ public partial class CommerceImplementService : ICommerceService
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         if (req.Id < 1)
         {
+            req.IsDisabled = true;
             req.Id = 0;
             req.CreatedAtUTC = DateTime.UtcNow;
             req.LastAtUpdatedUTC = DateTime.UtcNow;
@@ -226,7 +228,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> WorkScheduleCalendarsSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> CalendarSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
@@ -270,7 +272,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<CalendarScheduleModelDB[]>> WorkScheduleCalendarsRead(int[] req)
+    public async Task<TResponseModel<CalendarScheduleModelDB[]>> CalendarSchedulesRead(int[] req)
     {
         TResponseModel<CalendarScheduleModelDB[]> res = new();
 
