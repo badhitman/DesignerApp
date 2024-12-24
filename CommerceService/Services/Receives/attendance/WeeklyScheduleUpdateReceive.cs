@@ -9,7 +9,7 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// Обновление WorkSchedule
+/// Обновление WeeklyScheduleUpdateReceive
 /// </summary>
 public class WeeklyScheduleUpdateReceive(ICommerceService commerceRepo, ILogger<WeeklyScheduleUpdateReceive> loggerRepo)
     : IResponseReceive<WeeklyScheduleModelDB?, int?>

@@ -8,7 +8,7 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// WorkSchedulesSelectReceive
+/// WeekSchedulesSelectReceive
 /// </summary>
 public class WeekSchedulesSelectReceive(ICommerceService commerceRepo) 
     : IResponseReceive<TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WeeklyScheduleModelDB>?>
