@@ -10,7 +10,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// WorkScheduleReadReceive
 /// </summary>
-public class WorkScheduleReadReceive(ICommerceService commerceRepo)
+public class WeeklySchedulesReadReceive(ICommerceService commerceRepo)
 : IResponseReceive<int[]?, WeeklyScheduleModelDB[]?>
 {
     /// <inheritdoc/>

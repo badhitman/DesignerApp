@@ -10,7 +10,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// WorkSchedulesSelectReceive
 /// </summary>
-public class WorkSchedulesSelectReceive(ICommerceService commerceRepo) 
+public class WeekSchedulesSelectReceive(ICommerceService commerceRepo) 
     : IResponseReceive<TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WeeklyScheduleModelDB>?>
 {
     /// <inheritdoc/>

@@ -8,9 +8,9 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// WorkScheduleCalendarsSelectReceive
+/// CalendarsSchedulesSelectReceive
 /// </summary>
-public class WorkScheduleCalendarsSelectReceive(ICommerceService commerceRepo)
+public class CalendarsSchedulesSelectReceive(ICommerceService commerceRepo)
     : IResponseReceive<TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>?, TPaginationResponseModel<CalendarScheduleModelDB>?>
 {
     /// <inheritdoc/>

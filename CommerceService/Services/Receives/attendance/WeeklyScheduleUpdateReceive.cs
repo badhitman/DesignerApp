@@ -11,7 +11,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// Обновление WorkSchedule
 /// </summary>
-public class WorkScheduleUpdateReceive(ICommerceService commerceRepo, ILogger<WorkScheduleUpdateReceive> loggerRepo)
+public class WeeklyScheduleUpdateReceive(ICommerceService commerceRepo, ILogger<WeeklyScheduleUpdateReceive> loggerRepo)
     : IResponseReceive<WeeklyScheduleModelDB?, int?>
 {
     /// <summary>

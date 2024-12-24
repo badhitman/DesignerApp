@@ -124,13 +124,13 @@ builder.Services
     .RegisterMqListener<UsersOrganizationsReadReceive, int[]?, UserOrganizationModelDB[]?>()
     .RegisterMqListener<UsersOrganizationsSelectReceive, TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest>?, TPaginationResponseModel<UserOrganizationModelDB>?>()
 
-    .RegisterMqListener<WorkScheduleUpdateReceive, WeeklyScheduleModelDB?, int?>()
-    .RegisterMqListener<WorkSchedulesSelectReceive, TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WeeklyScheduleModelDB>?>()
-    .RegisterMqListener<WorkScheduleReadReceive, int[]?, WeeklyScheduleModelDB[]?>()
+    .RegisterMqListener<WeeklyScheduleUpdateReceive, WeeklyScheduleModelDB?, int?>()
+    .RegisterMqListener<WeekSchedulesSelectReceive, TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WeeklyScheduleModelDB>?>()
+    .RegisterMqListener<WeeklySchedulesReadReceive, int[]?, WeeklyScheduleModelDB[]?>()
 
-    .RegisterMqListener<WorkScheduleCalendarUpdateReceive, CalendarScheduleModelDB?, int?>()
-    .RegisterMqListener<WorkScheduleCalendarsSelectReceive, TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>?, TPaginationResponseModel<CalendarScheduleModelDB>?>()
-    .RegisterMqListener<WorkScheduleCalendarsReadReceive, int[]?, CalendarScheduleModelDB[]?>()
+    .RegisterMqListener<CalendarScheduleUpdateReceive, CalendarScheduleModelDB?, int?>()
+    .RegisterMqListener<CalendarsSchedulesSelectReceive, TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>?, TPaginationResponseModel<CalendarScheduleModelDB>?>()
+    .RegisterMqListener<CalendarsSchedulesReadReceive, int[]?, CalendarScheduleModelDB[]?>()
 
     .RegisterMqListener<PriceFullFileGetReceive, object?, FileAttachModel?>()
     .RegisterMqListener<OrderReportGetReceive, TAuthRequestModel<int>?, FileAttachModel?>()
