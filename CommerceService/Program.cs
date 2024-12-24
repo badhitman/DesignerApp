@@ -125,7 +125,7 @@ builder.Services
     .RegisterMqListener<UsersOrganizationsSelectReceive, TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest>?, TPaginationResponseModel<UserOrganizationModelDB>?>()
 
     .RegisterMqListener<WeeklyScheduleUpdateReceive, WeeklyScheduleModelDB?, int?>()
-    .RegisterMqListener<WeekSchedulesSelectReceive, TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WeeklyScheduleModelDB>?>()
+    .RegisterMqListener<WeeklySchedulesSelectReceive, TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WeeklyScheduleModelDB>?>()
     .RegisterMqListener<WeeklySchedulesReadReceive, int[]?, WeeklyScheduleModelDB[]?>()
 
     .RegisterMqListener<CalendarScheduleUpdateReceive, CalendarScheduleModelDB?, int?>()

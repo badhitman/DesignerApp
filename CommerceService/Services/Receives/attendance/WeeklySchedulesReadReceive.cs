@@ -14,7 +14,7 @@ public class WeeklySchedulesReadReceive(ICommerceService commerceRepo)
 : IResponseReceive<int[]?, WeeklyScheduleModelDB[]?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.WorkSchedulesReadCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.WeeklySchedulesReadCommerceReceive;
 
     /// <inheritdoc/>
     public async Task<TResponseModel<WeeklyScheduleModelDB[]?>> ResponseHandleAction(int[]? req)

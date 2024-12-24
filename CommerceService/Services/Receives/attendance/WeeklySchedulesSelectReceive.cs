@@ -8,13 +8,13 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// WeekSchedulesSelectReceive
+/// WeeklySchedulesSelectReceive
 /// </summary>
-public class WeekSchedulesSelectReceive(ICommerceService commerceRepo) 
+public class WeeklySchedulesSelectReceive(ICommerceService commerceRepo) 
     : IResponseReceive<TPaginationRequestModel<WorkSchedulesSelectRequestModel>?, TPaginationResponseModel<WeeklyScheduleModelDB>?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.WorkSchedulesSelectCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.WeeklySchedulesSelectCommerceReceive;
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>?>> ResponseHandleAction(TPaginationRequestModel<WorkSchedulesSelectRequestModel>? req)

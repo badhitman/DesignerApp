@@ -725,6 +725,11 @@ public static partial class GlobalStaticConstants
         public const string CALENDAR_CONTROLLER_NAME = "calendar";
 
         /// <summary>
+        /// Calendars
+        /// </summary>
+        public const string CALENDARS_CONTROLLER_NAME = "calendars";
+
+        /// <summary>
         /// WorkSchedule
         /// </summary>
         public const string WORKSCHEDULE_CONTROLLER_NAME = "workschedule";
@@ -733,6 +738,11 @@ public static partial class GlobalStaticConstants
         /// WorkSchedules
         /// </summary>
         public const string WORKSCHEDULES_CONTROLLER_NAME = "workschedules";
+
+        /// <summary>
+        /// Weekly
+        /// </summary>
+        public const string WEEKLY_CONTROLLER_NAME = "weekly";
 
         /// <summary>
         /// Image

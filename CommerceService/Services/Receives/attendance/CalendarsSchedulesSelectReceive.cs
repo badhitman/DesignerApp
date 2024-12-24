@@ -14,7 +14,7 @@ public class CalendarsSchedulesSelectReceive(ICommerceService commerceRepo)
     : IResponseReceive<TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>?, TPaginationResponseModel<CalendarScheduleModelDB>?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.WorkScheduleCalendarsSelectCommerceReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.CalendarsSchedulesSelectCommerceReceive;
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>?>> ResponseHandleAction(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>? req)
