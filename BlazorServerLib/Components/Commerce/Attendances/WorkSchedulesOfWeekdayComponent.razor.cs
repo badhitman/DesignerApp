@@ -64,7 +64,7 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
         if (OfferCurrent is not null && OfferCurrent.Id != 0)
             req.Payload.OfferFilter = OfferCurrent.Id;
 
-        TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>> res = await CommerceRepo.WorkSchedulesSelect(req);
+        TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>> res = await CommerceRepo.WeeklySchedulesSelect(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response?.Response is not null)
         {

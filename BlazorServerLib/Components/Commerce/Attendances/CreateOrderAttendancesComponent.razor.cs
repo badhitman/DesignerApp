@@ -45,7 +45,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
             ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
         };
         await SetBusy();
-        TResponseModel<WorkSchedulesFindResponseModel> res = await CommerceRepo.WorkSchedulesFind(req);
+        TResponseModel<WorkSchedulesFindResponseModel> res = await CommerceRepo.WorksSchedulesFind(req);
         Elements = res.Response?.WorksSchedulesViews();
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);

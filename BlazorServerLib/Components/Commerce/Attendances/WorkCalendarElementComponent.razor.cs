@@ -53,7 +53,7 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
     async Task SaveScheduleCalendar()
     {
         await SetBusy();
-        TResponseModel<int> res = await CommerceRepo.WorkScheduleCalendarUpdate(editWorkScheduleCalendar);
+        TResponseModel<int> res = await CommerceRepo.CalendarScheduleUpdate(editWorkScheduleCalendar);
         WorkScheduleCalendar = GlobalTools.CreateDeepCopy(editWorkScheduleCalendar)!;
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);

@@ -16,7 +16,7 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.OrganizationOfferContractUpdateOrCreateCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WorkSchedulesFindResponseModel>> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
+    public async Task<TResponseModel<WorkSchedulesFindResponseModel>> WorksSchedulesFind(WorkSchedulesFindRequestModel req)
         => await rabbitClient.MqRemoteCall<WorkSchedulesFindResponseModel>(GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive, req);
 
     /// <inheritdoc/>
@@ -136,27 +136,27 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<FileAttachModel>(GlobalStaticConstants.TransmissionQueues.PriceFullFileGetCommerceReceive);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WorkScheduleUpdate(WeeklyScheduleModelDB work)
+    public async Task<TResponseModel<int>> WeeklyScheduleUpdate(WeeklyScheduleModelDB work)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.WeeklyScheduleUpdateCommerceReceive, work);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WorkSchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<WeeklyScheduleModelDB>>(GlobalStaticConstants.TransmissionQueues.WeeklySchedulesSelectCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WeeklyScheduleModelDB[]>> WorkSchedulesRead(int[] req)
+    public async Task<TResponseModel<WeeklyScheduleModelDB[]>> WeeklySchedulesRead(int[] req)
         => await rabbitClient.MqRemoteCall<WeeklyScheduleModelDB[]>(GlobalStaticConstants.TransmissionQueues.WeeklySchedulesReadCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> WorkScheduleCalendarUpdate(CalendarScheduleModelDB work)
+    public async Task<TResponseModel<int>> CalendarScheduleUpdate(CalendarScheduleModelDB work)
         => await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.CalendarScheduleUpdateCommerceReceive, work);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> WorkScheduleCalendarsSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> CalendarsSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<CalendarScheduleModelDB>>(GlobalStaticConstants.TransmissionQueues.CalendarsSchedulesSelectCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<CalendarScheduleModelDB[]>> WorkScheduleCalendarsRead(int[] req)
+    public async Task<TResponseModel<CalendarScheduleModelDB[]>> CalendarsSchedulesRead(int[] req)
         => await rabbitClient.MqRemoteCall<CalendarScheduleModelDB[]>(GlobalStaticConstants.TransmissionQueues.CalendarsSchedulesReadCommerceReceive, req);
 
     /// <inheritdoc/>

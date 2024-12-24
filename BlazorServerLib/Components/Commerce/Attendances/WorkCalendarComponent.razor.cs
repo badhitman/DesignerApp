@@ -86,7 +86,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
             req.Payload.OfferFilter = OfferCurrent.Id;
 
         await SetBusy();
-        TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>> res = await CommerceRepo.WorkScheduleCalendarsSelect(req);
+        TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>> res = await CommerceRepo.CalendarsSchedulesSelect(req);
 
         if (res.Response is not null)
         {

@@ -49,7 +49,7 @@ public partial class WorkCalendarAddDateComponent : BlazorBusyComponentBaseModel
             return;
 
         await SetBusy();
-        TResponseModel<int> res = await CommerceRepo.WorkScheduleCalendarUpdate(new CalendarScheduleModelDB()
+        TResponseModel<int> res = await CommerceRepo.CalendarScheduleUpdate(new CalendarScheduleModelDB()
         {
             DateScheduleCalendar = DateOnly.FromDateTime(_date.Value),
             EndPart = EndPart.Value,
