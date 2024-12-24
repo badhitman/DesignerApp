@@ -10,15 +10,9 @@ namespace SharedLib;
 /// <summary>
 /// WorkScheduleBaseModelDB
 /// </summary>
-[Index(nameof(ExecutorIdentityUserId))]
 [Index(nameof(StartPart), nameof(EndPart))]
 public class WorkScheduleBaseModelDB : UniversalLayerModel
 {
-    /// <summary>
-    /// Исполнитель
-    /// </summary>
-    public string? ExecutorIdentityUserId { get; set; }
-
     /// <summary>
     /// Nomenclature
     /// </summary>

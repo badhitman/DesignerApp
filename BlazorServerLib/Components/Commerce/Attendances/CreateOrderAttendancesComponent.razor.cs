@@ -29,7 +29,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
         GroupName = "Дата",
         Indentation = false,
         Expandable = false,
-        Selector = (e) => e.Date
+        Selector = (e) => $"{e.Date} ({e.Date.DayOfWeek})"
     };
 
     async Task ServerReload()

@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
@@ -10,17 +12,38 @@ namespace SharedLib;
 public class WorkSchedulesViewModel
 {
     /// <summary>
-    /// Date
+    /// Организация
     /// </summary>
-    public DateOnly Date { get; set; }
+    [Required]
+    public required OrganizationModelDB Organization { get; set; }
 
     /// <summary>
-    /// Offer
+    /// Date
     /// </summary>
-    public OfferModelDB? Offer { get; set; }
+    [Required]
+    public required DateOnly Date { get; set; }
+
+    /// <summary>
+    /// StartPart
+    /// </summary>
+    [Required]
+    public required TimeSpan StartPart { get; set; }
+
+    /// <summary>
+    /// EndPart
+    /// </summary>
+    [Required]
+    public required TimeSpan EndPart { get; set; }
 
     /// <summary>
     /// Ёмкость очереди (0 - безлимитное)
     /// </summary>
-    public uint QueueCapacity { get; set; }
+    [Required]
+    public required uint QueueCapacity { get; set; }
+
+    /// <summary>
+    /// IsGlobalPermission
+    /// </summary>
+    [Required]
+    public required bool IsGlobalPermission { get; set; }
 }

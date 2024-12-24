@@ -21,27 +21,22 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// Schedules
     /// </summary>
-    public WeeklyScheduleModelDB[] Schedules { get; set; } = default!;
+    public List<WeeklyScheduleModelDB> Schedules { get; set; } = default!;
 
     /// <summary>
     /// Calendars
     /// </summary>
-    public CalendarScheduleModelDB[] Calendars { get; set; } = default!;
+    public List<CalendarScheduleModelDB> Calendars { get; set; } = default!;
 
     /// <summary>
     /// OrganizationsContracts
     /// </summary>
-    public OrganizationContractorModel[] OrganizationsContracts { get; set; } = default!;
+    public List<OrganizationContractorModel> OrganizationsContracts { get; set; } = default!;
 
     /// <summary>
     /// OrdersAttendances
     /// </summary>
-    public OrderAnonModelDB[] OrdersAttendances { get; set; } = default!;
-
-    /// <summary>
-    /// Offers
-    /// </summary>
-    public OfferModelDB[] Offers { get; set; } = default!;
+    public List<OrderAnonModelDB> OrdersAttendances { get; set; } = default!;
 
     /// <summary>
     /// WorkSchedulesViews
@@ -49,27 +44,54 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     public List<WorkSchedulesViewModel> WorksSchedulesViews()
     {
         List<WorkSchedulesViewModel> res = [];
+        if (OrganizationsContracts.Count == 0)
+            return res;
 
         for (DateOnly dt = StartDate; dt <= EndDate; dt = dt.AddDays(1))
         {
-            WeeklyScheduleModelDB[] w_sch = Schedules.Where(x => !x.IsDisabled && x.Weekday == dt.DayOfWeek).ToArray();
-            CalendarScheduleModelDB[] c_sch = Calendars.Where(x => !x.IsDisabled && x.DateScheduleCalendar == dt).ToArray();
+            WeeklyScheduleModelDB[] weekly_sch = Schedules.Where(x => !x.IsDisabled && x.Weekday == dt.DayOfWeek).ToArray();
+            CalendarScheduleModelDB[] calendar_sch = Calendars.Where(x => !x.IsDisabled && x.DateScheduleCalendar == dt).ToArray();
 
-            if ((w_sch.Length == 0) && (c_sch.Length == 0))
+            if (weekly_sch.Length == 0 && calendar_sch.Length == 0)
                 continue;
 
-            if (c_sch.Length != 0)
+            if (calendar_sch.Length != 0)
             {
-                foreach (CalendarScheduleModelDB csi in c_sch)
+                foreach (CalendarScheduleModelDB csi in calendar_sch)
                 {
+                    foreach (OrganizationContractorModel oc in OrganizationsContracts)
+                    {
+                        WorkSchedulesViewModel _el = new()
+                        {
+                            Date = dt,
+                            EndPart = csi.EndPart,
+                            StartPart = csi.StartPart,
+                            IsGlobalPermission = !oc.OfferId.HasValue || oc.OfferId.Value < 1,
+                            Organization = oc.Organization!,
+                            QueueCapacity = csi.QueueCapacity,
+                        };
 
+                        res.Add(_el);
+                    }
                 }
+                continue;
             }
-            else if (w_sch.Length != 0)
-            {
-                foreach (WeeklyScheduleModelDB csi in w_sch)
-                {
 
+            foreach (WeeklyScheduleModelDB csi in weekly_sch)
+            {
+                foreach (OrganizationContractorModel oc in OrganizationsContracts)
+                {
+                    WorkSchedulesViewModel _el = new()
+                    {
+                        Date = dt,
+                        EndPart = csi.EndPart,
+                        StartPart = csi.StartPart,
+                        IsGlobalPermission = !oc.OfferId.HasValue || oc.OfferId.Value < 1,
+                        Organization = oc.Organization!,
+                        QueueCapacity = csi.QueueCapacity,
+                    };
+
+                    res.Add(_el);
                 }
             }
 
