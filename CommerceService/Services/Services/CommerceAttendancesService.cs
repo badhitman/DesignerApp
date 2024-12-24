@@ -34,10 +34,16 @@ public partial class CommerceImplementService : ICommerceService
         await Task.WhenAll([
             Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-                res.Schedules = await context.WeeklySchedules
-                    .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && req.OffersFilter.Any(y => y == x.OfferId) && weeks.Contains(x.Weekday))
+                res.WeeklySchedules = await context.WeeklySchedules
+                    .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && (x.OfferId == null || req.OffersFilter.Any(y => y == x.OfferId)) && weeks.Contains(x.Weekday))
                     .ToListAsync();
              }),
+            Task.Run(async ()=> {
+                using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+                res.CalendarsSchedules = await context.CalendarsSchedules
+                    .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar))
+                    .ToListAsync();
+            }),
              Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
                 res.OrdersAttendances = await context
@@ -60,14 +66,8 @@ public partial class CommerceImplementService : ICommerceService
                     .ContractorsOrganizations
                     .Where(x => x.OfferId == null || req.OffersFilter.Any(y => y == x.OfferId))
                     .Include(x => x.Offer)
-                    //.Include(x => x.Organization!)
+                    .Include(x => x.Organization!)
                     //.ThenInclude(x => x.Users)
-                    .ToListAsync();
-            }),
-            Task.Run(async ()=> {
-                using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-                res.Calendars = await context.CalendarsSchedules
-                    .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar))
                     .ToListAsync();
             })
         ]);
@@ -257,8 +257,8 @@ public partial class CommerceImplementService : ICommerceService
             .Include(x => x.Offer)
             .Include(x => x.Nomenclature);
 
-        CalendarScheduleModelDB[] res = req.Payload.IncludeExternalData 
-            ? await inc_query.ToArrayAsync() 
+        CalendarScheduleModelDB[] res = req.Payload.IncludeExternalData
+            ? await inc_query.ToArrayAsync()
             : await pq.ToArrayAsync();
 
         return new()
@@ -270,7 +270,7 @@ public partial class CommerceImplementService : ICommerceService
                 SortingDirection = req.SortingDirection,
                 SortBy = req.SortBy,
                 TotalRowsCount = await q.CountAsync(),
-                Response = [..res]
+                Response = [.. res]
             },
         };
     }
