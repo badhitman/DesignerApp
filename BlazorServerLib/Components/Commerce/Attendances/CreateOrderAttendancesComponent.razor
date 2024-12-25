@@ -4,18 +4,28 @@
 
 <style>
     .mud-table-cell-custom-group {
-        font-weight: 500;
+    font-weight: 500;
     }
 
     .mud-table-cell-custom-group-footer {
-        padding-bottom: 50px;
-        text-align: right;
+    padding-bottom: 50px;
+    text-align: right;
     }
 </style>
 
 <div class="card">
     <div class="card-body" id="select-range-dt">
-        <h5 class="card-title">Услуги</h5>
+        <h5 class="card-title">
+            Услуги
+            @if (IsBusyProgress)
+            {
+                <sup class="spinner-grow spinner-grow-sm text-primary"></sup>
+            }
+            else
+            {
+                <sup title="Обновить" @onclick="ServerReload" style="cursor:pointer;" class="bi bi-arrow-clockwise text-success-emphasis"></sup>
+            }
+        </h5>
         <div class="input-group mb-1 mt-2">
             <label class="input-group-text" for="select-offer">Offer</label>
             <select @bind="SelectedOfferId" class="form-select" aria-label="Выбор услуги" id="select-offer">
@@ -30,22 +40,27 @@
                 }
             </select>
         </div>
-        
+
         <MudDateRangePicker Label="Период"
-                            @bind-DateRange="_dateRange"
-                            Orientation="Orientation.Landscape"
-                            Editable="true"
-                            PickerVariant="PickerVariant.Static"
-                            IsDateDisabledFunc="IsDateDisabledHandler"
-                            AdditionalDateClassesFunc="AdditionalDateClassesHandler" />
+        @bind-DateRange="_dateRange"
+        Orientation="Orientation.Landscape"
+        Editable="true"
+        PickerVariant="PickerVariant.Static"
+        IsDateDisabledFunc="IsDateDisabledHandler"
+        AdditionalDateClassesFunc="AdditionalDateClassesHandler" />
         <hr />
-        <MudTable Hover="true" Breakpoint="Breakpoint.Sm" Height="500px" FixedHeader="true"
-                  Items="Elements"
-                  Virtualize="true"
-                  GroupBy="@_groupDefinition"
-                  GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-                  GroupFooterClass="mb-4"
-                  Dense="true">
+
+        <MudTable Breakpoint="Breakpoint.Sm"
+        Loading="IsBusyProgress"
+        Hover="true"
+        Height="500px"
+        FixedHeader="true"
+        Items="Elements"
+        Virtualize="true"
+        GroupBy="@_groupDefinition"
+        GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+        GroupFooterClass="mb-4"
+        Dense="true">
             <ColGroup>
                 <col />
                 <col />
@@ -60,13 +75,23 @@
                 <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"{context.GroupName}: {context.Key}")</MudTh>
             </GroupHeaderTemplate>
             <RowTemplate>
-                <MudTd DataLabel="Дата: Организация">
+                <MudTd Class="@(context.IsStarted ? "mud-theme-primary" : context.IsGlobalPermission ? "fw-bold" : "")" DataLabel="Дата: Организация">
                     @context.Organization.ToString()
-                    <sup>@context.IsGlobalPermission</sup>
                 </MudTd>
-                <MudTd DataLabel="Период">@context.StartPart - @context.EndPart</MudTd>
-                <MudTd DataLabel="Слоты">@context.QueueCapacity</MudTd>
-            </RowTemplate>            
+                <MudTd DataLabel="Период">
+                    @{
+                        bool _is_selected = _selectedSlots.Contains(context);
+                    }
+                    @context.StartPart - @context.EndPart
+                    <MudIconButton OnClick="() => ToggleSelected(context)"
+                                   Class="ms-2"
+                                   Icon="@(_is_selected ? Icons.Material.Filled.AlarmAdd : Icons.Material.Filled.AlarmOff)"
+                                   Size="Size.Small"
+                                   Color="@(_is_selected ? Color.Tertiary : Color.Secondary)"
+                                   title="Записаться" />
+                </MudTd>
+                <MudTd DataLabel="Слоты">@(context.QueueCapacity == 0 ? "∞" : context.QueueCapacity)</MudTd>
+            </RowTemplate>
             <NoRecordsContent>
                 <MudText>Ничего не найдено</MudText>
             </NoRecordsContent>

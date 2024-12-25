@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
+using System.Linq;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
@@ -22,6 +23,19 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
 
 
     IEnumerable<WorkSchedulesViewModel>? Elements;
+    List<WorkSchedulesViewModel> _selectedSlots = [];
+
+    void ToggleSelected(WorkSchedulesViewModel sender)
+    {
+        lock(_selectedSlots)
+        {
+            int ind = _selectedSlots.FindIndex(x => x.Equals(sender));
+            if (ind < 0)
+                _selectedSlots.Add(sender);
+            else
+                _selectedSlots.RemoveAt(ind);
+        }
+    }
 
     DateRange _dateRange = new(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
     TableGroupDefinition<WorkSchedulesViewModel> _groupDefinition = new()
@@ -46,7 +60,11 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
         };
         await SetBusy();
         TResponseModel<WorkSchedulesFindResponseModel> res = await CommerceRepo.WorksSchedulesFind(req);
-        Elements = res.Response?.WorksSchedulesViews();
+        Elements = res.Response?.WorksSchedulesViews()
+            .OrderBy(x => x.Date)
+            .ThenBy(x => x.StartPart)
+            .ThenBy(x => x.Organization.Name);
+
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
     }

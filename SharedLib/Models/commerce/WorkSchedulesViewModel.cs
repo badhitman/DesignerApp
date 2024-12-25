@@ -46,4 +46,37 @@ public class WorkSchedulesViewModel
     /// </summary>
     [Required]
     public required bool IsGlobalPermission { get; set; }
+
+    /// <summary>
+    /// Слот уже начался (но не закончился)
+    /// </summary>
+    [Required]
+    public required bool IsStarted { get; set; }
+
+
+    /// <inheritdoc/>
+    public static bool operator ==(WorkSchedulesViewModel e1, WorkSchedulesViewModel e2)
+        => (e1 is null && e2 is null) || e1?.Equals(e2) == true;
+
+    /// <inheritdoc/>
+    public static bool operator !=(WorkSchedulesViewModel e1, WorkSchedulesViewModel e2)
+        => !(e1 is null && e2 is null) && e1?.Equals(e2) != true;
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj is null)
+            return false;
+
+        if (obj is WorkSchedulesViewModel other)
+            return Date == other.Date && StartPart == other.StartPart && EndPart == other.EndPart && Organization.Id == other.Organization.Id;
+
+        return base.Equals(obj);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return $"{Date}{StartPart}{EndPart}{Organization.Id}".GetHashCode();
+    }
 }

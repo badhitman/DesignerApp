@@ -56,20 +56,19 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
 
             WeeklyScheduleModelDB[] weekly_sch = WeeklySchedules
                 .Where(x => !x.IsDisabled && x.Weekday == dt.DayOfWeek)
-                .Where(x => !_is_current || x.StartPart >= _currentTime)
+                .Where(x => !_is_current || x.StartPart >= _currentTime || x.EndPart >= _currentTime)
                 .ToArray();
 
             CalendarScheduleModelDB[] calendar_sch = CalendarsSchedules
                 .Where(x => !x.IsDisabled && x.DateScheduleCalendar == dt)
-                .Where(x => !_is_current || x.StartPart >= _currentTime)
+                .Where(x => !_is_current || x.StartPart >= _currentTime || x.EndPart >= _currentTime)
                 .ToArray();
 
             if (weekly_sch.Length == 0 && calendar_sch.Length == 0)
                 continue;
 
-            OrganizationContractorModel[] organizations_query = OrganizationsContracts
-                .OrderByDescending(x => !x.OfferId.HasValue || x.OfferId.Value < 1)
-                .ToArray();
+            OrganizationContractorModel[] organizations_query = [.. OrganizationsContracts
+                .OrderByDescending(x => !x.OfferId.HasValue || x.OfferId.Value < 1)];
 
             if (calendar_sch.Length != 0)
             {
@@ -77,14 +76,18 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
                 {
                     foreach (OrganizationContractorModel oc in organizations_query)
                     {
+                        if (res.Any(x => x.Date == dt && x.StartPart == csi.StartPart && x.EndPart == csi.EndPart && x.Organization.Id == oc.Organization!.Id))
+                            continue;
+
                         WorkSchedulesViewModel _el = new()
                         {
-                            Date = dt,
-                            EndPart = csi.EndPart,
-                            StartPart = csi.StartPart,
                             IsGlobalPermission = !oc.OfferId.HasValue || oc.OfferId.Value < 1,
-                            Organization = oc.Organization!,
+                            IsStarted = _is_current && csi.StartPart <= _currentTime,
                             QueueCapacity = csi.QueueCapacity,
+                            Organization = oc.Organization!,
+                            StartPart = csi.StartPart,
+                            EndPart = csi.EndPart,
+                            Date = dt,
                         };
 
                         res.Add(_el);
@@ -97,14 +100,18 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
             {
                 foreach (OrganizationContractorModel oc in organizations_query)
                 {
+                    if (res.Any(x => x.Date == dt && x.StartPart == csi.StartPart && x.EndPart == csi.EndPart && x.Organization.Id == oc.Organization!.Id))
+                        continue;
+
                     WorkSchedulesViewModel _el = new()
                     {
-                        Date = dt,
-                        EndPart = csi.EndPart,
-                        StartPart = csi.StartPart,
                         IsGlobalPermission = !oc.OfferId.HasValue || oc.OfferId.Value < 1,
-                        Organization = oc.Organization!,
+                        IsStarted = _is_current && csi.StartPart <= _currentTime,
                         QueueCapacity = csi.QueueCapacity,
+                        Organization = oc.Organization!,
+                        StartPart = csi.StartPart,
+                        EndPart = csi.EndPart,
+                        Date = dt,
                     };
 
                     res.Add(_el);

@@ -2,6 +2,12 @@
 
 @inherits BlazorBusyComponentBaseModel
 
+<style>
+    .card-title sup{
+    cursor:pointer;
+    }
+</style>
+
 <div class="card my-2">
     <div class="card-body">
         <div class="hstack">
@@ -10,6 +16,12 @@
                 @if (IsBusyProgress)
                 {
                     <sup class="spinner-grow spinner-grow-sm text-primary"></sup>
+                }
+                else
+                {
+                    string title = ActualOnly ? "отображаются только актуальные даты. кликните, что бы отобразить все" : "отображаются все даты. кликните, что бы скрыть прошедшие даты";
+                    <sup @onclick="ToggleActualOnly" class="@(ActualOnly ? "text-decoration-underline" : "me-1")" title="@title">актуальные</sup>
+                    <sup @onclick="ToggleActualOnly" class="@(ActualOnly ? "ms-1" : "text-decoration-underline")" title="@title">все</sup>
                 }
             </h5>
             <div class="mx-auto"></div>
@@ -29,7 +41,7 @@
         }
 
         <div class="d-flex flex-column align-center">
-            <MudPagination Size="Size.Small" BoundaryCount="boundaryCount" MiddleCount="middleCount" Count="countPages" @bind-Selected="@selectedPage" Class="mt-4" />
+            <MudPagination Size="Size.Small" BoundaryCount="boundaryCount" MiddleCount="middleCount" Count="countPages" @bind-Selected="@SelectedPage" Class="mt-4" />
         </div>
     </div>
 </div>

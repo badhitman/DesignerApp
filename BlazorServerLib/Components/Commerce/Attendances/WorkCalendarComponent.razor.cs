@@ -29,7 +29,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     OfferModelDB? OfferCurrent;
 
     int _selectedPage = 1;
-    int selectedPage
+    int SelectedPage
     {
         get => _selectedPage;
         set
@@ -53,6 +53,8 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     int countPages = 0;
     List<CalendarScheduleModelDB> worksSchedulesCalendars = [];
 
+    bool ActualOnly = true;
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -63,6 +65,12 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     async void WorkCalendarReloadDateAction()
     {
         _selectedPage = 1;
+        await Reload(OfferCurrent);
+    }
+
+    async Task ToggleActualOnly()
+    {
+        ActualOnly = !ActualOnly;
         await Reload(OfferCurrent);
     }
 
@@ -77,7 +85,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
             Payload = new()
             {
                 // OfferFilter = OfferCurrent?.Id,
-                ActualOnly = true,
+                ActualOnly = ActualOnly,
             },
             PageNum = _selectedPage - 1,
         };
