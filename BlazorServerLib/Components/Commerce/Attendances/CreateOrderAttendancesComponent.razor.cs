@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using System.Linq;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
@@ -25,9 +24,19 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
     IEnumerable<WorkSchedulesViewModel>? Elements;
     List<WorkSchedulesViewModel> _selectedSlots = [];
 
+    void Closed(MudChip<WorkSchedulesViewModel> chip)
+    {
+        lock (_selectedSlots)
+        {
+            int ind = _selectedSlots.FindIndex(x => x.Equals(chip.Value));
+            if (ind > -1)
+                _selectedSlots.RemoveAt(ind);
+        }
+    }
+
     void ToggleSelected(WorkSchedulesViewModel sender)
     {
-        lock(_selectedSlots)
+        lock (_selectedSlots)
         {
             int ind = _selectedSlots.FindIndex(x => x.Equals(sender));
             if (ind < 0)

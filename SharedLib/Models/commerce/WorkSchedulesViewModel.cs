@@ -55,6 +55,12 @@ public class WorkSchedulesViewModel
 
 
     /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{Date}: {StartPart}-{EndPart} [{Organization.Name}]";
+    }
+
+    /// <inheritdoc/>
     public static bool operator ==(WorkSchedulesViewModel e1, WorkSchedulesViewModel e2)
         => (e1 is null && e2 is null) || e1?.Equals(e2) == true;
 

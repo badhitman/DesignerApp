@@ -4,12 +4,12 @@
 
 <style>
     .mud-table-cell-custom-group {
-    font-weight: 500;
+        font-weight: 500;
     }
 
     .mud-table-cell-custom-group-footer {
-    padding-bottom: 50px;
-    text-align: right;
+        padding-bottom: 50px;
+        text-align: right;
     }
 </style>
 
@@ -42,25 +42,42 @@
         </div>
 
         <MudDateRangePicker Label="Период"
-        @bind-DateRange="_dateRange"
-        Orientation="Orientation.Landscape"
-        Editable="true"
-        PickerVariant="PickerVariant.Static"
-        IsDateDisabledFunc="IsDateDisabledHandler"
-        AdditionalDateClassesFunc="AdditionalDateClassesHandler" />
-        <hr />
+                            @bind-DateRange="_dateRange"
+                            Orientation="Orientation.Landscape"
+                            Editable="true"
+                            PickerVariant="PickerVariant.Static"
+                            IsDateDisabledFunc="IsDateDisabledHandler"
+                            AdditionalDateClassesFunc="AdditionalDateClassesHandler" />
+
+        @if (_selectedSlots.Count == 0)
+        {
+            <hr />
+        }
+        else
+        {
+            <div class="card mb-1 mt-2">
+                <div class="card-body">
+                    <MudChipSet T="WorkSchedulesViewModel" AllClosable OnClose="Closed">
+                        @foreach (WorkSchedulesViewModel value in _selectedSlots.OrderBy(x => x.Date).ThenBy(x => x.StartPart))
+                        {
+                            <MudChip Value="value">@(value.ToString())</MudChip>
+                        }
+                    </MudChipSet>
+                </div>
+            </div>
+        }
 
         <MudTable Breakpoint="Breakpoint.Sm"
-        Loading="IsBusyProgress"
-        Hover="true"
-        Height="500px"
-        FixedHeader="true"
-        Items="Elements"
-        Virtualize="true"
-        GroupBy="@_groupDefinition"
-        GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-        GroupFooterClass="mb-4"
-        Dense="true">
+                  Loading="IsBusyProgress"
+                  Hover="true"
+                  Height="500px"
+                  FixedHeader="true"
+                  Items="Elements"
+                  Virtualize="true"
+                  GroupBy="@_groupDefinition"
+                  GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+                  GroupFooterClass="mb-4"
+                  Dense="true">
             <ColGroup>
                 <col />
                 <col />
@@ -85,10 +102,10 @@
                     @context.StartPart - @context.EndPart
                     <MudIconButton OnClick="() => ToggleSelected(context)"
                                    Class="ms-2"
-                                   Icon="@(_is_selected ? Icons.Material.Filled.AlarmAdd : Icons.Material.Filled.AlarmOff)"
+                                   Icon="@(_is_selected ? Icons.Material.Filled.Remove : Icons.Material.Filled.AlarmAdd)"
                                    Size="Size.Small"
-                                   Color="@(_is_selected ? Color.Tertiary : Color.Secondary)"
-                                   title="Записаться" />
+                                   Color="@(_is_selected ? Color.Default : Color.Tertiary)"
+                                   title="@(_is_selected ? "Убрать запись" : "Добавить запись")" />
                 </MudTd>
                 <MudTd DataLabel="Слоты">@(context.QueueCapacity == 0 ? "∞" : context.QueueCapacity)</MudTd>
             </RowTemplate>
