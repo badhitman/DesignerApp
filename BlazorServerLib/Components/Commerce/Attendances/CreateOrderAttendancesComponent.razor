@@ -56,6 +56,7 @@
         else
         {
             <div class="card mb-1 mt-2">
+                <div class="card-header">Создание заявки</div>
                 <div class="card-body">
                     <MudChipSet T="WorkSchedulesViewModel" AllClosable OnClose="Closed">
                         @foreach (WorkSchedulesViewModel value in _selectedSlots.OrderBy(x => x.Date).ThenBy(x => x.StartPart))
@@ -63,6 +64,11 @@
                             <MudChip Value="value">@(value.ToString())</MudChip>
                         }
                     </MudChipSet>
+                </div>
+                <div class="card-footer">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="button">Button</button>
+                    </div>
                 </div>
             </div>
         }

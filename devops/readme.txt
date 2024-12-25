@@ -15,19 +15,11 @@ ufw enable
 chown -R www-data:www-data /root/.vs-debugger
 chmod -R 777 /root/.vs-debugger
 
-chown -R www-data:www-data /srv/mongodb
-chmod -R 777 /srv/mongodb
-
-chown -R www-data:www-data /srv/postgres
-chmod -R 777 /srv/postgres
-
 chown -R www-data:www-data /srv/db-backups
 chmod -R 777 /srv/db-backups
 
-
 chown -R www-data:www-data /srv/Cloud.Disk
 chmod -R 777 /srv/Cloud.Disk
-
 
 # PROD
 ln -s /etc/nginx/sites-available/web.app /etc/nginx/sites-enabled/
