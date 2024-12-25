@@ -47,6 +47,16 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
     }
 
     DateRange _dateRange = new(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    DateRange SelectedDateRange
+    {
+        get => _dateRange;
+        set
+        {
+            _dateRange = value;
+            InvokeAsync(ServerReload);
+        }
+    }
+
     TableGroupDefinition<WorkSchedulesViewModel> _groupDefinition = new()
     {
         GroupName = "Дата",
