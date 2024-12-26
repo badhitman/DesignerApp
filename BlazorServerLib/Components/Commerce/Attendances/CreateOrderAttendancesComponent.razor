@@ -58,8 +58,8 @@
             <div class="card mb-1 mt-2">
                 <div class="card-header">Создание заявки</div>
                 <div class="card-body">
-                    <MudChipSet T="WorkSchedulesViewModel" AllClosable OnClose="Closed">
-                        @foreach (WorkSchedulesViewModel value in _selectedSlots.OrderBy(x => x.Date).ThenBy(x => x.StartPart))
+                    <MudChipSet T="WorkScheduleModel" AllClosable OnClose="Closed">
+                        @foreach (WorkScheduleModel value in _selectedSlots.OrderBy(x => x.Date).ThenBy(x => x.StartPart))
                         {
                             <MudChip Value="value">@(value.ToString())</MudChip>
                         }
@@ -67,7 +67,7 @@
                 </div>
                 <div class="card-footer">
                     <div class="d-grid gap-2">
-                        <button class="btn btn-primary" type="button">Button</button>
+                        <button @onclick="CreateOrder" class="btn btn-primary" type="button">Записаться</button>
                     </div>
                 </div>
             </div>

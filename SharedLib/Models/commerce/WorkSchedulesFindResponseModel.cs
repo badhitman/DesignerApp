@@ -41,9 +41,9 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// WorkSchedulesViews
     /// </summary>
-    public List<WorkSchedulesViewModel> WorksSchedulesViews()
+    public List<WorkScheduleModel> WorksSchedulesViews()
     {
-        List<WorkSchedulesViewModel> res = [];
+        List<WorkScheduleModel> res = [];
         if (OrganizationsContracts.Count == 0)
             return res;
 
@@ -79,7 +79,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
                         if (res.Any(x => x.Date == dt && x.StartPart == csi.StartPart && x.EndPart == csi.EndPart && x.Organization.Id == oc.Organization!.Id))
                             continue;
 
-                        WorkSchedulesViewModel _el = new()
+                        WorkScheduleModel _el = new()
                         {
                             IsGlobalPermission = !oc.OfferId.HasValue || oc.OfferId.Value < 1,
                             IsStarted = _is_current && csi.StartPart <= _currentTime,
@@ -103,7 +103,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
                     if (res.Any(x => x.Date == dt && x.StartPart == csi.StartPart && x.EndPart == csi.EndPart && x.Organization.Id == oc.Organization!.Id))
                         continue;
 
-                    WorkSchedulesViewModel _el = new()
+                    WorkScheduleModel _el = new()
                     {
                         IsGlobalPermission = !oc.OfferId.HasValue || oc.OfferId.Value < 1,
                         IsStarted = _is_current && csi.StartPart <= _currentTime,

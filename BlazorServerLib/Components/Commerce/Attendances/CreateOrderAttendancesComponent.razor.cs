@@ -21,10 +21,10 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
     protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
 
-    IEnumerable<WorkSchedulesViewModel>? Elements;
-    List<WorkSchedulesViewModel> _selectedSlots = [];
+    IEnumerable<WorkScheduleModel>? Elements;
+    List<WorkScheduleModel> _selectedSlots = [];
 
-    void Closed(MudChip<WorkSchedulesViewModel> chip)
+    void Closed(MudChip<WorkScheduleModel> chip)
     {
         lock (_selectedSlots)
         {
@@ -34,7 +34,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
         }
     }
 
-    void ToggleSelected(WorkSchedulesViewModel sender)
+    void ToggleSelected(WorkScheduleModel sender)
     {
         lock (_selectedSlots)
         {
@@ -57,13 +57,20 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
         }
     }
 
-    TableGroupDefinition<WorkSchedulesViewModel> _groupDefinition = new()
+    TableGroupDefinition<WorkScheduleModel> _groupDefinition = new()
     {
         GroupName = "Дата",
         Indentation = false,
         Expandable = false,
         Selector = (e) => $"{e.Date} ({GlobalStaticConstants.RU.DateTimeFormat.GetDayName(e.Date.DayOfWeek)})"
     };
+
+    async Task CreateOrder()
+    {
+        await SetBusy();
+
+        await SetBusy(false);
+    }
 
     async Task ServerReload()
     {

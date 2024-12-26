@@ -9,6 +9,8 @@ namespace SharedLib;
 /// </summary>
 public partial interface ICommerceService
 {
+    public Task CreateAttendanceRecords(WorkScheduleModel[] workSchedules);
+
     /// <summary>
     /// WorkSchedulesSelect find
     /// </summary>

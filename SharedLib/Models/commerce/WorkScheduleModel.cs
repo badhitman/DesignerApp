@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// WorkSchedulesViewModel
 /// </summary>
-public class WorkSchedulesViewModel
+public class WorkScheduleModel
 {
     /// <summary>
     /// Организация
@@ -61,11 +61,11 @@ public class WorkSchedulesViewModel
     }
 
     /// <inheritdoc/>
-    public static bool operator ==(WorkSchedulesViewModel e1, WorkSchedulesViewModel e2)
+    public static bool operator ==(WorkScheduleModel e1, WorkScheduleModel e2)
         => (e1 is null && e2 is null) || e1?.Equals(e2) == true;
 
     /// <inheritdoc/>
-    public static bool operator !=(WorkSchedulesViewModel e1, WorkSchedulesViewModel e2)
+    public static bool operator !=(WorkScheduleModel e1, WorkScheduleModel e2)
         => !(e1 is null && e2 is null) && e1?.Equals(e2) != true;
 
     /// <inheritdoc/>
@@ -74,7 +74,7 @@ public class WorkSchedulesViewModel
         if (obj is null)
             return false;
 
-        if (obj is WorkSchedulesViewModel other)
+        if (obj is WorkScheduleModel other)
             return Date == other.Date && StartPart == other.StartPart && EndPart == other.EndPart && Organization.Id == other.Organization.Id;
 
         return base.Equals(obj);
