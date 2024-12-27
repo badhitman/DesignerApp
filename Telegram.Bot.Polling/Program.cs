@@ -52,10 +52,12 @@ builder.ConfigureHostConfiguration(configHost =>
     void ReadSecrets(string dirName)
     {
         string secretPath = Path.Combine("..", dirName);
-        for (int i = 0; i < 5 && !Directory.Exists(secretPath); i++)
+        DirectoryInfo di = new(secretPath);
+        for (int i = 0; i < 5 && !di.Exists; i++)
         {
-            logger.Warn($"файл секретов не найден (продолжение следует...): {secretPath}");
+            logger.Warn($"файл секретов не найден (продолжение следует...): {di.FullName}");
             secretPath = Path.Combine("..", secretPath);
+            di = new(secretPath);
         }
 
         if (Directory.Exists(secretPath))

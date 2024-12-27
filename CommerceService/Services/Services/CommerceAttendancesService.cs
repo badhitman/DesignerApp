@@ -14,6 +14,36 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules)
+    {
+        IEnumerable<OrderAttendanceModelDB> recordsForAdd = workSchedules.Payload.Records.Select(x => new OrderAttendanceModelDB()
+        {
+            AuthorIdentityUserId = workSchedules.SenderActionUserId,
+            ContextName = GlobalStaticConstants.Routes.ATTENDANCE_CONTROLLER_NAME,
+            DateExecute = x.Date,
+            EndPart = TimeOnly.FromTimeSpan(x.EndPart),
+            StartPart = TimeOnly.FromTimeSpan(x.StartPart),
+            CreatedAtUTC = DateTime.UtcNow,
+            LastAtUpdatedUTC = DateTime.UtcNow,
+            OfferId = workSchedules.Payload.Offer.Id,
+            NomenclatureId = workSchedules.Payload.Offer.NomenclatureId,
+            OrganizationId = x.Organization.Id,
+            Version = Guid.NewGuid(),
+            StatusDocument = StatusesDocumentsEnum.Created,
+            Name = "Новая запись"
+        });
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        // 
+        await context.AddRangeAsync(recordsForAdd);
+
+        await context.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess("Ok");
+    }
+
+    /// <inheritdoc/>
     public async Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
     {
         WorkSchedulesFindResponseModel res = new(req.StartDate, req.EndDate);

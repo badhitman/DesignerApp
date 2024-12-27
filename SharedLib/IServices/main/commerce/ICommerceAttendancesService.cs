@@ -9,7 +9,10 @@ namespace SharedLib;
 /// </summary>
 public partial interface ICommerceService
 {
-    public Task CreateAttendanceRecords(WorkScheduleModel[] workSchedules);
+    /// <summary>
+    /// Create attendance records
+    /// </summary>
+    public Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules);
 
     /// <summary>
     /// WorkSchedulesSelect find
