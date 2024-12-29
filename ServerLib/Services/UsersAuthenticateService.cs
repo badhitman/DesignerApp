@@ -222,6 +222,18 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> SignInAsync(string userId, bool isPersistent)
+    {
+        ApplicationUser? user = await userManager.FindByIdAsync(userId);
+
+        if (user is null)
+            return ResponseBaseModel.CreateError("Пользователь не найден");
+        
+        await signInManager.SignInAsync(user, isPersistent: false);
+        return ResponseBaseModel.CreateSuccess("Пользователь авторизован");
+    }
+
+    /// <inheritdoc/>
     public async Task<IdentityResultResponseModel> PasswordSignInAsync(string userEmail, string password, bool isPersistent)
     {
         if (!UserConfMan.UserAuthorizationIsAllowed(userEmail))

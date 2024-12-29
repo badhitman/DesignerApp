@@ -17,7 +17,7 @@ namespace BlankBlazorApp.Controllers;
 /// </summary>
 [Route("[controller]/[action]"), ApiController]
 [AllowAnonymous]
-public class TelegramController(ITelegramRemoteTransmissionService tgRepo, IWebRemoteTransmissionService webRemoteRepo) : ControllerBase
+public class PublicController(ITelegramRemoteTransmissionService tgRepo, IWebRemoteTransmissionService webRemoteRepo, IUsersAuthenticateService uaRepo) : ControllerBase
 {
     /// <summary>
     /// Authorize
@@ -57,9 +57,27 @@ public class TelegramController(ITelegramRemoteTransmissionService tgRepo, IWebR
             string telegramUserJsonData = dataDict["user"];
             TelegramUserData userData = JsonConvert.DeserializeObject<TelegramUserData>(telegramUserJsonData)!;
             TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(userData.Id, userData.FirstName, userData.LastName, userData.UserName, userData.IsBot));
+            if (!uc.Success())
+                return NotFound(uc.Messages);
+            if (uc.Response is null)
+                return NotFound(ResponseBaseModel.CreateError("Пользователь не найден"));
+
+            await uaRepo.SignInAsync(uc.Response.UserIdentityId, false);
+            return Ok(uc);
         }
 
-        return NotFound(ResponseBaseModel.CreateError("Ошибка"));
+        return NotFound(ResponseBaseModel.CreateError("Неизвестная ошибка"));
 
+    }
+
+    /// <summary>
+    /// Проверка сессии (авторизован или нет)
+    /// </summary>
+    [HttpGet($"/{GlobalStaticConstants.Routes.AUTHORIZE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PING_ACTION_NAME}")]
+    public IActionResult Ping()
+    {
+        return HttpContext.User.Identity?.IsAuthenticated == true 
+            ? Ok(ResponseBaseModel.CreateSuccess($"Авторизованный: {HttpContext.User.Identity.Name}")) 
+            : Unauthorized(ResponseBaseModel.CreateError("Вы не авторизованы"));
     }
 }

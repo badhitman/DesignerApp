@@ -37,30 +37,47 @@
     <Routes />
     <script src="_framework/blazor.web.js" autostart="false"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            let tg = window.Telegram.WebApp;
-            let model = {};
-            model.InitData = tg.initData;
-            if(model.InitData != undefined && model.InitData != null)
+        document.addEventListener("DOMContentLoaded", function()
+        {
+            if(window.Telegram != undefined && window.Telegram != null)
             {
-                tg.BackButton.isVisible = false;
-                tg.BackButton.hide();
-
                 $.ajax({
-                    type: 'POST',
-                    url: '/telegram/authorize',
-                    data: JSON.stringify(model),
+                    type: 'GET',
+                    url: '/authorize/ping',
                     success: function (response) {
-                        // if (response.Success) {
-                    
-                        // }
+                        console.warn(JSON.stringify(response));
                     },
                     error: function (response) {
-                        //alert(response);
+                        console.warn(JSON.stringify(response));
+                        let tg = window.Telegram.WebApp;
+                        let model = {};
+                        model.InitData = tg.initData;
+                        if(model.InitData != undefined && model.InitData != null)
+                        {
+                            tg.BackButton.isVisible = false;
+                            tg.BackButton.hide();
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '/telegram/authorize',
+                                data: JSON.stringify(model),
+                                success: function (response) {
+                                    // if (response.Success) {
+                                    //console.warn(JSON.stringify(response));
+                                    window.location.reload();
+                                    // }
+                                },
+                                error: function (response) {
+                                    //alert(response);
+                                },
+                                contentType: "application/json"
+                            });
+                        }
                     },
-                     contentType: "application/json"
+                    contentType: "application/json"
                 });
             }
+        
             // console.warn(JSON.stringify(tg));
             Blazor.start().then(function () {console.warn("Blazor started!")});
 
