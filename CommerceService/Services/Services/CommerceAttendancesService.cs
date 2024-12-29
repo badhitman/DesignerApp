@@ -5,6 +5,9 @@
 using Microsoft.EntityFrameworkCore;
 using SharedLib;
 using DbcLib;
+using DocumentFormat.OpenXml.Drawing;
+using Microsoft.EntityFrameworkCore.Storage;
+using Newtonsoft.Json;
 
 namespace CommerceService;
 
@@ -32,14 +35,40 @@ public partial class CommerceImplementService : ICommerceService
             StatusDocument = StatusesDocumentsEnum.Created,
             Name = "Новая запись"
         });
-
+        string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        LockTransactionModelDB[] offersLocked = recordsForAdd
+            .Select(x => new LockTransactionModelDB()
+            {
+                LockerName = nameof(OrderAttendanceModelDB),
+                LockerId = x.OfferId,
+                RubricId = x.OrganizationId
+            }).ToArray();
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+
+        try
+        {
+            await context.AddRangeAsync(offersLocked);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            msg = $"Не удалось выполнить команду блокировки БД: ";
+            loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(workSchedules, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            return ResponseBaseModel.CreateError("Ошибка");
+        }
 
         // 
         await context.AddRangeAsync(recordsForAdd);
-
         await context.SaveChangesAsync();
 
+
+        if (offersLocked.Length != 0)
+            context.RemoveRange(offersLocked);
+
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
         return ResponseBaseModel.CreateSuccess("Ok");
     }
 

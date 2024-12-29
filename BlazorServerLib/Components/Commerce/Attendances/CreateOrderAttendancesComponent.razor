@@ -68,6 +68,7 @@
                 <div class="card-footer">
                     <div class="d-grid gap-2">
                         <button @onclick="CreateOrder" class="btn btn-primary" type="button">Записаться</button>
+                        <button @onclick="() => _selectedSlots.Clear()" class="btn btn-outline-secondary" type="button">Отменить</button>
                     </div>
                 </div>
             </div>

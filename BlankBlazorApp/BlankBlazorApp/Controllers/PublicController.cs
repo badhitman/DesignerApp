@@ -26,7 +26,7 @@ public class PublicController(ITelegramRemoteTransmissionService tgRepo, IWebRem
     public async Task<IActionResult> Authorize([FromBody] TelegramAuthModel model)
     {
         if (string.IsNullOrEmpty(model.InitData))
-            return NotFound(ResponseBaseModel.CreateError("string.IsNullOrEmpty(model.InitData)"));
+            return BadRequest(ResponseBaseModel.CreateError("string.IsNullOrEmpty(model.InitData)"));
 
         System.Collections.Specialized.NameValueCollection data = HttpUtility.ParseQueryString(model.InitData);
 
@@ -66,7 +66,7 @@ public class PublicController(ITelegramRemoteTransmissionService tgRepo, IWebRem
             return Ok(uc);
         }
 
-        return NotFound(ResponseBaseModel.CreateError("Неизвестная ошибка"));
+        return BadRequest(ResponseBaseModel.CreateError("Неизвестная ошибка"));
 
     }
 
