@@ -44,6 +44,10 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<byte[]?>(GlobalStaticConstants.TransmissionQueues.ReadFileTelegramReceive, fileId);
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<string?>> GetTelegramBotToken()
+        => await rabbitClient.MqRemoteCall<string?>(GlobalStaticConstants.TransmissionQueues.GetBotTokenTelegramReceive);
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>>> MessagesListTelegram(TPaginationRequestModel<SearchMessagesChatModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<MessageTelegramModelDB>>(GlobalStaticConstants.TransmissionQueues.MessagesChatsSelectTelegramReceive, req);
 

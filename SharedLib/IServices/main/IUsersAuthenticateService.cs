@@ -12,7 +12,7 @@ public interface IUsersAuthenticateService
     /// <summary>
     /// Войти в учётную запись пользователя
     /// </summary>
-    public Task<IdentityResultResponseModel> UserLoginAsync(string userEmail, string password, bool isPersistent);
+    public Task<IdentityResultResponseModel> PasswordSignInAsync(string userEmail, string password, bool isPersistent);
 
     /// <summary>
     /// Регистрация нового пользователя

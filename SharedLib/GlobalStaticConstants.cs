@@ -200,6 +200,15 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
+        /// Загрузка TelegramBot WebApp
+        /// </summary>
+        public static StorageMetadataModel ParameterIncludeTelegramBotWebApp => new()
+        {
+            ApplicationName = Routes.TELEGRAM_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.WEB_CONTROLLER_NAME, Routes.APP_CONTROLLER_NAME, Routes.INCLUDE_ACTION_NAME),
+        };
+
+        /// <summary>
         /// Отображать кнопку создания обращения
         /// </summary>
         public static StorageMetadataModel ShowCreatingIssue => new()
@@ -585,6 +594,9 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string SetWebConfigTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.CONFIGURATION_CONTROLLER_NAME}", $"{Routes.SET_ACTION_NAME}-of-{Routes.TELEGRAM_CONTROLLER_NAME}");
+
+        /// <inheritdoc/>
+        public readonly static string GetBotTokenTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, $"{Routes.TOKEN_CONTROLLER_NAME}_{Routes.CONFIGURATION_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string SendWappiMessageReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WAPPI_CONTROLLER_NAME, Routes.MESSAGE_CONTROLLER_NAME, Routes.SEND_ACTION_NAME);

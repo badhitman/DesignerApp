@@ -11,8 +11,8 @@ namespace BlankBlazorApp.Controllers;
 /// <summary>
 /// TinyMCEditorController Route("api/[controller]/[action]")
 /// </summary>
-[Route("[controller]/[action]")]
-[ApiController]
+[Route("[controller]/[action]"), ApiController]
+[AllowAnonymous]
 public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService storeRepo) : ControllerBase
 {
     /// <summary>

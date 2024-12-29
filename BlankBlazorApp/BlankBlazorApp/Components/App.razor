@@ -1,14 +1,4 @@
-﻿@using Microsoft.Extensions.Options
-@using BlazorLib.Components.Shared
-@using MudBlazor
-@using SharedLib
-
-@inject ISerializeStorageRemoteTransmissionService StoreRepo
-@inject ITelegramRemoteTransmissionService tgRemoteCall
-@inject IOptions<TelegramBotConfigModel> webConfig
-@inject NavigationManager NavigatorRepo
-@inject ISnackbar SnackbarRepo
-
+﻿@using SharedLib
 <!DOCTYPE html>
 <html lang="ru" data-bs-theme="dark">
 
@@ -48,10 +38,35 @@
     <script src="_framework/blazor.web.js" autostart="false"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-          Blazor.start().then(function () {console.warn("Blazor started!")});
-          /* 
-          Blazor.start({ssr: { }, circuit: { }, webAssembly: { }});
-          */
+            let tg = window.Telegram.WebApp;
+            let model = {};
+            model.InitData = tg.initData;
+            if(model.InitData != undefined && model.InitData != null)
+            {
+                tg.BackButton.isVisible = false;
+                tg.BackButton.hide();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/telegram/authorize',
+                    data: JSON.stringify(model),
+                    success: function (response) {
+                        // if (response.Success) {
+                    
+                        // }
+                    },
+                    error: function (response) {
+                        //alert(response);
+                    },
+                     contentType: "application/json"
+                });
+            }
+            // console.warn(JSON.stringify(tg));
+            Blazor.start().then(function () {console.warn("Blazor started!")});
+
+            /*
+            Blazor.start({ssr: { }, circuit: { }, webAssembly: { }});
+            */
         });
     </script>
     <script src="/lib/jquery/jquery.min.js?version=@GlobalStaticConstants.InitSalt"></script>
@@ -65,6 +80,10 @@
     <script src="/js/scriptLoader.js?version=@GlobalStaticConstants.InitSalt"></script>
     <script src="/js/JsOfReCAPTCHA.js?version=@GlobalStaticConstants.InitSalt"></script>
     <script src="/js/site.js?version=@GlobalStaticConstants.InitSalt"></script>
+    @if (_includeTelegramBotWeAppScript)
+    {
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    }
     <script>
         window.onBlazorReady = () => {
             $(document).tooltip({
@@ -83,24 +102,3 @@
     </div>
 </body>
 </html>
-
-@code {
-    static bool _isLoaded = false;
-    protected override async Task OnInitializedAsync()
-    {
-        if (webConfig.Value.BaseUri is null)
-            webConfig.Value.BaseUri = NavigatorRepo.BaseUri;
-
-        if (!_isLoaded)
-        {
-            _isLoaded = true;
-            if (ServiceProviderExtensions.SetRemoteConf?.Success() != true)
-            {
-                Task<TResponseModel<object?>>[] _tasks = [tgRemoteCall.SetWebConfigTelegram(webConfig.Value, false), tgRemoteCall.SetWebConfigHelpdesk(webConfig.Value, false), tgRemoteCall.SetWebConfigStorage(webConfig.Value, false)];
-                await Task.WhenAll(_tasks);
-            }
-
-        }
-
-    }
-}

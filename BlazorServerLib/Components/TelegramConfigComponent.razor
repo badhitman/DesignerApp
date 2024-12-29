@@ -9,8 +9,23 @@
     <div class="card-body">
         <h5 class="card-title">TelegramBot</h5>
         <ul class="list-group list-group-flush">
-            <li class="list-group-item my-2" title="В командном режиме бот будет обрабатывать только типовые TelegramBot команды начинающиеся на / и CallbackQuery запросы, а на простые текстовые сообщения отвечать не будет.">
-                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ParameterIsCommandModeTelegramBot" Title="Режим обработки TelegramBot входящих сообщений от пользователей" Label="Командный режим TelegramBot" HintTrue="Включён командный режим - простые текстовые сообщения игнорируются" HintFalse="Автоответчик - бот будет отвечать на все сообщения" />
+            <li class="list-group-item my-2">
+                <div class="row row-cols-1 row-cols-md-2 g-1">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body" title="В командном режиме бот будет обрабатывать только типовые TelegramBot команды начинающиеся на / и CallbackQuery запросы, а на простые текстовые сообщения отвечать не будет.">
+                                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ParameterIsCommandModeTelegramBot" Title="Режим обработки TelegramBot входящих сообщений от пользователей" Label="Командный режим TelegramBot" HintTrue="Включён командный режим - простые текстовые сообщения игнорируются" HintFalse="Автоответчик - бот будет отвечать на все сообщения" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ParameterIncludeTelegramBotWebApp" Title="TelegramBot WebApp скрипт" Label="https://telegram.org/js/telegram-web-app.js" HintTrue="Скрипт Telegram WebApp будет загружен" HintFalse="Не загружать скрипт Telegram WebApp" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </li>
             <li class="list-group-item my-2">
                 <h6 class="card-subtitle mb-2 text-body-secondary">Состояние службы</h6>

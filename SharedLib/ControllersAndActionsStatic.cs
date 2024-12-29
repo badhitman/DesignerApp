@@ -473,6 +473,11 @@ public static partial class GlobalStaticConstants
         public const string WEB_CONTROLLER_NAME = "web";
 
         /// <summary>
+        /// App
+        /// </summary>
+        public const string APP_CONTROLLER_NAME = "app";
+
+        /// <summary>
         /// main
         /// </summary>
         public const string MAIN_CONTROLLER_NAME = "main";
@@ -668,9 +673,13 @@ public static partial class GlobalStaticConstants
         public const string MESSAGES_CONTROLLER_NAME = "messages";
 
 
+        /// <summary>
+        /// Ping
+        /// </summary>
+        public const string PING_ACTION_NAME = "ping";
 
         /// <summary>
-        /// create
+        /// Create
         /// </summary>
         public const string CREATE_ACTION_NAME = "create";
 
@@ -838,6 +847,11 @@ public static partial class GlobalStaticConstants
         /// Найти
         /// </summary>
         public const string FIND_ACTION_NAME = "find";
+
+        /// <summary>
+        /// Include
+        /// </summary>
+        public const string INCLUDE_ACTION_NAME = "include";
 
         /// <summary>
         /// Get

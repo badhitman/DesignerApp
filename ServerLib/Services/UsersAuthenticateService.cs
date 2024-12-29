@@ -177,7 +177,7 @@ public class UsersAuthenticateService(
         if (!UserConfMan.UserRegistrationIsAllowed(userEmail))
             return new() { Messages = [new() { Text = $"Ошибка регистрации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
-        ApplicationUser user = CreateUser();
+        ApplicationUser user = CreateInstanceUser();
 
         await userStore.SetUserNameAsync(user, userEmail, CancellationToken.None);
         IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
@@ -222,7 +222,7 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<IdentityResultResponseModel> UserLoginAsync(string userEmail, string password, bool isPersistent)
+    public async Task<IdentityResultResponseModel> PasswordSignInAsync(string userEmail, string password, bool isPersistent)
     {
         if (!UserConfMan.UserAuthorizationIsAllowed(userEmail))
             return new() { Messages = [new() { Text = $"Ошибка авторизации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
@@ -280,7 +280,7 @@ public class UsersAuthenticateService(
             return (RegistrationNewUserResponseModel)ResponseBaseModel.CreateError("externalLoginInfo == null. error {D991FA4A-9566-4DD4-B23A-DEB497931FF5}");
 
         IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
-        ApplicationUser user = CreateUser();
+        ApplicationUser user = CreateInstanceUser();
 
         await userStore.SetUserNameAsync(user, userEmail, CancellationToken.None);
         await emailStore.SetEmailAsync(user, userEmail, CancellationToken.None);
@@ -325,7 +325,7 @@ public class UsersAuthenticateService(
         => await signInManager.SignOutAsync();
 
 
-    ApplicationUser CreateUser()
+    ApplicationUser CreateInstanceUser()
     {
         try
         {

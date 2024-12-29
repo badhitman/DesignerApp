@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface ITelegramRemoteTransmissionService
 {
     /// <summary>
+    /// Получить токен TG бота (для расчёта HMAC хеша)
+    /// </summary>
+    public Task<TResponseModel<string?>> GetTelegramBotToken();
+
+    /// <summary>
     /// Прочитать данные чата
     /// </summary>
     /// <param name="chatIdDb">Chat id (db:id)</param>

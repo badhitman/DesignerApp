@@ -108,7 +108,7 @@
 
     public async Task LoginUser()
     {
-        result = await UserAuthManage.UserLoginAsync(Input.Email, Input.Password, Input.RememberMe);
+        result = await UserAuthManage.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe);
         Messages.AddRange(result.Messages);
         if (result.Success())
         {
