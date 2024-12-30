@@ -12,7 +12,7 @@ public class CreateAttendanceRequestModel
     /// <summary>
     /// Records
     /// </summary>
-    public required WorkScheduleModel[] Records { get; set; }
+    public required List<WorkScheduleModel> Records { get; set; }
 
     /// <summary>
     /// Торговое предложение

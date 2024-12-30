@@ -9,7 +9,7 @@
             <MudTextField T="TimeSpan" Label="Начало" InputType="InputType.Time" @bind-Value="editWorkScheduleCalendar.StartPart" Immediate="true" />
             <MudTextField T="TimeSpan" Label="Конец" InputType="InputType.Time" @bind-Value="editWorkScheduleCalendar.EndPart" Immediate="true" />
             <MudTextField @bind-Value="editWorkScheduleCalendar.Name" Label="Примечание" Variant="Variant.Text" Immediate="true" />
-            <MudNumericField title="0 - безлимитное" T="uint" @bind-Value="editWorkScheduleCalendar.QueueCapacity" Label="Вместимость" Variant="Variant.Text" Min="0" />
+            <MudNumericField title="0 - безлимитное" T="uint" @bind-Value="editWorkScheduleCalendar.QueueCapacity" Label="Вместимость" Variant="Variant.Text" Min="0" Immediate="true" />
             <MudSwitch @bind-Value="editWorkScheduleCalendar.IsDisabled" ThumbIcon="@(editWorkScheduleCalendar.IsDisabled ? Icons.Material.Filled.Close : Icons.Material.Filled.Done)" ThumbIconColor="@(editWorkScheduleCalendar.IsDisabled ? Color.Error : Color.Success)">@(editWorkScheduleCalendar.IsDisabled ? "Отключено" : "Включено")</MudSwitch>
         </div>
     </div>

@@ -68,7 +68,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
     async Task CreateOrder()
     {
         await SetBusy();
-
+        //var res = await CommerceRepo.rec
         await SetBusy(false);
     }
 

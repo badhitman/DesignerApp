@@ -56,7 +56,8 @@
                         {
                             tg.BackButton.isVisible = false;
                             tg.BackButton.hide();
-
+                            tg.expand();
+                            tg.disableVerticalSwipes();
                             $.ajax({
                                 type: 'POST',
                                 url: '/telegram/authorize',

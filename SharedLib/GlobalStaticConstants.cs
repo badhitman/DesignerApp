@@ -298,6 +298,16 @@ public static partial class GlobalStaticConstants
             PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.RUBRIC_CONTROLLER_NAME),
         };
 
+
+        /// <summary>
+        /// RubricIssueForCreateAttendance
+        /// </summary>
+        public static StorageMetadataModel RubricIssueForCreateAttendance => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.ATTENDANCES_CONTROLLER_NAME, Routes.RUBRIC_CONTROLLER_NAME),
+        };
+       
         /// <summary>
         /// Уведомления Telegram о созданных заявках
         /// </summary>

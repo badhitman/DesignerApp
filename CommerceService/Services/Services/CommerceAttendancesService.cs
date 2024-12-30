@@ -2,12 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
-using DocumentFormat.OpenXml.Drawing;
-using Microsoft.EntityFrameworkCore.Storage;
-using Newtonsoft.Json;
 
 namespace CommerceService;
 
@@ -19,7 +18,31 @@ public partial class CommerceImplementService : ICommerceService
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules)
     {
-        IEnumerable<OrderAttendanceModelDB> recordsForAdd = workSchedules.Payload.Records.Select(x => new OrderAttendanceModelDB()
+        List<WorkScheduleModel> records = workSchedules.Payload.Records;
+        ResponseBaseModel res = new();
+        records.ForEach(x =>
+        {
+            ValidateReportModel ck = GlobalTools.ValidateObject(x);
+            if (!ck.IsValid)
+                res.Messages.InjectException(ck.ValidationResults);
+        });
+        string msg;
+        if (!res.Success())
+        {
+            msg = $"Ошибка запроса: {res.Message()}";
+            loggerRepo.LogError($"{msg}{JsonConvert.SerializeObject(workSchedules, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError(msg);
+            return res;
+        }
+
+        TResponseModel<UserInfoModel[]?> actor = await webTransmissionRepo.GetUsersIdentity([workSchedules.SenderActionUserId]);
+        if (!actor.Success() || actor.Response is null || actor.Response.Length == 0)
+        {
+            res.AddRangeMessages(actor.Messages);
+            return res;
+        }
+
+        List<OrderAttendanceModelDB> recordsForAdd = records.Select(x => new OrderAttendanceModelDB()
         {
             AuthorIdentityUserId = workSchedules.SenderActionUserId,
             ContextName = GlobalStaticConstants.Routes.ATTENDANCE_CONTROLLER_NAME,
@@ -34,8 +57,9 @@ public partial class CommerceImplementService : ICommerceService
             Version = Guid.NewGuid(),
             StatusDocument = StatusesDocumentsEnum.Created,
             Name = "Новая запись"
-        });
-        string msg;
+        })
+        .ToList();
+
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         LockTransactionModelDB[] offersLocked = recordsForAdd
             .Select(x => new LockTransactionModelDB()
@@ -56,30 +80,83 @@ public partial class CommerceImplementService : ICommerceService
             await transaction.RollbackAsync();
             msg = $"Не удалось выполнить команду блокировки БД: ";
             loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(workSchedules, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
-            return ResponseBaseModel.CreateError("Ошибка");
+            res.AddError(msg);
+            return res;
         }
 
         WorkSchedulesFindRequestModel req = new()
         {
             OffersFilter = [workSchedules.Payload.Offer.Id],
             ContextName = GlobalStaticConstants.Routes.ATTENDANCE_CONTROLLER_NAME,
-            StartDate = workSchedules.Payload.Records.Min(x => x.Date),
-            EndDate = workSchedules.Payload.Records.Max(x => x.Date),
+            StartDate = records.Min(x => x.Date),
+            EndDate = records.Max(x => x.Date),
         };
-        WorkSchedulesFindResponseModel balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray());
+        WorkSchedulesFindResponseModel get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray());
+        List<WorkScheduleModel> b_list = get_balance.WorksSchedulesViews();
 
+        foreach (IGrouping<int, WorkScheduleModel> rec in records.GroupBy(x => x.Organization.Id))
+        {
+            List<WorkScheduleModel> b_crop_list = b_list
+                .Where(x => x.Organization.Id == rec.Key)
+                .ToList();
 
+            foreach (WorkScheduleModel subNode in rec)
+            {
+                int cbInd = b_crop_list.FindIndex(x => x == subNode);
+                if (cbInd < 0)
+                    res.AddError($"Не хватает слота: {subNode}! Удалите или измените данную запись");
+                else if (b_crop_list[cbInd].QueueCapacity == 1)
+                    b_crop_list.RemoveAt(cbInd);
+                else if (b_crop_list[cbInd].QueueCapacity > 1)
+                    b_crop_list[cbInd].QueueCapacity--;
+            }
+        }
 
-        // 
+        if (!res.Success())
+        {
+            await transaction.RollbackAsync();
+            msg = $"Не удалось выполнить команду блокировки БД: ";
+            loggerRepo.LogError($"{msg}{JsonConvert.SerializeObject(workSchedules, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError(msg);
+            return res;
+        }
+
+        TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateAttendance);
+
+        TAuthRequestModel<UniversalUpdateRequestModel> issue_new = new()
+        {
+            SenderActionUserId = workSchedules.SenderActionUserId,
+            Payload = new()
+            {
+                Name = "Услуга",
+                ParentId = res_RubricIssueForCreateOrder.Response,
+                Description = "Услуга",
+            },
+        };
+
+        TResponseModel<int> issue = await hdRepo.IssueCreateOrUpdate(issue_new);
+        if (!issue.Success())
+        {
+            await transaction.RollbackAsync();
+            res.Messages.AddRange(issue.Messages);
+            return res;
+        }
+
+        recordsForAdd.ForEach(x => x.HelpdeskId = issue.Response);
+
         await context.AddRangeAsync(recordsForAdd);
         await context.SaveChangesAsync();
+        
+        //       req.HelpdeskId = issue.Response;
+        //       context.Update(req);
 
 
         context.RemoveRange(offersLocked);
 
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
-        return ResponseBaseModel.CreateSuccess("Ok");
+        res.AddSuccess("Ok");
+        return res;
     }
 
     /// <inheritdoc/>

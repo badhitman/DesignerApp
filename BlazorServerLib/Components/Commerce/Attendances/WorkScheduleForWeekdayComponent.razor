@@ -8,7 +8,7 @@
             <MudTextField T="TimeSpan" Label="Начало" InputType="InputType.Time" @bind-Value="WorkScheduleEdit.StartPart" Immediate="true" />
             <MudTextField T="TimeSpan" Label="Конец" InputType="InputType.Time" @bind-Value="WorkScheduleEdit.EndPart" Immediate="true" />
             <MudTextField @bind-Value="WorkScheduleEdit.Name" Label="Примечание" Variant="Variant.Text" Immediate="true" />
-            <MudNumericField title="0 - безлимитное" T="uint" @bind-Value="WorkScheduleEdit.QueueCapacity" Label="Вместимость" Variant="Variant.Text" Min="0" />
+            <MudNumericField title="0 - безлимитное" T="uint" @bind-Value="WorkScheduleEdit.QueueCapacity" Label="Вместимость" Variant="Variant.Text" Min="0" Immediate="true" />
             <MudSwitch @bind-Value="WorkScheduleEdit.IsDisabled" ThumbIcon="@(WorkScheduleEdit.IsDisabled ? Icons.Material.Filled.Close : Icons.Material.Filled.Done)" ThumbIconColor="@(WorkScheduleEdit.IsDisabled ? Color.Error : Color.Success)">@(WorkScheduleEdit.IsDisabled ? "Отключено" : "Включено")</MudSwitch>
         </div>
     </div>
