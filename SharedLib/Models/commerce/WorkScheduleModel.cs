@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedLib;
 
 /// <summary>
-/// WorkSchedulesViewModel
+/// WorkSchedule view model
 /// </summary>
 public class WorkScheduleModel
 {

@@ -24,8 +24,8 @@ public partial class CommerceImplementService : ICommerceService
             AuthorIdentityUserId = workSchedules.SenderActionUserId,
             ContextName = GlobalStaticConstants.Routes.ATTENDANCE_CONTROLLER_NAME,
             DateExecute = x.Date,
-            EndPart = TimeOnly.FromTimeSpan(x.EndPart),
             StartPart = TimeOnly.FromTimeSpan(x.StartPart),
+            EndPart = TimeOnly.FromTimeSpan(x.EndPart),
             CreatedAtUTC = DateTime.UtcNow,
             LastAtUpdatedUTC = DateTime.UtcNow,
             OfferId = workSchedules.Payload.Offer.Id,
@@ -59,13 +59,23 @@ public partial class CommerceImplementService : ICommerceService
             return ResponseBaseModel.CreateError("Ошибка");
         }
 
+        WorkSchedulesFindRequestModel req = new()
+        {
+            OffersFilter = [workSchedules.Payload.Offer.Id],
+            ContextName = GlobalStaticConstants.Routes.ATTENDANCE_CONTROLLER_NAME,
+            StartDate = workSchedules.Payload.Records.Min(x => x.Date),
+            EndDate = workSchedules.Payload.Records.Max(x => x.Date),
+        };
+        WorkSchedulesFindResponseModel balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray());
+
+
+
         // 
         await context.AddRangeAsync(recordsForAdd);
         await context.SaveChangesAsync();
 
 
-        if (offersLocked.Length != 0)
-            context.RemoveRange(offersLocked);
+        context.RemoveRange(offersLocked);
 
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
@@ -73,7 +83,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req)
+    public async Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req, int[]? organizationsFilter = null)
     {
         WorkSchedulesFindResponseModel res = new(req.StartDate, req.EndDate);
         if (res.StartDate > res.EndDate)
@@ -104,10 +114,16 @@ public partial class CommerceImplementService : ICommerceService
             }),
              Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-                res.OrdersAttendances = await context
+
+                IQueryable<OrderAttendanceModelDB> q = context
                     .OrdersAttendances
                     .Where(x => x.ContextName == req.ContextName && x.DateExecute >= req.StartDate && x.DateExecute <= req.EndDate)
-                    .Where(x => req.OffersFilter.Any(y => y == x.OfferId))
+                    .Where(x => req.OffersFilter.Any(y => y == x.OfferId));
+
+                if(organizationsFilter is not null && organizationsFilter.Length != 0)
+                     q = q.Where(x => organizationsFilter.Any(y => y == x.OrganizationId));
+
+                res.OrdersAttendances = await q
                     .Include(x => x.Offer!)
                     .ThenInclude(x => x.Nomenclature)
                     .Select(x => new OrderAnonModelDB()
@@ -120,12 +136,17 @@ public partial class CommerceImplementService : ICommerceService
             }),
             Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-                res.OrganizationsContracts = await context
+
+                IQueryable<OrganizationContractorModel> q = context
                     .ContractorsOrganizations
-                    .Where(x => x.OfferId == null || req.OffersFilter.Any(y => y == x.OfferId))
+                    .Where(x => x.OfferId == null || req.OffersFilter.Any(y => y == x.OfferId));
+
+                if(organizationsFilter is not null && organizationsFilter.Length != 0)
+                     q = q.Where(x => organizationsFilter.Any(y => y == x.OrganizationId));
+
+                res.OrganizationsContracts = await q
                     .Include(x => x.Offer)
                     .Include(x => x.Organization!)
-                    //.ThenInclude(x => x.Users)
                     .ToListAsync();
             })
         ]);

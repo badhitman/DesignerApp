@@ -48,6 +48,9 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
         uploadedFile.OpenReadStream().CopyTo(ms);
         FilePartMetadataModel currentPartMetadata = sessionUploadPart.FilePartsMetadata.First(x => x.PartFileId == fileToken);
 
+        if(currentPartMetadata.PartFileSize != uploadedFile.Length)
+            return ResponseBaseModel.CreateError($"Размер пакета данных ожидался {GlobalTools.SizeDataAsString(currentPartMetadata.PartFileSize)}, а в запросе получено {GlobalTools.SizeDataAsString(uploadedFile.Length)}");
+
         if (sessionUploadPart.FilePartsMetadata.Count == 1)
         {
             await Task.WhenAll([
@@ -58,8 +61,7 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
             return await toolsRepo.UpdateFile(_file_name, sessionUploadPart.RemoteDirectory, ms.ToArray());
         }
         else
-        {
-            
+        {            
             FilePartMetadataModel[] partsFiles = sessionUploadPart.FilePartsMetadata
                 .Where(x => !x.PartFileId.Equals(fileToken))
                 .ToArray();

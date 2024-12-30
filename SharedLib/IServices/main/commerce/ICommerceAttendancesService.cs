@@ -17,7 +17,7 @@ public partial interface ICommerceService
     /// <summary>
     /// WorkSchedulesSelect find
     /// </summary>
-    public Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req);
+    public Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req, int[]? organizationsFilter = null);
 
     /// <summary>
     /// WorkScheduleUpdate
