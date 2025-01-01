@@ -10,6 +10,11 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
+    /// OrdersByIssuesGet
+    /// </summary>
+    public Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req);
+
+    /// <summary>
     /// Create attendance records
     /// </summary>
     public Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules);

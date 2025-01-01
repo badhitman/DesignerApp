@@ -36,20 +36,19 @@ public partial class CommerceImplementService(
     /// <inheritdoc/>
     public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssuesGet(OrdersByIssuesSelectRequestModel req)
     {
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-
-        IQueryable<OrderDocumentModelDB> q = context
-            .OrdersDocuments
-            .AsQueryable();
-
-        if (req.IssueIds.Length != 0)
-            q = q.Where(x => req.IssueIds.Any(y => y == x.HelpdeskId));
-        else
+        if (req.IssueIds.Length == 0)
             return new()
             {
                 Response = [],
                 Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
             };
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        IQueryable<OrderDocumentModelDB> q = context
+            .OrdersDocuments
+            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
+            .AsQueryable();
 
         Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderDocumentModelDB, NomenclatureModelDB?> inc_query = q
             .Include(x => x.Organization)
@@ -62,7 +61,9 @@ public partial class CommerceImplementService(
 
         return new()
         {
-            Response = req.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await q.ToArrayAsync()],
+            Response = req.IncludeExternalData
+            ? [.. await inc_query.ToArrayAsync()]
+            : [.. await q.ToArrayAsync()],
         };
     }
 

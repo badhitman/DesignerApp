@@ -12,15 +12,8 @@ public class OrdersByIssuesSelectRequestModel
     /// <summary>
     /// Загрузить дополнительные данные для заказов
     /// </summary>
-    /// <remarks>
-    /// .Include(x => x.Organization)
-    /// .Include(x => x.AddressesTabs)
-    /// .ThenInclude(x => x.Rows)
-    /// .ThenInclude(x => x.Offer)
-    /// .ThenInclude(x => x.Nomenclature)
-    /// </remarks>
     public bool IncludeExternalData { get; set; }
-    
+
     /// <summary>
     /// Заказы для заявки из СДЭК
     /// </summary>

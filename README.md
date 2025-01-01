@@ -22,7 +22,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
     SharedLib <|-- CodegeneratorLib
     SharedLib <|-- IdentityLib
     SharedLib <|-- DbLayerLib
-    SharedLib <|-- ToolsMauiApp
+    BlazorLib <|-- ToolsMauiApp
     SharedLib : Общие модели
     IdentityLib <|-- ServerLib
     DbPostgreLib <|-- ServerLib
