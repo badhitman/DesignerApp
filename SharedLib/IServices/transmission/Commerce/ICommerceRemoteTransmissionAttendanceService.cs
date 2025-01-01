@@ -7,6 +7,11 @@ namespace SharedLib;
 public partial interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// Create attendance records
+    /// </summary>
+    public Task<TResponseModel<object>> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules);
+
+    /// <summary>
     /// OrganizationOfferContractUpdate
     /// </summary>
     public Task<TResponseModel<bool>> OrganizationOfferContractUpdate(TAuthRequestModel<OrganizationOfferToggleModel> req);
