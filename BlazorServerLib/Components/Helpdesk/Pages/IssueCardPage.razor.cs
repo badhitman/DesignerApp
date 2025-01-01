@@ -54,37 +54,29 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await ReadCurrentUser();
+        await SetBusy();
+        await Task.WhenAll([
+                Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingTelegramArea); ShowingTelegramArea = res.Response == true; }),
+                Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsIssuesArea); ShowingAttachmentsIssueArea = res.Response == true; }),
+                Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingWappiArea); ShowingWappiArea = res.Response == true; }),
+                Task.Run(ReadCurrentUser),
+                Task.Run(FindOrders),
+            ]);
         await ReadIssue();
         await FlushUsersDump();
-        await FindOrders();
-        await SetBusy();
-        TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingTelegramArea);
-        ShowingTelegramArea = res.Response == true;
-        
-        res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsIssuesArea);
-        ShowingAttachmentsIssueArea = res.Response == true;
-
-        res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingWappiArea);
-        ShowingWappiArea = res.Response == true;
-
         await SetBusy(false);
     }
 
     async Task FindOrders()
     {
-        if (IssueSource is null)
-            return;
-
         OrdersByIssuesSelectRequestModel req = new()
         {
             IncludeExternalData = true,
-            IssueIds = [IssueSource.Id],
+            IssueIds = [Id],
         };
-        await SetBusy();
 
         TResponseModel<OrderDocumentModelDB[]> res = await CommRepo.OrdersByIssues(req);
-        IsBusyProgress = false;
+        
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         OrdersJournal = res.Response is null
             ? null
@@ -93,8 +85,14 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
 
     async Task ReadIssue()
     {
+        TAuthRequestModel<IssuesReadRequestModel> req = new()
+        {
+            Payload = new() { IssuesIds = [Id] },
+            SenderActionUserId = CurrentUserSession!.UserId
+        };
+
         await SetBusy();
-        TResponseModel<IssueHelpdeskModelDB[]> issue_res = await HelpdeskRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>() { Payload = new() { IssuesIds = [Id] }, SenderActionUserId = CurrentUserSession!.UserId });
+        TResponseModel<IssueHelpdeskModelDB[]> issue_res = await HelpdeskRepo.IssuesRead(req);
         SnackbarRepo.ShowMessagesResponse(issue_res.Messages);
         IssueSource = issue_res.Response?.FirstOrDefault();
         IsBusyProgress = false;
@@ -119,10 +117,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
         if (users_ids.Count != 0)
             users_ids = users_ids.Distinct().ToList();
 
-        await SetBusy();
-
         TResponseModel<UserInfoModel[]?> users_data_identity = await WebRemoteRepo.GetUsersIdentity([.. users_ids]);
-        IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(users_data_identity.Messages);
         if (users_data_identity.Response is not null && users_data_identity.Response.Length != 0)
             UsersIdentityDump.AddRange(users_data_identity.Response);
