@@ -11,13 +11,13 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// StatusChangeReceive
 /// </summary>
-public class StatusChangeReceive(ICommerceService commRepo, ILogger<StatusChangeReceive> LoggerRepo) : IResponseReceive<StatusOrderChangeRequestModel?, bool?>
+public class StatusChangeReceive(ICommerceService commRepo, ILogger<StatusChangeReceive> LoggerRepo) : IResponseReceive<StatusChangeRequestModel?, bool?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.StatusChangeOrderByHelpDeskDocumentIdReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> ResponseHandleAction(StatusOrderChangeRequestModel? req)
+    public async Task<TResponseModel<bool?>> ResponseHandleAction(StatusChangeRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");

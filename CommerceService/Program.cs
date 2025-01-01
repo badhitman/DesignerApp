@@ -142,7 +142,7 @@ builder.Services
     .RegisterMqListener<WarehouseDocumentUpdateReceive, WarehouseDocumentModelDB?, int?>()
     .RegisterMqListener<RowsForWarehouseDocumentDeleteReceive, int[]?, bool?>()
     .RegisterMqListener<RowForWarehouseDocumentUpdateReceive, RowOfWarehouseDocumentModelDB?, int?>()
-    .RegisterMqListener<StatusChangeReceive, StatusOrderChangeRequestModel?, bool?>()
+    .RegisterMqListener<StatusChangeReceive, StatusChangeRequestModel?, bool?>()
     .RegisterMqListener<PriceRuleDeleteReceive, int?, bool?>()
     .RegisterMqListener<WorkSchedulesFindReceive, WorkSchedulesFindRequestModel?, WorkSchedulesFindResponseModel?>()
     .RegisterMqListener<PriceRuleUpdateReceive, PriceRuleForOfferModelDB?, int?>()

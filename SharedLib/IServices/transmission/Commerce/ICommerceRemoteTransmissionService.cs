@@ -22,7 +22,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Status order change
     /// </summary>
-    public Task<TResponseModel<bool>> StatusOrderChange(StatusOrderChangeRequestModel id, bool waitResponse = true);
+    public Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel id, bool waitResponse = true);
 
     /// <summary>
     /// Удалить ценообразование

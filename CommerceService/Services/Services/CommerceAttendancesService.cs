@@ -16,32 +16,112 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req)
+    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(StatusChangeRequestModel req)
     {
-        if (req.IssueIds.Length == 0)
-            return new()
-            {
-                Response = [],
-                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
-            };
+        TResponseModel<bool> res = new();
 
+        string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<OrderAttendanceModelDB> q = context
+        OrderAttendanceModelDB[] ordersDb = await context
             .OrdersAttendances
-            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
-            .AsQueryable();
+            .Where(x => x.HelpdeskId == req.DocumentId && x.StatusDocument != req.Step)
+            .ToArrayAsync();
 
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
-            .Include(x => x.Organization)
-            .Include(x => x.Offer!)
-            .Include(x => x.Nomenclature);
-
-        return new()
+        if (ordersDb.Length == 0)
         {
-            Response = req.IncludeExternalData
-            ? [.. await inc_query.ToArrayAsync()]
-            : [.. await q.ToArrayAsync()],
-        };
+            msg = "Изменение не требуется (документы для обновления отсутствуют)";
+            loggerRepo.LogInformation($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddInfo($"{msg}. Перед редактированием обновите страницу (F5), что бы загрузить актуальную версию объекта");
+            return res;
+        }
+
+        LockTransactionModelDB[] offersLocked = ordersDb
+           .Select(x => new LockTransactionModelDB()
+           {
+               LockerName = nameof(OrderAttendanceModelDB),
+               LockerId = x.OfferId,
+               RubricId = x.OrganizationId
+           }).ToArray();
+
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+        try
+        {
+            await context.AddRangeAsync(offersLocked);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            msg = $"Не удалось выполнить команду блокировки БД: ";
+            loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError($"{msg}{ex.Message}");
+            return res;
+        }
+
+        //int[] _offersIds = [.. _allOffersOfDocuments.Select(x => x.Row.OfferId).Distinct()];
+        //List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
+        //   .Where(x => _offersIds.Any(y => y == x.OfferId))
+        //   .Include(x => x.Offer)
+        //   .ToListAsync();
+
+        //_allOffersOfDocuments.ForEach(async offerEl =>
+        //{
+        //    int _i = registersOffersDb.FindIndex(y => y.WarehouseId == offerEl.WarehouseId && y.OfferId == offerEl.Row.OfferId);
+
+        //    if (req.Step == StatusesDocumentsEnum.Canceled)
+        //    {
+        //        if (_i < 0)
+        //        {
+        //            OfferAvailabilityModelDB _newReg = new()
+        //            {
+        //                WarehouseId = offerEl.WarehouseId,
+        //                NomenclatureId = offerEl.Row.NomenclatureId,
+        //                OfferId = offerEl.Row.OfferId,
+        //                Quantity = offerEl.Row.Quantity,
+        //            };
+        //            registersOffersDb.Add(_newReg);
+        //            await context.AddAsync(_newReg);
+        //        }
+        //        else
+        //            registersOffersDb[_i].Quantity += offerEl.Row.Quantity;
+        //    }
+        //    else
+        //    {
+        //        if (_i < 0)
+        //            res.AddError($"Отсутствуют остатки [{offerEl.Row.Offer?.Name}] - списание {{{offerEl.Row.Quantity}}} невозможно");
+        //        else if (registersOffersDb[_i].Quantity < offerEl.Row.Quantity)
+        //            res.AddError($"Недостаточно остатков [{offerEl.Row.Offer?.Name}] - списание {{{offerEl.Row.Quantity}}} отклонено");
+        //        else
+        //            registersOffersDb[_i].Quantity -= offerEl.Row.Quantity;
+        //    }
+        //});
+
+        //if (!res.Success())
+        //{
+        //    await transaction.RollbackAsync();
+        //    msg = $"Отказ изменения статуса: не достаточно остатков!";
+        //    loggerRepo.LogError($"{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}\n{JsonConvert.SerializeObject(res, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+        //    res.AddError(msg);
+        //    return res;
+        //}
+
+        //context.UpdateRange(registersOffersDb.Where(x => x.Id > 0));
+        if (offersLocked.Length != 0)
+            context.RemoveRange(offersLocked);
+
+        await context.SaveChangesAsync();
+        res.Response = await context
+                            .OrdersAttendances
+                            .Where(x => x.HelpdeskId == req.DocumentId)
+                            .ExecuteUpdateAsync(set => set
+                            .SetProperty(p => p.StatusDocument, req.Step)
+                            .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
+                            .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
+
+        await transaction.CommitAsync();
+        res.AddSuccess("Запрос смены статуса заказа услуг выполнен успешно");
+
+        return res;
     }
 
     /// <inheritdoc/>
@@ -184,6 +264,35 @@ public partial class CommerceImplementService : ICommerceService
         await transaction.CommitAsync();
         res.AddSuccess("Ok");
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req)
+    {
+        if (req.IssueIds.Length == 0)
+            return new()
+            {
+                Response = [],
+                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
+            };
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrderAttendanceModelDB> q = context
+            .OrdersAttendances
+            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
+            .AsQueryable();
+
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
+            .Include(x => x.Organization)
+            .Include(x => x.Offer!)
+            .Include(x => x.Nomenclature);
+
+        return new()
+        {
+            Response = req.IncludeExternalData
+            ? [.. await inc_query.ToArrayAsync()]
+            : [.. await q.ToArrayAsync()],
+        };
     }
 
     /// <inheritdoc/>

@@ -731,7 +731,7 @@ public partial class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusesOrdersChangeByHelpdeskDocumentId(StatusOrderChangeRequestModel req)
+    public async Task<TResponseModel<bool>> StatusesOrdersChangeByHelpdeskDocumentId(StatusChangeRequestModel req)
     {
         string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
@@ -763,7 +763,7 @@ public partial class CommerceImplementService(
                     .Where(x => x.HelpdeskId == req.DocumentId)
                     .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)) != 0;
 
-            res.AddSuccess("Запрос смены статуса заказа выполнен (строки в документе отсутствуют)");
+            res.AddSuccess("Запрос смены статуса заказа выполнен вхолостую (строки в документе отсутствуют)");
             return res;
         }
 

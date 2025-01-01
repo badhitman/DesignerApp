@@ -10,6 +10,15 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
+    /// Смена статуса заказу по идентификатору HelpDesk документа
+    /// </summary>
+    /// <remarks>
+    /// В запросе нельзя указывать идентификатор заказа: только идентификатор HelpDesk документа.
+    /// Допускается ситуация, когда под одним идентификатором HelpDesk документа могут существовать несколько заказов (объединённые заказы).
+    /// </remarks>
+    public Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(StatusChangeRequestModel req);
+
+    /// <summary>
     /// OrdersByIssuesGet
     /// </summary>
     public Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req);
