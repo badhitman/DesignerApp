@@ -5,6 +5,10 @@
     {
       "library": "bootstrap@5.3.3",
       "destination": "wwwroot/libs/bootstrap/"
+    },
+    {
+      "library": "tinymce@7.4.0",
+      "destination": "wwwroot/libs/tinymce/"
     }
   ]
 }

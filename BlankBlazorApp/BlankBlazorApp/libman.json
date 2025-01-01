@@ -23,10 +23,6 @@
       "destination": "wwwroot/lib/bootstrap-icons/"
     },
     {
-      "library": "ckeditor5@43.1.0",
-      "destination": "wwwroot/lib/ckeditor5/"
-    },
-    {
       "library": "tinymce@7.4.0",
       "destination": "wwwroot/lib/tinymce/"
     },

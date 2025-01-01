@@ -91,3 +91,7 @@ main > div.top-row {
         padding-left: env(safe-area-inset-left);
     }
 }
+
+.tox-tinymce .tox-editor-container .tox-editor-header .tox-promotion, #app > div.page > main > article > div.tinymce-wrapper > div > div.tox-statusbar > div.tox-statusbar__text-container.tox-statusbar__text-container--flex-start > div.tox-statusbar__right-container {
+    display: none;
+}
