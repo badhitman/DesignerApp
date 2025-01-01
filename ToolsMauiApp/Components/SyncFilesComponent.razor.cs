@@ -7,9 +7,10 @@ using ToolsMauiApp.Components.Pages;
 using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Maui.Alerts;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
 using System.IO.Compression;
 using SharedLib;
-using Microsoft.Extensions.Logging;
+using BlazorLib;
 
 namespace ToolsMauiApp.Components;
 

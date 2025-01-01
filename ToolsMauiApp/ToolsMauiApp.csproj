@@ -73,6 +73,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\BlazorLib\BlazorLib.csproj" />
       <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
     </ItemGroup>
 

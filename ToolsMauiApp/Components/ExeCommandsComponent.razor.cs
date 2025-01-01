@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using ToolsMauiApp.Components.Pages;
 using SharedLib;
+using BlazorLib;
 
 namespace ToolsMauiApp.Components;
 

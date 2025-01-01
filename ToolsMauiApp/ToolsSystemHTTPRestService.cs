@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLib;
+using BlazorLib;
 
 namespace ToolsMauiApp;
 
