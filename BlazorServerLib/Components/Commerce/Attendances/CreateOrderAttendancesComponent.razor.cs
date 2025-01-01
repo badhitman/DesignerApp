@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 /// <summary>
 /// CreateOrderAttendancesComponent
 /// </summary>
-public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseModel
+public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAuthModel
 {
     /// <summary>
     /// Commerce
@@ -67,9 +67,29 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
 
     async Task CreateOrder()
     {
+        if (CurrentUserSession is null)
+            throw new Exception("Пользователь не инициализирован");
+
+        if (_selectedSlots is null)
+            throw new Exception("Не выбраны слоты");
+
+        if (SelectedOffer is null)
+            throw new Exception("Offer не выбран");
+
+        TAuthRequestModel<CreateAttendanceRequestModel> req = new()
+        {
+            SenderActionUserId = CurrentUserSession.UserId,
+            Payload = new()
+            {
+                Offer = SelectedOffer,
+                Records = _selectedSlots
+            }
+        };
+
         await SetBusy();
-        //var res = await CommerceRepo.rec
+        TResponseModel<object> res = await CommerceRepo.CreateAttendanceRecords(req);
         await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 
     async Task ServerReload()
@@ -127,7 +147,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseMo
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await Task.WhenAll([ServerReload(), LoadOffers(0)]);
+        await Task.WhenAll([ServerReload(), LoadOffers(0), ReadCurrentUser()]);
         SelectedOfferId = AllOffers.FirstOrDefault()?.Id;
     }
 

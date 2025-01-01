@@ -154,6 +154,7 @@ builder.Services
     .RegisterMqListener<AddressesOrganizationsReadReceive, int[]?, AddressOrganizationModelDB[]?>()
     .RegisterMqListener<PaymentDocumentDeleteReceive, int?, bool?>()
     .RegisterMqListener<RowsForOrderDeleteReceive, int[]?, bool?>()
+    .RegisterMqListener<CreateAttendanceRecordsReceive, TAuthRequestModel<CreateAttendanceRequestModel>?, object?>()
     .RegisterMqListener<RowForOrderUpdateReceive, RowOfOrderDocumentModelDB?, int?>()
     .RegisterMqListener<OrdersReadReceive, int[]?, OrderDocumentModelDB[]?>()
     .RegisterMqListener<OrganizationOfferContractUpdateReceive, TAuthRequestModel<OrganizationOfferToggleModel>?, bool?>()

@@ -35,12 +35,14 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        TResponseModel<UserInfoModel[]?> actor = await webTransmissionRepo.GetUsersIdentity([workSchedules.SenderActionUserId]);
-        if (!actor.Success() || actor.Response is null || actor.Response.Length == 0)
+        TResponseModel<UserInfoModel[]?> actorget = await webTransmissionRepo.GetUsersIdentity([workSchedules.SenderActionUserId]);
+        if (!actorget.Success() || actorget.Response is null || actorget.Response.Length == 0)
         {
-            res.AddRangeMessages(actor.Messages);
+            res.AddRangeMessages(actorget.Messages);
             return res;
         }
+
+        UserInfoModel actor = actorget.Response[0];
 
         List<OrderAttendanceModelDB> recordsForAdd = records.Select(x => new OrderAttendanceModelDB()
         {
@@ -87,7 +89,7 @@ public partial class CommerceImplementService : ICommerceService
         WorkSchedulesFindRequestModel req = new()
         {
             OffersFilter = [workSchedules.Payload.Offer.Id],
-            ContextName = GlobalStaticConstants.Routes.ATTENDANCE_CONTROLLER_NAME,
+            ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
             StartDate = records.Min(x => x.Date),
             EndDate = records.Max(x => x.Date),
         };
@@ -146,10 +148,6 @@ public partial class CommerceImplementService : ICommerceService
 
         await context.AddRangeAsync(recordsForAdd);
         await context.SaveChangesAsync();
-        
-        //       req.HelpdeskId = issue.Response;
-        //       context.Update(req);
-
 
         context.RemoveRange(offersLocked);
 
