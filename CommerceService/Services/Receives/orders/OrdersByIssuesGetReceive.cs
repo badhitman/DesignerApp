@@ -31,7 +31,7 @@ public class OrdersByIssuesGetReceive(ICommerceService commRepo)
 }
 
 /// <summary>
-/// 
+/// OrdersAttendancesByIssuesGetReceive
 /// </summary>
 public class OrdersAttendancesByIssuesGetReceive(ICommerceService commRepo)
 : IResponseReceive<OrdersByIssuesSelectRequestModel?, OrderDocumentModelDB[]?>
