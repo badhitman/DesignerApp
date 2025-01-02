@@ -167,14 +167,14 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        TResponseModel<UserInfoModel[]?> actorget = await webTransmissionRepo.GetUsersIdentity([workSchedules.SenderActionUserId]);
-        if (!actorget.Success() || actorget.Response is null || actorget.Response.Length == 0)
+        TResponseModel<UserInfoModel[]?> actorRes = await webTransmissionRepo.GetUsersIdentity([workSchedules.SenderActionUserId]);
+        if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
         {
-            res.AddRangeMessages(actorget.Messages);
+            res.AddRangeMessages(actorRes.Messages);
             return res;
         }
 
-        UserInfoModel actor = actorget.Response[0];
+        UserInfoModel actor = actorRes.Response[0];
 
         List<OrderAttendanceModelDB> recordsForAdd = records.Select(x => new OrderAttendanceModelDB()
         {
@@ -225,9 +225,16 @@ public partial class CommerceImplementService : ICommerceService
             StartDate = records.Min(x => x.Date),
             EndDate = records.Max(x => x.Date),
         };
-        WorkSchedulesFindResponseModel get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray());
-        List<WorkScheduleModel> b_list = get_balance.WorksSchedulesViews();
 
+        TResponseModel<int?> res_RubricIssueForCreateOrder = default!;
+        WorkSchedulesFindResponseModel get_balance = default!;
+
+        await Task.WhenAll([
+                Task.Run(async () => {res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateAttendance); }),
+                Task.Run(async () => {get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray()); })
+            ]);
+
+        List<WorkScheduleModel> b_list = get_balance.WorksSchedulesViews();
         foreach (IGrouping<int, WorkScheduleModel> rec in records.GroupBy(x => x.Organization.Id))
         {
             List<WorkScheduleModel> b_crop_list = b_list
@@ -254,8 +261,6 @@ public partial class CommerceImplementService : ICommerceService
             res.AddError(msg);
             return res;
         }
-
-        TResponseModel<int?> res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateAttendance);
 
         TAuthRequestModel<UniversalUpdateRequestModel> issue_new = new()
         {

@@ -1,0 +1,19 @@
+﻿@using BlazorWebLib.Components.Helpdesk
+
+@inherits BlazorBusyComponentBaseModel
+
+<h6 class="card-subtitle mb-2 text-body-secondary">@Label</h6>
+<div class="vstack gap-3">
+    <CascadingValue Value="RubricSelectAction">
+        <CascadingValue Value="RubricMetadataShadow">
+            <RubricSelectorComponent @ref="ref_rubric" Title="" ModeSelectingRubrics="ModesSelectRubricsEnum.AllowWithoutRubric" ShowDisabledRubrics="true" StartRubric="_rubricSelected" />
+        </CascadingValue>
+    </CascadingValue>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(HelperText))
+{
+    <div class="form-text">
+        @HelperText
+    </div>
+}

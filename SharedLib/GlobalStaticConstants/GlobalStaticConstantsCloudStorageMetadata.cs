@@ -169,6 +169,14 @@ public static partial class GlobalStaticConstants
             PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.ORDER_CONTROLLER_NAME, Routes.RUBRIC_CONTROLLER_NAME),
         };
 
+        /// <summary>
+        /// RubricIssueForCreateAttendanceOrder
+        /// </summary>
+        public static StorageMetadataModel RubricIssueForCreateAttendanceOrder => new()
+        {
+            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.ATTENDANCE_CONTROLLER_NAME}", Routes.RUBRIC_CONTROLLER_NAME),
+        };
 
         /// <summary>
         /// RubricIssueForCreateAttendance

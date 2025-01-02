@@ -5,8 +5,6 @@
 @using MudBlazor
 @using SharedLib
 
-@inherits BlazorBusyComponentBaseModel
-
 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-2">
     <MudTabPanel Text="Home">
         <StringParameterStorageComponent Label="Заголовок" HelperText="Текст в левом верхнем углу" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.TitleMain" />
@@ -18,16 +16,21 @@
     <MudTabPanel Text="Другое">
         <ul class="list-group list-group-flush">
             <li class="list-group-item my-2">
-                <h6 class="card-subtitle mb-2 text-body-secondary">Рубрика заказа</h6>
-                <div class="vstack gap-3">
-                    <CascadingValue Value="RubricSelectAction">
-                        <CascadingValue Value="RubricMetadataShadow">
-                            <RubricSelectorComponent @ref="ref_rubric" Title="" ModeSelectingRubrics="ModesSelectRubricsEnum.AllowWithoutRubric" ShowDisabledRubrics="true" StartRubric="_rubricIssueForCreateOrder" />
-                        </CascadingValue>
-                    </CascadingValue>
-                </div>
-                <div class="form-text">
-                    Автоматическое назначение рубрики
+                <div class="row row-cols-1 row-cols-md-2 g-1">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <RubricParameterStorageComponent Label="Рубрика для заказа" HelperText="Автоматическое назначение рубрики при создании заказа" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateOrder" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <RubricParameterStorageComponent Label="Рубрика для брони" HelperText="Автоматическое назначение рубрики при записи на услугу/бронь" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateAttendanceOrder" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </li>
             <li class="list-group-item my-2">
