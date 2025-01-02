@@ -8,7 +8,7 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// OrdersAttendancesByIssuesGetReceive
+/// OrdersAttendancesByIssuesGet - receive
 /// </summary>
 public class OrdersAttendancesByIssuesGetReceive(ICommerceService commRepo)
 : IResponseReceive<OrdersByIssuesSelectRequestModel?, OrderAttendanceModelDB[]?>

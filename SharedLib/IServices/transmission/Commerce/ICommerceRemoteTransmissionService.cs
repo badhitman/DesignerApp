@@ -95,7 +95,7 @@ public partial interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
 
     /// <summary>
-    /// Получить заказов (по заявкам)
+    /// Получить заказы (по заявкам)
     /// </summary>
     public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssues(OrdersByIssuesSelectRequestModel req);
 

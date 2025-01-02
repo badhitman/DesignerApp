@@ -103,22 +103,10 @@ builder.ConfigureServices((context, services) =>
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>()
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
-    .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>();
-
-    services.AddScoped<ISerializeStorage, StorageServiceImpl>();
-    ////
-    services
-    .RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel?, int?>()
-    .RegisterMqListener<SaveFileReceive, StorageImageMetadataModel?, StorageFileModelDB?>()
-    .RegisterMqListener<TagSetReceive, TagSetModel?, bool?>()
-    .RegisterMqListener<SetWebConfigReceive, WebConfigModel?, object?>()
-    .RegisterMqListener<ReadFileReceive, TAuthRequestModel<RequestFileReadModel>?, FileContentModel?>()
-    .RegisterMqListener<TagsSelectReceive, TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<TagModelDB>?>()
-    .RegisterMqListener<FilesAreaGetMetadataReceive, FilesAreaMetadataRequestModel?, FilesAreaMetadataModel[]?>()
-    .RegisterMqListener<FilesSelectReceive, TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<StorageFileModelDB>?>()
-    .RegisterMqListener<ReadParameterReceive, StorageMetadataModel?, StorageCloudParameterPayloadModel?>()
-    .RegisterMqListener<ReadParametersReceive, StorageMetadataModel[]?, List<StorageCloudParameterPayloadModel>?>()
-    .RegisterMqListener<FindParametersReceive, RequestStorageBaseModel?, FoundParameterModel[]?>();
+    .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
+    .AddScoped<ISerializeStorage, StorageServiceImpl>();
+    //
+    services.StorageRegisterMqListeners();
     //
     #endregion
 

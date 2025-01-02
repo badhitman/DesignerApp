@@ -79,7 +79,7 @@ builder.ConfigureHostConfiguration(configHost =>
 });
 
 builder.ConfigureServices((context, services) =>
-{    
+{
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
     .Configure<HelpdeskConfigModel>(context.Configuration.GetSection("HelpdeskConfig"))
@@ -116,30 +116,7 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<IHelpdeskService, HelpdeskImplementService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     // 
-    services.RegisterMqListener<RubricsListReceive, RubricsListRequestModel?, UniversalBaseModel[]?>()
-    .RegisterMqListener<RubricCreateOrUpdateReceive, RubricIssueHelpdeskModelDB?, int?>()
-    .RegisterMqListener<IssuesSelectReceive, TPaginationRequestModel<SelectIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>()
-    .RegisterMqListener<ArticlesSelectReceive, TPaginationRequestModel<SelectArticlesRequestModel>?, TPaginationResponseModel<ArticleModelDB>?>()
-    .RegisterMqListener<IssueCreateOrUpdateReceive, TAuthRequestModel<UniversalUpdateRequestModel>?, int>()
-    .RegisterMqListener<MessageVoteReceive, TAuthRequestModel<VoteIssueRequestModel>?, bool?>()
-    .RegisterMqListener<MessageUpdateOrCreateReceive, TAuthRequestModel<IssueMessageHelpdeskBaseModel>?, int?>()
-    .RegisterMqListener<RubricMoveReceive, RowMoveModel?, bool?>()
-    .RegisterMqListener<SetWebConfigReceive, HelpdeskConfigModel?, object?>()
-    .RegisterMqListener<UpdateRubricsForArticleReceive, ArticleRubricsSetModel?, bool?>()
-    .RegisterMqListener<ArticlesReadReceive, int[]?, ArticleModelDB[]?>()
-    .RegisterMqListener<ArticleCreateOrUpdateReceive, ArticleModelDB?, int?>()
-    .RegisterMqListener<IssuesReadReceive, TAuthRequestModel<IssuesReadRequestModel>?, IssueHelpdeskModelDB[]?>()
-    .RegisterMqListener<RubricReadReceive, int?, List<RubricIssueHelpdeskModelDB>?>()
-    .RegisterMqListener<RubricsGetReceive, int[]?, List<RubricIssueHelpdeskModelDB>?>()
-    .RegisterMqListener<SubscribeUpdateReceive, TAuthRequestModel<SubscribeUpdateRequestModel>?, bool?>()
-    .RegisterMqListener<SubscribesListReceive, TAuthRequestModel<int>?, SubscriberIssueHelpdeskModelDB[]?>()
-    .RegisterMqListener<ExecuterUpdateReceive, TAuthRequestModel<UserIssueModel>?, bool>()
-    .RegisterMqListener<MessagesListReceive, TAuthRequestModel<int>?, IssueMessageHelpdeskModelDB[]>()
-    .RegisterMqListener<StatusChangeReceive, TAuthRequestModel<StatusChangeRequestModel>?, bool>()
-    .RegisterMqListener<PulseIssueReceive, PulseRequestModel?, bool>()
-    .RegisterMqListener<PulseJournalReceive, TPaginationRequestModel<UserIssueModel>?, TPaginationResponseModel<PulseViewModel>>()
-    .RegisterMqListener<TelegramMessageIncomingReceive, TelegramIncomingMessageModel?, bool>()
-    .RegisterMqListener<ConsoleIssuesSelectReceive, TPaginationRequestModel<ConsoleIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>>();
+    services.HelpdeskRegisterMqListeners();
     //  
     #endregion
 });

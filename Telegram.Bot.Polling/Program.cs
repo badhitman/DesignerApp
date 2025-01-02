@@ -1,4 +1,3 @@
-using Transmission.Receives.telegram;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using NLog.Extensions.Logging;
@@ -36,7 +35,7 @@ string path_load = Path.Combine(curr_dir, "appsettings.json");
 builder.ConfigureHostConfiguration(configHost =>
 {
     configHost.SetBasePath(curr_dir);
-    
+
     if (Path.Exists(path_load))
         configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
     else
@@ -81,7 +80,7 @@ builder.ConfigureHostConfiguration(configHost =>
 });
 
 builder.ConfigureServices((context, services) =>
-{    
+{
     services
     .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
     .Configure<BotConfiguration>(context.Configuration.GetSection(BotConfiguration.Configuration))
@@ -135,19 +134,7 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
     //
-    services.RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, MessageComplexIdsModel?>()
-    .RegisterMqListener<SetWebConfigReceive, TelegramBotConfigModel, object?>()
-    .RegisterMqListener<GetBotTokenReceive, object, string?>()
-    .RegisterMqListener<GetBotUsernameReceive, object?, string?>()
-    .RegisterMqListener<ChatsReadTelegramReceive, long[]?, ChatTelegramModelDB[]?>()
-    .RegisterMqListener<MessagesSelectTelegramReceive, TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>()
-    .RegisterMqListener<GetFileTelegramReceive, string?, byte[]?>()
-    .RegisterMqListener<SendWappiMessageReceive, EntryAltExtModel?, SendMessageResponseModel?>()
-    .RegisterMqListener<ChatsFindForUserTelegramReceive, long[]?, ChatTelegramModelDB[]?>()
-    .RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>?, TPaginationResponseModel<ChatTelegramModelDB>?>()
-    .RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>()
-    .RegisterMqListener<ChatTelegramReadReceive, int?, ChatTelegramModelDB?>()
-    .RegisterMqListener<ErrorsForChatsSelectTelegramReceive, TPaginationRequestModel<long[]?>?, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>();
+    services.TelegramBotRegisterMqListeners();
     #endregion
 });
 
