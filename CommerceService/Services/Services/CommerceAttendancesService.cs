@@ -16,6 +16,35 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req)
+    {
+        if (req.IssueIds.Length == 0)
+            return new()
+            {
+                Response = [],
+                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
+            };
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrderAttendanceModelDB> q = context
+            .OrdersAttendances
+            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
+            .AsQueryable();
+
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
+            .Include(x => x.Organization)
+            .Include(x => x.Offer!)
+            .Include(x => x.Nomenclature);
+
+        return new()
+        {
+            Response = req.IncludeExternalData
+            ? [.. await inc_query.ToArrayAsync()]
+            : [.. await q.ToArrayAsync()],
+        };
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(StatusChangeRequestModel req)
     {
         TResponseModel<bool> res = new();
@@ -119,35 +148,6 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req)
-    {
-        if (req.IssueIds.Length == 0)
-            return new()
-            {
-                Response = [],
-                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
-            };
-
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<OrderAttendanceModelDB> q = context
-            .OrdersAttendances
-            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
-            .AsQueryable();
-
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
-            .Include(x => x.Organization)
-            .Include(x => x.Offer!)
-            .Include(x => x.Nomenclature);
-
-        return new()
-        {
-            Response = req.IncludeExternalData
-            ? [.. await inc_query.ToArrayAsync()]
-            : [.. await q.ToArrayAsync()],
-        };
-    }
-
-    /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules)
     {
         List<WorkScheduleModel> records = workSchedules.Payload.Records;
@@ -158,7 +158,7 @@ public partial class CommerceImplementService : ICommerceService
             if (!ck.IsValid)
                 res.Messages.InjectException(ck.ValidationResults);
         });
-        string msg;
+        string msg, waMsg;
         if (!res.Success())
         {
             msg = $"Ошибка запроса: {res.Message()}";
@@ -228,11 +228,32 @@ public partial class CommerceImplementService : ICommerceService
 
         TResponseModel<int?> res_RubricIssueForCreateOrder = default!;
         WorkSchedulesFindResponseModel get_balance = default!;
+        TResponseModel<string?>? CommerceNewOrderSubjectNotification = null, CommerceNewOrderBodyNotification = null, CommerceNewOrderBodyNotificationTelegram = null;
 
-        await Task.WhenAll([
+        List<Task> tasks = [
+                Task.Run(async () => { CommerceNewOrderSubjectNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderSubjectNotification); }),
+                Task.Run(async () => { CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification); }),
+                Task.Run(async () => { CommerceNewOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram); }),
                 Task.Run(async () => { res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateAttendanceOrder); }),
                 Task.Run(async () => { get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray()); })
-            ]);
+            ];
+
+        if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
+        {
+            tasks.Add(Task.Run(async () =>
+            {
+                if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
+                {
+                    TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+                    _webConf.BaseUri = wc.Response?.ClearBaseUri;
+                }
+            }));
+            TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
+            _webConf.BaseUri = wc.Response?.ClearBaseUri;
+        }
+
+        await Task.WhenAll(tasks);
+        tasks.Clear();
 
         List<WorkScheduleModel> b_list = get_balance.WorksSchedulesViews();
         foreach (IGrouping<int, WorkScheduleModel> rec in records.GroupBy(x => x.Organization.Id))
@@ -286,6 +307,48 @@ public partial class CommerceImplementService : ICommerceService
         await context.AddRangeAsync(recordsForAdd);
         await context.SaveChangesAsync();
 
+        string subject_email = "Создана новая бронь";
+        DateTime _dt = DateTime.UtcNow.GetCustomTime();
+        string _dtAsString = $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
+        string _about_order = $"Новая бронь {_dtAsString}";
+
+        if (CommerceNewOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))
+            subject_email = CommerceNewOrderSubjectNotification.Response;
+
+        subject_email = IHelpdeskService.ReplaceTags(subject_email, _dt, issue.Response, StatusesDocumentsEnum.Created, subject_email, _webConf.ClearBaseUri, _about_order);
+        res.AddSuccess(subject_email);
+        msg = $"<p>Заказ <b>'{issue_new.Payload.Name}' от [{_dtAsString}]</b> успешно создан.</p>" +
+                $"<p>/<a href='{_webConf.ClearBaseUri}'>{_webConf.ClearBaseUri}</a>/</p>";
+        string msg_for_tg = msg.Replace("<p>", "").Replace("</p>", "");
+
+        waMsg = $"Заказ '{issue_new.Payload.Name}' от [{_dtAsString}] успешно создан.\n{_webConf.ClearBaseUri}";
+
+        if (CommerceNewOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotification.Response))
+            msg = CommerceNewOrderBodyNotification.Response;
+        msg = IHelpdeskService.ReplaceTags(msg, _dt, issue.Response, StatusesDocumentsEnum.Created, msg, _webConf.ClearBaseUri, _about_order);
+
+        if (CommerceNewOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationTelegram.Response))
+            msg_for_tg = CommerceNewOrderBodyNotificationTelegram.Response;
+        msg_for_tg = IHelpdeskService.ReplaceTags(msg_for_tg, _dt, issue.Response, StatusesDocumentsEnum.Created, msg_for_tg, _webConf.ClearBaseUri, _about_order);
+
+        tasks = [webTransmissionRepo.SendEmail(new() { Email = actor.Email!, Subject = subject_email, TextMessage = msg }, false)];
+
+        if (actor.TelegramId.HasValue)
+            tasks.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.TelegramId!.Value }, false));
+
+        if (!string.IsNullOrWhiteSpace(actor.PhoneNumber) && GlobalTools.IsPhoneNumber(actor.PhoneNumber!))
+        {
+            tasks.Add(Task.Run(async () =>
+            {
+                TResponseModel<string?> CommerceNewOrderBodyNotificationWhatsapp = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationWhatsapp);
+                if (CommerceNewOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewOrderBodyNotificationWhatsapp.Response))
+                    waMsg = CommerceNewOrderBodyNotificationWhatsapp.Response;
+
+                await tgRepo.SendWappiMessage(new() { Number = actor.PhoneNumber!, Text = IHelpdeskService.ReplaceTags(waMsg, _dt, issue.Response, StatusesDocumentsEnum.Created, waMsg, _webConf.ClearBaseUri, _about_order, true) }, false);
+            }));
+        }
+
+        loggerRepo.LogInformation(msg_for_tg);
         context.RemoveRange(offersLocked);
 
         await context.SaveChangesAsync();

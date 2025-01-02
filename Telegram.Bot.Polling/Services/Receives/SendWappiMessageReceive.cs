@@ -29,7 +29,7 @@ public class SendWappiMessageReceive(
         TResponseModel<SendMessageResponseModel?> res = new();
 
         TResponseModel<string?> wappiToken = default!, wappiProfileId = default!;
-        TResponseModel<bool?> wappiEnables = default!;
+        TResponseModel<bool?> wappiEnable = default!;
 
         List<Task> tasks = [Task.Run(async () =>
         {
@@ -39,11 +39,11 @@ public class SendWappiMessageReceive(
             wappiProfileId = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
         }), Task.Run(async () =>
         {
-            wappiEnables = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterEnabledWappi);
+            wappiEnable = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterEnabledWappi);
         })];
         await Task.WhenAll(tasks);
 
-        if (wappiEnables.Response != true)
+        if (wappiEnable.Response != true)
         {
             res.AddInfo("Wappi деактивирован - сообщения не отправляются");
             return res;
