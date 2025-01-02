@@ -23,6 +23,11 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
     [Parameter]
     public bool ReadOnly { get; set; }
 
+    /// <summary>
+    /// ContextName
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string? ContextName { get; set; }
 
     /// <inheritdoc/>
     [CascadingParameter, EditorRequired]
@@ -59,7 +64,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
             throw new ArgumentNullException(nameof(ItemModel));
 
         await SetBusy();
-        TResponseModel<bool?> res = await HelpdeskRepo.RubricMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id });
+        TResponseModel<bool?> res = await HelpdeskRepo.RubricMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         ReloadNodeHandle(ItemModel.ParentId ?? 0);
@@ -72,7 +77,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
         if (string.IsNullOrWhiteSpace(itemSystemName))
             throw new ArgumentNullException(nameof(itemSystemName));
-        
+
         IsRenameMode = false;
         ItemModel.Name = itemSystemName;
 

@@ -6,14 +6,14 @@
 
 <MudTreeView Style="width: 100%" ServerData="@LoadServerData" Items="@InitialTreeItems" SelectionMode="@(SelectedValuesChanged is null ? SelectionMode.ToggleSelection: SelectionMode.MultiSelection)" T="UniversalBaseModel" SelectedValuesChanged="SelectedValuesChangeHandler">
     <ItemTemplate Context="item">
-        <MudTreeViewItem @key="@($"node-rubric-{item.Value?.Id}")" Text="@item.Text" Icon="@item.Icon" IconExpanded="@Icons.Custom.Uncategorized.FolderOpen" Value="item.Value" Items="item.Children" CanExpand="item.Expandable" Selected="item.Selected">
+        <MudTreeViewItem @key="@($"node-rubric-{item.Value?.Id}")" Text="@item.Text" Icon="@item.Icon" IconExpanded="@Icons.Custom.Uncategorized.FolderOpen" Value="item.Value" Items="item.Children?.OrderBy(x => x.Value?.SortIndex).ToList()" CanExpand="item.Expandable" Selected="item.Selected">
             <BodyContent>
                 <CascadingValue Value="ReloadNodeAction">
                     <CascadingValue Value="ItemUpdAction">
                         <CascadingValue Value="(TreeItemDataRubricModel)item">
                             @if (item.Value!.Id > 0)
                             {
-                                <RubricNodeEditComponent ReadOnly="@(SelectedValuesChanged is not null)" />
+                                <RubricNodeEditComponent ReadOnly="@(SelectedValuesChanged is not null)" ContextName="@ContextName" />
                             }
                             else if (SelectedValuesChanged is null)
                             {

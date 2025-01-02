@@ -18,4 +18,9 @@ public class RowMoveModel
     /// Object Id
     /// </summary>
     public int ObjectId { get; set; }
+
+    /// <summary>
+    /// ContextName
+    /// </summary>
+    public required string? ContextName { get; set; }
 }

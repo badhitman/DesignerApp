@@ -29,7 +29,7 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     public TreeViewOptionsModel? SelectedValuesChanged { get; set; }
 
     /// <summary>
-    /// Без вложеных узлов
+    /// Без вложенных узлов
     /// </summary>
     [Parameter]
     public bool SingleLevelMode { get; set; }

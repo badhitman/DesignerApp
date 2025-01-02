@@ -51,7 +51,7 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
 
         List<RubricIssueHelpdeskModelDB> all = await context
             .Rubrics
-            .Where(x => x.ParentId == data.ParentId)
+            .Where(x => x.ContextName == req.ContextName && x.ParentId == data.ParentId)
             .OrderBy(x => x.SortIndex)
             .ToListAsync();
 
