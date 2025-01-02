@@ -53,6 +53,16 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
+        /// Отображение отключённых рубрик
+        /// </summary>
+        public static StorageMetadataModel ParameterEnabledWappi => new()
+        {
+            ApplicationName = Routes.WAPPI_CONTROLLER_NAME,
+            PropertyName = Routes.ENABLED_CONTROLLER_NAME,
+            PrefixPropertyName = Routes.GLOBAL_CONTROLLER_NAME,
+        };
+
+        /// <summary>
         /// Режим выбора рубрик в заявках
         /// </summary>
         public static StorageMetadataModel ModeSelectingRubrics => new()
@@ -176,15 +186,6 @@ public static partial class GlobalStaticConstants
         {
             ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
             PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, $"{Routes.ORDER_CONTROLLER_NAME}-{Routes.ATTENDANCE_CONTROLLER_NAME}", Routes.RUBRIC_CONTROLLER_NAME),
-        };
-
-        /// <summary>
-        /// RubricIssueForCreateAttendance
-        /// </summary>
-        public static StorageMetadataModel RubricIssueForCreateAttendance => new()
-        {
-            ApplicationName = Routes.HELPDESK_CONTROLLER_NAME,
-            PropertyName = Path.Combine(Routes.CREATE_ACTION_NAME, Routes.ATTENDANCES_CONTROLLER_NAME, Routes.RUBRIC_CONTROLLER_NAME),
         };
 
         /// <summary>

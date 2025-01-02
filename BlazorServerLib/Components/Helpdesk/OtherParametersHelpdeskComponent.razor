@@ -34,14 +34,33 @@
                 </div>
             </li>
             <li class="list-group-item my-2">
-                <h6 class="card-subtitle mb-2 text-body-secondary">wappi</h6>
-                <div class="vstack gap-3">
-                    <StringParameterStorageComponent IsPassword="true" Label="Токен API" HelperText="https://wappi.pro/dashboard" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi" />
-                    <hr />
-                    <StringParameterStorageComponent Label="ID профиля" HelperText="https://wappi.pro/dashboard" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.WappiProfileId" />
-                </div>
-                <div class="form-text">
-                    <a href="https://wappi.pro/">wappi.pro</a> настройки
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-body-secondary">WAPPI (WhatsApp)</h6>
+                        <BoolSimpleStorageComponent StorageMetadata="GlobalStaticConstants.CloudStorageMetadata.ParameterEnabledWappi" Title="Активация Wappi" Label="Активация службы отправки сообщений Wappi" HintTrue="Wappi включён - сообщения отправляются" HintFalse="Выключено: сообщения не будут отправляться через Wappi" />
+                        <hr />
+                        <div class="vstack gap-3">
+                            <div class="row row-cols-1 row-cols-md-2 g-1">
+                                <div class="col">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <StringParameterStorageComponent IsPassword="true" Label="Токен API" HelperText="https://wappi.pro/dashboard" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.WappiTokenApi" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <StringParameterStorageComponent Label="ID профиля" HelperText="https://wappi.pro/dashboard" KeyStorage="GlobalStaticConstants.CloudStorageMetadata.WappiProfileId" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            <a href="https://wappi.pro/">wappi.pro</a> настройки
+                        </div>
+                    </div>
                 </div>
             </li>
         </ul>

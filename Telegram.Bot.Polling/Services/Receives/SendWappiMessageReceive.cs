@@ -2,10 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.Net.Http.Json;
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
-using System.Net.Http.Json;
 
 namespace Transmission.Receives.telegram;
 
@@ -29,6 +29,7 @@ public class SendWappiMessageReceive(
         TResponseModel<SendMessageResponseModel?> res = new();
 
         TResponseModel<string?> wappiToken = default!, wappiProfileId = default!;
+        TResponseModel<bool?> wappiEnables = default!;
 
         List<Task> tasks = [Task.Run(async () =>
         {
@@ -36,8 +37,17 @@ public class SendWappiMessageReceive(
         }), Task.Run(async () =>
         {
             wappiProfileId = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.WappiProfileId);
+        }), Task.Run(async () =>
+        {
+            wappiEnables = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ParameterEnabledWappi);
         })];
         await Task.WhenAll(tasks);
+
+        if (wappiEnables.Response != true)
+        {
+            res.AddInfo("Wappi деактивирован - сообщения не отправляются");
+            return res;
+        }
 
         if (!wappiToken.Success() || string.IsNullOrWhiteSpace(wappiToken.Response) || !wappiProfileId.Success() || string.IsNullOrWhiteSpace(wappiProfileId.Response))
         {
@@ -45,6 +55,7 @@ public class SendWappiMessageReceive(
 
             res.AddRangeMessages(wappiToken.Messages);
             res.AddRangeMessages(wappiProfileId.Messages);
+            res.AddInfo("Wappi не настроен. Активирован, но сообщения не отправляются");
 
             return res;
         }

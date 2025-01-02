@@ -30,7 +30,7 @@ public class CreateAttendanceRecordsReceive(ICommerceService commerceRepo, ILogg
         ResponseBaseModel res = await commerceRepo.CreateAttendanceRecords(req);
         return new()
         {
-            Messages = res.Messages,             
+            Messages = res.Messages,
         };
     }
 }

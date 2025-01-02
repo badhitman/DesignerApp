@@ -8,6 +8,13 @@ public static partial class GlobalStaticConstants
     public static class Routes
     {
         /// <summary>
+        /// По владельцу
+        /// </summary>
+        public const string BY_PARENT = "by-parent";
+
+        #region CONTROLLER
+
+        /// <summary>
         /// Global
         /// </summary>
         public const string GLOBAL_CONTROLLER_NAME = "global";
@@ -413,6 +420,11 @@ public static partial class GlobalStaticConstants
         public const string DISABLED_CONTROLLER_NAME = "disabled";
 
         /// <summary>
+        /// Enabled
+        /// </summary>
+        public const string ENABLED_CONTROLLER_NAME = "enabled";
+
+        /// <summary>
         /// Issue
         /// </summary>
         public const string ISSUE_CONTROLLER_NAME = "issue";
@@ -672,47 +684,6 @@ public static partial class GlobalStaticConstants
         /// </summary>
         public const string MESSAGES_CONTROLLER_NAME = "messages";
 
-
-        /// <summary>
-        /// Ping
-        /// </summary>
-        public const string PING_ACTION_NAME = "ping";
-
-        /// <summary>
-        /// Create
-        /// </summary>
-        public const string CREATE_ACTION_NAME = "create";
-
-        /// <summary>
-        /// add
-        /// </summary>
-        public const string ADD_ACTION_NAME = "add";
-
-        /// <summary>
-        /// Allow
-        /// </summary>
-        public const string ALLOW_ACTION_NAME = "allow";
-
-        /// <summary>
-        /// Update
-        /// </summary>
-        public const string UPDATE_ACTION_NAME = "update";
-
-        /// <summary>
-        /// Upload
-        /// </summary>
-        public const string UPLOAD_ACTION_NAME = "upload";
-
-        /// <summary>
-        /// Start
-        /// </summary>
-        public const string START_ACTION_NAME = "start";
-
-        /// <summary>
-        /// Request
-        /// </summary>
-        public const string REQUEST_ACTION_NAME = "request";
-
         /// <summary>
         /// Attachment
         /// </summary>
@@ -757,6 +728,75 @@ public static partial class GlobalStaticConstants
         /// Weekly
         /// </summary>
         public const string WEEKLY_CONTROLLER_NAME = "weekly";
+
+        /// <summary>
+        /// Настройка групп видимости инструментов терминала
+        /// </summary>
+        public const string SEARCH_SELECTOR_CONFIG_CONTROLLER_NAME = "search-selector-config";
+
+        /// <summary>
+        /// Группы пользователей
+        /// </summary>
+        public const string GROUPSUSERS_CONTROLLER_NAME = "groups-users";
+
+        /// <summary>
+        /// Группы пользователей
+        /// </summary>
+        public const string ROLESUSERS_CONTROLLER_NAME = "roles-users";
+
+        /// <summary>
+        /// Профили пользователей
+        /// </summary>
+        public const string USERSPROFILES_CONTROLLER_NAME = "users-profiles";
+
+        #endregion
+
+        #region ACTION
+
+        /// <summary>
+        /// Disable
+        /// </summary>
+        public const string DISABLE_ACTION_NAME = "disable";
+
+        /// <summary>
+        /// Ping
+        /// </summary>
+        public const string PING_ACTION_NAME = "ping";
+
+        /// <summary>
+        /// Create
+        /// </summary>
+        public const string CREATE_ACTION_NAME = "create";
+
+        /// <summary>
+        /// add
+        /// </summary>
+        public const string ADD_ACTION_NAME = "add";
+
+        /// <summary>
+        /// Allow
+        /// </summary>
+        public const string ALLOW_ACTION_NAME = "allow";
+
+        /// <summary>
+        /// Update
+        /// </summary>
+        public const string UPDATE_ACTION_NAME = "update";
+
+        /// <summary>
+        /// Upload
+        /// </summary>
+        public const string UPLOAD_ACTION_NAME = "upload";
+
+        /// <summary>
+        /// Start
+        /// </summary>
+        public const string START_ACTION_NAME = "start";
+
+        /// <summary>
+        /// Request
+        /// </summary>
+        public const string REQUEST_ACTION_NAME = "request";
 
         /// <summary>
         /// Image
@@ -939,28 +979,6 @@ public static partial class GlobalStaticConstants
         public const string REGISTRATION_ACTION_NAME = "registration";
 
         /// <summary>
-        /// Настройка групп видимости инструментов терминала
-        /// </summary>
-        public const string SEARCH_SELECTOR_CONFIG_CONTROLLER_NAME = "search-selector-config";
-
-        /// <summary>
-        /// Группы пользователей
-        /// </summary>
-        public const string GROUPSUSERS_CONTROLLER_NAME = "groups-users";
-
-        /// <summary>
-        /// Группы пользователей
-        /// </summary>
-        public const string ROLESUSERS_CONTROLLER_NAME = "roles-users";
-
-        /// <summary>
-        /// Профили пользователей
-        /// </summary>
-        public const string USERSPROFILES_CONTROLLER_NAME = "users-profiles";
-
-
-
-        /// <summary>
         /// Статус
         /// </summary>
         public const string STATUS_ACTION_NAME = "status";
@@ -1066,11 +1084,6 @@ public static partial class GlobalStaticConstants
         public const string FIELD_ACTION_NAME = "field";
 
         /// <summary>
-        /// По владельцу
-        /// </summary>
-        public const string BY_PARENT = "by-parent";
-
-        /// <summary>
         /// Ссылки
         /// </summary>
         public const string LINKS_ACTION_NAME = "links";
@@ -1129,5 +1142,7 @@ public static partial class GlobalStaticConstants
         /// Перезагрузка
         /// </summary>
         public const string RELOAD_ACTION_NAME = "reload";
+
+        #endregion
     }
 }

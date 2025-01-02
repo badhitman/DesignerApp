@@ -88,8 +88,12 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
 
         await SetBusy();
         TResponseModel<object> res = await CommerceRepo.CreateAttendanceRecords(req);
-        await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
+
+        if (res.Success())
+            _selectedSlots.Clear();
+
+        await ServerReload();
     }
 
     async Task ServerReload()

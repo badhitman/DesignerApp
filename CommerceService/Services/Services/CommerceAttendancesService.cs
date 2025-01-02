@@ -230,8 +230,8 @@ public partial class CommerceImplementService : ICommerceService
         WorkSchedulesFindResponseModel get_balance = default!;
 
         await Task.WhenAll([
-                Task.Run(async () => {res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateAttendance); }),
-                Task.Run(async () => {get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray()); })
+                Task.Run(async () => { res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateAttendanceOrder); }),
+                Task.Run(async () => { get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray()); })
             ]);
 
         List<WorkScheduleModel> b_list = get_balance.WorksSchedulesViews();

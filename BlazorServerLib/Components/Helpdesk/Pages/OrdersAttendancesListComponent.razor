@@ -12,7 +12,7 @@
     <tbody>
         @foreach (OrderAttendanceModelDB row in OrdersAttendances.OrderBy(x => x.DateExecute).ThenBy(x => x.StartPart))
         {
-            <tr title="@row.CreatedAtUTC.GetHumanDateTime()">
+            <tr title="создан: @row.CreatedAtUTC.GetHumanDateTime()">
                 <td>@row.DateExecute</td>
                 <td>@row.StartPart - @row.EndPart</td>
                 <td>
