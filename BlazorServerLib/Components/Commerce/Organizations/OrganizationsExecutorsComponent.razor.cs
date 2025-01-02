@@ -177,7 +177,7 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
 
         await SetBusy(token: token);
         TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>> res = await CommerceRepo.UsersOrganizationsSelect(req);
-        //await SetBusy(false, token);
+        await SetBusy(false, token);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (!res.Success() || res.Response is null)
             return new TableData<UserOrganizationModelDB>() { TotalItems = 0, Items = [] };

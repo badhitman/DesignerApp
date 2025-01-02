@@ -21,7 +21,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
     protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
 
-    IEnumerable<WorkScheduleModel>? Elements;
+    List<WorkScheduleModel>? Elements;
     List<WorkScheduleModel> _selectedSlots = [];
 
     void Closed(MudChip<WorkScheduleModel> chip)
@@ -110,10 +110,11 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
         };
         await SetBusy();
         TResponseModel<WorkSchedulesFindResponseModel> res = await CommerceRepo.WorksSchedulesFind(req);
-        Elements = res.Response?.WorksSchedulesViews()
+        Elements = res.Response?.WorksSchedulesViews
             .OrderBy(x => x.Date)
             .ThenBy(x => x.StartPart)
-            .ThenBy(x => x.Organization.Name);
+            .ThenBy(x => x.Organization.Name)
+            .ToList();
 
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
@@ -151,7 +152,8 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        await Task.WhenAll([ServerReload(), LoadOffers(0), ReadCurrentUser()]);
+        await Task.WhenAll([LoadOffers(0), ReadCurrentUser()]);
+        await ServerReload();
         SelectedOfferId = AllOffers.FirstOrDefault()?.Id;
     }
 

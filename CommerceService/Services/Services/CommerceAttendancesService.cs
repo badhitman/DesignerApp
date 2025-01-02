@@ -101,11 +101,10 @@ public partial class CommerceImplementService : ICommerceService
                 EndDate = ordersDb.Max(x => x.DateExecute),
             };
             WorkSchedulesFindResponseModel get_balance = await WorkSchedulesFind(get_balance_req, ordersDb.Select(x => x.OrganizationId).Distinct().ToArray());
-            List<WorkScheduleModel> b_list = get_balance.WorksSchedulesViews();
 
             foreach (IGrouping<int, WorkScheduleModel> rec in ordersDb.GroupBy(x => x.OrganizationId))
             {
-                List<WorkScheduleModel> b_crop_list = b_list
+                List<WorkScheduleModel> b_crop_list = get_balance.WorksSchedulesViews
                     .Where(x => x.Organization.Id == rec.Key)
                     .ToList();
 
@@ -179,7 +178,7 @@ public partial class CommerceImplementService : ICommerceService
         List<OrderAttendanceModelDB> recordsForAdd = records.Select(x => new OrderAttendanceModelDB()
         {
             AuthorIdentityUserId = workSchedules.SenderActionUserId,
-            ContextName = GlobalStaticConstants.Routes.ATTENDANCE_CONTROLLER_NAME,
+            ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
             DateExecute = x.Date,
             StartPart = TimeOnly.FromTimeSpan(x.StartPart),
             EndPart = TimeOnly.FromTimeSpan(x.EndPart),
@@ -226,8 +225,8 @@ public partial class CommerceImplementService : ICommerceService
             EndDate = records.Max(x => x.Date),
         };
 
+        List<WorkScheduleModel> WorksSchedulesViews = default!;
         TResponseModel<int?> res_RubricIssueForCreateOrder = default!;
-        WorkSchedulesFindResponseModel get_balance = default!;
         TResponseModel<string?>? CommerceNewOrderSubjectNotification = null, CommerceNewOrderBodyNotification = null, CommerceNewOrderBodyNotificationTelegram = null;
 
         List<Task> tasks = [
@@ -235,7 +234,11 @@ public partial class CommerceImplementService : ICommerceService
                 Task.Run(async () => { CommerceNewOrderBodyNotification = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotification); }),
                 Task.Run(async () => { CommerceNewOrderBodyNotificationTelegram = await StorageTransmissionRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewOrderBodyNotificationTelegram); }),
                 Task.Run(async () => { res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateAttendanceOrder); }),
-                Task.Run(async () => { get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray()); })
+                Task.Run(async () =>
+                {
+                    WorkSchedulesFindResponseModel get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray());
+                    WorksSchedulesViews = get_balance.WorksSchedulesViews;
+                })
             ];
 
         if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
@@ -255,10 +258,9 @@ public partial class CommerceImplementService : ICommerceService
         await Task.WhenAll(tasks);
         tasks.Clear();
 
-        List<WorkScheduleModel> b_list = get_balance.WorksSchedulesViews();
         foreach (IGrouping<int, WorkScheduleModel> rec in records.GroupBy(x => x.Organization.Id))
         {
-            List<WorkScheduleModel> b_crop_list = b_list
+            List<WorkScheduleModel> b_crop_list = WorksSchedulesViews
                 .Where(x => x.Organization.Id == rec.Key)
                 .ToList();
 
@@ -360,10 +362,6 @@ public partial class CommerceImplementService : ICommerceService
     /// <inheritdoc/>
     public async Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req, int[]? organizationsFilter = null)
     {
-        WorkSchedulesFindResponseModel res = new(req.StartDate, req.EndDate);
-        if (res.StartDate > res.EndDate)
-            return res;
-
         List<DayOfWeek> weeks = [];
         List<DateOnly> dates = [];
 
@@ -374,16 +372,21 @@ public partial class CommerceImplementService : ICommerceService
                 weeks.Add(dt.DayOfWeek);
         }
 
+        List<WeeklyScheduleModelDB> WeeklySchedules = default!;
+        List<CalendarScheduleModelDB> CalendarsSchedules = default!;
+        List<OrderAttendanceModelDB> OrdersAttendances = default!;
+        List<OrganizationContractorModel> OrganizationsContracts = default!;
+
         await Task.WhenAll([
             Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-                res.WeeklySchedules = await context.WeeklySchedules
+                WeeklySchedules = await context.WeeklySchedules
                     .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && (x.OfferId == null || req.OffersFilter.Any(y => y == x.OfferId)) && weeks.Contains(x.Weekday))
                     .ToListAsync();
              }),
             Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-                res.CalendarsSchedules = await context.CalendarsSchedules
+                CalendarsSchedules = await context.CalendarsSchedules
                     .Where(x => !x.IsDisabled && x.ContextName == req.ContextName && dates.Contains(x.DateScheduleCalendar))
                     .ToListAsync();
             }),
@@ -398,16 +401,10 @@ public partial class CommerceImplementService : ICommerceService
                 if(organizationsFilter is not null && organizationsFilter.Length != 0)
                      q = q.Where(x => organizationsFilter.Any(y => y == x.OrganizationId));
 
-                res.OrdersAttendances = await q
+                OrdersAttendances = await q
                     .Include(x => x.Offer!)
                     .ThenInclude(x => x.Nomenclature)
-                    .Select(x => new OrderAnonModelDB()
-                    {
-                        DateExecute = x.DateExecute,
-                        StartPart = x.StartPart,
-                        EndPart = x.EndPart,
-                        Offer = x.Offer!,
-                    }).ToListAsync();
+                    .ToListAsync();
             }),
             Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
@@ -419,14 +416,14 @@ public partial class CommerceImplementService : ICommerceService
                 if(organizationsFilter is not null && organizationsFilter.Length != 0)
                      q = q.Where(x => organizationsFilter.Any(y => y == x.OrganizationId));
 
-                res.OrganizationsContracts = await q
+                OrganizationsContracts = await q
                     .Include(x => x.Offer)
                     .Include(x => x.Organization!)
                     .ToListAsync();
             })
         ]);
 
-        return res;
+        return new WorkSchedulesFindResponseModel(req.StartDate, req.EndDate, WeeklySchedules, CalendarsSchedules, OrganizationsContracts, OrdersAttendances);
     }
 
     /// <inheritdoc/>

@@ -12,43 +12,22 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// WorkSchedulesFindResponseModel
     /// </summary>
-    public WorkSchedulesFindResponseModel(DateOnly start, DateOnly end)
+    public WorkSchedulesFindResponseModel(DateOnly start, DateOnly end, List<WeeklyScheduleModelDB> WeeklySchedules, List<CalendarScheduleModelDB> CalendarsSchedules, List<OrganizationContractorModel> OrganizationsContracts, List<OrderAttendanceModelDB> OrdersAttendances)
     {
         StartDate = start;
         EndDate = end;
-    }
 
-    /// <summary>
-    /// Schedules
-    /// </summary>
-    public List<WeeklyScheduleModelDB> WeeklySchedules { get; set; } = default!;
+        WorksSchedulesViews = [];
 
-    /// <summary>
-    /// Calendars
-    /// </summary>
-    public List<CalendarScheduleModelDB> CalendarsSchedules { get; set; } = default!;
+        if(OrganizationsContracts is null)
+            return;
 
-    /// <summary>
-    /// OrganizationsContracts
-    /// </summary>
-    public List<OrganizationContractorModel> OrganizationsContracts { get; set; } = default!;
-
-    /// <summary>
-    /// OrdersAttendances
-    /// </summary>
-    public List<OrderAnonModelDB> OrdersAttendances { get; set; } = default!;
-
-    /// <summary>
-    /// WorkSchedulesViews
-    /// </summary>
-    public List<WorkScheduleModel> WorksSchedulesViews()
-    {
-        List<WorkScheduleModel> res = [];
         if (OrganizationsContracts.Count == 0)
-            return res;
+            return;
 
         DateOnly _currentDate = DateOnly.FromDateTime(DateTime.Now);
         TimeSpan _currentTime = DateTime.Now.TimeOfDay;
+
         bool _is_current;
         for (DateOnly dt = StartDate; dt <= EndDate; dt = dt.AddDays(1))
         {
@@ -61,7 +40,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
 
             CalendarScheduleModelDB[] calendar_sch = CalendarsSchedules
                 .Where(x => !x.IsDisabled && x.DateScheduleCalendar == dt)
-                .Where(x => !_is_current || x.StartPart >= _currentTime || x.EndPart >= _currentTime)
+               .Where(x => !_is_current || x.StartPart >= _currentTime || x.EndPart >= _currentTime)
                 .ToArray();
 
             if (weekly_sch.Length == 0 && calendar_sch.Length == 0)
@@ -76,7 +55,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
                 {
                     foreach (OrganizationContractorModel oc in organizations_query)
                     {
-                        if (res.Any(x => x.Date == dt && x.StartPart == csi.StartPart && x.EndPart == csi.EndPart && x.Organization.Id == oc.Organization!.Id))
+                        if (WorksSchedulesViews.Any(x => x.Date == dt && x.StartPart == csi.StartPart && x.EndPart == csi.EndPart && x.Organization.Id == oc.Organization!.Id))
                             continue;
 
                         WorkScheduleModel _el = new()
@@ -90,7 +69,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
                             Date = dt,
                         };
 
-                        res.Add(_el);
+                        WorksSchedulesViews.Add(_el);
                     }
                 }
                 continue;
@@ -100,7 +79,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
             {
                 foreach (OrganizationContractorModel oc in organizations_query)
                 {
-                    if (res.Any(x => x.Date == dt && x.StartPart == csi.StartPart && x.EndPart == csi.EndPart && x.Organization.Id == oc.Organization!.Id))
+                    if (WorksSchedulesViews.Any(x => x.Date == dt && x.StartPart == csi.StartPart && x.EndPart == csi.EndPart && x.Organization.Id == oc.Organization!.Id))
                         continue;
 
                     WorkScheduleModel _el = new()
@@ -114,11 +93,37 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
                         Date = dt,
                     };
 
-                    res.Add(_el);
+                    WorksSchedulesViews.Add(_el);
                 }
             }
         }
 
-        return res;
+        static bool QueryFindIndex(OrderAttendanceModelDB order, WorkScheduleModel ws)
+        {
+            return
+                order.DateExecute == ws.Date &&
+                order.OrganizationId == ws.Organization.Id &&
+                order.StartPart.ToTimeSpan() == ws.StartPart &&
+                order.EndPart.ToTimeSpan() == ws.EndPart;
+        }
+
+        if (OrdersAttendances is not null && OrdersAttendances.Count != 0)
+            OrdersAttendances.ForEach(x =>
+            {
+                int _i = WorksSchedulesViews.FindIndex(y => QueryFindIndex(x, y));
+
+                if (_i == -1)
+                    return;
+
+                if (WorksSchedulesViews[_i].QueueCapacity > 0)
+                    WorksSchedulesViews[_i].QueueCapacity--;
+                else if (WorksSchedulesViews[_i].QueueCapacity == 1)
+                    WorksSchedulesViews.RemoveAt(_i);
+            });
     }
+
+    /// <summary>
+    /// WorkSchedulesViews
+    /// </summary>
+    public List<WorkScheduleModel> WorksSchedulesViews { get; set; }
 }
