@@ -12,22 +12,16 @@ namespace Transmission.Receives.commerce;
 /// RowsForOrderDeleteReceive
 /// </summary>
 public class RowsForOrderDeleteReceive(ICommerceService commRepo, ILogger<RowsForOrderDeleteReceive> loggerRepo)
-    : IResponseReceive<int[]?, bool?>
+    : IResponseReceive<int[], TResponseModel<bool>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RowsDeleteFromOrderCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> ResponseHandleAction(int[]? req)
+    public async Task<TResponseModel<bool>?> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<bool> res = await commRepo.RowsForOrderDelete(req);
-
-        return new()
-        {
-            Messages = res.Messages,
-            Response = res.Response,
-        };
+        return await commRepo.RowsForOrderDelete(req);
     }
 }

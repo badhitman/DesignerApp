@@ -37,7 +37,7 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// SelectUsersOfIdentity
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<UserInfoModel>?>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req);
+    public Task<TPaginationResponseModel<UserInfoModel>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req);
 
     /// <summary>
     /// Отправка Email

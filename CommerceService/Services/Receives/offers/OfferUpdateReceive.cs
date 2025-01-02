@@ -3,12 +3,10 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
-using Newtonsoft.Json;
-using System.Text.RegularExpressions;
-using System.Globalization;
 
 namespace Transmission.Receives.commerce;
 
@@ -16,17 +14,17 @@ namespace Transmission.Receives.commerce;
 /// OfferUpdateReceive
 /// </summary>
 public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OfferUpdateReceive> loggerRepo)
-    : IResponseReceive<OfferModelDB?, int?>
+    : IResponseReceive<OfferModelDB, TResponseModel<int>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OfferUpdateCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(OfferModelDB? req)
+    public async Task<TResponseModel<int>?> ResponseHandleAction(OfferModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<int?> res = new() { Response = 0 };
+        TResponseModel<int> res = new() { Response = 0 };
 
         if (!string.IsNullOrWhiteSpace(req.QuantitiesTemplate))
         {

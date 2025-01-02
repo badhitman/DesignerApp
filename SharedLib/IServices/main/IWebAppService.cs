@@ -13,7 +13,7 @@ public interface IWebAppService
     /// <summary>
     /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
     /// </summary>
-    public Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user);
+    public Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user);
 
     /// <summary>
     /// Получить состояние процедуры привязки аккаунта Telegram к учётной записи сайта (если есть).

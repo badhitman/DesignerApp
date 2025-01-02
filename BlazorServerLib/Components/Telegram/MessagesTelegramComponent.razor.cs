@@ -48,7 +48,7 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
     private async Task<TableData<MessageTelegramModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         await SetBusy();
-        TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>> rest_message = await TelegramRepo
+        TPaginationResponseModel<MessageTelegramModelDB> rest_message = await TelegramRepo
             .MessagesListTelegram(new TPaginationRequestModel<SearchMessagesChatModel>()
             {
                 Payload = new() { ChatId = ChatId, SearchQuery = SearchStringQuery },
@@ -59,11 +59,10 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
             });
 
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(rest_message.Messages);
 
         if (rest_message.Response is null)
             return new TableData<MessageTelegramModelDB>() { TotalItems = 0, Items = [] };
 
-        return new TableData<MessageTelegramModelDB>() { TotalItems = rest_message.Response.TotalRowsCount, Items = rest_message.Response.Response };
+        return new TableData<MessageTelegramModelDB>() { TotalItems = rest_message.TotalRowsCount, Items = rest_message.Response };
     }
 }

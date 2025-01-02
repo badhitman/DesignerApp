@@ -15,7 +15,9 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
     /// <inheritdoc/>
     public async Task<TResponseModel<List<T>?>> ReadParameters<T>(StorageMetadataModel[] req)
     {
-        TResponseModel<List<StorageCloudParameterPayloadModel>?> response_payload = await rabbitClient.MqRemoteCall<List<StorageCloudParameterPayloadModel>?>(GlobalStaticConstants.TransmissionQueues.ReadCloudParametersReceive, req);
+        TResponseMQModel<List<StorageCloudParameterPayloadModel>?> response_payload = await rabbitClient
+            .MqRemoteCall<List<StorageCloudParameterPayloadModel>?>(GlobalStaticConstants.TransmissionQueues.ReadCloudParametersReceive, req);
+
         TResponseModel<List<T>?> res = new();
         if (!response_payload.Success())
         {
@@ -100,7 +102,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
         => await rabbitClient.MqRemoteCall<FileContentModel>(GlobalStaticConstants.TransmissionQueues.ReadFileReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
+    public async Task<TPaginationResponseModel<StorageFileModelDB>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<StorageFileModelDB>>(GlobalStaticConstants.TransmissionQueues.FilesSelectReceive, req);
 
     /// <inheritdoc/>
@@ -108,7 +110,7 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
         => await rabbitClient.MqRemoteCall<FilesAreaMetadataModel[]>(GlobalStaticConstants.TransmissionQueues.FilesAreaGetMetadataReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<TagModelDB>>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
+    public async Task<TPaginationResponseModel<TagModelDB>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<TagModelDB>>(GlobalStaticConstants.TransmissionQueues.TagsSelectReceive, req);
 
     /// <inheritdoc/>

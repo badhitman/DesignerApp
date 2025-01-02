@@ -16,6 +16,23 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> OrderAttendance(TAuthRequestModel<int> req)
+    {
+        TResponseModel<UserInfoModel[]?> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
+        {
+            ResponseBaseModel res = new();
+            res.AddRangeMessages(actorRes.Messages);
+            return res;
+        }
+        UserInfoModel actor = actorRes.Response[0];
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req)
     {
         if (req.IssueIds.Length == 0)
@@ -45,14 +62,22 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(StatusChangeRequestModel req)
+    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
     {
         TResponseModel<bool> res = new();
+        TResponseModel<UserInfoModel[]?> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
+        {
+            res.AddRangeMessages(actorRes.Messages);
+            return res;
+        }
+        UserInfoModel actor = actorRes.Response[0];
+
         string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         List<OrderAttendanceModelDB> ordersDb = await context
             .OrdersAttendances
-            .Where(x => x.HelpdeskId == req.DocumentId && x.StatusDocument != req.Step)
+            .Where(x => x.HelpdeskId == req.Payload.DocumentId && x.StatusDocument != req.Payload.Step)
             .ToListAsync();
 
         if (ordersDb.Count == 0)
@@ -86,7 +111,7 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        if (req.Step == StatusesDocumentsEnum.Canceled)
+        if (req.Payload.Step == StatusesDocumentsEnum.Canceled)
         {
             ordersDb.ForEach(x => x.StatusDocument = StatusesDocumentsEnum.Canceled);
             context.UpdateRange(ordersDb);
@@ -134,9 +159,9 @@ public partial class CommerceImplementService : ICommerceService
         await context.SaveChangesAsync();
         res.Response = await context
                             .OrdersAttendances
-                            .Where(x => x.HelpdeskId == req.DocumentId)
+                            .Where(x => x.HelpdeskId == req.Payload.DocumentId)
                             .ExecuteUpdateAsync(set => set
-                            .SetProperty(p => p.StatusDocument, req.Step)
+                            .SetProperty(p => p.StatusDocument, req.Payload.Step)
                             .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
                             .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
 
@@ -172,7 +197,6 @@ public partial class CommerceImplementService : ICommerceService
             res.AddRangeMessages(actorRes.Messages);
             return res;
         }
-
         UserInfoModel actor = actorRes.Response[0];
 
         List<OrderAttendanceModelDB> recordsForAdd = records.Select(x => new OrderAttendanceModelDB()
@@ -427,7 +451,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
+    public async Task<TPaginationResponseModel<WeeklyScheduleModelDB>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
@@ -458,15 +482,12 @@ public partial class CommerceImplementService : ICommerceService
 
         return new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
-            },
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
         };
     }
 
@@ -515,22 +536,18 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WeeklyScheduleModelDB[]>> WeeklySchedulesRead(int[] req)
+    public async Task<WeeklyScheduleModelDB[]> WeeklySchedulesRead(int[] req)
     {
-        TResponseModel<WeeklyScheduleModelDB[]> res = new();
-
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         IQueryable<WeeklyScheduleModelDB> q = context
             .WeeklySchedules
             .Where(x => req.Any(y => x.Id == y));
 
-        res.Response = await q
+        return await q
             .Include(x => x.Offer!)
             .Include(x => x.Nomenclature)
             .ToArrayAsync();
-
-        return res;
     }
 
     /// <inheritdoc/>
@@ -579,7 +596,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> CalendarSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
+    public async Task<TPaginationResponseModel<CalendarScheduleModelDB>> CalendarsSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
@@ -614,20 +631,17 @@ public partial class CommerceImplementService : ICommerceService
 
         return new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = [.. res]
-            },
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = [.. res],
         };
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<CalendarScheduleModelDB[]>> CalendarSchedulesRead(int[] req)
+    public async Task<TResponseModel<CalendarScheduleModelDB[]>> CalendarsSchedulesRead(int[] req)
     {
         TResponseModel<CalendarScheduleModelDB[]> res = new();
 

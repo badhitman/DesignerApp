@@ -13,19 +13,18 @@ namespace Transmission.Receives.telegram;
 /// Получить чаты
 /// </summary>
 public class ChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
-    : IResponseReceive<TPaginationRequestModel<string?>?, TPaginationResponseModel<ChatTelegramModelDB>?>
+    : IResponseReceive<TPaginationRequestModel<string?>, TPaginationResponseModel<ChatTelegramModelDB>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ChatsSelectTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?>> ResponseHandleAction(TPaginationRequestModel<string?>? req)
+    public async Task<TPaginationResponseModel<ChatTelegramModelDB>?> ResponseHandleAction(TPaginationRequestModel<string?>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         if (req.PageSize < 5)
             req.PageSize = 5;
 
-        TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?> res = new();
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
 
         IQueryable<ChatTelegramModelDB> q = context
@@ -50,7 +49,7 @@ public class ChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tg
                 : q.OrderByDescending(x => x.LastUpdateUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
         }
 
-        res.Response = new()
+        return new()
         {
             PageNum = req.PageNum,
             PageSize = req.PageSize,
@@ -59,7 +58,5 @@ public class ChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tg
             TotalRowsCount = await q.CountAsync(),
             Response = await TakePart(q, req.SortingDirection).ToListAsync(),
         };
-
-        return res;
     }
 }

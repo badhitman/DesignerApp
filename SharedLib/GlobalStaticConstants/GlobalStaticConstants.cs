@@ -39,6 +39,9 @@ public static partial class GlobalStaticConstants
     public static JsonSerializerSettings JsonSerializerSettings
         => new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
 
+    /*
+     // public static readonly JsonSerializerOptions SerializerOptions = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
+     */
 
     /// <summary>
     /// Русская (ru-RU) CultureInfo

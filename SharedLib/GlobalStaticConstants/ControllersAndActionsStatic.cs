@@ -979,11 +979,6 @@ public static partial class GlobalStaticConstants
         public const string REGISTRATION_ACTION_NAME = "registration";
 
         /// <summary>
-        /// Статус
-        /// </summary>
-        public const string STATUS_ACTION_NAME = "status";
-
-        /// <summary>
         /// 
         /// </summary>
         public const string MAIN_ACTION_NAME = "main";

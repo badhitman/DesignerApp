@@ -13,19 +13,18 @@ namespace Transmission.Receives.telegram;
 /// Получить ошибки отправок сообщений (для чатов)
 /// </summary>
 public class ErrorsForChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
-    : IResponseReceive<TPaginationRequestModel<long[]?>?, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>
+    : IResponseReceive<TPaginationRequestModel<long[]>, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ErrorsForChatsSelectTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>> ResponseHandleAction(TPaginationRequestModel<long[]?>? req)
+    public async Task<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?> ResponseHandleAction(TPaginationRequestModel<long[]>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         if (req.PageSize < 5)
             req.PageSize = 5;
 
-        TResponseModel<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?> res = new();
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
 
         IQueryable<ErrorSendingMessageTelegramBotModelDB> q = context
@@ -42,7 +41,7 @@ public class ErrorsForChatsSelectTelegramReceive(IDbContextFactory<TelegramBotCo
                 : q.OrderByDescending(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
         }
 
-        res.Response = new()
+        return new()
         {
             PageNum = req.PageNum,
             PageSize = req.PageSize,
@@ -51,7 +50,5 @@ public class ErrorsForChatsSelectTelegramReceive(IDbContextFactory<TelegramBotCo
             TotalRowsCount = await q.CountAsync(),
             Response = await TakePart(q, req.SortingDirection).ToListAsync(),
         };
-
-        return res;
     }
 }

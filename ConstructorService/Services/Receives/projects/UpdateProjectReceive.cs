@@ -11,19 +11,15 @@ namespace Transmission.Receives.constructor;
 /// UpdateProjectReceive
 /// </summary>
 public class UpdateProjectReceive(IConstructorService conService)
-    : IResponseReceive<ProjectViewModel?, object?>
+    : IResponseReceive<ProjectViewModel, ResponseBaseModel>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateProjectReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(ProjectViewModel? req)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(ProjectViewModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        ResponseBaseModel res = await conService.UpdateProject(req);
-        return new()
-        {
-            Messages = res.Messages
-        };
+        return await conService.UpdateProject(req);
     }
 }

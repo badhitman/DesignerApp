@@ -92,7 +92,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Подбор заказов (поиск по параметрам)
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
+    public Task<TPaginationResponseModel<OrderDocumentModelDB>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
 
     /// <summary>
     /// Получить заказы (по заявкам)
@@ -107,12 +107,12 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OffersSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req);
+    public Task<TPaginationResponseModel<OfferModelDB>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req);
 
     /// <summary>
     /// NomenclaturesSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req);
+    public Task<TPaginationResponseModel<NomenclatureModelDB>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req);
 
     /// <summary>
     /// OrganizationUpdate
@@ -145,7 +145,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Подбор организаций с параметрами запроса
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
+    public Task<TPaginationResponseModel<OrganizationModelDB>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
 
     /// <summary>
     /// Обновление параметров организации. Юридические параметры не меняются, а формируется запрос на изменение, которое должна подтвердить сторонняя система
@@ -160,7 +160,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// UsersOrganizationsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req);
+    public Task<TPaginationResponseModel<UserOrganizationModelDB>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req);
 
     /// <summary>
     /// UserOrganizationUpdate

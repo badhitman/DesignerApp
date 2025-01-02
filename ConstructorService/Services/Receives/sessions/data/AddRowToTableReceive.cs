@@ -12,20 +12,15 @@ namespace Transmission.Receives.constructor;
 /// </summary>
 /// <returns>Номер п/п (начиная с 1) созданной строки</returns>
 public class AddRowToTableReceive(IConstructorService conService)
-    : IResponseReceive<FieldSessionDocumentDataBaseModel?, int?>
+    : IResponseReceive<FieldSessionDocumentDataBaseModel, TResponseStrictModel<int>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.AddRowToTableReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(FieldSessionDocumentDataBaseModel? payload)
+    public async Task<TResponseStrictModel<int>?> ResponseHandleAction(FieldSessionDocumentDataBaseModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        TResponseStrictModel<int> res = await conService.AddRowToTable(payload);
-        return new()
-        {
-            Response = res.Response,
-            Messages = res.Messages
-        };
+        return await conService.AddRowToTable(payload);
     }
 }

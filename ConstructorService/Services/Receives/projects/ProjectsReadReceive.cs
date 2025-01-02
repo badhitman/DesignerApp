@@ -11,15 +11,15 @@ namespace Transmission.Receives.constructor;
 /// ProjectsReadReceive
 /// </summary>
 public class ProjectsReadReceive(IConstructorService conService)
-: IResponseReceive<int[]?, ProjectModelDb[]?>
+: IResponseReceive<int[], ProjectModelDb[]>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ProjectsReadReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ProjectModelDb[]?>> ResponseHandleAction(int[]? req)
+    public async Task<ProjectModelDb[]?> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return new() { Response = await conService.ReadProjects(req) };
+        return await conService.ReadProjects(req);
     }
 }

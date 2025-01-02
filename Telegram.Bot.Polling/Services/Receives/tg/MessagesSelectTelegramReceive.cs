@@ -14,19 +14,18 @@ namespace Transmission.Receives.telegram;
 /// Получить сообщения из чата
 /// </summary>
 public class MessagesSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>
+    : IResponseReceive<TPaginationRequestModel<SearchMessagesChatModel>, TPaginationResponseModel<MessageTelegramModelDB>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessagesChatsSelectTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?>> ResponseHandleAction(TPaginationRequestModel<SearchMessagesChatModel>? req)
+    public async Task<TPaginationResponseModel<MessageTelegramModelDB>?> ResponseHandleAction(TPaginationRequestModel<SearchMessagesChatModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         if (req.PageSize < 5)
             req.PageSize = 5;
 
-        TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>?> res = new();
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
         IQueryable<MessageTelegramModelDB> q = context
             .Messages
@@ -56,7 +55,7 @@ public class MessagesSelectTelegramReceive(IDbContextFactory<TelegramBotContext>
                 : q.OrderByDescending(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
         }
 
-        res.Response = new()
+        return new()
         {
             PageNum = req.PageNum,
             PageSize = req.PageSize,
@@ -65,7 +64,5 @@ public class MessagesSelectTelegramReceive(IDbContextFactory<TelegramBotContext>
             TotalRowsCount = await q.CountAsync(),
             Response = await Include(TakePart(q, req.SortingDirection)).ToListAsync()
         };
-
-        return res;
     }
 }

@@ -11,19 +11,15 @@ namespace Transmission.Receives.constructor;
 /// Удалить схему документа
 /// </summary>
 public class DeleteDocumentSchemeReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, object?>
+    : IResponseReceive<TAuthRequestModel<int>, ResponseBaseModel>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteDocumentSchemeReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.DeleteDocumentScheme(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.DeleteDocumentScheme(payload);
     }
 }

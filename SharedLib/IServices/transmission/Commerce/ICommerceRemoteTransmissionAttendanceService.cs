@@ -7,6 +7,11 @@ namespace SharedLib;
 public partial interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// Смена статуса заявки (бронь)
+    /// </summary>
+    public Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req);
+
+    /// <summary>
     /// Получить заказы (по заявкам)
     /// </summary>
     public Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssues(OrdersByIssuesSelectRequestModel req);
@@ -34,7 +39,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkSchedulesSelect select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req);
+    public Task<TPaginationResponseModel<WeeklyScheduleModelDB>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req);
 
     /// <summary>
     /// WorkSchedulesRead read
@@ -49,7 +54,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkScheduleCalendarsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> CalendarsSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req);
+    public Task<TPaginationResponseModel<CalendarScheduleModelDB>> CalendarsSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req);
 
     /// <summary>
     /// WorkScheduleCalendarsRead

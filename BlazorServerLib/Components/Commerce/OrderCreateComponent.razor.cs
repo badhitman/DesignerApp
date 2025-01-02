@@ -419,13 +419,12 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         };
 
         await SetBusy();
-        TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        TPaginationResponseModel<OrganizationModelDB> res = await CommerceRepo.OrganizationsSelect(req);
         await SetBusy(false);
 
-        if (!res.Success() || res.Response?.Response is null || res.Response.Response.Count == 0)
+        if (res.Response is null || res.Response.Count == 0)
             return;
-        Organizations = res.Response.Response;
+        Organizations = res.Response;
 
         await SetBusy();
         TResponseModel<OrderDocumentModelDB?> current_cart = await StorageRepo

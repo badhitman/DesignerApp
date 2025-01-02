@@ -73,10 +73,9 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseAut
 
         SimplePaginationRequestModel req = new();
         await SetBusy();
-        
-        TResponseModel<TPaginationResponseModel<DocumentSchemeConstructorModelDB>> rest = await ConstructorRepo.RequestDocumentsSchemes(new() { RequestPayload = req, ProjectId = ParentFormsPage.MainProject.Id }, token);
+
+        data = await ConstructorRepo.RequestDocumentsSchemes(new() { RequestPayload = req, ProjectId = ParentFormsPage.MainProject.Id }, token);
         IsBusyProgress = false;
-        data = rest.Response ?? throw new Exception();
 
         if (data.Response is null)
         {

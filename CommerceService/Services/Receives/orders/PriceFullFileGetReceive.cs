@@ -11,17 +11,14 @@ namespace Transmission.Receives.commerce;
 /// PriceFullFileGetReceive
 /// </summary>
 public class PriceFullFileGetReceive(ICommerceService commRepo)
-: IResponseReceive<object?, FileAttachModel?>
+    : IResponseReceive<object, FileAttachModel>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PriceFullFileGetCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<FileAttachModel?>> ResponseHandleAction(object? req)
+    public async Task<FileAttachModel?> ResponseHandleAction(object? req)
     {
-        return new()
-        {
-            Response = await commRepo.GetFullPriceFile(),
-        };
+        return await commRepo.GetFullPriceFile();
     }
 }

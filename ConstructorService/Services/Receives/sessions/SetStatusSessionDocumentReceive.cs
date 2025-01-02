@@ -11,19 +11,15 @@ namespace Transmission.Receives.constructor;
 /// Установить статус сессии (от менеджера)
 /// </summary>
 public class SetStatusSessionDocumentReceive(IConstructorService conService)
-    : IResponseReceive<SessionStatusModel?, object?>
+    : IResponseReceive<SessionStatusModel, ResponseBaseModel>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetStatusSessionDocumentReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(SessionStatusModel? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(SessionStatusModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.SetStatusSessionDocument(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.SetStatusSessionDocument(payload);
     }
 }

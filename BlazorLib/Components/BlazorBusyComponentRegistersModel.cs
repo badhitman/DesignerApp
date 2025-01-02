@@ -57,14 +57,14 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
             SortingDirection = VerticalDirectionsEnum.Up,
         };
         await SetBusy();
-        TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>> rubrics = await CommerceRepo.OffersRegistersSelect(reqData);
+        TPaginationResponseModel<OfferAvailabilityModelDB> rubrics = await CommerceRepo.OffersRegistersSelect(reqData);
         await SetBusy(false);
-        SnackbarRepo.ShowMessagesResponse(rubrics.Messages);
-        if (rubrics.Success() && rubrics.Response is not null && rubrics.Response.Response.Count != 0)
+        
+        if (rubrics.Response is not null && rubrics.Response.Count != 0)
         {
             lock (this)
             {
-                RegistersCache.AddRange(rubrics.Response.Response.Where(x => !RegistersCache.Any(y => y.Id == x.Id)));
+                RegistersCache.AddRange(rubrics.Response.Where(x => !RegistersCache.Any(y => y.Id == x.Id)));
             }
         }
     }

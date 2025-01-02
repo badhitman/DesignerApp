@@ -166,11 +166,10 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
 
-        TResponseModel<TPaginationResponseModel<StorageFileModelDB>> rest = await FilesRepo
+        TPaginationResponseModel<StorageFileModelDB> rest = await FilesRepo
             .FilesSelect(req);
 
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        List<StorageFileModelDB> data = rest.Response!.Response!;
+        List<StorageFileModelDB> data = rest.Response;
         IsBusyProgress = false;
         return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
     }

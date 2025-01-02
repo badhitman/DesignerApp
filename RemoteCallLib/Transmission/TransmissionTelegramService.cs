@@ -20,7 +20,7 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<ChatTelegramModelDB[]?>(GlobalStaticConstants.TransmissionQueues.ChatsReadTelegramReceive, chats_ids);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?>> ChatsSelect(TPaginationRequestModel<string?> req)
+    public async Task<TPaginationResponseModel<ChatTelegramModelDB>?> ChatsSelect(TPaginationRequestModel<string?> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<ChatTelegramModelDB>?>(GlobalStaticConstants.TransmissionQueues.ChatsSelectTelegramReceive, req);
 
     /// <inheritdoc/>
@@ -28,7 +28,7 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<ChatTelegramModelDB?>(GlobalStaticConstants.TransmissionQueues.ChatReadTelegramReceive, chatIdDb);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]?> req)
+    public async Task<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]?> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>(GlobalStaticConstants.TransmissionQueues.ErrorsForChatsSelectTelegramReceive, req);
 
     /// <inheritdoc/>
@@ -48,7 +48,7 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<string?>(GlobalStaticConstants.TransmissionQueues.GetBotTokenTelegramReceive);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>>> MessagesListTelegram(TPaginationRequestModel<SearchMessagesChatModel> req)
+    public async Task<TPaginationResponseModel<MessageTelegramModelDB>?> MessagesListTelegram(TPaginationRequestModel<SearchMessagesChatModel> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<MessageTelegramModelDB>>(GlobalStaticConstants.TransmissionQueues.MessagesChatsSelectTelegramReceive, req);
 
     /// <inheritdoc/>

@@ -176,15 +176,15 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
             req.Payload.OrganizationsFilter = [Organization.Id];
 
         await SetBusy(token: token);
-        TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>> res = await CommerceRepo.UsersOrganizationsSelect(req);
+        TPaginationResponseModel<UserOrganizationModelDB> res = await CommerceRepo.UsersOrganizationsSelect(req);
         await SetBusy(false, token);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (!res.Success() || res.Response is null)
+        
+        if ( res.Response is null)
             return new TableData<UserOrganizationModelDB>() { TotalItems = 0, Items = [] };
 
-        await CacheUsersUpdate(res.Response.Response.Select(x => x.UserPersonIdentityId));
+        await CacheUsersUpdate(res.Response.Select(x => x.UserPersonIdentityId));
 
         // Return the data
-        return new TableData<UserOrganizationModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+        return new TableData<UserOrganizationModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };
     }
 }

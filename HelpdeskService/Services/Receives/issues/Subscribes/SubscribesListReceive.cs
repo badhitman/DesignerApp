@@ -21,13 +21,13 @@ public class SubscribesListReceive(
     /// <summary>
     /// Подписчики на события в обращении/инциденте
     /// </summary>
-    public async Task<TResponseModel<SubscriberIssueHelpdeskModelDB[]?>> ResponseHandleAction(TAuthRequestModel<int>? req)
+    public async Task<SubscriberIssueHelpdeskModelDB[]?> ResponseHandleAction(TAuthRequestModel<int>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<SubscriberIssueHelpdeskModelDB[]?> res = new();
+
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
+            return [];
 
         UserInfoModel actor = rest.Response[0];
 
@@ -38,9 +38,8 @@ public class SubscribesListReceive(
         });
 
         if (!issues_data.Success() || issues_data.Response is null)
-            return new() { Messages = issues_data.Messages };
+            return [];
 
-        res.Response = [.. issues_data.Response.SelectMany(x => x.Subscribers!)];
-        return res;
+        return [.. issues_data.Response.SelectMany(x => x.Subscribers!)];
     }
 }

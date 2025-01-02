@@ -81,8 +81,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseAuthModel
         };
         await SetBusy();
         await Task.Delay(1, token);
-        TResponseModel<TPaginationResponseModel<SessionOfDocumentDataModelDB>> res_sd = await ConstructorRepo.RequestSessionsDocuments(req);
-        TPaginationResponseModel<SessionOfDocumentDataModelDB> rest = res_sd.Response ?? throw new Exception();
+        TPaginationResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.RequestSessionsDocuments(req);
         IsBusyProgress = false;
 
         if (rest.Response is null)

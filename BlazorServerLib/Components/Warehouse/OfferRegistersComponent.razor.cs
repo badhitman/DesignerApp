@@ -43,14 +43,13 @@ public partial class OfferRegistersComponent : BlazorBusyComponentRubricsCachedM
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>> rest = await CommerceRepo.OffersRegistersSelect(req);
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-
+        TPaginationResponseModel<OfferAvailabilityModelDB> rest = await CommerceRepo.OffersRegistersSelect(req);
+        
         if (rest.Response is not null)
         {
-            await CacheRubricsUpdate(rest.Response.Response.Select(x => x.WarehouseId));
+            await CacheRubricsUpdate(rest.Response.Select(x => x.WarehouseId));
             await SetBusy(false, token: token);
-            return new TableData<OfferAvailabilityModelDB>() { TotalItems = rest.Response.TotalRowsCount, Items = rest.Response.Response };
+            return new TableData<OfferAvailabilityModelDB>() { TotalItems = rest.TotalRowsCount, Items = rest.Response };
         }
 
         await SetBusy(false, token: token);
