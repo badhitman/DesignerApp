@@ -109,11 +109,6 @@ public static partial class GlobalStaticConstants
     public const string SESSION_TOKEN_NAME = "token";
 
     /// <summary>
-    /// Префикс имени MQ очереди
-    /// </summary>
-    public static string TransmissionQueueNamePrefix { get; set; } = "Transmission.Receives";
-
-    /// <summary>
     /// DocumentName - property
     /// </summary>
     public const string DocumentNameProperty = "[DocumentNameProperty]";

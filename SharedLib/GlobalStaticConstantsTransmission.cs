@@ -10,6 +10,11 @@ namespace SharedLib;
 public static partial class GlobalStaticConstants
 {
     /// <summary>
+    /// Префикс имени MQ очереди
+    /// </summary>
+    public static string TransmissionQueueNamePrefix { get; set; } = "Transmission.Receives";
+
+    /// <summary>
     /// Transmission MQ queues
     /// </summary>
     public static class TransmissionQueues
