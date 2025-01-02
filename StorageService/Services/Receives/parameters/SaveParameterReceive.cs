@@ -32,7 +32,8 @@ public class SaveParameterReceive(ISerializeStorage serializeStorageRepo,ILogger
             SerializedDataJson = req.SerializedDataJson,
             PrefixPropertyName = req.PrefixPropertyName is null ? null : rx.Replace(req.PrefixPropertyName.Trim(), " "),
             OwnerPrimaryKey = req.OwnerPrimaryKey,
-            TypeName = req.TypeName,
+            TypeName = req.TypeName, 
+            CreatedAt = DateTime.UtcNow,
         };
 
         return await serializeStorageRepo.FlushParameter(store_db, req.TrimHistory);
