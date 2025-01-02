@@ -19,15 +19,14 @@ public partial class CommerceImplementService : ICommerceService
     public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(StatusChangeRequestModel req)
     {
         TResponseModel<bool> res = new();
-
         string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        OrderAttendanceModelDB[] ordersDb = await context
+        List<OrderAttendanceModelDB> ordersDb = await context
             .OrdersAttendances
             .Where(x => x.HelpdeskId == req.DocumentId && x.StatusDocument != req.Step)
-            .ToArrayAsync();
+            .ToListAsync();
 
-        if (ordersDb.Length == 0)
+        if (ordersDb.Count == 0)
         {
             msg = "Изменение не требуется (документы для обновления отсутствуют)";
             loggerRepo.LogInformation($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
@@ -58,57 +57,52 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        //int[] _offersIds = [.. _allOffersOfDocuments.Select(x => x.Row.OfferId).Distinct()];
-        //List<OfferAvailabilityModelDB> registersOffersDb = await context.OffersAvailability
-        //   .Where(x => _offersIds.Any(y => y == x.OfferId))
-        //   .Include(x => x.Offer)
-        //   .ToListAsync();
+        if (req.Step == StatusesDocumentsEnum.Canceled)
+        {
+            ordersDb.ForEach(x => x.StatusDocument = StatusesDocumentsEnum.Canceled);
+            context.UpdateRange(ordersDb);
+        }
+        else
+        {
+            WorkSchedulesFindRequestModel get_balance_req = new()
+            {
+                OffersFilter = ordersDb.Select(x => x.OfferId).Distinct().ToArray(),
+                ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
+                StartDate = ordersDb.Min(x => x.DateExecute),
+                EndDate = ordersDb.Max(x => x.DateExecute),
+            };
+            WorkSchedulesFindResponseModel get_balance = await WorkSchedulesFind(get_balance_req, ordersDb.Select(x => x.OrganizationId).Distinct().ToArray());
+            List<WorkScheduleModel> b_list = get_balance.WorksSchedulesViews();
 
-        //_allOffersOfDocuments.ForEach(async offerEl =>
-        //{
-        //    int _i = registersOffersDb.FindIndex(y => y.WarehouseId == offerEl.WarehouseId && y.OfferId == offerEl.Row.OfferId);
+            foreach (IGrouping<int, WorkScheduleModel> rec in ordersDb.GroupBy(x => x.OrganizationId))
+            {
+                List<WorkScheduleModel> b_crop_list = b_list
+                    .Where(x => x.Organization.Id == rec.Key)
+                    .ToList();
 
-        //    if (req.Step == StatusesDocumentsEnum.Canceled)
-        //    {
-        //        if (_i < 0)
-        //        {
-        //            OfferAvailabilityModelDB _newReg = new()
-        //            {
-        //                WarehouseId = offerEl.WarehouseId,
-        //                NomenclatureId = offerEl.Row.NomenclatureId,
-        //                OfferId = offerEl.Row.OfferId,
-        //                Quantity = offerEl.Row.Quantity,
-        //            };
-        //            registersOffersDb.Add(_newReg);
-        //            await context.AddAsync(_newReg);
-        //        }
-        //        else
-        //            registersOffersDb[_i].Quantity += offerEl.Row.Quantity;
-        //    }
-        //    else
-        //    {
-        //        if (_i < 0)
-        //            res.AddError($"Отсутствуют остатки [{offerEl.Row.Offer?.Name}] - списание {{{offerEl.Row.Quantity}}} невозможно");
-        //        else if (registersOffersDb[_i].Quantity < offerEl.Row.Quantity)
-        //            res.AddError($"Недостаточно остатков [{offerEl.Row.Offer?.Name}] - списание {{{offerEl.Row.Quantity}}} отклонено");
-        //        else
-        //            registersOffersDb[_i].Quantity -= offerEl.Row.Quantity;
-        //    }
-        //});
+                foreach (WorkScheduleModel subNode in rec)
+                {
+                    int cbInd = b_crop_list.FindIndex(x => x == subNode);
+                    if (cbInd < 0)
+                        res.AddError($"Не хватает слота: {subNode}! Удалите или измените данную запись");
+                    else if (b_crop_list[cbInd].QueueCapacity == 1)
+                        b_crop_list.RemoveAt(cbInd);
+                    else if (b_crop_list[cbInd].QueueCapacity > 1)
+                        b_crop_list[cbInd].QueueCapacity--;
+                }
+            }
 
-        //if (!res.Success())
-        //{
-        //    await transaction.RollbackAsync();
-        //    msg = $"Отказ изменения статуса: не достаточно остатков!";
-        //    loggerRepo.LogError($"{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}\n{JsonConvert.SerializeObject(res, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
-        //    res.AddError(msg);
-        //    return res;
-        //}
+            if (!res.Success())
+            {
+                await transaction.RollbackAsync();
+                msg = $"Не удалось сформировать резерв:";
+                loggerRepo.LogError($"{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}\n{JsonConvert.SerializeObject(res, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+                res.AddError(msg);
+                return res;
+            }
+        }
 
-        //context.UpdateRange(registersOffersDb.Where(x => x.Id > 0));
-        if (offersLocked.Length != 0)
-            context.RemoveRange(offersLocked);
-
+        context.RemoveRange(offersLocked);
         await context.SaveChangesAsync();
         res.Response = await context
                             .OrdersAttendances
@@ -255,7 +249,7 @@ public partial class CommerceImplementService : ICommerceService
         if (!res.Success())
         {
             await transaction.RollbackAsync();
-            msg = $"Не удалось выполнить команду блокировки БД: ";
+            msg = $"Не удалось сформировать резерв: ";
             loggerRepo.LogError($"{msg}{JsonConvert.SerializeObject(workSchedules, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
             res.AddError(msg);
             return res;

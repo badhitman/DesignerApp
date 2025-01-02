@@ -47,6 +47,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
     public List<UserInfoModel> UsersIdentityDump = [];
 
     OrderDocumentModelDB[]? OrdersJournal;
+    OrderAttendanceModelDB[]? OrdersAttendancesJournal;
     bool ShowingTelegramArea;
     bool ShowingWappiArea;
     bool ShowingAttachmentsIssueArea;
@@ -59,8 +60,9 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
                 Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingTelegramArea); ShowingTelegramArea = res.Response == true; }),
                 Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingAttachmentsIssuesArea); ShowingAttachmentsIssueArea = res.Response == true; }),
                 Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingWappiArea); ShowingWappiArea = res.Response == true; }),
-                Task.Run(ReadCurrentUser),
-                Task.Run(FindOrders),
+                ReadCurrentUser(),
+                FindOrders(),
+                FindOrdersAttendances(),
             ]);
         await ReadIssue();
         await FlushUsersDump();
@@ -76,9 +78,25 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
         };
 
         TResponseModel<OrderDocumentModelDB[]> res = await CommRepo.OrdersByIssues(req);
-        
+
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         OrdersJournal = res.Response is null
+            ? null
+            : [.. res.Response];
+    }
+
+    async Task FindOrdersAttendances()
+    {
+        OrdersByIssuesSelectRequestModel req = new()
+        {
+            IncludeExternalData = true,
+            IssueIds = [Id],
+        };
+
+        TResponseModel<OrderAttendanceModelDB[]> res = await CommRepo.OrdersAttendancesByIssues(req);
+
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        OrdersAttendancesJournal = res.Response is null
             ? null
             : [.. res.Response];
     }

@@ -1,0 +1,39 @@
+@using MudBlazor
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Время</th>
+            <th>Услуга</th>
+            <th>Исполнитель</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (OrderAttendanceModelDB row in OrdersAttendances.OrderBy(x => x.DateExecute).ThenBy(x => x.StartPart))
+        {
+            <tr title="@row.CreatedAtUTC.GetHumanDateTime()">
+                <td>@row.DateExecute</td>
+                <td>@row.StartPart - @row.EndPart</td>
+                <td>
+                    @row.Offer?.GetName()
+                    <sup>@row.Nomenclature?.Name</sup>
+                </td>
+                <td>@row.Organization?.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired]
+    public required OrderAttendanceModelDB[] OrdersAttendances { get; set; }
+
+
+    OrderAttendanceModelDB[] currentOrdersAttendances = default!;
+
+    protected override void OnInitialized()
+    {
+        currentOrdersAttendances = OrdersAttendances;
+    }
+}
