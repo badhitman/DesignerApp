@@ -405,7 +405,7 @@ public partial class CommerceImplementService(
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            msg = "Не удалось выполнить команду блокировки БД: ";
+            msg = $"Не удалось выполнить команду блокировки БД {nameof(RowsForOrderDelete)}: ";
             res.AddError($"{msg}{ex.Message}");
             loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
             return res;
@@ -551,7 +551,7 @@ public partial class CommerceImplementService(
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                msg = "Не удалось выполнить команду блокировки БД: ";
+                msg = $"Не удалось выполнить команду блокировки БД {nameof(OrderUpdate)}: ";
                 loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
                 res.AddError($"{msg}{ex.Message}");
                 return res;
@@ -786,7 +786,7 @@ public partial class CommerceImplementService(
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            msg = $"Не удалось выполнить команду блокировки БД: ";
+            msg = $"Не удалось выполнить команду блокировки БД {nameof(StatusesOrdersChangeByHelpdeskDocumentId)}: ";
             loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
             res.AddError($"{msg}{ex.Message}");
             return res;

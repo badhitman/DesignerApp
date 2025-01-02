@@ -66,7 +66,7 @@ public partial class CommerceImplementService : ICommerceService
         LockTransactionModelDB[] offersLocked = ordersDb
            .Select(x => new LockTransactionModelDB()
            {
-               LockerName = nameof(OrderAttendanceModelDB),
+               LockerName = $"{nameof(OrderAttendanceModelDB)} /{x.DateExecute}: {x.StartPart}-{x.EndPart}",
                LockerId = x.OfferId,
                RubricId = x.OrganizationId
            }).ToArray();
@@ -80,7 +80,7 @@ public partial class CommerceImplementService : ICommerceService
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            msg = $"Не удалось выполнить команду блокировки БД: ";
+            msg = $"Не удалось выполнить команду блокировки БД {nameof(StatusesOrdersAttendancesChangeByHelpdeskDocumentId)}: ";
             loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
             res.AddError($"{msg}{ex.Message}");
             return res;
@@ -197,7 +197,7 @@ public partial class CommerceImplementService : ICommerceService
         LockTransactionModelDB[] offersLocked = recordsForAdd
             .Select(x => new LockTransactionModelDB()
             {
-                LockerName = nameof(OrderAttendanceModelDB),
+                LockerName = $"{nameof(OrderAttendanceModelDB)} /{x.DateExecute}: {x.StartPart}-{x.EndPart}",
                 LockerId = x.OfferId,
                 RubricId = x.OrganizationId
             }).ToArray();
@@ -211,7 +211,7 @@ public partial class CommerceImplementService : ICommerceService
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            msg = $"Не удалось выполнить команду блокировки БД: ";
+            msg = $"Не удалось выполнить команду блокировки БД {nameof(CreateAttendanceRecords)}: ";
             loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(workSchedules, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
             res.AddError(msg);
             return res;

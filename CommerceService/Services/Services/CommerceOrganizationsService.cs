@@ -543,8 +543,6 @@ public partial class CommerceImplementService : ICommerceService
             : q.OrderByDescending(x => x.Organization!.Name);
         }
 
-
-
         IQueryable<UserOrganizationModelDB> pq = q
             .Skip(req.PageNum * req.PageSize)
             .Take(req.PageSize);
