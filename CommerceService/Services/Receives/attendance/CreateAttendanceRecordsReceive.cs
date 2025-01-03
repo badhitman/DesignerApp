@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// CreateAttendanceRecords
 /// </summary>
 public class CreateAttendanceRecordsReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo)
-    : IResponseReceive<TAuthRequestModel<CreateAttendanceRequestModel>, object>
+    : IResponseReceive<TAuthRequestModel<CreateAttendanceRequestModel>, ResponseBaseModel>
 {
     /// <summary>
     /// Обновление WorkScheduleCalendar
@@ -22,7 +22,7 @@ public class CreateAttendanceRecordsReceive(ICommerceService commerceRepo, ILogg
 /// <summary>
     /// Обновление WorkScheduleCalendar
     /// </summary>
-    public async Task<object?> ResponseHandleAction(TAuthRequestModel<CreateAttendanceRequestModel>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<CreateAttendanceRequestModel>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(payload, GlobalStaticConstants.JsonSerializerSettings)}");

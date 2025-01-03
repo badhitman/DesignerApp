@@ -19,7 +19,7 @@ public class SendEmailReceive(IMailProviderService mailRepo, ILogger<SendEmailRe
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SendEmailReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ResponseHandleAction(SendEmailRequestModel? email_send)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(SendEmailRequestModel? email_send)
     {
         ArgumentNullException.ThrowIfNull(email_send);
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(email_send, GlobalStaticConstants.JsonSerializerSettings)}");
