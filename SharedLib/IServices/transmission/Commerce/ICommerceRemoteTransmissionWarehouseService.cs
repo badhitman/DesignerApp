@@ -14,22 +14,22 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Удалить строку складского документа
     /// </summary>
-    public Task<TResponseModel<bool>> RowsForWarehouseDelete(int[] req);
+    public Task<bool> RowsForWarehouseDelete(int[] req);
 
     /// <summary>
     /// Обновить строку складского документа
     /// </summary>
-    public Task<TResponseModel<int>> RowForWarehouseUpdate(RowOfWarehouseDocumentModelDB row);
+    public Task<int> RowForWarehouseUpdate(RowOfWarehouseDocumentModelDB row);
 
     /// <summary>
     /// WarehousesRead
     /// </summary>
-    public Task<TResponseModel<WarehouseDocumentModelDB[]>> WarehousesRead(int[] ids);
+    public Task<WarehouseDocumentModelDB[]> WarehousesRead(int[] ids);
 
     /// <summary>
     /// WarehouseUpdate
     /// </summary>
-    public Task<TResponseModel<int>> WarehouseUpdate(WarehouseDocumentModelDB document);
+    public Task<int> WarehouseUpdate(WarehouseDocumentModelDB document);
 
     /// <summary>
     /// Подбор складских документов (поиск по параметрам)

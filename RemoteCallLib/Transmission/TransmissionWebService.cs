@@ -12,40 +12,40 @@ namespace RemoteCallLib;
 public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTransmissionService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<TelegramBotConfigModel?>> GetWebConfig()
+    public async Task<TelegramBotConfigModel?> GetWebConfig()
         => await rabbitClient.MqRemoteCall<TelegramBotConfigModel?>(GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentity(IEnumerable<string> ids_users)
+    public async Task<UserInfoModel[]?> GetUsersIdentity(IEnumerable<string> ids_users)
         => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityReceive, ids_users);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> SendEmail(SendEmailRequestModel req, bool waitResponse = true)
+    public async Task<bool> SendEmail(SendEmailRequestModel req, bool waitResponse = true)
         => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.SendEmailReceive, req, waitResponse);
 
     #region tg
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true)
-        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive, req, waitResponse);
+    public async Task<ResponseBaseModel> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive, req, waitResponse);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user)
+    public async Task<CheckTelegramUserAuthModel?> CheckTelegramUser(CheckTelegramUserHandleModel user)
         => await rabbitClient.MqRemoteCall<CheckTelegramUserAuthModel?>(GlobalStaticConstants.TransmissionQueues.UpdateTelegramUserReceive, user);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> TelegramJoinAccountDelete(long telegramId)
-        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteReceive, telegramId);
+    public async Task<ResponseBaseModel> TelegramJoinAccountDelete(long telegramId)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteReceive, telegramId);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage)
-        => await rabbitClient.MqRemoteCall<object?>(GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive, setMainMessage);
+    public async Task<ResponseBaseModel> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive, setMainMessage);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TelegramUserBaseModel?>> GetTelegramUser(long telegramUserId)
+    public async Task<TelegramUserBaseModel?> GetTelegramUser(long telegramUserId)
         => await rabbitClient.MqRemoteCall<TelegramUserBaseModel?>(GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive, telegramUserId);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> GetUserIdentityByTelegram(long[] ids_users)
+    public async Task<UserInfoModel[]?> GetUserIdentityByTelegram(long[] ids_users)
         => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByTelegramIdsReceive, ids_users);
 
     /// <inheritdoc/>
@@ -53,11 +53,11 @@ public class TransmissionWebService(IRabbitClient rabbitClient) : IWebRemoteTran
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<UserInfoModel>?>(GlobalStaticConstants.TransmissionQueues.SelectUsersOfIdentityReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string[]?>> SetRoleForUser(SetRoleFoeUserRequestModel req)
+    public async Task<string[]?> SetRoleForUser(SetRoleFoeUserRequestModel req)
         => await rabbitClient.MqRemoteCall<string[]?>(GlobalStaticConstants.TransmissionQueues.SetRoleForUserOfIdentityReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> GetUsersIdentityByEmails(IEnumerable<string> ids_emails)
+    public async Task<UserInfoModel[]?> GetUsersIdentityByEmails(IEnumerable<string> ids_emails)
         => await rabbitClient.MqRemoteCall<UserInfoModel[]?>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByEmailReceive, ids_emails);
     #endregion
 }

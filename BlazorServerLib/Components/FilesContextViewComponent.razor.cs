@@ -171,7 +171,7 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
 
         List<StorageFileModelDB> data = rest.Response;
         IsBusyProgress = false;
-        return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
+        return new() { TotalItems = rest.TotalRowsCount, Items = data };
     }
 
     private void OnSearch(string text)

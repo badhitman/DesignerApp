@@ -12,82 +12,82 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Price Full - file get
     /// </summary>
-    public Task<TResponseModel<FileAttachModel>> PriceFullFileGet();
+    public Task<FileAttachModel> PriceFullFileGet();
 
     /// <summary>
     /// Order report get
     /// </summary>
-    public Task<TResponseModel<FileAttachModel>> OrderReportGet(TAuthRequestModel<int> req);
+    public Task<FileAttachModel> OrderReportGet(TAuthRequestModel<int> req);
 
     /// <summary>
     /// Status order change
     /// </summary>
-    public Task<TResponseModel<bool>> StatusOrderChange(StatusChangeRequestModel id, bool waitResponse = true);
+    public Task<bool> StatusOrderChange(StatusChangeRequestModel id, bool waitResponse = true);
 
     /// <summary>
     /// Удалить ценообразование
     /// </summary>
-    public Task<TResponseModel<bool>> PriceRuleDelete(int id);
+    public Task<bool> PriceRuleDelete(int id);
 
     /// <summary>
     /// Обновить/создать правило ценообразования
     /// </summary>
-    public Task<TResponseModel<int>> PriceRuleUpdate(PriceRuleForOfferModelDB price_rule);
+    public Task<int> PriceRuleUpdate(PriceRuleForOfferModelDB price_rule);
 
     /// <summary>
     /// Обновить/создать платёжный документ
     /// </summary>
-    public Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment);
+    public Task<int> PaymentDocumentUpdate(PaymentDocumentBaseModel payment);
 
     /// <summary>
     /// PricesRulesGetForOffers
     /// </summary>
-    public Task<TResponseModel<PriceRuleForOfferModelDB[]>> PricesRulesGetForOffers(int[] ids);
+    public Task<PriceRuleForOfferModelDB[]> PricesRulesGetForOffers(int[] ids);
 
     /// <summary>
     /// OffersRead
     /// </summary>
-    public Task<TResponseModel<OfferModelDB[]>> OffersRead(int[] ids);
+    public Task<OfferModelDB[]> OffersRead(int[] ids);
 
     /// <summary>
     /// NomenclaturesRead
     /// </summary>
-    public Task<TResponseModel<NomenclatureModelDB[]>> NomenclaturesRead(int[] ids);
+    public Task<NomenclatureModelDB[]> NomenclaturesRead(int[] ids);
 
     /// <summary>
     /// Прочитать данные адресов организаций по их идентификаторам
     /// </summary>
-    public Task<TResponseModel<AddressOrganizationModelDB[]>> AddressesOrganizationsRead(int[] ids);
+    public Task<AddressOrganizationModelDB[]> AddressesOrganizationsRead(int[] ids);
 
     /// <summary>
     /// AttachmentDeleteFromOrder
     /// </summary>
-    public Task<TResponseModel<bool>> AttachmentDeleteFromOrder(int req);
+    public Task<bool> AttachmentDeleteFromOrder(int req);
 
     /// <summary>
     /// Удалить платёжный документ
     /// </summary>
-    public Task<TResponseModel<bool>> PaymentDocumentDelete(int req);
+    public Task<bool> PaymentDocumentDelete(int req);
 
     /// <summary>
     /// Удалить строку заказа
     /// </summary>
-    public Task<TResponseModel<bool>> RowsForOrderDelete(int[] req);
+    public Task<bool> RowsForOrderDelete(int[] req);
 
     /// <summary>
     /// Обновить строку заказа
     /// </summary>
-    public Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB row);
+    public Task<int> RowForOrderUpdate(RowOfOrderDocumentModelDB row);
 
     /// <summary>
     /// OrdersRead
     /// </summary>
-    public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(int[] orders_ids);
+    public Task<OrderDocumentModelDB[]> OrdersRead(int[] orders_ids);
 
     /// <summary>
     /// OrderUpdate
     /// </summary>
-    public Task<TResponseModel<int>> OrderUpdate(OrderDocumentModelDB order);
+    public Task<int> OrderUpdate(OrderDocumentModelDB order);
 
     /// <summary>
     /// Подбор заказов (поиск по параметрам)
@@ -97,12 +97,12 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Получить заказы (по заявкам)
     /// </summary>
-    public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssues(OrdersByIssuesSelectRequestModel req);
+    public Task<OrderDocumentModelDB[]> OrdersByIssues(OrdersByIssuesSelectRequestModel req);
 
     /// <summary>
     /// Удалить Offer
     /// </summary>
-    public Task<TResponseModel<bool>> OfferDelete(int req);
+    public Task<bool> OfferDelete(int req);
 
     /// <summary>
     /// OffersSelect
@@ -117,7 +117,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OrganizationUpdate
     /// </summary>
-    public Task<TResponseModel<int>> OfferUpdate(OfferModelDB offer);
+    public Task<int> OfferUpdate(OfferModelDB offer);
 
     /// <summary>
     /// Установить реквизиты организации (+ сброс запроса редактирования)
@@ -125,7 +125,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <remarks>
     /// Если организация находиться в статусе запроса изменения реквизитов - этот признак обнуляется.
     /// </remarks>
-    public Task<TResponseModel<bool>> OrganizationSetLegal(OrganizationLegalModel org);
+    public Task<bool> OrganizationSetLegal(OrganizationLegalModel org);
 
     /// <summary>
     /// Удалить адрес организации
@@ -135,12 +135,12 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Обновить/Создать адрес организации
     /// </summary>
-    public Task<TResponseModel<int>> AddressOrganizationUpdate(AddressOrganizationBaseModel req);
+    public Task<int> AddressOrganizationUpdate(AddressOrganizationBaseModel req);
 
     /// <summary>
     /// Обновить/Создать товар
     /// </summary>
-    public Task<TResponseModel<int>> NomenclatureUpdateReceive(NomenclatureModelDB req);
+    public Task<int> NomenclatureUpdateReceive(NomenclatureModelDB req);
 
     /// <summary>
     /// Подбор организаций с параметрами запроса
@@ -150,12 +150,12 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Обновление параметров организации. Юридические параметры не меняются, а формируется запрос на изменение, которое должна подтвердить сторонняя система
     /// </summary>
-    public Task<TResponseModel<int>> OrganizationUpdate(TAuthRequestModel<OrganizationModelDB> org);
+    public Task<int> OrganizationUpdate(TAuthRequestModel<OrganizationModelDB> org);
 
     /// <summary>
     /// Прочитать данные организаций по их идентификаторам
     /// </summary>
-    public Task<TResponseModel<OrganizationModelDB[]>> OrganizationsRead(int[] organizations_ids);
+    public Task<OrganizationModelDB[]> OrganizationsRead(int[] organizations_ids);
 
     /// <summary>
     /// UsersOrganizationsSelect
@@ -165,10 +165,10 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// UserOrganizationUpdate
     /// </summary>
-    public Task<TResponseModel<int>> UserOrganizationUpdate(TAuthRequestModel<UserOrganizationModelDB> org);
+    public Task<int> UserOrganizationUpdate(TAuthRequestModel<UserOrganizationModelDB> org);
 
     /// <summary>
     /// UsersOrganizationsRead
     /// </summary>
-    public Task<TResponseModel<UserOrganizationModelDB[]>> UsersOrganizationsRead(int[] organizations_ids);
+    public Task<UserOrganizationModelDB[]> UsersOrganizationsRead(int[] organizations_ids);
 }
