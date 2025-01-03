@@ -36,7 +36,7 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
                 PageSize = page_size,
             });
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        
         if (rest.Response is not null)
         {
             TotalRowsCount = rest.TotalRowsCount;

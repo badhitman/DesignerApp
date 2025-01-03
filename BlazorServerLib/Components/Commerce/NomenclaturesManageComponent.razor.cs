@@ -76,7 +76,7 @@ public partial class NomenclaturesManageComponent : BlazorBusyComponentRegisters
 
         IsBusyProgress = false;
 
-        if ( res.Response is null)
+        if (res.Response is null)
             return new TableData<NomenclatureModelDB>() { TotalItems = 0, Items = [] };
 
         return new TableData<NomenclatureModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };

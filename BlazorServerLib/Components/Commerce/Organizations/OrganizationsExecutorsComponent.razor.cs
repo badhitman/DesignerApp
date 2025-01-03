@@ -178,8 +178,8 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
         await SetBusy(token: token);
         TPaginationResponseModel<UserOrganizationModelDB> res = await CommerceRepo.UsersOrganizationsSelect(req);
         await SetBusy(false, token);
-        
-        if ( res.Response is null)
+
+        if (res.Response is null)
             return new TableData<UserOrganizationModelDB>() { TotalItems = 0, Items = [] };
 
         await CacheUsersUpdate(res.Response.Select(x => x.UserPersonIdentityId));

@@ -96,11 +96,11 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
         };
 
         await SetBusy(token: token);
-        
+
         TPaginationResponseModel<OrderDocumentModelDB> res = await CommerceRepo.OrdersSelect(req);
         IsBusyProgress = false;
-        
-        if ( res.Response is null)
+
+        if (res.Response is null)
             return new TableData<OrderDocumentModelDB>() { TotalItems = 0, Items = [] };
 
         documentsPartData = res.Response;

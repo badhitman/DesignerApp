@@ -42,7 +42,7 @@ public partial class ErrorMessageTelegramBotComponent : BlazorBusyComponentBaseM
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         });
         IsBusyProgress = false;
-        
+
         if (err_res.Response is null)
             return new TableData<ErrorSendingMessageTelegramBotModelDB>() { TotalItems = 0, Items = [] };
 

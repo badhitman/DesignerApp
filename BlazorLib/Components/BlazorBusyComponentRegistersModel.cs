@@ -59,7 +59,7 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
         await SetBusy();
         TPaginationResponseModel<OfferAvailabilityModelDB> rubrics = await CommerceRepo.OffersRegistersSelect(reqData);
         await SetBusy(false);
-        
+
         if (rubrics.Response is not null && rubrics.Response.Count != 0)
         {
             lock (this)

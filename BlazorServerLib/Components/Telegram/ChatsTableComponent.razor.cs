@@ -93,7 +93,7 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
                     });
         IsBusyProgress = false;
 
-        if ( issues_users_res.Response is null || issues_users_res.Response.Count == 0)
+        if (issues_users_res.Response is null || issues_users_res.Response.Count == 0)
             return;
 
         foreach (UserInfoModel us in users_res.Response)

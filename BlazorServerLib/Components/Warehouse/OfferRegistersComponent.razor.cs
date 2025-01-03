@@ -36,7 +36,7 @@ public partial class OfferRegistersComponent : BlazorBusyComponentRubricsCachedM
         {
             Payload = new()
             {
-                
+
             },
             PageNum = state.Page,
             PageSize = state.PageSize,
@@ -44,7 +44,7 @@ public partial class OfferRegistersComponent : BlazorBusyComponentRubricsCachedM
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         TPaginationResponseModel<OfferAvailabilityModelDB> rest = await CommerceRepo.OffersRegistersSelect(req);
-        
+
         if (rest.Response is not null)
         {
             await CacheRubricsUpdate(rest.Response.Select(x => x.WarehouseId));

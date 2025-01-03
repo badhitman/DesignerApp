@@ -48,7 +48,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseAut
     protected async Task DeleteDocument(int questionnaire_id)
     {
         await SetBusy();
-        
+
         ResponseBaseModel rest = await ConstructorRepo.DeleteDocumentScheme(new() { Payload = questionnaire_id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 

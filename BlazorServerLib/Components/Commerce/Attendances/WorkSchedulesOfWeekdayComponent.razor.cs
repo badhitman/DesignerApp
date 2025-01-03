@@ -65,7 +65,7 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
             req.Payload.OfferFilter = OfferCurrent.Id;
 
         TPaginationResponseModel<WeeklyScheduleModelDB> res = await CommerceRepo.WeeklySchedulesSelect(req);
-        
+
         if (res.Response is not null)
         {
             TotalElementsCount = res.TotalRowsCount;

@@ -82,9 +82,9 @@ public partial class OffersComponent : BlazorBusyComponentRegistersModel
         await SetBusy(token: token);
         TPaginationResponseModel<OfferModelDB> res = await CommerceRepo.OffersSelect(req);
 
-        if ( res.Response is not null)
+        if (res.Response is not null)
         {
-            await CacheRegistersUpdate(offers: res.Response.Select(x => x.Id),goods: []);
+            await CacheRegistersUpdate(offers: res.Response.Select(x => x.Id), goods: []);
             IsBusyProgress = false;
             return new TableData<OfferModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };
         }

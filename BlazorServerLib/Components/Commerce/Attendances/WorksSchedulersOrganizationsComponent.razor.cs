@@ -145,7 +145,7 @@ public partial class WorksSchedulersOrganizationsComponent : BlazorBusyComponent
         TPaginationResponseModel<OrganizationModelDB> res = await CommerceRepo.OrganizationsSelect(req);
         await SetBusy(false, token: token);
 
-        if ( res.Response is null)
+        if (res.Response is null)
             return new TableData<OrganizationModelDB>() { TotalItems = 0, Items = [] };
 
         return new TableData<OrganizationModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };

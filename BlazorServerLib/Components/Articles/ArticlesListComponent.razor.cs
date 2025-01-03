@@ -51,7 +51,7 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
             .ArticlesSelect(req);
 
         await SetBusy(false, token: token);
-        
+
         // Forward the provided token to methods which support it
         List<ArticleModelDB> data = rest.Response!;
         await UpdateUsersData(rest.Response.Select(x => x.AuthorIdentityId).ToArray());

@@ -44,7 +44,7 @@ public partial class AttendancesCatalogComponent : BlazorBusyComponentBaseAuthMo
         };
         await SetBusy(token: token);
         TPaginationResponseModel<NomenclatureModelDB> res = await CommerceRepo.NomenclaturesSelect(req);
-        
+
         IsBusyProgress = false;
 
         if (res.Response is null)

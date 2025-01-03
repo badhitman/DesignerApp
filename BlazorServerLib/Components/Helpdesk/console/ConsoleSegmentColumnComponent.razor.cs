@@ -81,7 +81,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
             }
         });
         IsBusyProgress = false;
-        
+
         if (res.Response is not null && res.Response.Count != 0)
         {
             totalCount = res.TotalRowsCount;
