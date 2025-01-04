@@ -17,7 +17,7 @@ public class GetUserIdentityByTelegramReceive(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IWebRemoteTransmissionService webRepo,
     IMemoryCache cache)
-    : IResponseReceive<long[]?, UserInfoModel[]?>
+    : IResponseReceive<long[], TResponseModel<UserInfoModel[]>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByTelegramIdsReceive;
@@ -25,11 +25,11 @@ public class GetUserIdentityByTelegramReceive(
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> ResponseHandleAction(long[]? tg_ids = null)
+    public async Task<TResponseModel<UserInfoModel[]>?> ResponseHandleAction(long[]? tg_ids = null)
     {
         ArgumentNullException.ThrowIfNull(tg_ids);
         tg_ids = [.. tg_ids.Where(x => x != 0)];
-        TResponseModel<UserInfoModel[]?> response = new() { Response = [] };
+        TResponseModel<UserInfoModel[]> response = new() { Response = [] };
         if (tg_ids.Length == 0)
         {
             response.AddError("Пустой запрос");

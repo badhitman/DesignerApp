@@ -13,13 +13,13 @@ namespace Transmission.Receives.web;
 /// TelegramJoinAccountConfirm receive
 /// </summary>
 public class TelegramJoinAccountConfirmReceive(IWebAppService tgWebRepo, ILogger<TelegramJoinAccountConfirmReceive> _logger)
-    : IResponseReceive<TelegramJoinAccountConfirmModel?, object?>
+    : IResponseReceive<TelegramJoinAccountConfirmModel, ResponseBaseModel>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TelegramJoinAccountConfirmModel? confirm)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TelegramJoinAccountConfirmModel? confirm)
     {
         TResponseModel<object?> res = new();
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(confirm, GlobalStaticConstants.JsonSerializerSettings)}");

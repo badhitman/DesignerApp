@@ -11,7 +11,7 @@ namespace Transmission.Receives.helpdesk;
 /// Прочитать рубрику (со всеми вышестоящими владельцами)
 /// </summary>
 public class RubricReadReceive(IHelpdeskService hdRepo)
-    : IResponseReceive<int?, List<RubricIssueHelpdeskModelDB>?>
+    : IResponseReceive<int, TResponseModel<List<RubricIssueHelpdeskModelDB>>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricForIssuesReadHelpdeskReceive;
@@ -19,10 +19,10 @@ public class RubricReadReceive(IHelpdeskService hdRepo)
     /// <summary>
     /// Прочитать рубрику (со всеми вышестоящими владельцами)
     /// </summary>
-    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> ResponseHandleAction(int? rubricId)
+    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>>?> ResponseHandleAction(int rubricId)
     {
-        ArgumentNullException.ThrowIfNull(rubricId);
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await hdRepo.RubricRead(rubricId.Value);
-        return res;
+#pragma warning disable CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
+        return await hdRepo.RubricRead(rubricId);
+#pragma warning restore CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
     }
 }

@@ -5,21 +5,21 @@
 using RemoteCallLib;
 using SharedLib;
 
-namespace Transmission.Receives.helpdesk;
+namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// StatusChangeReceive
+/// StatusesOrdersAttendancesChangeByHelpdeskDocumentIdReceive
 /// </summary>
-public class StatusChangeReceive(IHelpdeskService hdRepo)
+public class StatusesOrdersAttendancesChangeByHelpdeskDocumentIdReceive(ICommerceService commRepo)
     : IResponseReceive<TAuthRequestModel<StatusChangeRequestModel>, TResponseModel<bool>>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.StatusChangeIssueHelpdeskReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrdersAttendancesStatusesChangeByHelpdeskDocumentIdReceive;
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>?> ResponseHandleAction(TAuthRequestModel<StatusChangeRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await hdRepo.IssueStatusChange(req);
+        return await commRepo.StatusesOrdersAttendancesChangeByHelpdeskDocumentId(req);
     }
 }

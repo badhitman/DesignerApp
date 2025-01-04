@@ -14,7 +14,7 @@ namespace Transmission.Receives.commerce;
 /// Удалить оффер
 /// </summary>
 public class OfferDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OfferDeleteReceive> loggerRepo)
-    : IResponseReceive<int?, bool?>
+    : IResponseReceive<int, TResponseModel<bool>>
 {
     /// <summary>
     /// Удалить оффер
@@ -24,11 +24,10 @@ public class OfferDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFac
     /// <summary>
     /// Удалить оффер
     /// </summary>
-    public async Task<TResponseModel<bool?>> ResponseHandleAction(int? req)
+    public async Task<TResponseModel<bool>?> ResponseHandleAction(int req)
     {
-        ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<bool?> res = new() { Response = false };
+        TResponseModel<bool> res = new() { Response = false };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         int lc = await context

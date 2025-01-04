@@ -53,18 +53,18 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Проверка Telegram пользователя
     /// </summary>
-    public Task<TResponseModel<object?>> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true);
+    public Task<ResponseBaseModel> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true);
 
     /// <summary>
     /// Удалить связь Telegram аккаунта с учётной записью сайта
     /// </summary>
-    public Task<TResponseModel<object?>> TelegramJoinAccountDelete(long telegramId);
+    public Task<ResponseBaseModel> TelegramJoinAccountDelete(long telegramId);
 
     /// <summary>
     /// Основное сообщение в чате в котором Bot ведёт диалог с пользователем.
     /// Бот может отвечать новым сообщением или редактировать своё ранее отправленное в зависимости от ситуации.
     /// </summary>
-    public Task<TResponseModel<object?>> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage);
+    public Task<ResponseBaseModel> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage);
 
     /// <summary>
     /// Получить данные пользователя из кэша

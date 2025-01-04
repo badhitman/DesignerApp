@@ -12,17 +12,16 @@ namespace Transmission.Receives.web;
 /// Get web config - receive
 /// </summary>
 public class GetWebConfigReceive(IOptions<TelegramBotConfigModel> webConfig)
-    : IResponseReceive<object?, TelegramBotConfigModel?>
+    : IResponseReceive<object, TelegramBotConfigModel>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive;
 
     /// <inheritdoc/>
-    public Task<TResponseModel<TelegramBotConfigModel?>> ResponseHandleAction(object? payload = null)
+    public Task<TelegramBotConfigModel?> ResponseHandleAction(object? payload = null)
     {
-        return Task.FromResult(new TResponseModel<TelegramBotConfigModel?>()
-        {
-            Response = webConfig.Value
-        });
+#pragma warning disable CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
+        return Task.FromResult(webConfig.Value);
+#pragma warning restore CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
     }
 }

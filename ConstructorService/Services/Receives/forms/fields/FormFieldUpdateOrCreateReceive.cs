@@ -11,19 +11,15 @@ namespace Transmission.Receives.constructor;
 /// Обновить/создать поле формы (простой тип)
 /// </summary>
 public class FormFieldUpdateOrCreateReceive(IConstructorService conService)
-: IResponseReceive<TAuthRequestModel<FieldFormConstructorModelDB>?, object?>
+    : IResponseReceive<TAuthRequestModel<FieldFormConstructorModelDB>, ResponseBaseModel>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FormFieldUpdateOrCreateReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<FieldFormConstructorModelDB>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<FieldFormConstructorModelDB>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.FormFieldUpdateOrCreate(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.FormFieldUpdateOrCreate(payload);
     }
 }

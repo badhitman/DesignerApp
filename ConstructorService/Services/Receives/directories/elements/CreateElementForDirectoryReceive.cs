@@ -11,19 +11,15 @@ namespace Transmission.Receives.constructor;
 /// Создать элемент справочника
 /// </summary>
 public class CreateElementForDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<OwnedNameModel>?, int?>
+    : IResponseReceive<TAuthRequestModel<OwnedNameModel>, TResponseStrictModel<int>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CreateElementForDirectoryReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(TAuthRequestModel<OwnedNameModel>? payload)
+    public async Task<TResponseStrictModel<int>?> ResponseHandleAction(TAuthRequestModel<OwnedNameModel>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.CreateElementForDirectory(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.CreateElementForDirectory(payload);
     }
 }

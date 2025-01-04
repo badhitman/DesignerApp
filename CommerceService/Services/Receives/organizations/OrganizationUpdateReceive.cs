@@ -12,21 +12,16 @@ namespace Transmission.Receives.commerce;
 /// Organization update or create
 /// </summary>
 public class OrganizationUpdateReceive(ICommerceService commerceRepo, ILogger<OrganizationUpdateReceive> loggerRepo)
-    : IResponseReceive<TAuthRequestModel<OrganizationModelDB>?, int?>
+    : IResponseReceive<TAuthRequestModel<OrganizationModelDB>, TResponseModel<int>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrganizationUpdateOrCreateCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(TAuthRequestModel<OrganizationModelDB>? req)
+    public async Task<TResponseModel<int>?> ResponseHandleAction(TAuthRequestModel<OrganizationModelDB>? req)
     {
         ArgumentNullException.ThrowIfNull(req?.Payload);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<int> res = await commerceRepo.OrganizationUpdate(req);
-        return new()
-        {
-            Response = res.Response,
-            Messages = res.Messages
-        };
+        return await commerceRepo.OrganizationUpdate(req);
     }
 }

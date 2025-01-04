@@ -11,19 +11,15 @@ namespace Transmission.Receives.constructor;
 /// Удалить связь [таба/вкладки схемы документа] с [формой] 
 /// </summary>
 public class DeleteTabDocumentSchemeJoinFormReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, object?>
+    : IResponseReceive<TAuthRequestModel<int>, ResponseBaseModel>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteTabDocumentSchemeJoinFormReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.DeleteTabDocumentSchemeJoinForm(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.DeleteTabDocumentSchemeJoinForm(payload);
     }
 }

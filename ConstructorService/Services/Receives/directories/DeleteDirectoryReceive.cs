@@ -11,19 +11,15 @@ namespace Transmission.Receives.constructor;
 /// DeleteDirectoryReceive
 /// </summary>
 public class DeleteDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, object?>
+    : IResponseReceive<TAuthRequestModel<int>, ResponseBaseModel>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteDirectoryReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.DeleteDirectory(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.DeleteDirectory(payload);
     }
 }

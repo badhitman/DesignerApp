@@ -11,7 +11,7 @@ namespace Transmission.Receives.helpdesk;
 /// Получить рубрики
 /// </summary>
 public class RubricsGetReceive(IHelpdeskService hdRepo)
-    : IResponseReceive<int[]?, List<RubricIssueHelpdeskModelDB>?>
+    : IResponseReceive<int[], TResponseModel<List<RubricIssueHelpdeskModelDB>>>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricsForIssuesGetHelpdeskReceive;
@@ -19,14 +19,9 @@ public class RubricsGetReceive(IHelpdeskService hdRepo)
     /// <summary>
     /// Получить рубрики
     /// </summary>
-    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> ResponseHandleAction(int[]? rubricsIds)
+    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>>?> ResponseHandleAction(int[]? rubricsIds)
     {
         ArgumentNullException.ThrowIfNull(rubricsIds);
-        TResponseModel<List<RubricIssueHelpdeskModelDB>> res = await hdRepo.RubricsGet(rubricsIds);
-        return new()
-        {
-            Messages = res.Messages,
-            Response = res.Response,
-        };
+        return await hdRepo.RubricsGet(rubricsIds);
     }
 }
