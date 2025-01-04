@@ -11,15 +11,18 @@ namespace Transmission.Receives.constructor;
 /// ReadDirectoriesReceive
 /// </summary>
 public class ReadDirectoriesReceive(IConstructorService conService)
-    : IResponseReceive<int[], List<EntryNestedModel>>
+    : IResponseReceive<int[]?, EntryNestedModel[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadDirectoriesReceive;
 
     /// <inheritdoc/>
-    public async Task<List<EntryNestedModel>?> ResponseHandleAction(int[]? payload)
+    public async Task<TResponseModel<EntryNestedModel[]?>> ResponseHandleAction(int[]? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await conService.ReadDirectories(payload);
+        return new()
+        {
+            Response = [.. await conService.ReadDirectories(payload)],
+        };
     }
 }

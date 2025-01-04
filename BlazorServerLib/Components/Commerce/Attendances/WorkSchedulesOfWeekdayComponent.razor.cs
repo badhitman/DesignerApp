@@ -64,12 +64,12 @@ public partial class WorkSchedulesOfWeekdayComponent : BlazorBusyComponentBaseMo
         if (OfferCurrent is not null && OfferCurrent.Id != 0)
             req.Payload.OfferFilter = OfferCurrent.Id;
 
-        TPaginationResponseModel<WeeklyScheduleModelDB> res = await CommerceRepo.WeeklySchedulesSelect(req);
-
-        if (res.Response is not null)
+        TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>> res = await CommerceRepo.WeeklySchedulesSelect(req);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (res.Response?.Response is not null)
         {
-            TotalElementsCount = res.TotalRowsCount;
-            WorkSchedules.AddRange(res.Response);
+            TotalElementsCount = res.Response.TotalRowsCount;
+            WorkSchedules.AddRange(res.Response.Response);
         }
         await SetBusy(false);
     }

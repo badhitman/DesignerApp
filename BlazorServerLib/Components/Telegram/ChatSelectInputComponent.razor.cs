@@ -28,7 +28,7 @@ public partial class ChatSelectInputComponent : LazySelectorComponent<ChatTelegr
     public override async Task LoadPartData()
     {
         await SetBusy();
-        TPaginationResponseModel<ChatTelegramModelDB>? rest = await TelegramRepo
+        TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?> rest = await TelegramRepo
             .ChatsSelect(new()
             {
                 Payload = _selectedValueText,
@@ -36,10 +36,11 @@ public partial class ChatSelectInputComponent : LazySelectorComponent<ChatTelegr
                 PageSize = page_size,
             });
 
-        if (rest.Response is not null)
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (rest.Success() && rest.Response?.Response is not null)
         {
-            TotalRowsCount = rest.TotalRowsCount;
-            LoadedData.AddRange(rest.Response);
+            TotalRowsCount = rest.Response.TotalRowsCount;
+            LoadedData.AddRange(rest.Response.Response);
 
             if (PageNum == 0)
                 LoadedData.Insert(0, new() { Title = "OFF" });

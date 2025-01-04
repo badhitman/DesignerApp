@@ -14,22 +14,25 @@ namespace Transmission.Receives.commerce;
 /// PaymentDocumentDeleteReceive
 /// </summary>
 public class PaymentDocumentDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PaymentDocumentDeleteReceive> loggerRepo)
-    : IResponseReceive<int, bool>
+    : IResponseReceive<int?, bool?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PaymentDocumentDeleteCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<bool> ResponseHandleAction(int req)
+    public async Task<TResponseModel<bool?>> ResponseHandleAction(int? req)
     {
+        ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-
+        TResponseModel<bool?> res = new();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         DateTime dtu = DateTime.UtcNow;
         await context.OrdersDocuments
                 .Where(x => context.PaymentsDocuments.Any(y => y.Id == req && y.OrderDocumentId == x.Id))
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
-        return 0 < await context.PaymentsDocuments.Where(x => x.Id == req).ExecuteDeleteAsync();
+        res.Response = 0 < await context.PaymentsDocuments.Where(x => x.Id == req).ExecuteDeleteAsync();
+
+        return res;
     }
 }

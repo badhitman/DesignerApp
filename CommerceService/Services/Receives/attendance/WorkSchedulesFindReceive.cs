@@ -10,16 +10,21 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// WorkSchedulesFindReceive
 /// </summary>
-public class WorkSchedulesFindReceive(ICommerceService commerceRepo)
-    : IResponseReceive<WorkSchedulesFindRequestModel, WorkSchedulesFindResponseModel>
+public class WorkSchedulesFindReceive(ICommerceService commerceRepo) 
+    : IResponseReceive<WorkSchedulesFindRequestModel?, WorkSchedulesFindResponseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<WorkSchedulesFindResponseModel?> ResponseHandleAction(WorkSchedulesFindRequestModel? req)
+    public async Task<TResponseModel<WorkSchedulesFindResponseModel?>> ResponseHandleAction(WorkSchedulesFindRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await commerceRepo.WorkSchedulesFind(req);
+        WorkSchedulesFindResponseModel ws = await commerceRepo.WorkSchedulesFind(req);
+
+        return new()
+        {
+            Response = ws,
+        };
     }
 }

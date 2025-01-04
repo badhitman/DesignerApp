@@ -169,7 +169,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Подобрать формы
     /// </summary>
-    public Task<TPaginationResponseModel<FormConstructorModelDB>> SelectForms(SelectFormsModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<TPaginationResponseModel<FormConstructorModelDB>>> SelectForms(SelectFormsModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить форму
@@ -232,7 +232,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Запрос схем документов
     /// </summary>
-    public Task<TPaginationResponseModel<DocumentSchemeConstructorModelDB>> RequestDocumentsSchemes(RequestDocumentsSchemesModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<TPaginationResponseModel<DocumentSchemeConstructorModelDB>>> RequestDocumentsSchemes(RequestDocumentsSchemesModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить схему документа
@@ -316,7 +316,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Запросить порцию сессий (с пагинацией)
     /// </summary>
-    public Task<TPaginationResponseModel<SessionOfDocumentDataModelDB>> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<TPaginationResponseModel<SessionOfDocumentDataModelDB>>> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Найти порцию сессий по имени поля (с пагинацией)

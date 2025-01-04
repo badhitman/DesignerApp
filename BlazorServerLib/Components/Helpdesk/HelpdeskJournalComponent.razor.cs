@@ -105,16 +105,17 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseAuthModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
 
-        TPaginationResponseModel<IssueHelpdeskModel> rest = await HelpdeskRepo
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> rest = await HelpdeskRepo
             .IssuesSelect(req);
 
         IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         // Forward the provided token to methods which support it
-        List<IssueHelpdeskModel> data = rest.Response;
-        await UpdateUsersData(rest.Response.SelectMany(x => new string?[] { x.AuthorIdentityUserId, x.ExecutorIdentityUserId }).ToArray());
+        List<IssueHelpdeskModel> data = rest.Response!.Response!;
+        await UpdateUsersData(rest.Response.Response!.SelectMany(x => new string?[] { x.AuthorIdentityUserId, x.ExecutorIdentityUserId }).ToArray());
         // Return the data
-        return new() { TotalItems = rest.TotalRowsCount, Items = data };
+        return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
     }
 
     async Task UpdateUsersData(string?[] users_ids)

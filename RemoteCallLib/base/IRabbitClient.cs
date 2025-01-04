@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using SharedLib;
+
 namespace RemoteCallLib;
 
 /// <summary>
@@ -12,5 +14,5 @@ public interface IRabbitClient
     /// <summary>
     /// Удалённый вызов метода через MQ
     /// </summary>
-    public Task<T?> MqRemoteCall<T>(string queue, object? request = null, bool waitResponse = true);
+    public Task<TResponseModel<T>> MqRemoteCall<T>(string queue, object? request = null, bool waitResponse = true);
 }

@@ -11,14 +11,20 @@ namespace Transmission.Receives.constructor;
 /// Получить связь [таба/вкладки схемы документа] с [формой]
 /// </summary>
 public class GetTabDocumentSchemeJoinFormReceive(IConstructorService conService)
-    : IResponseReceive<int, TResponseModel<FormToTabJoinConstructorModelDB>>
+    : IResponseReceive<int?, FormToTabJoinConstructorModelDB?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetTabDocumentSchemeJoinFormReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<FormToTabJoinConstructorModelDB>?> ResponseHandleAction(int payload)
+    public async Task<TResponseModel<FormToTabJoinConstructorModelDB?>> ResponseHandleAction(int? payload)
     {
-        return await conService.GetTabDocumentSchemeJoinForm(payload);
+        ArgumentNullException.ThrowIfNull(payload);
+        TResponseModel<FormToTabJoinConstructorModelDB> res = await conService.GetTabDocumentSchemeJoinForm(payload.Value);
+        return new()
+        {
+            Messages = res.Messages,
+            Response = res.Response,
+        };
     }
 }

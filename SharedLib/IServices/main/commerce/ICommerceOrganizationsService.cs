@@ -22,7 +22,7 @@ public partial interface ICommerceService
     /// <summary>
     /// UsersOrganizations select
     /// </summary>
-    public Task<TPaginationResponseModel<UserOrganizationModelDB>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req);
+    public Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req);
 
     /// <summary>
     /// UserOrganization update
@@ -42,7 +42,7 @@ public partial interface ICommerceService
     /// <summary>
     /// Organizations select
     /// </summary>
-    public Task<TPaginationResponseModel<OrganizationModelDB>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
 
     /// <summary>
     /// Organizations read

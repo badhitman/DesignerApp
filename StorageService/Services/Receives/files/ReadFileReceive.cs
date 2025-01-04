@@ -21,17 +21,17 @@ public class ReadFileReceive(IMongoDatabase mongoFs,
     IHelpdeskRemoteTransmissionService hdRepo,
     IDbContextFactory<StorageContext> cloudParametersDbFactory,
     IWebRemoteTransmissionService webRepo)
-    : IResponseReceive<TAuthRequestModel<RequestFileReadModel>, TResponseModel<FileContentModel>>
+    : IResponseReceive<TAuthRequestModel<RequestFileReadModel>?, FileContentModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadFileReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<FileContentModel>?> ResponseHandleAction(TAuthRequestModel<RequestFileReadModel>? req)
+    public async Task<TResponseModel<FileContentModel?>> ResponseHandleAction(TAuthRequestModel<RequestFileReadModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<FileContentModel> res = new();
+        TResponseModel<FileContentModel?> res = new();
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
         StorageFileModelDB? file_db = await context
             .CloudFiles

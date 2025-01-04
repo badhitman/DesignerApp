@@ -47,16 +47,17 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
 
-        TPaginationResponseModel<ArticleModelDB> rest = await HelpdeskRepo
+        TResponseModel<TPaginationResponseModel<ArticleModelDB>> rest = await HelpdeskRepo
             .ArticlesSelect(req);
 
         await SetBusy(false, token: token);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         // Forward the provided token to methods which support it
-        List<ArticleModelDB> data = rest.Response!;
-        await UpdateUsersData(rest.Response.Select(x => x.AuthorIdentityId).ToArray());
+        List<ArticleModelDB> data = rest.Response!.Response!;
+        await UpdateUsersData(rest.Response.Response!.Select(x => x.AuthorIdentityId).ToArray());
         // Return the data
-        return new() { TotalItems = rest.TotalRowsCount, Items = data };
+        return new() { TotalItems = rest.Response.TotalRowsCount, Items = data };
     }
 
     async Task UpdateUsersData(string?[] users_ids)

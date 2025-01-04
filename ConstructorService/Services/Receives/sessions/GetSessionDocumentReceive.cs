@@ -11,15 +11,20 @@ namespace Transmission.Receives.constructor;
 /// Получить сессию
 /// </summary>
 public class GetSessionDocumentReceive(IConstructorService conService)
-    : IResponseReceive<SessionGetModel, TResponseModel<SessionOfDocumentDataModelDB>>
+    : IResponseReceive<SessionGetModel?, SessionOfDocumentDataModelDB?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetSessionDocumentReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<SessionOfDocumentDataModelDB>?> ResponseHandleAction(SessionGetModel? payload)
+    public async Task<TResponseModel<SessionOfDocumentDataModelDB?>> ResponseHandleAction(SessionGetModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await conService.GetSessionDocument(payload);
+        TResponseModel<SessionOfDocumentDataModelDB> res = await conService.GetSessionDocument(payload);
+        return new()
+        {
+            Messages = res.Messages,
+            Response = res.Response,
+        };
     }
 }

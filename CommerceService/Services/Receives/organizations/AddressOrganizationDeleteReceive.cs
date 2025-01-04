@@ -12,15 +12,20 @@ namespace Transmission.Receives.commerce;
 /// AddressOrganizationDeleteReceive
 /// </summary>
 public class AddressOrganizationDeleteReceive(ICommerceService commerceRepo, ILogger<AddressOrganizationDeleteReceive> loggerRepo)
-    : IResponseReceive<int, ResponseBaseModel>
+    : IResponseReceive<int?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.AddressOrganizationDeleteCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(int req)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(int? req)
     {
+        ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        return await commerceRepo.AddressOrganizationDelete(req);
+        ResponseBaseModel res = await commerceRepo.AddressOrganizationDelete(req.Value);
+        return new()
+        {
+            Messages = res.Messages,
+        };
     }
 }

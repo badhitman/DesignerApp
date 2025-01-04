@@ -11,15 +11,19 @@ namespace Transmission.Receives.constructor;
 /// Запрос схем документов
 /// </summary>
 public class RequestDocumentsSchemesReceive(IConstructorService conService)
-    : IResponseReceive<RequestDocumentsSchemesModel, TPaginationResponseModel<DocumentSchemeConstructorModelDB>>
+    : IResponseReceive<RequestDocumentsSchemesModel?, TPaginationResponseModel<DocumentSchemeConstructorModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RequestDocumentsSchemesReceive;
 
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<DocumentSchemeConstructorModelDB>?> ResponseHandleAction(RequestDocumentsSchemesModel? payload)
+    public async Task<TResponseModel<TPaginationResponseModel<DocumentSchemeConstructorModelDB>?>> ResponseHandleAction(RequestDocumentsSchemesModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await conService.RequestDocumentsSchemes(payload);
+
+        return new()
+        {
+            Response = await conService.RequestDocumentsSchemes(payload)
+        };
     }
 }

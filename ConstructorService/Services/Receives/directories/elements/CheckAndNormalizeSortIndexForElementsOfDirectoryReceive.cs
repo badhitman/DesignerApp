@@ -11,14 +11,19 @@ namespace Transmission.Receives.constructor;
 /// CheckAndNormalizeSortIndexForElementsOfDirectoryReceive
 /// </summary>
 public class CheckAndNormalizeSortIndexForElementsOfDirectoryReceive(IConstructorService conService)
-   : IResponseReceive<int, ResponseBaseModel>
+   : IResponseReceive<int?, bool?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CheckAndNormalizeSortIndexForElementsOfDirectoryReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(int payload)
+    public async Task<TResponseModel<bool?>> ResponseHandleAction(int? payload)
     {
-        return await conService.CheckAndNormalizeSortIndexForElementsOfDirectory(payload);
+        ArgumentNullException.ThrowIfNull(payload);
+        ResponseBaseModel res = await conService.CheckAndNormalizeSortIndexForElementsOfDirectory(payload.Value);
+        return new()
+        {
+            Messages = res.Messages,
+        };
     }
 }

@@ -99,9 +99,11 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
             SortingDirection = VerticalDirectionsEnum.Down,
         };
 
-        TPaginationResponseModel<TagModelDB> res = await TagsRepo.TagsSelect(req);
+        TResponseModel<TPaginationResponseModel<TagModelDB>> res = await TagsRepo.TagsSelect(req);
 
-        List<string> res_data = [.. res.Response?.Where(x => TagsSets?.Any(y => y.TagName.Equals(x.TagName, StringComparison.OrdinalIgnoreCase)) != true).Select(x => x.TagName)];
+        if (!res.Success())
+            SnackbarRepo.ShowMessagesResponse(res.Messages);
+        List<string> res_data = [.. res.Response?.Response?.Where(x => TagsSets?.Any(y => y.TagName.Equals(x.TagName, StringComparison.OrdinalIgnoreCase)) != true).Select(x => x.TagName)];
 
         if (!string.IsNullOrWhiteSpace(value) && !res_data.Contains(value))
             res_data.Add(value);
@@ -127,11 +129,11 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
             SortingDirection = VerticalDirectionsEnum.Down,
         };
 
-        TPaginationResponseModel<TagModelDB> res = await TagsRepo.TagsSelect(req);
+        TResponseModel<TPaginationResponseModel<TagModelDB>> res = await TagsRepo.TagsSelect(req);
 
         await SetBusy(false);
         if (res.Response is not null)
-            TagsSets = res.Response;
+            TagsSets = res.Response.Response;
     }
 
     /// <inheritdoc/>

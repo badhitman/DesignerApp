@@ -13,22 +13,26 @@ namespace Transmission.Receives.helpdesk;
 /// Set web config site
 /// </summary>
 public class SetWebConfigReceive(IOptions<HelpdeskConfigModel> webConfig, ILogger<SetWebConfigReceive> _logger)
-    : IResponseReceive<HelpdeskConfigModel, ResponseBaseModel>
+    : IResponseReceive<HelpdeskConfigModel?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetWebConfigHelpdeskReceive;
 
     /// <inheritdoc/>
-    public Task<ResponseBaseModel?> ResponseHandleAction(HelpdeskConfigModel? payload)
+    public Task<TResponseModel<object?>> ResponseHandleAction(HelpdeskConfigModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(payload)}");
+        TResponseModel<object?> res = new();
 
-#pragma warning disable CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
-        if (!Uri.TryCreate(payload.BaseUri, UriKind.Absolute, out _))
-            return Task.FromResult(ResponseBaseModel.CreateError("BaseUri is null"));
+        if(!Uri.TryCreate(payload.BaseUri, UriKind.Absolute,out _))
+        {
+            res.AddError("BaseUri is null");
+            return Task.FromResult(res);
+        }
 
-        return Task.FromResult(webConfig.Value.Update(payload.BaseUri));
-#pragma warning restore CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
+        ResponseBaseModel upd = webConfig.Value.Update(payload.BaseUri);
+        res.AddRangeMessages(upd.Messages);
+        return Task.FromResult(res);
     }
 }

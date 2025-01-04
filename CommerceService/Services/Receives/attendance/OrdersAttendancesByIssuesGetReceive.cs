@@ -11,15 +11,21 @@ namespace Transmission.Receives.commerce;
 /// OrdersAttendancesByIssuesGet - receive
 /// </summary>
 public class OrdersAttendancesByIssuesGetReceive(ICommerceService commRepo)
-    : IResponseReceive<OrdersByIssuesSelectRequestModel, TResponseModel<OrderAttendanceModelDB[]>>
+: IResponseReceive<OrdersByIssuesSelectRequestModel?, OrderAttendanceModelDB[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrdersAttendancesByIssuesGetReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrderAttendanceModelDB[]>?> ResponseHandleAction(OrdersByIssuesSelectRequestModel? payload)
+    public async Task<TResponseModel<OrderAttendanceModelDB[]?>> ResponseHandleAction(OrdersByIssuesSelectRequestModel? req)
     {
-        ArgumentNullException.ThrowIfNull(payload);
-        return await commRepo.OrdersAttendancesByIssuesGet(payload);
+        ArgumentNullException.ThrowIfNull(req);
+
+        TResponseModel<OrderAttendanceModelDB[]> res = await commRepo.OrdersAttendancesByIssuesGet(req);
+        return new()
+        {
+            Response = res.Response,
+            Messages = res.Messages,
+        };
     }
 }

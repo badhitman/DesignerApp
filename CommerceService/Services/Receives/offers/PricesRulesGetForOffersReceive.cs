@@ -13,20 +13,23 @@ namespace Transmission.Receives.commerce;
 /// PricesRulesGetForOffersReceive
 /// </summary>
 public class PricesRulesGetForOffersReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<int[], PriceRuleForOfferModelDB[]>
+: IResponseReceive<int[]?, PriceRuleForOfferModelDB[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PricesRulesGetForOfferCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<PriceRuleForOfferModelDB[]?> ResponseHandleAction(int[]? req)
+    public async Task<TResponseModel<PriceRuleForOfferModelDB[]?>> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<PriceRuleForOfferModelDB[]?> res = new();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        return await context
+        return new TResponseModel<PriceRuleForOfferModelDB[]?>()
+        {
+            Response = await context
             .PricesRules.Where(x => req.Any(y => x.OfferId == y))
             .Include(x => x.Offer)
-            .ToArrayAsync();
+            .ToArrayAsync()
+        };
     }
 }

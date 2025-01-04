@@ -142,13 +142,14 @@ public partial class WorksSchedulersOrganizationsComponent : BlazorBusyComponent
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         await SetBusy(token: token);
-        TPaginationResponseModel<OrganizationModelDB> res = await CommerceRepo.OrganizationsSelect(req);
+        TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
         await SetBusy(false, token: token);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
 
-        if (res.Response is null)
+        if (!res.Success() || res.Response?.Response is null)
             return new TableData<OrganizationModelDB>() { TotalItems = 0, Items = [] };
 
-        return new TableData<OrganizationModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };
+        return new TableData<OrganizationModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
     }
 
 

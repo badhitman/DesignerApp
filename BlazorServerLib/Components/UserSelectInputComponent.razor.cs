@@ -28,7 +28,7 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
     public override async Task LoadPartData()
     {
         await SetBusy();
-        TPaginationResponseModel<UserInfoModel> rest = await WebRepo
+        TResponseModel<TPaginationResponseModel<UserInfoModel>?> rest = await WebRepo
             .SelectUsersOfIdentity(new()
             {
                 Payload = new() { SearchQuery = _selectedValueText },
@@ -36,11 +36,11 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
                 PageSize = page_size,
             });
         IsBusyProgress = false;
-        
-        if (rest.Response is not null)
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+        if (rest.Success() && rest.Response?.Response is not null)
         {
-            TotalRowsCount = rest.TotalRowsCount;
-            LoadedData.AddRange(rest.Response);
+            TotalRowsCount = rest.Response.TotalRowsCount;
+            LoadedData.AddRange(rest.Response.Response);
 
             if (PageNum == 0)
                 LoadedData.Insert(0, new() { UserId = "", UserName = "Не выбран" });

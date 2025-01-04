@@ -15,7 +15,7 @@ namespace Transmission.Receives.web;
 /// Получить пользователей из Identity по их Email
 /// </summary>
 public class GetUsersIdentityByEmailReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, IMemoryCache cache)
-    : IResponseReceive<string[], TResponseModel<UserInfoModel[]>>
+    : IResponseReceive<string[]?, UserInfoModel[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByEmailReceive;
@@ -23,11 +23,11 @@ public class GetUsersIdentityByEmailReceive(IDbContextFactory<IdentityAppDbConte
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]>?> ResponseHandleAction(string[]? users_emails = null)
+    public async Task<TResponseModel<UserInfoModel[]?>> ResponseHandleAction(string[]? users_emails = null)
     {
         ArgumentNullException.ThrowIfNull(users_emails);
         users_emails = [.. users_emails.Where(x => MailAddress.TryCreate(x, out _)).Select(x => x.ToUpper())];
-        TResponseModel<UserInfoModel[]> res = new() { Response = [] };
+        TResponseModel<UserInfoModel[]?> res = new() { Response = [] };
         if (users_emails.Length == 0)
         {
             res.AddError("Пустой запрос");

@@ -29,7 +29,7 @@ public class CommerceController(ICommerceRemoteTransmissionService commRepo) : C
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TPaginationResponseModel<NomenclatureModelDB>> OrdersSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
+    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> OrdersSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
         => await commRepo.NomenclaturesSelect(req);
 
     /// <summary>

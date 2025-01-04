@@ -94,10 +94,10 @@ public class StorageServiceImpl(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> FlushParameter(StorageCloudParameterModelDB _set, bool trimHistory = false)
+    public async Task<TResponseModel<int?>> FlushParameter(StorageCloudParameterModelDB _set, bool trimHistory = false)
     {
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
-        TResponseModel<int> res = new();
+        TResponseModel<int?> res = new();
         _set.Id = 0;
         await context.AddAsync(_set);
         bool success;

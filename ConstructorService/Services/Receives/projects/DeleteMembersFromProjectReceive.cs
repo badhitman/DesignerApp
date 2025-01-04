@@ -11,15 +11,18 @@ namespace Transmission.Receives.constructor;
 /// DeleteMembersFromProjectReceive
 /// </summary>
 public class DeleteMembersFromProjectReceive(IConstructorService conService)
-    : IResponseReceive<UsersProjectModel, ResponseBaseModel>
+    : IResponseReceive<UsersProjectModel?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteMembersFromProjectReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(UsersProjectModel? req)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(UsersProjectModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await conService.DeleteMembersFromProject(req);
+        return new()
+        {
+            Response = await conService.DeleteMembersFromProject(req)
+        };
     }
 }

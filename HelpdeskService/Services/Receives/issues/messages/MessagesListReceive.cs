@@ -16,7 +16,7 @@ public class MessagesListReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
-    : IResponseReceive<TAuthRequestModel<int>, TResponseModel<IssueMessageHelpdeskModelDB[]>>
+    : IResponseReceive<TAuthRequestModel<int>?, IssueMessageHelpdeskModelDB[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessagesOfIssueListHelpdeskReceive;
@@ -24,10 +24,10 @@ public class MessagesListReceive(
     /// <summary>
     /// Получить сообщения для инцидента
     /// </summary>
-    public async Task<TResponseModel<IssueMessageHelpdeskModelDB[]>?> ResponseHandleAction(TAuthRequestModel<int>? req)
+    public async Task<TResponseModel<IssueMessageHelpdeskModelDB[]?>> ResponseHandleAction(TAuthRequestModel<int>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<IssueMessageHelpdeskModelDB[]> res = new();
+        TResponseModel<IssueMessageHelpdeskModelDB[]?> res = new();
 
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)

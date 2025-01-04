@@ -110,7 +110,7 @@ public interface IConstructorService
     /// <summary>
     /// Прочитать данные справочников
     /// </summary>
-    public Task<List<EntryNestedModel>> ReadDirectories(IEnumerable<int> ids, CancellationToken cancellationToken = default);
+    public Task<IEnumerable<EntryNestedModel>> ReadDirectories(IEnumerable<int> ids, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить справочники/списки для проекта

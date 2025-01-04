@@ -11,16 +11,21 @@ namespace Transmission.Receives.constructor;
 /// Найти порцию сессий по имени поля (с пагинацией)
 /// </summary>
 public class FindSessionsDocumentsByFormFieldNameReceive(IConstructorService conService)
-    : IResponseReceive<FormFieldModel, TResponseModel<EntryDictModel[]>>
+    : IResponseReceive<FormFieldModel?, EntryDictModel[]?>
 {
 
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FindSessionsDocumentsByFormFieldNameReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryDictModel[]>?> ResponseHandleAction(FormFieldModel? payload)
+    public async Task<TResponseModel<EntryDictModel[]?>> ResponseHandleAction(FormFieldModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await conService.FindSessionsDocumentsByFormFieldName(payload);
+        TResponseModel<EntryDictModel[]> res = await conService.FindSessionsDocumentsByFormFieldName(payload);
+        return new()
+        {
+            Messages = res.Messages,
+            Response = res.Response,
+        };
     }
 }

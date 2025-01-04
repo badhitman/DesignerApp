@@ -11,15 +11,19 @@ namespace Transmission.Receives.constructor;
 /// Отправить опрос на проверку (от клиента)
 /// </summary>
 public class SetDoneSessionDocumentDataReceive(IConstructorService conService)
-    : IResponseReceive<string, ResponseBaseModel>
+    : IResponseReceive<string?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetDoneSessionDocumentDataReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(string? payload)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(string? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await conService.SetDoneSessionDocumentData(payload);
+        var res = await conService.SetDoneSessionDocumentData(payload);
+        return new()
+        {
+            Messages = res.Messages
+        };
     }
 }

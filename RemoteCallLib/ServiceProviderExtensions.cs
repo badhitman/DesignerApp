@@ -31,7 +31,6 @@ public static class ServiceProviderExtensions
     /// </summary>
     public static IServiceCollection RegisterMqListener<TQueue, TRequest, TResponse>(this IServiceCollection sc)
         where TQueue : class, IResponseReceive<TRequest?, TResponse?>
-        where TResponse : class, new()
     {
         sc.AddScoped<IResponseReceive<TRequest?, TResponse?>, TQueue>();
         sc.AddHostedService<RabbitMqListenerService<TQueue, TRequest?, TResponse?>>();

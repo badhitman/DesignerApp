@@ -11,15 +11,19 @@ namespace Transmission.Receives.constructor;
 /// AddMembersToProjectReceive
 /// </summary>
 public class AddMembersToProjectReceive(IConstructorService conService)
-    : IResponseReceive<UsersProjectModel, ResponseBaseModel>
+    : IResponseReceive<UsersProjectModel?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.AddMembersToProjectReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(UsersProjectModel? req)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(UsersProjectModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await conService.AddMemberToProject(req);
+        ResponseBaseModel res = await conService.AddMemberToProject(req);
+        return new()
+        {
+            Messages = res.Messages,
+        };
     }
 }

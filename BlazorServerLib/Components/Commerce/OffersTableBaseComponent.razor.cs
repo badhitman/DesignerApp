@@ -82,12 +82,12 @@ public abstract class OffersTableBaseComponent : BlazorBusyComponentRegistersMod
         };
         await SetBusy();
 
-        TPaginationResponseModel<OfferModelDB> res = await CommerceRepo.OffersSelect(req);
+        TResponseModel<TPaginationResponseModel<OfferModelDB>> res = await CommerceRepo.OffersSelect(req);
         await SetBusy(false);
-        if (res.Response is not null && res.Response.Count != 0)
+        if (res.Success() && res.Response?.Response is not null && res.Response.Response.Count != 0)
         {
-            allOffers!.AddRange(res.Response);
-            if (allOffers.Count < res.TotalRowsCount)
+            allOffers!.AddRange(res.Response.Response);
+            if (allOffers.Count < res.Response.TotalRowsCount)
                 await LoadOffers(page_num + 1);
         }
     }

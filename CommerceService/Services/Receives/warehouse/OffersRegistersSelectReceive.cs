@@ -11,15 +11,20 @@ namespace Transmission.Receives.commerce;
 /// OffersRegistersSelectReceive
 /// </summary>
 public class OffersRegistersSelectReceive(ICommerceService commRepo)
-: IResponseReceive<TPaginationRequestModel<RegistersSelectRequestBaseModel>, TPaginationResponseModel<OfferAvailabilityModelDB>>
+: IResponseReceive<TPaginationRequestModel<RegistersSelectRequestBaseModel>?, TPaginationResponseModel<OfferAvailabilityModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OffersRegistersSelectCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<OfferAvailabilityModelDB>?> ResponseHandleAction(TPaginationRequestModel<RegistersSelectRequestBaseModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>?>> ResponseHandleAction(TPaginationRequestModel<RegistersSelectRequestBaseModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await commRepo.RegistersSelect(req);
+        TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>> res = await commRepo.RegistersSelect(req);
+        return new()
+        {
+            Response = res.Response,
+            Messages = res.Messages,
+        };
     }
 }

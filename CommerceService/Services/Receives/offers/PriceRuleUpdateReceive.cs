@@ -14,17 +14,17 @@ namespace Transmission.Receives.commerce;
 /// PriceRuleUpdateReceive
 /// </summary>
 public class PriceRuleUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PriceRuleUpdateReceive> loggerRepo)
-    : IResponseReceive<PriceRuleForOfferModelDB, TResponseModel<int>>
+    : IResponseReceive<PriceRuleForOfferModelDB?, int?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PriceRuleUpdateCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>?> ResponseHandleAction(PriceRuleForOfferModelDB? req)
+    public async Task<TResponseModel<int?>> ResponseHandleAction(PriceRuleForOfferModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<int> res = new() { Response = 0 };
+        TResponseModel<int?> res = new() { Response = 0 };
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         req.Name = req.Name.Trim();
         if (req.QuantityRule <= 1)

@@ -94,17 +94,18 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
             req.Payload.OfferFilter = OfferCurrent.Id;
 
         await SetBusy();
-        TPaginationResponseModel<CalendarScheduleModelDB> res = await CommerceRepo.CalendarsSchedulesSelect(req);
+        TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>> res = await CommerceRepo.CalendarsSchedulesSelect(req);
 
         if (res.Response is not null)
         {
-            countPages = (int)Math.Ceiling((decimal)res.TotalRowsCount / res.PageSize);
-            if (res.Response is not null)
+            countPages = (int)Math.Ceiling((decimal)res.Response.TotalRowsCount / res.Response.PageSize);
+            if (res.Response.Response is not null)
             {
-                worksSchedulesCalendars = res.Response;
+                worksSchedulesCalendars = res.Response.Response;
             }
         }
 
         await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
     }
 }

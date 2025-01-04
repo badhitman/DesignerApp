@@ -12,15 +12,19 @@ namespace Transmission.Receives.constructor;
 /// Если индекс ниже нуля - удаляются все значения для указанной JoinForm (полная очистка таблицы или очистка всех значений всех поллей стандартной формы)
 /// </summary>
 public class DeleteValuesFieldsByGroupSessionDocumentDataByRowNumReceive(IConstructorService conService)
-    : IResponseReceive<ValueFieldSessionDocumentDataBaseModel, ResponseBaseModel>
+    : IResponseReceive<ValueFieldSessionDocumentDataBaseModel?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteValuesFieldsByGroupSessionDocumentDataByRowNumReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(ValueFieldSessionDocumentDataBaseModel? payload)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(ValueFieldSessionDocumentDataBaseModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await conService.DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(payload);
+        var res = await conService.DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(payload);
+        return new()
+        {
+            Messages = res.Messages
+        };
     }
 }

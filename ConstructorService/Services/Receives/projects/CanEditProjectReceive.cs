@@ -11,15 +11,18 @@ namespace Transmission.Receives.constructor;
 /// CanEditProjectReceive
 /// </summary>
 public class CanEditProjectReceive(IConstructorService conService)
-    : IResponseReceive<UserProjectModel, ResponseBaseModel>
+    : IResponseReceive<UserProjectModel?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CanEditProjectReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(UserProjectModel? req)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(UserProjectModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await conService.CanEditProject(req);
+        return new()
+        {
+            Response = await conService.CanEditProject(req)
+        };
     }
 }

@@ -2,9 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
+using DbcLib;
 
 namespace Transmission.Receives.commerce;
 
@@ -12,7 +14,7 @@ namespace Transmission.Receives.commerce;
 /// Обновление номенклатуры
 /// </summary>
 public class NomenclatureUpdateReceive(ICommerceService commerceRepo, ILogger<NomenclatureUpdateReceive> loggerRepo)
-    : IResponseReceive<NomenclatureModelDB, TResponseModel<int>>
+    : IResponseReceive<NomenclatureModelDB?, int?>
 {
     /// <summary>
     /// Обновление номенклатуры
@@ -22,9 +24,10 @@ public class NomenclatureUpdateReceive(ICommerceService commerceRepo, ILogger<No
     /// <summary>
     /// Обновление номенклатуры
     /// </summary>
-    public async Task<TResponseModel<int>?> ResponseHandleAction(NomenclatureModelDB? req)
+    public async Task<TResponseModel<int?>> ResponseHandleAction(NomenclatureModelDB? req)
     {
-        ArgumentNullException.ThrowIfNull(req);        
+        ArgumentNullException.ThrowIfNull(req);
+        req.Name = req.Name.Trim();
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
         TResponseModel<int> res = await commerceRepo.NomenclatureUpdate(req);
         return new()

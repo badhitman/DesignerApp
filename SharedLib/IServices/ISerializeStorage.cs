@@ -40,7 +40,7 @@ public interface ISerializeStorage
     /// <summary>
     /// FlushParameter
     /// </summary>
-    public Task<TResponseModel<int>> FlushParameter(StorageCloudParameterModelDB storage, bool trimHistory = false);
+    public Task<TResponseModel<int?>> FlushParameter(StorageCloudParameterModelDB storage, bool trimHistory = false);
 
     /// <summary>
     /// Прочитать значение параметра. null - если значения нет

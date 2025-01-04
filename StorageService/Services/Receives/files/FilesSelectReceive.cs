@@ -14,13 +14,13 @@ namespace Transmission.Receives.storage;
 /// FilesSelectReceive
 /// </summary>
 public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>, TPaginationResponseModel<StorageFileModelDB>>
+    : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<StorageFileModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FilesSelectReceive;
 
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<StorageFileModelDB>?> ResponseHandleAction(TPaginationRequestModel<SelectMetadataRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>?>> ResponseHandleAction(TPaginationRequestModel<SelectMetadataRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
@@ -55,12 +55,15 @@ public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbConte
         int trc = await q.CountAsync();
         return new()
         {
-            PageNum = req.PageNum,
-            PageSize = req.PageSize,
-            SortingDirection = req.SortingDirection,
-            SortBy = req.SortBy,
-            TotalRowsCount = trc,
-            Response = await oq.ToListAsync(),
+            Response = new()
+            {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+                TotalRowsCount = trc,
+                Response = await oq.ToListAsync()
+            }
         };
     }
 }

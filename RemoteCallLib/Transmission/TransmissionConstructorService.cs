@@ -136,7 +136,7 @@ public class TransmissionConstructorService(IRabbitClient rabbitClient) : IConst
 
     #region forms
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<FormConstructorModelDB>> SelectForms(SelectFormsModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<TPaginationResponseModel<FormConstructorModelDB>>> SelectForms(SelectFormsModel req, CancellationToken cancellationToken = default)
     => await rabbitClient.MqRemoteCall<TPaginationResponseModel<FormConstructorModelDB>>(GlobalStaticConstants.TransmissionQueues.SelectFormsReceive, req);
 
     /// <inheritdoc/>
@@ -183,7 +183,7 @@ public class TransmissionConstructorService(IRabbitClient rabbitClient) : IConst
      => await rabbitClient.MqRemoteCall<DocumentSchemeConstructorModelDB>(GlobalStaticConstants.TransmissionQueues.UpdateOrCreateDocumentSchemeReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<DocumentSchemeConstructorModelDB>> RequestDocumentsSchemes(RequestDocumentsSchemesModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<TPaginationResponseModel<DocumentSchemeConstructorModelDB>>> RequestDocumentsSchemes(RequestDocumentsSchemesModel req, CancellationToken cancellationToken = default)
      => await rabbitClient.MqRemoteCall<TPaginationResponseModel<DocumentSchemeConstructorModelDB>>(GlobalStaticConstants.TransmissionQueues.RequestDocumentsSchemesReceive, req);
 
     /// <inheritdoc/>
@@ -246,7 +246,7 @@ public class TransmissionConstructorService(IRabbitClient rabbitClient) : IConst
      => await rabbitClient.MqRemoteCall<SessionOfDocumentDataModelDB>(GlobalStaticConstants.TransmissionQueues.UpdateOrCreateSessionDocumentReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<SessionOfDocumentDataModelDB>> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<TPaginationResponseModel<SessionOfDocumentDataModelDB>>> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default)
      => await rabbitClient.MqRemoteCall<TPaginationResponseModel<SessionOfDocumentDataModelDB>>(GlobalStaticConstants.TransmissionQueues.RequestSessionsDocumentsReceive, req);
 
     /// <inheritdoc/>

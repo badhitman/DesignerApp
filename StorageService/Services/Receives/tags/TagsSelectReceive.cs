@@ -14,13 +14,13 @@ namespace Transmission.Receives.storage;
 /// TagsSelectReceive
 /// </summary>
 public class TagsSelectReceive(ILogger<TagsSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>, TPaginationResponseModel<TagModelDB>>
+    : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<TagModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.TagsSelectReceive;
 
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<TagModelDB>?> ResponseHandleAction(TPaginationRequestModel<SelectMetadataRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<TagModelDB>?>> ResponseHandleAction(TPaginationRequestModel<SelectMetadataRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
@@ -55,12 +55,15 @@ public class TagsSelectReceive(ILogger<TagsSelectReceive> loggerRepo, IDbContext
         int trc = await q.CountAsync();
         return new()
         {
-            PageNum = req.PageNum,
-            PageSize = req.PageSize,
-            SortingDirection = req.SortingDirection,
-            SortBy = req.SortBy,
-            TotalRowsCount = trc,
-            Response = await oq.ToListAsync(),
+            Response = new()
+            {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+                TotalRowsCount = trc,
+                Response = await oq.ToListAsync()
+            }
         };
     }
 }

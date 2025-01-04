@@ -43,12 +43,12 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// ChatsSelect
     /// </summary>
-    public Task<TPaginationResponseModel<ChatTelegramModelDB>> ChatsSelect(TPaginationRequestModel<string?> req);
+    public Task<TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?>> ChatsSelect(TPaginationRequestModel<string?> req);
 
     /// <summary>
     /// Получить ошибки отправок сообщений (для чатов)
     /// </summary>
-    public Task<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]?> req);
+    public Task<TResponseModel<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]?> req);
 
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
@@ -74,7 +74,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Получить сообщения чата Telegram
     /// </summary>
-    public Task<TPaginationResponseModel<MessageTelegramModelDB>> MessagesListTelegram(TPaginationRequestModel<SearchMessagesChatModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<MessageTelegramModelDB>>> MessagesListTelegram(TPaginationRequestModel<SearchMessagesChatModel> req);
 
     /// <summary>
     /// Получить данные файла

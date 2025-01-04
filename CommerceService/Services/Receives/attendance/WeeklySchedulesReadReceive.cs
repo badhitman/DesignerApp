@@ -11,15 +11,20 @@ namespace Transmission.Receives.commerce;
 /// WorkScheduleReadReceive
 /// </summary>
 public class WeeklySchedulesReadReceive(ICommerceService commerceRepo)
-: IResponseReceive<int[], WeeklyScheduleModelDB[]>
+: IResponseReceive<int[]?, WeeklyScheduleModelDB[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.WeeklySchedulesReadCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<WeeklyScheduleModelDB[]?> ResponseHandleAction(int[]? req)
+    public async Task<TResponseModel<WeeklyScheduleModelDB[]?>> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await commerceRepo.WeeklySchedulesRead(req);
+        TResponseModel<WeeklyScheduleModelDB[]> wc = await commerceRepo.WeeklySchedulesRead(req);
+        return new()
+        {
+            Response = wc.Response,
+            Messages = wc.Messages,
+        };
     }
 }

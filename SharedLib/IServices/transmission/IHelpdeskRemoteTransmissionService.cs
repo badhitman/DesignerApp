@@ -28,7 +28,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Подобрать статьи 
     /// </summary>
-    public Task<TPaginationResponseModel<ArticleModelDB>> ArticlesSelect(TPaginationRequestModel<SelectArticlesRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<ArticleModelDB>>> ArticlesSelect(TPaginationRequestModel<SelectArticlesRequestModel> req);
 
     /// <summary>
     /// Создать (обновить) статью
@@ -67,7 +67,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
-    public Task<TPaginationResponseModel<IssueHelpdeskModel>> IssuesSelect(TPaginationRequestModel<SelectIssuesRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TPaginationRequestModel<SelectIssuesRequestModel> req);
 
     /// <summary>
     /// Создать обращение
@@ -107,12 +107,12 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Журнал событий в обращении
     /// </summary>
-    public Task<TPaginationResponseModel<PulseViewModel>> PulseJournal(TPaginationRequestModel<UserIssueModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<PulseViewModel>>> PulseJournal(TPaginationRequestModel<UserIssueModel> req);
 
     /// <summary>
     /// Получить обращения
     /// </summary>
-    public Task<TPaginationResponseModel<IssueHelpdeskModel>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req);
     #endregion
 
     #region message

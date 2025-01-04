@@ -36,13 +36,14 @@ public partial class WarehouseMainComponent : BlazorBusyComponentRubricsCachedMo
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        TPaginationResponseModel<WarehouseDocumentModelDB> rest = await CommerceRepo.WarehousesSelect(req);
+        TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>> rest = await CommerceRepo.WarehousesSelect(req);
         await SetBusy(false, token: token);
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
 
         if (rest.Response is not null)
         {
-            await CacheRubricsUpdate(rest.Response.Select(x => x.WarehouseId));
-            return new TableData<WarehouseDocumentModelDB>() { TotalItems = rest.TotalRowsCount, Items = rest.Response };
+            await CacheRubricsUpdate(rest.Response.Response.Select(x => x.WarehouseId));
+            return new TableData<WarehouseDocumentModelDB>() { TotalItems = rest.Response.TotalRowsCount, Items = rest.Response.Response };
         }
 
         await SetBusy(false, token: token);

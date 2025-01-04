@@ -11,15 +11,19 @@ namespace Transmission.Receives.constructor;
 /// Удалить страницу опроса/анкеты
 /// </summary>
 public class DeleteTabOfDocumentSchemeReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>, ResponseBaseModel>
+    : IResponseReceive<TAuthRequestModel<int>?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteTabOfDocumentSchemeReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<int>? payload)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await conService.DeleteTabOfDocumentScheme(payload);
+        ResponseBaseModel res = await conService.DeleteTabOfDocumentScheme(payload);
+        return new()
+        {
+            Messages = res.Messages,
+        };
     }
 }

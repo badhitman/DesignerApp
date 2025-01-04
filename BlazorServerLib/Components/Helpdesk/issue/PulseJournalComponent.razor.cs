@@ -31,7 +31,7 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
     private async Task<TableData<PulseViewModel>> ServerReload(TableState state, CancellationToken token)
     {
         await SetBusy(token: token);
-        TPaginationResponseModel<PulseViewModel> tp = await HelpdeskRepo.PulseJournal(new TPaginationRequestModel<UserIssueModel>()
+        TResponseModel<TPaginationResponseModel<PulseViewModel>> rest = await HelpdeskRepo.PulseJournal(new TPaginationRequestModel<UserIssueModel>()
         {
             PageNum = state.Page,
             PageSize = state.PageSize,
@@ -45,6 +45,9 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
         });
 
         IsBusyProgress = false;
+        SnackbarRepo.ShowMessagesResponse(rest.Messages);
+
+        TPaginationResponseModel<PulseViewModel> tp = rest.Response!;
 
         string[] users_ids = tp.Response!
             .Select(x => x.AuthorUserIdentityId)

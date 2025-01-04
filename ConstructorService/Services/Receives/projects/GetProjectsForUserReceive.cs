@@ -11,15 +11,18 @@ namespace Transmission.Receives.constructor;
 /// GetProjectsForUserReceive
 /// </summary>
 public class GetProjectsForUserReceive(IConstructorService conService)
-    : IResponseReceive<GetProjectsForUserRequestModel, ProjectViewModel[]>
+: IResponseReceive<GetProjectsForUserRequestModel?, ProjectViewModel[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ProjectsForUserReceive;
 
     /// <inheritdoc/>
-    public async Task<ProjectViewModel[]?> ResponseHandleAction(GetProjectsForUserRequestModel? req)
+    public async Task<TResponseModel<ProjectViewModel[]?>> ResponseHandleAction(GetProjectsForUserRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await conService.GetProjectsForUser(req);
+        return new()
+        {
+            Response = await conService.GetProjectsForUser(req)
+        };
     }
 }

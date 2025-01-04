@@ -11,14 +11,20 @@ namespace Transmission.Receives.constructor;
 /// Получить форму
 /// </summary>
 public class GetFormReceive(IConstructorService conService)
-   : IResponseReceive<int, TResponseModel<FormConstructorModelDB>>
+   : IResponseReceive<int?, FormConstructorModelDB?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetFormReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<FormConstructorModelDB>?> ResponseHandleAction(int payload)
+    public async Task<TResponseModel<FormConstructorModelDB?>> ResponseHandleAction(int? payload)
     {
-        return await conService.GetForm(payload);
+        ArgumentNullException.ThrowIfNull(payload);
+        TResponseModel<FormConstructorModelDB> res = await conService.GetForm(payload.Value);
+        return new()
+        {
+            Messages = res.Messages,
+            Response = res.Response,
+        };
     }
 }

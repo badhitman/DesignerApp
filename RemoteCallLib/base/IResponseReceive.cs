@@ -14,7 +14,7 @@ public interface IResponseReceive<TRequest, TResponse>
     /// <summary>
     /// Обработчик ответа на запрос
     /// </summary>
-    public Task<TResponse?> ResponseHandleAction(TRequest? payload);
+    public Task<TResponseModel<TResponse?>> ResponseHandleAction(TRequest? payload);
 
     /// <summary>
     /// Имя очереди

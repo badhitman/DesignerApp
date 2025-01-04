@@ -9,30 +9,30 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Получить остатки
     /// </summary>
-    public Task<TPaginationResponseModel<OfferAvailabilityModelDB>> OffersRegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>> OffersRegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req);
 
     /// <summary>
     /// Удалить строку складского документа
     /// </summary>
-    public Task<bool> RowsForWarehouseDelete(int[] req);
+    public Task<TResponseModel<bool>> RowsForWarehouseDelete(int[] req);
 
     /// <summary>
     /// Обновить строку складского документа
     /// </summary>
-    public Task<int> RowForWarehouseUpdate(RowOfWarehouseDocumentModelDB row);
+    public Task<TResponseModel<int>> RowForWarehouseUpdate(RowOfWarehouseDocumentModelDB row);
 
     /// <summary>
     /// WarehousesRead
     /// </summary>
-    public Task<WarehouseDocumentModelDB[]> WarehousesRead(int[] ids);
+    public Task<TResponseModel<WarehouseDocumentModelDB[]>> WarehousesRead(int[] ids);
 
     /// <summary>
     /// WarehouseUpdate
     /// </summary>
-    public Task<int> WarehouseUpdate(WarehouseDocumentModelDB document);
+    public Task<TResponseModel<int>> WarehouseUpdate(WarehouseDocumentModelDB document);
 
     /// <summary>
     /// Подбор складских документов (поиск по параметрам)
     /// </summary>
-    public Task<TPaginationResponseModel<WarehouseDocumentModelDB>> WarehousesSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>>> WarehousesSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req);
 }

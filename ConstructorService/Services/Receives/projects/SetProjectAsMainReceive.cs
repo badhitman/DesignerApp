@@ -11,15 +11,19 @@ namespace Transmission.Receives.constructor;
 /// SetProjectAsMainReceive
 /// </summary>
 public class SetProjectAsMainReceive(IConstructorService conService)
-    : IResponseReceive<UserProjectModel, ResponseBaseModel>
+    : IResponseReceive<UserProjectModel?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetProjectAsMainReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(UserProjectModel? req)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(UserProjectModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await conService.SetProjectAsMain(req);
+        ResponseBaseModel res = await conService.SetProjectAsMain(req);
+        return new()
+        {
+            Messages = res.Messages,
+        };
     }
 }

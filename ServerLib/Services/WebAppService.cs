@@ -33,9 +33,9 @@ public class WebAppService(
 {
     #region Telegram
     /// <inheritdoc/>
-    public async Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user)
+    public async Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user)
     {
-        TResponseModel<CheckTelegramUserAuthModel> res = new();
+        TResponseModel<CheckTelegramUserAuthModel?> res = new();
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         TelegramUserModelDb? tgUserDb = await identityContext.TelegramUsers.FirstOrDefaultAsync(x => x.TelegramId == user.TelegramUserId);
 

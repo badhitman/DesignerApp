@@ -11,15 +11,19 @@ namespace Transmission.Receives.constructor;
 /// SetMarkerDeleteProjectReceive
 /// </summary>
 public class SetMarkerDeleteProjectReceive(IConstructorService conService) 
-    : IResponseReceive<SetMarkerProjectRequestModel, ResponseBaseModel>
+    : IResponseReceive<SetMarkerProjectRequestModel?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetMarkerDeleteProjectReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(SetMarkerProjectRequestModel? req)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(SetMarkerProjectRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await conService.SetMarkerDeleteProject(req);
+        ResponseBaseModel res = await conService.SetMarkerDeleteProject(req);
+        return new()
+        {
+            Messages = res.Messages
+        };
     }
 }

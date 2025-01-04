@@ -10,16 +10,20 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// OrganizationsReadReceive
 /// </summary>
-public class OrganizationsReadReceive(ICommerceService commerceRepo)
-    : IResponseReceive<int[], TResponseModel<OrganizationModelDB[]>>
+public class OrganizationsReadReceive(ICommerceService commerceRepo) : IResponseReceive<int[]?, OrganizationModelDB[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrganizationsReadCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrganizationModelDB[]>?> ResponseHandleAction(int[]? req)
+    public async Task<TResponseModel<OrganizationModelDB[]?>> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await commerceRepo.OrganizationsRead(req);
+        TResponseModel<OrganizationModelDB[]> res = await commerceRepo.OrganizationsRead(req);
+        return new()
+        {
+            Messages = res.Messages,
+            Response = res.Response,
+        };
     }
 }

@@ -27,7 +27,7 @@ public partial interface ICommerceService
     /// <summary>
     /// WarehouseDocuments select
     /// </summary>
-    public Task<TPaginationResponseModel<WarehouseDocumentModelDB>> WarehouseDocumentsSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>>> WarehouseDocumentsSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req);
 
     /// <summary>
     /// WarehouseDocuments read
@@ -37,5 +37,5 @@ public partial interface ICommerceService
     /// <summary>
     /// Registers select
     /// </summary>
-    public Task<TPaginationResponseModel<OfferAvailabilityModelDB>> RegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>> RegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req);
 }

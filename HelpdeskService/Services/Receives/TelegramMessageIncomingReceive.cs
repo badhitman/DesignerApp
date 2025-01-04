@@ -16,13 +16,13 @@ public class TelegramMessageIncomingReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     ITelegramRemoteTransmissionService tgRepo,
     ISerializeStorageRemoteTransmissionService StorageRepo)
-    : IResponseReceive<TelegramIncomingMessageModel, TResponseModel<bool>>
+    : IResponseReceive<TelegramIncomingMessageModel?, bool>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IncomingTelegramMessageHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>?> ResponseHandleAction(TelegramIncomingMessageModel? req)
+    public async Task<TResponseModel<bool>> ResponseHandleAction(TelegramIncomingMessageModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<bool> res = new() { Response = false };

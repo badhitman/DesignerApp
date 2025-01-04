@@ -46,14 +46,15 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
             SortBy = state.SortLabel,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
-        TPaginationResponseModel<ChatTelegramModelDB> rest = await TgRepo.ChatsSelect(req);
+        TResponseModel<TPaginationResponseModel<ChatTelegramModelDB>?> rest = await TgRepo.ChatsSelect(req);
         IsBusyProgress = false;
+        SnackBarRepo.ShowMessagesResponse(rest.Messages);
 
-        if (rest.Response is null)
+        if (!rest.Success() || rest.Response?.Response is null)
             return new TableData<ChatTelegramModelDB>() { TotalItems = 0, Items = pagedData };
-        pagedData = rest.Response;
+        pagedData = rest.Response.Response;
         await LoadUsersData();
-        return new TableData<ChatTelegramModelDB>() { TotalItems = rest.TotalRowsCount, Items = pagedData };
+        return new TableData<ChatTelegramModelDB>() { TotalItems = rest.Response.TotalRowsCount, Items = pagedData };
     }
 
     async Task LoadUsersData()
@@ -77,7 +78,7 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
 
         string[] users_ids_identity = [.. users_res.Response.Select(x => x.UserId)];
         await SetBusy();
-        TPaginationResponseModel<IssueHelpdeskModel> issues_users_res = await HelpdeskRepo
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> issues_users_res = await HelpdeskRepo
                     .IssuesSelect(new()
                     {
                         Payload = new()
@@ -92,13 +93,13 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
                         SortingDirection = VerticalDirectionsEnum.Down,
                     });
         IsBusyProgress = false;
-
-        if (issues_users_res.Response is null || issues_users_res.Response.Count == 0)
+        SnackBarRepo.ShowMessagesResponse(issues_users_res.Messages);
+        if (!issues_users_res.Success() || issues_users_res.Response?.Response is null || issues_users_res.Response.Response.Count == 0)
             return;
 
         foreach (UserInfoModel us in users_res.Response)
         {
-            IssueHelpdeskModel[] issues_for_user = [.. issues_users_res.Response
+            IssueHelpdeskModel[] issues_for_user = [.. issues_users_res.Response.Response
                 .Where(x =>
                 x.ExecutorIdentityUserId == us.UserId ||
                 x.Subscribers!.Any(y => y.UserId == us.UserId) ||

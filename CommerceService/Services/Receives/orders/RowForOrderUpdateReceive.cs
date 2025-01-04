@@ -12,16 +12,17 @@ namespace Transmission.Receives.commerce;
 /// RowForOrderUpdateReceive
 /// </summary>
 public class RowForOrderUpdateReceive(ICommerceService commRepo, ILogger<RowForOrderUpdateReceive> loggerRepo)
-    : IResponseReceive<RowOfOrderDocumentModelDB, TResponseModel<int>>
+    : IResponseReceive<RowOfOrderDocumentModelDB?, int?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RowForOrderUpdateCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>?> ResponseHandleAction(RowOfOrderDocumentModelDB? req)
+    public async Task<TResponseModel<int?>> ResponseHandleAction(RowOfOrderDocumentModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        return await commRepo.RowForOrderUpdate(req);
+        TResponseModel<int> res = await commRepo.RowForOrderUpdate(req);
+        return new() { Messages = res.Messages, Response = res.Response };
     }
 }

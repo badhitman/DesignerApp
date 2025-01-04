@@ -88,7 +88,7 @@ public interface IHelpdeskService
     /// <summary>
     /// Сообщение в обращение
     /// </summary>
-    public Task<TResponseModel<int>> MessageUpdateOrCreate(TAuthRequestModel<IssueMessageHelpdeskBaseModel> req);
+    public Task<TResponseModel<int?>> MessageUpdateOrCreate(TAuthRequestModel<IssueMessageHelpdeskBaseModel> req);
 
     /// <summary>
     /// Message vote

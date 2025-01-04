@@ -11,15 +11,19 @@ namespace Transmission.Receives.constructor;
 /// Удалить поле формы (тип: справочник/список)
 /// </summary>
 public class FormFieldDirectoryDeleteReceive(IConstructorService conService)
-: IResponseReceive<TAuthRequestModel<int>, ResponseBaseModel>
+: IResponseReceive<TAuthRequestModel<int>?, object?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FormFieldDirectoryDeleteReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<int>? payload)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await conService.FormFieldDirectoryDelete(payload);
+        ResponseBaseModel res = await conService.FormFieldDirectoryDelete(payload);
+        return new()
+        {
+            Messages = res.Messages,
+        };
     }
 }

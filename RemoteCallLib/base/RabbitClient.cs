@@ -50,7 +50,7 @@ public class RabbitClient : IRabbitClient
     }
 
     /// <inheritdoc/>
-    public Task<T?> MqRemoteCall<T>(string queue, object? request = null, bool waitResponse = true)
+    public Task<TResponseModel<T>> MqRemoteCall<T>(string queue, object? request = null, bool waitResponse = true)
     {
         string response_topic = waitResponse ? $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}" : "";
 
@@ -64,6 +64,7 @@ public class RabbitClient : IRabbitClient
             _channel.QueueDeclare(queue: response_topic, durable: false, exclusive: false, autoDelete: true, arguments: ResponseQueueArguments);
         }
 
+        TResponseModel<T> res = new();
         Stopwatch stopwatch = new();
         EventingBasicConsumer consumer = new(_channel);
 
@@ -71,7 +72,6 @@ public class RabbitClient : IRabbitClient
         CancellationToken token = cts.Token;
         ManualResetEventSlim mres = new(false);
         string _msg;
-        TResponseMQModel<T?>? res_io = null;
         void MessageReceivedEvent(object? sender, BasicDeliverEventArgs e)
         {
             string msg;
@@ -80,16 +80,15 @@ public class RabbitClient : IRabbitClient
 
             try
             {
-                res_io = JsonConvert.DeserializeObject<TResponseMQModel<T?>>(content, GlobalStaticConstants.JsonSerializerSettings)
+                res = JsonConvert.DeserializeObject<TResponseModel<T>>(content, GlobalStaticConstants.JsonSerializerSettings)
                     ?? throw new Exception("parse error {0CBCCD44-63C8-4E93-8349-11A8BE63B235}");
-
-                if (!res_io.Success())
-                    loggerRepo.LogError(res_io.Message());
             }
             catch (Exception ex)
             {
                 msg = $"error deserialisation: {content}.\n\nerror ";
                 loggerRepo.LogError(ex, msg);
+                res!.AddError(msg);
+                res.Messages.InjectException(ex);
             }
 
             try
@@ -100,6 +99,8 @@ public class RabbitClient : IRabbitClient
             {
                 msg = "exception basic ask. error {A62029D4-1A23-461D-99AD-349C6B7500A8}";
                 loggerRepo.LogError(ex, msg);
+                res.Messages.InjectException(ex);
+                res.AddError(msg);
             }
 
             stopwatch.Stop();
@@ -167,8 +168,7 @@ public class RabbitClient : IRabbitClient
             }
             catch (Exception ex)
             {
-                _msg = "exception Wait response. error {8B621451-2214-467F-B8E9-906DD866662C}";
-                loggerRepo.LogError(ex, _msg);
+                res.Messages.InjectException(ex);
                 stopwatch.Stop();
             }
 
@@ -177,18 +177,12 @@ public class RabbitClient : IRabbitClient
                 _msg = $"Elapsed for `{queue}` -> `{response_topic}`: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}";
                 loggerRepo.LogError(_msg);
                 stopwatch.Stop();
+                res.AddInfo(_msg);
             }
             else
                 loggerRepo.LogDebug($"Elapsed [{queue}] -> [{response_topic}]: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
         }
 
-        if (res_io is null)
-        {
-            _msg = $"Response MQ/IO is null!";
-            loggerRepo.LogError(_msg);
-            return Task.FromResult(default(T));
-        }
-
-        return Task.FromResult(res_io.Response);
+        return Task.FromResult(res);
     }
 }

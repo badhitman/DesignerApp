@@ -67,7 +67,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
     {
         await SetBusy();
 
-        TPaginationResponseModel<IssueHelpdeskModel> res = await HelpdeskRepo.ConsoleIssuesSelect(new TPaginationRequestModel<ConsoleIssuesRequestModel>
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> res = await HelpdeskRepo.ConsoleIssuesSelect(new TPaginationRequestModel<ConsoleIssuesRequestModel>
         {
             PageNum = pageNum,
             PageSize = 5,
@@ -81,11 +81,11 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
             }
         });
         IsBusyProgress = false;
-
-        if (res.Response is not null && res.Response.Count != 0)
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (res.Response?.Response is not null && res.Response.Response.Count != 0)
         {
-            totalCount = res.TotalRowsCount;
-            Issues.AddRange(res.Response);
+            totalCount = res.Response.TotalRowsCount;
+            Issues.AddRange(res.Response.Response);
             pageNum++;
         }
         await UpdateOrdersCache();

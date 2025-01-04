@@ -12,20 +12,25 @@ namespace Transmission.Receives.commerce;
 /// CreateAttendanceRecords
 /// </summary>
 public class CreateAttendanceRecordsReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo)
-    : IResponseReceive<TAuthRequestModel<CreateAttendanceRequestModel>, ResponseBaseModel>
+    : IResponseReceive<TAuthRequestModel<CreateAttendanceRequestModel>?, object?>
 {
     /// <summary>
     /// Обновление WorkScheduleCalendar
     /// </summary>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CreateAttendanceRecordsCommerceReceive;
 
-/// <summary>
+    /// <summary>
     /// Обновление WorkScheduleCalendar
     /// </summary>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<CreateAttendanceRequestModel>? payload)
+    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<CreateAttendanceRequestModel>? req)
     {
-        ArgumentNullException.ThrowIfNull(payload);
-        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(payload, GlobalStaticConstants.JsonSerializerSettings)}");
-        return await commerceRepo.CreateAttendanceRecords(payload);
+        ArgumentNullException.ThrowIfNull(req);
+
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
+        ResponseBaseModel res = await commerceRepo.CreateAttendanceRecords(req);
+        return new()
+        {
+            Messages = res.Messages,
+        };
     }
 }

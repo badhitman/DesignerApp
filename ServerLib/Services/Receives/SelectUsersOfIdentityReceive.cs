@@ -13,19 +13,20 @@ namespace Transmission.Receives.web;
 /// SelectUsersOfIdentityReceive
 /// </summary>
 public class SelectUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SimpleBaseRequestModel>, TPaginationResponseModel<UserInfoModel>>
+    : IResponseReceive<TPaginationRequestModel<SimpleBaseRequestModel>?, TPaginationResponseModel<UserInfoModel?>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SelectUsersOfIdentityReceive;
 
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<UserInfoModel>?> ResponseHandleAction(TPaginationRequestModel<SimpleBaseRequestModel>? req)
+    public async Task<TResponseModel<TPaginationResponseModel<UserInfoModel?>?>> ResponseHandleAction(TPaginationRequestModel<SimpleBaseRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
         if (req.PageSize < 10)
             req.PageSize = 10;
 
+        TResponseModel<TPaginationResponseModel<UserInfoModel?>?> res = new();
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
         IQueryable<ApplicationUser> q = identityContext.Users.AsQueryable();
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
@@ -37,7 +38,7 @@ public class SelectUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext
             (x.NormalizedLastNameUpper != null && x.NormalizedLastNameUpper.Contains(req.Payload.SearchQuery)));
         }
 
-        return new()
+        res.Response = new()
         {
             TotalRowsCount = await q.CountAsync(),
             PageNum = req.PageNum,
@@ -63,5 +64,7 @@ public class SelectUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext
             })
             .ToListAsync()]
         };
+
+        return res;
     }
 }

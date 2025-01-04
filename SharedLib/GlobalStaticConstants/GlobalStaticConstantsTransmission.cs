@@ -341,9 +341,6 @@ public static partial class GlobalStaticConstants
         public readonly static string OrdersAttendancesByIssuesGetReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.ORDERS_CONTROLLER_NAME}-of-{Routes.ATTENDANCES_CONTROLLER_NAME}-by-{Routes.ISSUES_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
 
         /// <inheritdoc/>
-        public readonly static string OrdersAttendancesStatusesChangeByHelpdeskDocumentIdReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.ORDERS_CONTROLLER_NAME}-of-{Routes.ATTENDANCES_CONTROLLER_NAME}-by-{Routes.ISSUES_CONTROLLER_NAME}", $"{Routes.CHANGE_ACTION_NAME}-{Routes.STATUS_CONTROLLER_NAME}");
-
-        /// <inheritdoc/>
         public readonly static string OrdersReadCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, Routes.ORDERS_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
 
         /// <inheritdoc/>

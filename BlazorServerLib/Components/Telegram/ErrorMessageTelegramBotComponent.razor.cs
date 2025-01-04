@@ -33,7 +33,7 @@ public partial class ErrorMessageTelegramBotComponent : BlazorBusyComponentBaseM
     private async Task<TableData<ErrorSendingMessageTelegramBotModelDB>> ServerReload(TableState state, CancellationToken token)
     {
         await SetBusy();
-        TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB> err_res = await TelegramRepo.ErrorsForChatsSelectTelegram(new TPaginationRequestModel<long[]?>()
+        TResponseModel<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?> err_res = await TelegramRepo.ErrorsForChatsSelectTelegram(new TPaginationRequestModel<long[]?>()
         {
             Payload = ChatId is null || ChatId.Value == 0 ? null : [ChatId.Value],
             PageNum = state.Page,
@@ -42,11 +42,11 @@ public partial class ErrorMessageTelegramBotComponent : BlazorBusyComponentBaseM
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         });
         IsBusyProgress = false;
-
-        if (err_res.Response is null)
+        SnackbarRepo.ShowMessagesResponse(err_res.Messages);
+        if (!err_res.Success() || err_res.Response?.Response is null)
             return new TableData<ErrorSendingMessageTelegramBotModelDB>() { TotalItems = 0, Items = [] };
 
-        pagedData = err_res.Response;
-        return new TableData<ErrorSendingMessageTelegramBotModelDB>() { TotalItems = err_res.TotalRowsCount, Items = pagedData };
+        pagedData = err_res.Response.Response;
+        return new TableData<ErrorSendingMessageTelegramBotModelDB>() { TotalItems = err_res.Response.TotalRowsCount, Items = pagedData };
     }
 }

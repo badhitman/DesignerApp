@@ -16,17 +16,17 @@ namespace Transmission.Receives.web;
 /// SetRoleForUserReceive
 /// </summary>
 public class SetRoleForUserReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, ILogger<SetRoleForUserReceive> _logger)
-    : IResponseReceive<SetRoleFoeUserRequestModel, TResponseModel<string[]>>
+    : IResponseReceive<SetRoleFoeUserRequestModel?, string[]?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetRoleForUserOfIdentityReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string[]>?> ResponseHandleAction(SetRoleFoeUserRequestModel? req)
+    public async Task<TResponseModel<string[]?>> ResponseHandleAction(SetRoleFoeUserRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<string[]> res = new();
+        TResponseModel<string[]?> res = new();
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
 
         IQueryable<ApplicationRole> q = identityContext

@@ -91,8 +91,9 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             throw new Exception("Проект не выбран.");
 
         await SetBusy();
-
-        rest_data = await ConstructorRepo.SelectForms(new() { Request = SimplePaginationRequestModel.Build(searchString, _table_state?.PageSize ?? 10, _table_state?.Page ?? 0), ProjectId = ParentFormsPage.MainProject.Id });
+        
+        TResponseModel<TPaginationResponseModel<FormConstructorModelDB>> res = await ConstructorRepo.SelectForms(new() { Request = SimplePaginationRequestModel.Build(searchString, _table_state?.PageSize ?? 10, _table_state?.Page ?? 0), ProjectId = ParentFormsPage.MainProject.Id });
+        rest_data = res.Response;
         IsBusyProgress = false;
     }
 
