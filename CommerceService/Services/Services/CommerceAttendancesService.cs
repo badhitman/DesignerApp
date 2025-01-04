@@ -16,6 +16,23 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> OrderAttendance(TAuthRequestModel<int> req)
+    {
+        TResponseModel<UserInfoModel[]?> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
+        {
+            ResponseBaseModel res = new();
+            res.AddRangeMessages(actorRes.Messages);
+            return res;
+        }
+        UserInfoModel actor = actorRes.Response[0];
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req)
     {
         if (req.IssueIds.Length == 0)
@@ -45,14 +62,21 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(StatusChangeRequestModel req)
+    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
     {
         TResponseModel<bool> res = new();
+        TResponseModel<UserInfoModel[]?> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
+        {
+            res.AddRangeMessages(actorRes.Messages);
+            return res;
+        }
+        UserInfoModel actor = actorRes.Response[0];
         string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         List<OrderAttendanceModelDB> ordersDb = await context
             .OrdersAttendances
-            .Where(x => x.HelpdeskId == req.DocumentId && x.StatusDocument != req.Step)
+            .Where(x => x.HelpdeskId == req.Payload.DocumentId && x.StatusDocument != req.Payload.Step)
             .ToListAsync();
 
         if (ordersDb.Count == 0)
@@ -134,9 +158,9 @@ public partial class CommerceImplementService : ICommerceService
         await context.SaveChangesAsync();
         res.Response = await context
                             .OrdersAttendances
-                            .Where(x => x.HelpdeskId == req.DocumentId)
+                            .Where(x => x.HelpdeskId == req.Payload.DocumentId)
                             .ExecuteUpdateAsync(set => set
-                            .SetProperty(p => p.StatusDocument, req.Step)
+                            .SetProperty(p => p.StatusDocument, req.Payload.Step)
                             .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
                             .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
 
@@ -427,7 +451,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
+    public async Task<TPaginationResponseModel<WeeklyScheduleModelDB>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;

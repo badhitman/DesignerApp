@@ -27,6 +27,7 @@ namespace RemoteCallLib;
 public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     : BackgroundService
     where TQueue : IResponseReceive<TRequest?, TResponse>
+    where TResponse : new()
 {
     readonly ILogger<RabbitMqListenerService<TQueue, TRequest, TResponse>> LoggerRepo;
     readonly IConnection _connection;
@@ -35,18 +36,6 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     readonly ConnectionFactory factory;
 
     static Dictionary<string, object>? ResponseQueueArguments;
-
-#if DEBUG
-    private static readonly JsonSerializerSettings _sOpt = new()
-    {
-        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-    };
-#else
-    private static readonly JsonSerializerOptions _sOpt = new ()
-    {
-           ReferenceHandler = ReferenceHandler.IgnoreCycles,
-    };
-#endif
 
     Type? _queueType;
     /// <summary>
@@ -90,37 +79,40 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
-
+        TResponseMQModel<TResponse> answer = new()
+        {
+            StartedServer = DateTime.UtcNow,
+        };
         EventingBasicConsumer consumer = new(_channel);
         consumer.Received += async (ch, ea) =>
         {
-            TResponseModel<TResponse?> result_handler;
             TRequest? sr;
+
 #if DEBUG
             string content = Encoding.UTF8.GetString(ea.Body.ToArray()).Trim();
-
             try
             {
                 sr = content.Equals("null", StringComparison.OrdinalIgnoreCase)
                 ? default
                 : JsonConvert.DeserializeObject<TRequest?>(content);
 
-                result_handler = await receiveService.ResponseHandleAction(sr);
+                answer.Response = await receiveService.ResponseHandleAction(sr);
             }
             catch (Exception ex)
             {
-                result_handler = new();
-                result_handler.Messages.InjectException(ex);
+                answer.Messages.InjectException(ex);
                 LoggerRepo.LogError(ex, $"Ошибка выполнения удалённой команды: {QueueName}");
             }
+
+            answer.FinalizedServer = DateTime.UtcNow;
 
             if (!string.IsNullOrWhiteSpace(ea.BasicProperties.ReplyTo))
             {
                 try
                 {
-                    _channel.BasicPublish(exchange: "", routingKey: ea.BasicProperties.ReplyTo, basicProperties: null, body: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(result_handler, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)));
+                    _channel.BasicPublish(exchange: "", routingKey: ea.BasicProperties.ReplyTo, basicProperties: null, body: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(answer, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)));
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
@@ -135,23 +127,19 @@ public class RabbitMqListenerService<TQueue, TRequest, TResponse>
             try
             {
                 sr = System.Text.Json.JsonSerializer.Deserialize<TRequest?>(ea.Body.ToArray());
-                result_handler = await receiveService.ResponseHandleAction(sr);
+                answer.Response = await receiveService.ResponseHandleAction(sr);
             }
             catch (Exception ex)
             {
-                result_handler = new();
-                result_handler.Messages.InjectException(ex);
+                answer.Messages.InjectException(ex);
+                LoggerRepo.LogError(ex, $"Ошибка выполнения удалённой команды: {QueueName}");
             }
+            answer.Finalized = DateTime.UtcNow;
             if (!string.IsNullOrWhiteSpace(ea.BasicProperties.ReplyTo))
             {
                 try
                 {
-                    JsonSerializerOptions options = new()
-                    {
-                        ReferenceHandler = ReferenceHandler.IgnoreCycles,
-                        WriteIndented = true
-                    };
-                    _channel.BasicPublish(exchange: "", routingKey: ea.BasicProperties.ReplyTo, basicProperties: null, body: System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result_handler, _sOpt));
+                    _channel.BasicPublish(exchange: "", routingKey: ea.BasicProperties.ReplyTo, basicProperties: null, body: System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result_handler, GlobalStaticConstants.JsonSerializerSettings));
                 }
                 finally
                 {
