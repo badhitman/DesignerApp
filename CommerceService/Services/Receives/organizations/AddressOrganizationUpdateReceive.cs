@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// AddressOrganizationUpdateReceive
 /// </summary>
 public class AddressOrganizationUpdateReceive(ICommerceService commerceRepo, ILogger<AddressOrganizationUpdateReceive> loggerRepo)
-    : IResponseReceive<AddressOrganizationBaseModel, TResponseModel<int>>
+    : IResponseReceive<AddressOrganizationBaseModel?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.AddressOrganizationUpdateCommerceReceive;

@@ -14,7 +14,7 @@ namespace Transmission.Receives.commerce;
 /// PaymentDocumentUpdateReceive
 /// </summary>
 public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PaymentDocumentUpdateReceive> loggerRepo)
-    : IResponseReceive<PaymentDocumentBaseModel, TResponseModel<int>>
+    : IResponseReceive<PaymentDocumentBaseModel?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PaymentDocumentUpdateCommerceReceive;

@@ -13,14 +13,16 @@ namespace Transmission.Receives.web;
 /// Удаление связи Telegram аккаунта с учётной записью сайта
 /// </summary>
 public class TelegramJoinAccountDeleteReceive(IWebAppService tgWebRepo, ILogger<TelegramJoinAccountDeleteReceive> _logger)
-    : IResponseReceive<long, ResponseBaseModel>
+    : IResponseReceive<long?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteReceive;
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel?> ResponseHandleAction(long payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(long? payload)
     {
+        ArgumentNullException.ThrowIfNull(payload);
+
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(payload, GlobalStaticConstants.JsonSerializerSettings)}");
         string msg;
         if (payload == 0)
@@ -32,7 +34,7 @@ public class TelegramJoinAccountDeleteReceive(IWebAppService tgWebRepo, ILogger<
 
         try
         {
-            ResponseBaseModel join_remove = await tgWebRepo.TelegramAccountRemoveJoin(payload);
+            ResponseBaseModel join_remove = await tgWebRepo.TelegramAccountRemoveJoin(payload.Value);
             return ResponseBaseModel.Create(join_remove.Messages);
         }
         catch (Exception ex)

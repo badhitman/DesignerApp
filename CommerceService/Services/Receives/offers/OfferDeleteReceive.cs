@@ -14,7 +14,7 @@ namespace Transmission.Receives.commerce;
 /// Удалить оффер
 /// </summary>
 public class OfferDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OfferDeleteReceive> loggerRepo)
-    : IResponseReceive<int, TResponseModel<bool>>
+    : IResponseReceive<int, TResponseModel<bool>?>
 {
     /// <summary>
     /// Удалить оффер

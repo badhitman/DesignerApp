@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// Обновление WorkScheduleCalendar
 /// </summary>
 public class CalendarScheduleUpdateReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo)
-    : IResponseReceive<CalendarScheduleModelDB, TResponseModel<int>>
+    : IResponseReceive<CalendarScheduleModelDB?, TResponseModel<int>?>
 {
     /// <summary>
     /// Обновление WorkScheduleCalendar

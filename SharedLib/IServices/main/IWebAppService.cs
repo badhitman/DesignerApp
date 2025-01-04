@@ -13,7 +13,7 @@ public interface IWebAppService
     /// <summary>
     /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
     /// </summary>
-    public Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user);
+    public Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user);
 
     /// <summary>
     /// Получить состояние процедуры привязки аккаунта Telegram к учётной записи сайта (если есть).
@@ -40,7 +40,7 @@ public interface IWebAppService
     /// Получить информацию по пользователю (из БД).
     /// Данные возвращаются из кэша: каждое сообщение в TelegramBot кеширует информацию о пользователе в БД
     /// </summary>
-    public Task<TResponseModel<TelegramUserBaseModel?>> GetTelegramUserCachedInfo(long telegramId);
+    public Task<TResponseModel<TelegramUserBaseModel>> GetTelegramUserCachedInfo(long telegramId);
 
     /// <summary>
     /// Удалить связь Telegram аккаунта с учётной записью сайта

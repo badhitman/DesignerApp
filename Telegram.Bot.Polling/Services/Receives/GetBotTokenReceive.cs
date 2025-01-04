@@ -12,7 +12,7 @@ namespace Transmission.Receives.telegram;
 /// Get TelegramBot Token
 /// </summary>
 public class GetBotTokenReceive(IOptions<BotConfiguration> tgConfig, ILogger<GetBotTokenReceive> _logger)
-    : IResponseReceive<object, TResponseModel<string>>
+    : IResponseReceive<object?, TResponseModel<string>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetBotTokenTelegramReceive;

@@ -13,7 +13,7 @@ namespace Transmission.Receives.web;
 /// UpdateTelegramUser
 /// </summary>
 public class UpdateTelegramUserReceive(IWebAppService tgWebRepo, ILogger<UpdateTelegramUserReceive> _logger)
-    : IResponseReceive<CheckTelegramUserHandleModel, TResponseModel<CheckTelegramUserAuthModel>>
+    : IResponseReceive<CheckTelegramUserHandleModel?, TResponseModel<CheckTelegramUserAuthModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateTelegramUserReceive;
@@ -21,6 +21,8 @@ public class UpdateTelegramUserReceive(IWebAppService tgWebRepo, ILogger<UpdateT
     /// <inheritdoc/>
     public async Task<TResponseModel<CheckTelegramUserAuthModel>?> ResponseHandleAction(CheckTelegramUserHandleModel? user)
     {
+        ArgumentNullException.ThrowIfNull(user);
+
         TResponseModel<CheckTelegramUserAuthModel> res = new();
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(user, GlobalStaticConstants.JsonSerializerSettings)}");
         string msg;

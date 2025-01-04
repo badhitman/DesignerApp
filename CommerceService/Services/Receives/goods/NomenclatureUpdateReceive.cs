@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// Обновление номенклатуры
 /// </summary>
 public class NomenclatureUpdateReceive(ICommerceService commerceRepo, ILogger<NomenclatureUpdateReceive> loggerRepo)
-    : IResponseReceive<NomenclatureModelDB, TResponseModel<int>>
+    : IResponseReceive<NomenclatureModelDB?, TResponseModel<int>?>
 {
     /// <summary>
     /// Обновление номенклатуры
@@ -26,11 +26,6 @@ public class NomenclatureUpdateReceive(ICommerceService commerceRepo, ILogger<No
     {
         ArgumentNullException.ThrowIfNull(req);        
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<int> res = await commerceRepo.NomenclatureUpdate(req);
-        return new()
-        {
-            Messages = res.Messages,
-            Response = res.Response,
-        };
+        return await commerceRepo.NomenclatureUpdate(req);
     }
 }

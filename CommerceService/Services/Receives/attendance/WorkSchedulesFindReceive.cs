@@ -11,7 +11,7 @@ namespace Transmission.Receives.commerce;
 /// WorkSchedulesFindReceive
 /// </summary>
 public class WorkSchedulesFindReceive(ICommerceService commerceRepo)
-    : IResponseReceive<WorkSchedulesFindRequestModel, WorkSchedulesFindResponseModel>
+    : IResponseReceive<WorkSchedulesFindRequestModel?, WorkSchedulesFindResponseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive;

@@ -22,7 +22,7 @@ public class ForwardMessageTelegramReceive(
     ILogger<ForwardMessageTelegramReceive> loggerRepo,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
     StoreTelegramService storeTgRepo)
-    : IResponseReceive<ForwardMessageTelegramBotModel, TResponseModel<MessageComplexIdsModel>>
+    : IResponseReceive<ForwardMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ForwardTextMessageTelegramReceive;

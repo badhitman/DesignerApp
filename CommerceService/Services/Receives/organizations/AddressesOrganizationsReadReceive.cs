@@ -11,7 +11,7 @@ namespace Transmission.Receives.commerce;
 /// AddressesOrganizationsReadReceive
 /// </summary>
 public class AddressesOrganizationsReadReceive(ICommerceService commerceRepo)
-    : IResponseReceive<int[], TResponseModel<AddressOrganizationModelDB[]>>
+    : IResponseReceive<int[]?, TResponseModel<AddressOrganizationModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.AddressesOrganizationsReadCommerceReceive;

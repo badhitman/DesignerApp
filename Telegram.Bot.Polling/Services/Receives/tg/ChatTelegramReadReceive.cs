@@ -13,13 +13,13 @@ namespace Transmission.Receives.telegram;
 /// Прочитать данные чата
 /// </summary>
 public class ChatTelegramReadReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
-    : IResponseReceive<int, ChatTelegramModelDB>
+    : IResponseReceive<int?, ChatTelegramModelDB?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ChatReadTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<ChatTelegramModelDB?> ResponseHandleAction(int chat_id)
+    public async Task<ChatTelegramModelDB?> ResponseHandleAction(int? chat_id)
     {
         TResponseModel<ChatTelegramModelDB> res = new();
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();

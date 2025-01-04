@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// Organization set legal
 /// </summary>
 public class OrganizationSetLegalReceive(ICommerceService commerceRepo, ILogger<OrganizationSetLegalReceive> loggerRepo)
-    : IResponseReceive<OrganizationLegalModel, TResponseModel<bool>>
+    : IResponseReceive<OrganizationLegalModel?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrganizationSetLegalCommerceReceive;

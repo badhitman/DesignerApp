@@ -15,6 +15,7 @@ using NLog.Web;
 using DbcLib;
 using NLog;
 using BlazorWebLib;
+using BlankBlazorApp;
 #if !DEBUG
 using System.Reflection;
 #endif
@@ -202,18 +203,7 @@ builder.Services
     .AddScoped<IConstructorRemoteTransmissionService, TransmissionConstructorService>()
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
 //
-builder.Services.RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, CheckTelegramUserAuthModel?>()
-    .RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, object?>()
-    .RegisterMqListener<TelegramJoinAccountDeleteReceive, long, object?>()
-    .RegisterMqListener<GetWebConfigReceive, object?, TelegramBotConfigModel>()
-    .RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, object?>()
-    .RegisterMqListener<GetTelegramUserReceive, long, TelegramUserBaseModel>()
-    .RegisterMqListener<GetUsersOfIdentityReceive, string[], UserInfoModel[]>()
-    .RegisterMqListener<GetUsersIdentityByEmailReceive, string[], UserInfoModel[]>()
-    .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, bool>()
-    .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], UserInfoModel[]>()
-    .RegisterMqListener<SetRoleForUserReceive, SetRoleFoeUserRequestModel, string[]>()
-    .RegisterMqListener<SelectUsersOfIdentityReceive, TPaginationRequestModel<SimpleBaseRequestModel>, TPaginationResponseModel<UserInfoModel?>>();
+builder.Services.WebAppRegisterMqListeners();
 #endregion
 
 WebApplication app = builder.Build();

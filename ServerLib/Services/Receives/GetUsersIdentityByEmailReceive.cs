@@ -15,7 +15,7 @@ namespace Transmission.Receives.web;
 /// Получить пользователей из Identity по их Email
 /// </summary>
 public class GetUsersIdentityByEmailReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, IMemoryCache cache)
-    : IResponseReceive<string[], TResponseModel<UserInfoModel[]>>
+    : IResponseReceive<string[]?, TResponseModel<UserInfoModel[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByEmailReceive;

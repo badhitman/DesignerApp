@@ -13,15 +13,17 @@ namespace Transmission.Receives.web;
 /// Данные возвращаются из кэша: каждое сообщение в TelegramBot кеширует информацию о пользователе в БД
 /// </summary>
 public class GetTelegramUserReceive(IWebAppService tgWebRepo, ILogger<GetTelegramUserReceive> _logger)
-    : IResponseReceive<long, TResponseModel<TelegramUserBaseModel?>>
+    : IResponseReceive<long?, TResponseModel<TelegramUserBaseModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TelegramUserBaseModel?>?> ResponseHandleAction(long payload)
+    public async Task<TResponseModel<TelegramUserBaseModel>?> ResponseHandleAction(long? payload)
     {
-        TResponseModel<TelegramUserBaseModel?> res = new();
+        ArgumentNullException.ThrowIfNull(payload);
+
+        TResponseModel<TelegramUserBaseModel> res = new();
         string msg;
         if (payload == 0)
         {
@@ -33,7 +35,7 @@ public class GetTelegramUserReceive(IWebAppService tgWebRepo, ILogger<GetTelegra
 
         try
         {
-            res = await tgWebRepo.GetTelegramUserCachedInfo(payload);
+            res = await tgWebRepo.GetTelegramUserCachedInfo(payload.Value);
         }
         catch (Exception ex)
         {

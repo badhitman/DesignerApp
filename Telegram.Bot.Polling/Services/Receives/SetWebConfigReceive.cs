@@ -13,7 +13,7 @@ namespace Transmission.Receives.telegram;
 /// Set web config site
 /// </summary>
 public class SetWebConfigReceive(TelegramBotConfigModel webConfig, ILogger<SetWebConfigReceive> _logger)
-    : IResponseReceive<TelegramBotConfigModel, ResponseBaseModel>
+    : IResponseReceive<TelegramBotConfigModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetWebConfigTelegramReceive;

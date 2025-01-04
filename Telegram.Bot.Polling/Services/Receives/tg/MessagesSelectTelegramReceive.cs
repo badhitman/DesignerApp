@@ -14,7 +14,7 @@ namespace Transmission.Receives.telegram;
 /// Получить сообщения из чата
 /// </summary>
 public class MessagesSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SearchMessagesChatModel>, TPaginationResponseModel<MessageTelegramModelDB>>
+    : IResponseReceive<TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessagesChatsSelectTelegramReceive;

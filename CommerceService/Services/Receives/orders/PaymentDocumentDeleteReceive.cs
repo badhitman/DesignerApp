@@ -14,13 +14,13 @@ namespace Transmission.Receives.commerce;
 /// PaymentDocumentDeleteReceive
 /// </summary>
 public class PaymentDocumentDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PaymentDocumentDeleteReceive> loggerRepo)
-    : IResponseReceive<int, bool>
+    : IResponseReceive<int, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PaymentDocumentDeleteCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<bool> ResponseHandleAction(int req)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(int req)
     {
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
 
@@ -30,6 +30,6 @@ public class PaymentDocumentDeleteReceive(IDbContextFactory<CommerceContext> com
                 .Where(x => context.PaymentsDocuments.Any(y => y.Id == req && y.OrderDocumentId == x.Id))
                 .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
 
-        return 0 < await context.PaymentsDocuments.Where(x => x.Id == req).ExecuteDeleteAsync();
+        return ResponseBaseModel.CreateInfo($"Изменений бд: {await context.PaymentsDocuments.Where(x => x.Id == req).ExecuteDeleteAsync()}");
     }
 }

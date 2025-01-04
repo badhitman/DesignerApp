@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// AddressOrganizationDeleteReceive
 /// </summary>
 public class AddressOrganizationDeleteReceive(ICommerceService commerceRepo, ILogger<AddressOrganizationDeleteReceive> loggerRepo)
-    : IResponseReceive<int, ResponseBaseModel>
+    : IResponseReceive<int, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.AddressOrganizationDeleteCommerceReceive;

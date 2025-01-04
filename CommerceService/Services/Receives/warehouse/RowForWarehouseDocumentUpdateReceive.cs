@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// RowForWarehouseDocumentUpdate
 /// </summary>
 public class RowForWarehouseDocumentUpdateReceive(ICommerceService commRepo, ILogger<RowForWarehouseDocumentUpdateReceive> loggerRepo)
-    : IResponseReceive<RowOfWarehouseDocumentModelDB, TResponseModel<int>>
+    : IResponseReceive<RowOfWarehouseDocumentModelDB?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RowForWarehouseDocumentUpdateCommerceReceive;

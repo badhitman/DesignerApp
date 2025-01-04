@@ -16,7 +16,7 @@ namespace Transmission.Receives.web;
 /// SetRoleForUserReceive
 /// </summary>
 public class SetRoleForUserReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, ILogger<SetRoleForUserReceive> _logger)
-    : IResponseReceive<SetRoleFoeUserRequestModel, TResponseModel<string[]>>
+    : IResponseReceive<SetRoleFoeUserRequestModel?, TResponseModel<string[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetRoleForUserOfIdentityReceive;

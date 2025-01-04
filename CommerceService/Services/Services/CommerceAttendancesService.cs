@@ -482,15 +482,12 @@ public partial class CommerceImplementService : ICommerceService
 
         return new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
-            },
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
         };
     }
 
@@ -651,7 +648,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<CalendarScheduleModelDB[]>> CalendarSchedulesRead(int[] req)
+    public async Task<List<CalendarScheduleModelDB>> CalendarSchedulesRead(int[] req)
     {
         TResponseModel<CalendarScheduleModelDB[]> res = new();
 
@@ -661,11 +658,9 @@ public partial class CommerceImplementService : ICommerceService
             .CalendarsSchedules
             .Where(x => req.Any(y => x.Id == y));
 
-        res.Response = await q
+        return await q
             .Include(x => x.Offer!)
             .Include(x => x.Nomenclature)
-            .ToArrayAsync();
-
-        return res;
+            .ToListAsync();
     }
 }

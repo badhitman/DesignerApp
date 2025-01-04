@@ -13,7 +13,7 @@ namespace Transmission.Receives.commerce;
 /// NomenclaturesSelectReceive
 /// </summary>
 public class NomenclaturesSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-    : IResponseReceive<TPaginationRequestModel<NomenclaturesSelectRequestModel>, TPaginationResponseModel<NomenclatureModelDB>>
+    : IResponseReceive<TPaginationRequestModel<NomenclaturesSelectRequestModel>?, TPaginationResponseModel<NomenclatureModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.NomenclaturesSelectCommerceReceive;

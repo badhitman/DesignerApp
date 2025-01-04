@@ -14,7 +14,7 @@ namespace Transmission.Receives.commerce;
 /// PriceRuleDeleteReceive
 /// </summary>
 public class PriceRuleDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PriceRuleDeleteReceive> loggerRepo)
-    : IResponseReceive<int, TResponseModel<bool>>
+    : IResponseReceive<int, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PriceRuleDeleteCommerceReceive;

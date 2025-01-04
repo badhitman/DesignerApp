@@ -18,19 +18,19 @@ public static class RegisterMqListenerExtension
     public static IServiceCollection TelegramBotRegisterMqListeners(this IServiceCollection services)
     {
         return services
-            .RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, MessageComplexIdsModel?>()
-            .RegisterMqListener<SetWebConfigReceive, TelegramBotConfigModel, object?>()
-            .RegisterMqListener<GetBotTokenReceive, object, string?>()
-            .RegisterMqListener<GetBotUsernameReceive, object?, string?>()
-            .RegisterMqListener<ChatsReadTelegramReceive, long[]?, ChatTelegramModelDB[]?>()
-            .RegisterMqListener<MessagesSelectTelegramReceive, TPaginationRequestModel<SearchMessagesChatModel>?, TPaginationResponseModel<MessageTelegramModelDB>?>()
-            .RegisterMqListener<GetFileTelegramReceive, string?, byte[]?>()
-            .RegisterMqListener<SendWappiMessageReceive, EntryAltExtModel?, SendMessageResponseModel?>()
-            .RegisterMqListener<ChatsFindForUserTelegramReceive, long[]?, ChatTelegramModelDB[]?>()
-            .RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>?, TPaginationResponseModel<ChatTelegramModelDB>?>()
-            .RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>()
-            .RegisterMqListener<ChatTelegramReadReceive, int?, ChatTelegramModelDB?>()
-            .RegisterMqListener<ErrorsForChatsSelectTelegramReceive, TPaginationRequestModel<long[]?>?, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>()
+            .RegisterMqListener<SendTextMessageTelegramReceive, SendTextMessageTelegramBotModel, TResponseModel<MessageComplexIdsModel>>()
+            .RegisterMqListener<SetWebConfigReceive, TelegramBotConfigModel, ResponseBaseModel>()
+            .RegisterMqListener<GetBotTokenReceive, object, TResponseModel<string>>()
+            .RegisterMqListener<GetBotUsernameReceive, object, TResponseModel<string>>()
+            .RegisterMqListener<ChatsReadTelegramReceive, long[], List<ChatTelegramModelDB>>()
+            .RegisterMqListener<MessagesSelectTelegramReceive, TPaginationRequestModel<SearchMessagesChatModel>, TPaginationResponseModel<MessageTelegramModelDB>>()
+            .RegisterMqListener<GetFileTelegramReceive, string, TResponseModel<byte[]>>()
+            .RegisterMqListener<SendWappiMessageReceive, EntryAltExtModel, TResponseModel<SendMessageResponseModel>>()
+            .RegisterMqListener<ChatsFindForUserTelegramReceive, long[], List<ChatTelegramModelDB>>()
+            .RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>, TPaginationResponseModel<ChatTelegramModelDB>>()
+            .RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel, TResponseModel<MessageComplexIdsModel>>()
+            .RegisterMqListener<ChatTelegramReadReceive, int?, ChatTelegramModelDB>()
+            .RegisterMqListener<ErrorsForChatsSelectTelegramReceive, TPaginationRequestModel<long[]>, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>>()
             ;
     }
 }

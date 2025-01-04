@@ -14,7 +14,7 @@ namespace Transmission.Receives.commerce;
 /// OfferUpdateReceive
 /// </summary>
 public class OfferUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<OfferUpdateReceive> loggerRepo)
-    : IResponseReceive<OfferModelDB, TResponseModel<int>>
+    : IResponseReceive<OfferModelDB?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OfferUpdateCommerceReceive;

@@ -13,13 +13,13 @@ namespace Transmission.Receives.telegram;
 /// Найти чаты пользователей
 /// </summary>
 public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory, ILogger<ChatsFindForUserTelegramReceive> logger)
-    : IResponseReceive<long[], ChatTelegramModelDB[]>
+    : IResponseReceive<long[]?, List<ChatTelegramModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ChatsFindForUserTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<ChatTelegramModelDB[]?> ResponseHandleAction(long[]? chats_ids)
+    public async Task<List<ChatTelegramModelDB>?> ResponseHandleAction(long[]? chats_ids)
     {
         ArgumentNullException.ThrowIfNull(chats_ids);
         TResponseModel<ChatTelegramModelDB[]?> res = new();
@@ -34,6 +34,6 @@ public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContex
         return await q
             .Include(x => x.UsersJoins!)
             .ThenInclude(x => x.User)
-            .ToArrayAsync();
+            .ToListAsync();
     }
 }

@@ -13,7 +13,7 @@ namespace Transmission.Receives.web;
 /// Отправка Email - receive
 /// </summary>
 public class SendEmailReceive(IMailProviderService mailRepo, ILogger<SendEmailReceive> _logger)
-    : IResponseReceive<SendEmailRequestModel, ResponseBaseModel>
+    : IResponseReceive<SendEmailRequestModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SendEmailReceive;

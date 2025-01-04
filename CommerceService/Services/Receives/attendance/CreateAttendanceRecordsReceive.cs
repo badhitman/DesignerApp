@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// CreateAttendanceRecords
 /// </summary>
 public class CreateAttendanceRecordsReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo)
-    : IResponseReceive<TAuthRequestModel<CreateAttendanceRequestModel>, ResponseBaseModel>
+    : IResponseReceive<TAuthRequestModel<CreateAttendanceRequestModel>?, ResponseBaseModel?>
 {
     /// <summary>
     /// Обновление WorkScheduleCalendar

@@ -25,7 +25,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
     IWebRemoteTransmissionService webRemoteCall,
     StoreTelegramService storeTgRepo,
     ILogger<SendTextMessageTelegramReceive> _logger)
-    : IResponseReceive<SendTextMessageTelegramBotModel, TResponseModel<MessageComplexIdsModel>>
+    : IResponseReceive<SendTextMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive;

@@ -12,7 +12,7 @@ namespace Transmission.Receives.commerce;
 /// UserOrganizationUpdateReceive
 /// </summary>
 public class UserOrganizationUpdateReceive(ICommerceService commerceRepo, ILogger<UserOrganizationUpdateReceive> loggerRepo)
-    : IResponseReceive<TAuthRequestModel<UserOrganizationModelDB>, TResponseModel<int>>
+    : IResponseReceive<TAuthRequestModel<UserOrganizationModelDB>?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrganizationUserUpdateOrCreateCommerceReceive;

@@ -17,7 +17,7 @@ public class GetUserIdentityByTelegramReceive(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IWebRemoteTransmissionService webRepo,
     IMemoryCache cache)
-    : IResponseReceive<long[], TResponseModel<UserInfoModel[]>>
+    : IResponseReceive<long[]?, TResponseModel<UserInfoModel[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByTelegramIdsReceive;

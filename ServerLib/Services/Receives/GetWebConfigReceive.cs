@@ -12,7 +12,7 @@ namespace Transmission.Receives.web;
 /// Get web config - receive
 /// </summary>
 public class GetWebConfigReceive(IOptions<TelegramBotConfigModel> webConfig)
-    : IResponseReceive<object, TelegramBotConfigModel>
+    : IResponseReceive<object?, TelegramBotConfigModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetWebConfigReceive;

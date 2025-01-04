@@ -12,15 +12,15 @@ public class FileAttachModel
     /// <summary>
     /// Data
     /// </summary>
-    public required byte[] Data { get; set; }
+    public byte[] Data { get; set; } = [];
 
     /// <summary>
     /// 
     /// </summary>
-    public required string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// 
     /// </summary>
-    public required string ContentType { get; set; }
+    public string ContentType { get; set; } = string.Empty;
 }

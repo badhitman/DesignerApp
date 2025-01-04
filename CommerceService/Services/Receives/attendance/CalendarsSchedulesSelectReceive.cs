@@ -11,7 +11,7 @@ namespace Transmission.Receives.commerce;
 /// CalendarsSchedulesSelectReceive
 /// </summary>
 public class CalendarsSchedulesSelectReceive(ICommerceService commerceRepo)
-    : IResponseReceive<TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>, TPaginationResponseModel<CalendarScheduleModelDB>>
+    : IResponseReceive<TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>?, TPaginationResponseModel<CalendarScheduleModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CalendarsSchedulesSelectCommerceReceive;
@@ -20,6 +20,6 @@ public class CalendarsSchedulesSelectReceive(ICommerceService commerceRepo)
     public async Task<TPaginationResponseModel<CalendarScheduleModelDB>?> ResponseHandleAction(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await commerceRepo.CalendarsSchedulesSelect(payload);
+        return await commerceRepo.CalendarSchedulesSelect(payload);
     }
 }
