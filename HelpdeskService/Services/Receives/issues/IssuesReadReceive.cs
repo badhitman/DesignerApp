@@ -11,7 +11,7 @@ namespace Transmission.Receives.helpdesk;
 /// Read issue - of context user
 /// </summary>
 public class IssuesReadReceive(IHelpdeskService hdRepo)
-    : IResponseReceive<TAuthRequestModel<IssuesReadRequestModel>, TResponseModel<IssueHelpdeskModelDB[]>>
+    : IResponseReceive<TAuthRequestModel<IssuesReadRequestModel>?, TResponseModel<IssueHelpdeskModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssuesGetHelpdeskReceive;

@@ -12,7 +12,7 @@ namespace Transmission.Receives.helpdesk;
 /// CreateIssueTheme
 /// </summary>
 public class RubricCreateOrUpdateReceive(IHelpdeskService hdRepo, ILogger<RubricCreateOrUpdateReceive> loggerRepo)
-    : IResponseReceive<RubricIssueHelpdeskModelDB, TResponseModel<int>>
+    : IResponseReceive<RubricIssueHelpdeskModelDB?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricForIssuesUpdateHelpdeskReceive;

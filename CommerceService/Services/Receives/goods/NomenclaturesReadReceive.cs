@@ -12,8 +12,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// NomenclaturesReadReceive
 /// </summary>
-public class NomenclaturesReadReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-    : IResponseReceive<int[]?, List<NomenclatureModelDB>?>
+public class NomenclaturesReadReceive(IDbContextFactory<CommerceContext> commerceDbFactory) : IResponseReceive<int[]?, List<NomenclatureModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.NomenclaturesReadCommerceReceive;

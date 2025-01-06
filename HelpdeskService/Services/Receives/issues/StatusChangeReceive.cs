@@ -11,7 +11,7 @@ namespace Transmission.Receives.helpdesk;
 /// StatusChangeReceive
 /// </summary>
 public class StatusChangeReceive(IHelpdeskService hdRepo)
-    : IResponseReceive<TAuthRequestModel<StatusChangeRequestModel>, TResponseModel<bool>>
+    : IResponseReceive<TAuthRequestModel<StatusChangeRequestModel>?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.StatusChangeIssueHelpdeskReceive;

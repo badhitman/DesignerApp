@@ -13,7 +13,7 @@ namespace Transmission.Receives.helpdesk;
 public class SubscribesListReceive(
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
-    : IResponseReceive<TAuthRequestModel<int>, SubscriberIssueHelpdeskModelDB[]>
+    : IResponseReceive<TAuthRequestModel<int>?, TResponseModel<SubscriberIssueHelpdeskModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SubscribesIssueListHelpdeskReceive;
@@ -21,13 +21,13 @@ public class SubscribesListReceive(
     /// <summary>
     /// Подписчики на события в обращении/инциденте
     /// </summary>
-    public async Task<SubscriberIssueHelpdeskModelDB[]?> ResponseHandleAction(TAuthRequestModel<int>? req)
+    public async Task<TResponseModel<SubscriberIssueHelpdeskModelDB[]>?> ResponseHandleAction(TAuthRequestModel<int>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
         TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return [];
+            return new();
 
         UserInfoModel actor = rest.Response[0];
 
@@ -38,8 +38,11 @@ public class SubscribesListReceive(
         });
 
         if (!issues_data.Success() || issues_data.Response is null)
-            return [];
+            return new();
 
-        return [.. issues_data.Response.SelectMany(x => x.Subscribers!)];
+        return new()
+        {
+            Response = [.. issues_data.Response.SelectMany(x => x.Subscribers!)]
+        };
     }
 }

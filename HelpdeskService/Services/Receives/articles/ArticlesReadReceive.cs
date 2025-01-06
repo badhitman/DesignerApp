@@ -12,13 +12,13 @@ namespace Transmission.Receives.helpdesk;
 /// ArticlesReadReceive
 /// </summary>
 public class ArticlesReadReceive(IArticlesService artRepo, ILogger<ArticlesReadReceive> loggerRepo)
-    : IResponseReceive<int[], ArticleModelDB[]>
+    : IResponseReceive<int[]?, TResponseModel<ArticleModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ArticlesReadReceive;
 
     /// <inheritdoc/>
-    public async Task<ArticleModelDB[]?> ResponseHandleAction(int[]? req)
+    public async Task<TResponseModel<ArticleModelDB[]>?> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");

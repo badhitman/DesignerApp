@@ -12,7 +12,7 @@ namespace Transmission.Receives.helpdesk;
 /// ArticlesSelectReceive
 /// </summary>
 public class ArticlesSelectReceive(IArticlesService artRepo, ILogger<ArticlesSelectReceive> loggerRepo)
-    : IResponseReceive<TPaginationRequestModel<SelectArticlesRequestModel>, TPaginationResponseModel<ArticleModelDB>>
+    : IResponseReceive<TPaginationRequestModel<SelectArticlesRequestModel>?, TPaginationResponseModel<ArticleModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ArticlesSelectHelpdeskReceive;

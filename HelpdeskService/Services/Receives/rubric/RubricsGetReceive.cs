@@ -11,7 +11,7 @@ namespace Transmission.Receives.helpdesk;
 /// Получить рубрики
 /// </summary>
 public class RubricsGetReceive(IHelpdeskService hdRepo)
-    : IResponseReceive<int[], TResponseModel<List<RubricIssueHelpdeskModelDB>>>
+    : IResponseReceive<int[]?, TResponseModel<List<RubricIssueHelpdeskModelDB>>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricsForIssuesGetHelpdeskReceive;

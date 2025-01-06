@@ -16,7 +16,7 @@ public class TelegramMessageIncomingReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     ITelegramRemoteTransmissionService tgRepo,
     ISerializeStorageRemoteTransmissionService StorageRepo)
-    : IResponseReceive<TelegramIncomingMessageModel, TResponseModel<bool>>
+    : IResponseReceive<TelegramIncomingMessageModel?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IncomingTelegramMessageHelpdeskReceive;

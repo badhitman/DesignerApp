@@ -12,13 +12,13 @@ namespace Transmission.Receives.helpdesk;
 /// UpdateRubricsForArticleReceive
 /// </summary>
 public class UpdateRubricsForArticleReceive(IArticlesService artRepo, ILogger<ArticleCreateOrUpdateReceive> loggerRepo)
-    : IResponseReceive<ArticleRubricsSetModel, bool>
+    : IResponseReceive<ArticleRubricsSetModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricsForArticleSetReceive;
 
     /// <inheritdoc/>
-    public async Task<bool> ResponseHandleAction(ArticleRubricsSetModel? req)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(ArticleRubricsSetModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");

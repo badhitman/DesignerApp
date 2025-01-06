@@ -11,7 +11,7 @@ namespace Transmission.Receives.helpdesk;
 /// Create (or update) Issue: Рубрика, тема и описание
 /// </summary>
 public class IssueCreateOrUpdateReceive(IHelpdeskService hdRepo)
-    : IResponseReceive<TAuthRequestModel<UniversalUpdateRequestModel>, TResponseModel<int>>
+    : IResponseReceive<TAuthRequestModel<UniversalUpdateRequestModel>?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssueUpdateHelpdeskReceive;
