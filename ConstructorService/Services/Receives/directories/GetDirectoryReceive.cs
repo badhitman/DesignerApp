@@ -11,13 +11,13 @@ namespace Transmission.Receives.constructor;
 /// GetDirectoryReceive
 /// </summary>
 public class GetDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<int, EntryDescriptionModel>
+    : IResponseReceive<int, TResponseModel<EntryDescriptionModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetDirectoryReceive;
 
     /// <inheritdoc/>
-    public async Task<EntryDescriptionModel?> ResponseHandleAction(int payload)
+    public async Task<TResponseModel<EntryDescriptionModel>?> ResponseHandleAction(int payload)
     {
         return await conService.GetDirectory(payload);
     }

@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Получить сессию
 /// </summary>
 public class GetSessionDocumentDataReceive(IConstructorService conService)
-    : IResponseReceive<string, TResponseModel<SessionOfDocumentDataModelDB>>
+    : IResponseReceive<string?, TResponseModel<SessionOfDocumentDataModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetSessionDocumentDataReceive;

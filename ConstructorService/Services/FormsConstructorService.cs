@@ -187,12 +187,12 @@ public partial class FormsConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<int>> AddRowToTable(FieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<int>> AddRowToTable(FieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default)
     {
         TResponseModel<SessionOfDocumentDataModelDB> get_s = await GetSessionDocument(new() { SessionId = req.SessionId }, cancellationToken);
         if (!get_s.Success())
-            return new TResponseStrictModel<int>() { Messages = get_s.Messages, Response = 0 };
-        TResponseStrictModel<int> res = new() { Response = 0 };
+            return new TResponseModel<int>() { Messages = get_s.Messages, Response = 0 };
+        TResponseModel<int> res = new() { Response = 0 };
         SessionOfDocumentDataModelDB? session = get_s.Response;
 
         if (session?.Owner?.Tabs is null || session.DataSessionValues is null)
@@ -202,7 +202,7 @@ public partial class FormsConstructorService(
         }
 
         if (session.SessionStatus >= SessionsStatusesEnum.Sended)
-            return (TResponseStrictModel<int>)ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (в статусе {session.SessionStatus}).");
+            return (TResponseModel<int>)ResponseBaseModel.CreateError($"Сессия опроса/анкеты {nameof(req.SessionId)}#{req.SessionId} заблокирована (в статусе {session.SessionStatus}).");
 
         FormToTabJoinConstructorModelDB? form_join = session.Owner.Tabs.SelectMany(x => x.JoinsForms!).FirstOrDefault(x => x.Id == req.JoinFormId);
         if (form_join?.Form?.Fields is null || form_join.Form.FieldsDirectoriesLinks is null || !form_join.IsTable)
@@ -314,7 +314,7 @@ public partial class FormsConstructorService(
     // Если проект отключить (есть у него такой статус: IsDisabled), то работы с проектом блокируются для всех участников, кроме владельца
     #region проекты
     /// <inheritdoc/>
-    public async Task<ProjectViewModel[]> GetProjectsForUser(GetProjectsForUserRequestModel req)
+    public async Task<TResponseModel<ProjectViewModel[]>> GetProjectsForUser(GetProjectsForUserRequestModel req)
     {
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         IQueryable<ProjectModelDb> q = context_forms
@@ -370,7 +370,7 @@ public partial class FormsConstructorService(
             Members = ReadMembersData(project.Members),
         };
 
-        return raw_data.Select(cast_expression).ToArray();
+        return new() { Response = raw_data.Select(cast_expression).ToArray() };
     }
 
     /// <inheritdoc/>
@@ -512,7 +512,7 @@ public partial class FormsConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<EntryAltModel[]> GetMembersOfProject(int project_id)
+    public async Task<TResponseModel<EntryAltModel[]>> GetMembersOfProject(int project_id)
     {
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
@@ -523,15 +523,18 @@ public partial class FormsConstructorService(
             .ToArrayAsync();
 
         if (members_users_ids.Length == 0)
-            return [];
+            return new();
 
         TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity(members_users_ids);
         if (!restUsers.Success())
             throw new Exception(restUsers.Message());
 
-        return restUsers.Response!
+        return new()
+        {
+            Response = restUsers.Response!
             .Select(x => new EntryAltModel() { Id = x.UserId, Name = x.UserName })
-            .ToArray();
+            .ToArray()
+        };
     }
 
     /// <inheritdoc/>
@@ -898,7 +901,7 @@ public partial class FormsConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<EntryModel[]>> GetDirectories(ProjectFindModel req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<EntryModel[]>> GetDirectories(ProjectFindModel req, CancellationToken cancellationToken = default)
     {
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
@@ -911,25 +914,28 @@ public partial class FormsConstructorService(
         if (!string.IsNullOrWhiteSpace(req.QuerySearch))
             query = query.Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{req.QuerySearch.ToUpper()}%"));
 
-        return new TResponseStrictModel<EntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
+        return new TResponseModel<EntryModel[]>() { Response = await query.ToArrayAsync(cancellationToken: cancellationToken) };
     }
 
     /// <inheritdoc/>
-    public async Task<EntryDescriptionModel> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<EntryDescriptionModel>> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default)
     {
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
-        return await context_forms
+        return new()
+        {
+            Response = await context_forms
             .Directories
             .Where(x => x.Id == enumeration_id)
             .Select(x => new EntryDescriptionModel() { Name = x.Name, Id = x.Id, Description = x.Description })
-            .FirstAsync(cancellationToken: cancellationToken);
+            .FirstAsync(cancellationToken: cancellationToken)
+        };
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(TAuthRequestModel<EntryConstructedModel> req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<int>> UpdateOrCreateDirectory(TAuthRequestModel<EntryConstructedModel> req, CancellationToken cancellationToken = default)
     {
         req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name.Trim(), " ");
-        TResponseStrictModel<int> res = new() { Response = 0 };
+        TResponseModel<int> res = new() { Response = 0 };
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(req.Payload);
         if (!IsValid)
         {
@@ -1040,14 +1046,17 @@ public partial class FormsConstructorService(
     #endregion
     #region элементы справочникв/списков
     /// <inheritdoc/>
-    public async Task<EntryDescriptionModel> GetElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<EntryDescriptionModel>> GetElementOfDirectory(int element_id, CancellationToken cancellationToken = default)
     {
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
-        return await context_forms
+        return new()
+        {
+            Response = await context_forms
             .ElementsOfDirectories
             .Where(x => x.Id == element_id)
             .Select(x => new EntryDescriptionModel() { Name = x.Name, Id = x.Id, Description = x.Description })
-            .FirstAsync(cancellationToken: cancellationToken);
+            .FirstAsync(cancellationToken: cancellationToken)
+        };
     }
 
     /// <inheritdoc/>
@@ -1074,10 +1083,10 @@ public partial class FormsConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<int>> CreateElementForDirectory(TAuthRequestModel<OwnedNameModel> req, CancellationToken cancellationToken = default)
+    public async Task<TResponseModel<int>> CreateElementForDirectory(TAuthRequestModel<OwnedNameModel> req, CancellationToken cancellationToken = default)
     {
         req.Payload.Name = MyRegexSpices().Replace(req.Payload.Name, " ").Trim();
-        TResponseStrictModel<int> res = new() { Response = 0 };
+        TResponseModel<int> res = new() { Response = 0 };
 
         (bool IsValid, List<ValidationResult> ValidationResults) = GlobalTools.ValidateObject(req.Payload);
         if (!IsValid)

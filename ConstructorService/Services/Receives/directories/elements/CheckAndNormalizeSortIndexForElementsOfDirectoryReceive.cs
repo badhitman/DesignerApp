@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// CheckAndNormalizeSortIndexForElementsOfDirectoryReceive
 /// </summary>
 public class CheckAndNormalizeSortIndexForElementsOfDirectoryReceive(IConstructorService conService)
-   : IResponseReceive<int, ResponseBaseModel>
+   : IResponseReceive<int, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CheckAndNormalizeSortIndexForElementsOfDirectoryReceive;

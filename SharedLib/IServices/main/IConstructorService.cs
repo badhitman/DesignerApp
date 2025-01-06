@@ -35,7 +35,7 @@ public interface IConstructorService
     /// Добавить новую строку в таблицу значений
     /// </summary>
     /// <returns>Номер п/п (начиная с 1) созданной строки</returns>
-    public Task<TResponseStrictModel<int>> AddRowToTable(FieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<int>> AddRowToTable(FieldSessionDocumentDataBaseModel req, CancellationToken cancellationToken = default);
     #endregion
 
     /////////////// Контекст работы конструктора: работы в системе над какими-либо сущностями всегда принадлежат какому-либо проекту/контексту.
@@ -46,12 +46,12 @@ public interface IConstructorService
     /// <summary>
     /// Получить проекты
     /// </summary>
-    public Task<ProjectViewModel[]> GetProjectsForUser(GetProjectsForUserRequestModel req);
+    public Task<TResponseModel<ProjectViewModel[]>> GetProjectsForUser(GetProjectsForUserRequestModel req);
 
     /// <summary>
     /// Прочитать данные проектов
     /// </summary>
-    public Task<ProjectModelDb[]> ReadProjects(int[] projects_ids);
+    public Task<List<ProjectModelDb>> ReadProjects(int[] projects_ids);
 
     /// <summary>
     /// Создать проект
@@ -81,7 +81,7 @@ public interface IConstructorService
     /// <summary>
     /// Получить участников проекта (за исключением владельца, который хранится в самом проекте)
     /// </summary>
-    public Task<EntryAltModel[]> GetMembersOfProject(int project_id);
+    public Task<TResponseModel<EntryAltModel[]>> GetMembersOfProject(int project_id);
 
     /// <summary>
     /// Установить проект как основной/используемый для пользователя.
@@ -115,17 +115,17 @@ public interface IConstructorService
     /// <summary>
     /// Получить справочники/списки для проекта
     /// </summary>
-    public Task<TResponseStrictModel<EntryModel[]>> GetDirectories(ProjectFindModel req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<EntryModel[]>> GetDirectories(ProjectFindModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить справочник (список/перечисление)
     /// </summary>
-    public Task<EntryDescriptionModel> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<EntryDescriptionModel>> GetDirectory(int enumeration_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/Создать справочник
     /// </summary>
-    public Task<TResponseStrictModel<int>> UpdateOrCreateDirectory(TAuthRequestModel<EntryConstructedModel> req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<int>> UpdateOrCreateDirectory(TAuthRequestModel<EntryConstructedModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить справочник/список (со всеми элементами и связями)
@@ -141,7 +141,7 @@ public interface IConstructorService
     /// <summary>
     /// Создать элемент справочника
     /// </summary>
-    public Task<TResponseStrictModel<int>> CreateElementForDirectory(TAuthRequestModel<OwnedNameModel> req, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<int>> CreateElementForDirectory(TAuthRequestModel<OwnedNameModel> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить элемент справочника
@@ -151,7 +151,7 @@ public interface IConstructorService
     /// <summary>
     /// Получить элемент справочника/перечисления/списка
     /// </summary>
-    public Task<EntryDescriptionModel> GetElementOfDirectory(int element_id, CancellationToken cancellationToken = default);
+    public Task<TResponseModel<EntryDescriptionModel>> GetElementOfDirectory(int element_id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить элемент справочника/списка

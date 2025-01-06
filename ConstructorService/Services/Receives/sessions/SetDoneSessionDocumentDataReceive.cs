@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Отправить опрос на проверку (от клиента)
 /// </summary>
 public class SetDoneSessionDocumentDataReceive(IConstructorService conService)
-    : IResponseReceive<string, ResponseBaseModel>
+    : IResponseReceive<string?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetDoneSessionDocumentDataReceive;

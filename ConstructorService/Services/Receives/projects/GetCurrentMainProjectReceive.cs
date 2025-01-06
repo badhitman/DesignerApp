@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// GetCurrentMainProjectReceive
 /// </summary>
 public class GetCurrentMainProjectReceive(IConstructorService conService)
-    : IResponseReceive<string, TResponseModel<MainProjectViewModel>>
+    : IResponseReceive<string?, TResponseModel<MainProjectViewModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetCurrentMainProjectReceive;

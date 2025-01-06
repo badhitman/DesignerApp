@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// UpdateProjectReceive
 /// </summary>
 public class UpdateProjectReceive(IConstructorService conService)
-    : IResponseReceive<ProjectViewModel, ResponseBaseModel>
+    : IResponseReceive<ProjectViewModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateProjectReceive;

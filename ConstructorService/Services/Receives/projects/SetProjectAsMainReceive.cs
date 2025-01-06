@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// SetProjectAsMainReceive
 /// </summary>
 public class SetProjectAsMainReceive(IConstructorService conService)
-    : IResponseReceive<UserProjectModel, ResponseBaseModel>
+    : IResponseReceive<UserProjectModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetProjectAsMainReceive;

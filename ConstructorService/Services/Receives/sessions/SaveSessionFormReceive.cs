@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Сохранить данные формы документа из сессии
 /// </summary>
 public class SaveSessionFormReceive(IConstructorService conService)
-    : IResponseReceive<SaveConstructorSessionRequestModel, TResponseModel<ValueDataForSessionOfDocumentModelDB[]>>
+    : IResponseReceive<SaveConstructorSessionRequestModel?, TResponseModel<ValueDataForSessionOfDocumentModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SaveSessionFormReceive;

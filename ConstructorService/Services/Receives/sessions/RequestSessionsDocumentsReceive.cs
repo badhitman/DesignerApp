@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Запросить порцию сессий (с пагинацией)
 /// </summary>
 public class RequestSessionsDocumentsReceive(IConstructorService conService)
-    : IResponseReceive<RequestSessionsDocumentsRequestPaginationModel, TPaginationResponseModel<SessionOfDocumentDataModelDB>>
+    : IResponseReceive<RequestSessionsDocumentsRequestPaginationModel?, TPaginationResponseModel<SessionOfDocumentDataModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RequestSessionsDocumentsReceive;

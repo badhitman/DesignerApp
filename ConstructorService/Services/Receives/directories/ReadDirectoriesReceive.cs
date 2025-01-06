@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// ReadDirectoriesReceive
 /// </summary>
 public class ReadDirectoriesReceive(IConstructorService conService)
-    : IResponseReceive<int[], List<EntryNestedModel>>
+    : IResponseReceive<int[]?, List<EntryNestedModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadDirectoriesReceive;

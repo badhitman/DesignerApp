@@ -12,13 +12,13 @@ namespace Transmission.Receives.constructor;
 /// </summary>
 /// <returns>Номер п/п (начиная с 1) созданной строки</returns>
 public class AddRowToTableReceive(IConstructorService conService)
-    : IResponseReceive<FieldSessionDocumentDataBaseModel, TResponseStrictModel<int>>
+    : IResponseReceive<FieldSessionDocumentDataBaseModel?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.AddRowToTableReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseStrictModel<int>?> ResponseHandleAction(FieldSessionDocumentDataBaseModel? payload)
+    public async Task<TResponseModel<int>?> ResponseHandleAction(FieldSessionDocumentDataBaseModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
         return await conService.AddRowToTable(payload);

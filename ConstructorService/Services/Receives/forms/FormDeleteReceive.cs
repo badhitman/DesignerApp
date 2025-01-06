@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Удалить форму
 /// </summary>
 public class FormDeleteReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>, ResponseBaseModel>
+    : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FormDeleteReceive;

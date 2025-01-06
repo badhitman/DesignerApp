@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Получить связь [таба/вкладки схемы документа] с [формой]
 /// </summary>
 public class GetTabDocumentSchemeJoinFormReceive(IConstructorService conService)
-    : IResponseReceive<int, TResponseModel<FormToTabJoinConstructorModelDB>>
+    : IResponseReceive<int, TResponseModel<FormToTabJoinConstructorModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetTabDocumentSchemeJoinFormReceive;

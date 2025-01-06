@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// AddMembersToProjectReceive
 /// </summary>
 public class AddMembersToProjectReceive(IConstructorService conService)
-    : IResponseReceive<UsersProjectModel, ResponseBaseModel>
+    : IResponseReceive<UsersProjectModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.AddMembersToProjectReceive;

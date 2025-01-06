@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Удалить сессию опроса/анкеты
 /// </summary>
 public class DeleteSessionDocumentReceive(IConstructorService conService)
-    : IResponseReceive<int, ResponseBaseModel>
+    : IResponseReceive<int, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteSessionDocumentReceive;

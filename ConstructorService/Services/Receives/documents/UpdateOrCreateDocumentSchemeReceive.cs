@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Обновить/создать схему документа
 /// </summary>
 public class UpdateOrCreateDocumentSchemeReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<EntryConstructedModel>, TResponseModel<DocumentSchemeConstructorModelDB>>
+    : IResponseReceive<TAuthRequestModel<EntryConstructedModel>?, TResponseModel<DocumentSchemeConstructorModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateOrCreateDocumentSchemeReceive;

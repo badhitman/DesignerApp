@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Сдвинуть поле формы (простой тип)
 /// </summary>
 public class FieldFormMoveReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<MoveObjectModel>, TResponseModel<FormConstructorModelDB>>
+    : IResponseReceive<TAuthRequestModel<MoveObjectModel>?, TResponseModel<FormConstructorModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FieldFormMoveReceive;

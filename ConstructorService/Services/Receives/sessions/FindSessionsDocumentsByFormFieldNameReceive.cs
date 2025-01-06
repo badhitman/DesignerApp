@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Найти порцию сессий по имени поля (с пагинацией)
 /// </summary>
 public class FindSessionsDocumentsByFormFieldNameReceive(IConstructorService conService)
-    : IResponseReceive<FormFieldModel, TResponseModel<EntryDictModel[]>>
+    : IResponseReceive<FormFieldModel?, TResponseModel<EntryDictModel[]>?>
 {
 
     /// <inheritdoc/>

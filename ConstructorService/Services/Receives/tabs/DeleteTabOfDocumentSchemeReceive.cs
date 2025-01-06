@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Удалить страницу опроса/анкеты
 /// </summary>
 public class DeleteTabOfDocumentSchemeReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>, ResponseBaseModel>
+    : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteTabOfDocumentSchemeReceive;

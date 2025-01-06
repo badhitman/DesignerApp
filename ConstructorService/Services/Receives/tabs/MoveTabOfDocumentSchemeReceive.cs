@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Перемещение страницы опроса/анкеты (сортировка страниц внутри опроса/анкеты)
 /// </summary>
 public class MoveTabOfDocumentSchemeReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<MoveObjectModel>, TResponseModel<DocumentSchemeConstructorModelDB>>
+    : IResponseReceive<TAuthRequestModel<MoveObjectModel>?, TResponseModel<DocumentSchemeConstructorModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MoveTabOfDocumentSchemeReceive;

@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Обновить/создать форму (имя, описание, `признак таблицы`)
 /// </summary>
 public class FormUpdateOrCreateReceive(IConstructorService conService)
-   : IResponseReceive<TAuthRequestModel<FormBaseConstructorModel>, TResponseModel<FormConstructorModelDB>>
+   : IResponseReceive<TAuthRequestModel<FormBaseConstructorModel>?, TResponseModel<FormConstructorModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FormUpdateOrCreateReceive;

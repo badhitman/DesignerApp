@@ -11,7 +11,7 @@ namespace Transmission.Receives.constructor;
 /// Сдвинуть ниже элемент справочника/списка
 /// </summary>
 public class DownMoveElementOfDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>, ResponseBaseModel>
+    : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DownMoveElementOfDirectoryReceive;

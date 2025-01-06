@@ -22,7 +22,7 @@ public class EntryModel
     /// <summary>
     /// Имя объекта
     /// </summary>
-    [NameValid]
+    [NameValid, Required]
     public virtual required string Name { get; set; }
 
     /// <inheritdoc/>
@@ -63,6 +63,6 @@ public class EntryModel
     }
 
     /// <inheritdoc/>
-    public override int GetHashCode() 
+    public override int GetHashCode()
         => $"{Id} {Name}".GetHashCode();
 }
