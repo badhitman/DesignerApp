@@ -26,7 +26,7 @@ public class SaveFileReceive(
     ICommerceRemoteTransmissionService commRepo,
     IOptions<WebConfigModel> webConfig,
     IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<StorageImageMetadataModel, TResponseModel<StorageFileModelDB>>
+    : IResponseReceive<StorageImageMetadataModel?, TResponseModel<StorageFileModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SaveFileReceive;

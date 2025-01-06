@@ -14,7 +14,7 @@ namespace Transmission.Receives.storage;
 /// TagsSelectReceive
 /// </summary>
 public class TagsSelectReceive(ILogger<TagsSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>, TPaginationResponseModel<TagModelDB>>
+    : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<TagModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.TagsSelectReceive;
