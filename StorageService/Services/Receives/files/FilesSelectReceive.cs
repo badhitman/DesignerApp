@@ -52,7 +52,7 @@ public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbConte
           : q.OrderByDescending(x => x.CreatedAt).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
 
         int trc = await q.CountAsync();
-        return new()
+        TPaginationResponseModel<StorageFileModelDB> res = new()
         {
             PageNum = req.PageNum,
             PageSize = req.PageSize,
@@ -61,5 +61,6 @@ public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbConte
             TotalRowsCount = trc,
             Response = await oq.ToListAsync(),
         };
+        return res;
     }
 }

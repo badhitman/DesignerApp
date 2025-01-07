@@ -30,7 +30,7 @@ public interface ISerializeStorageRemoteTransmissionService
     /// <summary>
     /// Files select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req);
+    public Task<TPaginationResponseModel<StorageFileModelDB>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req);
 
     /// <summary>
     /// ReadFile
