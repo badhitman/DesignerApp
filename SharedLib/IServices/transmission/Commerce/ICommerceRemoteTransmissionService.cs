@@ -87,7 +87,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Подбор заказов (поиск по параметрам)
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
+    public Task<TPaginationResponseModel<OrderDocumentModelDB>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
 
     /// <summary>
     /// Получить заказы (по заявкам)

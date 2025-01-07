@@ -100,8 +100,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<List<PriceRuleForOfferModelDB>>(GlobalStaticConstants.TransmissionQueues.PricesRulesGetForOfferCommerceReceive, ids) ?? [];
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)
-        => await rabbitClient.MqRemoteCall<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>>(GlobalStaticConstants.TransmissionQueues.OrdersSelectCommerceReceive, req) ?? new();
+    public async Task<TPaginationResponseModel<OrderDocumentModelDB>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OrderDocumentModelDB>>(GlobalStaticConstants.TransmissionQueues.OrdersSelectCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> OrderUpdate(OrderDocumentModelDB order)

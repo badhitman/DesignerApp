@@ -97,17 +97,17 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
 
         await SetBusy(token: token);
         
-        TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>> res = await CommerceRepo.OrdersSelect(req);
+        TPaginationResponseModel<OrderDocumentModelDB> res = await CommerceRepo.OrdersSelect(req);
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (!res.Success() || res.Response?.Response is null)
+        
+        if (res.Response is null)
             return new TableData<OrderDocumentModelDB>() { TotalItems = 0, Items = [] };
 
-        documentsPartData = res.Response.Response;
+        documentsPartData = res.Response;
         await UpdateCacheIssues();
         return new TableData<OrderDocumentModelDB>()
         {
-            TotalItems = res.Response.TotalRowsCount,
+            TotalItems = res.TotalRowsCount,
             Items = documentsPartData
         };
     }
