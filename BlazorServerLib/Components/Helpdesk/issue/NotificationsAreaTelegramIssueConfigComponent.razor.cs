@@ -33,10 +33,8 @@ public partial class NotificationsAreaTelegramIssueConfigComponent : IssueWrapBa
             return;
 
         await SetBusy();
-        TResponseModel<ChatTelegramModelDB[]?> rest = await TelegramRepo.ChatsFindForUser(telegram_users_ids);
+        chatsTelegram = [.. await TelegramRepo.ChatsFindForUser(telegram_users_ids)];
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        chatsTelegram = [.. rest.Response];
         chatsTelegram.Insert(0, new() { Title = "Off", Type = ChatsTypesTelegramEnum.Private });
     }
 }

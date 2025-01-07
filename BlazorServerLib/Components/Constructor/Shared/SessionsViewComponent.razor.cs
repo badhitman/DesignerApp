@@ -79,10 +79,10 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseAuthModel
             FilterUserId = CurrentUserSession!.UserId,
             ProjectId = ParentFormsPage.MainProject.Id
         };
-        await SetBusy();
+        await SetBusy(token: token);
         await Task.Delay(1, token);
-        TResponseModel<TPaginationResponseModel<SessionOfDocumentDataModelDB>> res_sd = await ConstructorRepo.RequestSessionsDocuments(req);
-        TPaginationResponseModel<SessionOfDocumentDataModelDB> rest = res_sd.Response ?? throw new Exception();
+        TPaginationResponseModel<SessionOfDocumentDataModelDB> rest = await ConstructorRepo.RequestSessionsDocuments(req);
+
         IsBusyProgress = false;
 
         if (rest.Response is null)
@@ -205,8 +205,8 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseAuthModel
 
         await SetBusy();
 
-        var ds_res = await ConstructorRepo.RequestDocumentsSchemes(new() { RequestPayload = new() { PageNum = 0, PageSize = 1000 }, ProjectId = ParentFormsPage.MainProject.Id });
-        TPaginationResponseModel<DocumentSchemeConstructorModelDB> rest = ds_res.Response ?? throw new Exception();
+        TPaginationResponseModel<DocumentSchemeConstructorModelDB> rest = await ConstructorRepo.RequestDocumentsSchemes(new() { RequestPayload = new() { PageNum = 0, PageSize = 1000 }, ProjectId = ParentFormsPage.MainProject.Id });
+
         IsBusyProgress = false;
 
         if (rest.Response is null)

@@ -29,8 +29,8 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<ChatsFindForUserTelegramReceive, long[], List<ChatTelegramModelDB>>()
             .RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>, TPaginationResponseModel<ChatTelegramModelDB>>()
             .RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel, TResponseModel<MessageComplexIdsModel>>()
-            .RegisterMqListener<ChatTelegramReadReceive, int?, ChatTelegramModelDB>()
-            .RegisterMqListener<ErrorsForChatsSelectTelegramReceive, TPaginationRequestModel<long[]>, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>>()
+            .RegisterMqListener<ChatTelegramReadReceive, int, ChatTelegramModelDB>()
+            .RegisterMqListener<ErrorsForChatsSelectTelegramReceive, TPaginationRequestModel<long[]?>, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>>()
             ;
     }
 }

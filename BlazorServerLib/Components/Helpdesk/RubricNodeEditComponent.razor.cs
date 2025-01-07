@@ -64,7 +64,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
             throw new ArgumentNullException(nameof(ItemModel));
 
         await SetBusy();
-        TResponseModel<bool?> res = await HelpdeskRepo.RubricMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id, ContextName = ContextName });
+        TResponseModel<bool> res = await HelpdeskRepo.RubricMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id, ContextName = ContextName });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         ReloadNodeHandle(ItemModel.ParentId ?? 0);
@@ -82,7 +82,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
         ItemModel.Name = itemSystemName;
 
         await SetBusy();
-        TResponseModel<int?> res = await HelpdeskRepo.RubricCreateOrUpdate(new RubricIssueHelpdeskModelDB()
+        TResponseModel<int> res = await HelpdeskRepo.RubricCreateOrUpdate(new RubricIssueHelpdeskModelDB()
         {
             Name = ItemModel.Name,
             Description = ItemModel.Description,

@@ -575,12 +575,10 @@ public partial class CommerceImplementService(
                 {
                     if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
                     {
-                        TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
-                        _webConf.BaseUri = wc.Response?.ClearBaseUri;
+                        TelegramBotConfigModel wc = await webTransmissionRepo.GetWebConfig();
+                        _webConf.BaseUri = wc.ClearBaseUri;
                     }
                 }));
-                TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
-                _webConf.BaseUri = wc.Response?.ClearBaseUri;
             }
 
             await Task.WhenAll(tasks);

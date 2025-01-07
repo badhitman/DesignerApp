@@ -28,7 +28,7 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<ChatTelegramModelDB>(GlobalStaticConstants.TransmissionQueues.ChatReadTelegramReceive, chatIdDb);
 
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]> req)
+    public async Task<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]?> req)
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>>(GlobalStaticConstants.TransmissionQueues.ErrorsForChatsSelectTelegramReceive, req);
 
     /// <inheritdoc/>
@@ -60,7 +60,7 @@ public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegram
         => await rabbitClient.MqRemoteCall<TResponseModel<SendMessageResponseModel>>(GlobalStaticConstants.TransmissionQueues.SendWappiMessageReceive, message, waitResponse);
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetWebConfigHelpdesk(HelpdeskConfigModel webConf, bool waitResponse = true)
+    public async Task<ResponseBaseModel> SetWebConfigHelpdesk(WebConfigModel webConf, bool waitResponse = true)
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.SetWebConfigHelpdeskReceive, webConf, waitResponse);
 
     /// <inheritdoc/>

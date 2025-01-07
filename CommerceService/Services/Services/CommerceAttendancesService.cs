@@ -110,7 +110,7 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        if (req.Step == StatusesDocumentsEnum.Canceled)
+        if (req.Payload.Step == StatusesDocumentsEnum.Canceled)
         {
             ordersDb.ForEach(x => x.StatusDocument = StatusesDocumentsEnum.Canceled);
             context.UpdateRange(ordersDb);
@@ -271,15 +271,14 @@ public partial class CommerceImplementService : ICommerceService
             {
                 if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
                 {
-                    TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
-                    _webConf.BaseUri = wc.Response?.ClearBaseUri;
+                    TelegramBotConfigModel wc = await webTransmissionRepo.GetWebConfig();
+                    _webConf.BaseUri = wc.ClearBaseUri;
                 }
             }));
-            TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
-            _webConf.BaseUri = wc.Response?.ClearBaseUri;
         }
 
         await Task.WhenAll(tasks);
+
         tasks.Clear();
 
         foreach (IGrouping<int, WorkScheduleModel> rec in records.GroupBy(x => x.Organization.Id))
@@ -536,22 +535,18 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<WeeklyScheduleModelDB[]>> WeeklySchedulesRead(int[] req)
+    public async Task<List<WeeklyScheduleModelDB>> WeeklySchedulesRead(int[] req)
     {
-        TResponseModel<WeeklyScheduleModelDB[]> res = new();
-
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         IQueryable<WeeklyScheduleModelDB> q = context
             .WeeklySchedules
             .Where(x => req.Any(y => x.Id == y));
 
-        res.Response = await q
+        return await q
             .Include(x => x.Offer!)
             .Include(x => x.Nomenclature)
-            .ToArrayAsync();
-
-        return res;
+            .ToListAsync();
     }
 
     /// <inheritdoc/>
@@ -600,7 +595,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> CalendarSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
+    public async Task<TPaginationResponseModel<CalendarScheduleModelDB>> CalendarSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
@@ -635,15 +630,12 @@ public partial class CommerceImplementService : ICommerceService
 
         return new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = [.. res]
-            },
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = [.. res]
         };
     }
 

@@ -160,7 +160,7 @@ public class UpdateHandler(
                 ReplyToMessage = msg_db.ReplyToMessage,
             };
 
-            TResponseModel<bool?> hd_res = await helpdeskRepo.TelegramMessageIncoming(hd_request);
+            TResponseModel<bool> hd_res = await helpdeskRepo.TelegramMessageIncoming(hd_request);
 
             if (message.Chat.Type == ChatType.Private)
                 await Usage(uc.Response, message.MessageId, MessagesTypesEnum.TextMessage, message.Chat.Id, messageText, cancellationToken);

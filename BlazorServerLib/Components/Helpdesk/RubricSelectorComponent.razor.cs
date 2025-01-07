@@ -87,10 +87,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         }
 
         await SetBusy();
-        TResponseModel<List<UniversalBaseModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = ownerRubricId, ContextName = ContextName });
-
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        CurrentRubrics = rest.Response;
+        CurrentRubrics = await HelpdeskRepo.RubricsList(new() { Request = ownerRubricId, ContextName = ContextName });
 
         await SetBusy(false);
     }

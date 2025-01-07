@@ -48,7 +48,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Получить ошибки отправок сообщений (для чатов)
     /// </summary>
-    public Task<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]> req);
+    public Task<TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>> ErrorsForChatsSelectTelegram(TPaginationRequestModel<long[]?> req);
 
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
@@ -58,7 +58,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
     /// </summary>
-    public Task<ResponseBaseModel> SetWebConfigHelpdesk(HelpdeskConfigModel webConf, bool waitResponse = true);
+    public Task<ResponseBaseModel> SetWebConfigHelpdesk(WebConfigModel webConf, bool waitResponse = true);
 
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
