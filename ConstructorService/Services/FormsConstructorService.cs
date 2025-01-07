@@ -410,7 +410,7 @@ public partial class FormsConstructorService(
             res.Messages.InjectException(ValidationResults);
             return res;
         }
-        TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity([req.UserId]);
+        TResponseModel<UserInfoModel[]> restUsers = await webRepo.GetUsersIdentity([req.UserId]);
         if (!restUsers.Success())
             throw new Exception(restUsers.Message());
 
@@ -538,7 +538,7 @@ public partial class FormsConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> AddMemberToProject(UsersProjectModel req)
     {
-        TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity(req.UsersIds);
+        TResponseModel<UserInfoModel[]> restUsers = await webRepo.GetUsersIdentity(req.UsersIds);
         if (!restUsers.Success())
             throw new Exception(restUsers.Message());
 
@@ -592,7 +592,7 @@ public partial class FormsConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteMembersFromProject(UsersProjectModel req)
     {
-        TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity(req.UsersIds);
+        TResponseModel<UserInfoModel[]> restUsers = await webRepo.GetUsersIdentity(req.UsersIds);
         if (!restUsers.Success())
             throw new Exception(restUsers.Message());
 
@@ -629,7 +629,7 @@ public partial class FormsConstructorService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetProjectAsMain(UserProjectModel req)
     {
-        TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity([req.UserId]);
+        TResponseModel<UserInfoModel[]> restUsers = await webRepo.GetUsersIdentity([req.UserId]);
         if (!restUsers.Success())
             throw new Exception(restUsers.Message());
 
@@ -662,7 +662,7 @@ public partial class FormsConstructorService(
     /// <inheritdoc/>
     public async Task<TResponseModel<MainProjectViewModel>> GetCurrentMainProject(string user_id)
     {
-        TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity([user_id]);
+        TResponseModel<UserInfoModel[]> restUsers = await webRepo.GetUsersIdentity([user_id]);
         if (!restUsers.Success())
             throw new Exception(restUsers.Message());
 
@@ -862,7 +862,7 @@ public partial class FormsConstructorService(
         // user_id ??= httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception();
 
 
-        TResponseModel<UserInfoModel[]?> call_user = await webRepo.GetUsersIdentity([req.UserId]);
+        TResponseModel<UserInfoModel[]> call_user = await webRepo.GetUsersIdentity([req.UserId]);
         UserInfoModel? author_user = call_user.Response?.Single();
 
         if (!call_user.Success())
@@ -3068,7 +3068,7 @@ public partial class FormsConstructorService(
         session_json.Name = MyRegexSpices().Replace(session_json.Name.Trim(), " ");
         session_json.NormalizedUpperName = session_json.Name.ToUpper();
 
-        TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity([session_json.AuthorUser]);
+        TResponseModel<UserInfoModel[]> restUsers = await webRepo.GetUsersIdentity([session_json.AuthorUser]);
         if (!restUsers.Success())
             throw new Exception(restUsers.Message());
 
@@ -3207,7 +3207,7 @@ public partial class FormsConstructorService(
             string[] users_ids = response.Select(x => x.AuthorUser).Distinct().ToArray();
 
 
-            TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity(users_ids);
+            TResponseModel<UserInfoModel[]> restUsers = await webRepo.GetUsersIdentity(users_ids);
             if (!restUsers.Success())
                 throw new Exception(restUsers.Message());
 

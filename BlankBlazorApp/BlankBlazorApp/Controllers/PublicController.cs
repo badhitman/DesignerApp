@@ -37,7 +37,7 @@ public class PublicController(ITelegramRemoteTransmissionService tgRepo, IWebRem
         string dataCheckString = string.Join('\n', dataDict.Where(x => x.Key != "hash")
             .Select(x => $"{x.Key}={x.Value}"));
 
-        TResponseModel<string?> getTgToken = await tgRepo.GetTelegramBotToken();
+        TResponseModel<string> getTgToken = await tgRepo.GetTelegramBotToken();
         if (!getTgToken.Success() || string.IsNullOrWhiteSpace(getTgToken.Response))
             return NotFound(ResponseBaseModel.CreateError("Не удалось прочитать токен TG бота"));
 

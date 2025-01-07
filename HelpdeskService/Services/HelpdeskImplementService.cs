@@ -240,7 +240,7 @@ public class HelpdeskImplementService(
         string[] users_ids = [req.SenderActionUserId, req.Payload.UserId, issue_data.ExecutorIdentityUserId ?? ""];
         users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
 
-        TResponseModel<UserInfoModel[]?> users_rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]> users_rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
         if (!users_rest.Success() || users_rest.Response is null || users_rest.Response.Length != users_ids.Length)
             return new() { Messages = users_rest.Messages };
 
@@ -856,7 +856,7 @@ public class HelpdeskImplementService(
         string[] users_ids = [req.SenderActionUserId, req.Payload.UserId];
         users_ids = [.. users_ids.Distinct()];
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != users_ids.Length)
             return new() { Messages = rest.Messages };
 
@@ -1020,7 +1020,7 @@ public class HelpdeskImplementService(
         if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
             return new() { Messages = issues_data.Messages };
 
-        TResponseModel<UserInfoModel[]?> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
+        TResponseModel<UserInfoModel[]> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
             ? new() { Response = [UserInfoModel.BuildSystem()] }
             : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
 
@@ -1209,7 +1209,7 @@ public class HelpdeskImplementService(
                 }
                 wpMessage = $"{wpMessage}\n\n> {safeTextMessage}".Trim().TrimEnd('>').Trim();
 
-                TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
+                TResponseModel<UserInfoModel[]> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
                 if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
                 {
                     foreach (UserInfoModel u in users_notify.Response)
@@ -1296,7 +1296,7 @@ public class HelpdeskImplementService(
     {
         TResponseModel<bool?> res = new();
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<UserInfoModel[]?> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
+        TResponseModel<UserInfoModel[]> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
             ? new() { Response = [UserInfoModel.BuildSystem()] }
             : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
 

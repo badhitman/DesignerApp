@@ -38,7 +38,7 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
         if (!string.IsNullOrWhiteSpace(editExecutorEmail))
         {
             await SetBusy();
-            TResponseModel<UserInfoModel[]?> res = await WebRepo.GetUsersIdentityByEmails([editExecutorEmail]);
+            TResponseModel<UserInfoModel[]> res = await WebRepo.GetUsersIdentityByEmails([editExecutorEmail]);
             user_by_email = res.Response?.FirstOrDefault();
             IsBusyProgress = false;
             if (user_by_email is null)

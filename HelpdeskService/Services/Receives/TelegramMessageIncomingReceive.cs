@@ -113,7 +113,7 @@ public class TelegramMessageIncomingReceive(
         helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(GlobalStaticConstants.CloudStorageMetadata.HelpdeskNotificationTelegramGlobalForIncomingMessage);
         if (helpdesk_user_redirect_telegram_for_issue_rest.Success() && helpdesk_user_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_user_redirect_telegram_for_issue_rest.Response != 0)
         {
-            TResponseModel<MessageComplexIdsModel?> forward_res = await tgRepo.ForwardMessage(new()
+            TResponseModel<MessageComplexIdsModel> forward_res = await tgRepo.ForwardMessage(new()
             {
                 DestinationChatId = helpdesk_user_redirect_telegram_for_issue_rest.Response.Value,
                 SourceChatId = req.Chat!.ChatTelegramId,
@@ -144,7 +144,7 @@ public class TelegramMessageIncomingReceive(
     async Task<List<FileAttachModel>?> Files(TelegramIncomingMessageModel req)
     {
         List<FileAttachModel> files = [];
-        TResponseModel<byte[]?> data_res;
+        TResponseModel<byte[]> data_res;
         //
         if (req.Audio is not null)
         {
