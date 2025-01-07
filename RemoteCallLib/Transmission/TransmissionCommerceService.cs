@@ -76,10 +76,6 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.PaymentDocumentDeleteCommerceReceive, req);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> AttachmentDeleteFromOrder(int req)
-        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.AttachmentDeleteFromOrderCommerceReceive, req);
-
-    /// <inheritdoc/>
     public async Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB row)
         => await rabbitClient.MqRemoteCall<TResponseModel<int>>(GlobalStaticConstants.TransmissionQueues.RowForOrderUpdateCommerceReceive, row);
 
@@ -165,7 +161,7 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req)
-        => await rabbitClient.MqRemoteCall< TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>>(GlobalStaticConstants.TransmissionQueues.OrganizationsUsersSelectCommerceReceive, req);
+        => await rabbitClient.MqRemoteCall<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>>(GlobalStaticConstants.TransmissionQueues.OrganizationsUsersSelectCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> UserOrganizationUpdate(TAuthRequestModel<UserOrganizationModelDB> org)
@@ -178,4 +174,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
     /// <inheritdoc/>
     public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssues(OrdersByIssuesSelectRequestModel req)
         => await rabbitClient.MqRemoteCall<TResponseModel<OrderAttendanceModelDB[]>>(GlobalStaticConstants.TransmissionQueues.OrdersAttendancesByIssuesGetReceive, req);
+
+    /// <inheritdoc/>
+    public async Task<bool> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
+        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.StatusChangeOrderByHelpDeskDocumentIdReceive, req);
 }

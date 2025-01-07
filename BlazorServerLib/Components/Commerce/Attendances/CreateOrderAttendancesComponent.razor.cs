@@ -87,7 +87,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
         };
 
         await SetBusy();
-        TResponseModel<object> res = await CommerceRepo.CreateAttendanceRecords(req);
+        ResponseBaseModel res = await CommerceRepo.CreateAttendanceRecords(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
 
         if (res.Success())
@@ -109,14 +109,12 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
             ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
         };
         await SetBusy();
-        TResponseModel<WorkSchedulesFindResponseModel> res = await CommerceRepo.WorksSchedulesFind(req);
-        Elements = res.Response?.WorksSchedulesViews
+        WorkSchedulesFindResponseModel res = await CommerceRepo.WorksSchedulesFind(req);
+        Elements = [.. res.WorksSchedulesViews
             .OrderBy(x => x.Date)
             .ThenBy(x => x.StartPart)
-            .ThenBy(x => x.Organization.Name)
-            .ToList();
+            .ThenBy(x => x.Organization.Name)];
 
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
     }
 
@@ -177,12 +175,12 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
             }
         };
         await SetBusy();
-        TResponseModel<TPaginationResponseModel<OfferModelDB>> res = await CommerceRepo.OffersSelect(req);
+        TPaginationResponseModel<OfferModelDB> res = await CommerceRepo.OffersSelect(req);
         await SetBusy(false);
-        if (res.Success() && res.Response?.Response is not null && res.Response.Response.Count != 0)
+        if (res.Response is not null && res.Response.Count != 0)
         {
-            AllOffers!.AddRange(res.Response.Response);
-            if (AllOffers.Count < res.Response.TotalRowsCount)
+            AllOffers!.AddRange(res.Response);
+            if (AllOffers.Count < res.TotalRowsCount)
                 await LoadOffers(page_num + 1);
         }
     }

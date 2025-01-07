@@ -40,14 +40,14 @@ public partial class NomenclaturesManageComponent : BlazorBusyComponentRegisters
     async Task DownloadFullPrice()
     {
         await SetBusy();
-        TResponseModel<FileAttachModel> res = await CommerceRepo.PriceFullFileGet();
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        FileAttachModel res = await CommerceRepo.PriceFullFileGet();
+
         await SetBusy(false);
-        if (res.Success() && res.Response is not null && res.Response.Data.Length != 0)
+        if (res.Data.Length != 0)
         {
-            using MemoryStream ms = new(res.Response.Data);
+            using MemoryStream ms = new(res.Data);
             using DotNetStreamReference streamRef = new(stream: ms);
-            await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", res.Response.Name, streamRef);
+            await JsRuntimeRepo.InvokeVoidAsync("downloadFileFromStream", res.Name, streamRef);
         }
     }
 
@@ -65,22 +65,21 @@ public partial class NomenclaturesManageComponent : BlazorBusyComponentRegisters
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         await SetBusy(token: token);
-        TResponseModel<TPaginationResponseModel<NomenclatureModelDB>> res = await CommerceRepo.NomenclaturesSelect(req);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        TPaginationResponseModel<NomenclatureModelDB> res = await CommerceRepo.NomenclaturesSelect(req);
 
-        if (res.Success() && res.Response?.Response is not null)
+        if (res.Response is not null)
         {
-            await CacheRegistersUpdate(offers: [], goods: res.Response.Response.Select(x => x.Id));
+            await CacheRegistersUpdate(offers: [], goods: res.Response.Select(x => x.Id));
             IsBusyProgress = false;
-            return new TableData<NomenclatureModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+            return new TableData<NomenclatureModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };
         }
 
         IsBusyProgress = false;
 
-        if (!res.Success() || res.Response?.Response is null)
+        if (res.Response is null)
             return new TableData<NomenclatureModelDB>() { TotalItems = 0, Items = [] };
 
-        return new TableData<NomenclatureModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+        return new TableData<NomenclatureModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };
     }
 
     private void OnExpandCollapseClick()

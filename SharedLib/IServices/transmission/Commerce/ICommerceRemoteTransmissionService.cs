@@ -60,11 +60,6 @@ public partial interface ICommerceRemoteTransmissionService
     public Task<TResponseModel<AddressOrganizationModelDB[]>> AddressesOrganizationsRead(int[] ids);
 
     /// <summary>
-    /// AttachmentDeleteFromOrder
-    /// </summary>
-    public Task<TResponseModel<bool>> AttachmentDeleteFromOrder(int req);
-
-    /// <summary>
     /// Удалить платёжный документ
     /// </summary>
     public Task<ResponseBaseModel> PaymentDocumentDelete(int req);

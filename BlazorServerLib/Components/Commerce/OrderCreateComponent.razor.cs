@@ -204,15 +204,15 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
 
         await SetBusy();
 
-        TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([.. offers_load]);
+        List<PriceRuleForOfferModelDB> res = await CommerceRepo.PricesRulesGetForOffers([.. offers_load]);
         await SetBusy(false);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
+
         offers_load.ForEach(x =>
         {
             if (RulesCache.ContainsKey(x))
-                RulesCache[x] = res.Response?.Where(y => x == y.OfferId && !y.IsDisabled).ToArray();
+                RulesCache[x] = res.Where(y => x == y.OfferId && !y.IsDisabled).ToArray();
             else
-                RulesCache.Add(x, res.Response?.Where(y => x == y.OfferId && !y.IsDisabled).ToArray());
+                RulesCache.Add(x, res.Where(y => x == y.OfferId && !y.IsDisabled).ToArray());
         });
     }
 
@@ -419,13 +419,13 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         };
 
         await SetBusy();
-        TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        TPaginationResponseModel<OrganizationModelDB> res = await CommerceRepo.OrganizationsSelect(req);
+
         await SetBusy(false);
 
-        if (!res.Success() || res.Response?.Response is null || res.Response.Response.Count == 0)
+        if (res.Response is null || res.Response.Count == 0)
             return;
-        Organizations = res.Response.Response;
+        Organizations = res.Response;
 
         await SetBusy();
         TResponseModel<OrderDocumentModelDB?> current_cart = await StorageRepo

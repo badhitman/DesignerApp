@@ -43,7 +43,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// ChatsSelect
     /// </summary>
-    public Task<TPaginationResponseModel<ChatTelegramModelDB>> ChatsSelect(TPaginationRequestModel<string> req);
+    public Task<TPaginationResponseModel<ChatTelegramModelDB>> ChatsSelect(TPaginationRequestModel<string?> req);
 
     /// <summary>
     /// Получить ошибки отправок сообщений (для чатов)
@@ -63,7 +63,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
     /// </summary>
-    public Task<TResponseModel<object?>> SetWebConfigStorage(WebConfigModel webConf, bool waitResponse = true);
+    public Task<ResponseBaseModel> SetWebConfigStorage(WebConfigModel webConf, bool waitResponse = true);
 
     /// <summary>
     /// Прочитать данные по чатам

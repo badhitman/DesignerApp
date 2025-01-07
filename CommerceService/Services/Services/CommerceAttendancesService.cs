@@ -18,7 +18,7 @@ public partial class CommerceImplementService : ICommerceService
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> OrderAttendance(TAuthRequestModel<int> req)
     {
-        TResponseModel<UserInfoModel[]?> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
         {
             ResponseBaseModel res = new();

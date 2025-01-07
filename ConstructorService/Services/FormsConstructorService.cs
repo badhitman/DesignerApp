@@ -3,17 +3,15 @@
 ////////////////////////////////////////////////
 
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Linq.Expressions;
 using System.Net.Mail;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
-using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace ConstructorService;
 
@@ -374,7 +372,7 @@ public partial class FormsConstructorService(
     }
 
     /// <inheritdoc/>
-    public async Task<ProjectModelDb[]> ReadProjects(int[] projects_ids)
+    public async Task<List<ProjectModelDb>> ReadProjects(int[] projects_ids)
     {
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
         return await context_forms
@@ -397,7 +395,7 @@ public partial class FormsConstructorService(
             //.Include(x => x.Documents!)
             //.ThenInclude(x=>x.)
 
-            .ToArrayAsync();
+            .ToListAsync();
     }
 
     /// <inheritdoc/>
@@ -886,7 +884,7 @@ public partial class FormsConstructorService(
     // Примечание: В генераторе для C# .NET формируются как Enum
     #region справочники/списки
     /// <inheritdoc/>
-    public async Task<IEnumerable<EntryNestedModel>> ReadDirectories(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+    public async Task<List<EntryNestedModel>> ReadDirectories(IEnumerable<int> ids, CancellationToken cancellationToken = default)
     {
         if (!ids.Any())
             return [];
@@ -897,7 +895,7 @@ public partial class FormsConstructorService(
             .Where(x => ids.Contains(x.Id)).
             ToArrayAsync(cancellationToken: cancellationToken);
 
-        return res.Select(x => new EntryNestedModel() { Id = x.Id, Name = x.Name, Childs = x.Elements!.Select(y => new EntryModel() { Id = y.Id, Name = y.Name }) });
+        return [.. res.Select(x => new EntryNestedModel() { Id = x.Id, Name = x.Name, Childs = x.Elements!.Select(y => new EntryModel() { Id = y.Id, Name = y.Name }) })];
     }
 
     /// <inheritdoc/>

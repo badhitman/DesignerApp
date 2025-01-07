@@ -29,7 +29,7 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseAuthM
 
 
     bool IsExpandPanel;
-    PriceRuleForOfferModelDB[] rules = default!;
+    List<PriceRuleForOfferModelDB> rules = default!;
 
     int QuantityAddingRule { get; set; } = 2;
     decimal PriceAddingRule { get; set; }
@@ -69,10 +69,8 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseAuthM
         //
         await SetBusy();
 
-        TResponseModel<PriceRuleForOfferModelDB[]> res = await CommerceRepo.PricesRulesGetForOffers([Offer.Id]);
+        rules = await CommerceRepo.PricesRulesGetForOffers([Offer.Id]);
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
-        rules = res.Response ?? throw new Exception();
     }
 
     /// <inheritdoc/>

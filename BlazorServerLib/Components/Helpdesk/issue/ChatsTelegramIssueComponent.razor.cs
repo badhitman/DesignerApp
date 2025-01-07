@@ -17,7 +17,7 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
     ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
 
 
-    ChatTelegramModelDB[]? chats = null;
+    List<ChatTelegramModelDB>? chats = null;
 
     async void SendMessageTelegramAction(SendTextMessageTelegramBotModel msg)
     {
@@ -53,9 +53,7 @@ public partial class ChatsTelegramIssueComponent : IssueWrapBaseModel
         await base.OnInitializedAsync();
         long[] chats_ids = [.. UsersIdentityDump.Where(x => x.TelegramId.HasValue).Select(x => x.TelegramId!.Value)];
 
-        TResponseModel<ChatTelegramModelDB[]?> rest_chats = await TelegramRepo.ChatsReadTelegram(chats_ids);
+        chats = await TelegramRepo.ChatsReadTelegram(chats_ids);
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(rest_chats.Messages);
-        chats = rest_chats.Response;
     }
 }
