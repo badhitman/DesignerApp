@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// DeleteDirectoryReceive
 /// </summary>
-public class DeleteDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
+public class DeleteDirectoryReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteDirectoryReceive;

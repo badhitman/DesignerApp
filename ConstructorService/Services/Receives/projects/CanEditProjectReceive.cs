@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// CanEditProjectReceive
 /// </summary>
-public class CanEditProjectReceive(IConstructorService conService)
-    : IResponseReceive<UserProjectModel?, ResponseBaseModel?>
+public class CanEditProjectReceive(IConstructorService conService) : IResponseReceive<UserProjectModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CanEditProjectReceive;

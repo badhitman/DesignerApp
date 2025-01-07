@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Запрос схем документов
 /// </summary>
-public class RequestDocumentsSchemesReceive(IConstructorService conService)
-    : IResponseReceive<RequestDocumentsSchemesModel?, TPaginationResponseModel<DocumentSchemeConstructorModelDB>?>
+public class RequestDocumentsSchemesReceive(IConstructorService conService) : IResponseReceive<RequestDocumentsSchemesModel?, TPaginationResponseModel<DocumentSchemeConstructorModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RequestDocumentsSchemesReceive;

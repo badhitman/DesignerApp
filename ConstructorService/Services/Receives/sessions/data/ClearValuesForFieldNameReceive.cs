@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Удалить значения (введённые в сессиях) по имени поля
 /// </summary>
-public class ClearValuesForFieldNameReceive(IConstructorService conService)
-    : IResponseReceive<FormFieldOfSessionModel?, ResponseBaseModel?>
+public class ClearValuesForFieldNameReceive(IConstructorService conService) : IResponseReceive<FormFieldOfSessionModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ClearValuesForFieldNameReceive;

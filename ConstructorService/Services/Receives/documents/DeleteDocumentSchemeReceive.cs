@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Удалить схему документа
 /// </summary>
-public class DeleteDocumentSchemeReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
+public class DeleteDocumentSchemeReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteDocumentSchemeReceive;

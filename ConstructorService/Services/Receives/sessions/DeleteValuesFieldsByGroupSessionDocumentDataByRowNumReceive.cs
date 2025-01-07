@@ -9,10 +9,9 @@ namespace Transmission.Receives.constructor;
 
 /// <summary>
 /// Удалить набор значений сессии опроса/анкеты по номеру строки [GroupByRowNum].
-/// Если индекс ниже нуля - удаляются все значения для указанной JoinForm (полная очистка таблицы или очистка всех значений всех поллей стандартной формы)
+/// Если индекс ниже нуля - удаляются все значения для указанной JoinForm (полная очистка таблицы или очистка всех значений всех полей стандартной формы)
 /// </summary>
-public class DeleteValuesFieldsByGroupSessionDocumentDataByRowNumReceive(IConstructorService conService)
-    : IResponseReceive<ValueFieldSessionDocumentDataBaseModel?, ResponseBaseModel?>
+public class DeleteValuesFieldsByGroupSessionDocumentDataByRowNumReceive(IConstructorService conService) : IResponseReceive<ValueFieldSessionDocumentDataBaseModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteValuesFieldsByGroupSessionDocumentDataByRowNumReceive;

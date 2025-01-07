@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Сдвинуть выше элемент справочника/списка
 /// </summary>
-public class UpMoveElementOfDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
+public class UpMoveElementOfDirectoryReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpMoveElementOfDirectoryReceive;

@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Установить значение свойства сессии
 /// </summary>
-public class SetValueFieldSessionDocumentDataReceive(IConstructorService conService)
-    : IResponseReceive<SetValueFieldDocumentDataModel?, TResponseModel<SessionOfDocumentDataModelDB>?>
+public class SetValueFieldSessionDocumentDataReceive(IConstructorService conService) : IResponseReceive<SetValueFieldDocumentDataModel?, TResponseModel<SessionOfDocumentDataModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetValueFieldSessionDocumentDataReceive;

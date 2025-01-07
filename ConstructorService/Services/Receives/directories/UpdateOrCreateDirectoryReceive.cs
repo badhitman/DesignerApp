@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// UpdateOrCreateDirectoryReceive
 /// </summary>
-public class UpdateOrCreateDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<EntryConstructedModel>?, TResponseModel<int>?>
+public class UpdateOrCreateDirectoryReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<EntryConstructedModel>?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateOrCreateDirectoryReceive;

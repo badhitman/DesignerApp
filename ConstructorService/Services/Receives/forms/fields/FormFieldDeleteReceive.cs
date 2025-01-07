@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Удалить поле формы (простой тип)
 /// </summary>
-public class FormFieldDeleteReceive(IConstructorService conService)
-: IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
+public class FormFieldDeleteReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FormFieldDeleteReceive;

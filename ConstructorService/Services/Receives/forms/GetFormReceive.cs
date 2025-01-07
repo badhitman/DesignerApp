@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Получить форму
 /// </summary>
-public class GetFormReceive(IConstructorService conService)
-   : IResponseReceive<int, TResponseModel<FormConstructorModelDB>?>
+public class GetFormReceive(IConstructorService conService) : IResponseReceive<int, TResponseModel<FormConstructorModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetFormReceive;

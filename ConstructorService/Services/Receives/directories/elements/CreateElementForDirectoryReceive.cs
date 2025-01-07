@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Создать элемент справочника
 /// </summary>
-public class CreateElementForDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<OwnedNameModel>?, TResponseModel<int>?>
+public class CreateElementForDirectoryReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<OwnedNameModel>?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CreateElementForDirectoryReceive;

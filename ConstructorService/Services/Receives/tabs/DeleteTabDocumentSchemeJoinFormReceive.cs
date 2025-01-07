@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Удалить связь [таба/вкладки схемы документа] с [формой] 
 /// </summary>
-public class DeleteTabDocumentSchemeJoinFormReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
+public class DeleteTabDocumentSchemeJoinFormReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteTabDocumentSchemeJoinFormReceive;

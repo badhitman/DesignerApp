@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// DeleteMembersFromProjectReceive
 /// </summary>
-public class DeleteMembersFromProjectReceive(IConstructorService conService)
-    : IResponseReceive<UsersProjectModel?, ResponseBaseModel?>
+public class DeleteMembersFromProjectReceive(IConstructorService conService) : IResponseReceive<UsersProjectModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteMembersFromProjectReceive;

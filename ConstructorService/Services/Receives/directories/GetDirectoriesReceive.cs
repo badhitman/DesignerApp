@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// GetDirectoriesReceive
 /// </summary>
-public class GetDirectoriesReceive(IConstructorService conService)
-    : IResponseReceive<ProjectFindModel?, TResponseModel<EntryModel[]>?>
+public class GetDirectoriesReceive(IConstructorService conService) : IResponseReceive<ProjectFindModel?, TResponseModel<EntryModel[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetDirectoriesReceive;

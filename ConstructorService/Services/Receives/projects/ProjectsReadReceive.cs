@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// ProjectsReadReceive
 /// </summary>
-public class ProjectsReadReceive(IConstructorService conService)
-: IResponseReceive<int[]?, List<ProjectModelDb>?>
+public class ProjectsReadReceive(IConstructorService conService) : IResponseReceive<int[]?, List<ProjectModelDb>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ProjectsReadReceive;

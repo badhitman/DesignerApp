@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Обновить/создать поле формы (простой тип)
 /// </summary>
-public class FormFieldUpdateOrCreateReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<FieldFormConstructorModelDB>?, ResponseBaseModel?>
+public class FormFieldUpdateOrCreateReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<FieldFormConstructorModelDB>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FormFieldUpdateOrCreateReceive;

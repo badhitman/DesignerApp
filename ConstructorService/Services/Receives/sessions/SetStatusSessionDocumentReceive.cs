@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Установить статус сессии (от менеджера)
 /// </summary>
-public class SetStatusSessionDocumentReceive(IConstructorService conService)
-    : IResponseReceive<SessionStatusModel?, ResponseBaseModel?>
+public class SetStatusSessionDocumentReceive(IConstructorService conService) : IResponseReceive<SessionStatusModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetStatusSessionDocumentReceive;

@@ -10,8 +10,7 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// CreateProjectReceive
 /// </summary>
-public class CreateProjectReceive(IConstructorService conService)
-    : IResponseReceive<CreateProjectRequestModel?, TResponseModel<int>?>
+public class CreateProjectReceive(IConstructorService conService) : IResponseReceive<CreateProjectRequestModel?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ProjectCreateReceive;
