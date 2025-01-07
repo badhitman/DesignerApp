@@ -703,7 +703,6 @@ public class HelpdeskImplementService(
             return res;
         }
 
-        TResponseModel<UserInfoModel[]?> users_notify = null;
         TResponseModel<string?>
             CommerceStatusChangeOrderSubjectNotification = default!,
             CommerceStatusChangeOrderBodyNotification = default!,
@@ -816,7 +815,7 @@ public class HelpdeskImplementService(
                 tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
         }
 
-        users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
         if (users_notify?.Success() == true && users_notify.Response is not null && users_notify.Response.Length != 0)
         {
             foreach (UserInfoModel u in users_notify.Response)

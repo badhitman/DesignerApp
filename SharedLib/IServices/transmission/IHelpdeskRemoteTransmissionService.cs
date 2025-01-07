@@ -55,7 +55,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Прочитать данные рубрики (вместе со всеми вышестоящими родителями)
     /// </summary>
-    public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricRead(int rubricId);
+    public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>>> RubricRead(int rubricId);
 
     /// <summary>
     /// Получить рубрики
@@ -87,7 +87,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Запрос подписчиков на обращение
     /// </summary>
-    public Task<TResponseModel<SubscriberIssueHelpdeskModelDB[]?>> SubscribesList(TAuthRequestModel<int> req);
+    public Task<List<SubscriberIssueHelpdeskModelDB>> SubscribesList(TAuthRequestModel<int> req);
 
     /// <summary>
     /// Исполнитель обращения

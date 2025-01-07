@@ -179,7 +179,7 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
         TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>> res = await CommerceRepo.UsersOrganizationsSelect(req);
         await SetBusy(false, token);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        if (!res.Success() || res.Response is null)
+        if (!res.Success() || res.Response?.Response is null)
             return new TableData<UserOrganizationModelDB>() { TotalItems = 0, Items = [] };
 
         await CacheUsersUpdate(res.Response.Response.Select(x => x.UserPersonIdentityId));
