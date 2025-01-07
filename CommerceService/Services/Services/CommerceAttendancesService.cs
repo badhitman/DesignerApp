@@ -550,7 +550,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> CalendarScheduleUpdate(CalendarScheduleModelDB req)
+    public async Task<TResponseModel<int>> CalendarScheduleUpdate(TAuthRequestModel<CalendarScheduleModelDB> req)
     {
         TResponseModel<int> res = new() { Response = 0 };
         ValidateReportModel ck = GlobalTools.ValidateObject(req);
@@ -560,35 +560,35 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        req.Name = req.Name.Trim();
-        req.Description = req.Description?.Trim();
-        req.NormalizedNameUpper = req.Name.ToUpper();
+        req.Payload.Name = req.Payload.Name.Trim();
+        req.Payload.Description = req.Payload.Description?.Trim();
+        req.Payload.NormalizedNameUpper = req.Payload.Name.ToUpper();
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        if (req.Id < 1)
+        if (req.Payload.Id < 1)
         {
-            req.IsDisabled = true;
-            req.Id = 0;
-            req.CreatedAtUTC = DateTime.UtcNow;
-            req.LastAtUpdatedUTC = DateTime.UtcNow;
-            context.Add(req);
+            req.Payload.IsDisabled = true;
+            req.Payload.Id = 0;
+            req.Payload.CreatedAtUTC = DateTime.UtcNow;
+            req.Payload.LastAtUpdatedUTC = DateTime.UtcNow;
+            context.Add(req.Payload);
             await context.SaveChangesAsync();
-            res.Response = req.Id;
+            res.Response = req.Payload.Id;
         }
         else
         {
             res.Response = await context.CalendarsSchedules
-                .Where(x => x.Id == req.Id)
+                .Where(x => x.Id == req.Payload.Id)
                 .ExecuteUpdateAsync(set => set
-                .SetProperty(p => p.Name, req.Name)
-                .SetProperty(p => p.Description, req.Description)
-                .SetProperty(p => p.IsDisabled, req.IsDisabled)
-                .SetProperty(p => p.QueueCapacity, req.QueueCapacity)
-                .SetProperty(p => p.EndPart, req.EndPart)
-                .SetProperty(p => p.StartPart, req.StartPart)
-                .SetProperty(p => p.DateScheduleCalendar, req.DateScheduleCalendar)
+                .SetProperty(p => p.Name, req.Payload.Name)
+                .SetProperty(p => p.Description, req.Payload.Description)
+                .SetProperty(p => p.IsDisabled, req.Payload.IsDisabled)
+                .SetProperty(p => p.QueueCapacity, req.Payload.QueueCapacity)
+                .SetProperty(p => p.EndPart, req.Payload.EndPart)
+                .SetProperty(p => p.StartPart, req.Payload.StartPart)
+                .SetProperty(p => p.DateScheduleCalendar, req.Payload.DateScheduleCalendar)
                 .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
-                .SetProperty(p => p.NormalizedNameUpper, req.NormalizedNameUpper));
+                .SetProperty(p => p.NormalizedNameUpper, req.Payload.NormalizedNameUpper));
         }
 
         return res;

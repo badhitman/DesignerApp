@@ -9,9 +9,10 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// Обновление WorkScheduleCalendar
+/// Обновление расписания на конкретную дату
 /// </summary>
-public class CalendarScheduleUpdateReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo) : IResponseReceive<CalendarScheduleModelDB?, TResponseModel<int>?>
+public class CalendarScheduleUpdateReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo) 
+    : IResponseReceive<TAuthRequestModel<CalendarScheduleModelDB>?, TResponseModel<int>?>
 {
     /// <summary>
     /// Обновление WorkScheduleCalendar
@@ -21,7 +22,7 @@ public class CalendarScheduleUpdateReceive(ICommerceService commerceRepo, ILogge
     /// <summary>
     /// Обновление WorkScheduleCalendar
     /// </summary>
-    public async Task<TResponseModel<int>?> ResponseHandleAction(CalendarScheduleModelDB? payload)
+    public async Task<TResponseModel<int>?> ResponseHandleAction(TAuthRequestModel<CalendarScheduleModelDB>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(payload, GlobalStaticConstants.JsonSerializerSettings)}");

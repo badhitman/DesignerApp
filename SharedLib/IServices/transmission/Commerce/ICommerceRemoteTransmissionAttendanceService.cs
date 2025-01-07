@@ -49,7 +49,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkScheduleCalendarUpdate
     /// </summary>
-    public Task<TResponseModel<int>> CalendarScheduleUpdate(CalendarScheduleModelDB work);
+    public Task<TResponseModel<int>> CalendarScheduleUpdate(TAuthRequestModel<CalendarScheduleModelDB> work);
 
     /// <summary>
     /// WorkScheduleCalendarsSelect

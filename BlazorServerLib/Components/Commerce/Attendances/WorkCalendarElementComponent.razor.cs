@@ -11,7 +11,7 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 /// <summary>
 /// WorkCalendarElementComponent
 /// </summary>
-public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
+public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseAuthModel
 {
     /// <summary>
     /// Commerce
@@ -52,8 +52,11 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
 
     async Task SaveScheduleCalendar()
     {
+        if (CurrentUserSession is null)
+            return;
+
         await SetBusy();
-        TResponseModel<int> res = await CommerceRepo.CalendarScheduleUpdate(editWorkScheduleCalendar);
+        TResponseModel<int> res = await CommerceRepo.CalendarScheduleUpdate(new() { Payload = editWorkScheduleCalendar, SenderActionUserId = CurrentUserSession.UserId });
         WorkScheduleCalendar = GlobalTools.CreateDeepCopy(editWorkScheduleCalendar)!;
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
@@ -62,8 +65,9 @@ public partial class WorkCalendarElementComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         editWorkScheduleCalendar = GlobalTools.CreateDeepCopy(WorkScheduleCalendar)!;
     }
 }

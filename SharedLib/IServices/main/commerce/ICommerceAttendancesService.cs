@@ -56,7 +56,7 @@ public partial interface ICommerceService
     /// <summary>
     /// WorkScheduleCalendarUpdate
     /// </summary>
-    public Task<TResponseModel<int>> CalendarScheduleUpdate(CalendarScheduleModelDB work);
+    public Task<TResponseModel<int>> CalendarScheduleUpdate(TAuthRequestModel<CalendarScheduleModelDB> work);
 
     /// <summary>
     /// WorkScheduleCalendarsSelect

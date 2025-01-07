@@ -5,14 +5,13 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using MudBlazor;
 
 namespace BlazorWebLib.Components.Commerce.Attendances;
 
 /// <summary>
 /// WorkCalendarAddDateComponent
 /// </summary>
-public partial class WorkCalendarAddDateComponent : BlazorBusyComponentBaseModel
+public partial class WorkCalendarAddDateComponent : BlazorBusyComponentBaseAuthModel
 {
     /// <summary>
     /// Commerce
@@ -45,19 +44,23 @@ public partial class WorkCalendarAddDateComponent : BlazorBusyComponentBaseModel
 
     async Task Save()
     {
-        if (_date is null || EndPart is null || StartPart is null)
+        if (_date is null || EndPart is null || StartPart is null || CurrentUserSession is null)
             return;
 
         await SetBusy();
-        TResponseModel<int> res = await CommerceRepo.CalendarScheduleUpdate(new CalendarScheduleModelDB()
+        TResponseModel<int> res = await CommerceRepo.CalendarScheduleUpdate(new()
         {
-            DateScheduleCalendar = DateOnly.FromDateTime(_date.Value),
-            EndPart = EndPart.Value,
-            StartPart = StartPart.Value,
-            QueueCapacity = QueueCapacity,
-            Name = "",
-            ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
-            IsDisabled = true,
+            Payload = new CalendarScheduleModelDB()
+            {
+                DateScheduleCalendar = DateOnly.FromDateTime(_date.Value),
+                EndPart = EndPart.Value,
+                StartPart = StartPart.Value,
+                QueueCapacity = QueueCapacity,
+                Name = "",
+                ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
+                IsDisabled = true,
+            },
+            SenderActionUserId = CurrentUserSession.UserId
         });
         await SetBusy(false);
         if (WorkCalendarAddDateHandle is not null)
