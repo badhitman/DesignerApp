@@ -11,8 +11,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// UpdateRubricsForArticleReceive
 /// </summary>
-public class UpdateRubricsForArticleReceive(IArticlesService artRepo, ILogger<ArticleCreateOrUpdateReceive> loggerRepo)
-    : IResponseReceive<ArticleRubricsSetModel?, ResponseBaseModel?>
+public class UpdateRubricsForArticleReceive(IArticlesService artRepo, ILogger<ArticleCreateOrUpdateReceive> loggerRepo) : IResponseReceive<ArticleRubricsSetModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricsForArticleSetReceive;

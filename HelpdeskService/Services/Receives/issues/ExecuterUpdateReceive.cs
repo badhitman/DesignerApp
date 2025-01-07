@@ -10,8 +10,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Subscribe update - of context user
 /// </summary>
-public class ExecuterUpdateReceive(IHelpdeskService hdRepo) 
-    : IResponseReceive<TAuthRequestModel<UserIssueModel>?, TResponseModel<bool>?>
+public class ExecuterUpdateReceive(IHelpdeskService hdRepo) : IResponseReceive<TAuthRequestModel<UserIssueModel>?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ExecuterIssueUpdateHelpdeskReceive;

@@ -12,8 +12,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// IssuesSelectReceive
 /// </summary>
-public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SelectIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>
+public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory) : IResponseReceive<TPaginationRequestModel<SelectIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive;

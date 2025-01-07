@@ -12,8 +12,7 @@ namespace Transmission.Receives.helpdesk;
 /// </summary>
 public class SubscribesListReceive(
     IWebRemoteTransmissionService webTransmissionRepo,
-    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
-    : IResponseReceive<TAuthRequestModel<int>?, TResponseModel<SubscriberIssueHelpdeskModelDB[]>?>
+    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo) : IResponseReceive<TAuthRequestModel<int>?, TResponseModel<SubscriberIssueHelpdeskModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SubscribesIssueListHelpdeskReceive;

@@ -10,8 +10,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// MessageVote Receive
 /// </summary>
-public class MessageVoteReceive(IHelpdeskService hdRepo)
-    : IResponseReceive<TAuthRequestModel<VoteIssueRequestModel>?, TResponseModel<bool?>?>
+public class MessageVoteReceive(IHelpdeskService hdRepo) : IResponseReceive<TAuthRequestModel<VoteIssueRequestModel>?, TResponseModel<bool?>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessageOfIssueVoteHelpdeskReceive;

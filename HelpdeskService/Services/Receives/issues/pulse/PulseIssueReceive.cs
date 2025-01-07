@@ -13,8 +13,7 @@ namespace Transmission.Receives.helpdesk;
 /// <remarks>
 /// Плюс рассылка уведомлений участникам события.
 /// </remarks>
-public class PulseIssueReceive(IHelpdeskService hdRepo)
-    : IResponseReceive<PulseRequestModel?, TResponseModel<bool>?>
+public class PulseIssueReceive(IHelpdeskService hdRepo) : IResponseReceive<PulseRequestModel?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PulseIssuePushHelpdeskReceive;

@@ -17,8 +17,7 @@ public class PulseJournalReceive(
     ILogger<PulseJournalReceive> LoggerRepo,
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
-    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
-    : IResponseReceive<TPaginationRequestModel<UserIssueModel>?, TPaginationResponseModel<PulseViewModel>?>
+    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo) : IResponseReceive<TPaginationRequestModel<UserIssueModel>?, TPaginationResponseModel<PulseViewModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PulseJournalHelpdeskReceive;

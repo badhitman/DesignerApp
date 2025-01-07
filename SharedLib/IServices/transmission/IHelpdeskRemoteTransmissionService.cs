@@ -12,13 +12,13 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Входящее сообщение от клиента в TelegramBot
     /// </summary>
-    public Task<TResponseModel<bool?>> TelegramMessageIncoming(TelegramIncomingMessageModel req);
+    public Task<TResponseModel<bool>> TelegramMessageIncoming(TelegramIncomingMessageModel req);
 
     #region articles
     /// <summary>
     /// UpdateRubricsForArticle
     /// </summary>
-    public Task<TResponseModel<bool?>> UpdateRubricsForArticle(ArticleRubricsSetModel req);
+    public Task<ResponseBaseModel> UpdateRubricsForArticle(ArticleRubricsSetModel req);
 
     /// <summary>
     /// Получить статьи 
@@ -28,29 +28,29 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Подобрать статьи 
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<ArticleModelDB>>> ArticlesSelect(TPaginationRequestModel<SelectArticlesRequestModel> req);
+    public Task<TPaginationResponseModel<ArticleModelDB>> ArticlesSelect(TPaginationRequestModel<SelectArticlesRequestModel> req);
 
     /// <summary>
     /// Создать (обновить) статью
     /// </summary>
-    public Task<TResponseModel<int?>> ArticleCreateOrUpdate(ArticleModelDB article);
+    public Task<TResponseModel<int>> ArticleCreateOrUpdate(ArticleModelDB article);
     #endregion
 
     #region rubric
     /// <summary>
     /// Получить темы обращений
     /// </summary>
-    public Task<TResponseModel<List<UniversalBaseModel>?>> RubricsList(RubricsListRequestModel req);
+    public Task<List<UniversalBaseModel>> RubricsList(RubricsListRequestModel req);
 
     /// <summary>
     /// Создать тему для обращений
     /// </summary>
-    public Task<TResponseModel<int?>> RubricCreateOrUpdate(RubricIssueHelpdeskModelDB issueTheme);
+    public Task<TResponseModel<int>> RubricCreateOrUpdate(RubricIssueHelpdeskModelDB issueTheme);
 
     /// <summary>
     /// Сдвинуть рубрику
     /// </summary>
-    public Task<TResponseModel<bool?>> RubricMove(RowMoveModel req);
+    public Task<TResponseModel<bool>> RubricMove(RowMoveModel req);
 
     /// <summary>
     /// Прочитать данные рубрики (вместе со всеми вышестоящими родителями)
@@ -60,14 +60,14 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить рубрики
     /// </summary>
-    public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricsGet(IEnumerable<int> rubricsIds);
+    public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>>> RubricsGet(IEnumerable<int> rubricsIds);
     #endregion
 
     #region issue
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TPaginationRequestModel<SelectIssuesRequestModel> req);
+    public Task<TPaginationResponseModel<IssueHelpdeskModel>> IssuesSelect(TPaginationRequestModel<SelectIssuesRequestModel> req);
 
     /// <summary>
     /// Создать обращение
@@ -107,12 +107,12 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Журнал событий в обращении
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<PulseViewModel>>> PulseJournal(TPaginationRequestModel<UserIssueModel> req);
+    public Task<TPaginationResponseModel<PulseViewModel>> PulseJournal(TPaginationRequestModel<UserIssueModel> req);
 
     /// <summary>
     /// Получить обращения
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req);
+    public Task<TPaginationResponseModel<IssueHelpdeskModel>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req);
     #endregion
 
     #region message

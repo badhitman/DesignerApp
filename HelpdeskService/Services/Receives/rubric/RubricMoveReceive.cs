@@ -14,8 +14,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Сдвинуть рубрику
 /// </summary>
-public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, ILogger<RubricMoveReceive> loggerRepo)
-    : IResponseReceive<RowMoveModel?, TResponseModel<bool>?>
+public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, ILogger<RubricMoveReceive> loggerRepo) : IResponseReceive<RowMoveModel?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricForIssuesMoveHelpdeskReceive;

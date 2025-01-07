@@ -58,7 +58,7 @@ public interface ITelegramRemoteTransmissionService
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера
     /// </summary>
-    public Task<TResponseModel<object?>> SetWebConfigHelpdesk(WebConfigModel webConf, bool waitResponse = true);
+    public Task<ResponseBaseModel> SetWebConfigHelpdesk(HelpdeskConfigModel webConf, bool waitResponse = true);
 
     /// <summary>
     /// Установить WebConfig. От web части отправляется значение при загрузке браузера

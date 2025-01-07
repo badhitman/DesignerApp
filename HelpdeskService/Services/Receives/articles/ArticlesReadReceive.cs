@@ -11,8 +11,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// ArticlesReadReceive
 /// </summary>
-public class ArticlesReadReceive(IArticlesService artRepo, ILogger<ArticlesReadReceive> loggerRepo)
-    : IResponseReceive<int[]?, TResponseModel<ArticleModelDB[]>?>
+public class ArticlesReadReceive(IArticlesService artRepo, ILogger<ArticlesReadReceive> loggerRepo) : IResponseReceive<int[]?, TResponseModel<ArticleModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ArticlesReadReceive;

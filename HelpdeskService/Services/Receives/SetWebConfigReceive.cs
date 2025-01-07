@@ -12,8 +12,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Set web config site
 /// </summary>
-public class SetWebConfigReceive(IOptions<HelpdeskConfigModel> webConfig, ILogger<SetWebConfigReceive> _logger)
-    : IResponseReceive<HelpdeskConfigModel?, ResponseBaseModel?>
+public class SetWebConfigReceive(IOptions<HelpdeskConfigModel> webConfig, ILogger<SetWebConfigReceive> _logger) : IResponseReceive<HelpdeskConfigModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetWebConfigHelpdeskReceive;
