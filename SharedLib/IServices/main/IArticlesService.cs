@@ -12,7 +12,7 @@ public interface IArticlesService
     /// <summary>
     /// Установит рубрики для статьи
     /// </summary>
-    public Task<bool> UpdateRubricsForArticle(ArticleRubricsSetModel req);
+    public Task<TResponseModel<bool>> UpdateRubricsForArticle(ArticleRubricsSetModel req);
 
     /// <summary>
     /// Создать/обновить статью
@@ -27,5 +27,5 @@ public interface IArticlesService
     /// <summary>
     /// Получить статьи
     /// </summary>
-    public Task<ArticleModelDB[]> ArticlesRead(int[] req);
+    public Task<TResponseModel<ArticleModelDB[]>> ArticlesRead(int[] req);
 }

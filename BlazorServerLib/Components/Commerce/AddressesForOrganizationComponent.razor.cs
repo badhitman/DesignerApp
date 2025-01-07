@@ -105,7 +105,7 @@ public partial class AddressesForOrganizationComponent : BlazorBusyComponentBase
 
             foreach (int i in added_rubrics)
             {
-                TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = await HelpdeskRepo.RubricRead(i);
+                TResponseModel<List<RubricIssueHelpdeskModelDB>> res = await HelpdeskRepo.RubricRead(i);
                 if (res.Success() && res.Response is not null)
                     RubriciesCached.Add(i, res.Response);
 

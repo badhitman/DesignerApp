@@ -12,14 +12,13 @@ namespace Transmission.Receives.telegram;
 /// <summary>
 /// Найти чаты пользователей
 /// </summary>
-public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory, ILogger<ChatsFindForUserTelegramReceive> logger)
-    : IResponseReceive<long[]?, ChatTelegramModelDB[]?>
+public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory, ILogger<ChatsFindForUserTelegramReceive> logger) : IResponseReceive<long[]?, List<ChatTelegramModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ChatsFindForUserTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ChatTelegramModelDB[]?>> ResponseHandleAction(long[]? chats_ids)
+    public async Task<List<ChatTelegramModelDB>?> ResponseHandleAction(long[]? chats_ids)
     {
         ArgumentNullException.ThrowIfNull(chats_ids);
         TResponseModel<ChatTelegramModelDB[]?> res = new();
@@ -31,11 +30,9 @@ public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContex
             ? context.Chats.Where(x => chats_ids.Contains(x.ChatTelegramId))
             : context.Chats.Where(x => chats_ids.Contains(x.ChatTelegramId) || context.JoinsUsersToChats.Any(y => y.ChatId == x.Id && users_ids.Contains(y.UserId)));
 
-        res.Response = await q
+        return await q
             .Include(x => x.UsersJoins!)
             .ThenInclude(x => x.User)
-            .ToArrayAsync();
-
-        return res;
+            .ToListAsync();
     }
 }

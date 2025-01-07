@@ -53,7 +53,7 @@ public partial class AddressForOrganizationPage : BlazorBusyComponentBaseModel
         AddressCurrent = res_address.Response!.Single();
         AddressEdit = GlobalTools.CreateDeepCopy(AddressCurrent) ?? throw new Exception();
 
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> res_rubric = await HelpdeskRepo.RubricRead(AddressCurrent.ParentId);
+        TResponseModel<List<RubricIssueHelpdeskModelDB>> res_rubric = await HelpdeskRepo.RubricRead(AddressCurrent.ParentId);
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(res_rubric.Messages);
         if (res_rubric.Success() && res_rubric.Response is not null && res_rubric.Response.Count != 0)

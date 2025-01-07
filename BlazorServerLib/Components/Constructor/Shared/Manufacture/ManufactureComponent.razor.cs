@@ -96,8 +96,7 @@ public partial class ManufactureComponent : BlazorBusyComponentBaseAuthModel
     {
         await SetBusy();
 
-        var call = await ConstructorRepo.ProjectsRead([ParentFormsPage.MainProject!.Id]);
-        ProjectModelDb[] rest_project = call.Response ?? throw new Exception();
+        List<ProjectModelDb> rest_project = await ConstructorRepo.ProjectsRead([ParentFormsPage.MainProject!.Id]);
         CurrentProject = rest_project.Single();
 
         //TResponseModel<ManageManufactureModelDB> rest_manufacture = await ManufactureRepo.ReadManufactureConfig(ParentFormsPage.MainProject.Id, user.UserId);

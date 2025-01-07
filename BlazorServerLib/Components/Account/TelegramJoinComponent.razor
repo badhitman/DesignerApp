@@ -139,7 +139,7 @@ else
         await ReadState(false);
         await SetBusy();
         
-        TResponseModel<string?> bot_username_res = await TelegramRemoteRepo.GetBotUsername();
+        TResponseModel<string> bot_username_res = await TelegramRemoteRepo.GetBotUsername();
         IsBusyProgress = false;
         bot_username = bot_username_res.Response;
         Messages.AddRange(bot_username_res.Messages);
@@ -147,7 +147,7 @@ else
         {
             await SetBusy();
             
-            TResponseModel<TelegramUserBaseModel?> rest = await tgWebRepo.GetTelegramUserCachedInfo(User.TelegramId.Value);
+            TResponseModel<TelegramUserBaseModel> rest = await tgWebRepo.GetTelegramUserCachedInfo(User.TelegramId.Value);
             IsBusyProgress = false;
             Messages.AddRange(rest.Messages);
             TelegramUser = rest.Response;

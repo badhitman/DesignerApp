@@ -91,7 +91,7 @@ public partial class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)
+    public async Task<TPaginationResponseModel<OrderDocumentModelDB>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)
     {
         if (req.PageSize < 10)
             req.PageSize = 10;
@@ -142,15 +142,12 @@ public partial class CommerceImplementService(
 
         return new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = req.Payload.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
-            },
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = req.Payload.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
         };
     }
 
@@ -466,7 +463,7 @@ public partial class CommerceImplementService(
 
         req.Name = req.Name.Trim();
 
-        TResponseModel<UserInfoModel[]?> actor = await webTransmissionRepo.GetUsersIdentity([req.AuthorIdentityUserId]);
+        TResponseModel<UserInfoModel[]> actor = await webTransmissionRepo.GetUsersIdentity([req.AuthorIdentityUserId]);
         if (!actor.Success() || actor.Response is null || actor.Response.Length == 0)
         {
             res.AddRangeMessages(actor.Messages);
@@ -511,7 +508,7 @@ public partial class CommerceImplementService(
                 return res;
 
             int[] rubricsIds = [.. req.AddressesTabs.Select(x => x.WarehouseId).Distinct()];
-            TResponseModel<List<RubricIssueHelpdeskModelDB>?> getRubrics = await hdRepo.RubricsGet(rubricsIds);
+            TResponseModel<List<RubricIssueHelpdeskModelDB>> getRubrics = await hdRepo.RubricsGet(rubricsIds);
             if (!getRubrics.Success())
             {
                 res.AddRangeMessages(getRubrics.Messages);
@@ -575,12 +572,10 @@ public partial class CommerceImplementService(
                 {
                     if (string.IsNullOrWhiteSpace(_webConf.ClearBaseUri))
                     {
-                        TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
-                        _webConf.BaseUri = wc.Response?.ClearBaseUri;
+                        TelegramBotConfigModel wc = await webTransmissionRepo.GetWebConfig();
+                        _webConf.BaseUri = wc.ClearBaseUri;
                     }
                 }));
-                TResponseModel<TelegramBotConfigModel?> wc = await webTransmissionRepo.GetWebConfig();
-                _webConf.BaseUri = wc.Response?.ClearBaseUri;
             }
 
             await Task.WhenAll(tasks);
@@ -862,7 +857,7 @@ public partial class CommerceImplementService(
     {
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        TResponseModel<UserInfoModel[]?> rest = default!;
+        TResponseModel<UserInfoModel[]> rest = default!;
         TResponseModel<OrderDocumentModelDB[]> orderData = default!;
         List<Task> _taskList = [
             Task.Run(async () => { rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]); }),
@@ -988,7 +983,7 @@ public partial class CommerceImplementService(
         }
 
         int[] rubricsIds = offersAll.SelectMany(x => x.Registers!).Select(x => x.WarehouseId).Distinct().ToArray();
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> rubricsDb = await hdRepo.RubricsGet(rubricsIds);
+        TResponseModel<List<RubricIssueHelpdeskModelDB>> rubricsDb = await hdRepo.RubricsGet(rubricsIds);
         List<IGrouping<NomenclatureModelDB?, OfferModelDB>> gof = offersAll.GroupBy(x => x.Nomenclature).Where(x => x.Any(y => y.Registers!.Any(z => z.Quantity > 0))).ToList();
         try
         {

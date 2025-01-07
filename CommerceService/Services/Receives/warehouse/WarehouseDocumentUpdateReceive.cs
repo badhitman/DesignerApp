@@ -11,23 +11,16 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// WarehouseDocumentUpdateReceive
 /// </summary>
-public class WarehouseDocumentUpdateReceive(ICommerceService commRepo, ILogger<WarehouseDocumentUpdateReceive> loggerRepo)
-    : IResponseReceive<WarehouseDocumentModelDB?, int?>
+public class WarehouseDocumentUpdateReceive(ICommerceService commRepo, ILogger<WarehouseDocumentUpdateReceive> loggerRepo) : IResponseReceive<WarehouseDocumentModelDB?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.WarehouseDocumentUpdateCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(WarehouseDocumentModelDB? req)
+    public async Task<TResponseModel<int>?> ResponseHandleAction(WarehouseDocumentModelDB? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<int> res = await commRepo.WarehouseDocumentUpdate(req);
-
-        return new()
-        {
-            Messages = res.Messages,
-            Response = res.Response,
-        };
+        return await commRepo.WarehouseDocumentUpdate(req);
     }
 }

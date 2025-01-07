@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
@@ -14,18 +14,17 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Сдвинуть рубрику
 /// </summary>
-public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, ILogger<RubricMoveReceive> loggerRepo)
-    : IResponseReceive<RowMoveModel?, bool?>
+public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory, ILogger<RubricMoveReceive> loggerRepo) : IResponseReceive<RowMoveModel?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricForIssuesMoveHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> ResponseHandleAction(RowMoveModel? req)
+    public async Task<TResponseModel<bool>?> ResponseHandleAction(RowMoveModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<bool?> res = new();
+        TResponseModel<bool> res = new();
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
@@ -76,10 +75,6 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
                 r1.SortIndex = val2;
                 context.Update(r1);
                 await context.SaveChangesAsync();
-                //r1.SortIndex++;
-                //r2.SortIndex--;
-                //context.UpdateRange(all);
-                //await context.SaveChangesAsync();
 
                 res.Response = true;
                 res.AddSuccess($"Рубрика '{data.Name}' сдвинута выше");
@@ -105,10 +100,6 @@ public class RubricMoveReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFact
                 r1.SortIndex = val2;
                 context.Update(r1);
                 await context.SaveChangesAsync();
-                //r1.SortIndex--;
-                //r2.SortIndex++;
-                //context.UpdateRange(all);
-                //await context.SaveChangesAsync();
 
                 res.Response = true;
                 res.AddSuccess($"Рубрика '{data.Name}' сдвинута ниже");

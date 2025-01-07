@@ -30,7 +30,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<OrdersSelectRequestModel> req)
+    public async Task<TPaginationResponseModel<OrderDocumentModelDB>> OrdersSelect(TPaginationRequestModel<OrdersSelectRequestModel> req)
         => await commRepo.OrdersSelect(new TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>>() { Payload = new TAuthRequestModel<OrdersSelectRequestModel>() { Payload = req.Payload, SenderActionUserId = GlobalStaticConstants.Roles.System } });
 
     /// <summary>

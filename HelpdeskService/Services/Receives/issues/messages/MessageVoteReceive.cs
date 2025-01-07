@@ -10,14 +10,13 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// MessageVote Receive
 /// </summary>
-public class MessageVoteReceive(IHelpdeskService hdRepo)
-    : IResponseReceive<TAuthRequestModel<VoteIssueRequestModel>?, bool?>
+public class MessageVoteReceive(IHelpdeskService hdRepo) : IResponseReceive<TAuthRequestModel<VoteIssueRequestModel>?, TResponseModel<bool?>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessageOfIssueVoteHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> ResponseHandleAction(TAuthRequestModel<VoteIssueRequestModel>? req)
+    public async Task<TResponseModel<bool?>?> ResponseHandleAction(TAuthRequestModel<VoteIssueRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         return await hdRepo.MessageVote(req);

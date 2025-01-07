@@ -61,7 +61,7 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
         else if (!string.IsNullOrWhiteSpace(UserId))
         {
             await SetBusy();
-            TResponseModel<UserInfoModel[]?> user_res = await WebRepo.GetUsersIdentity([UserId]);
+            TResponseModel<UserInfoModel[]> user_res = await WebRepo.GetUsersIdentity([UserId]);
             SnackbarRepo.ShowMessagesResponse(user_res.Messages);
             CurrentViewUser = user_res.Response?.FirstOrDefault();
             await SetBusy(false);
@@ -89,13 +89,12 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         await SetBusy(token: token);
-        TResponseModel<TPaginationResponseModel<OrganizationModelDB>> res = await CommerceRepo.OrganizationsSelect(req);
+        TPaginationResponseModel<OrganizationModelDB> res = await CommerceRepo.OrganizationsSelect(req);
         await SetBusy(false, token: token);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
 
-        if (!res.Success() || res.Response?.Response is null)
+        if (res.Response is null)
             return new TableData<OrganizationModelDB>() { TotalItems = 0, Items = [] };
 
-        return new TableData<OrganizationModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+        return new TableData<OrganizationModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };
     }
 }

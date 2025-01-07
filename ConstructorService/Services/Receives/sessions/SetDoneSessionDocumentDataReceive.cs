@@ -10,20 +10,15 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Отправить опрос на проверку (от клиента)
 /// </summary>
-public class SetDoneSessionDocumentDataReceive(IConstructorService conService)
-    : IResponseReceive<string?, object?>
+public class SetDoneSessionDocumentDataReceive(IConstructorService conService) : IResponseReceive<string?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetDoneSessionDocumentDataReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(string? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(string? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        var res = await conService.SetDoneSessionDocumentData(payload);
-        return new()
-        {
-            Messages = res.Messages
-        };
+        return await conService.SetDoneSessionDocumentData(payload);
     }
 }

@@ -7,6 +7,11 @@ namespace SharedLib;
 public partial interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// Смена статуса заявки (бронь)
+    /// </summary>
+    public Task<bool> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req);
+
+    /// <summary>
     /// Получить заказы (по заявкам)
     /// </summary>
     public Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssues(OrdersByIssuesSelectRequestModel req);
@@ -14,7 +19,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Create attendance records
     /// </summary>
-    public Task<TResponseModel<object>> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules);
+    public Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules);
 
     /// <summary>
     /// OrganizationOfferContractUpdate
@@ -24,7 +29,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkSchedulesFind
     /// </summary>
-    public Task<TResponseModel<WorkSchedulesFindResponseModel>> WorksSchedulesFind(WorkSchedulesFindRequestModel req);
+    public Task<WorkSchedulesFindResponseModel> WorksSchedulesFind(WorkSchedulesFindRequestModel req);
 
     /// <summary>
     /// WorkScheduleUpdate
@@ -34,12 +39,12 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkSchedulesSelect select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req);
+    public Task<TPaginationResponseModel<WeeklyScheduleModelDB>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req);
 
     /// <summary>
     /// WorkSchedulesRead read
     /// </summary>
-    public Task<TResponseModel<WeeklyScheduleModelDB[]>> WeeklySchedulesRead(int[] req);
+    public Task<List<WeeklyScheduleModelDB>> WeeklySchedulesRead(int[] req);
 
     /// <summary>
     /// WorkScheduleCalendarUpdate
@@ -49,10 +54,10 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkScheduleCalendarsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> CalendarsSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req);
+    public Task<TPaginationResponseModel<CalendarScheduleModelDB>> CalendarsSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req);
 
     /// <summary>
     /// WorkScheduleCalendarsRead
     /// </summary>
-    public Task<TResponseModel<CalendarScheduleModelDB[]>> CalendarsSchedulesRead(int[] req);
+    public Task<List<CalendarScheduleModelDB>> CalendarsSchedulesRead(int[] req);
 }

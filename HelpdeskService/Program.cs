@@ -127,9 +127,9 @@ using (IServiceScope ss = app.Services.CreateScope())
 {
     IOptions<HelpdeskConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<HelpdeskConfigModel>>();
     IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
-    TResponseModel<TelegramBotConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
-    if (wc_remote.Response is not null && wc_remote.Success() && Uri.TryCreate(wc_remote.Response.BaseUri, UriKind.Absolute, out _))
-        wc_main.Value.Update(wc_remote.Response.BaseUri);
+    TelegramBotConfigModel wc_remote = await webRemoteCall.GetWebConfig();
+    if (Uri.TryCreate(wc_remote.BaseUri, UriKind.Absolute, out _))
+        wc_main.Value.Update(wc_remote.BaseUri);
 
 #if DEBUG
 #if DEMO

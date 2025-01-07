@@ -10,21 +10,15 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// GetDirectoriesReceive
 /// </summary>
-public class GetDirectoriesReceive(IConstructorService conService)
-    : IResponseReceive<ProjectFindModel?, EntryModel[]?>
+public class GetDirectoriesReceive(IConstructorService conService) : IResponseReceive<ProjectFindModel?, TResponseModel<EntryModel[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetDirectoriesReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryModel[]?>> ResponseHandleAction(ProjectFindModel? payload)
+    public async Task<TResponseModel<EntryModel[]>?> ResponseHandleAction(ProjectFindModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        TResponseStrictModel<EntryModel[]> res = await conService.GetDirectories(payload);
-        return new()
-        {
-            Response = res.Response,
-            Messages = res.Messages,
-        };
+        return await conService.GetDirectories(payload);
     }
 }

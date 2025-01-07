@@ -10,13 +10,18 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
+    /// Удалить бронь
+    /// </summary>
+    public Task<ResponseBaseModel> OrderAttendance(TAuthRequestModel<int> orderId);
+
+    /// <summary>
     /// Смена статуса заказу по идентификатору HelpDesk документа
     /// </summary>
     /// <remarks>
     /// В запросе нельзя указывать идентификатор заказа: только идентификатор HelpDesk документа.
     /// Допускается ситуация, когда под одним идентификатором HelpDesk документа могут существовать несколько заказов (объединённые заказы).
     /// </remarks>
-    public Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(StatusChangeRequestModel req);
+    public Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req);
 
     /// <summary>
     /// OrdersByIssuesGet
@@ -41,12 +46,12 @@ public partial interface ICommerceService
     /// <summary>
     /// WorkSchedulesSelect select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<WeeklyScheduleModelDB>>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req);
+    public Task<TPaginationResponseModel<WeeklyScheduleModelDB>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req);
 
     /// <summary>
     /// WorkSchedulesRead read
     /// </summary>
-    public Task<TResponseModel<WeeklyScheduleModelDB[]>> WeeklySchedulesRead(int[] req);
+    public Task<List<WeeklyScheduleModelDB>> WeeklySchedulesRead(int[] req);
 
     /// <summary>
     /// WorkScheduleCalendarUpdate
@@ -56,10 +61,10 @@ public partial interface ICommerceService
     /// <summary>
     /// WorkScheduleCalendarsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> CalendarSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req);
+    public Task<TPaginationResponseModel<CalendarScheduleModelDB>> CalendarSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req);
 
     /// <summary>
     /// WorkScheduleCalendarsRead
     /// </summary>
-    public Task<TResponseModel<CalendarScheduleModelDB[]>> CalendarSchedulesRead(int[] req);
+    public Task<List<CalendarScheduleModelDB>> CalendarSchedulesRead(int[] req);
 }

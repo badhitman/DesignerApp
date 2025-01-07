@@ -33,7 +33,7 @@ public abstract class BlazorBusyComponentUsersCachedModel : BlazorBusyComponentB
             return;
 
         await SetBusy();
-        TResponseModel<UserInfoModel[]?> users = await WebRepo.GetUsersIdentity(usersIds);
+        TResponseModel<UserInfoModel[]> users = await WebRepo.GetUsersIdentity(usersIds);
         SnackbarRepo.ShowMessagesResponse(users.Messages);
         if (users.Success() && users.Response is not null && users.Response.Length != 0)
             lock (UsersCache)

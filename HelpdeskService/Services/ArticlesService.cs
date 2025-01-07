@@ -56,7 +56,7 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
     }
 
     /// <inheritdoc/>
-    public async Task<ArticleModelDB[]> ArticlesRead(int[] req)
+    public async Task<TResponseModel<ArticleModelDB[]>> ArticlesRead(int[] req)
     {
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 #if DEBUG
@@ -66,11 +66,14 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
             .ThenInclude(x => x.Rubric)
             .ToArrayAsync();
 #endif
-        return await context.Articles
+        return new()
+        {
+            Response = await context.Articles
             .Where(x => req.Any(y => y == x.Id))
             .Include(x => x.RubricsJoins!)
             .ThenInclude(x => x.Rubric)
-            .ToArrayAsync();
+            .ToArrayAsync()
+        };
     }
 
     /// <inheritdoc/>
@@ -119,11 +122,11 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateRubricsForArticle(ArticleRubricsSetModel req)
+    public async Task<TResponseModel<bool>> UpdateRubricsForArticle(ArticleRubricsSetModel req)
     {
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
         if (req.RubricsIds.Length == 0)
-            return await context.RubricsArticlesJoins.Where(x => x.ArticleId == req.ArticleId).ExecuteDeleteAsync() != 0;
+            return new TResponseModel<bool>() { Response = await context.RubricsArticlesJoins.Where(x => x.ArticleId == req.ArticleId).ExecuteDeleteAsync() != 0 };
 
         RubricArticleJoinModelDB[] rubrics_db = await context
             .RubricsArticlesJoins
@@ -142,6 +145,9 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
             res = res || await context.SaveChangesAsync() != 0;
         }
 
-        return res;
+        return new()
+        {
+            Response = res
+        };
     }
 }

@@ -83,9 +83,9 @@ public class HelpdeskImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricRead(int rubricId)
+    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>>> RubricRead(int rubricId)
     {
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = new();
+        TResponseModel<List<RubricIssueHelpdeskModelDB>> res = new();
 
         if (rubricId < 1)
             return res;
@@ -240,7 +240,7 @@ public class HelpdeskImplementService(
         string[] users_ids = [req.SenderActionUserId, req.Payload.UserId, issue_data.ExecutorIdentityUserId ?? ""];
         users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
 
-        TResponseModel<UserInfoModel[]?> users_rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]> users_rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
         if (!users_rest.Success() || users_rest.Response is null || users_rest.Response.Length != users_ids.Length)
             return new() { Messages = users_rest.Messages };
 
@@ -385,7 +385,7 @@ public class HelpdeskImplementService(
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(issue_upd)}");
         TResponseModel<int> res = new() { Response = 0 };
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = default!;
-        TResponseModel<UserInfoModel[]?> users_rest = default!;
+        TResponseModel<UserInfoModel[]> users_rest = default!;
 
         List<Task> tasks = [
             Task.Run(async () => { users_rest = await webTransmissionRepo.GetUsersIdentity([issue_upd.SenderActionUserId]); }),
@@ -529,7 +529,7 @@ public class HelpdeskImplementService(
                     IssueIds = [issue_upd.Payload.Id],
                 };
 
-                TResponseModel<TelegramBotConfigModel?> wc = default!;
+                TelegramBotConfigModel wc = default!;
                 TResponseModel<OrderDocumentModelDB[]> comm_res = default!;
 
                 await Task.WhenAll([
@@ -541,7 +541,7 @@ public class HelpdeskImplementService(
                 {
                     msg += $". Заказ: [{string.Join(";", comm_res.Response.Select(x => $"(№{x.Id} - {x.CreatedAtUTC.GetCustomTime()})"))}]";
                 }
-                msg += $". /<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/";
+                msg += $". /<a href='{wc.ClearBaseUri}'>{wc.ClearBaseUri}</a>/";
                 res.AddSuccess(msg);
 
                 p_req = new()
@@ -617,7 +617,7 @@ public class HelpdeskImplementService(
         if (req.SenderActionUserId == GlobalStaticConstants.Roles.System || issues_db.All(x => x.ExecutorIdentityUserId == req.SenderActionUserId) || issues_db.All(x => x.AuthorIdentityUserId == req.SenderActionUserId) || issues_db.All(x => x.Subscribers!.Any(x => x.UserId == req.SenderActionUserId)))
             return new() { Response = issues_db };
 
-        TResponseModel<UserInfoModel[]?> rest_user_date = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> rest_user_date = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!rest_user_date.Success() || rest_user_date.Response is null || rest_user_date.Response.Length != 1)
         {
             loggerRepo.LogError($"Пользователь не найден: {req.SenderActionUserId}");
@@ -646,7 +646,7 @@ public class HelpdeskImplementService(
             Response = false,
         };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && (!rest.Success() || rest.Response is null || rest.Response.Length != 1))
             return new() { Messages = rest.Messages };
 
@@ -703,14 +703,13 @@ public class HelpdeskImplementService(
             return res;
         }
 
-        TResponseModel<UserInfoModel[]?>? users_notify = null;
         TResponseModel<string?>
             CommerceStatusChangeOrderSubjectNotification = default!,
             CommerceStatusChangeOrderBodyNotification = default!,
             CommerceStatusChangeOrderBodyNotificationWhatsapp = default!,
             CommerceStatusChangeOrderBodyNotificationTelegram = default!;
 
-        TResponseModel<TelegramBotConfigModel?> wc = default!;
+        TelegramBotConfigModel wc = default!;
         List<Task> tasks = [
             Task.Run(async () => { CommerceStatusChangeOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderSubjectNotification(prevStatus)); }),
             Task.Run(async () => { CommerceStatusChangeOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceStatusChangeOrderBodyNotification(prevStatus)); }),
@@ -747,20 +746,20 @@ public class HelpdeskImplementService(
         string _about_document = $"'{issue_data.Name}' {cdd.GetHumanDateTime()}";
         string subject_email = "Изменение статуса документа";
         if (CommerceStatusChangeOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderSubjectNotification.Response))
-            subject_email = IHelpdeskService.ReplaceTags(issue_data.Name, cdd, issue_data.Id, nextStatus, CommerceStatusChangeOrderSubjectNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+            subject_email = IHelpdeskService.ReplaceTags(issue_data.Name, cdd, issue_data.Id, nextStatus, CommerceStatusChangeOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
 
         string msg = $"<p>Заявка '{_about_document} [изменение статуса]: `{prevStatus.DescriptionInfo()}` → `{nextStatus.DescriptionInfo()}`" +
-                            $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
+                            $"<p>/<a href='{wc.ClearBaseUri}'>{wc.ClearBaseUri}</a>/</p>";
 
         if (CommerceStatusChangeOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
-            msg = IHelpdeskService.ReplaceTags(issue_data.Name, cdd, issue_data.Id, nextStatus, CommerceStatusChangeOrderBodyNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+            msg = IHelpdeskService.ReplaceTags(issue_data.Name, cdd, issue_data.Id, nextStatus, CommerceStatusChangeOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
 
         string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
         if (CommerceStatusChangeOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationTelegram.Response))
-            tg_message = IHelpdeskService.ReplaceTags(issue_data.Name, cdd, issue_data.Id, nextStatus, CommerceStatusChangeOrderBodyNotificationTelegram.Response, wc.Response?.ClearBaseUri, _about_document);
+            tg_message = IHelpdeskService.ReplaceTags(issue_data.Name, cdd, issue_data.Id, nextStatus, CommerceStatusChangeOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
 
         string wp_message = $"Заявка '{_about_document} [изменение статуса]: `{prevStatus.DescriptionInfo()}` → `{nextStatus.DescriptionInfo()}`" +
-                            $"{wc.Response?.ClearBaseUri}";
+                            $"{wc.ClearBaseUri}";
 
         res.AddSuccess(msg);
         res.Response = true;
@@ -800,23 +799,23 @@ public class HelpdeskImplementService(
             _about_document = $"'{order_obj.Name}' {cdd.GetHumanDateTime()}";
 
             if (CommerceStatusChangeOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderSubjectNotification.Response))
-                subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderSubjectNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+                subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
 
             msg = $"<p>Заказ '{_about_document} [изменение статуса]: `{prevStatus}` → `{nextStatus}`" +
-                                $"<p>/<a href='{wc.Response?.ClearBaseUri}'>{wc.Response?.ClearBaseUri}</a>/</p>";
+                                $"<p>/<a href='{wc.ClearBaseUri}'>{wc.ClearBaseUri}</a>/</p>";
 
             tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
             wp_message = $"Заказ '{order_obj.Name}' от [{cdd.GetHumanDateTime()}] - {nextStatus.DescriptionInfo()}. " +
-                               $"{wc.Response?.ClearBaseUri}";
+                               $"{wc.ClearBaseUri}";
 
             if (CommerceStatusChangeOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
-                msg = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderBodyNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+                msg = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
 
             if (CommerceStatusChangeOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationTelegram.Response))
-                tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderBodyNotificationTelegram.Response, wc.Response?.ClearBaseUri, _about_document);
+                tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
         }
 
-        users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
         if (users_notify?.Success() == true && users_notify.Response is not null && users_notify.Response.Length != 0)
         {
             foreach (UserInfoModel u in users_notify.Response)
@@ -857,7 +856,7 @@ public class HelpdeskImplementService(
         string[] users_ids = [req.SenderActionUserId, req.Payload.UserId];
         users_ids = [.. users_ids.Distinct()];
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity(users_ids);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != users_ids.Length)
             return new() { Messages = rest.Messages };
 
@@ -1021,7 +1020,7 @@ public class HelpdeskImplementService(
         if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
             return new() { Messages = issues_data.Messages };
 
-        TResponseModel<UserInfoModel[]?> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
+        TResponseModel<UserInfoModel[]> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
             ? new() { Response = [UserInfoModel.BuildSystem()] }
             : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
 
@@ -1129,7 +1128,7 @@ public class HelpdeskImplementService(
                     IssueIds = [issue_data.Id],
                 };
 
-                TResponseModel<TelegramBotConfigModel?> wc = default!;
+                TelegramBotConfigModel wc = default!;
                 TResponseModel<OrderDocumentModelDB[]> find_orders = default!;
                 TResponseModel<string?> CommerceNewMessageOrderBodyNotificationWhatsapp = default!, CommerceNewMessageOrderSubjectNotification = default!, CommerceNewMessageOrderBodyNotification = default!, CommerceNewMessageOrderBodyNotificationTelegram = default!;
 
@@ -1159,25 +1158,25 @@ public class HelpdeskImplementService(
                 {
                     CommerceNewMessageOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp);
                     if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
-                        wpMessage = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.Response?.ClearBaseUri, _about_document, true);
+                        wpMessage = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.ClearBaseUri, _about_document, true);
                 }));
                 tasks.Add(Task.Run(async () =>
                 {
                     CommerceNewMessageOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram);
                     if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
-                        tg_message = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.Response?.ClearBaseUri, _about_document);
+                        tg_message = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
                 }));
                 tasks.Add(Task.Run(async () =>
                 {
                     CommerceNewMessageOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification);
                     if (CommerceNewMessageOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
-                        msg = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+                        msg = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
                 }));
                 tasks.Add(Task.Run(async () =>
                 {
                     CommerceNewMessageOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderSubjectNotification);
                     if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
-                        subject_email = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+                        subject_email = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
                 }));
                 await Task.WhenAll(tasks);
                 tasks.Clear();
@@ -1191,18 +1190,18 @@ public class HelpdeskImplementService(
                     OrderDocumentModelDB order_obj = find_orders.Response[0];
                     _about_document = $"Заказ '{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", IHelpdeskService.cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", IHelpdeskService.cultureInfo)}";
                     if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
-                        subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+                        subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
 
                     if (!CommerceNewMessageOrderBodyNotification.Success() || string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
                         msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.</p>";
                     else
-                        msg = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.Response?.ClearBaseUri, _about_document);
+                        msg = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
 
                     if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
-                        tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.Response?.ClearBaseUri, _about_document);
+                        tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
 
                     if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
-                        wpMessage = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.Response?.ClearBaseUri, _about_document, true);
+                        wpMessage = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.ClearBaseUri, _about_document, true);
                     else
                         wpMessage = $"Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.";
 
@@ -1210,7 +1209,7 @@ public class HelpdeskImplementService(
                 }
                 wpMessage = $"{wpMessage}\n\n> {safeTextMessage}".Trim().TrimEnd('>').Trim();
 
-                TResponseModel<UserInfoModel[]?> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
+                TResponseModel<UserInfoModel[]> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
                 if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
                 {
                     foreach (UserInfoModel u in users_notify.Response)
@@ -1297,7 +1296,7 @@ public class HelpdeskImplementService(
     {
         TResponseModel<bool?> res = new();
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<UserInfoModel[]?> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
+        TResponseModel<UserInfoModel[]> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
             ? new() { Response = [UserInfoModel.BuildSystem()] }
             : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
 
@@ -1455,7 +1454,7 @@ public class HelpdeskImplementService(
             users_ids.AddRange(issue_data.Subscribers.Where(x => !x.IsSilent).Select(x => x.UserId));
 
         users_ids = [.. users_ids.Distinct()];
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([.. users_ids]);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([.. users_ids]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != users_ids.Count)
             return new() { Messages = rest.Messages };
 

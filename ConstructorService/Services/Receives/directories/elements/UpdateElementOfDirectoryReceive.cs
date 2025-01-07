@@ -10,20 +10,15 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Обновить элемент справочника
 /// </summary>
-public class UpdateElementOfDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<EntryDescriptionModel>?, object?>
+public class UpdateElementOfDirectoryReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<EntryDescriptionModel>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateElementOfDirectoryReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<EntryDescriptionModel>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<EntryDescriptionModel>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.UpdateElementOfDirectory(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.UpdateElementOfDirectory(payload);
     }
 }

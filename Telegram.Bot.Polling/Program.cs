@@ -144,9 +144,8 @@ using (IServiceScope ss = app.Services.CreateScope())
 {
     TelegramBotConfigModel wc_main = ss.ServiceProvider.GetRequiredService<TelegramBotConfigModel>();
     IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
-    TResponseModel<TelegramBotConfigModel?> wc_remote = await webRemoteCall.GetWebConfig();
-    if (wc_remote.Response is not null && wc_remote.Success())
-        wc_main.Update(wc_remote.Response);
+    TelegramBotConfigModel wc_remote = await webRemoteCall.GetWebConfig();
+    wc_main.Update(wc_remote);
 }
 
 await app.RunAsync();

@@ -10,21 +10,14 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Получить страницу анкеты/опроса
 /// </summary>
-public class GetTabOfDocumentSchemeReceive(IConstructorService conService)
-    : IResponseReceive<int?, TabOfDocumentSchemeConstructorModelDB?>
+public class GetTabOfDocumentSchemeReceive(IConstructorService conService) : IResponseReceive<int, TResponseModel<TabOfDocumentSchemeConstructorModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetTabOfDocumentSchemeReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB?>> ResponseHandleAction(int? payload)
+    public async Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>?> ResponseHandleAction(int payload)
     {
-        ArgumentNullException.ThrowIfNull(payload);
-        TResponseModel<TabOfDocumentSchemeConstructorModelDB> res = await conService.GetTabOfDocumentScheme(payload.Value);
-        return new()
-        {
-            Messages = res.Messages,
-            Response = res.Response,
-        };
+        return await conService.GetTabOfDocumentScheme(payload);
     }
 }

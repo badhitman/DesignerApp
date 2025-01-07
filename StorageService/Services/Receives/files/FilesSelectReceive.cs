@@ -13,14 +13,13 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// FilesSelectReceive
 /// </summary>
-public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<StorageFileModelDB>?>
+public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<StorageFileModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FilesSelectReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>?>> ResponseHandleAction(TPaginationRequestModel<SelectMetadataRequestModel>? req)
+    public async Task<TPaginationResponseModel<StorageFileModelDB>?> ResponseHandleAction(TPaginationRequestModel<SelectMetadataRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
@@ -53,17 +52,15 @@ public class FilesSelectReceive(ILogger<FilesSelectReceive> loggerRepo, IDbConte
           : q.OrderByDescending(x => x.CreatedAt).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
 
         int trc = await q.CountAsync();
-        return new()
+        TPaginationResponseModel<StorageFileModelDB> res = new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = trc,
-                Response = await oq.ToListAsync()
-            }
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = trc,
+            Response = await oq.ToListAsync(),
         };
+        return res;
     }
 }

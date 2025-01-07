@@ -10,20 +10,15 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Сдвинуть выше элемент справочника/списка
 /// </summary>
-public class UpMoveElementOfDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, object?>
+public class UpMoveElementOfDirectoryReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpMoveElementOfDirectoryReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.UpMoveElementOfDirectory(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.UpMoveElementOfDirectory(payload);
     }
 }

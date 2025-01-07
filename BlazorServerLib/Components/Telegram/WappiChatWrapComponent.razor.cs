@@ -42,7 +42,7 @@ public partial class WappiChatWrapComponent : BlazorBusyComponentBaseModel
         await SetBusy();
         EntryAltExtModel req = new() { Text = _textSendMessage, Number = Chat };
 
-        TResponseModel<SendMessageResponseModel?> rest = await TelegramRepo.SendWappiMessage(req);
+        TResponseModel<SendMessageResponseModel> rest = await TelegramRepo.SendWappiMessage(req);
         _textSendMessage = "";
 
         IsBusyProgress = false;

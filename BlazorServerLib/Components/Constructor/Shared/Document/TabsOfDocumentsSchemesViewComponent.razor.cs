@@ -59,14 +59,14 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
 
         await SetBusy();
 
-        TResponseModel<TPaginationResponseModel<FormConstructorModelDB>> rest = await ConstructorRepo.SelectForms(new() { ProjectId = ParentFormsPage.MainProject.Id, Request = AltSimplePaginationRequestModel.Build(null, int.MaxValue, 0, true) });
+        TPaginationResponseModel<FormConstructorModelDB> rest = await ConstructorRepo.SelectForms(new() { ProjectId = ParentFormsPage.MainProject.Id, Request = AltSimplePaginationRequestModel.Build(null, int.MaxValue, 0, true) });
 
         IsBusyProgress = false;
 
         if (rest.Response is null)
             throw new Exception($"Ошибка 973D18EE-ED49-442D-B12B-CDC5A32C8A51 rest.Content.Elements is null");
 
-        AllForms = rest.Response.Response;
+        AllForms = rest.Response;
     }
 
     /// <inheritdoc/>

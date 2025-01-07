@@ -16,8 +16,7 @@ namespace Transmission.Receives.storage;
 /// <remarks>
 /// Общий размер и количество группируется по AppName
 /// </remarks>
-public class FilesAreaGetMetadataReceive(ILogger<FilesSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<FilesAreaMetadataRequestModel?, FilesAreaMetadataModel[]?>
+public class FilesAreaGetMetadataReceive(ILogger<FilesSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<FilesAreaMetadataRequestModel?, TResponseModel<FilesAreaMetadataModel[]>?>
 {
     /// <summary>
     /// Получить сводку (метаданные) по пространствам хранилища
@@ -33,7 +32,7 @@ public class FilesAreaGetMetadataReceive(ILogger<FilesSelectReceive> loggerRepo,
     /// <remarks>
     /// Общий размер и количество группируется по AppName
     /// </remarks>
-    public async Task<TResponseModel<FilesAreaMetadataModel[]?>> ResponseHandleAction(FilesAreaMetadataRequestModel? req)
+    public async Task<TResponseModel<FilesAreaMetadataModel[]>?> ResponseHandleAction(FilesAreaMetadataRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
@@ -58,7 +57,14 @@ public class FilesAreaGetMetadataReceive(ILogger<FilesSelectReceive> loggerRepo,
 
         return new()
         {
-            Response = [.. res.Select(x => new FilesAreaMetadataModel() { ApplicationName = x.AppName, CountFiles = x.CountFiles, SizeFilesSum = x.SummSize })]
+            Response =
+            [.. res
+            .Select(x => new FilesAreaMetadataModel()
+            {
+                ApplicationName = x.AppName,
+                CountFiles = x.CountFiles,
+                SizeFilesSum = x.SummSize
+            })]
         };
     }
 }

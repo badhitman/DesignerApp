@@ -10,20 +10,15 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Удалить значения (введённые в сессиях) по имени поля
 /// </summary>
-public class ClearValuesForFieldNameReceive(IConstructorService conService)
-    : IResponseReceive<FormFieldOfSessionModel?, object?>
+public class ClearValuesForFieldNameReceive(IConstructorService conService) : IResponseReceive<FormFieldOfSessionModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ClearValuesForFieldNameReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(FormFieldOfSessionModel? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(FormFieldOfSessionModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.ClearValuesForFieldName(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.ClearValuesForFieldName(payload);
     }
 }

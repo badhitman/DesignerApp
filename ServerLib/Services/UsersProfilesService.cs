@@ -114,7 +114,7 @@ public class UsersProfilesService(
             return (UserBooleanResponseModel)ResponseBaseModel.CreateError(msg);
         }
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 
@@ -143,7 +143,7 @@ public class UsersProfilesService(
     /// <inheritdoc/>
     public async Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string userId)
     {
-        TResponseModel<UserInfoModel[]?> rest;
+        TResponseModel<UserInfoModel[]> rest;
         if (!string.IsNullOrWhiteSpace(userId))
         {
             rest = await webTransmissionRepo.GetUsersIdentity([userId]);
@@ -168,7 +168,7 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new UserBooleanResponseModel() { Messages = user.Messages };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 
@@ -214,7 +214,7 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([user.ApplicationUser.Id]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Messages = rest.Messages };
 

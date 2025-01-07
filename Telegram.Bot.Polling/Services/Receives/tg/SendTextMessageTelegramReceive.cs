@@ -24,18 +24,17 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
     IWebRemoteTransmissionService webRemoteCall,
     StoreTelegramService storeTgRepo,
-    ILogger<SendTextMessageTelegramReceive> _logger)
-    : IResponseReceive<SendTextMessageTelegramBotModel?, MessageComplexIdsModel?>
+    ILogger<SendTextMessageTelegramReceive> _logger) : IResponseReceive<SendTextMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<MessageComplexIdsModel?>> ResponseHandleAction(SendTextMessageTelegramBotModel? message)
+    public async Task<TResponseModel<MessageComplexIdsModel>?> ResponseHandleAction(SendTextMessageTelegramBotModel? message)
     {
         ArgumentNullException.ThrowIfNull(message);
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(message)}");
-        TResponseModel<MessageComplexIdsModel?> res = new();
+        TResponseModel<MessageComplexIdsModel> res = new();
         string msg;
         if (string.IsNullOrWhiteSpace(message.Message))
         {

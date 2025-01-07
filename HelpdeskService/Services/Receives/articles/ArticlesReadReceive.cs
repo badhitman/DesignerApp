@@ -11,21 +11,17 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// ArticlesReadReceive
 /// </summary>
-public class ArticlesReadReceive(IArticlesService artRepo, ILogger<ArticlesReadReceive> loggerRepo)
-    : IResponseReceive<int[]?, ArticleModelDB[]?>
+public class ArticlesReadReceive(IArticlesService artRepo, ILogger<ArticlesReadReceive> loggerRepo) : IResponseReceive<int[]?, TResponseModel<ArticleModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ArticlesReadReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ArticleModelDB[]?>> ResponseHandleAction(int[]? req)
+    public async Task<TResponseModel<ArticleModelDB[]>?> ResponseHandleAction(int[]? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
 
-        return new()
-        {
-            Response = await artRepo.ArticlesRead(req)
-        };
+        return await artRepo.ArticlesRead(req);
     }
 }

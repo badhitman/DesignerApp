@@ -80,14 +80,13 @@ public partial class OffersComponent : BlazorBusyComponentRegistersModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
         await SetBusy(token: token);
-        TResponseModel<TPaginationResponseModel<OfferModelDB>> res = await CommerceRepo.OffersSelect(req);
-        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        TPaginationResponseModel<OfferModelDB> res = await CommerceRepo.OffersSelect(req);
 
-        if (res.Success() && res.Response?.Response is not null)
+        if (res.Response is not null)
         {
-            await CacheRegistersUpdate(offers: res.Response.Response.Select(x => x.Id),goods: []);
+            await CacheRegistersUpdate(offers: res.Response.Select(x => x.Id), goods: []);
             IsBusyProgress = false;
-            return new TableData<OfferModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
+            return new TableData<OfferModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };
         }
 
         IsBusyProgress = false;

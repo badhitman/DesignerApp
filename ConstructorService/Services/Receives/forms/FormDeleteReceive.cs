@@ -10,20 +10,15 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Удалить форму
 /// </summary>
-public class FormDeleteReceive(IConstructorService conService)
-: IResponseReceive<TAuthRequestModel<int>?, object?>
+public class FormDeleteReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FormDeleteReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.FormDelete(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.FormDelete(payload);
     }
 }

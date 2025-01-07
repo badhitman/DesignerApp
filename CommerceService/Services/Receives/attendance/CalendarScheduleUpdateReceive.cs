@@ -11,8 +11,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// Обновление WorkScheduleCalendar
 /// </summary>
-public class CalendarScheduleUpdateReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo)
-    : IResponseReceive<CalendarScheduleModelDB?, int?>
+public class CalendarScheduleUpdateReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo) : IResponseReceive<CalendarScheduleModelDB?, TResponseModel<int>?>
 {
     /// <summary>
     /// Обновление WorkScheduleCalendar
@@ -22,16 +21,10 @@ public class CalendarScheduleUpdateReceive(ICommerceService commerceRepo, ILogge
     /// <summary>
     /// Обновление WorkScheduleCalendar
     /// </summary>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(CalendarScheduleModelDB? req)
+    public async Task<TResponseModel<int>?> ResponseHandleAction(CalendarScheduleModelDB? payload)
     {
-        ArgumentNullException.ThrowIfNull(req);
-        
-        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<int> res = await commerceRepo.CalendarScheduleUpdate(req);
-        return new()
-        {
-            Messages = res.Messages,
-            Response = res.Response,
-        };
+        ArgumentNullException.ThrowIfNull(payload);
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(payload, GlobalStaticConstants.JsonSerializerSettings)}");
+        return await commerceRepo.CalendarScheduleUpdate(payload);
     }
 }

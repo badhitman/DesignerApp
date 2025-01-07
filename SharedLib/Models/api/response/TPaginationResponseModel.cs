@@ -19,5 +19,5 @@ public class TPaginationResponseModel<T> : PaginationResponseModel
     }
 
     /// <inheritdoc/>
-    public required List<T> Response { get; set; }
+    public List<T>? Response { get; set; }
 }

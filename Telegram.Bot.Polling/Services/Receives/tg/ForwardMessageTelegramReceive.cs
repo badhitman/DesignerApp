@@ -21,18 +21,17 @@ public class ForwardMessageTelegramReceive(
     ITelegramBotClient _botClient,
     ILogger<ForwardMessageTelegramReceive> loggerRepo,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
-    StoreTelegramService storeTgRepo)
-    : IResponseReceive<ForwardMessageTelegramBotModel?, MessageComplexIdsModel?>
+    StoreTelegramService storeTgRepo) : IResponseReceive<ForwardMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ForwardTextMessageTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<MessageComplexIdsModel?>> ResponseHandleAction(ForwardMessageTelegramBotModel? message)
+    public async Task<TResponseModel<MessageComplexIdsModel>?> ResponseHandleAction(ForwardMessageTelegramBotModel? message)
     {
         ArgumentNullException.ThrowIfNull(message);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(message)}");
-        TResponseModel<MessageComplexIdsModel?> res = new();
+        TResponseModel<MessageComplexIdsModel> res = new();
         Message sender_msg;
         try
         {

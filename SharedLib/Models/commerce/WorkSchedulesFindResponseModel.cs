@@ -12,14 +12,21 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// WorkSchedulesFindResponseModel
     /// </summary>
+    public WorkSchedulesFindResponseModel()
+    {
+        StartDate = DateOnly.FromDateTime(DateTime.MinValue);
+        EndDate = DateOnly.FromDateTime(DateTime.MinValue);
+    }
+
+    /// <summary>
+    /// WorkSchedulesFindResponseModel
+    /// </summary>
     public WorkSchedulesFindResponseModel(DateOnly start, DateOnly end, List<WeeklyScheduleModelDB> WeeklySchedules, List<CalendarScheduleModelDB> CalendarsSchedules, List<OrganizationContractorModel> OrganizationsContracts, List<OrderAttendanceModelDB> OrdersAttendances)
     {
         StartDate = start;
         EndDate = end;
 
-        WorksSchedulesViews = [];
-
-        if(OrganizationsContracts is null)
+        if (OrganizationsContracts is null)
             return;
 
         if (OrganizationsContracts.Count == 0)
@@ -125,5 +132,5 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// WorkSchedulesViews
     /// </summary>
-    public List<WorkScheduleModel> WorksSchedulesViews { get; set; }
+    public List<WorkScheduleModel> WorksSchedulesViews { get; set; } = [];
 }

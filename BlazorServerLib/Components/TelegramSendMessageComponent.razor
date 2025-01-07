@@ -61,14 +61,14 @@ else
     {
         errorMessage = null;
         await SetBusy();
-        TResponseModel<TelegramUserBaseModel?> tg_user_info = await tgWebRepo.GetTelegramUserCachedInfo(TelegramId);
+        TResponseModel<TelegramUserBaseModel> tg_user_info = await tgWebRepo.GetTelegramUserCachedInfo(TelegramId);
 
         if (!tg_user_info.Success())
             errorMessage += $"\n{tg_user_info.Message()}";
 
         TelegramUser = tg_user_info.Response ?? throw new Exception($"error {{6090D4EA-4B24-47E1-8090-6272549BDAFB}}\n{tg_user_info.Message()}");
 
-        TResponseModel<MessageComplexIdsModel?> rest = await tgRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
+        TResponseModel<MessageComplexIdsModel> rest = await tgRepo.SendTextMessageTelegram(new SendTextMessageTelegramBotModel()
             {
                 From = $"<a href='{conf.Value.BaseUri}'>{conf.Value.ClearBaseUri}</a> (от: {CurrentUserSession?.UserName})",
                 UserTelegramId = TelegramUser.TelegramId,

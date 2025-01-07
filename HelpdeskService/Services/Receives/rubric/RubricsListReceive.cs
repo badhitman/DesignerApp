@@ -12,8 +12,7 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// Получить рубрики, вложенные в рубрику (если не указано, то root перечень)
 /// </summary>
-public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<RubricsListRequestModel?, UniversalBaseModel[]?>
+public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory) : IResponseReceive<RubricsListRequestModel?, List<UniversalBaseModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive;
@@ -23,7 +22,7 @@ public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFac
     /// </summary>
     /// <param name="req">OwnerId: вышестоящая рубрика.</param>
     /// <returns>Рубрики, подчинённые <c>OwnerId</c></returns>
-    public async Task<TResponseModel<UniversalBaseModel[]?>> ResponseHandleAction(RubricsListRequestModel? req)
+    public async Task<List<UniversalBaseModel>?> ResponseHandleAction(RubricsListRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         TResponseModel<UniversalBaseModel[]?> res = new();
@@ -50,7 +49,6 @@ public class RubricsListReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFac
         else
             q = q.Where(x => x.ParentId == req.Request);
 
-        res.Response = await q.ToArrayAsync();
-        return res;
+        return await q.ToListAsync();
     }
 }

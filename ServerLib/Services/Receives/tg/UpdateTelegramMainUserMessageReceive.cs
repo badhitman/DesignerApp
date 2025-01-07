@@ -12,16 +12,17 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// Update Telegram main user message
 /// </summary>
-public class UpdateTelegramMainUserMessageReceive(IWebAppService tgWebRepo, ILogger<UpdateTelegramMainUserMessageReceive> _logger)
-    : IResponseReceive<MainUserMessageModel?, object?>
+public class UpdateTelegramMainUserMessageReceive(IWebAppService tgWebRepo, ILogger<UpdateTelegramMainUserMessageReceive> _logger) : IResponseReceive<MainUserMessageModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(MainUserMessageModel? setMainMessage)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(MainUserMessageModel? setMainMessage)
     {
-        TResponseModel<object?> res = new();
+        ArgumentNullException.ThrowIfNull(setMainMessage);
+
+        ResponseBaseModel res = new();
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(setMainMessage, GlobalStaticConstants.JsonSerializerSettings)}");
         string msg;
         if (setMainMessage is null)
@@ -34,8 +35,7 @@ public class UpdateTelegramMainUserMessageReceive(IWebAppService tgWebRepo, ILog
 
         try
         {
-            ResponseBaseModel updMessage = await tgWebRepo.UpdateTelegramMainUserMessage(setMainMessage);
-            res.AddRangeMessages(updMessage.Messages);
+            return await tgWebRepo.UpdateTelegramMainUserMessage(setMainMessage);
         }
         catch (Exception ex)
         {

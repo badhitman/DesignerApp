@@ -69,7 +69,7 @@ public interface IHelpdeskService
     /// <summary>
     /// Rubric read
     /// </summary>
-    public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricRead(int rubricId);
+    public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>>> RubricRead(int rubricId);
 
     /// <summary>
     /// Rubrics get

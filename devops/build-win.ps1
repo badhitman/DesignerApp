@@ -1,7 +1,7 @@
 $paths = 'C:/Users/User/Documents/publish/StorageService', 'C:/Users/User/Documents/publish/ApiRestService', 'C:/Users/User/Documents/publish/CommerceService', 'C:/Users/User/Documents/publish/HelpdeskService', 'C:/Users/User/Documents/publish/Telegram.Bot.Polling', 'C:/Users/User/Documents/publish/BlankBlazorApp', 'C:/Users/User/Documents/publish/ConstructorService'
 foreach ($path in $paths) {
     if (Test-Path -LiteralPath $path) {
-      Remove-Item -LiteralPath $path -Verbose -Recurse -WhatIf
+      Remove-Item -Recurse -Force Remove-Item -Recurse -Force $path
     } else {
       "Path doesn't exist: $path"
     }

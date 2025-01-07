@@ -3,11 +3,10 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 using DbcLib;
-using Newtonsoft.Json;
-using System.Numerics;
 
 namespace Transmission.Receives.helpdesk;
 
@@ -18,8 +17,7 @@ public class PulseJournalReceive(
     ILogger<PulseJournalReceive> LoggerRepo,
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
-    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
-    : IResponseReceive<TPaginationRequestModel<UserIssueModel>?, TPaginationResponseModel<PulseViewModel>?>
+    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo) : IResponseReceive<TPaginationRequestModel<UserIssueModel>?, TPaginationResponseModel<PulseViewModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PulseJournalHelpdeskReceive;
@@ -27,13 +25,12 @@ public class PulseJournalReceive(
     /// <summary>
     /// Подписчики на события в обращении/инциденте
     /// </summary>
-    public async Task<TResponseModel<TPaginationResponseModel<PulseViewModel>?>> ResponseHandleAction(TPaginationRequestModel<UserIssueModel>? req)
+    public async Task<TPaginationResponseModel<PulseViewModel>?> ResponseHandleAction(TPaginationRequestModel<UserIssueModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<TPaginationResponseModel<PulseViewModel>?> res = new();
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.Payload.UserId]);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([req.Payload.UserId]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
+            return new() { Response = [] };
 
         if (req.PageSize < 5)
             req.PageSize = 5;
@@ -51,7 +48,7 @@ public class PulseJournalReceive(
         if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
         {
             LoggerRepo.LogWarning($"Запрос журнала активности пользователем {actor.UserId} - отклонён");
-            return new() { Messages = issues_data.Messages };
+            return new() { Response = [] };
         }
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
@@ -63,7 +60,7 @@ public class PulseJournalReceive(
             ? q.OrderByDescending(x => x.CreatedAt)
             : q.OrderBy(x => x.CreatedAt);
 
-        res.Response = new()
+        return new()
         {
             TotalRowsCount = q.Count(),
             PageNum = req.PageNum,
@@ -83,7 +80,5 @@ public class PulseJournalReceive(
             })
             .ToListAsync()
         };
-
-        return res;
     }
 }

@@ -16,8 +16,7 @@ namespace Transmission.Receives.web;
 public class GetUserIdentityByTelegramReceive(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IWebRemoteTransmissionService webRepo,
-    IMemoryCache cache)
-    : IResponseReceive<long[]?, UserInfoModel[]?>
+    IMemoryCache cache) : IResponseReceive<long[]?, TResponseModel<UserInfoModel[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByTelegramIdsReceive;
@@ -25,11 +24,11 @@ public class GetUserIdentityByTelegramReceive(
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> ResponseHandleAction(long[]? tg_ids = null)
+    public async Task<TResponseModel<UserInfoModel[]>?> ResponseHandleAction(long[]? tg_ids = null)
     {
         ArgumentNullException.ThrowIfNull(tg_ids);
         tg_ids = [.. tg_ids.Where(x => x != 0)];
-        TResponseModel<UserInfoModel[]?> response = new() { Response = [] };
+        TResponseModel<UserInfoModel[]> response = new() { Response = [] };
         if (tg_ids.Length == 0)
         {
             response.AddError("Пустой запрос");
@@ -58,7 +57,7 @@ public class GetUserIdentityByTelegramReceive(
 
         string[] users_ids = [.. users.Select(x => x.Id)];
 
-        TResponseModel<UserInfoModel[]?> res_find_users_identity = await webRepo.GetUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]> res_find_users_identity = await webRepo.GetUsersIdentity(users_ids);
         if (!res_find_users_identity.Success())
         {
             response.AddRangeMessages(res_find_users_identity.Messages);

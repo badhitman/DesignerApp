@@ -13,8 +13,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// Получить пользователей из Identity по их идентификаторам
 /// </summary>
-public class GetUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, IMemoryCache cache)
-    : IResponseReceive<string[]?, UserInfoModel[]?>
+public class GetUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, IMemoryCache cache) : IResponseReceive<string[]?, TResponseModel<UserInfoModel[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityReceive;
@@ -22,11 +21,11 @@ public class GetUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> i
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]?>> ResponseHandleAction(string[]? users_ids = null)
+    public async Task<TResponseModel<UserInfoModel[]>?> ResponseHandleAction(string[]? users_ids = null)
     {
         ArgumentNullException.ThrowIfNull(users_ids);
         users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x))];
-        TResponseModel<UserInfoModel[]?> res = new() { Response = [] };
+        TResponseModel<UserInfoModel[]> res = new() { Response = [] };
         if (users_ids.Length == 0)
         {
             res.AddError("Пустой запрос");

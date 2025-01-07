@@ -13,18 +13,17 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// PaymentDocumentUpdateReceive
 /// </summary>
-public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PaymentDocumentUpdateReceive> loggerRepo)
-    : IResponseReceive<PaymentDocumentBaseModel?, int?>
+public class PaymentDocumentUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PaymentDocumentUpdateReceive> loggerRepo) : IResponseReceive<PaymentDocumentBaseModel?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PaymentDocumentUpdateCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> ResponseHandleAction(PaymentDocumentBaseModel? req)
+    public async Task<TResponseModel<int>?> ResponseHandleAction(PaymentDocumentBaseModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<int?> res = new() { Response = 0 };
+        TResponseModel<int> res = new() { Response = 0 };
 
         if (req.Amount <= 0)
         {

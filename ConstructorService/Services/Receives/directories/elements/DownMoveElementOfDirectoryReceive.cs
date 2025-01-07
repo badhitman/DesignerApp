@@ -10,20 +10,15 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Сдвинуть ниже элемент справочника/списка
 /// </summary>
-public class DownMoveElementOfDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, object?>
+public class DownMoveElementOfDirectoryReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DownMoveElementOfDirectoryReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.DownMoveElementOfDirectory(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.DownMoveElementOfDirectory(payload);
     }
 }

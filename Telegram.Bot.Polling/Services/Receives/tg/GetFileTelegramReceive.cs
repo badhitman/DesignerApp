@@ -3,25 +3,24 @@
 ////////////////////////////////////////////////
 
 using RemoteCallLib;
-using SharedLib;
 using Telegram.Bot;
+using SharedLib;
 
 namespace Transmission.Receives.telegram;
 
 /// <summary>
 /// Получить файл из Telegram
 /// </summary>
-public class GetFileTelegramReceive(ITelegramBotClient _botClient)
-    : IResponseReceive<string?, byte[]?>
+public class GetFileTelegramReceive(ITelegramBotClient _botClient) : IResponseReceive<string?, TResponseModel<byte[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadFileTelegramReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<byte[]?>> ResponseHandleAction(string? fileId)
+    public async Task<TResponseModel<byte[]>?> ResponseHandleAction(string? fileId)
     {
         ArgumentNullException.ThrowIfNull(fileId);
-        TResponseModel<byte[]?> res = new();
+        TResponseModel<byte[]> res = new();
         try
         {
             Telegram.Bot.Types.File fileTg = await _botClient.GetFile(fileId);

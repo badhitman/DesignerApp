@@ -10,19 +10,14 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Получить элемент справочника/перечисления/списка
 /// </summary>
-public class GetElementOfDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<int?, EntryDescriptionModel?>
+public class GetElementOfDirectoryReceive(IConstructorService conService) : IResponseReceive<int, TResponseModel<EntryDescriptionModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetElementOfDirectoryReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryDescriptionModel?>> ResponseHandleAction(int? payload)
+    public async Task<TResponseModel<EntryDescriptionModel>?> ResponseHandleAction(int payload)
     {
-        ArgumentNullException.ThrowIfNull(payload);
-        return new()
-        {
-            Response = await conService.GetElementOfDirectory(payload.Value),
-        };
+        return await conService.GetElementOfDirectory(payload);
     }
 }

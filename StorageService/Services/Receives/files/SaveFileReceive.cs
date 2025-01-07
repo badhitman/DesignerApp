@@ -25,18 +25,17 @@ public class SaveFileReceive(
     IHelpdeskRemoteTransmissionService HelpdeskRepo,
     ICommerceRemoteTransmissionService commRepo,
     IOptions<WebConfigModel> webConfig,
-    IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<StorageImageMetadataModel?, StorageFileModelDB?>
+    IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<StorageImageMetadataModel?, TResponseModel<StorageFileModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SaveFileReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<StorageFileModelDB?>> ResponseHandleAction(StorageImageMetadataModel? req)
+    public async Task<TResponseModel<StorageFileModelDB>?> ResponseHandleAction(StorageImageMetadataModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         LoggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<StorageFileModelDB?> res = new();
+        TResponseModel<StorageFileModelDB> res = new();
         GridFSBucket gridFS = new(mongoFs);
         Regex rx = new(@"\s+", RegexOptions.Compiled);
         string _file_name = rx.Replace(req.FileName.Trim(), " ");

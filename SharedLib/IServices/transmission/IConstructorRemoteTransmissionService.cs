@@ -18,12 +18,12 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// DeleteValuesFieldsByGroupSessionDocumentDataByRowNum
     /// </summary>
-    public Task<TResponseModel<object>> DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(ValueFieldSessionDocumentDataBaseModel req);
+    public Task<ResponseBaseModel> DeleteValuesFieldsByGroupSessionDocumentDataByRowNum(ValueFieldSessionDocumentDataBaseModel req);
 
     /// <summary>
     /// SetDoneSessionDocumentData
     /// </summary>
-    public Task<TResponseModel<object>> SetDoneSessionDocumentData(string req);
+    public Task<ResponseBaseModel> SetDoneSessionDocumentData(string req);
 
     /// <summary>
     /// SetValueFieldSessionDocumentData
@@ -50,7 +50,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// ReadDirectories
     /// </summary>
-    public Task<TResponseModel<EntryNestedModel[]>> ReadDirectories(int[] req);
+    public Task<List<EntryNestedModel>> ReadDirectories(int[] req);
 
     /// <summary>
     /// UpdateOrCreateDirectory
@@ -60,7 +60,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// DeleteDirectory
     /// </summary>
-    public Task<TResponseModel<object>> DeleteDirectory(TAuthRequestModel<int> req);
+    public Task<ResponseBaseModel> DeleteDirectory(TAuthRequestModel<int> req);
     #endregion
     #region elements of directories
     /// <summary>
@@ -76,7 +76,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// UpdateElementOfDirectory
     /// </summary>
-    public Task<TResponseModel<object>> UpdateElementOfDirectory(TAuthRequestModel<EntryDescriptionModel> req);
+    public Task<ResponseBaseModel> UpdateElementOfDirectory(TAuthRequestModel<EntryDescriptionModel> req);
 
     /// <summary>
     /// GetElementOfDirectory
@@ -86,39 +86,39 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// DeleteElementFromDirectory
     /// </summary>
-    public Task<TResponseModel<object>> DeleteElementFromDirectory(TAuthRequestModel<int> req);
+    public Task<ResponseBaseModel> DeleteElementFromDirectory(TAuthRequestModel<int> req);
 
     /// <summary>
     /// UpMoveElementOfDirectory
     /// </summary>
-    public Task<TResponseModel<object>> UpMoveElementOfDirectory(TAuthRequestModel<int> req);
+    public Task<ResponseBaseModel> UpMoveElementOfDirectory(TAuthRequestModel<int> req);
 
     /// <summary>
     /// DownMoveElementOfDirectory
     /// </summary>
-    public Task<TResponseModel<object>> DownMoveElementOfDirectory(TAuthRequestModel<int> req);
+    public Task<ResponseBaseModel> DownMoveElementOfDirectory(TAuthRequestModel<int> req);
 
     /// <summary>
     /// CheckAndNormalizeSortIndexForElementsOfDirectory
     /// </summary>
-    public Task<TResponseModel<bool>> CheckAndNormalizeSortIndexForElementsOfDirectory(int req);
+    public Task<ResponseBaseModel> CheckAndNormalizeSortIndexForElementsOfDirectory(int req);
     #endregion
 
     #region project
     /// <summary>
     /// CanEditProject
     /// </summary>
-    public Task<TResponseModel<object>> CanEditProject(UserProjectModel req);
+    public Task<ResponseBaseModel> CanEditProject(UserProjectModel req);
 
     /// <summary>
     /// DeleteMembersFromProject
     /// </summary>
-    public Task<TResponseModel<object>> DeleteMembersFromProject(UsersProjectModel req);
+    public Task<ResponseBaseModel> DeleteMembersFromProject(UsersProjectModel req);
 
     /// <summary>
     /// ProjectsRead
     /// </summary>
-    public Task<TResponseModel<ProjectModelDb[]>> ProjectsRead(int[] ids);
+    public Task<List<ProjectModelDb>> ProjectsRead(int[] ids);
 
     /// <summary>
     /// GetProjectsForUser
@@ -128,22 +128,22 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// SetMarkerDeleteProject
     /// </summary>
-    public Task<TResponseModel<object>> SetMarkerDeleteProject(SetMarkerProjectRequestModel req);
+    public Task<ResponseBaseModel> SetMarkerDeleteProject(SetMarkerProjectRequestModel req);
 
     /// <summary>
     /// UpdateProject
     /// </summary>
-    public Task<TResponseModel<object>> UpdateProject(ProjectViewModel req);
+    public Task<ResponseBaseModel> UpdateProject(ProjectViewModel req);
 
     /// <summary>
     /// AddMembersToProject
     /// </summary>
-    public Task<TResponseModel<object>> AddMembersToProject(UsersProjectModel req);
+    public Task<ResponseBaseModel> AddMembersToProject(UsersProjectModel req);
 
     /// <summary>
     /// SetProjectAsMain
     /// </summary>
-    public Task<TResponseModel<object>> SetProjectAsMain(UserProjectModel req);
+    public Task<ResponseBaseModel> SetProjectAsMain(UserProjectModel req);
 
     /// <summary>
     /// GetCurrentMainProject
@@ -169,7 +169,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Подобрать формы
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<FormConstructorModelDB>>> SelectForms(SelectFormsModel req, CancellationToken cancellationToken = default);
+    public Task<TPaginationResponseModel<FormConstructorModelDB>> SelectForms(SelectFormsModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить форму
@@ -184,7 +184,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Удалить форму
     /// </summary>
-    public Task<TResponseModel<object>> FormDelete(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormDelete(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
     #region поля форм    
     /// <summary>
@@ -201,22 +201,22 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Обновить/создать поле формы (простой тип)
     /// </summary>
-    public Task<TResponseModel<object>> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormConstructorModelDB> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldUpdateOrCreate(TAuthRequestModel<FieldFormConstructorModelDB> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить поле формы (простой тип)
     /// </summary>
-    public Task<TResponseModel<object>> FormFieldDelete(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldDelete(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Обновить/создать поле формы (тип: справочник/список)
     /// </summary>
-    public Task<TResponseModel<object>> FormFieldDirectoryUpdateOrCreate(TAuthRequestModel<FieldFormAkaDirectoryConstructorModelDB> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldDirectoryUpdateOrCreate(TAuthRequestModel<FieldFormAkaDirectoryConstructorModelDB> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить поле формы (тип: справочник/список)
     /// </summary>
-    public Task<TResponseModel<object>> FormFieldDirectoryDelete(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> FormFieldDirectoryDelete(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
 
     /////////////// Документ. Описывается/настраивается конечный результат, который будет использоваться.
@@ -232,7 +232,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Запрос схем документов
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<DocumentSchemeConstructorModelDB>>> RequestDocumentsSchemes(RequestDocumentsSchemesModel req, CancellationToken cancellationToken = default);
+    public Task<TPaginationResponseModel<DocumentSchemeConstructorModelDB>> RequestDocumentsSchemes(RequestDocumentsSchemesModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить схему документа
@@ -242,7 +242,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Удалить схему документа
     /// </summary>
-    public Task<TResponseModel<object>> DeleteDocumentScheme(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteDocumentScheme(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
     // табы/вкладки схожи по смыслу табов/вкладок в Excel. Т.е. обычная группировка разных рабочих пространств со своим именем 
     #region табы документов
@@ -264,7 +264,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Удалить страницу опроса/анкеты
     /// </summary>
-    public Task<TResponseModel<object>> DeleteTabOfDocumentScheme(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteTabOfDocumentScheme(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
     #region структура/схема таба/вкладки: формы, порядок и настройки поведения    
     /// <summary>
@@ -275,7 +275,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Обновить/создать связь [таба/вкладки схемы документа] с [формой]
     /// </summary>
-    public Task<TResponseModel<object>> CreateOrUpdateTabDocumentSchemeJoinForm(TAuthRequestModel<FormToTabJoinConstructorModelDB> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TAuthRequestModel<FormToTabJoinConstructorModelDB> req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сдвинуть связь [таба/вкладки схемы документа] с [формой] (изменение сортировки/последовательности)
@@ -285,7 +285,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Удалить связь [таба/вкладки схемы документа] с [формой] 
     /// </summary>
-    public Task<TResponseModel<object>> DeleteTabDocumentSchemeJoinForm(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteTabDocumentSchemeJoinForm(TAuthRequestModel<int> req, CancellationToken cancellationToken = default);
     #endregion
 
     /////////////// Пользовательский/публичный доступ к возможностям заполнения документа данными
@@ -301,7 +301,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Установить статус сессии (от менеджера)
     /// </summary>
-    public Task<TResponseModel<object>> SetStatusSessionDocument(SessionStatusModel req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> SetStatusSessionDocument(SessionStatusModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить сессию
@@ -316,7 +316,7 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Запросить порцию сессий (с пагинацией)
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<SessionOfDocumentDataModelDB>>> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default);
+    public Task<TPaginationResponseModel<SessionOfDocumentDataModelDB>> RequestSessionsDocuments(RequestSessionsDocumentsRequestPaginationModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Найти порцию сессий по имени поля (с пагинацией)
@@ -326,11 +326,11 @@ public interface IConstructorRemoteTransmissionService
     /// <summary>
     /// Удалить значения (введённые в сессиях) по имени поля
     /// </summary>
-    public Task<TResponseModel<object>> ClearValuesForFieldName(FormFieldOfSessionModel req, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> ClearValuesForFieldName(FormFieldOfSessionModel req, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить сессию опроса/анкеты
     /// </summary>
-    public Task<TResponseModel<object>> DeleteSessionDocument(int session_id, CancellationToken cancellationToken = default);
+    public Task<ResponseBaseModel> DeleteSessionDocument(int session_id, CancellationToken cancellationToken = default);
     #endregion     
 }

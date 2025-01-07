@@ -66,7 +66,7 @@ public partial class RolesManageKitComponent : BlazorBusyComponentBaseModel
 
         async Task Act()
         {
-            TResponseModel<string[]?> res = await WebRepo.SetRoleForUser(req);
+            TResponseModel<string[]> res = await WebRepo.SetRoleForUser(req);
             SnackbarRepo.ShowMessagesResponse(res.Messages);
             if (!res.Success() || res.Response is null)
                 return;

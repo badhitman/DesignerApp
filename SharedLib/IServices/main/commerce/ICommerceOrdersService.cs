@@ -51,7 +51,7 @@ public partial interface ICommerceService
     /// <summary>
     /// Orders select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OrderDocumentModelDB>>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
+    public Task<TPaginationResponseModel<OrderDocumentModelDB>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
         
     /// <summary>
     /// Orders read

@@ -10,19 +10,14 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// GetMembersOfProjectReceive
 /// </summary>
-public class GetMembersOfProjectReceive(IConstructorService conService)
-    : IResponseReceive<int?, EntryAltModel[]?>
+public class GetMembersOfProjectReceive(IConstructorService conService) : IResponseReceive<int, TResponseModel<EntryAltModel[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetMembersOfProjectReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<EntryAltModel[]?>> ResponseHandleAction(int? req)
+    public async Task<TResponseModel<EntryAltModel[]>?> ResponseHandleAction(int req)
     {
-        ArgumentNullException.ThrowIfNull(req);
-        return new()
-        {
-            Response = await conService.GetMembersOfProject(req.Value)
-        };
+        return await conService.GetMembersOfProject(req);
     }
 }

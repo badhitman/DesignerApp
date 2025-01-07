@@ -157,17 +157,13 @@ public partial class RubricsManageComponent : BlazorBusyComponentBaseModel
     async Task<List<UniversalBaseModel>> RequestRubrics(int? parent_id = null)
     {
         await SetBusy();
-        TResponseModel<List<UniversalBaseModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
+        List<UniversalBaseModel> rest = await HelpdeskRepo.RubricsList(new() { Request = parent_id ?? 0, ContextName = ContextName });
 
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        if (rest.Response is null)
-            throw new Exception();
-
-        rest.Response = [.. rest.Response.OrderBy(x => x.SortIndex)];
+        rest = [.. rest.OrderBy(x => x.SortIndex)];
 
         if (SelectedValuesChanged is null)
-            rest.Response.Add(new UniversalBaseModel() { Name = "", SortIndex = uint.MaxValue, ParentId = parent_id });
+            rest.Add(new UniversalBaseModel() { Name = "", SortIndex = uint.MaxValue, ParentId = parent_id });
 
-        return rest.Response;
+        return rest;
     }
 }

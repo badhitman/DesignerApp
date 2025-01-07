@@ -85,7 +85,7 @@ public partial class IssueMessagesComponent : IssueWrapBaseModel
 
         if (users_for_adding.Length != 0)
         {
-            TResponseModel<UserInfoModel[]?> users_data_identity = await WebRemoteRepo.GetUsersIdentity([.. users_for_adding.Distinct()]);
+            TResponseModel<UserInfoModel[]> users_data_identity = await WebRemoteRepo.GetUsersIdentity([.. users_for_adding.Distinct()]);
             SnackbarRepo.ShowMessagesResponse(users_data_identity.Messages);
             if (users_data_identity.Response is not null && users_data_identity.Response.Length != 0)
                 UsersIdentityDump.AddRange(users_data_identity.Response);

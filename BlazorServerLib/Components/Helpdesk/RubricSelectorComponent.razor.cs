@@ -87,10 +87,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         }
 
         await SetBusy();
-        TResponseModel<List<UniversalBaseModel>?> rest = await HelpdeskRepo.RubricsList(new() { Request = ownerRubricId, ContextName = ContextName });
-
-        SnackbarRepo.ShowMessagesResponse(rest.Messages);
-        CurrentRubrics = rest.Response;
+        CurrentRubrics = await HelpdeskRepo.RubricsList(new() { Request = ownerRubricId, ContextName = ContextName });
 
         await SetBusy(false);
     }
@@ -106,7 +103,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         {
             await SetBusy();
 
-            TResponseModel<List<RubricIssueHelpdeskModelDB>?> dump_rubric = await HelpdeskRepo.RubricRead(rubric_id);
+            TResponseModel<List<RubricIssueHelpdeskModelDB>> dump_rubric = await HelpdeskRepo.RubricRead(rubric_id);
             RubricMetadataShadow = dump_rubric.Response;
             SnackbarRepo.ShowMessagesResponse(dump_rubric.Messages);
             IsBusyProgress = false;

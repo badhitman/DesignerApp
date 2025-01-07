@@ -3,24 +3,23 @@
 ////////////////////////////////////////////////
 
 using RemoteCallLib;
-using SharedLib;
 using Telegram.Bot;
+using SharedLib;
 
 namespace Transmission.Receives.telegram;
 
 /// <summary>
 /// Получить Username TelegramBot
 /// </summary>
-public class GetBotUsernameReceive(ITelegramBotClient _botClient, ILogger<GetBotUsernameReceive> _logger)
-    : IResponseReceive<object?, string?>
+public class GetBotUsernameReceive(ITelegramBotClient _botClient, ILogger<GetBotUsernameReceive> _logger) : IResponseReceive<object?, TResponseModel<string>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetBotUsernameReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string?>> ResponseHandleAction(object? payload = null)
+    public async Task<TResponseModel<string>?> ResponseHandleAction(object? payload = null)
     {
-        TResponseModel<string?> res = new();
+        TResponseModel<string> res = new();
         Telegram.Bot.Types.User me;
         string msg;
         try

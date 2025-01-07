@@ -42,7 +42,7 @@ public partial interface ICommerceService
     /// <summary>
     /// Organizations select
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
+    public Task<TPaginationResponseModel<OrganizationModelDB>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
 
     /// <summary>
     /// Organizations read

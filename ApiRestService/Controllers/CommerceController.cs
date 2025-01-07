@@ -29,7 +29,7 @@ public class CommerceController(ICommerceRemoteTransmissionService commRepo) : C
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> OrdersSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
+    public async Task<TPaginationResponseModel<NomenclatureModelDB>> OrdersSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
         => await commRepo.NomenclaturesSelect(req);
 
     /// <summary>
@@ -42,6 +42,6 @@ public class CommerceController(ICommerceRemoteTransmissionService commRepo) : C
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TResponseModel<NomenclatureModelDB[]>> NomenclaturesRead(int[] req)
+    public async Task<List<NomenclatureModelDB>> NomenclaturesRead(int[] req)
         => await commRepo.NomenclaturesRead(req);
 }

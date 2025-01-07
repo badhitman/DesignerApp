@@ -12,14 +12,13 @@ namespace Transmission.Receives.helpdesk;
 /// <summary>
 /// IssuesSelectReceive
 /// </summary>
-public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SelectIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>
+public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFactory) : IResponseReceive<TPaginationRequestModel<SelectIssuesRequestModel>?, TPaginationResponseModel<IssueHelpdeskModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.IssuesSelectHelpdeskReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>?>> ResponseHandleAction(TPaginationRequestModel<SelectIssuesRequestModel>? req)
+    public async Task<TPaginationResponseModel<IssueHelpdeskModel>?> ResponseHandleAction(TPaginationRequestModel<SelectIssuesRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
@@ -92,15 +91,12 @@ public class IssuesSelectReceive(IDbContextFactory<HelpdeskContext> helpdeskDbFa
 
         return new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = [.. data.Select(x => IssueHelpdeskModel.Build(x))]
-            }
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = [.. data.Select(x => IssueHelpdeskModel.Build(x))]
         };
     }
 }

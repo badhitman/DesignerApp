@@ -15,11 +15,11 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
     /// <inheritdoc/>
     public async Task<TResponseModel<List<T>?>> ReadParameters<T>(StorageMetadataModel[] req)
     {
-        TResponseModel<List<StorageCloudParameterPayloadModel>?> response_payload = await rabbitClient.MqRemoteCall<List<StorageCloudParameterPayloadModel>?>(GlobalStaticConstants.TransmissionQueues.ReadCloudParametersReceive, req);
+        TResponseModel<List<StorageCloudParameterPayloadModel>>? response_payload = await rabbitClient.MqRemoteCall<TResponseModel<List<StorageCloudParameterPayloadModel>>>(GlobalStaticConstants.TransmissionQueues.ReadCloudParametersReceive, req);
         TResponseModel<List<T>?> res = new();
-        if (!response_payload.Success())
+        if (response_payload?.Success() != true)
         {
-            res.Messages = response_payload.Messages;
+            res.Messages = response_payload?.Messages ?? [];
             return res;
         }
 
@@ -33,14 +33,11 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
     /// <inheritdoc/>
     public async Task<TResponseModel<T?>> ReadParameter<T>(StorageMetadataModel req)
     {
-        TResponseModel<StorageCloudParameterPayloadModel?> response_payload = await rabbitClient.MqRemoteCall<StorageCloudParameterPayloadModel?>(GlobalStaticConstants.TransmissionQueues.ReadCloudParameterReceive, req);
-        TResponseModel<T?> res = new() { Messages = response_payload.Messages };
+        TResponseModel<StorageCloudParameterPayloadModel>? response_payload = await rabbitClient.MqRemoteCall<TResponseModel<StorageCloudParameterPayloadModel>>(GlobalStaticConstants.TransmissionQueues.ReadCloudParameterReceive, req);
+        TResponseModel<T?> res = new() { Messages = response_payload?.Messages ?? [] };
 
-        if (!response_payload.Success())
-        {
-            res.Messages = response_payload.Messages;
+        if (response_payload?.Success() != true)
             return res;
-        }
 
         if (response_payload.Response is null)
             return res;
@@ -52,11 +49,11 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
     /// <inheritdoc/>
     public async Task<TResponseModel<T?[]?>> FindParameters<T>(RequestStorageBaseModel req)
     {
-        TResponseModel<FoundParameterModel[]?> response_payload = await rabbitClient.MqRemoteCall<FoundParameterModel[]?>(GlobalStaticConstants.TransmissionQueues.FindCloudParameterReceive, req);
+        TResponseModel<FoundParameterModel[]>? response_payload = await rabbitClient.MqRemoteCall<TResponseModel<FoundParameterModel[]>>(GlobalStaticConstants.TransmissionQueues.FindCloudParameterReceive, req);
         TResponseModel<T?[]?> res = new();
-        if (!response_payload.Success())
+        if (response_payload?.Success() != true)
         {
-            res.Messages = response_payload.Messages;
+            res.Messages = response_payload?.Messages ?? [];
             return res;
         }
 
@@ -88,30 +85,30 @@ public class SerializeStorageRemoteTransmissionService(IRabbitClient rabbitClien
             PrefixPropertyName = store.PrefixPropertyName,
         };
 
-        return await rabbitClient.MqRemoteCall<int>(GlobalStaticConstants.TransmissionQueues.SaveCloudParameterReceive, set_req, waitResponse);
+        return await rabbitClient.MqRemoteCall<TResponseModel<int>>(GlobalStaticConstants.TransmissionQueues.SaveCloudParameterReceive, set_req, waitResponse) ?? new();
     }
 
     /// <inheritdoc/>
     public async Task<TResponseModel<StorageFileModelDB>> SaveFile(StorageImageMetadataModel? req)
-        => await rabbitClient.MqRemoteCall<StorageFileModelDB>(GlobalStaticConstants.TransmissionQueues.SaveFileReceive, req);
+        => await rabbitClient.MqRemoteCall<TResponseModel<StorageFileModelDB>>(GlobalStaticConstants.TransmissionQueues.SaveFileReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TResponseModel<FileContentModel>> ReadFile(TAuthRequestModel<RequestFileReadModel>? req)
-        => await rabbitClient.MqRemoteCall<FileContentModel>(GlobalStaticConstants.TransmissionQueues.ReadFileReceive, req);
+        => await rabbitClient.MqRemoteCall<TResponseModel<FileContentModel>>(GlobalStaticConstants.TransmissionQueues.ReadFileReceive, req) ?? new();
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<StorageFileModelDB>>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<StorageFileModelDB>>(GlobalStaticConstants.TransmissionQueues.FilesSelectReceive, req);
+    public async Task<TPaginationResponseModel<StorageFileModelDB>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<StorageFileModelDB>>(GlobalStaticConstants.TransmissionQueues.FilesSelectReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TResponseModel<FilesAreaMetadataModel[]>> FilesAreaGetMetadata(FilesAreaMetadataRequestModel req)
-        => await rabbitClient.MqRemoteCall<FilesAreaMetadataModel[]>(GlobalStaticConstants.TransmissionQueues.FilesAreaGetMetadataReceive, req);
+        => await rabbitClient.MqRemoteCall<TResponseModel<FilesAreaMetadataModel[]>>(GlobalStaticConstants.TransmissionQueues.FilesAreaGetMetadataReceive, req) ?? new();
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<TagModelDB>>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<TagModelDB>>(GlobalStaticConstants.TransmissionQueues.TagsSelectReceive, req);
+    public async Task<TPaginationResponseModel<TagModelDB>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<TagModelDB>>(GlobalStaticConstants.TransmissionQueues.TagsSelectReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> TagSet(TagSetModel req)
-        => await rabbitClient.MqRemoteCall<bool>(GlobalStaticConstants.TransmissionQueues.TagSetReceive, req);
+        => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.TagSetReceive, req) ?? new();
 }

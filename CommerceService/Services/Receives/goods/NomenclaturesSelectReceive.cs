@@ -12,14 +12,13 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// NomenclaturesSelectReceive
 /// </summary>
-public class NomenclaturesSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<TPaginationRequestModel<NomenclaturesSelectRequestModel>?, TPaginationResponseModel<NomenclatureModelDB>?>
+public class NomenclaturesSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory) : IResponseReceive<TPaginationRequestModel<NomenclaturesSelectRequestModel>?, TPaginationResponseModel<NomenclatureModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.NomenclaturesSelectCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>?>> ResponseHandleAction(TPaginationRequestModel<NomenclaturesSelectRequestModel>? req)
+    public async Task<TPaginationResponseModel<NomenclatureModelDB>?> ResponseHandleAction(TPaginationRequestModel<NomenclaturesSelectRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
 
@@ -40,15 +39,12 @@ public class NomenclaturesSelectReceive(IDbContextFactory<CommerceContext> comme
 
         return new()
         {
-            Response = new()
-            {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
-            }
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
         };
     }
 }

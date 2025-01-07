@@ -13,20 +13,19 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// TagSetReceive
 /// </summary>
-public class TagSetReceive(ILogger<TagSetReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<TagSetModel?, bool?>
+public class TagSetReceive(ILogger<TagSetReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<TagSetModel?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.TagSetReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> ResponseHandleAction(TagSetModel? req)
+    public async Task<TResponseModel<bool>?> ResponseHandleAction(TagSetModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
         using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
 
-        TResponseModel<bool?> res = new() { Response = false };
+        TResponseModel<bool> res = new() { Response = false };
 
         IQueryable<TagModelDB> q = context
             .CloudTags

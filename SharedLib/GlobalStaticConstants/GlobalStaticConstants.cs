@@ -3,6 +3,8 @@
 ////////////////////////////////////////////////
 
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace SharedLib;
@@ -38,8 +40,9 @@ public static partial class GlobalStaticConstants
     /// </summary>
     public static JsonSerializerSettings JsonSerializerSettings
         => new() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-
-
+        
+    // public static readonly JsonSerializerOptions SerializerOptions = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
+     
     /// <summary>
     /// Русская (ru-RU) CultureInfo
     /// </summary>

@@ -48,7 +48,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseAut
     protected async Task DeleteDocument(int questionnaire_id)
     {
         await SetBusy();
-        
+
         ResponseBaseModel rest = await ConstructorRepo.DeleteDocumentScheme(new() { Payload = questionnaire_id, SenderActionUserId = CurrentUserSession!.UserId });
         IsBusyProgress = false;
 
@@ -72,11 +72,10 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseAut
             throw new Exception("Не выбран основной/используемый проект");
 
         SimplePaginationRequestModel req = new();
-        await SetBusy();
-        
-        TResponseModel<TPaginationResponseModel<DocumentSchemeConstructorModelDB>> rest = await ConstructorRepo.RequestDocumentsSchemes(new() { RequestPayload = req, ProjectId = ParentFormsPage.MainProject.Id }, token);
+        await SetBusy(token: token);
+
+        data = await ConstructorRepo.RequestDocumentsSchemes(new() { RequestPayload = req, ProjectId = ParentFormsPage.MainProject.Id }, token);
         IsBusyProgress = false;
-        data = rest.Response ?? throw new Exception();
 
         if (data.Response is null)
         {

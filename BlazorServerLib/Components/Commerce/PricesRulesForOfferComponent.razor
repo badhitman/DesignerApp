@@ -15,7 +15,7 @@
             <button @onclick="() => IsExpandPanel = !IsExpandPanel" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            @if (rules.Length == 0)
+            @if (rules.Count == 0)
             {
                 <figure class="text-center">
                     <blockquote class="blockquote">

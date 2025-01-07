@@ -59,14 +59,8 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
 
         addingSubscriber = null;
         await SetBusy();
-
-        TResponseModel<SubscriberIssueHelpdeskModelDB[]?> reload_subscribers_list = await HelpdeskRepo.SubscribesList(new() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId });
+        Issue.Subscribers = [.. await HelpdeskRepo.SubscribesList(new() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId })];
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(reload_subscribers_list.Messages);
-        if (!reload_subscribers_list.Success() || reload_subscribers_list.Response is null)
-            return;
-
-        Issue.Subscribers = [.. reload_subscribers_list.Response];
     }
 
     /// <inheritdoc/>
@@ -95,13 +89,13 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
 
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (!rest.Success())
+        {
+            IsBusyProgress = false;
             return;
+        }
 
-        TResponseModel<SubscriberIssueHelpdeskModelDB[]?> subscribes = await HelpdeskRepo.SubscribesList(new TAuthRequestModel<int>() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId });
-
+        Issue.Subscribers = [.. await HelpdeskRepo.SubscribesList(new TAuthRequestModel<int>() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId })];
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(subscribes.Messages);
-        Issue.Subscribers = [.. subscribes.Response];
     }
 
     async Task SubscribeMeToggle()
@@ -125,10 +119,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         if (!rest.Success())
             return;
 
-        TResponseModel<SubscriberIssueHelpdeskModelDB[]?> subscribes = await HelpdeskRepo.SubscribesList(new TAuthRequestModel<int>() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId });
-
+        Issue.Subscribers = [.. await HelpdeskRepo.SubscribesList(new TAuthRequestModel<int>() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId })];
         IsBusyProgress = false;
-        SnackbarRepo.ShowMessagesResponse(subscribes.Messages);
-        Issue.Subscribers = [.. subscribes.Response];
     }
 }

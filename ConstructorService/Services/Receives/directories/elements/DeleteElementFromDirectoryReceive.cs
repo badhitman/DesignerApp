@@ -10,20 +10,15 @@ namespace Transmission.Receives.constructor;
 /// <summary>
 /// Удалить элемент справочника/списка
 /// </summary>
-public class DeleteElementFromDirectoryReceive(IConstructorService conService)
-    : IResponseReceive<TAuthRequestModel<int>?, object?>
+public class DeleteElementFromDirectoryReceive(IConstructorService conService) : IResponseReceive<TAuthRequestModel<int>?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.DeleteElementFromDirectoryReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<object?>> ResponseHandleAction(TAuthRequestModel<int>? payload)
+    public async Task<ResponseBaseModel?> ResponseHandleAction(TAuthRequestModel<int>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        ResponseBaseModel res = await conService.DeleteElementFromDirectory(payload);
-        return new()
-        {
-            Messages = res.Messages,
-        };
+        return await conService.DeleteElementFromDirectory(payload);
     }
 }
