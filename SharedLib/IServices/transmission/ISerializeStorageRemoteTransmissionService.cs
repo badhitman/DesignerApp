@@ -17,7 +17,7 @@ public interface ISerializeStorageRemoteTransmissionService
     /// <summary>
     /// TagsSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<TagModelDB>>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req);
+    public Task<TPaginationResponseModel<TagModelDB>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req);
 
     /// <summary>
     /// Получить сводку (метаданные) по пространствам хранилища

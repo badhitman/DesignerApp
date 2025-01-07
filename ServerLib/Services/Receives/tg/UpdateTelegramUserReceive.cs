@@ -12,8 +12,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// UpdateTelegramUser
 /// </summary>
-public class UpdateTelegramUserReceive(IWebAppService tgWebRepo, ILogger<UpdateTelegramUserReceive> _logger)
-    : IResponseReceive<CheckTelegramUserHandleModel?, TResponseModel<CheckTelegramUserAuthModel>?>
+public class UpdateTelegramUserReceive(IWebAppService tgWebRepo, ILogger<UpdateTelegramUserReceive> _logger) : IResponseReceive<CheckTelegramUserHandleModel?, TResponseModel<CheckTelegramUserAuthModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateTelegramUserReceive;

@@ -11,8 +11,7 @@ namespace Transmission.Receives.telegram;
 /// <summary>
 /// Получить Username TelegramBot
 /// </summary>
-public class GetBotUsernameReceive(ITelegramBotClient _botClient, ILogger<GetBotUsernameReceive> _logger)
-    : IResponseReceive<object?, TResponseModel<string>?>
+public class GetBotUsernameReceive(ITelegramBotClient _botClient, ILogger<GetBotUsernameReceive> _logger) : IResponseReceive<object?, TResponseModel<string>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetBotUsernameReceive;

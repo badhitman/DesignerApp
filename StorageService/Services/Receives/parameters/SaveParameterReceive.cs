@@ -12,8 +12,7 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// Save parameter
 /// </summary>
-public class SaveParameterReceive(ISerializeStorage serializeStorageRepo, ILogger<SaveParameterReceive> LoggerRepo)
-    : IResponseReceive<StorageCloudParameterPayloadModel?, TResponseModel<int?>?>
+public class SaveParameterReceive(ISerializeStorage serializeStorageRepo, ILogger<SaveParameterReceive> LoggerRepo) : IResponseReceive<StorageCloudParameterPayloadModel?, TResponseModel<int?>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SaveCloudParameterReceive;

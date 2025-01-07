@@ -16,8 +16,7 @@ namespace Transmission.Receives.storage;
 /// <remarks>
 /// Общий размер и количество группируется по AppName
 /// </remarks>
-public class FilesAreaGetMetadataReceive(ILogger<FilesSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<FilesAreaMetadataRequestModel?, TResponseModel<FilesAreaMetadataModel[]>?>
+public class FilesAreaGetMetadataReceive(ILogger<FilesSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<FilesAreaMetadataRequestModel?, TResponseModel<FilesAreaMetadataModel[]>?>
 {
     /// <summary>
     /// Получить сводку (метаданные) по пространствам хранилища

@@ -12,8 +12,7 @@ namespace Transmission.Receives.telegram;
 /// <summary>
 /// Найти чаты пользователей
 /// </summary>
-public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory, ILogger<ChatsFindForUserTelegramReceive> logger)
-    : IResponseReceive<long[]?, List<ChatTelegramModelDB>?>
+public class ChatsFindForUserTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory, ILogger<ChatsFindForUserTelegramReceive> logger) : IResponseReceive<long[]?, List<ChatTelegramModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ChatsFindForUserTelegramReceive;

@@ -13,8 +13,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// Получить пользователей из Identity по их идентификаторам
 /// </summary>
-public class GetUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, IMemoryCache cache)
-    : IResponseReceive<string[]?, TResponseModel<UserInfoModel[]>?>
+public class GetUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> identityDbFactory, IMemoryCache cache) : IResponseReceive<string[]?, TResponseModel<UserInfoModel[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityReceive;

@@ -12,8 +12,7 @@ namespace Transmission.Receives.telegram;
 /// <summary>
 /// Получить ошибки отправок сообщений (для чатов)
 /// </summary>
-public class ErrorsForChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
-    : IResponseReceive<TPaginationRequestModel<long[]>?, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>
+public class ErrorsForChatsSelectTelegramReceive(IDbContextFactory<TelegramBotContext> tgDbFactory) : IResponseReceive<TPaginationRequestModel<long[]>?, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ErrorsForChatsSelectTelegramReceive;

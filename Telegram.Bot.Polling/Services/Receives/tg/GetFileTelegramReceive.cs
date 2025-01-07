@@ -11,8 +11,7 @@ namespace Transmission.Receives.telegram;
 /// <summary>
 /// Получить файл из Telegram
 /// </summary>
-public class GetFileTelegramReceive(ITelegramBotClient _botClient)
-    : IResponseReceive<string?, TResponseModel<byte[]>?>
+public class GetFileTelegramReceive(ITelegramBotClient _botClient) : IResponseReceive<string?, TResponseModel<byte[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadFileTelegramReceive;

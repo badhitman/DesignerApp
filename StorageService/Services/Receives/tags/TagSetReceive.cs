@@ -13,8 +13,7 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// TagSetReceive
 /// </summary>
-public class TagSetReceive(ILogger<TagSetReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<TagSetModel?, TResponseModel<bool>?>
+public class TagSetReceive(ILogger<TagSetReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<TagSetModel?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.TagSetReceive;

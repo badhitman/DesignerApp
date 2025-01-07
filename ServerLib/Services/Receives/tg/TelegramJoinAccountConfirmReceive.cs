@@ -12,8 +12,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// TelegramJoinAccountConfirm receive
 /// </summary>
-public class TelegramJoinAccountConfirmReceive(IWebAppService tgWebRepo, ILogger<TelegramJoinAccountConfirmReceive> _logger)
-    : IResponseReceive<TelegramJoinAccountConfirmModel?, ResponseBaseModel?>
+public class TelegramJoinAccountConfirmReceive(IWebAppService tgWebRepo, ILogger<TelegramJoinAccountConfirmReceive> _logger) : IResponseReceive<TelegramJoinAccountConfirmModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive;

@@ -12,8 +12,7 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// Set web config site
 /// </summary>
-public class SetWebConfigReceive(IOptions<WebConfigModel> webConfig, ILogger<SetWebConfigReceive> _logger)
-    : IResponseReceive<WebConfigModel?, ResponseBaseModel?>
+public class SetWebConfigReceive(IOptions<WebConfigModel> webConfig, ILogger<SetWebConfigReceive> _logger) : IResponseReceive<WebConfigModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetWebConfigStorageReceive;

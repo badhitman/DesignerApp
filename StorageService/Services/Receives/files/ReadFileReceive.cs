@@ -20,8 +20,7 @@ public class ReadFileReceive(IMongoDatabase mongoFs,
     ILogger<ReadFileReceive> LoggerRepo,
     IHelpdeskRemoteTransmissionService hdRepo,
     IDbContextFactory<StorageContext> cloudParametersDbFactory,
-    IWebRemoteTransmissionService webRepo)
-    : IResponseReceive<TAuthRequestModel<RequestFileReadModel>?, TResponseModel<FileContentModel>?>
+    IWebRemoteTransmissionService webRepo) : IResponseReceive<TAuthRequestModel<RequestFileReadModel>?, TResponseModel<FileContentModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadFileReceive;

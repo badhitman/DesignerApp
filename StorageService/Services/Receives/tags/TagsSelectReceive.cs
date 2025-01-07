@@ -13,8 +13,7 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// TagsSelectReceive
 /// </summary>
-public class TagsSelectReceive(ILogger<TagsSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory)
-    : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<TagModelDB>?>
+public class TagsSelectReceive(ILogger<TagsSelectReceive> loggerRepo, IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<TPaginationRequestModel<SelectMetadataRequestModel>?, TPaginationResponseModel<TagModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.TagsSelectReceive;

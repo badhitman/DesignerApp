@@ -11,8 +11,7 @@ namespace Transmission.Receives.storage;
 /// <summary>
 /// Read parameter
 /// </summary>
-public class ReadParameterReceive(ISerializeStorage serializeStorageRepo, ILogger<ReadParameterReceive> LoggerRepo)
-    : IResponseReceive<StorageMetadataModel?, TResponseModel<StorageCloudParameterPayloadModel>?>
+public class ReadParameterReceive(ISerializeStorage serializeStorageRepo, ILogger<ReadParameterReceive> LoggerRepo) : IResponseReceive<StorageMetadataModel?, TResponseModel<StorageCloudParameterPayloadModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadCloudParameterReceive;

@@ -15,8 +15,7 @@ namespace Transmission.Receives.helpdesk;
 public class MessagesListReceive(
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
-    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo)
-    : IResponseReceive<TAuthRequestModel<int>?, TResponseModel<IssueMessageHelpdeskModelDB[]>?>
+    IHelpdeskRemoteTransmissionService helpdeskTransmissionRepo) : IResponseReceive<TAuthRequestModel<int>?, TResponseModel<IssueMessageHelpdeskModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.MessagesOfIssueListHelpdeskReceive;

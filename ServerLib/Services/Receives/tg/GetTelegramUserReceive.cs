@@ -12,8 +12,7 @@ namespace Transmission.Receives.web;
 /// Получить информацию по пользователю (из БД).
 /// Данные возвращаются из кэша: каждое сообщение в TelegramBot кеширует информацию о пользователе в БД
 /// </summary>
-public class GetTelegramUserReceive(IWebAppService tgWebRepo, ILogger<GetTelegramUserReceive> _logger)
-    : IResponseReceive<long?, TResponseModel<TelegramUserBaseModel>?>
+public class GetTelegramUserReceive(IWebAppService tgWebRepo, ILogger<GetTelegramUserReceive> _logger) : IResponseReceive<long?, TResponseModel<TelegramUserBaseModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive;
