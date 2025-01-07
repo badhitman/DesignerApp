@@ -98,7 +98,7 @@ public partial class FormsConstructorService(
             }
         }
 
-        TResponseModel<UserInfoModel[]?> userRest = await webRepo.GetUsersIdentity([sq.AuthorUser]);
+        TResponseModel<UserInfoModel[]> userRest = await webRepo.GetUsersIdentity([sq.AuthorUser]);
         UserInfoModel? author_user = userRest.Response?.Single();
         if (author_user is null)
         {
@@ -338,7 +338,7 @@ public partial class FormsConstructorService(
 
         if (usersIds.Length != 0)
         {
-            TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity(usersIds);
+            TResponseModel<UserInfoModel[]> restUsers = await webRepo.GetUsersIdentity(usersIds);
             if (!restUsers.Success())
                 throw new Exception(restUsers.Message());
 
@@ -523,7 +523,7 @@ public partial class FormsConstructorService(
         if (members_users_ids.Length == 0)
             return new();
 
-        TResponseModel<UserInfoModel[]?> restUsers = await webRepo.GetUsersIdentity(members_users_ids);
+        TResponseModel<UserInfoModel[]> restUsers = await webRepo.GetUsersIdentity(members_users_ids);
         if (!restUsers.Success())
             throw new Exception(restUsers.Message());
 

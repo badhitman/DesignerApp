@@ -103,7 +103,7 @@ public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
         {
             await SetBusy();
 
-            TResponseModel<List<RubricIssueHelpdeskModelDB>?> dump_rubric = await HelpdeskRepo.RubricRead(rubric_id);
+            TResponseModel<List<RubricIssueHelpdeskModelDB>> dump_rubric = await HelpdeskRepo.RubricRead(rubric_id);
             RubricMetadataShadow = dump_rubric.Response;
             SnackbarRepo.ShowMessagesResponse(dump_rubric.Messages);
             IsBusyProgress = false;

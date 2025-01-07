@@ -298,7 +298,7 @@ public partial class CommerceImplementService : ICommerceService
         await Task.WhenAll([
             Task.Run(async () =>
             {
-                TResponseModel<UserInfoModel[]?> userFind = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+                TResponseModel<UserInfoModel[]> userFind = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
                 actor = userFind.Response!.First();
                 }),
             Task.Run(async () => { duple = await context.Organizations.FirstOrDefaultAsync(x => x.INN == req.Payload.INN || x.OGRN == req.Payload.OGRN || (x.BankBIC == req.Payload.BankBIC && x.CurrentAccount == req.Payload.CurrentAccount && x.CorrespondentAccount == req.Payload.CorrespondentAccount)); })

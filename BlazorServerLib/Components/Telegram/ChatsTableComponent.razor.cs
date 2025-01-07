@@ -67,7 +67,7 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
             return;
 
         await SetBusy();
-        TResponseModel<UserInfoModel[]?> users_res = await WebRepo.GetUserIdentityByTelegram(users_ids_for_load);
+        TResponseModel<UserInfoModel[]> users_res = await WebRepo.GetUserIdentityByTelegram(users_ids_for_load);
         IsBusyProgress = false;
         SnackBarRepo.ShowMessagesResponse(users_res.Messages);
         if (!users_res.Success() || users_res.Response is null || users_res.Response.Length == 0)

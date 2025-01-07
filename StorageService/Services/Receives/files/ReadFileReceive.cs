@@ -57,7 +57,7 @@ public class ReadFileReceive(IMongoDatabase mongoFs,
         UserInfoModel? currentUser = null;
         if (!allowed && !string.IsNullOrWhiteSpace(req.SenderActionUserId))
         {
-            TResponseModel<UserInfoModel[]?> findUserRes = await webRepo.GetUsersIdentity([req.SenderActionUserId]);
+            TResponseModel<UserInfoModel[]> findUserRes = await webRepo.GetUsersIdentity([req.SenderActionUserId]);
             currentUser = findUserRes.Response?.Single();
             if (currentUser is null)
             {

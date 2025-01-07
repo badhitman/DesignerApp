@@ -45,7 +45,7 @@ public class TelegramMessageIncomingReceive(
                     ReplyToMessageId = inc_msg.SourceMessageId,
                 };
 
-                TResponseModel<MessageComplexIdsModel?> send_answer = await tgRepo.SendTextMessageTelegram(sender);
+                TResponseModel<MessageComplexIdsModel> send_answer = await tgRepo.SendTextMessageTelegram(sender);
 
                 if (send_answer.Success() && send_answer.Response is not null)
                 {
@@ -85,7 +85,7 @@ public class TelegramMessageIncomingReceive(
         TResponseModel<long?> helpdesk_user_redirect_telegram_for_issue_rest = await StorageRepo.ReadParameter<long?>(GlobalStaticConstants.CloudStorageMetadata.HelpdeskNotificationsTelegramForUser(req.From!.UserTelegramId));
         if (helpdesk_user_redirect_telegram_for_issue_rest.Success() && helpdesk_user_redirect_telegram_for_issue_rest.Response.HasValue && helpdesk_user_redirect_telegram_for_issue_rest.Response != 0)
         {
-            TResponseModel<MessageComplexIdsModel?> forward_res = await tgRepo.ForwardMessage(new()
+            TResponseModel<MessageComplexIdsModel> forward_res = await tgRepo.ForwardMessage(new()
             {
                 DestinationChatId = helpdesk_user_redirect_telegram_for_issue_rest.Response.Value,
                 SourceChatId = req.Chat!.ChatTelegramId,

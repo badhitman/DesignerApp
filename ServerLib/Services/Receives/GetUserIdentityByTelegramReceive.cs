@@ -57,7 +57,7 @@ public class GetUserIdentityByTelegramReceive(
 
         string[] users_ids = [.. users.Select(x => x.Id)];
 
-        TResponseModel<UserInfoModel[]?> res_find_users_identity = await webRepo.GetUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]> res_find_users_identity = await webRepo.GetUsersIdentity(users_ids);
         if (!res_find_users_identity.Success())
         {
             response.AddRangeMessages(res_find_users_identity.Messages);

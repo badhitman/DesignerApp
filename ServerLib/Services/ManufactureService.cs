@@ -27,7 +27,7 @@ public class ManufactureService(
 
         string user_id = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception();
 
-        TResponseModel<UserInfoModel[]?> users_find = await webRepo.GetUsersIdentity([user_id]);
+        TResponseModel<UserInfoModel[]> users_find = await webRepo.GetUsersIdentity([user_id]);
         UserInfoModel current_user = users_find.Response![0];
 
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();

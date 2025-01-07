@@ -466,7 +466,7 @@ public partial class CommerceImplementService(
 
         req.Name = req.Name.Trim();
 
-        TResponseModel<UserInfoModel[]?> actor = await webTransmissionRepo.GetUsersIdentity([req.AuthorIdentityUserId]);
+        TResponseModel<UserInfoModel[]> actor = await webTransmissionRepo.GetUsersIdentity([req.AuthorIdentityUserId]);
         if (!actor.Success() || actor.Response is null || actor.Response.Length == 0)
         {
             res.AddRangeMessages(actor.Messages);
@@ -860,7 +860,7 @@ public partial class CommerceImplementService(
     {
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-        TResponseModel<UserInfoModel[]?> rest = default!;
+        TResponseModel<UserInfoModel[]> rest = default!;
         TResponseModel<OrderDocumentModelDB[]> orderData = default!;
         List<Task> _taskList = [
             Task.Run(async () => { rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]); }),

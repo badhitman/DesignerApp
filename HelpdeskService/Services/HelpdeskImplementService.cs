@@ -83,9 +83,9 @@ public class HelpdeskImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>?>> RubricRead(int rubricId)
+    public async Task<TResponseModel<List<RubricIssueHelpdeskModelDB>>> RubricRead(int rubricId)
     {
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> res = new();
+        TResponseModel<List<RubricIssueHelpdeskModelDB>> res = new();
 
         if (rubricId < 1)
             return res;
@@ -385,7 +385,7 @@ public class HelpdeskImplementService(
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(issue_upd)}");
         TResponseModel<int> res = new() { Response = 0 };
         TResponseModel<ModesSelectRubricsEnum?> res_ModeSelectingRubrics = default!;
-        TResponseModel<UserInfoModel[]?> users_rest = default!;
+        TResponseModel<UserInfoModel[]> users_rest = default!;
 
         List<Task> tasks = [
             Task.Run(async () => { users_rest = await webTransmissionRepo.GetUsersIdentity([issue_upd.SenderActionUserId]); }),
@@ -617,7 +617,7 @@ public class HelpdeskImplementService(
         if (req.SenderActionUserId == GlobalStaticConstants.Roles.System || issues_db.All(x => x.ExecutorIdentityUserId == req.SenderActionUserId) || issues_db.All(x => x.AuthorIdentityUserId == req.SenderActionUserId) || issues_db.All(x => x.Subscribers!.Any(x => x.UserId == req.SenderActionUserId)))
             return new() { Response = issues_db };
 
-        TResponseModel<UserInfoModel[]?> rest_user_date = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> rest_user_date = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!rest_user_date.Success() || rest_user_date.Response is null || rest_user_date.Response.Length != 1)
         {
             loggerRepo.LogError($"Пользователь не найден: {req.SenderActionUserId}");
@@ -646,7 +646,7 @@ public class HelpdeskImplementService(
             Response = false,
         };
 
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && (!rest.Success() || rest.Response is null || rest.Response.Length != 1))
             return new() { Messages = rest.Messages };
 
@@ -1454,7 +1454,7 @@ public class HelpdeskImplementService(
             users_ids.AddRange(issue_data.Subscribers.Where(x => !x.IsSilent).Select(x => x.UserId));
 
         users_ids = [.. users_ids.Distinct()];
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([.. users_ids]);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([.. users_ids]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != users_ids.Count)
             return new() { Messages = rest.Messages };
 

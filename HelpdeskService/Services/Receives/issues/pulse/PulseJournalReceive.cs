@@ -28,7 +28,7 @@ public class PulseJournalReceive(
     public async Task<TPaginationResponseModel<PulseViewModel>?> ResponseHandleAction(TPaginationRequestModel<UserIssueModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        TResponseModel<UserInfoModel[]?> rest = await webTransmissionRepo.GetUsersIdentity([req.Payload.UserId]);
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([req.Payload.UserId]);
         if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
             return new() { Response = [] };
 

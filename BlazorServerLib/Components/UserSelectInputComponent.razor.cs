@@ -65,7 +65,7 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
         }
 
         await SetBusy();
-        TResponseModel<UserInfoModel[]?> rest = await WebRepo.GetUsersIdentity([SelectedUser]);
+        TResponseModel<UserInfoModel[]> rest = await WebRepo.GetUsersIdentity([SelectedUser]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null || rest.Response.Length == 0)

@@ -137,7 +137,7 @@ public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthM
         int[] orderWarehouses = [.. Document.AddressesTabs!.Select(x => x.WarehouseId).Distinct()];
         await SetBusy();
 
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> getWarehouses = await HelpdeskRepo.RubricsGet(orderWarehouses);
+        TResponseModel<List<RubricIssueHelpdeskModelDB>> getWarehouses = await HelpdeskRepo.RubricsGet(orderWarehouses);
         SnackbarRepo.ShowMessagesResponse(getWarehouses.Messages);
         currentWarehouses = getWarehouses.Response ?? [];
 

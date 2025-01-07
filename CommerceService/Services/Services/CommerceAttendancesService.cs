@@ -65,7 +65,7 @@ public partial class CommerceImplementService : ICommerceService
     public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
     {
         TResponseModel<bool> res = new();
-        TResponseModel<UserInfoModel[]?> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
         {
             res.AddRangeMessages(actorRes.Messages);
@@ -190,7 +190,7 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        TResponseModel<UserInfoModel[]?> actorRes = await webTransmissionRepo.GetUsersIdentity([workSchedules.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([workSchedules.SenderActionUserId]);
         if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
         {
             res.AddRangeMessages(actorRes.Messages);

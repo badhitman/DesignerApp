@@ -78,7 +78,7 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
         if (UsersIdentityDump.Any(x => x.UserId == user_id) != true)
         {
             await SetBusy();
-            TResponseModel<UserInfoModel[]?> res_user = await WebRemoteTransmissionRepo.GetUsersIdentity([user_id]);
+            TResponseModel<UserInfoModel[]> res_user = await WebRemoteTransmissionRepo.GetUsersIdentity([user_id]);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(res_user.Messages);
