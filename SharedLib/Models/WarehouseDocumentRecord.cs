@@ -1,0 +1,7 @@
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @FakeGov 
+////////////////////////////////////////////////
+
+namespace SharedLib;
+
+record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);

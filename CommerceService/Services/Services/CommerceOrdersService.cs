@@ -1336,14 +1336,5 @@ public partial class CommerceImplementService(
 
         newCell.CellValue = new CellValue(val);
         newCell.DataType = new EnumValue<CellValues>(type);
-
     }
 }
-
-record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);
-
-record OrderRowsQueryRecord(OrderDocumentModelDB Document, TabAddressForOrderModelDb TabAddress, RowOfOrderDocumentModelDB Row, OfferModelDB Offer, NomenclatureModelDB Goods);
-
-record WarehouseRowDocumentRecord(int WarehouseId, RowOfOrderDocumentModelDB Row);
-
-record RowOrderDocumentRecord(int DocumentId, StatusesDocumentsEnum DocumentStatus, int OfferId, int GoodsId, decimal Quantity, int WarehouseId);
