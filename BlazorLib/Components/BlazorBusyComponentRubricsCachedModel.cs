@@ -42,7 +42,7 @@ public abstract class BlazorBusyComponentRubricsCachedModel : BlazorBusyComponen
             return;
 
         await SetBusy();
-        TResponseModel<List<RubricIssueHelpdeskModelDB>?> rubrics = await HelpdeskRepo.RubricsGet(rubricsIds);
+        TResponseModel<List<RubricIssueHelpdeskModelDB>> rubrics = await HelpdeskRepo.RubricsGet(rubricsIds);
         SnackbarRepo.ShowMessagesResponse(rubrics.Messages);
         if (rubrics.Success() && rubrics.Response is not null && rubrics.Response.Count != 0)
             lock (RubricsCache)

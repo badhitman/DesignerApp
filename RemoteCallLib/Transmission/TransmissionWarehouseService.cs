@@ -9,8 +9,8 @@ namespace RemoteCallLib;
 public partial class TransmissionCommerceService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>> OffersRegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req)
-        => await rabbitClient.MqRemoteCall< TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>>(GlobalStaticConstants.TransmissionQueues.OffersRegistersSelectCommerceReceive, req);
+    public async Task<TPaginationResponseModel<OfferAvailabilityModelDB>> OffersRegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OfferAvailabilityModelDB>>(GlobalStaticConstants.TransmissionQueues.OffersRegistersSelectCommerceReceive, req);
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> RowsForWarehouseDelete(int[] req)
@@ -32,6 +32,6 @@ public partial class TransmissionCommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>>> WarehousesSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall< TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>>>(GlobalStaticConstants.TransmissionQueues.WarehousesSelectCommerceReceive, req);
+    public async Task<TPaginationResponseModel<WarehouseDocumentModelDB>> WarehousesSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<WarehouseDocumentModelDB>>(GlobalStaticConstants.TransmissionQueues.WarehousesSelectCommerceReceive, req);
 }

@@ -9,7 +9,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Получить остатки
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>> OffersRegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req);
+    public Task<TPaginationResponseModel<OfferAvailabilityModelDB>> OffersRegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req);
 
     /// <summary>
     /// Удалить строку складского документа
@@ -34,5 +34,5 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Подбор складских документов (поиск по параметрам)
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<WarehouseDocumentModelDB>>> WarehousesSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req);
+    public Task<TPaginationResponseModel<WarehouseDocumentModelDB>> WarehousesSelect(TPaginationRequestModel<WarehouseDocumentsSelectRequestModel> req);
 }
