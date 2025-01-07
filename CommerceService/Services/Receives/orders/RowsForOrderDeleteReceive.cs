@@ -11,8 +11,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// RowsForOrderDeleteReceive
 /// </summary>
-public class RowsForOrderDeleteReceive(ICommerceService commRepo, ILogger<RowsForOrderDeleteReceive> loggerRepo)
-    : IResponseReceive<int[]?, TResponseModel<bool>?>
+public class RowsForOrderDeleteReceive(ICommerceService commRepo, ILogger<RowsForOrderDeleteReceive> loggerRepo) : IResponseReceive<int[]?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RowsDeleteFromOrderCommerceReceive;

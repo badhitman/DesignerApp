@@ -24,7 +24,6 @@ public class CalendarScheduleUpdateReceive(ICommerceService commerceRepo, ILogge
     public async Task<TResponseModel<int>?> ResponseHandleAction(CalendarScheduleModelDB? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(payload, GlobalStaticConstants.JsonSerializerSettings)}");
         return await commerceRepo.CalendarScheduleUpdate(payload);
     }

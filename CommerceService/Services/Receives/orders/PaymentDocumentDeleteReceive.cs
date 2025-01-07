@@ -13,8 +13,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// PaymentDocumentDeleteReceive
 /// </summary>
-public class PaymentDocumentDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PaymentDocumentDeleteReceive> loggerRepo)
-    : IResponseReceive<int, ResponseBaseModel?>
+public class PaymentDocumentDeleteReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PaymentDocumentDeleteReceive> loggerRepo) : IResponseReceive<int, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PaymentDocumentDeleteCommerceReceive;

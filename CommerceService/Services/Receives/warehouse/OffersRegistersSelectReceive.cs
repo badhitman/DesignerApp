@@ -10,8 +10,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// OffersRegistersSelectReceive
 /// </summary>
-public class OffersRegistersSelectReceive(ICommerceService commRepo)
-: IResponseReceive<TPaginationRequestModel<RegistersSelectRequestBaseModel>?, TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>?>
+public class OffersRegistersSelectReceive(ICommerceService commRepo) : IResponseReceive<TPaginationRequestModel<RegistersSelectRequestBaseModel>?, TResponseModel<TPaginationResponseModel<OfferAvailabilityModelDB>>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OffersRegistersSelectCommerceReceive;

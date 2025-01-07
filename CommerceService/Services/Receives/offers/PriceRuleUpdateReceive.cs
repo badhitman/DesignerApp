@@ -13,8 +13,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// PriceRuleUpdateReceive
 /// </summary>
-public class PriceRuleUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PriceRuleUpdateReceive> loggerRepo)
-    : IResponseReceive<PriceRuleForOfferModelDB?, TResponseModel<int>?>
+public class PriceRuleUpdateReceive(IDbContextFactory<CommerceContext> commerceDbFactory, ILogger<PriceRuleUpdateReceive> loggerRepo) : IResponseReceive<PriceRuleForOfferModelDB?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PriceRuleUpdateCommerceReceive;

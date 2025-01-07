@@ -11,8 +11,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// StatusChangeReceive
 /// </summary>
-public class StatusChangeReceive(ICommerceService commRepo, ILogger<StatusChangeReceive> LoggerRepo)
-    : IResponseReceive<StatusChangeRequestModel?, TResponseModel<bool>?>
+public class StatusChangeReceive(ICommerceService commRepo, ILogger<StatusChangeReceive> LoggerRepo) : IResponseReceive<StatusChangeRequestModel?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.StatusChangeOrderByHelpDeskDocumentIdReceive;

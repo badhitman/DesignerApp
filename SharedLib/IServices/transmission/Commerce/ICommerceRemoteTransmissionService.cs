@@ -12,7 +12,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Price Full - file get
     /// </summary>
-    public Task<TResponseModel<FileAttachModel>> PriceFullFileGet();
+    public Task<FileAttachModel> PriceFullFileGet();
 
     /// <summary>
     /// Order report get
@@ -42,7 +42,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// PricesRulesGetForOffers
     /// </summary>
-    public Task<TResponseModel<PriceRuleForOfferModelDB[]>> PricesRulesGetForOffers(int[] ids);
+    public Task<List<PriceRuleForOfferModelDB>> PricesRulesGetForOffers(int[] ids);
 
     /// <summary>
     /// OffersRead
@@ -52,7 +52,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// NomenclaturesRead
     /// </summary>
-    public Task<TResponseModel<NomenclatureModelDB[]>> NomenclaturesRead(int[] ids);
+    public Task<List<NomenclatureModelDB>> NomenclaturesRead(int[] ids);
 
     /// <summary>
     /// Прочитать данные адресов организаций по их идентификаторам
@@ -67,7 +67,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Удалить платёжный документ
     /// </summary>
-    public Task<TResponseModel<bool>> PaymentDocumentDelete(int req);
+    public Task<ResponseBaseModel> PaymentDocumentDelete(int req);
 
     /// <summary>
     /// Удалить строку заказа
@@ -107,12 +107,12 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OffersSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req);
+    public Task<TPaginationResponseModel<OfferModelDB>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req);
 
     /// <summary>
     /// NomenclaturesSelect
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<NomenclatureModelDB>>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req);
+    public Task<TPaginationResponseModel<NomenclatureModelDB>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req);
 
     /// <summary>
     /// OrganizationUpdate
@@ -145,7 +145,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Подбор организаций с параметрами запроса
     /// </summary>
-    public Task<TResponseModel<TPaginationResponseModel<OrganizationModelDB>>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
+    public Task<TPaginationResponseModel<OrganizationModelDB>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req);
 
     /// <summary>
     /// Обновление параметров организации. Юридические параметры не меняются, а формируется запрос на изменение, которое должна подтвердить сторонняя система

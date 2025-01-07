@@ -12,8 +12,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// PricesRulesGetForOffersReceive
 /// </summary>
-public class PricesRulesGetForOffersReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-: IResponseReceive<int[]?, List<PriceRuleForOfferModelDB>?>
+public class PricesRulesGetForOffersReceive(IDbContextFactory<CommerceContext> commerceDbFactory) : IResponseReceive<int[]?, List<PriceRuleForOfferModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.PricesRulesGetForOfferCommerceReceive;

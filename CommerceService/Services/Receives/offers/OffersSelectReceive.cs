@@ -12,8 +12,7 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// OffersSelectReceive
 /// </summary>
-public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory)
-    : IResponseReceive<TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferModelDB>?>
+public class OffersSelectReceive(IDbContextFactory<CommerceContext> commerceDbFactory) : IResponseReceive<TPaginationRequestModel<OffersSelectRequestModel>?, TPaginationResponseModel<OfferModelDB>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive;
