@@ -2,34 +2,38 @@
 
 @inherits BlazorBusyComponentBaseAuthModel
 
-<h3>Мета файлы</h3>
+<div class="card">
+    <div class="card-body">
+        <h5 class="Мета файлы">Card title</h5>
 
-@if (IsBusyProgress)
-{
-    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
-}
+        @if (IsBusyProgress)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+        }
 
-<div class="d-flex">
-    @for (int i = 0; i < _included.Count; i++)
-    {
-        int index = i;
-        <MudCheckBox @bind-Value="_included[index]">`@FilesAreaMetadata[index].ApplicationName` @(GlobalTools.SizeDataAsString(FilesAreaMetadata[index].SizeFilesSum)) (файлов: @FilesAreaMetadata[index].CountFiles)</MudCheckBox>
-    }
+        <div class="d-flex flex-wrap">
+            @for (int i = 0; i < _included.Count; i++)
+            {
+                int index = i;
+                <MudCheckBox @bind-Value="_included[index]">`@FilesAreaMetadata[index].ApplicationName` @(GlobalTools.SizeDataAsString(FilesAreaMetadata[index].SizeFilesSum)) (файлов: @FilesAreaMetadata[index].CountFiles)</MudCheckBox>
+            }
+        </div>
+
+        @if (_included.Count(x => x) == _included.Count || _included.Count(x => !x) == _included.Count)
+        {
+            <FilesContextViewComponent Title="Файлы" ApplicationsNames="@([])" PropertyName="@string.Empty" />
+        }
+        else
+        {
+            reqNamesApps = [];
+            for (int i = 0; i < _included.Count; i++)
+            {
+                int index = i;
+                if (_included[index])
+                    reqNamesApps.Add(FilesAreaMetadata[index].ApplicationName);
+            }
+
+            <FilesContextViewComponent Title="Файлы" ApplicationsNames="@(reqNamesApps.ToArray())" PropertyName="@string.Empty" />
+        }
+    </div>
 </div>
-
-@if (_included.Count(x => x) == _included.Count || _included.Count(x => !x) == _included.Count)
-{
-    <FilesContextViewComponent Title="Файлы" ApplicationsNames="@([])" PropertyName="@string.Empty" />
-}
-else
-{
-    reqNamesApps = [];
-    for (int i = 0; i < _included.Count; i++)
-    {
-        int index = i;
-        if (_included[index])
-            reqNamesApps.Add(FilesAreaMetadata[index].ApplicationName);
-    }
-
-    <FilesContextViewComponent Title="Файлы" ApplicationsNames="@(reqNamesApps.ToArray())" PropertyName="@string.Empty" />
-}
