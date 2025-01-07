@@ -34,7 +34,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<WeeklySchedulesReadReceive, int[], List<WeeklyScheduleModelDB>>()
             .RegisterMqListener<CalendarScheduleUpdateReceive, TAuthRequestModel<CalendarScheduleModelDB>, TResponseModel<int>>()
             .RegisterMqListener<CalendarsSchedulesSelectReceive, TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>, TPaginationResponseModel<CalendarScheduleModelDB>>()
-            .RegisterMqListener<CalendarsSchedulesReadReceive, int[], List<CalendarScheduleModelDB>>()
+            .RegisterMqListener<CalendarsSchedulesReadReceive, TAuthRequestModel<int[]>, TResponseModel<List<CalendarScheduleModelDB>>>()
             .RegisterMqListener<PriceFullFileGetReceive, object, FileAttachModel>()
             .RegisterMqListener<OrderReportGetReceive, TAuthRequestModel<int>, TResponseModel<FileAttachModel>>()
             .RegisterMqListener<OffersRegistersSelectReceive, TPaginationRequestModel<RegistersSelectRequestBaseModel>, TPaginationResponseModel<OfferAvailabilityModelDB>>()

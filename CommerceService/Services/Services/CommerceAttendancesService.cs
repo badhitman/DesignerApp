@@ -640,7 +640,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<List<CalendarScheduleModelDB>> CalendarSchedulesRead(int[] req)
+    public async Task<TResponseModel<List<CalendarScheduleModelDB>>> CalendarSchedulesRead(TAuthRequestModel<int[]> req)
     {
         TResponseModel<CalendarScheduleModelDB[]> res = new();
 
@@ -648,11 +648,14 @@ public partial class CommerceImplementService : ICommerceService
 
         IQueryable<CalendarScheduleModelDB> q = context
             .CalendarsSchedules
-            .Where(x => req.Any(y => x.Id == y));
+            .Where(x => req.Payload.Any(y => x.Id == y));
 
-        return await q
+        return new()
+        {
+            Response = await q
             .Include(x => x.Offer!)
             .Include(x => x.Nomenclature)
-            .ToListAsync();
+            .ToListAsync()
+        };
     }
 }

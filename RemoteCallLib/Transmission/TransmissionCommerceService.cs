@@ -156,8 +156,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<TPaginationResponseModel<CalendarScheduleModelDB>>(GlobalStaticConstants.TransmissionQueues.CalendarsSchedulesSelectCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
-    public async Task<List<CalendarScheduleModelDB>> CalendarsSchedulesRead(int[] req)
-        => await rabbitClient.MqRemoteCall<List<CalendarScheduleModelDB>>(GlobalStaticConstants.TransmissionQueues.CalendarsSchedulesReadCommerceReceive, req) ?? new();
+    public async Task<TResponseModel<List<CalendarScheduleModelDB>>> CalendarsSchedulesRead(TAuthRequestModel<int[]> req)
+        => await rabbitClient.MqRemoteCall<TResponseModel<List<CalendarScheduleModelDB>>>(GlobalStaticConstants.TransmissionQueues.CalendarsSchedulesReadCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>> UsersOrganizationsSelect(TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req)

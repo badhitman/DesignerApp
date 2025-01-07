@@ -10,13 +10,13 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// CalendarsSchedulesReadReceive
 /// </summary>
-public class CalendarsSchedulesReadReceive(ICommerceService commerceRepo) : IResponseReceive<int[]?, List<CalendarScheduleModelDB>?>
+public class CalendarsSchedulesReadReceive(ICommerceService commerceRepo) : IResponseReceive<TAuthRequestModel<int[]>?, TResponseModel<List<CalendarScheduleModelDB>>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.CalendarsSchedulesReadCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<List<CalendarScheduleModelDB>?> ResponseHandleAction(int[]? payload)
+    public async Task<TResponseModel<List<CalendarScheduleModelDB>>?> ResponseHandleAction(TAuthRequestModel<int[]>? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
         return await commerceRepo.CalendarSchedulesRead(payload);

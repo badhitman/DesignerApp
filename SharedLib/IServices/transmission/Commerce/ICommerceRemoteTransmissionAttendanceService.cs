@@ -59,5 +59,5 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkScheduleCalendarsRead
     /// </summary>
-    public Task<List<CalendarScheduleModelDB>> CalendarsSchedulesRead(int[] req);
+    public Task<TResponseModel<List<CalendarScheduleModelDB>>> CalendarsSchedulesRead(TAuthRequestModel<int[]> req);
 }

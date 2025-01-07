@@ -66,5 +66,5 @@ public partial interface ICommerceService
     /// <summary>
     /// WorkScheduleCalendarsRead
     /// </summary>
-    public Task<List<CalendarScheduleModelDB>> CalendarSchedulesRead(int[] req);
+    public Task<TResponseModel<List<CalendarScheduleModelDB>>> CalendarSchedulesRead(TAuthRequestModel<int[]> req);
 }
