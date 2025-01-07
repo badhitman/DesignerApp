@@ -11,7 +11,7 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 /// <summary>
 /// WorkCalendarComponent
 /// </summary>
-public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
+public partial class WorkCalendarComponent : BlazorBusyComponentBaseAuthModel
 {
     /// <summary>
     /// Commerce
@@ -58,6 +58,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         OfferCurrent = Offer;
         await Reload(OfferCurrent);
     }
@@ -79,6 +80,9 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
     /// </summary>
     public async Task Reload(OfferModelDB? selectedOffer)
     {
+        if (CurrentUserSession is null)
+            return;
+
         OfferCurrent = selectedOffer;
         TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req = new()
         {
@@ -94,14 +98,14 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseModel
             req.Payload.OfferFilter = OfferCurrent.Id;
 
         await SetBusy();
-        TPaginationResponseModel<CalendarScheduleModelDB> res = await CommerceRepo.CalendarsSchedulesSelect(req);
-
+        TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>> res = await CommerceRepo.CalendarsSchedulesSelect(new() { Payload = req, SenderActionUserId = CurrentUserSession.UserId });
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response is not null)
         {
-            countPages = (int)Math.Ceiling((decimal)res.TotalRowsCount / res.PageSize);
-            if (res.Response is not null)
+            countPages = (int)Math.Ceiling((decimal)res.Response.TotalRowsCount / res.Response.PageSize);
+            if (res.Response.Response is not null)
             {
-                worksSchedulesCalendars = res.Response;
+                worksSchedulesCalendars = res.Response.Response;
             }
         }
 

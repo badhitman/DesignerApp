@@ -61,7 +61,7 @@ public partial interface ICommerceService
     /// <summary>
     /// WorkScheduleCalendarsSelect
     /// </summary>
-    public Task<TPaginationResponseModel<CalendarScheduleModelDB>> CalendarSchedulesSelect(TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>>> CalendarSchedulesSelect(TAuthRequestModel<TPaginationRequestModel<WorkScheduleCalendarsSelectRequestModel>> req);
 
     /// <summary>
     /// WorkScheduleCalendarsRead
