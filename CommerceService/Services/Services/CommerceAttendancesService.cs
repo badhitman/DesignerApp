@@ -113,14 +113,14 @@ public partial class CommerceImplementService : ICommerceService
         }
         else
         {
-            WorkSchedulesFindRequestModel get_balance_req = new()
+            WorkFindRequestModel get_balance_req = new()
             {
                 OffersFilter = ordersDb.Select(x => x.OfferId).Distinct().ToArray(),
                 ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
                 StartDate = ordersDb.Min(x => x.DateExecute),
                 EndDate = ordersDb.Max(x => x.DateExecute),
             };
-            WorkSchedulesFindResponseModel get_balance = await WorkSchedulesFind(get_balance_req, ordersDb.Select(x => x.OrganizationId).Distinct().ToArray());
+            WorksFindResponseModel get_balance = await WorkSchedulesFind(get_balance_req, ordersDb.Select(x => x.OrganizationId).Distinct().ToArray());
 
             foreach (IGrouping<int, WorkScheduleModel> rec in ordersDb.GroupBy(x => x.OrganizationId))
             {
@@ -167,7 +167,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req)
+    public async Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req)
     {
         if (req.IssueIds.Length == 0)
             return new()
@@ -266,7 +266,7 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        WorkSchedulesFindRequestModel req = new()
+        WorkFindRequestModel req = new()
         {
             OffersFilter = [workSchedules.Payload.Offer.Id],
             ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
@@ -285,7 +285,7 @@ public partial class CommerceImplementService : ICommerceService
                 Task.Run(async () => { res_RubricIssueForCreateOrder = await StorageTransmissionRepo.ReadParameter<int?>(GlobalStaticConstants.CloudStorageMetadata.RubricIssueForCreateAttendanceOrder); }),
                 Task.Run(async () =>
                 {
-                    WorkSchedulesFindResponseModel get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray());
+                    WorksFindResponseModel get_balance = await WorkSchedulesFind(req, recordsForAdd.Select(x => x.OrganizationId).Distinct().ToArray());
                     WorksSchedulesViews = get_balance.WorksSchedulesViews;
                 })
             ];
@@ -408,7 +408,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req, int[]? organizationsFilter = null)
+    public async Task<WorksFindResponseModel> WorkSchedulesFind(WorkFindRequestModel req, int[]? organizationsFilter = null)
     {
         List<DayOfWeek> weeks = [];
         List<DateOnly> dates = [];
@@ -471,7 +471,7 @@ public partial class CommerceImplementService : ICommerceService
             })
         ]);
 
-        return new WorkSchedulesFindResponseModel(req.StartDate, req.EndDate, WeeklySchedules, CalendarsSchedules, OrganizationsContracts, OrdersAttendances);
+        return new WorksFindResponseModel(req.StartDate, req.EndDate, WeeklySchedules, CalendarsSchedules, OrganizationsContracts, OrdersAttendances);
     }
 
     /// <inheritdoc/>

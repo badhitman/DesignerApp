@@ -8,9 +8,9 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// OrdersAttendancesByIssuesGet - receive
+/// AttendancesRecordsByIssuesGetReceive
 /// </summary>
-public class OrdersAttendancesByIssuesGetReceive(ICommerceService commRepo) : IResponseReceive<OrdersByIssuesSelectRequestModel?, TResponseModel<OrderAttendanceModelDB[]>?>
+public class AttendancesRecordsByIssuesGetReceive(ICommerceService commRepo) : IResponseReceive<OrdersByIssuesSelectRequestModel?, TResponseModel<OrderAttendanceModelDB[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrdersAttendancesByIssuesGetReceive;
@@ -19,6 +19,6 @@ public class OrdersAttendancesByIssuesGetReceive(ICommerceService commRepo) : IR
     public async Task<TResponseModel<OrderAttendanceModelDB[]>?> ResponseHandleAction(OrdersByIssuesSelectRequestModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await commRepo.OrdersAttendancesByIssuesGet(payload);
+        return await commRepo.AttendancesRecordsByIssuesGet(payload);
     }
 }

@@ -16,12 +16,16 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.CreateAttendanceRecordsCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.OrdersAttendancesStatusesChangeByHelpdeskDocumentIdReceive, req) ?? new();
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool>> OrganizationOfferContractUpdate(TAuthRequestModel<OrganizationOfferToggleModel> req)
         => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.OrganizationOfferContractUpdateOrCreateCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
-    public async Task<WorkSchedulesFindResponseModel> WorksSchedulesFind(WorkSchedulesFindRequestModel req)
-        => await rabbitClient.MqRemoteCall<WorkSchedulesFindResponseModel>(GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive, req) ?? new();
+    public async Task<WorksFindResponseModel> WorksSchedulesFind(WorkFindRequestModel req)
+        => await rabbitClient.MqRemoteCall<WorksFindResponseModel>(GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<NomenclatureModelDB>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
@@ -174,8 +178,4 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
     /// <inheritdoc/>
     public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssues(OrdersByIssuesSelectRequestModel req)
         => await rabbitClient.MqRemoteCall<TResponseModel<OrderAttendanceModelDB[]>>(GlobalStaticConstants.TransmissionQueues.OrdersAttendancesByIssuesGetReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.OrdersAttendancesStatusesChangeByHelpdeskDocumentIdReceive, req) ?? new();
 }

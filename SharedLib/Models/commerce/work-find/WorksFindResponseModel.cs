@@ -5,14 +5,14 @@
 namespace SharedLib;
 
 /// <summary>
-/// WorkSchedulesFindResponseModel
+/// WorksFindResponseModel
 /// </summary>
-public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
+public class WorksFindResponseModel : WorksFindBaseModel
 {
     /// <summary>
     /// WorkSchedulesFindResponseModel
     /// </summary>
-    public WorkSchedulesFindResponseModel()
+    public WorksFindResponseModel()
     {
         StartDate = DateOnly.FromDateTime(DateTime.MinValue);
         EndDate = DateOnly.FromDateTime(DateTime.MinValue);
@@ -21,7 +21,7 @@ public class WorkSchedulesFindResponseModel : WorkSchedulesFindBaseModel
     /// <summary>
     /// WorkSchedulesFindResponseModel
     /// </summary>
-    public WorkSchedulesFindResponseModel(DateOnly start, DateOnly end, List<WeeklyScheduleModelDB> WeeklySchedules, List<CalendarScheduleModelDB> CalendarsSchedules, List<OrganizationContractorModel> OrganizationsContracts, List<OrderAttendanceModelDB> OrdersAttendances)
+    public WorksFindResponseModel(DateOnly start, DateOnly end, List<WeeklyScheduleModelDB> WeeklySchedules, List<CalendarScheduleModelDB> CalendarsSchedules, List<OrganizationContractorModel> OrganizationsContracts, List<OrderAttendanceModelDB> OrdersAttendances)
     {
         StartDate = start;
         EndDate = end;

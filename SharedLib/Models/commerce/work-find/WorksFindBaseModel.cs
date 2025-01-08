@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// WorkSchedulesFindBaseModel
+/// WorksFindBaseModel
 /// </summary>
-public class WorkSchedulesFindBaseModel
+public class WorksFindBaseModel
 {
     /// <summary>
     /// Start date

@@ -29,7 +29,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// WorkSchedulesFind
     /// </summary>
-    public Task<WorkSchedulesFindResponseModel> WorksSchedulesFind(WorkSchedulesFindRequestModel req);
+    public Task<WorksFindResponseModel> WorksSchedulesFind(WorkFindRequestModel req);
 
     /// <summary>
     /// WorkScheduleUpdate

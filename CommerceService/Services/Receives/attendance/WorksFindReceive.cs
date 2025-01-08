@@ -8,15 +8,15 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// WorkSchedulesFindReceive
+/// WorksFindReceive
 /// </summary>
-public class WorkSchedulesFindReceive(ICommerceService commerceRepo) : IResponseReceive<WorkSchedulesFindRequestModel?, WorkSchedulesFindResponseModel?>
+public class WorksFindReceive(ICommerceService commerceRepo) : IResponseReceive<WorkFindRequestModel?, WorksFindResponseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.WorksSchedulesFindCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<WorkSchedulesFindResponseModel?> ResponseHandleAction(WorkSchedulesFindRequestModel? req)
+    public async Task<WorksFindResponseModel?> ResponseHandleAction(WorkFindRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         return await commerceRepo.WorkSchedulesFind(req);

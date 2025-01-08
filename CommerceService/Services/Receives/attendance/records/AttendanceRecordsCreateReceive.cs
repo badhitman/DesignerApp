@@ -9,9 +9,9 @@ using SharedLib;
 namespace Transmission.Receives.commerce;
 
 /// <summary>
-/// CreateAttendanceRecords
+/// AttendanceRecordsCreateReceive
 /// </summary>
-public class CreateAttendanceRecordsReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo) : IResponseReceive<TAuthRequestModel<CreateAttendanceRequestModel>?, ResponseBaseModel?>
+public class AttendanceRecordsCreateReceive(ICommerceService commerceRepo, ILogger<CalendarScheduleUpdateReceive> loggerRepo) : IResponseReceive<TAuthRequestModel<CreateAttendanceRequestModel>?, ResponseBaseModel?>
 {
     /// <summary>
     /// Обновление WorkScheduleCalendar

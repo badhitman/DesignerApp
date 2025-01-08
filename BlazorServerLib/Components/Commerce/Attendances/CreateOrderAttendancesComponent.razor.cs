@@ -101,7 +101,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
         if (_dateRange.Start is null || _dateRange.End is null || _selectedOfferId is null)
             return;
 
-        WorkSchedulesFindRequestModel req = new()
+        WorkFindRequestModel req = new()
         {
             StartDate = DateOnly.FromDateTime(_dateRange.Start.Value),
             EndDate = DateOnly.FromDateTime(_dateRange.End.Value),
@@ -109,7 +109,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
             ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
         };
         await SetBusy();
-        WorkSchedulesFindResponseModel res = await CommerceRepo.WorksSchedulesFind(req);
+        WorksFindResponseModel res = await CommerceRepo.WorksSchedulesFind(req);
         Elements = [.. res.WorksSchedulesViews
             .OrderBy(x => x.Date)
             .ThenBy(x => x.StartPart)

@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// WorkSchedulesFindRequestModel
+/// WorkFindRequestModel
 /// </summary>
-public class WorkSchedulesFindRequestModel : WorkSchedulesFindBaseModel
+public class WorkFindRequestModel : WorksFindBaseModel
 {
     /// <summary>
     /// Имя контекста для разделения различных селекторов независимо друг от друга

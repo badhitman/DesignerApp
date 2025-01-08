@@ -26,7 +26,7 @@ public partial interface ICommerceService
     /// <summary>
     /// OrdersByIssuesGet
     /// </summary>
-    public Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req);
+    public Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req);
 
     /// <summary>
     /// Create attendance records
@@ -36,7 +36,7 @@ public partial interface ICommerceService
     /// <summary>
     /// WorkSchedulesSelect find
     /// </summary>
-    public Task<WorkSchedulesFindResponseModel> WorkSchedulesFind(WorkSchedulesFindRequestModel req, int[]? organizationsFilter = null);
+    public Task<WorksFindResponseModel> WorkSchedulesFind(WorkFindRequestModel req, int[]? organizationsFilter = null);
 
     /// <summary>
     /// WorkScheduleUpdate
