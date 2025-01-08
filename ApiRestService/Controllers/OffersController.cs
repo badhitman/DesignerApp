@@ -43,5 +43,5 @@ public class OffersController(ICommerceRemoteTransmissionService commRepo) : Con
     [LoggerNolog]
 #endif
     public async Task<TResponseModel<OfferModelDB[]>> OffersRead(int[] req)
-        => await commRepo.OffersRead(req);
+        => await commRepo.OffersRead(new() { Payload = req, SenderActionUserId = GlobalStaticConstants.Roles.System });
 }

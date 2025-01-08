@@ -47,12 +47,12 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OffersRead
     /// </summary>
-    public Task<TResponseModel<OfferModelDB[]>> OffersRead(int[] ids);
+    public Task<TResponseModel<OfferModelDB[]>> OffersRead(TAuthRequestModel<int[]> ids);
 
     /// <summary>
     /// NomenclaturesRead
     /// </summary>
-    public Task<List<NomenclatureModelDB>> NomenclaturesRead(int[] ids);
+    public Task<TResponseModel<List<NomenclatureModelDB>>> NomenclaturesRead(TAuthRequestModel<int[]> ids);
 
     /// <summary>
     /// Прочитать данные адресов организаций по их идентификаторам
@@ -97,7 +97,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Удалить Offer
     /// </summary>
-    public Task<TResponseModel<bool>> OfferDelete(int req);
+    public Task<ResponseBaseModel> OfferDelete(TAuthRequestModel<int> req);
 
     /// <summary>
     /// OffersSelect

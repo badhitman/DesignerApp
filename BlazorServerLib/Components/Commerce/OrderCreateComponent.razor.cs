@@ -162,11 +162,11 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             .Distinct()
             .ToArray();
 
-        if (offersIds is null || offersIds.Length == 0)
+        if (offersIds is null || offersIds.Length == 0 || CurrentUserSession is null)
             return;
 
         await SetBusy();
-        TResponseModel<OfferModelDB[]> offersRes = await CommerceRepo.OffersRead(offersIds);
+        TResponseModel<OfferModelDB[]> offersRes = await CommerceRepo.OffersRead(new() { Payload = offersIds, SenderActionUserId = CurrentUserSession.UserId });
         if (!offersRes.Success() || offersRes.Response is null || offersRes.Response.Length == 0)
         {
             SnackbarRepo.ShowMessagesResponse(offersRes.Messages);

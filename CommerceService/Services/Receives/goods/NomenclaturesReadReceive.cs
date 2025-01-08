@@ -12,20 +12,16 @@ namespace Transmission.Receives.commerce;
 /// <summary>
 /// NomenclaturesReadReceive
 /// </summary>
-public class NomenclaturesReadReceive(IDbContextFactory<CommerceContext> commerceDbFactory) : IResponseReceive<int[]?, List<NomenclatureModelDB>?>
+public class NomenclaturesReadReceive(ICommerceService commerceRepo)
+    : IResponseReceive<TAuthRequestModel<int[]>?, TResponseModel<List<NomenclatureModelDB>>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.NomenclaturesReadCommerceReceive;
 
     /// <inheritdoc/>
-    public async Task<List<NomenclatureModelDB>?> ResponseHandleAction(int[]? req)
+    public async Task<TResponseModel<List<NomenclatureModelDB>>?> ResponseHandleAction(TAuthRequestModel<int[]>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        return await context
-            .Nomenclatures
-            .Where(x => req.Any(y => x.Id == y))
-            .Include(x => x.Offers)
-            .ToListAsync();
+        return await commerceRepo.NomenclaturesRead(req);
     }
 }

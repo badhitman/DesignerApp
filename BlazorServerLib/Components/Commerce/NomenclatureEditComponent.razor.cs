@@ -61,12 +61,13 @@ public partial class NomenclatureEditComponent : BlazorBusyComponentBaseAuthMode
         if (CurrentUserSession is null)
             throw new Exception();
 
-        List<NomenclatureModelDB> res = await CommerceRepo.NomenclaturesRead([NomenclatureId]);
+        TResponseModel<List<NomenclatureModelDB>> res = await CommerceRepo.NomenclaturesRead(new() { Payload = [NomenclatureId], SenderActionUserId = CurrentUserSession.UserId });
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
         IsBusyProgress = false;
 
-        if (res.Count != 0)
+        if (res.Response is not null && res.Response.Count != 0)
         {
-            CurrentNomenclature = res.Single();
+            CurrentNomenclature = res.Response.Single();
             editNomenclature = GlobalTools.CreateDeepCopy(CurrentNomenclature);
         }
     }

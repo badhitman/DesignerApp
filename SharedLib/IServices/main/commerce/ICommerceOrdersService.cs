@@ -10,6 +10,26 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
+    /// OffersRead
+    /// </summary>
+    public Task<TResponseModel<OfferModelDB[]>> OffersRead(TAuthRequestModel<int[]> req);
+
+    /// <summary>
+    /// OfferDelete
+    /// </summary>
+    public Task<ResponseBaseModel> OfferDelete(TAuthRequestModel<int> req);
+
+    /// <summary>
+    /// NomenclaturesSelect
+    /// </summary>
+    public Task<TPaginationResponseModel<NomenclatureModelDB>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req);
+
+    /// <summary>
+    /// NomenclaturesRead
+    /// </summary>
+    public Task<TResponseModel<List<NomenclatureModelDB>>> NomenclaturesRead(TAuthRequestModel<int[]> req);
+
+    /// <summary>
     /// NomenclatureUpdate
     /// </summary>
     public Task<TResponseModel<int>> NomenclatureUpdate(NomenclatureModelDB nom);
@@ -52,7 +72,7 @@ public partial interface ICommerceService
     /// Orders select
     /// </summary>
     public Task<TPaginationResponseModel<OrderDocumentModelDB>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req);
-        
+
     /// <summary>
     /// Orders read
     /// </summary>

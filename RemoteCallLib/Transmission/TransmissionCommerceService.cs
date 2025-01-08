@@ -44,8 +44,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<TResponseModel<int>>(GlobalStaticConstants.TransmissionQueues.NomenclatureUpdateCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> OfferDelete(int req)
-        => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.OfferDeleteCommerceReceive, req) ?? new();
+    public async Task<ResponseBaseModel> OfferDelete(TAuthRequestModel<int> req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.OfferDeleteCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<OfferModelDB>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
@@ -92,11 +92,11 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<TResponseModel<AddressOrganizationModelDB[]>>(GlobalStaticConstants.TransmissionQueues.AddressesOrganizationsReadCommerceReceive, ids) ?? new();
 
     /// <inheritdoc/> int[]?, List<NomenclatureModelDB>?
-    public async Task<List<NomenclatureModelDB>> NomenclaturesRead(int[] ids)
-        => await rabbitClient.MqRemoteCall<List<NomenclatureModelDB>>(GlobalStaticConstants.TransmissionQueues.NomenclaturesReadCommerceReceive, ids) ?? [];
+    public async Task<TResponseModel<List<NomenclatureModelDB>>> NomenclaturesRead(TAuthRequestModel<int[]> ids)
+        => await rabbitClient.MqRemoteCall<TResponseModel<List<NomenclatureModelDB>>>(GlobalStaticConstants.TransmissionQueues.NomenclaturesReadCommerceReceive, ids) ?? new();
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OfferModelDB[]>> OffersRead(int[] ids)
+    public async Task<TResponseModel<OfferModelDB[]>> OffersRead(TAuthRequestModel<int[]> ids)
         => await rabbitClient.MqRemoteCall<TResponseModel<OfferModelDB[]>>(GlobalStaticConstants.TransmissionQueues.OfferReadCommerceReceive, ids) ?? new();
 
     /// <inheritdoc/> int[]?, List<PriceRuleForOfferModelDB>?

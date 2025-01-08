@@ -34,6 +34,57 @@ public partial class CommerceImplementService(
     private static readonly CultureInfo cultureInfo = new("ru-RU");
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<OfferModelDB[]>> OffersRead(TAuthRequestModel<int[]> req)
+    {
+        TResponseModel<OfferModelDB[]> res = new();
+        if (!req.Payload.Any(x => x > 0))
+        {
+            res.AddError("Пустой запрос");
+            return res;
+        }
+        req.Payload = [.. req.Payload.Where(x => x > 0)];
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        res.Response = await context.Offers.Where(x => req.Payload.Any(y => x.Id == y)).ToArrayAsync();
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> OfferDelete(TAuthRequestModel<int> req)
+    {
+        ResponseBaseModel res = new();
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        int lc = await context
+            .OrdersDocuments
+            .Where(x => context.RowsOfOrdersDocuments.Any(y => y.OrderDocumentId == x.Id && y.OfferId == req.Payload))
+            .CountAsync();
+
+        string msg;
+        if (lc != 0)
+        {
+            msg = $"Оффер не может быть удалён т.к. используется в заказах: {lc} шт.";
+            res.AddError(msg);
+            loggerRepo.LogError(msg);
+            return res;
+        }
+
+        if (await context.Offers.Where(x => x.Id == req.Payload).ExecuteDeleteAsync() > 0)
+        {
+            msg = $"Оффер #{req.Payload} успешно удалён";
+            loggerRepo.LogInformation(msg);
+            res.AddSuccess(msg);
+        }
+        else
+        {
+            msg = $"Оффер #{req.Payload} отсутствует в БД. Возможно, он был удалён ранее";
+            res.AddInfo(msg);
+            loggerRepo.LogWarning($"{msg}. Оффер #{req} удалён");
+        }
+
+        return res;
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssuesGet(OrdersByIssuesSelectRequestModel req)
     {
         if (req.IssueIds.Length == 0)
@@ -1058,6 +1109,49 @@ public partial class CommerceImplementService(
         loggerRepo.LogInformation(msg);
         res.AddSuccess(msg);
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<List<NomenclatureModelDB>>> NomenclaturesRead(TAuthRequestModel<int[]> req)
+    {
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        return new()
+        {
+            Response = await context
+            .Nomenclatures
+            .Where(x => req.Payload.Any(y => x.Id == y))
+            .Include(x => x.Offers)
+            .ToListAsync()
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<NomenclatureModelDB>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
+    {
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<NomenclatureModelDB> q = string.IsNullOrEmpty(req.Payload.ContextName)
+            ? context.Nomenclatures.Where(x => x.ContextName == null || x.ContextName == "").AsQueryable()
+            : context.Nomenclatures.Where(x => x.ContextName == req.Payload.ContextName).AsQueryable();
+
+        if (req.Payload.AfterDateUpdate is not null)
+            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
+
+        IOrderedQueryable<NomenclatureModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.CreatedAtUTC)
+          : q.OrderByDescending(x => x.CreatedAtUTC);
+
+        return new()
+        {
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
+        };
     }
 
     static byte[] SaveOrderAsExcel(OrderDocumentModelDB orderDb)

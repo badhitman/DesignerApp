@@ -42,6 +42,6 @@ public class CommerceController(ICommerceRemoteTransmissionService commRepo) : C
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<List<NomenclatureModelDB>> NomenclaturesRead(int[] req)
-        => await commRepo.NomenclaturesRead(req);
+    public async Task<TResponseModel<List<NomenclatureModelDB>>> NomenclaturesRead(int[] req)
+        => await commRepo.NomenclaturesRead(new() { Payload = req, SenderActionUserId = GlobalStaticConstants.Roles.System });
 }
