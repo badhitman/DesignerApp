@@ -42,8 +42,8 @@ else
                 <hr class="mt-1 pt-1" />
                 @* @MyMarkup(issue_element.Description ?? "без описания") *@
                 @{
-                    OrderDocumentModelDB? current_order = OrdersCache.FirstOrDefault(x => x.Key == issue_element.Id).Value.FirstOrDefault();
-                    List<OrderAttendanceModelDB>? current_order_attendance = OrdersAttendancesCache.FirstOrDefault(x => x.Key == issue_element.Id).Value;
+                    OrderDocumentModelDB? current_order = OrdersCache.ContainsKey(issue_element.Id) ? OrdersCache.FirstOrDefault(x => x.Key == issue_element.Id).Value.FirstOrDefault() : null;
+                    List<OrderAttendanceModelDB>? current_order_attendance = OrdersAttendancesCache.ContainsKey(issue_element.Id) ? OrdersAttendancesCache.FirstOrDefault(x => x.Key == issue_element.Id).Value : null;
                 }
                 @if (!string.IsNullOrWhiteSpace(current_order?.Organization?.Name))
                 {
