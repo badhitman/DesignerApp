@@ -531,16 +531,23 @@ public class HelpdeskImplementService(
 
                 TelegramBotConfigModel wc = default!;
                 TResponseModel<OrderDocumentModelDB[]> comm_res = default!;
+                TResponseModel<OrderAttendanceModelDB[]> attendance_res = default!;
 
                 await Task.WhenAll([
                     Task.Run(async () => { comm_res = await commRepo.OrdersByIssues(req_comm); }),
+                    Task.Run(async () => { attendance_res = await commRepo.OrdersAttendancesByIssues(req_comm); }),
                     Task.Run(async () => { wc = await webTransmissionRepo.GetWebConfig(); })]);
 
                 msg = $"Документ (#{issue_upd.Payload.Id}) обновлён.";
                 if (comm_res.Success() && comm_res.Response is not null && comm_res.Response.Length != 0)
                 {
-                    msg += $". Заказ: [{string.Join(";", comm_res.Response.Select(x => $"(№{x.Id} - {x.CreatedAtUTC.GetCustomTime()})"))}]";
+                    msg += $". Заказ: [{string.Join(";", comm_res.Response.Select(x => $"(№{x.Id} - {x.CreatedAtUTC.GetCustomTime()})"))}].\n";
                 }
+                if (attendance_res.Success() && attendance_res.Response is not null && attendance_res.Response.Length != 0)
+                {
+                    msg += $". Услуги: [{string.Join(";", attendance_res.Response.Select(x => $"(№{x.Id} - {x.CreatedAtUTC.GetCustomTime()})"))}].\n";
+                }
+
                 msg += $". /<a href='{wc.ClearBaseUri}'>{wc.ClearBaseUri}</a>/";
                 res.AddSuccess(msg);
 

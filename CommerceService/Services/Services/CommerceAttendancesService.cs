@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
-using DocumentFormat.OpenXml.Bibliography;
 
 namespace CommerceService;
 
@@ -17,194 +16,32 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> OrderAttendanceDeleteRecord(TAuthRequestModel<int> req)
+    public async Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req)
     {
-        UserInfoModel actor = default!;
-        OrderAttendanceModelDB? orderAttendanceDB = null;
-        ResponseBaseModel res = new();
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        await Task.WhenAll([
-            Task.Run(async () => { orderAttendanceDB = await context.OrdersAttendances.FirstOrDefaultAsync(x => x.Id == req.Payload); }),
-            Task.Run(async () => {
-                TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
-                if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length != 1)
-                {
-                    res.AddRangeMessages(actorRes.Messages);
-                    res.AddError("Пользователь не найден в БД");
-                }
-                else
-                    actor = actorRes.Response[0];
-             })]);
-
-        if (!res.Success())
-            return res;
-
-        if (orderAttendanceDB is null)
-            res.AddInfo("Запись отсутствует");
-        else
-        {
-            if (orderAttendanceDB.AuthorIdentityUserId == req.SenderActionUserId || actor.IsAdmin || actor.Roles?.Contains(GlobalStaticConstants.Roles.System) == true)
+        if (req.IssueIds.Length == 0)
+            return new()
             {
-                context.Remove(orderAttendanceDB);
-                await context.SaveChangesAsync();
-                res.AddSuccess("Запись успешно удалена");
-
-                if (orderAttendanceDB.HelpdeskId.HasValue)
-                {
-                    PulseRequestModel reqPulse = new()
-                    {
-                        Payload = new()
-                        {
-                            Payload = new()
-                            {
-                                Description = $"Запись удалена - {orderAttendanceDB}",
-                                IssueId = orderAttendanceDB.HelpdeskId.Value,
-                                PulseType = PulseIssuesTypesEnum.OrderAttendance,
-                                Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
-                            },
-                            SenderActionUserId = req.SenderActionUserId,
-                        }
-                    };
-
-                    await HelpdeskRepo.PulsePush(reqPulse, false);
-                }
-            }
-            else
-            {
-                res.AddError("У вас недостаточно прав");
-            }
-        }
-
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
-    {
-        TResponseModel<bool> res = new();
-        TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
-        if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
-        {
-            res.AddRangeMessages(actorRes.Messages);
-            return res;
-        }
-        UserInfoModel actor = actorRes.Response[0];
-        string msg;
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        List<OrderAttendanceModelDB> ordersDb = await context
-            .OrdersAttendances
-            .Where(x => x.HelpdeskId == req.Payload.DocumentId && x.StatusDocument != req.Payload.Step)
-            .ToListAsync();
-
-        if (ordersDb.Count == 0)
-        {
-            msg = "Изменение не требуется (документы для обновления отсутствуют)";
-            loggerRepo.LogInformation($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
-            res.AddInfo($"{msg}. Перед редактированием обновите страницу (F5), что бы загрузить актуальную версию объекта");
-            return res;
-        }
-
-        LockTransactionModelDB[] offersLocked = ordersDb
-           .Select(x => new LockTransactionModelDB()
-           {
-               LockerName = $"{nameof(OrderAttendanceModelDB)} /{x.DateExecute}: {x.StartPart}-{x.EndPart}",
-               LockerId = x.OfferId,
-               RubricId = x.OrganizationId
-           }).ToArray();
-
-        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
-        try
-        {
-            await context.AddRangeAsync(offersLocked);
-            await context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            msg = $"Не удалось выполнить команду блокировки БД {nameof(StatusesOrdersAttendancesChangeByHelpdeskDocumentId)}: ";
-            loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
-            res.AddError($"{msg}{ex.Message}");
-            return res;
-        }
-
-        PulseRequestModel reqPulse = new()
-        {
-            Payload = new()
-            {
-                Payload = new()
-                {
-                    Description = "",
-                    IssueId = req.Payload.DocumentId,
-                    PulseType = PulseIssuesTypesEnum.OrderAttendance,
-                    Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
-                },
-                SenderActionUserId = req.SenderActionUserId,
-            }
-        };
-
-        if (req.Payload.Step == StatusesDocumentsEnum.Canceled)
-        {
-            ordersDb.ForEach(x => x.StatusDocument = StatusesDocumentsEnum.Canceled);
-            context.UpdateRange(ordersDb);
-            reqPulse.Payload.Payload.Description += $"Отмена для записей: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
-            reqPulse.Payload.Payload.Tag = GlobalStaticConstants.Routes.CANCEL_ACTION_NAME;
-        }
-        else
-        {
-            WorkFindRequestModel get_balance_req = new()
-            {
-                OffersFilter = ordersDb.Select(x => x.OfferId).Distinct().ToArray(),
-                ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
-                StartDate = ordersDb.Min(x => x.DateExecute),
-                EndDate = ordersDb.Max(x => x.DateExecute),
+                Response = [],
+                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
             };
-            WorksFindResponseModel get_balance = await WorkSchedulesFind(get_balance_req, ordersDb.Select(x => x.OrganizationId).Distinct().ToArray());
 
-            foreach (IGrouping<int, WorkScheduleModel> rec in ordersDb.GroupBy(x => x.OrganizationId))
-            {
-                List<WorkScheduleModel> b_crop_list = get_balance.WorksSchedulesViews
-                    .Where(x => x.Organization.Id == rec.Key)
-                    .ToList();
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrderAttendanceModelDB> q = context
+            .OrdersAttendances
+            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
+            .AsQueryable();
 
-                foreach (WorkScheduleModel subNode in rec)
-                {
-                    int cbInd = b_crop_list.FindIndex(x => x == subNode);
-                    if (cbInd < 0)
-                        res.AddError($"Не хватает слота: {subNode}! Удалите или измените данную запись");
-                    else if (b_crop_list[cbInd].QueueCapacity == 1)
-                        b_crop_list.RemoveAt(cbInd);
-                    else if (b_crop_list[cbInd].QueueCapacity > 1)
-                        b_crop_list[cbInd].QueueCapacity--;
-                }
-            }
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
+            .Include(x => x.Organization)
+            .Include(x => x.Offer!)
+            .Include(x => x.Nomenclature);
 
-            if (!res.Success())
-            {
-                await transaction.RollbackAsync();
-                msg = $"Не удалось сформировать резерв:";
-                loggerRepo.LogError($"{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}\n{JsonConvert.SerializeObject(res, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
-                res.AddError(msg);
-                return res;
-            }
-
-            reqPulse.Payload.Payload.Description += $"Восстановление записей: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
-            reqPulse.Payload.Payload.Tag = GlobalStaticConstants.Routes.SET_ACTION_NAME;
-        }
-        await HelpdeskRepo.PulsePush(reqPulse, false);
-        context.RemoveRange(offersLocked);
-        await context.SaveChangesAsync();
-        res.Response = await context
-                            .OrdersAttendances
-                            .Where(x => x.HelpdeskId == req.Payload.DocumentId)
-                            .ExecuteUpdateAsync(set => set
-                            .SetProperty(p => p.StatusDocument, req.Payload.Step)
-                            .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
-                            .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
-
-        await transaction.CommitAsync();
-        res.AddSuccess("Запрос смены статуса заказа услуг выполнен успешно");
-
-        return res;
+        return new()
+        {
+            Response = req.IncludeExternalData
+            ? [.. await inc_query.ToArrayAsync()]
+            : [.. await q.ToArrayAsync()],
+        };
     }
 
     /// <inheritdoc/>
@@ -436,32 +273,195 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req)
+    public async Task<ResponseBaseModel> OrderAttendanceDeleteRecord(TAuthRequestModel<int> req)
     {
-        if (req.IssueIds.Length == 0)
-            return new()
-            {
-                Response = [],
-                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
-            };
-
+        UserInfoModel actor = default!;
+        OrderAttendanceModelDB? orderAttendanceDB = null;
+        ResponseBaseModel res = new();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<OrderAttendanceModelDB> q = context
-            .OrdersAttendances
-            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
-            .AsQueryable();
+        await Task.WhenAll([
+            Task.Run(async () => { orderAttendanceDB = await context.OrdersAttendances.FirstOrDefaultAsync(x => x.Id == req.Payload); }),
+            Task.Run(async () => {
+                TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+                if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length != 1)
+                {
+                    res.AddRangeMessages(actorRes.Messages);
+                    res.AddError("Пользователь не найден в БД");
+                }
+                else
+                    actor = actorRes.Response[0];
+             })]);
 
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
-            .Include(x => x.Organization)
-            .Include(x => x.Offer!)
-            .Include(x => x.Nomenclature);
+        if (!res.Success())
+            return res;
 
-        return new()
+        if (orderAttendanceDB is null)
+            res.AddInfo("Запись отсутствует");
+        else
         {
-            Response = req.IncludeExternalData
-            ? [.. await inc_query.ToArrayAsync()]
-            : [.. await q.ToArrayAsync()],
+            if (orderAttendanceDB.AuthorIdentityUserId == req.SenderActionUserId || actor.IsAdmin || actor.Roles?.Contains(GlobalStaticConstants.Roles.System) == true)
+            {
+                context.Remove(orderAttendanceDB);
+                await context.SaveChangesAsync();
+                res.AddSuccess("Запись успешно удалена");
+
+                if (orderAttendanceDB.HelpdeskId.HasValue)
+                {
+                    PulseRequestModel reqPulse = new()
+                    {
+                        Payload = new()
+                        {
+                            Payload = new()
+                            {
+                                Description = $"Запись удалена - {orderAttendanceDB}",
+                                IssueId = orderAttendanceDB.HelpdeskId.Value,
+                                PulseType = PulseIssuesTypesEnum.OrderAttendance,
+                                Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                            },
+                            SenderActionUserId = req.SenderActionUserId,
+                        }
+                    };
+
+                    await HelpdeskRepo.PulsePush(reqPulse, false);
+                }
+            }
+            else
+            {
+                res.AddError("У вас недостаточно прав");
+            }
+        }
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
+    {
+        TResponseModel<bool> res = new();
+        TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
+        {
+            res.AddRangeMessages(actorRes.Messages);
+            return res;
+        }
+        UserInfoModel actor = actorRes.Response[0];
+        string msg;
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        List<OrderAttendanceModelDB> ordersDb = await context
+            .OrdersAttendances
+            .Where(x => x.HelpdeskId == req.Payload.DocumentId && x.StatusDocument != req.Payload.Step)
+            .ToListAsync();
+
+        if (ordersDb.Count == 0)
+        {
+            msg = "Изменение не требуется (документы для обновления отсутствуют)";
+            loggerRepo.LogInformation($"{msg}: {JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddInfo($"{msg}. Перед редактированием обновите страницу (F5), что бы загрузить актуальную версию объекта");
+            return res;
+        }
+
+        LockTransactionModelDB[] offersLocked = ordersDb
+           .Select(x => new LockTransactionModelDB()
+           {
+               LockerName = $"{nameof(OrderAttendanceModelDB)} /{x.DateExecute}: {x.StartPart}-{x.EndPart}",
+               LockerId = x.OfferId,
+               RubricId = x.OrganizationId
+           }).ToArray();
+
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+        try
+        {
+            await context.AddRangeAsync(offersLocked);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            msg = $"Не удалось выполнить команду блокировки БД {nameof(StatusesOrdersAttendancesChangeByHelpdeskDocumentId)}: ";
+            loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+            res.AddError($"{msg}{ex.Message}");
+            return res;
+        }
+
+        PulseRequestModel reqPulse = new()
+        {
+            Payload = new()
+            {
+                Payload = new()
+                {
+                    Description = "",
+                    IssueId = req.Payload.DocumentId,
+                    PulseType = PulseIssuesTypesEnum.OrderAttendance,
+                    Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
+                },
+                SenderActionUserId = req.SenderActionUserId,
+            }
         };
+
+        if (req.Payload.Step == StatusesDocumentsEnum.Canceled)
+        {
+            ordersDb.ForEach(x => x.StatusDocument = StatusesDocumentsEnum.Canceled);
+            context.UpdateRange(ordersDb);
+            //
+            reqPulse.Payload.Payload.Description += $"Отмена для записей: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
+            reqPulse.Payload.Payload.Tag = GlobalStaticConstants.Routes.CANCEL_ACTION_NAME;
+        }
+        else
+        {
+            WorkFindRequestModel get_balance_req = new()
+            {
+                OffersFilter = ordersDb.Select(x => x.OfferId).Distinct().ToArray(),
+                ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
+                StartDate = ordersDb.Min(x => x.DateExecute),
+                EndDate = ordersDb.Max(x => x.DateExecute),
+            };
+            WorksFindResponseModel get_balance = await WorkSchedulesFind(get_balance_req, ordersDb.Select(x => x.OrganizationId).Distinct().ToArray());
+
+            foreach (IGrouping<int, WorkScheduleModel> rec in ordersDb.GroupBy(x => x.OrganizationId))
+            {
+                List<WorkScheduleModel> b_crop_list = get_balance.WorksSchedulesViews
+                    .Where(x => x.Organization.Id == rec.Key)
+                    .ToList();
+
+                foreach (WorkScheduleModel subNode in rec)
+                {
+                    int cbInd = b_crop_list.FindIndex(x => x == subNode);
+                    if (cbInd < 0)
+                        res.AddError($"Не хватает слота: {subNode}! Удалите или измените данную запись");
+                    else if (b_crop_list[cbInd].QueueCapacity == 1)
+                        b_crop_list.RemoveAt(cbInd);
+                    else if (b_crop_list[cbInd].QueueCapacity > 1)
+                        b_crop_list[cbInd].QueueCapacity--;
+                }
+            }
+
+            if (!res.Success())
+            {
+                await transaction.RollbackAsync();
+                msg = $"Не удалось сформировать резерв:";
+                loggerRepo.LogError($"{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}\n{JsonConvert.SerializeObject(res, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
+                res.AddError(msg);
+                return res;
+            }
+
+            reqPulse.Payload.Payload.Description += $"Восстановление записей: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
+            reqPulse.Payload.Payload.Tag = GlobalStaticConstants.Routes.SET_ACTION_NAME;
+        }
+        await HelpdeskRepo.PulsePush(reqPulse, false);
+        context.RemoveRange(offersLocked);
+        await context.SaveChangesAsync();
+        res.Response = await context
+                            .OrdersAttendances
+                            .Where(x => x.HelpdeskId == req.Payload.DocumentId)
+                            .ExecuteUpdateAsync(set => set
+                            .SetProperty(p => p.StatusDocument, req.Payload.Step)
+                            .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
+                            .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
+
+        await transaction.CommitAsync();
+        res.AddSuccess("Запрос смены статуса заказа услуг выполнен успешно");
+
+        return res;
     }
 
 

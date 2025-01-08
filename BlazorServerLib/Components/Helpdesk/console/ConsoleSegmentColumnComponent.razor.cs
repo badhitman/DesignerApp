@@ -91,26 +91,66 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
         await UpdateOrdersCache();
     }
 
-    Dictionary<int, OrderDocumentModelDB?> OrdersCache = [];
+    //
+    Dictionary<int, List<OrderDocumentModelDB>> OrdersCache = [];
+    Dictionary<int, List<OrderAttendanceModelDB>> OrdersAttendancesCache = [];
     async Task UpdateOrdersCache()
     {
         int[] issues_ids = Issues.Where(x => !OrdersCache.ContainsKey(x.Id)).Select(x => x.Id).ToArray();
-        if (issues_ids.Length == 0)
+        int[] issues_attendance_ids = Issues.Where(x => !OrdersAttendancesCache.ContainsKey(x.Id)).Select(x => x.Id).ToArray();
+
+        if (issues_ids.Length == 0 && issues_attendance_ids.Length == 0)
             return;
 
-        //await SetBusy();
-        OrdersByIssuesSelectRequestModel req = new()
-        {
-            IssueIds = issues_ids,
-            IncludeExternalData = true
-        };
-        TResponseModel<OrderDocumentModelDB[]> rest = await commRepo.OrdersByIssues(req);
-        if (rest.Success() && rest.Response is not null && rest.Response.Length != 0)
-        {
-            foreach (OrderDocumentModelDB ro in rest.Response)
-                OrdersCache.Add(ro.HelpdeskId!.Value, ro);
-        }
-        //IsBusyProgress = false;
+        await SetBusy();
+
+        await Task.WhenAll([
+            Task.Run(async () => {
+                OrdersByIssuesSelectRequestModel req = new()
+                {
+                    IssueIds = issues_ids,
+                    IncludeExternalData = true
+                };
+
+                TResponseModel<OrderDocumentModelDB[]> rest = await commRepo.OrdersByIssues(req);
+                if (rest.Success() && rest.Response is not null && rest.Response.Length != 0)
+                {
+                    lock(OrdersCache)
+                    {
+                        foreach (OrderDocumentModelDB ro in rest.Response)
+                        {
+                            if(!OrdersCache.ContainsKey(ro.HelpdeskId!.Value))
+                                OrdersCache.Add(ro.HelpdeskId!.Value, []);
+
+                            OrdersCache[ro.HelpdeskId!.Value].Add(ro);
+                        }
+                    }
+                }
+            }),
+            Task.Run(async () => {
+                OrdersByIssuesSelectRequestModel req = new()
+                {
+                    IssueIds = issues_attendance_ids,
+                    IncludeExternalData = true
+                };
+                TResponseModel<OrderAttendanceModelDB[]> restAttendance = await commRepo.OrdersAttendancesByIssues(req);
+                if (restAttendance.Success() && restAttendance.Response is not null && restAttendance.Response.Length != 0)
+                {
+                    lock(OrdersAttendancesCache)
+                    {
+                        foreach (OrderAttendanceModelDB ro in restAttendance.Response)
+                        {
+                            if(!OrdersAttendancesCache.ContainsKey(ro.HelpdeskId!.Value))
+                                OrdersAttendancesCache.Add(ro.HelpdeskId!.Value, []);
+
+                            OrdersAttendancesCache[ro.HelpdeskId!.Value].Add(ro);
+                        }
+                    }
+                }
+            })
+        ]);
+
+        IsBusyProgress = false;
     }
 
     string? _luf;
