@@ -675,7 +675,7 @@ public class HelpdeskImplementService(
         if (prevStatus == nextStatus)
         {
             res.AddInfo("Статус уже установлен");
-            await commRepo.StatusOrderChange(new() { DocumentId = issue_data.Id, Step = nextStatus, }, false);
+            await commRepo.StatusOrderChangeByHelpdeskDocumentId(new() { DocumentId = issue_data.Id, Step = nextStatus, }, false);
             return res;
         }
 
@@ -794,32 +794,56 @@ public class HelpdeskImplementService(
         {
             IssueIds = [issue_data.Id],
         };
-        TResponseModel<OrderDocumentModelDB[]> find_orders = await commRepo.OrdersByIssues(req_docs);
-        if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
+        TResponseModel<OrderDocumentModelDB[]> find_orders = default!;
+        TResponseModel<OrderAttendanceModelDB[]> find_orders_attendances = default!;
+
+        await Task.WhenAll([
+                Task.Run(async () => find_orders = await commRepo.OrdersByIssues(req_docs)),
+                Task.Run(async () => find_orders_attendances = await commRepo.OrdersAttendancesByIssues(req_docs))
+            ]);
+
+        bool order_exist = find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0;
+        bool order_attendance_exist = find_orders_attendances.Success() && find_orders_attendances.Response is not null && find_orders_attendances.Response.Length != 0;
+
+        if (order_exist || order_attendance_exist)
         {
-            tasks.Add(commRepo.StatusOrderChange(new() { DocumentId = issue_data.Id, Step = nextStatus, }));
-            OrderDocumentModelDB order_obj = find_orders.Response[0];
-            if (!users_ids.Contains(order_obj.AuthorIdentityUserId))
+            if (order_exist)
+                await commRepo.StatusOrderChangeByHelpdeskDocumentId(new() { DocumentId = issue_data.Id, Step = nextStatus, }, false);
+
+            if (order_attendance_exist)
+                await commRepo.StatusesOrdersAttendancesChangeByHelpdeskDocumentId(new() { SenderActionUserId = req.SenderActionUserId, Payload = new() { DocumentId = issue_data.Id, Step = nextStatus, } }, false);
+
+            OrderDocumentModelDB? order_obj = find_orders.Response?.FirstOrDefault();
+            OrderAttendanceModelDB? order_attendance = find_orders_attendances.Response?.FirstOrDefault();
+
+            if (order_obj is not null && !users_ids.Contains(order_obj.AuthorIdentityUserId))
                 users_ids.Add(order_obj.AuthorIdentityUserId);
 
-            cdd = order_obj.CreatedAtUTC.GetCustomTime();
-            _about_document = $"'{order_obj.Name}' {cdd.GetHumanDateTime()}";
+            if (order_attendance is not null && !users_ids.Contains(order_attendance.AuthorIdentityUserId))
+                users_ids.Add(order_attendance.AuthorIdentityUserId);
+
+            // cdd = order_obj.CreatedAtUTC.GetCustomTime();
+
+            string _docName = order_obj?.Name ?? order_attendance?.Name ?? "-no name-";
+            int _hdDocId = order_obj?.HelpdeskId ?? order_attendance?.HelpdeskId ?? 0;
+
+            _about_document = $"'{_docName}' {cdd.GetHumanDateTime()}";
 
             if (CommerceStatusChangeOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderSubjectNotification.Response))
-                subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
+                subject_email = IHelpdeskService.ReplaceTags(_docName, cdd, _hdDocId, nextStatus, CommerceStatusChangeOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
 
             msg = $"<p>Заказ '{_about_document} [изменение статуса]: `{prevStatus}` → `{nextStatus}`" +
                                 $"<p>/<a href='{wc.ClearBaseUri}'>{wc.ClearBaseUri}</a>/</p>";
 
             tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
-            wp_message = $"Заказ '{order_obj.Name}' от [{cdd.GetHumanDateTime()}] - {nextStatus.DescriptionInfo()}. " +
+            wp_message = $"Заказ '{_docName}' от [{cdd.GetHumanDateTime()}] - {nextStatus.DescriptionInfo()}. " +
                                $"{wc.ClearBaseUri}";
 
             if (CommerceStatusChangeOrderBodyNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotification.Response))
-                msg = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
+                msg = IHelpdeskService.ReplaceTags(_docName, cdd, _hdDocId, nextStatus, CommerceStatusChangeOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
 
             if (CommerceStatusChangeOrderBodyNotificationTelegram?.Success() == true && !string.IsNullOrWhiteSpace(CommerceStatusChangeOrderBodyNotificationTelegram.Response))
-                tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, cdd, (order_obj.HelpdeskId ?? 0), nextStatus, CommerceStatusChangeOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
+                tg_message = IHelpdeskService.ReplaceTags(_docName, cdd, _hdDocId, nextStatus, CommerceStatusChangeOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
         }
 
         TResponseModel<UserInfoModel[]> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);

@@ -42,12 +42,12 @@ else
                 <hr class="mt-1 pt-1" />
                 @* @MyMarkup(issue_element.Description ?? "без описания") *@
                 @{
-                    List<OrderDocumentModelDB>? current_order = OrdersCache.FirstOrDefault(x => x.Key == issue_element.Id).Value;
+                    OrderDocumentModelDB? current_order = OrdersCache.FirstOrDefault(x => x.Key == issue_element.Id).Value.FirstOrDefault();
                     List<OrderAttendanceModelDB>? current_order_attendance = OrdersAttendancesCache.FirstOrDefault(x => x.Key == issue_element.Id).Value;
                 }
-                @if (!string.IsNullOrWhiteSpace(current_order.FirstOrDefault()?.Organization?.Name))
+                @if (!string.IsNullOrWhiteSpace(current_order?.Organization?.Name))
                 {
-                    <span>Юр.лицо: <u>@current_order.First().Organization!.Name</u></span>
+                    <span>Юр.лицо: <u>@current_order.Organization!.Name</u></span>
                 }
                 <MudStack Row="true">
                     <a title="открыть обращение" href="/issue-card/@issue_element.Id" class="card-link">Перейти</a>
