@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
+using DocumentFormat.OpenXml.Bibliography;
 
 namespace CommerceService;
 
@@ -367,6 +368,22 @@ public partial class CommerceImplementService : ICommerceService
 
         await context.AddRangeAsync(recordsForAdd);
         await context.SaveChangesAsync();
+
+        PulseRequestModel reqPulse = new()
+        {
+            Payload = new()
+            {
+                Payload = new()
+                {
+                    Description = $"Бронь: {string.Join(";", recordsForAdd.Select(x => x.ToString()))};",
+                    IssueId = issue.Response,
+                    PulseType = PulseIssuesTypesEnum.OrderAttendance,
+                    Tag = GlobalStaticConstants.Routes.CREATE_ACTION_NAME,
+                },
+                SenderActionUserId = workSchedules.SenderActionUserId,
+            }
+        };
+        await HelpdeskRepo.PulsePush(reqPulse, false);
 
         string subject_email = "Создана новая бронь";
         DateTime _dt = DateTime.UtcNow.GetCustomTime();
