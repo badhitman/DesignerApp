@@ -53,4 +53,10 @@ public class OrderAttendanceModelDB : OrderDocumentBaseModelDB
     /// Имя контекста для разделения различных селекторов независимо друг от друга
     /// </summary>
     public string? ContextName { get; set; }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"[{DateExecute}] ({StartPart}-{EndPart}): offer {(Offer is null ? $"#{OfferId}" : Offer.GetName())}";
+    }
 }

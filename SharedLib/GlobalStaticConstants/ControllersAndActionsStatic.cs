@@ -752,6 +752,10 @@ public static partial class GlobalStaticConstants
         #endregion
 
         #region ACTION
+        /// <summary>
+        /// Cancel
+        /// </summary>
+        public const string CANCEL_ACTION_NAME = "cancel";
 
         /// <summary>
         /// Disable

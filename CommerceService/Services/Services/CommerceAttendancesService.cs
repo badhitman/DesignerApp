@@ -47,6 +47,26 @@ public partial class CommerceImplementService : ICommerceService
                 context.Remove(orderAttendanceDB);
                 await context.SaveChangesAsync();
                 res.AddSuccess("Запись успешно удалена");
+
+                if (orderAttendanceDB.HelpdeskId.HasValue)
+                {
+                    PulseRequestModel reqPulse = new()
+                    {
+                        Payload = new()
+                        {
+                            Payload = new()
+                            {
+                                Description = $"Запись удалена - {orderAttendanceDB}",
+                                IssueId = orderAttendanceDB.HelpdeskId.Value,
+                                PulseType = PulseIssuesTypesEnum.OrderAttendance,
+                                Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                            },
+                            SenderActionUserId = req.SenderActionUserId,
+                        }
+                    };
+
+                    await HelpdeskRepo.PulsePush(reqPulse, false);
+                }
             }
             else
             {
@@ -106,10 +126,27 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
+        PulseRequestModel reqPulse = new()
+        {
+            Payload = new()
+            {
+                Payload = new()
+                {
+                    Description = "",
+                    IssueId = req.Payload.DocumentId,
+                    PulseType = PulseIssuesTypesEnum.OrderAttendance,
+                    Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
+                },
+                SenderActionUserId = req.SenderActionUserId,
+            }
+        };
+
         if (req.Payload.Step == StatusesDocumentsEnum.Canceled)
         {
             ordersDb.ForEach(x => x.StatusDocument = StatusesDocumentsEnum.Canceled);
             context.UpdateRange(ordersDb);
+            reqPulse.Payload.Payload.Description += $"Отмена для записей: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
+            reqPulse.Payload.Payload.Tag = GlobalStaticConstants.Routes.CANCEL_ACTION_NAME;
         }
         else
         {
@@ -148,8 +185,11 @@ public partial class CommerceImplementService : ICommerceService
                 res.AddError(msg);
                 return res;
             }
-        }
 
+            reqPulse.Payload.Payload.Description += $"Восстановление записей: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
+            reqPulse.Payload.Payload.Tag = GlobalStaticConstants.Routes.SET_ACTION_NAME;
+        }
+        await HelpdeskRepo.PulsePush(reqPulse, false);
         context.RemoveRange(offersLocked);
         await context.SaveChangesAsync();
         res.Response = await context
@@ -164,35 +204,6 @@ public partial class CommerceImplementService : ICommerceService
         res.AddSuccess("Запрос смены статуса заказа услуг выполнен успешно");
 
         return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req)
-    {
-        if (req.IssueIds.Length == 0)
-            return new()
-            {
-                Response = [],
-                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
-            };
-
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<OrderAttendanceModelDB> q = context
-            .OrdersAttendances
-            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
-            .AsQueryable();
-
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
-            .Include(x => x.Organization)
-            .Include(x => x.Offer!)
-            .Include(x => x.Nomenclature);
-
-        return new()
-        {
-            Response = req.IncludeExternalData
-            ? [.. await inc_query.ToArrayAsync()]
-            : [.. await q.ToArrayAsync()],
-        };
     }
 
     /// <inheritdoc/>
@@ -344,7 +355,7 @@ public partial class CommerceImplementService : ICommerceService
             },
         };
 
-        TResponseModel<int> issue = await hdRepo.IssueCreateOrUpdate(issue_new);
+        TResponseModel<int> issue = await HelpdeskRepo.IssueCreateOrUpdate(issue_new);
         if (!issue.Success())
         {
             await transaction.RollbackAsync();
@@ -406,6 +417,36 @@ public partial class CommerceImplementService : ICommerceService
         res.AddSuccess("Ok");
         return res;
     }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req)
+    {
+        if (req.IssueIds.Length == 0)
+            return new()
+            {
+                Response = [],
+                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
+            };
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrderAttendanceModelDB> q = context
+            .OrdersAttendances
+            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
+            .AsQueryable();
+
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
+            .Include(x => x.Organization)
+            .Include(x => x.Offer!)
+            .Include(x => x.Nomenclature);
+
+        return new()
+        {
+            Response = req.IncludeExternalData
+            ? [.. await inc_query.ToArrayAsync()]
+            : [.. await q.ToArrayAsync()],
+        };
+    }
+
 
     /// <inheritdoc/>
     public async Task<WorksFindResponseModel> WorkSchedulesFind(WorkFindRequestModel req, int[]? organizationsFilter = null)

@@ -55,4 +55,14 @@ public enum PulseIssuesTypesEnum
     /// </summary>
     [Description("Изменения в файлах в заявке")]
     Files = 60,
+
+    /// <summary>
+    /// Заказы
+    /// </summary>
+    Order = 70,
+
+    /// <summary>
+    /// Услуги/Бронь
+    /// </summary>
+    OrderAttendance = 80,
 }

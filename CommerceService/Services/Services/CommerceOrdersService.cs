@@ -25,7 +25,7 @@ namespace CommerceService;
 public partial class CommerceImplementService(
     IDbContextFactory<CommerceContext> commerceDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
-    IHelpdeskRemoteTransmissionService hdRepo,
+    IHelpdeskRemoteTransmissionService HelpdeskRepo,
     ITelegramRemoteTransmissionService tgRepo,
     ILogger<CommerceImplementService> loggerRepo,
     WebConfigModel _webConf,
@@ -508,7 +508,7 @@ public partial class CommerceImplementService(
                 return res;
 
             int[] rubricsIds = [.. req.AddressesTabs.Select(x => x.WarehouseId).Distinct()];
-            TResponseModel<List<RubricIssueHelpdeskModelDB>> getRubrics = await hdRepo.RubricsGet(rubricsIds);
+            TResponseModel<List<RubricIssueHelpdeskModelDB>> getRubrics = await HelpdeskRepo.RubricsGet(rubricsIds);
             if (!getRubrics.Success())
             {
                 res.AddRangeMessages(getRubrics.Messages);
@@ -630,7 +630,7 @@ public partial class CommerceImplementService(
                     },
                 };
 
-                TResponseModel<int> issue = await hdRepo.IssueCreateOrUpdate(issue_new);
+                TResponseModel<int> issue = await HelpdeskRepo.IssueCreateOrUpdate(issue_new);
                 if (!issue.Success())
                 {
                     await transaction.RollbackAsync();
@@ -880,7 +880,7 @@ public partial class CommerceImplementService(
         bool allowed = actor.IsAdmin || orderDb.AuthorIdentityUserId == actor.UserId || actor.UserId == GlobalStaticConstants.Roles.System;
         if (!allowed && orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
         {
-            TResponseModel<IssueHelpdeskModelDB[]> issueData = await hdRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
+            TResponseModel<IssueHelpdeskModelDB[]> issueData = await HelpdeskRepo.IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
             {
                 SenderActionUserId = req.SenderActionUserId,
                 Payload = new()
@@ -983,7 +983,7 @@ public partial class CommerceImplementService(
         }
 
         int[] rubricsIds = offersAll.SelectMany(x => x.Registers!).Select(x => x.WarehouseId).Distinct().ToArray();
-        TResponseModel<List<RubricIssueHelpdeskModelDB>> rubricsDb = await hdRepo.RubricsGet(rubricsIds);
+        TResponseModel<List<RubricIssueHelpdeskModelDB>> rubricsDb = await HelpdeskRepo.RubricsGet(rubricsIds);
         List<IGrouping<NomenclatureModelDB?, OfferModelDB>> gof = offersAll.GroupBy(x => x.Nomenclature).Where(x => x.Any(y => y.Registers!.Any(z => z.Quantity > 0))).ToList();
         try
         {
