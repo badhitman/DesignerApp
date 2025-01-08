@@ -52,6 +52,12 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
     bool ShowingWappiArea;
     bool ShowingAttachmentsIssueArea;
 
+    void ReloadRecords(OrderAttendanceModelDB[] sender)
+    {
+        OrdersAttendancesJournal = sender;
+        StateHasChanged();
+    }
+
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {

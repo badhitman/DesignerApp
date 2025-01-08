@@ -2,8 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.Pages;
@@ -18,6 +18,18 @@ public partial class OrdersAttendancesListComponent(ICommerceRemoteTransmissionS
     /// </summary>
     [Parameter, EditorRequired]
     public required OrderAttendanceModelDB[] OrdersAttendances { get; set; }
+
+    /// <summary>
+    /// HelpdeskIssueId
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int HelpdeskIssueId { get; set; }
+
+    /// <summary>
+    /// UpdateRecords
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required Action<OrderAttendanceModelDB[]> UpdateRecords { get; set; }
 
     int? _initDeleteOrder;
 
@@ -35,7 +47,18 @@ public partial class OrdersAttendancesListComponent(ICommerceRemoteTransmissionS
         }
 
         await SetBusy();
-        ResponseBaseModel res = await CommerceRepo.AttendanceRecordsDelete(new() { Payload = rec.Id, SenderActionUserId = CurrentUserSession.UserId });
+        ResponseBaseModel resDel = await CommerceRepo.AttendanceRecordsDelete(new() { Payload = rec.Id, SenderActionUserId = CurrentUserSession.UserId });
+        SnackbarRepo.ShowMessagesResponse(resDel.Messages);
+
+        TResponseModel<OrderAttendanceModelDB[]> resReload = await CommerceRepo.OrdersAttendancesByIssues(new() { IssueIds = [HelpdeskIssueId] });
+        SnackbarRepo.ShowMessagesResponse(resReload.Messages);
+
+        if (resReload.Success() && resReload.Response is not null)
+        {
+            OrdersAttendances = resReload.Response;
+            UpdateRecords(OrdersAttendances);
+        }
+
         await SetBusy(false);
     }
 }

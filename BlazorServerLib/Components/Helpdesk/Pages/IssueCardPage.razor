@@ -45,7 +45,7 @@ else
                                             @if (OrdersAttendancesJournal is not null && OrdersAttendancesJournal.Length != 0)
                                             {
                                                 <MudTabPanel Text="@($"Услуг{(OrdersAttendancesJournal.Length == 1 ? "а" : "и")}")">
-                                                    <OrdersAttendancesListComponent OrdersAttendances="OrdersAttendancesJournal" />
+                                                    <OrdersAttendancesListComponent HelpdeskIssueId="Id" OrdersAttendances="OrdersAttendancesJournal" UpdateRecords="ReloadRecords" />
                                                 </MudTabPanel>
                                             }
                                             @if (CurrentUserSession!.IsAdmin)

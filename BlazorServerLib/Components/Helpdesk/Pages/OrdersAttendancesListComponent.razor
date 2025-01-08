@@ -27,7 +27,7 @@
                     @if (CanDeleteRecord(row))
                     {
                         <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
-                            <button @onclick="async () => await DeleteRecord(row)" type="button" class="btn btn-link @(_initDeleteOrder == row.Id ? "link-danger" : "")">@(_initDeleteOrder == row.Id ? "подтвердить удаление" : "удалить")</button>
+                            <button disabled="@IsBusyProgress" @onclick="async () => await DeleteRecord(row)" type="button" class="btn btn-link @(_initDeleteOrder == row.Id ? "link-danger" : "")">@(_initDeleteOrder == row.Id ? "подтвердить удаление" : "удалить")</button>
                             @if (_initDeleteOrder == row.Id)
                             {
                                 <button @onclick="() => _initDeleteOrder = null" type="button" class="btn btn-link">отмена</button>
