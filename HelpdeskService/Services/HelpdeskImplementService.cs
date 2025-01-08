@@ -675,7 +675,7 @@ public class HelpdeskImplementService(
         if (prevStatus == nextStatus)
         {
             res.AddInfo("Статус уже установлен");
-            await commRepo.StatusOrderChangeByHelpdeskDocumentId(new() { DocumentId = issue_data.Id, Step = nextStatus, }, false);
+            await commRepo.StatusOrderChangeByHelpdeskDocumentId(new() { Payload = new() { DocumentId = issue_data.Id, Step = nextStatus, }, SenderActionUserId = req.SenderActionUserId }, false);
             return res;
         }
 
@@ -808,7 +808,7 @@ public class HelpdeskImplementService(
         if (order_exist || order_attendance_exist)
         {
             if (order_exist)
-                await commRepo.StatusOrderChangeByHelpdeskDocumentId(new() { DocumentId = issue_data.Id, Step = nextStatus, }, false);
+                await commRepo.StatusOrderChangeByHelpdeskDocumentId(new() { Payload = new() { DocumentId = issue_data.Id, Step = nextStatus, }, SenderActionUserId = req.SenderActionUserId }, false);
 
             if (order_attendance_exist)
                 await commRepo.StatusesOrdersAttendancesChangeByHelpdeskDocumentId(new() { SenderActionUserId = req.SenderActionUserId, Payload = new() { DocumentId = issue_data.Id, Step = nextStatus, } }, false);

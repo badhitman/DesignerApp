@@ -726,13 +726,13 @@ public partial class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusesOrdersChangeByHelpdeskDocumentId(StatusChangeRequestModel req)
+    public async Task<TResponseModel<bool>> StatusesOrdersChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
     {
         string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         OrderDocumentModelDB[] ordersDb = await context
             .OrdersDocuments
-            .Where(x => x.HelpdeskId == req.DocumentId && x.StatusDocument != req.Step)
+            .Where(x => x.HelpdeskId == req.Payload.DocumentId && x.StatusDocument != req.Payload.Step)
             .Include(x => x.AddressesTabs!)
             .ThenInclude(x => x.Rows)
             .ToArrayAsync();
@@ -755,7 +755,7 @@ public partial class CommerceImplementService(
         {
             res.Response = await context
                     .OrdersDocuments
-                    .Where(x => x.HelpdeskId == req.DocumentId)
+                    .Where(x => x.HelpdeskId == req.Payload.DocumentId)
                     .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)) != 0;
 
             res.AddSuccess("Запрос смены статуса заказа выполнен вхолостую (строки в документе отсутствуют)");
@@ -797,7 +797,7 @@ public partial class CommerceImplementService(
         {
             int _i = registersOffersDb.FindIndex(y => y.WarehouseId == offerEl.WarehouseId && y.OfferId == offerEl.Row.OfferId);
 
-            if (req.Step == StatusesDocumentsEnum.Canceled)
+            if (req.Payload.Step == StatusesDocumentsEnum.Canceled)
             {
                 if (_i < 0)
                 {
@@ -841,9 +841,9 @@ public partial class CommerceImplementService(
         await context.SaveChangesAsync();
         res.Response = await context
                             .OrdersDocuments
-                            .Where(x => x.HelpdeskId == req.DocumentId)
+                            .Where(x => x.HelpdeskId == req.Payload.DocumentId)
                             .ExecuteUpdateAsync(set => set
-                            .SetProperty(p => p.StatusDocument, req.Step)
+                            .SetProperty(p => p.StatusDocument, req.Payload.Step)
                             .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow)
                             .SetProperty(p => p.Version, Guid.NewGuid())) != 0;
 
