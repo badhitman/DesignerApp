@@ -822,8 +822,6 @@ public class HelpdeskImplementService(
             if (order_attendance is not null && !users_ids.Contains(order_attendance.AuthorIdentityUserId))
                 users_ids.Add(order_attendance.AuthorIdentityUserId);
 
-            // cdd = order_obj.CreatedAtUTC.GetCustomTime();
-
             string _docName = order_obj?.Name ?? order_attendance?.Name ?? "-no name-";
             int _hdDocId = order_obj?.HelpdeskId ?? order_attendance?.HelpdeskId ?? 0;
 

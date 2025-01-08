@@ -1,5 +1,7 @@
 @using MudBlazor
 
+@inherits BlazorBusyComponentBaseAuthModel
+
 <table class="table table-striped table-hover">
     <thead>
         <tr>
@@ -7,12 +9,13 @@
             <th>Время</th>
             <th>Услуга</th>
             <th>Исполнитель</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (OrderAttendanceModelDB row in OrdersAttendances.OrderBy(x => x.DateExecute).ThenBy(x => x.StartPart))
         {
-            <tr title="создан: @row.CreatedAtUTC.GetHumanDateTime()">
+            <tr title="создан: @row.CreatedAtUTC.GetHumanDateTime()" @key="@($"row:{row.Id}")">
                 <td>@row.DateExecute</td>
                 <td>@row.StartPart - @row.EndPart</td>
                 <td>
@@ -20,20 +23,19 @@
                     <sup>@row.Nomenclature?.Name</sup>
                 </td>
                 <td>@row.Organization?.Name</td>
+                <td>
+                    @if (CanDeleteRecord(row))
+                    {
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                            <button @onclick="async () => await DeleteRecord(row)" type="button" class="btn btn-link @(_initDeleteOrder == row.Id ? "link-danger" : "")">@(_initDeleteOrder == row.Id ? "подтвердить удаление" : "удалить")</button>
+                            @if (_initDeleteOrder == row.Id)
+                            {
+                                <button @onclick="() => _initDeleteOrder = null" type="button" class="btn btn-link">отмена</button>
+                            }
+                        </div>
+                    }
+                </td>
             </tr>
         }
     </tbody>
 </table>
-
-@code {
-    [Parameter, EditorRequired]
-    public required OrderAttendanceModelDB[] OrdersAttendances { get; set; }
-
-
-    OrderAttendanceModelDB[] currentOrdersAttendances = default!;
-
-    protected override void OnInitialized()
-    {
-        currentOrdersAttendances = OrdersAttendances;
-    }
-}

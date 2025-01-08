@@ -7,6 +7,11 @@ namespace SharedLib;
 public partial interface ICommerceRemoteTransmissionService
 {
     /// <summary>
+    /// AttendanceRecordsDelete
+    /// </summary>
+    public Task<ResponseBaseModel> AttendanceRecordsDelete(TAuthRequestModel<int> req);
+
+    /// <summary>
     /// Смена статуса заявки (бронь)
     /// </summary>
     public Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req, bool waitResponse = true);

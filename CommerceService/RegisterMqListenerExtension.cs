@@ -26,6 +26,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<NomenclatureUpdateReceive, NomenclatureModelDB, TResponseModel<int>>()
             .RegisterMqListener<OrdersByIssuesGetReceive, OrdersByIssuesSelectRequestModel, TResponseModel<OrderDocumentModelDB[]>>()
             .RegisterMqListener<OfferDeleteReceive, int, TResponseModel<bool>>()
+            .RegisterMqListener<AttendanceRecordsDeleteReceive, TAuthRequestModel<int>, ResponseBaseModel>()
             .RegisterMqListener<UserOrganizationUpdateReceive, TAuthRequestModel<UserOrganizationModelDB>, TResponseModel<int>>()
             .RegisterMqListener<UsersOrganizationsReadReceive, int[], TResponseModel<UserOrganizationModelDB[]>>()
             .RegisterMqListener<UsersOrganizationsSelectReceive, TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest>, TResponseModel<TPaginationResponseModel<UserOrganizationModelDB>>>()

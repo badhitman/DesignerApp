@@ -710,6 +710,11 @@ public static partial class GlobalStaticConstants
         public const string RECORDS_CONTROLLER_NAME = "records";
 
         /// <summary>
+        /// Record
+        /// </summary>
+        public const string RECORD_CONTROLLER_NAME = "record";
+
+        /// <summary>
         /// Calendars
         /// </summary>
         public const string CALENDARS_CONTROLLER_NAME = "calendars";

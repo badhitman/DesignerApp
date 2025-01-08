@@ -16,35 +16,6 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req)
-    {
-        if (req.IssueIds.Length == 0)
-            return new()
-            {
-                Response = [],
-                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
-            };
-
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<OrderAttendanceModelDB> q = context
-            .OrdersAttendances
-            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
-            .AsQueryable();
-
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
-            .Include(x => x.Organization)
-            .Include(x => x.Offer!)
-            .Include(x => x.Nomenclature);
-
-        return new()
-        {
-            Response = req.IncludeExternalData
-            ? [.. await inc_query.ToArrayAsync()]
-            : [.. await q.ToArrayAsync()],
-        };
-    }
-
-    /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules)
     {
         List<WorkScheduleModel> records = workSchedules.Payload.Records;
@@ -403,7 +374,7 @@ public partial class CommerceImplementService : ICommerceService
             ordersDb.ForEach(x => x.StatusDocument = StatusesDocumentsEnum.Canceled);
             context.UpdateRange(ordersDb);
             //
-            reqPulse.Payload.Payload.Description += $"Отмена для записей: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
+            reqPulse.Payload.Payload.Description += $"Отмена брони: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
             reqPulse.Payload.Payload.Tag = GlobalStaticConstants.Routes.CANCEL_ACTION_NAME;
         }
         else
@@ -427,7 +398,7 @@ public partial class CommerceImplementService : ICommerceService
                 {
                     int cbInd = b_crop_list.FindIndex(x => x == subNode);
                     if (cbInd < 0)
-                        res.AddError($"Не хватает слота: {subNode}! Удалите или измените данную запись");
+                        res.AddError($"Не хватает слота (не возможно восстановить бронь): {subNode}! Удалите или измените данную запись");
                     else if (b_crop_list[cbInd].QueueCapacity == 1)
                         b_crop_list.RemoveAt(cbInd);
                     else if (b_crop_list[cbInd].QueueCapacity > 1)
@@ -444,7 +415,7 @@ public partial class CommerceImplementService : ICommerceService
                 return res;
             }
 
-            reqPulse.Payload.Payload.Description += $"Восстановление записей: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
+            reqPulse.Payload.Payload.Description += $"Восстановление записей/брони: {string.Join(";", ordersDb.Select(x => x.ToString()))};";
             reqPulse.Payload.Payload.Tag = GlobalStaticConstants.Routes.SET_ACTION_NAME;
         }
         await HelpdeskRepo.PulsePush(reqPulse, false);
@@ -462,6 +433,35 @@ public partial class CommerceImplementService : ICommerceService
         res.AddSuccess("Запрос смены статуса заказа услуг выполнен успешно");
 
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req)
+    {
+        if (req.IssueIds.Length == 0)
+            return new()
+            {
+                Response = [],
+                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
+            };
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrderAttendanceModelDB> q = context
+            .OrdersAttendances
+            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
+            .AsQueryable();
+
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
+            .Include(x => x.Organization)
+            .Include(x => x.Offer!)
+            .Include(x => x.Nomenclature);
+
+        return new()
+        {
+            Response = req.IncludeExternalData
+            ? [.. await inc_query.ToArrayAsync()]
+            : [.. await q.ToArrayAsync()],
+        };
     }
 
 

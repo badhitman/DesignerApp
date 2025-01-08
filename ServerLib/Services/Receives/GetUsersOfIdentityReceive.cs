@@ -24,7 +24,7 @@ public class GetUsersOfIdentityReceive(IDbContextFactory<IdentityAppDbContext> i
     public async Task<TResponseModel<UserInfoModel[]>?> ResponseHandleAction(string[]? users_ids = null)
     {
         ArgumentNullException.ThrowIfNull(users_ids);
-        users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x))];
+        users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
         TResponseModel<UserInfoModel[]> res = new() { Response = [] };
         if (users_ids.Length == 0)
         {

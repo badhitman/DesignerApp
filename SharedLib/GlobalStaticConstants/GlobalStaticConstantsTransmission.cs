@@ -399,6 +399,9 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string CreateAttendanceRecordsCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.ATTENDANCES_CONTROLLER_NAME}-{Routes.RECORDS_CONTROLLER_NAME}", Routes.CREATE_ACTION_NAME);
 
+        /// <inheritdoc/>
+        public readonly static string AttendanceRecordDeleteCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.ATTENDANCE_CONTROLLER_NAME}-{Routes.RECORD_CONTROLLER_NAME}", Routes.DELETE_ACTION_NAME);
+
         /// <summary>
         /// Attendance Update
         /// </summary>
