@@ -16,20 +16,38 @@ namespace CommerceService;
 public partial class CommerceImplementService : ICommerceService
 {
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> OrderAttendance(TAuthRequestModel<int> req)
+    public async Task<ResponseBaseModel> OrderAttendanceDeleteRecord(TAuthRequestModel<int> req)
     {
-        TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
-        if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
-        {
-            ResponseBaseModel res = new();
-            res.AddRangeMessages(actorRes.Messages);
-            return res;
-        }
-        UserInfoModel actor = actorRes.Response[0];
-
+        UserInfoModel actor = default!;
+        OrderAttendanceModelDB? orderAttendanceDB = null;
+        ResponseBaseModel res = new();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        await Task.WhenAll([
+            Task.Run(async () => { orderAttendanceDB = await context.OrdersAttendances.FirstOrDefaultAsync(x => x.Id == req.Payload); }),
+            Task.Run(async () => {
+                TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+                if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length != 1)
+                {
+                    res.AddRangeMessages(actorRes.Messages);
+                    res.AddError("Пользователь не найден в БД");
+                }
+                else
+                    actor = actorRes.Response[0];
+             })]);
 
-        throw new NotImplementedException();
+        if (!res.Success())
+            return res;
+
+        if (orderAttendanceDB is null)
+            res.AddInfo("Запись отсутствует");
+        else
+        {
+            context.Remove(orderAttendanceDB);
+            await context.SaveChangesAsync();
+            res.AddSuccess("Запись успешно удалена");
+        }
+
+        return res;
     }
 
     /// <inheritdoc/>

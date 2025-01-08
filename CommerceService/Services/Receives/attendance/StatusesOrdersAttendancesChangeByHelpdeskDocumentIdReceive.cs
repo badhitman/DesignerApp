@@ -11,7 +11,7 @@ namespace Transmission.Receives.commerce;
 /// StatusesOrdersAttendancesChangeByHelpdeskDocumentIdReceive
 /// </summary>
 public class StatusesOrdersAttendancesChangeByHelpdeskDocumentIdReceive(ICommerceService commRepo) : IResponseReceive<TAuthRequestModel<StatusChangeRequestModel>?, TResponseModel<bool>?>
-{
+{//                                                                             StatusChangeOrderByHelpDeskDocumentIdReceive
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.OrdersAttendancesStatusesChangeByHelpdeskDocumentIdReceive;
 

@@ -12,7 +12,7 @@ public partial interface ICommerceService
     /// <summary>
     /// Удалить бронь
     /// </summary>
-    public Task<ResponseBaseModel> OrderAttendance(TAuthRequestModel<int> orderId);
+    public Task<ResponseBaseModel> OrderAttendanceDeleteRecord(TAuthRequestModel<int> orderId);
 
     /// <summary>
     /// Смена статуса заказу по идентификатору HelpDesk документа

@@ -9,7 +9,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Смена статуса заявки (бронь)
     /// </summary>
-    public Task<bool> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req);
+    public Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req);
 
     /// <summary>
     /// Получить заказы (по заявкам)
