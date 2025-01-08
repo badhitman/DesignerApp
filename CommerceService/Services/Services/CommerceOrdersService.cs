@@ -34,6 +34,42 @@ public partial class CommerceImplementService(
     private static readonly CultureInfo cultureInfo = new("ru-RU");
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TAuthRequestModel<TPaginationRequestModel<OffersSelectRequestModel>> req)
+    {
+        if (req.Payload.PageSize < 10)
+            req.Payload.PageSize = 10;
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        IQueryable<OfferModelDB> q = from o in context.Offers
+                                     join n in context.Nomenclatures.Where(x => x.ContextName == req.Payload.Payload.ContextName) on o.NomenclatureId equals n.Id
+                                     select o;
+
+        if (req.Payload.Payload.NomenclatureFilter is not null && req.Payload.Payload.NomenclatureFilter.Length != 0)
+            q = q.Where(x => req.Payload.Payload.NomenclatureFilter.Any(y => y == x.NomenclatureId));
+
+        if (req.Payload.Payload.AfterDateUpdate is not null)
+            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate);
+
+        IOrderedQueryable<OfferModelDB> oq = req.Payload.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.CreatedAtUTC)
+          : q.OrderByDescending(x => x.CreatedAtUTC);
+
+        return new()
+        {
+            Response = new()
+            {
+                PageNum = req.Payload.PageNum,
+                PageSize = req.Payload.PageSize,
+                SortingDirection = req.Payload.SortingDirection,
+                SortBy = req.Payload.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = [.. await oq.Skip(req.Payload.PageNum * req.Payload.PageSize).Take(req.Payload.PageSize).Include(x => x.Nomenclature).ToArrayAsync()]
+            }
+        };
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<OfferModelDB[]>> OffersRead(TAuthRequestModel<int[]> req)
     {
         TResponseModel<OfferModelDB[]> res = new();

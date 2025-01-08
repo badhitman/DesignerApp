@@ -29,8 +29,8 @@ public class OffersController(ICommerceRemoteTransmissionService commRepo) : Con
 #if !DEBUG
     [LoggerNolog]
 #endif
-    public async Task<TPaginationResponseModel<OfferModelDB>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
-        => await commRepo.OffersSelect(req);
+    public async Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
+        => await commRepo.OffersSelect(new() { Payload = req, SenderActionUserId = GlobalStaticConstants.Roles.System });
 
     /// <summary>
     /// Чтение данных офферов (по идентификаторам)

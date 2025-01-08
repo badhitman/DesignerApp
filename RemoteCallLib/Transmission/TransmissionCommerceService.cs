@@ -48,8 +48,8 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.OfferDeleteCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<OfferModelDB>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<OfferModelDB>>(GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive, req) ?? new();
+    public async Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TAuthRequestModel<TPaginationRequestModel<OffersSelectRequestModel>> req)
+        => await rabbitClient.MqRemoteCall< TResponseModel<TPaginationResponseModel<OfferModelDB>>>(GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> OfferUpdate(OfferModelDB offer)

@@ -10,6 +10,11 @@ namespace SharedLib;
 public partial interface ICommerceService
 {
     /// <summary>
+    /// OffersSelect
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TAuthRequestModel<TPaginationRequestModel<OffersSelectRequestModel>> req);
+
+    /// <summary>
     /// OffersRead
     /// </summary>
     public Task<TResponseModel<OfferModelDB[]>> OffersRead(TAuthRequestModel<int[]> req);

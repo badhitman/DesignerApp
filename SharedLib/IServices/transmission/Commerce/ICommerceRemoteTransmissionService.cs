@@ -102,7 +102,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OffersSelect
     /// </summary>
-    public Task<TPaginationResponseModel<OfferModelDB>> OffersSelect(TPaginationRequestModel<OffersSelectRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TAuthRequestModel<TPaginationRequestModel<OffersSelectRequestModel>> req);
 
     /// <summary>
     /// NomenclaturesSelect

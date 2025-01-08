@@ -63,7 +63,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<OrganizationOfferContractUpdateReceive, TAuthRequestModel<OrganizationOfferToggleModel>, TResponseModel<bool>>()
             .RegisterMqListener<OrdersSelectReceive, TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>>, TPaginationResponseModel<OrderDocumentModelDB>>()
             .RegisterMqListener<OfferUpdateReceive, OfferModelDB, TResponseModel<int>>()
-            .RegisterMqListener<OffersSelectReceive, TPaginationRequestModel<OffersSelectRequestModel>, TPaginationResponseModel<OfferModelDB>>()
+            .RegisterMqListener<OffersSelectReceive, TAuthRequestModel<TPaginationRequestModel<OffersSelectRequestModel>>, TResponseModel<TPaginationResponseModel<OfferModelDB>>>()
             .RegisterMqListener<NomenclaturesSelectReceive, TPaginationRequestModel<NomenclaturesSelectRequestModel>, TPaginationResponseModel<NomenclatureModelDB>>()
             .RegisterMqListener<OrganizationsReadReceive, int[], TResponseModel<OrganizationModelDB[]>>()
             ;
