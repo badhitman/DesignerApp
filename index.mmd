@@ -1,0 +1,95 @@
+---
+title: Структура (зависимости) проектов в решении
+---
+classDiagram
+note for DbPostgreLib "Если используется другая СУБД, тогда
+указатели  от [ServerLib] [Telegram.Bot.Polling], [HelpdeskService] и [RemoteCallLib]
+должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]"
+    SharedLib <|-- CodegeneratorLib
+    SharedLib <|-- IdentityLib
+    SharedLib <|-- DbLayerLib
+    BlazorLib <|-- ToolsMauiApp
+    SharedLib : Общие модели
+    IdentityLib <|-- ServerLib
+    DbPostgreLib <|-- ServerLib
+    RemoteCallLib <|-- ServerLib
+    RemoteCallLib <|-- CommerceService
+    RemoteCallLib <|-- ApiRestService
+    CodegeneratorLib <|-- BlazorLib
+    HtmlGenerator <|-- CodegeneratorLib
+    DbLayerLib <|-- DbPostgreLib
+    DbLayerLib <|-- DbSqliteLib
+    DbLayerLib <|-- DbMySQLLib
+	DbPostgreLib <|-- RemoteCallLib
+    BlankBlazorApp_Client  <|-- BlankBlazorApp
+	BlazorWebLib  <|-- BlankBlazorApp
+	ServerLib  <|-- BlankBlazorApp
+    RemoteCallLib <|-- Telegram_Bot_Polling
+	DbPostgreLib <|-- Telegram_Bot_Polling
+    RemoteCallLib <|-- StorageService
+    RemoteCallLib <|-- ConstructorService
+    RemoteCallLib <|-- HelpdeskService
+	DbPostgreLib <|-- HelpdeskService
+    BlazorLib <|-- BlazorWebLib
+    BlazorLib <|-- BlankBlazorApp_Client
+    	
+    class CodegeneratorLib{
+        Генератор исходников для Web конструктора
+    }
+    class IdentityLib{
+        Контекст пакета Identity (авторизация)
+    }
+    class DbLayerLib{
+        Абстракция над Мульти-СУБД
+    }
+    class ServerLib{
+        Backend для BlankBlazorApp
+    }
+    class BlazorLib{
+        Blazor UI Компоненты
+    }
+    class DbSqliteLib{
+        Sqlite
+    }
+    class DbPostgreLib{
+        PostgreSQL
+    }
+    class DbMySQLLib{
+        MySQL
+    }
+    class RemoteCallLib{
+        Трансмиссия
+    }
+    class StorageService{
+        @Микросервис
+    }
+    class ConstructorService{
+        @Микросервис
+    }
+    class HtmlGenerator{
+        Внешний репозиторий
+    }
+    class BlankBlazorApp{
+        @Микросервис
+    }
+    class BlankBlazorApp_Client["BlankBlazorApp.Client"]{
+        CSR Blazor WebAssembly
+    }
+    class Telegram_Bot_Polling["Telegram.Bot.Polling"]{
+        @Микросервис
+    }
+    class BlazorWebLib{
+        SSR Blazor Server
+    }
+    class HelpdeskService{
+        @Микросервис        
+    }
+    class CommerceService{
+        @Микросервис        
+    }
+    class ApiRestService{
+        @Микросервис        
+    }
+    class ToolsMauiApp{
+      @Win/Android Клиент
+    }

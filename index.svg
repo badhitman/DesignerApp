@@ -1,0 +1,810 @@
+<svg aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 -50 2271.43359375 802" style="max-width: 2271.43359375px;" xmlns="http://www.w3.org/2000/svg" width="100%" id="mermaidGraphInSVG">
+	<style>#mermaidGraphInSVG{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#ccc;}#mermaidGraphInSVG .error-icon{fill:#a44141;}#mermaidGraphInSVG .error-text{fill:#ddd;stroke:#ddd;}#mermaidGraphInSVG .edge-thickness-normal{stroke-width:1px;}#mermaidGraphInSVG .edge-thickness-thick{stroke-width:3.5px;}#mermaidGraphInSVG .edge-pattern-solid{stroke-dasharray:0;}#mermaidGraphInSVG .edge-thickness-invisible{stroke-width:0;fill:none;}#mermaidGraphInSVG .edge-pattern-dashed{stroke-dasharray:3;}#mermaidGraphInSVG .edge-pattern-dotted{stroke-dasharray:2;}#mermaidGraphInSVG .marker{fill:lightgrey;stroke:lightgrey;}#mermaidGraphInSVG .marker.cross{stroke:lightgrey;}#mermaidGraphInSVG svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaidGraphInSVG p{margin:0;}#mermaidGraphInSVG g.classGroup text{fill:#ccc;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#mermaidGraphInSVG g.classGroup text .title{font-weight:bolder;}#mermaidGraphInSVG .nodeLabel,#mermaidGraphInSVG .edgeLabel{color:#e0dfdf;}#mermaidGraphInSVG .edgeLabel .label rect{fill:#1f2020;}#mermaidGraphInSVG .label text{fill:#e0dfdf;}#mermaidGraphInSVG .edgeLabel .label span{background:#1f2020;}#mermaidGraphInSVG .classTitle{font-weight:bolder;}#mermaidGraphInSVG .node rect,#mermaidGraphInSVG .node circle,#mermaidGraphInSVG .node ellipse,#mermaidGraphInSVG .node polygon,#mermaidGraphInSVG .node path{fill:#1f2020;stroke:#ccc;stroke-width:1px;}#mermaidGraphInSVG .divider{stroke:#ccc;stroke-width:1;}#mermaidGraphInSVG g.clickable{cursor:pointer;}#mermaidGraphInSVG g.classGroup rect{fill:#1f2020;stroke:#ccc;}#mermaidGraphInSVG g.classGroup line{stroke:#ccc;stroke-width:1;}#mermaidGraphInSVG .classLabel .box{stroke:none;stroke-width:0;fill:#1f2020;opacity:0.5;}#mermaidGraphInSVG .classLabel .label{fill:#ccc;font-size:10px;}#mermaidGraphInSVG .relation{stroke:lightgrey;stroke-width:1;fill:none;}#mermaidGraphInSVG .dashed-line{stroke-dasharray:3;}#mermaidGraphInSVG .dotted-line{stroke-dasharray:1 2;}#mermaidGraphInSVG #compositionStart,#mermaidGraphInSVG .composition{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG #compositionEnd,#mermaidGraphInSVG .composition{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG #dependencyStart,#mermaidGraphInSVG .dependency{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG #dependencyStart,#mermaidGraphInSVG .dependency{fill:lightgrey!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG #extensionStart,#mermaidGraphInSVG .extension{fill:transparent!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG #extensionEnd,#mermaidGraphInSVG .extension{fill:transparent!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG #aggregationStart,#mermaidGraphInSVG .aggregation{fill:transparent!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG #aggregationEnd,#mermaidGraphInSVG .aggregation{fill:transparent!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG #lollipopStart,#mermaidGraphInSVG .lollipop{fill:#1f2020!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG #lollipopEnd,#mermaidGraphInSVG .lollipop{fill:#1f2020!important;stroke:lightgrey!important;stroke-width:1;}#mermaidGraphInSVG .edgeTerminals{font-size:11px;line-height:initial;}#mermaidGraphInSVG .classTitleText{text-anchor:middle;font-size:18px;fill:#ccc;}#mermaidGraphInSVG :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+	<g>
+		<defs>
+			<marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="18" class="marker aggregation classDiagram" id="mermaidGraphInSVG_classDiagram-aggregationStart">
+				<path d="M 18,7 L9,13 L1,7 L9,1 Z"></path>
+			</marker>
+		</defs>
+		<defs>
+			<marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="1" class="marker aggregation classDiagram" id="mermaidGraphInSVG_classDiagram-aggregationEnd">
+				<path d="M 18,7 L9,13 L1,7 L9,1 Z"></path>
+			</marker>
+		</defs>
+		<defs>
+			<marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="18" class="marker extension classDiagram" id="mermaidGraphInSVG_classDiagram-extensionStart">
+				<path d="M 1,7 L18,13 V 1 Z"></path>
+			</marker>
+		</defs>
+		<defs>
+			<marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="1" class="marker extension classDiagram" id="mermaidGraphInSVG_classDiagram-extensionEnd">
+				<path d="M 1,1 V 13 L18,7 Z"></path>
+			</marker>
+		</defs>
+		<defs>
+			<marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="18" class="marker composition classDiagram" id="mermaidGraphInSVG_classDiagram-compositionStart">
+				<path d="M 18,7 L9,13 L1,7 L9,1 Z"></path>
+			</marker>
+		</defs>
+		<defs>
+			<marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="1" class="marker composition classDiagram" id="mermaidGraphInSVG_classDiagram-compositionEnd">
+				<path d="M 18,7 L9,13 L1,7 L9,1 Z"></path>
+			</marker>
+		</defs>
+		<defs>
+			<marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="6" class="marker dependency classDiagram" id="mermaidGraphInSVG_classDiagram-dependencyStart">
+				<path d="M 5,7 L9,13 L1,7 L9,1 Z"></path>
+			</marker>
+		</defs>
+		<defs>
+			<marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="13" class="marker dependency classDiagram" id="mermaidGraphInSVG_classDiagram-dependencyEnd">
+				<path d="M 18,7 L9,13 L14,7 L9,1 Z"></path>
+			</marker>
+		</defs>
+		<defs>
+			<marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="13" class="marker lollipop classDiagram" id="mermaidGraphInSVG_classDiagram-lollipopStart">
+				<circle r="6" cy="7" cx="7" fill="transparent" stroke="black"></circle>
+			</marker>
+		</defs>
+		<defs>
+			<marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="1" class="marker lollipop classDiagram" id="mermaidGraphInSVG_classDiagram-lollipopEnd">
+				<circle r="6" cy="7" cx="7" fill="transparent" stroke="black"></circle>
+			</marker>
+		</defs>
+		<g class="root">
+			<g class="clusters"></g>
+			<g class="edgePaths">
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_SharedLib_CodegeneratorLib_1" d="M952.282,55.264L835.626,65.053C718.97,74.843,485.659,94.421,369.003,115.127C252.348,135.833,252.348,157.667,252.348,179.5C252.348,201.333,252.348,223.167,256.33,238.25C260.313,253.333,268.279,261.667,272.262,265.833L276.244,270"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_SharedLib_IdentityLib_2" d="M1069.705,103.999L1070.81,105.666C1071.916,107.333,1074.128,110.666,1075.234,123.25C1076.34,135.833,1076.34,157.667,1076.34,179.5C1076.34,201.333,1076.34,223.167,1076.34,245C1076.34,266.833,1076.34,288.667,1076.34,310.5C1076.34,332.333,1076.34,354.167,1076.34,369.25C1076.34,384.333,1076.34,392.667,1076.34,396.833L1076.34,401"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_SharedLib_DbLayerLib_3" d="M1112.937,69.884L1140.464,77.236C1167.991,84.589,1223.044,99.295,1250.571,110.814C1278.098,122.333,1278.098,130.667,1278.098,134.833L1278.098,139"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_BlazorLib_ToolsMauiApp_4" d="M209.945,472.88L190.915,478.567C171.885,484.254,133.825,495.627,114.796,505.48C95.766,515.333,95.766,523.667,95.766,527.833L95.766,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_IdentityLib_ServerLib_5" d="M1076.34,500L1076.34,501.167C1076.34,502.333,1076.34,504.667,1090.846,510.632C1105.353,516.597,1134.366,526.194,1148.872,530.992L1163.379,535.791"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_DbPostgreLib_ServerLib_6" d="M1522.571,335.193L1502.38,341.994C1482.189,348.796,1441.807,362.398,1421.617,380.116C1401.426,397.833,1401.426,419.667,1401.426,441.5C1401.426,463.333,1401.426,485.167,1393.342,500.25C1385.259,515.333,1369.092,523.667,1361.009,527.833L1352.926,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_RemoteCallLib_ServerLib_7" d="M1480.923,496.493L1479.633,498.244C1478.343,499.995,1475.763,503.498,1459.832,510.072C1443.9,516.647,1414.616,526.294,1399.974,531.117L1385.332,535.941"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_RemoteCallLib_CommerceService_8" d="M1441.978,446.862L1293.453,456.885C1144.928,466.908,847.878,486.954,699.353,501.144C550.828,515.333,550.828,523.667,550.828,527.833L550.828,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_RemoteCallLib_ApiRestService_9" d="M1442,448.151L1324.871,457.959C1207.742,467.767,973.484,487.384,856.356,501.359C739.227,515.333,739.227,523.667,739.227,527.833L739.227,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_CodegeneratorLib_BlazorLib_10" d="M314.957,369L314.957,370.167C314.957,371.333,314.957,373.667,314.957,379C314.957,384.333,314.957,392.667,314.957,396.833L314.957,401"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_HtmlGenerator_CodegeneratorLib_11" d="M869.656,238L869.656,239.167C869.656,240.333,869.656,242.667,806.665,251.272C743.673,259.876,617.69,274.753,554.699,282.191L491.707,289.629"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_DbLayerLib_DbPostgreLib_12" d="M1393.531,226.828L1400.918,229.857C1408.305,232.886,1423.078,238.943,1447.428,249.002C1471.777,259.062,1505.703,273.123,1522.666,280.154L1539.629,287.185"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_DbLayerLib_DbSqliteLib_13" d="M1212.538,231.138L1209.604,233.448C1206.671,235.758,1200.804,240.379,1197.871,246.856C1194.938,253.333,1194.938,261.667,1194.938,265.833L1194.938,270"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_DbLayerLib_DbMySQLLib_14" d="M1334.554,232.294L1336.818,234.412C1339.083,236.53,1343.612,240.765,1345.876,247.049C1348.141,253.333,1348.141,261.667,1348.141,265.833L1348.141,270"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_DbPostgreLib_RemoteCallLib_15" d="M1536.331,362.89L1533.848,365.075C1531.364,367.26,1526.397,371.63,1523.913,377.982C1521.43,384.333,1521.43,392.667,1521.43,396.833L1521.43,401"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_BlankBlazorApp_Client_BlankBlazorApp_16" d="M329.664,631L329.664,632.167C329.664,633.333,329.664,635.667,417.443,646.535C505.221,657.404,680.779,676.809,768.557,686.511L856.336,696.213"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_BlazorWebLib_BlankBlazorApp_17" d="M922.266,631L922.266,632.167C922.266,633.333,922.266,635.667,922.266,641C922.266,646.333,922.266,654.667,922.266,658.833L922.266,663"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_ServerLib_BlankBlazorApp_18" d="M1274.355,631L1274.355,632.167C1274.355,633.333,1274.355,635.667,1226.662,645.706C1178.969,655.745,1083.582,673.49,1035.889,682.362L988.195,691.235"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_RemoteCallLib_Telegram_Bot_Polling_19" d="M1521.43,500L1521.43,501.167C1521.43,502.333,1521.43,504.667,1526.802,510C1532.174,515.333,1542.918,523.667,1548.29,527.833L1553.662,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_DbPostgreLib_Telegram_Bot_Polling_20" d="M1665.203,361.693L1668.432,364.077C1671.662,366.462,1678.12,371.231,1681.349,384.532C1684.578,397.833,1684.578,419.667,1684.578,441.5C1684.578,463.333,1684.578,485.167,1679.572,500.25C1674.566,515.333,1664.553,523.667,1659.547,527.833L1654.54,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_RemoteCallLib_StorageService_21" d="M1600.455,459.865L1634.258,467.721C1668.062,475.577,1735.67,491.288,1769.474,503.311C1803.277,515.333,1803.277,523.667,1803.277,527.833L1803.277,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_RemoteCallLib_ConstructorService_22" d="M1600.753,452.459L1666.55,461.549C1732.347,470.639,1863.941,488.82,1929.738,502.076C1995.535,515.333,1995.535,523.667,1995.535,527.833L1995.535,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_RemoteCallLib_HelpdeskService_23" d="M1600.806,450.567L1683.143,459.973C1765.48,469.378,1930.154,488.189,2018.807,501.761C2107.461,515.333,2120.094,523.667,2126.41,527.833L2132.726,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_DbPostgreLib_HelpdeskService_24" d="M1670.022,318.618L1757.372,328.181C1844.722,337.745,2019.421,356.873,2106.771,377.353C2194.121,397.833,2194.121,419.667,2194.121,441.5C2194.121,463.333,2194.121,485.167,2194.121,500.25C2194.121,515.333,2194.121,523.667,2194.121,527.833L2194.121,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_BlazorLib_BlazorWebLib_25" d="M420.619,452.896L504.227,461.913C587.834,470.931,755.05,488.965,838.658,502.149C922.266,515.333,922.266,523.667,922.266,527.833L922.266,532"></path>
+				<path marker-start="url(#mermaidGraphInSVG_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_BlazorLib_BlankBlazorApp_Client_26" d="M327.994,499.563L328.272,500.802C328.551,502.042,329.107,504.521,329.386,509.927C329.664,515.333,329.664,523.667,329.664,527.833L329.664,532"></path>
+				<path style="fill:none" class="edge-pattern-dotted relation" id="edgeNote27" d="M1768.199,215.5L1768.199,220.417C1768.199,225.333,1768.199,235.167,1748.854,247.437C1729.509,259.706,1690.819,274.413,1671.474,281.766L1652.129,289.119"></path>
+			</g>
+			<g class="edgeLabels">
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g class="edgeLabel">
+					<g transform="translate(0, 0)" class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="edgeLabel"></span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+			</g>
+			<g class="nodes">
+				<g transform="translate(1032.8828125, 48.5)" id="classId-SharedLib-189" class="node default">
+					<rect height="81" width="125.328125" y="-40.5" x="-62.6640625" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="62.6640625" x1="-62.6640625" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="62.6640625" x1="-62.6640625" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -37.21875, -33)" height="19" width="74.4375" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">SharedLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -55.1640625, 2)" height="19" width="110.328125">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Общие модели</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(314.95703125, 310.5)" id="classId-CodegeneratorLib-190" class="node default">
+					<rect height="81" width="353.5" y="-40.5" x="-176.75" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="176.75" x1="-176.75" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="176.75" x1="-176.75" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -66.609375, -33)" height="19" width="133.21875" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">CodegeneratorLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -169.25, 2)" height="19" width="338.5">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Генератор исходников для Web конструктора</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1076.33984375, 441.5)" id="classId-IdentityLib-191" class="node default">
+					<rect height="81" width="300.765625" y="-40.5" x="-150.3828125" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="150.3828125" x1="-150.3828125" class="divider"></line>
+					<line y2="6.5" y1="6.5" x2="150.3828125" x1="-150.3828125" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -40.65625, -33)" height="19" width="81.3125" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">IdentityLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -142.8828125, 14)" height="19" width="285.765625">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Контекст пакета Identity(авторизация)</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1278.09765625, 179.5)" id="classId-DbLayerLib-192" class="node default">
+					<rect height="81" width="234.328125" y="-40.5" x="-117.1640625" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="117.1640625" x1="-117.1640625" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="117.1640625" x1="-117.1640625" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -42.2265625, -33)" height="19" width="84.453125" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">DbLayerLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -109.6640625, 2)" height="19" width="219.328125">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Абстракция над Мульти-СУБД</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(314.95703125, 441.5)" id="classId-BlazorLib-193" class="node default">
+					<rect height="81" width="175.53125" y="-40.5" x="-87.765625" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="87.765625" x1="-87.765625" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="87.765625" x1="-87.765625" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -35.015625, -33)" height="19" width="70.03125" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">BlazorLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -80.265625, 2)" height="19" width="160.53125">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Blazor UI Компоненты</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(95.765625, 572.5)" id="classId-ToolsMauiApp-194" class="node default">
+					<rect height="81" width="175.53125" y="-40.5" x="-87.765625" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="87.765625" x1="-87.765625" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="87.765625" x1="-87.765625" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -50.4453125, -33)" height="19" width="100.890625" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">ToolsMauiApp</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -80.265625, 2)" height="19" width="160.53125">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">@Win/Android Клиент</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1274.35546875, 572.5)" id="classId-ServerLib-195" class="node default">
+					<rect height="81" width="221.953125" y="-40.5" x="-110.9765625" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="110.9765625" x1="-110.9765625" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="110.9765625" x1="-110.9765625" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -35.8046875, -33)" height="19" width="71.609375" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">ServerLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -103.4765625, 2)" height="19" width="206.953125">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Backend для BlankBlazorApp</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1595.87890625, 310.5)" id="classId-DbPostgreLib-196" class="node default">
+					<rect height="81" width="112.5" y="-40.5" x="-56.25" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="56.25" x1="-56.25" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="56.25" x1="-56.25" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -48.75, -33)" height="19" width="97.5" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">DbPostgreLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -48.75, 2)" height="19" width="79.171875">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">PostgreSQL</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1521.4296875, 441.5)" id="classId-RemoteCallLib-197" class="node default">
+					<rect height="81" width="122.984375" y="-40.5" x="-61.4921875" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="61.4921875" x1="-61.4921875" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="61.4921875" x1="-61.4921875" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -53.9921875, -33)" height="19" width="107.984375" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">RemoteCallLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -53.9921875, 2)" height="19" width="97.4375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Трансмиссия</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(550.828125, 572.5)" id="classId-CommerceService-198" class="node default">
+					<rect height="81" width="150.0625" y="-40.5" x="-75.03125" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="75.03125" x1="-75.03125" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="75.03125" x1="-75.03125" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -67.53125, -33)" height="19" width="135.0625" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">CommerceService</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -67.53125, 2)" height="19" width="110.109375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">@Микросервис</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(739.2265625, 572.5)" id="classId-ApiRestService-199" class="node default">
+					<rect height="81" width="126.734375" y="-40.5" x="-63.3671875" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="63.3671875" x1="-63.3671875" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="63.3671875" x1="-63.3671875" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -55.8671875, -33)" height="19" width="111.734375" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">ApiRestService</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -55.8671875, 2)" height="19" width="110.109375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">@Микросервис</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(869.65625, 179.5)" id="classId-HtmlGenerator-200" class="node default">
+					<rect height="81" width="180.4375" y="-40.5" x="-90.21875" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="90.21875" x1="-90.21875" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="90.21875" x1="-90.21875" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -55.7109375, -33)" height="19" width="111.421875" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">HtmlGenerator</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -82.71875, 2)" height="19" width="165.4375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Внешний репозиторий</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1194.9375, 310.5)" id="classId-DbSqliteLib-201" class="node default">
+					<rect height="81" width="100.0625" y="-40.5" x="-50.03125" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="50.03125" x1="-50.03125" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="50.03125" x1="-50.03125" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -42.53125, -33)" height="19" width="85.0625" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">DbSqliteLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -42.53125, 2)" height="19" width="40.96875">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Sqlite</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1348.140625, 310.5)" id="classId-DbMySQLLib-202" class="node default">
+					<rect height="81" width="106.34375" y="-40.5" x="-53.171875" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="53.171875" x1="-53.171875" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="53.171875" x1="-53.171875" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -45.671875, -33)" height="19" width="91.34375" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">DbMySQLLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -45.671875, 2)" height="19" width="45.859375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">MySQL</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(329.6640625, 572.5)" id="classId-BlankBlazorApp_Client-203" class="node default">
+					<rect height="81" width="192.265625" y="-40.5" x="-96.1328125" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="96.1328125" x1="-96.1328125" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="96.1328125" x1="-96.1328125" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -83.5, -33)" height="19" width="167" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">BlankBlazorApp.Client</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -88.6328125, 2)" height="19" width="177.265625">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">CSR Blazor WebAssembly</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(922.265625, 703.5)" id="classId-BlankBlazorApp-204" class="node default">
+					<rect height="81" width="131.859375" y="-40.5" x="-65.9296875" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="65.9296875" x1="-65.9296875" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="65.9296875" x1="-65.9296875" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -58.4296875, -33)" height="19" width="116.859375" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">BlankBlazorApp</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -58.4296875, 2)" height="19" width="110.109375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">@Микросервис</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(922.265625, 572.5)" id="classId-BlazorWebLib-205" class="node default">
+					<rect height="81" width="139.34375" y="-40.5" x="-69.671875" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="69.671875" x1="-69.671875" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="69.671875" x1="-69.671875" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -51.1953125, -33)" height="19" width="102.390625" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">BlazorWebLib</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -62.171875, 2)" height="19" width="124.34375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">SSR Blazor Server</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1605.87890625, 572.5)" id="classId-Telegram_Bot_Polling-206" class="node default">
+					<rect height="81" width="168.828125" y="-40.5" x="-84.4140625" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="84.4140625" x1="-84.4140625" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="84.4140625" x1="-84.4140625" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -76.9140625, -33)" height="19" width="153.828125" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">Telegram.Bot.Polling</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -76.9140625, 2)" height="19" width="110.109375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">@Микросервис</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1803.27734375, 572.5)" id="classId-StorageService-207" class="node default">
+					<rect height="81" width="125.96875" y="-40.5" x="-62.984375" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="62.984375" x1="-62.984375" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="62.984375" x1="-62.984375" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -55.484375, -33)" height="19" width="110.96875" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">StorageService</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -55.484375, 2)" height="19" width="110.109375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">@Микросервис</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1995.53515625, 572.5)" id="classId-ConstructorService-208" class="node default">
+					<rect height="81" width="158.546875" y="-40.5" x="-79.2734375" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="79.2734375" x1="-79.2734375" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="79.2734375" x1="-79.2734375" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -71.7734375, -33)" height="19" width="143.546875" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">ConstructorService</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -71.7734375, 2)" height="19" width="110.109375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">@Микросервис</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(2194.12109375, 572.5)" id="classId-HelpdeskService-209" class="node default">
+					<rect height="81" width="138.625" y="-40.5" x="-69.3125" class="outer title-state" style=""></rect>
+					<line y2="-9.5" y1="-9.5" x2="69.3125" x1="-69.3125" class="divider"></line>
+					<line y2="29.5" y1="29.5" x2="69.3125" x1="-69.3125" class="divider"></line>
+					<g class="label">
+						<foreignObject height="0" width="0">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel"></span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -61.8125, -33)" height="19" width="123.625" class="classTitle">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">HelpdeskService</span>
+							</div>
+						</foreignObject>
+						<foreignObject transform="translate( -61.8125, 2)" height="19" width="110.109375">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">@Микросервис</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+				<g transform="translate(1768.19921875, 179.5)" id="note0" class="node undefined">
+					<rect height="72" width="645.875" y="-36" x="-322.9375" ry="0" rx="0"></rect>
+					<g transform="translate(-315.4375, -28.5)" style="" class="label">
+						<rect></rect>
+						<foreignObject height="57" width="630.875">
+							<div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+								<span class="nodeLabel">
+									Если используется другая СУБД, тогда<br>
+										указатели  от [ServerLib] [Telegram.Bot.Polling], [HelpdeskService] и [RemoteCallLib]<br>должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]</span>
+							</div>
+						</foreignObject>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<text class="classTitleText" y="-25" x="1135.716796875">Структура (зависимости) проектов в решении</text>
+</svg>

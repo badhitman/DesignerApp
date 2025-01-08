@@ -42,41 +42,19 @@ public partial class CommerceImplementService : ICommerceService
             res.AddInfo("Запись отсутствует");
         else
         {
-            context.Remove(orderAttendanceDB);
-            await context.SaveChangesAsync();
-            res.AddSuccess("Запись успешно удалена");
+            if (orderAttendanceDB.AuthorIdentityUserId == req.SenderActionUserId || actor.IsAdmin || actor.Roles?.Contains(GlobalStaticConstants.Roles.System) == true)
+            {
+                context.Remove(orderAttendanceDB);
+                await context.SaveChangesAsync();
+                res.AddSuccess("Запись успешно удалена");
+            }
+            else
+            {
+                res.AddError("У вас недостаточно прав");
+            }
         }
 
         return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req)
-    {
-        if (req.IssueIds.Length == 0)
-            return new()
-            {
-                Response = [],
-                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
-            };
-
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<OrderAttendanceModelDB> q = context
-            .OrdersAttendances
-            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
-            .AsQueryable();
-
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
-            .Include(x => x.Organization)
-            .Include(x => x.Offer!)
-            .Include(x => x.Nomenclature);
-
-        return new()
-        {
-            Response = req.IncludeExternalData
-            ? [.. await inc_query.ToArrayAsync()]
-            : [.. await q.ToArrayAsync()],
-        };
     }
 
     /// <inheritdoc/>
@@ -186,6 +164,35 @@ public partial class CommerceImplementService : ICommerceService
         res.AddSuccess("Запрос смены статуса заказа услуг выполнен успешно");
 
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req)
+    {
+        if (req.IssueIds.Length == 0)
+            return new()
+            {
+                Response = [],
+                Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Запрос не может быть пустым" }]
+            };
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<OrderAttendanceModelDB> q = context
+            .OrdersAttendances
+            .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
+            .AsQueryable();
+
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
+            .Include(x => x.Organization)
+            .Include(x => x.Offer!)
+            .Include(x => x.Nomenclature);
+
+        return new()
+        {
+            Response = req.IncludeExternalData
+            ? [.. await inc_query.ToArrayAsync()]
+            : [.. await q.ToArrayAsync()],
+        };
     }
 
     /// <inheritdoc/>
