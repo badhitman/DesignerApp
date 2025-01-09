@@ -11,6 +11,7 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HelpdeskService;
 
@@ -484,6 +485,108 @@ public class HelpdeskImplementService(
 
     #region rubric    
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> RubricMove(TAuthRequestModel<RowMoveModel> req)
+    {
+        ResponseBaseModel res = new();
+
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+
+        var data = await context
+        .Rubrics
+        .Where(x => x.Id == req.Payload.ObjectId)
+        .Select(x => new { x.Id, x.ParentId, x.Name })
+        .FirstAsync(x => x.Id == req.Payload.ObjectId);
+
+        using IDbContextTransaction transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+        LockUniqueTokenModelDB locker = new() { Token = $"rubric-sort-upd-{data.ParentId}" };
+        try
+        {
+            await context.AddAsync(locker);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            res.AddError($"Не удалось выполнить команду: {ex.Message}");
+            return res;
+        }
+
+        List<RubricIssueHelpdeskModelDB> all = await context
+            .Rubrics
+            .Where(x => x.ContextName == req.Payload.ContextName && x.ParentId == data.ParentId)
+            .OrderBy(x => x.SortIndex)
+            .ToListAsync();
+
+        int i = all.FindIndex(x => x.Id == data.Id);
+        if (req.Payload.Direction == VerticalDirectionsEnum.Up)
+        {
+            if (i == 0)
+            {
+                res.AddInfo("Элемент уже в крайнем положении.");
+            }
+            else
+            {
+                RubricIssueHelpdeskModelDB r1 = all[i - 1], r2 = all[i];
+                uint val1 = r1.SortIndex, val2 = r2.SortIndex;
+                r1.SortIndex = uint.MaxValue;
+                context.Update(r1);
+                await context.SaveChangesAsync();
+                r2.SortIndex = val1;
+                context.Update(r2);
+                await context.SaveChangesAsync();
+                r1.SortIndex = val2;
+                context.Update(r1);
+                await context.SaveChangesAsync();
+
+                res.AddSuccess($"Рубрика '{data.Name}' сдвинута выше");
+            }
+        }
+        else
+        {
+            if (i == all.Count - 1)
+            {
+                res.AddInfo("Элемент уже в крайнем положении.");
+            }
+            else
+            {
+                RubricIssueHelpdeskModelDB r1 = all[i + 1], r2 = all[i];
+                uint val1 = r1.SortIndex, val2 = r2.SortIndex;
+                r1.SortIndex = uint.MaxValue;
+                context.Update(r1);
+                await context.SaveChangesAsync();
+                r2.SortIndex = val1;
+                context.Update(r2);
+                await context.SaveChangesAsync();
+                r1.SortIndex = val2;
+                context.Update(r1);
+                await context.SaveChangesAsync();
+
+                res.AddSuccess($"Рубрика '{data.Name}' сдвинута ниже");
+            }
+        }
+
+        all = [.. all.OrderBy(x => x.SortIndex)];
+
+        bool nu = false;
+        uint si = 0;
+        all.ForEach(x =>
+        {
+            si++;
+            nu = nu || x.SortIndex != si;
+            x.SortIndex = si;
+        });
+
+        if (nu)
+        {
+            context.UpdateRange(all);
+        }
+        context.Remove(locker);
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
+        return res;
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<int>> RubricCreateOrUpdate(RubricIssueHelpdeskModelDB rubric)
     {
         TResponseModel<int> res = new();
@@ -596,6 +699,27 @@ public class HelpdeskImplementService(
     #endregion
 
     #region issues
+    /// <inheritdoc/>
+    public async Task<TResponseModel<List<SubscriberIssueHelpdeskModelDB>>> SubscribesList(TAuthRequestModel<int> req)
+    {
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+            return new() { Messages = rest.Messages };
+
+        UserInfoModel actor = rest.Response[0];
+
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
+        {
+            SenderActionUserId = actor.UserId,
+            Payload = new() { IssuesIds = [req.Payload], IncludeSubscribersOnly = true },
+        });
+
+        if (!issues_data.Success() || issues_data.Response is null)
+            return new() { Messages = issues_data.Messages };
+
+        return new() { Response = [.. issues_data.Response.SelectMany(x => x.Subscribers!)] };
+    }
+
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TAuthRequestModel<TPaginationRequestModel<SelectIssuesRequestModel>> req)
     {

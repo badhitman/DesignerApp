@@ -46,6 +46,11 @@ public interface IHelpdeskService
 
     #region issues
     /// <summary>
+    /// SubscribesList
+    /// </summary>
+    public Task<TResponseModel<List<SubscriberIssueHelpdeskModelDB>>> SubscribesList(TAuthRequestModel<int> req);
+
+    /// <summary>
     /// IssuesSelect
     /// </summary>
     public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TAuthRequestModel<TPaginationRequestModel<SelectIssuesRequestModel>> req);
@@ -82,6 +87,11 @@ public interface IHelpdeskService
     #endregion
 
     #region rubric
+    /// <summary>
+    /// RubricMove
+    /// </summary>
+    public Task<ResponseBaseModel> RubricMove(TAuthRequestModel<RowMoveModel> req);
+
     /// <summary>
     /// Rubric create (or update)
     /// </summary>

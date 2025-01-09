@@ -11,7 +11,7 @@ namespace BlazorWebLib.Components.Helpdesk;
 /// <summary>
 /// RubricNode: Edit
 /// </summary>
-public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
+public partial class RubricNodeEditComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
@@ -60,11 +60,11 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
 
     async Task MoveRow(VerticalDirectionsEnum dir, TreeItemDataRubricModel rubric)
     {
-        if (ItemModel is null)
-            throw new ArgumentNullException(nameof(ItemModel));
+        if (ItemModel is null || CurrentUserSession is null)
+            return;
 
         await SetBusy();
-        TResponseModel<bool> res = await HelpdeskRepo.RubricMove(new RowMoveModel() { Direction = dir, ObjectId = rubric.Value!.Id, ContextName = ContextName });
+        ResponseBaseModel res = await HelpdeskRepo.RubricMove(new() { SenderActionUserId = CurrentUserSession.UserId, Payload = new() { Direction = dir, ObjectId = rubric.Value!.Id, ContextName = ContextName } });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         ReloadNodeHandle(ItemModel.ParentId ?? 0);
@@ -98,8 +98,10 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseModel
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         ItemModel = Item.Value;
         itemSystemName = ItemModel?.Name;
     }

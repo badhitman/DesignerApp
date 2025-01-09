@@ -50,7 +50,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Сдвинуть рубрику
     /// </summary>
-    public Task<TResponseModel<bool>> RubricMove(RowMoveModel req);
+    public Task<ResponseBaseModel> RubricMove(TAuthRequestModel<RowMoveModel> req);
 
     /// <summary>
     /// Прочитать данные рубрики (вместе со всеми вышестоящими родителями)
@@ -87,7 +87,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Запрос подписчиков на обращение
     /// </summary>
-    public Task<List<SubscriberIssueHelpdeskModelDB>> SubscribesList(TAuthRequestModel<int> req);
+    public Task<TResponseModel<List<SubscriberIssueHelpdeskModelDB>>> SubscribesList(TAuthRequestModel<int> req);
 
     /// <summary>
     /// Исполнитель обращения

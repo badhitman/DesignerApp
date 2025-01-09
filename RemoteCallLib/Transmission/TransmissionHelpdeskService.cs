@@ -49,7 +49,7 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<List<UniversalBaseModel>>(GlobalStaticConstants.TransmissionQueues.RubricsForIssuesListHelpdeskReceive, req) ?? new();
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> RubricMove(RowMoveModel req)
+    public async Task<ResponseBaseModel> RubricMove(TAuthRequestModel<RowMoveModel> req)
         => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.RubricForIssuesMoveHelpdeskReceive, req) ?? new();
     #endregion
 
@@ -71,8 +71,8 @@ public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdesk
         => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.SubscribeIssueUpdateHelpdeskReceive, req) ?? new();
 
     /// <inheritdoc/>
-    public async Task<List<SubscriberIssueHelpdeskModelDB>> SubscribesList(TAuthRequestModel<int> req)
-        => await rabbitClient.MqRemoteCall<List<SubscriberIssueHelpdeskModelDB>>(GlobalStaticConstants.TransmissionQueues.SubscribesIssueListHelpdeskReceive, req) ?? new();
+    public async Task<TResponseModel<List<SubscriberIssueHelpdeskModelDB>>> SubscribesList(TAuthRequestModel<int> req)
+        => await rabbitClient.MqRemoteCall<TResponseModel<List<SubscriberIssueHelpdeskModelDB>>>(GlobalStaticConstants.TransmissionQueues.SubscribesIssueListHelpdeskReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> ExecuterUpdate(TAuthRequestModel<UserIssueModel> req)
