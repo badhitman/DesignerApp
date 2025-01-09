@@ -66,12 +66,17 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseAuthM
     /// <inheritdoc/>
     public async Task ReloadRules()
     {
+        if (CurrentUserSession is null)
+            return;
+
         QuantityAddingRule = 2;
         PriceAddingRule = 0;
         //
         await SetBusy();
-
-        rules = await CommerceRepo.PricesRulesGetForOffers([Offer.Id]);
+        TResponseModel<List<PriceRuleForOfferModelDB>> res = await CommerceRepo.PricesRulesGetForOffers(new() { Payload = [Offer.Id], SenderActionUserId = CurrentUserSession.UserId });
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
+        if (res.Response is not null && res.Success())
+            rules = res.Response;
         IsBusyProgress = false;
     }
 

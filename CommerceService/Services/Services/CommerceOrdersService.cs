@@ -35,6 +35,20 @@ public partial class CommerceImplementService(
 
     #region price-rule
     /// <inheritdoc/>
+    public async Task<TResponseModel<List<PriceRuleForOfferModelDB>>> PricesRulesGetForOffers(TAuthRequestModel<int[]> req)
+    {
+        TResponseModel<PriceRuleForOfferModelDB[]?> res = new();
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        return new()
+        {
+            Response = await context
+            .PricesRules.Where(x => req.Payload.Any(y => x.OfferId == y))
+            .Include(x => x.Offer)
+            .ToListAsync()
+        };
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<int>> PriceRuleUpdate(TAuthRequestModel<PriceRuleForOfferModelDB> req)
     {
         TResponseModel<int> res = new() { Response = 0 };

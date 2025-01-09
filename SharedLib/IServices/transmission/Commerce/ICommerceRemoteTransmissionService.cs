@@ -42,7 +42,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// PricesRulesGetForOffers
     /// </summary>
-    public Task<List<PriceRuleForOfferModelDB>> PricesRulesGetForOffers(int[] ids);
+    public Task<TResponseModel<List<PriceRuleForOfferModelDB>>> PricesRulesGetForOffers(TAuthRequestModel<int[]> ids);
 
     /// <summary>
     /// OffersRead

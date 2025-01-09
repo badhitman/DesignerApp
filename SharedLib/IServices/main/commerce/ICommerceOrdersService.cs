@@ -11,6 +11,11 @@ public partial interface ICommerceService
 {
     #region price-rule
     /// <summary>
+    /// PricesRulesGetForOffers
+    /// </summary>
+    public Task<TResponseModel<List<PriceRuleForOfferModelDB>>> PricesRulesGetForOffers(TAuthRequestModel<int[]> req);
+
+    /// <summary>
     /// PriceRuleUpdate
     /// </summary>
     public Task<TResponseModel<int>> PriceRuleUpdate(TAuthRequestModel<PriceRuleForOfferModelDB> req);

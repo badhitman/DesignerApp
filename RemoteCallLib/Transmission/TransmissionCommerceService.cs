@@ -99,9 +99,9 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
     public async Task<TResponseModel<OfferModelDB[]>> OffersRead(TAuthRequestModel<int[]> ids)
         => await rabbitClient.MqRemoteCall<TResponseModel<OfferModelDB[]>>(GlobalStaticConstants.TransmissionQueues.OfferReadCommerceReceive, ids) ?? new();
 
-    /// <inheritdoc/> int[]?, List<PriceRuleForOfferModelDB>?
-    public async Task<List<PriceRuleForOfferModelDB>> PricesRulesGetForOffers(int[] ids)
-        => await rabbitClient.MqRemoteCall<List<PriceRuleForOfferModelDB>>(GlobalStaticConstants.TransmissionQueues.PricesRulesGetForOfferCommerceReceive, ids) ?? [];
+    /// <inheritdoc/>
+    public async Task<TResponseModel<List<PriceRuleForOfferModelDB>>> PricesRulesGetForOffers(TAuthRequestModel<int[]> ids)
+        => await rabbitClient.MqRemoteCall<TResponseModel<List<PriceRuleForOfferModelDB>>>(GlobalStaticConstants.TransmissionQueues.PricesRulesGetForOfferCommerceReceive, ids) ?? new();
 
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<OrderDocumentModelDB>> OrdersSelect(TPaginationRequestModel<TAuthRequestModel<OrdersSelectRequestModel>> req)

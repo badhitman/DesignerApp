@@ -186,6 +186,9 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
 
     async Task UpdateCachePriceRules()
     {
+        if (CurrentUserSession is null)
+            return;
+
         CurrentCart ??= OrderDocumentModelDB.NewEmpty(CurrentUserSession!.UserId);
 
         if (CurrentCart.AddressesTabs is null)
@@ -203,17 +206,18 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             return;
 
         await SetBusy();
-
-        List<PriceRuleForOfferModelDB> res = await CommerceRepo.PricesRulesGetForOffers([.. offers_load]);
+        TResponseModel<List<PriceRuleForOfferModelDB>> res = await CommerceRepo.PricesRulesGetForOffers(new() { Payload = [.. offers_load], SenderActionUserId = CurrentUserSession.UserId });
         await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(res.Messages);
 
-        offers_load.ForEach(x =>
-        {
-            if (RulesCache.ContainsKey(x))
-                RulesCache[x] = res.Where(y => x == y.OfferId && !y.IsDisabled).ToArray();
-            else
-                RulesCache.Add(x, res.Where(y => x == y.OfferId && !y.IsDisabled).ToArray());
-        });
+        if (res.Success() && res.Response is not null)
+            offers_load.ForEach(x =>
+            {
+                if (RulesCache.ContainsKey(x))
+                    RulesCache[x] = res.Response.Where(y => x == y.OfferId && !y.IsDisabled).ToArray();
+                else
+                    RulesCache.Add(x, res.Response.Where(y => x == y.OfferId && !y.IsDisabled).ToArray());
+            });
     }
 
     void CalculateDiscounts()
