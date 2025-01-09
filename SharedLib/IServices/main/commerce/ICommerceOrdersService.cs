@@ -11,6 +11,11 @@ public partial interface ICommerceService
 {
     #region payment-document
     /// <summary>
+    /// PaymentDocumentUpdate
+    /// </summary>
+    public Task<TResponseModel<int>> PaymentDocumentUpdate(TAuthRequestModel<PaymentDocumentBaseModel> req);
+
+    /// <summary>
     /// PaymentDocumentDelete
     /// </summary>
     public Task<ResponseBaseModel> PaymentDocumentDelete(TAuthRequestModel<int> req);

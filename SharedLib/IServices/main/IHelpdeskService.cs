@@ -30,6 +30,11 @@ public interface IHelpdeskService
 
     #region issues
     /// <summary>
+    /// IssuesSelect
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TAuthRequestModel<TPaginationRequestModel<SelectIssuesRequestModel>> req);
+
+    /// <summary>
     /// ConsoleIssuesSelect
     /// </summary>
     public Task<TPaginationResponseModel<IssueHelpdeskModel>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req);

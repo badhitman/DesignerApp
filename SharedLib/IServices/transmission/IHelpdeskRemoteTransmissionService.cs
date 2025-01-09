@@ -67,7 +67,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Получить обращения для пользователя
     /// </summary>
-    public Task<TPaginationResponseModel<IssueHelpdeskModel>> IssuesSelect(TPaginationRequestModel<SelectIssuesRequestModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TAuthRequestModel<TPaginationRequestModel<SelectIssuesRequestModel>> req);
 
     /// <summary>
     /// Создать обращение

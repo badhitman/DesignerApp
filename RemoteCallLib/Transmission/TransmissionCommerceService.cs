@@ -112,7 +112,7 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<TResponseModel<int>>(GlobalStaticConstants.TransmissionQueues.OrderUpdateCommerceReceive, order) ?? new();
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment)
+    public async Task<TResponseModel<int>> PaymentDocumentUpdate(TAuthRequestModel<PaymentDocumentBaseModel> payment)
         => await rabbitClient.MqRemoteCall<TResponseModel<int>>(GlobalStaticConstants.TransmissionQueues.PaymentDocumentUpdateCommerceReceive, payment) ?? new();
 
     /// <inheritdoc/> PriceRuleForOfferModelDB?, TResponseModel<int>?

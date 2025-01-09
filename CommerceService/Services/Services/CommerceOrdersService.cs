@@ -35,6 +35,74 @@ public partial class CommerceImplementService(
 
     #region payment-document
     /// <inheritdoc/>
+    public async Task<TResponseModel<int>> PaymentDocumentUpdate(TAuthRequestModel<PaymentDocumentBaseModel> req)
+    {
+        TResponseModel<int> res = new() { Response = 0 };
+
+        if (req.Payload.Amount <= 0)
+        {
+            res.AddError("Сумма платежа должна быть больше нуля");
+            return res;
+        }
+        if (req.Payload.OrderDocumentId < 1)
+        {
+            res.AddError("Не указан документ-заказ");
+            return res;
+        }
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        DateTime dtu = DateTime.UtcNow;
+
+        PaymentDocumentModelDb? payment_db = null;
+        if (!string.IsNullOrWhiteSpace(req.Payload.ExternalDocumentId))
+        {
+            payment_db = await context
+               .PaymentsDocuments
+               .FirstOrDefaultAsync(x => x.ExternalDocumentId == req.Payload.ExternalDocumentId);
+
+            req.Payload.Id = req.Payload.Id > 0 ? req.Payload.Id : payment_db?.Id ?? 0;
+        }
+
+        if (req.Payload.Id < 1)
+        {
+            payment_db = new()
+            {
+                Name = req.Payload.Name,
+                Amount = req.Payload.Amount,
+                OrderDocumentId = req.Payload.OrderDocumentId,
+                ExternalDocumentId = req.Payload.ExternalDocumentId,
+            };
+
+            await context.AddAsync(payment_db);
+
+            await context.SaveChangesAsync();
+
+            res.AddSuccess("Платёж добавлен");
+            res.Response = req.Payload.Id;
+            return res;
+        }
+
+        res.Response = await context.PaymentsDocuments
+            .Where(x => x.Id == req.Payload.Id)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.Name, req.Payload.Name)
+            .SetProperty(p => p.Amount, req.Payload.Amount));
+
+        await context.OrdersDocuments
+               .Where(x => x.Id == req.Payload.OrderDocumentId)
+               .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.ExternalDocumentId) && payment_db?.ExternalDocumentId != req.Payload.ExternalDocumentId)
+            res.Response = await context.PaymentsDocuments
+            .Where(x => x.Id == req.Payload.Id)
+            .ExecuteUpdateAsync(set => set.SetProperty(p => p.ExternalDocumentId, req.Payload.ExternalDocumentId));
+
+        res.AddSuccess($"Обновление `{GetType().Name}` выполнено");
+        return res;
+    }
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> PaymentDocumentDelete(TAuthRequestModel<int> req)
     {
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();

@@ -32,6 +32,90 @@ public class HelpdeskImplementService(
 
     #region rubric
     /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TAuthRequestModel<TPaginationRequestModel<SelectIssuesRequestModel>> req)
+    {
+        if (req.Payload.PageSize < 5)
+            req.Payload.PageSize = 5;
+
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+
+        IQueryable<IssueHelpdeskModelDB> q = context
+            .Issues
+            .Where(x => x.ProjectId == req.Payload.Payload.ProjectId)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.Payload.SearchQuery))
+        {
+            req.Payload.Payload.SearchQuery = req.Payload.Payload.SearchQuery.ToUpper();
+
+            q = from issue_element in q
+                join rubric_element in context.Rubrics on issue_element.RubricIssueId equals rubric_element.Id
+                into grp_rubrics
+                from c in grp_rubrics.DefaultIfEmpty()
+                where issue_element.NormalizedNameUpper!.Contains(req.Payload.Payload.SearchQuery) || c.NormalizedNameUpper!.Contains(req.Payload.Payload.SearchQuery)
+                select issue_element;
+        }
+
+        switch (req.Payload.Payload.JournalMode)
+        {
+            case HelpdeskJournalModesEnum.ActualOnly:
+                q = q.Where(x => x.StatusDocument <= StatusesDocumentsEnum.Progress);
+                break;
+            case HelpdeskJournalModesEnum.ArchiveOnly:
+                q = q.Where(x => x.StatusDocument > StatusesDocumentsEnum.Progress);
+                break;
+            default:
+                break;
+        }
+
+        switch (req.Payload.Payload.UserArea)
+        {
+            case UsersAreasHelpdeskEnum.Subscriber:
+                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.Payload.IdentityUsersIds.Contains(y.UserId)));
+                break;
+            case UsersAreasHelpdeskEnum.Executor:
+                q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId));
+                break;
+            case UsersAreasHelpdeskEnum.Main:
+                q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.Payload.IdentityUsersIds.Contains(y.UserId)));
+                break;
+            case UsersAreasHelpdeskEnum.Author:
+                q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId));
+                break;
+            default:
+                if (req.Payload.Payload.UserArea is not null)
+                    q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId) || req.Payload.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.Payload.IdentityUsersIds.Contains(y.UserId)));
+                break;
+        }
+
+        q = req.Payload.SortingDirection == VerticalDirectionsEnum.Up
+            ? q.OrderBy(x => x.CreatedAtUTC)
+            : q.OrderByDescending(x => x.CreatedAtUTC);
+
+        var inc = q
+            .Skip(req.Payload.PageNum * req.Payload.PageSize)
+            .Take(req.Payload.PageSize)
+            .Include(x => x.RubricIssue);
+
+        List<IssueHelpdeskModelDB> data = req.Payload.Payload.IncludeSubscribers
+            ? await inc.Include(x => x.Subscribers).ToListAsync()
+            : await inc.ToListAsync();
+
+        return new()
+        {
+            Response = new()
+            {
+                PageNum = req.Payload.PageNum,
+                PageSize = req.Payload.PageSize,
+                SortingDirection = req.Payload.SortingDirection,
+                SortBy = req.Payload.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = [.. data.Select(x => IssueHelpdeskModel.Build(x))]
+            }
+        };
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<int>> RubricCreateOrUpdate(RubricIssueHelpdeskModelDB rubric)
     {
         TResponseModel<int> res = new();

@@ -30,7 +30,7 @@ public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : C
     [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
 #endif
     public async Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment)
-        => await commRepo.PaymentDocumentUpdate(payment);
+        => await commRepo.PaymentDocumentUpdate(new() { Payload = payment, SenderActionUserId = GlobalStaticConstants.Roles.System });
 
     /// <summary>
     /// Удалить платёжный документ

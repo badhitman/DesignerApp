@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Telegram;
 /// <summary>
 /// ChatsTableComponent
 /// </summary>
-public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
+public partial class ChatsTableComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ITelegramRemoteTransmissionService TgRepo { get; set; } = default!;
@@ -58,6 +58,9 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
 
     async Task LoadUsersData()
     {
+        if (CurrentUserSession is null)
+            return;
+
         IQueryable<ChatTelegramModelDB> q = pagedData
             .Where(x => x.Type == ChatsTypesTelegramEnum.Private && !UsersCache.Any(y => y.TelegramId == x.ChatTelegramId))
             .AsQueryable();
@@ -77,28 +80,32 @@ public partial class ChatsTableComponent : BlazorBusyComponentBaseModel
 
         string[] users_ids_identity = [.. users_res.Response.Select(x => x.UserId)];
         await SetBusy();
-        TPaginationResponseModel<IssueHelpdeskModel> issues_users_res = await HelpdeskRepo
-                    .IssuesSelect(new()
-                    {
-                        Payload = new()
-                        {
-                            IdentityUsersIds = [.. users_ids_identity],
-                            JournalMode = HelpdeskJournalModesEnum.All,
-                            IncludeSubscribers = true,
-                        },
-                        PageNum = 0,
-                        PageSize = int.MaxValue,
-                        SortBy = nameof(IssueHelpdeskModel.LastUpdateAt),
-                        SortingDirection = VerticalDirectionsEnum.Down,
-                    });
+        TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> issues_users_res = await HelpdeskRepo
+                     .IssuesSelect(new()
+                     {
+                         Payload = new()
+                         {
+                             Payload = new()
+                             {
+                                 IdentityUsersIds = [.. users_ids_identity],
+                                 JournalMode = HelpdeskJournalModesEnum.All,
+                                 IncludeSubscribers = true,
+                             },
+                             PageNum = 0,
+                             PageSize = int.MaxValue,
+                             SortBy = nameof(IssueHelpdeskModel.LastUpdateAt),
+                             SortingDirection = VerticalDirectionsEnum.Down,
+                         },
+                         SenderActionUserId = CurrentUserSession.UserId
+                     });
         IsBusyProgress = false;
 
-        if (issues_users_res.Response is null || issues_users_res.Response.Count == 0)
+        if (issues_users_res.Response?.Response is null || issues_users_res.Response.Response.Count == 0)
             return;
 
         foreach (UserInfoModel us in users_res.Response)
         {
-            IssueHelpdeskModel[] issues_for_user = [.. issues_users_res.Response
+            IssueHelpdeskModel[] issues_for_user = [.. issues_users_res.Response.Response
                 .Where(x =>
                 x.ExecutorIdentityUserId == us.UserId ||
                 x.Subscribers!.Any(y => y.UserId == us.UserId) ||

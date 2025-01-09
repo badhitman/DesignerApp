@@ -37,7 +37,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Обновить/создать платёжный документ
     /// </summary>
-    public Task<TResponseModel<int>> PaymentDocumentUpdate(PaymentDocumentBaseModel payment);
+    public Task<TResponseModel<int>> PaymentDocumentUpdate(TAuthRequestModel<PaymentDocumentBaseModel> payment);
 
     /// <summary>
     /// PricesRulesGetForOffers
