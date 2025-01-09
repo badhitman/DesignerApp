@@ -88,6 +88,11 @@ public interface IHelpdeskService
 
     #region rubric
     /// <summary>
+    /// Получить рубрики, вложенные в рубрику (если не указано, то root перечень)
+    /// </summary>
+    public Task<List<UniversalBaseModel>> RubricsList(RubricsListRequestModel req);
+
+    /// <summary>
     /// RubricMove
     /// </summary>
     public Task<ResponseBaseModel> RubricMove(TAuthRequestModel<RowMoveModel> req);

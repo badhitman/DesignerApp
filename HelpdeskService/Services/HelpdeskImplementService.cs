@@ -483,7 +483,34 @@ public class HelpdeskImplementService(
 
     #endregion
 
-    #region rubric    
+    #region rubric
+    /// <inheritdoc/>
+    public async Task<List<UniversalBaseModel>> RubricsList(RubricsListRequestModel req)
+    {
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        IQueryable<UniversalBaseModel> q = context
+            .Rubrics
+            .Where(x => x.ProjectId == req.ProjectId && x.ContextName == req.ContextName)
+            .Select(x => new UniversalBaseModel()
+            {
+                Name = x.Name,
+                Description = x.Description,
+                Id = x.Id,
+                IsDisabled = x.IsDisabled,
+                ParentId = x.ParentId,
+                ProjectId = x.ProjectId,
+                SortIndex = x.SortIndex,
+            })
+            .AsQueryable();
+
+        if (req.Request < 1)
+            q = q.Where(x => x.ParentId == null || x.ParentId < 1);
+        else
+            q = q.Where(x => x.ParentId == req.Request);
+
+        return await q.ToListAsync();
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> RubricMove(TAuthRequestModel<RowMoveModel> req)
     {
