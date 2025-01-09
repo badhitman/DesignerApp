@@ -39,7 +39,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<MessagesListReceive, TAuthRequestModel<int>, TResponseModel<IssueMessageHelpdeskModelDB[]>>()
             .RegisterMqListener<StatusChangeReceive, TAuthRequestModel<StatusChangeRequestModel>, TResponseModel<bool>>()
             .RegisterMqListener<PulseIssueReceive, PulseRequestModel, TResponseModel<bool>>()
-            .RegisterMqListener<PulseJournalReceive, TPaginationRequestModel<UserIssueModel>, TPaginationResponseModel<PulseViewModel>>()
+            .RegisterMqListener<PulseJournalSelectReceive, TAuthRequestModel<TPaginationRequestModel<UserIssueModel>>, TResponseModel<TPaginationResponseModel<PulseViewModel>>>()
             .RegisterMqListener<TelegramMessageIncomingReceive, TelegramIncomingMessageModel, TResponseModel<bool>>()
             .RegisterMqListener<ConsoleIssuesSelectReceive, TPaginationRequestModel<ConsoleIssuesRequestModel>, TPaginationResponseModel<IssueHelpdeskModel>>()
             ;

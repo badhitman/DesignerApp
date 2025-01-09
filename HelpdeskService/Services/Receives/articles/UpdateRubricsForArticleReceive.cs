@@ -21,7 +21,6 @@ public class UpdateRubricsForArticleReceive(IArticlesService artRepo, ILogger<Ar
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-
         return await artRepo.UpdateRubricsForArticle(req);
     }
 }

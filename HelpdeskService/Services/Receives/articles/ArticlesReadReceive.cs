@@ -21,7 +21,6 @@ public class ArticlesReadReceive(IArticlesService artRepo, ILogger<ArticlesReadR
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogDebug($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-
         return await artRepo.ArticlesRead(req);
     }
 }

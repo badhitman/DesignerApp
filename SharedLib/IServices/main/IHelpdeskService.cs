@@ -27,6 +27,22 @@ public interface IHelpdeskService
         .Replace(GlobalStaticConstants.HostAddressProperty, clearMd ? clearBaseUri : $"<a href='{clearBaseUri}'>{clearBaseUri}</a>");
     }
 
+    #region messages
+    /// <summary>
+    /// Сообщение в обращение
+    /// </summary>
+    public Task<TResponseModel<int?>> MessageUpdateOrCreate(TAuthRequestModel<IssueMessageHelpdeskBaseModel> req);
+
+    /// <summary>
+    /// Message vote
+    /// </summary>
+    public Task<TResponseModel<bool?>> MessageVote(TAuthRequestModel<VoteIssueRequestModel> req);
+
+    /// <summary>
+    /// MessagesList
+    /// </summary>
+    public Task<TResponseModel<IssueMessageHelpdeskModelDB[]>> MessagesList(TAuthRequestModel<int> req);
+    #endregion
 
     #region issues
     /// <summary>
@@ -82,6 +98,12 @@ public interface IHelpdeskService
     public Task<TResponseModel<List<RubricIssueHelpdeskModelDB>>> RubricsGet(int[] rubricsIds);
     #endregion
 
+    #region pulse
+    /// <summary>
+    /// PulseJournalSelect
+    /// </summary>
+    public Task<TResponseModel<TPaginationResponseModel<PulseViewModel>>> PulseJournalSelect(TAuthRequestModel<TPaginationRequestModel<UserIssueModel>> req);
+
     /// <summary>
     /// Регистрация события из обращения (логи).
     /// </summary>
@@ -90,15 +112,7 @@ public interface IHelpdeskService
     /// </remarks>
     public Task<TResponseModel<bool>> PulsePush(PulseRequestModel req);
 
-    /// <summary>
-    /// Сообщение в обращение
-    /// </summary>
-    public Task<TResponseModel<int?>> MessageUpdateOrCreate(TAuthRequestModel<IssueMessageHelpdeskBaseModel> req);
-
-    /// <summary>
-    /// Message vote
-    /// </summary>
-    public Task<TResponseModel<bool?>> MessageVote(TAuthRequestModel<VoteIssueRequestModel> req);
+    #endregion
 
     /// <summary>
     /// Очистить кеш сегмента консоли

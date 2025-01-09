@@ -107,7 +107,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Журнал событий в обращении
     /// </summary>
-    public Task<TPaginationResponseModel<PulseViewModel>> PulseJournal(TPaginationRequestModel<UserIssueModel> req);
+    public Task<TResponseModel<TPaginationResponseModel<PulseViewModel>>> PulseSelectJournal(TAuthRequestModel<TPaginationRequestModel<UserIssueModel>> req);
 
     /// <summary>
     /// Получить обращения

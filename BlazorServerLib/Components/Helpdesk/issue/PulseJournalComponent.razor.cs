@@ -23,7 +23,7 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
 
     private MudTable<PulseViewModel> table = default!;
 
-    MarkupString ms(string raw_html) => (MarkupString)raw_html;
+    static MarkupString ms(string raw_html) => (MarkupString)raw_html;
 
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
@@ -31,22 +31,29 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
     private async Task<TableData<PulseViewModel>> ServerReload(TableState state, CancellationToken token)
     {
         await SetBusy(token: token);
-        TPaginationResponseModel<PulseViewModel> tp = await HelpdeskRepo.PulseJournal(new TPaginationRequestModel<UserIssueModel>()
+        TResponseModel<TPaginationResponseModel<PulseViewModel>> tp = await HelpdeskRepo.PulseSelectJournal(new()
         {
-            PageNum = state.Page,
-            PageSize = state.PageSize,
-            SortingDirection = state.SortDirection == SortDirection.Descending ? VerticalDirectionsEnum.Down : VerticalDirectionsEnum.Up,
-            SortBy = state.SortLabel,
-            Payload = new()
+            Payload = new TPaginationRequestModel<UserIssueModel>()
             {
-                UserId = CurrentUserSession!.UserId,
-                IssueId = Issue.Id,
-            }
+                PageNum = state.Page,
+                PageSize = state.PageSize,
+                SortingDirection = state.SortDirection == SortDirection.Descending ? VerticalDirectionsEnum.Down : VerticalDirectionsEnum.Up,
+                SortBy = state.SortLabel,
+                Payload = new()
+                {
+                    UserId = CurrentUserSession!.UserId,
+                    IssueId = Issue.Id,
+                }
+            },
+            SenderActionUserId = CurrentUserSession.UserId,
         });
-
+        SnackbarRepo.ShowMessagesResponse(tp.Messages);
         IsBusyProgress = false;
 
-        string[] users_ids = tp.Response!
+        if (!tp.Success() || tp.Response?.Response is null)
+            return new TableData<PulseViewModel>() { TotalItems = 0, Items = [] };
+
+        string[] users_ids = tp.Response.Response
             .Select(x => x.AuthorUserIdentityId)
             .Where(x => !UsersIdentityDump.Any(y => y.UserId == x))
             .ToArray();
@@ -61,7 +68,7 @@ public partial class PulseJournalComponent : IssueWrapBaseModel
                 UsersIdentityDump.AddRange(users_add.Response);
         }
 
-        return new TableData<PulseViewModel>() { TotalItems = tp.TotalRowsCount, Items = tp.Response };
+        return new TableData<PulseViewModel>() { TotalItems = tp.Response.TotalRowsCount, Items = tp.Response.Response };
     }
 
     /// <inheritdoc/>

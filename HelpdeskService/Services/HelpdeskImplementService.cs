@@ -30,91 +30,459 @@ public class HelpdeskImplementService(
 {
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 
-    #region rubric
+    #region messages
     /// <inheritdoc/>
-    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TAuthRequestModel<TPaginationRequestModel<SelectIssuesRequestModel>> req)
+    public async Task<TResponseModel<IssueMessageHelpdeskModelDB[]>> MessagesList(TAuthRequestModel<int> req)
     {
-        if (req.Payload.PageSize < 5)
-            req.Payload.PageSize = 5;
+        TResponseModel<IssueMessageHelpdeskModelDB[]> res = new();
+
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+            return new() { Messages = rest.Messages };
+
+        UserInfoModel actor = rest.Response[0];
+
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
+        {
+            SenderActionUserId = actor.UserId,
+            Payload = new() { IssuesIds = [req.Payload], IncludeSubscribersOnly = true },
+        });
+
+        if (!issues_data.Success() || issues_data.Response is null)
+            return new() { Messages = issues_data.Messages };
+
+        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(role_actor => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(hd_role => hd_role == role_actor)) != true && !issues_data.Response.All(c => actor.UserId == c.AuthorIdentityUserId))
+        {
+            res.AddError("У вас не достаточно прав");
+            return res;
+        }
 
         using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
 
-        IQueryable<IssueHelpdeskModelDB> q = context
-            .Issues
-            .Where(x => x.ProjectId == req.Payload.Payload.ProjectId)
-            .AsQueryable();
+        int[] issues_ids = issues_data.Response.Select(i => i.Id).ToArray();
 
-        if (!string.IsNullOrWhiteSpace(req.Payload.Payload.SearchQuery))
-        {
-            req.Payload.Payload.SearchQuery = req.Payload.Payload.SearchQuery.ToUpper();
+        res.Response = await context
+            .IssuesMessages
+            .Where(x => issues_ids.Any(y => y == x.IssueId))
+            .OrderByDescending(i => i.CreatedAt)
+            .Include(x => x.Votes)
+            .ToArrayAsync();
 
-            q = from issue_element in q
-                join rubric_element in context.Rubrics on issue_element.RubricIssueId equals rubric_element.Id
-                into grp_rubrics
-                from c in grp_rubrics.DefaultIfEmpty()
-                where issue_element.NormalizedNameUpper!.Contains(req.Payload.Payload.SearchQuery) || c.NormalizedNameUpper!.Contains(req.Payload.Payload.SearchQuery)
-                select issue_element;
-        }
-
-        switch (req.Payload.Payload.JournalMode)
-        {
-            case HelpdeskJournalModesEnum.ActualOnly:
-                q = q.Where(x => x.StatusDocument <= StatusesDocumentsEnum.Progress);
-                break;
-            case HelpdeskJournalModesEnum.ArchiveOnly:
-                q = q.Where(x => x.StatusDocument > StatusesDocumentsEnum.Progress);
-                break;
-            default:
-                break;
-        }
-
-        switch (req.Payload.Payload.UserArea)
-        {
-            case UsersAreasHelpdeskEnum.Subscriber:
-                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.Payload.IdentityUsersIds.Contains(y.UserId)));
-                break;
-            case UsersAreasHelpdeskEnum.Executor:
-                q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId));
-                break;
-            case UsersAreasHelpdeskEnum.Main:
-                q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.Payload.IdentityUsersIds.Contains(y.UserId)));
-                break;
-            case UsersAreasHelpdeskEnum.Author:
-                q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId));
-                break;
-            default:
-                if (req.Payload.Payload.UserArea is not null)
-                    q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId) || req.Payload.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.Payload.IdentityUsersIds.Contains(y.UserId)));
-                break;
-        }
-
-        q = req.Payload.SortingDirection == VerticalDirectionsEnum.Up
-            ? q.OrderBy(x => x.CreatedAtUTC)
-            : q.OrderByDescending(x => x.CreatedAtUTC);
-
-        var inc = q
-            .Skip(req.Payload.PageNum * req.Payload.PageSize)
-            .Take(req.Payload.PageSize)
-            .Include(x => x.RubricIssue);
-
-        List<IssueHelpdeskModelDB> data = req.Payload.Payload.IncludeSubscribers
-            ? await inc.Include(x => x.Subscribers).ToListAsync()
-            : await inc.ToListAsync();
-
-        return new()
-        {
-            Response = new()
-            {
-                PageNum = req.Payload.PageNum,
-                PageSize = req.Payload.PageSize,
-                SortingDirection = req.Payload.SortingDirection,
-                SortBy = req.Payload.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = [.. data.Select(x => IssueHelpdeskModel.Build(x))]
-            }
-        };
+        return res;
     }
 
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> MessageUpdateOrCreate(TAuthRequestModel<IssueMessageHelpdeskBaseModel> req)
+    {
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
+        TResponseModel<int?> res = new();
+
+        if (string.IsNullOrWhiteSpace(req.Payload.MessageText))
+        {
+            res.AddError("Пустой текст сообщения");
+            return res;
+        }
+        req.Payload.MessageText = req.Payload.MessageText.Trim();
+
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
+        {
+            SenderActionUserId = req.SenderActionUserId,
+            Payload = new() { IssuesIds = [req.Payload.IssueId], IncludeSubscribersOnly = true },
+        });
+
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
+            return new() { Messages = issues_data.Messages };
+
+        TResponseModel<UserInfoModel[]> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
+            ? new() { Response = [UserInfoModel.BuildSystem()] }
+            : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+            return new() { Messages = rest.Messages };
+
+        UserInfoModel actor = rest.Response[0];
+
+        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && !issues_data.Response.All(iss => actor.UserId == iss.AuthorIdentityUserId))
+        {
+            res.AddError("У вас не достаточно прав");
+            return res;
+        }
+        List<Task> tasks = [];
+        IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
+        {
+            await SubscribeUpdate(new()
+            {
+                SenderActionUserId = GlobalStaticConstants.Roles.System,
+                Payload = new()
+                {
+                    IssueId = issue_data.Id,
+                    SetValue = true,
+                    UserId = actor.UserId,
+                    IsSilent = false,
+                }
+            });
+        }
+
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        IssueMessageHelpdeskModelDB msg_db;
+        IssueReadMarkerHelpdeskModelDB? my_marker = null;
+        DateTime dtn = DateTime.UtcNow;
+        string msg;
+        PulseRequestModel p_req;
+        if (req.Payload.Id < 1)
+        {
+            msg_db = new()
+            {
+                AuthorUserId = actor.UserId,
+                CreatedAt = dtn,
+                LastUpdateAt = dtn,
+                MessageText = req.Payload.MessageText,
+                IssueId = req.Payload.IssueId,
+            };
+            msg = "Сообщение успешно добавлено к документу";
+            await context.AddAsync(msg_db);
+            await context.SaveChangesAsync();
+            res.AddInfo(msg);
+
+            res.Response = msg_db.Id;
+            if (actor.UserId != GlobalStaticConstants.Roles.System)
+            {
+                p_req = new()
+                {
+                    Payload = new()
+                    {
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Id,
+                            PulseType = PulseIssuesTypesEnum.Messages,
+                            Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
+                            Description = $"Пользователь `{actor.UserName}` в обращение #{issue_data.Id} '{issue_data.Name}' добавил комментарий: {req.Payload.MessageText}",
+                        },
+                        SenderActionUserId = req.SenderActionUserId,
+                    },
+                    IsMuteEmail = true,
+                    IsMuteTelegram = true,
+                    IsMuteWhatsapp = true,
+                };
+
+                tasks = [
+                    PulsePush(p_req),
+                    Task.Run(async () => { my_marker = await context.IssueReadMarkers.FirstOrDefaultAsync(x => x.IssueId == req.Payload.IssueId && x.UserIdentityId == actor.UserId); })];
+
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+
+                if (my_marker is null)
+                {
+                    my_marker = new()
+                    {
+                        LastReadAt = dtn,
+                        UserIdentityId = actor.UserId,
+                        IssueId = req.Payload.IssueId,
+                    };
+                    await context.AddAsync(my_marker);
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+                    await context.IssueReadMarkers.Where(x => x.Id == my_marker.Id)
+                        .ExecuteUpdateAsync(set => set
+                        .SetProperty(p => p.LastReadAt, dtn));
+                }
+
+                tasks.Add(context
+                    .IssueReadMarkers
+                    .Where(x => x.IssueId == req.Payload.IssueId && x.Id != my_marker.Id)
+                    .ExecuteDeleteAsync());
+
+                OrdersByIssuesSelectRequestModel req_docs = new()
+                {
+                    IssueIds = [issue_data.Id],
+                };
+
+                TelegramBotConfigModel wc = default!;
+                TResponseModel<OrderDocumentModelDB[]> find_orders = default!;
+                TResponseModel<string?> CommerceNewMessageOrderBodyNotificationWhatsapp = default!, CommerceNewMessageOrderSubjectNotification = default!, CommerceNewMessageOrderBodyNotification = default!, CommerceNewMessageOrderBodyNotificationTelegram = default!;
+
+                string safeTextMessage = req.Payload.MessageText.Replace("<p>", "").Replace("</p>", "\n").Trim();
+                safeTextMessage = safeTextMessage.Contains('>') || safeTextMessage.Contains('<')
+                    ? ""
+                    : safeTextMessage;
+
+                if (string.IsNullOrWhiteSpace(safeTextMessage))
+                {
+                    HtmlDocument doc = new();
+                    doc.LoadHtml(req.Payload.MessageText);
+                    safeTextMessage = doc.DocumentNode.InnerText;
+                }
+                if (safeTextMessage.Length > 128)
+                    safeTextMessage = $"{safeTextMessage[..125]}...";
+
+                string subject_email = "Новое сообщение";
+                string _about_document = $"Обращение '{issue_data.Name}' от [{issue_data.CreatedAtUTC.GetHumanDateTime()}]";
+                string wpMessage = $"Заявка '{issue_data.Name}' от [{issue_data.CreatedAtUTC.GetHumanDateTime()}]: Пользователь `{actor.UserName}` добавил комментарий.";
+                msg = $"<p>{_about_document}: Пользователь `{actor.UserName}` добавил комментарий.</p>";
+                string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
+
+                tasks.Add(Task.Run(async () => { find_orders = await commRepo.OrdersByIssues(req_docs); }));
+                tasks.Add(Task.Run(async () => { wc = await webTransmissionRepo.GetWebConfig(); }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    CommerceNewMessageOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp);
+                    if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
+                        wpMessage = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.ClearBaseUri, _about_document, true);
+                }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    CommerceNewMessageOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram);
+                    if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
+                        tg_message = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
+                }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    CommerceNewMessageOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification);
+                    if (CommerceNewMessageOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
+                        msg = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
+                }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    CommerceNewMessageOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderSubjectNotification);
+                    if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
+                        subject_email = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
+                }));
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+
+                IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
+
+                string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()]; ;
+
+                if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
+                {
+                    OrderDocumentModelDB order_obj = find_orders.Response[0];
+                    _about_document = $"Заказ '{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", IHelpdeskService.cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", IHelpdeskService.cultureInfo)}";
+                    if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
+                        subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
+
+                    if (!CommerceNewMessageOrderBodyNotification.Success() || string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
+                        msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.</p>";
+                    else
+                        msg = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
+
+                    if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
+                        tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
+
+                    if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
+                        wpMessage = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.ClearBaseUri, _about_document, true);
+                    else
+                        wpMessage = $"Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.";
+
+                    users_ids = [.. users_ids.Union([order_obj.AuthorIdentityUserId]).Distinct()];
+                }
+                wpMessage = $"{wpMessage}\n\n> {safeTextMessage}".Trim().TrimEnd('>').Trim();
+
+                TResponseModel<UserInfoModel[]> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
+                if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
+                {
+                    foreach (UserInfoModel u in users_notify.Response)
+                    {
+                        loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
+                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = $"{msg}</hr>{req.Payload.MessageText}" }, false));
+
+                        if (u.TelegramId.HasValue)
+                        {
+                            SendTextMessageTelegramBotModel tg_req = new()
+                            {
+                                From = subject_email,
+                                Message = $"{tg_message}\n\n<code>{safeTextMessage}</code>".Trim(),
+                                UserTelegramId = u.TelegramId.Value,
+                                ParseModeName = "html"
+                            };
+                            tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req, false));
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
+                            tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = wpMessage }, false));
+                    }
+                }
+
+                if (tasks.Count != 0)
+                    await Task.WhenAll(tasks);
+            }
+            else
+                await context
+                .IssueReadMarkers
+                .Where(x => x.IssueId == req.Payload.IssueId)
+                .ExecuteDeleteAsync();
+        }
+        else
+        {
+            res.Response = 0;
+            msg_db = await context.IssuesMessages.FirstAsync(x => x.Id == req.Payload.Id);
+
+            if (msg_db.MessageText == req.Payload.MessageText)
+                res.AddInfo("Изменений нет");
+            else if (!actor.IsAdmin && msg_db.AuthorUserId != actor.UserId)
+                res.AddError("Не достаточно прав");
+            else
+            {
+                p_req = new()
+                {
+                    Payload = new()
+                    {
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Id,
+                            PulseType = PulseIssuesTypesEnum.Messages,
+                            Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
+                            Description = $"Пользователь <a href='/Users/Profiles/view-{actor.UserId}' target='_blank'>{actor.UserName}</a> изменил комментарий #{msg_db.Id}.<br /><dl><dt>старое:</dt><dd>{msg_db.MessageText}</dd><dt>новое:</dt><dd>{req.Payload.MessageText}</dd></dl>",
+                        },
+                        SenderActionUserId = req.SenderActionUserId,
+                    },
+                    IsMuteEmail = true,
+                    IsMuteTelegram = true,
+                    IsMuteWhatsapp = true,
+                };
+
+                tasks.Add(Task.Run(async () =>
+                {
+                    res.Response = await context
+                        .IssuesMessages
+                        .Where(x => x.Id == msg_db.Id)
+                        .ExecuteUpdateAsync(set => set
+                        .SetProperty(p => p.MessageText, req.Payload.MessageText)
+                        .SetProperty(p => p.LastUpdateAt, dtn));
+                }));
+                tasks.Add(PulsePush(p_req));
+                await Task.WhenAll(tasks);
+                msg = "Сообщение успешно обновлено";
+                res.AddSuccess(msg);
+            }
+        }
+        await ConsoleSegmentCacheEmpty(issue_data.StatusDocument);
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> MessageVote(TAuthRequestModel<VoteIssueRequestModel> req)
+    {
+        TResponseModel<bool?> res = new();
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
+        TResponseModel<UserInfoModel[]> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
+            ? new() { Response = [UserInfoModel.BuildSystem()] }
+            : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+
+        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
+            return new() { Messages = rest.Messages };
+
+        UserInfoModel actor = rest.Response[0];
+
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+        IssueMessageHelpdeskModelDB msg_db = await context.IssuesMessages.FirstAsync(x => x.Id == req.Payload.MessageId);
+
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
+        {
+            SenderActionUserId = actor.UserId,
+            Payload = new() { IssuesIds = [msg_db.IssueId], IncludeSubscribersOnly = true },
+        });
+
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length != 1)
+            return new() { Messages = issues_data.Messages };
+
+        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && !issues_data.Response.All(iss => actor.UserId == iss.AuthorIdentityUserId))
+        {
+            res.AddError("У вас не достаточно прав");
+            return res;
+        }
+        var issue_data = issues_data.Response.Single();
+        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
+        {
+            await SubscribeUpdate(new()
+            {
+                SenderActionUserId = GlobalStaticConstants.Roles.System,
+                Payload = new()
+                {
+                    IssueId = issue_data.Id,
+                    SetValue = true,
+                    UserId = actor.UserId,
+                    IsSilent = false,
+                }
+            });
+        }
+
+        int? vote_db_key = await context
+            .Votes
+            .Where(x => x.MessageId == msg_db.Id && x.IdentityUserId == req.SenderActionUserId)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+        PulseRequestModel p_req;
+        if (req.Payload.SetStatus)
+        {
+            if (!vote_db_key.HasValue)
+            {
+                VoteHelpdeskModelDB vote_db = new() { IdentityUserId = actor.UserId, IssueId = issue_data.Id, MessageId = msg_db.Id };
+                await context.AddAsync(vote_db);
+                await context.SaveChangesAsync();
+
+                res.AddSuccess("Ваш голос учтён");
+                p_req = new()
+                {
+                    Payload = new()
+                    {
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Id,
+                            PulseType = PulseIssuesTypesEnum.Vote,
+                            Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
+                            Description = $"Пользователь `{actor.UserName}` проголосовал за сообщение #{msg_db.Id}",
+                        }
+                    }
+                };
+
+                await PulsePush(p_req);
+            }
+            else
+                res.AddInfo("Вы уже проголосовали");
+        }
+        else
+        {
+            if (!vote_db_key.HasValue)
+                res.AddInfo("Ваш голос отсутствует");
+            else
+            {
+                await context
+                    .Votes
+                    .Where(x => x.Id == vote_db_key.Value)
+                    .ExecuteDeleteAsync();
+
+                res.AddInfo("Ваш голос удалён");
+                p_req = new()
+                {
+                    Payload = new()
+                    {
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssueId = issue_data.Id,
+                            PulseType = PulseIssuesTypesEnum.Vote,
+                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
+                            Description = $"Пользователь `{actor.UserName}` удалил свой голос за сообщение #{msg_db.Id}",
+                        }
+                    }
+                };
+
+                await PulsePush(p_req);
+            }
+        }
+
+        return res;
+    }
+
+    #endregion
+
+    #region rubric    
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> RubricCreateOrUpdate(RubricIssueHelpdeskModelDB rubric)
     {
@@ -228,6 +596,90 @@ public class HelpdeskImplementService(
     #endregion
 
     #region issues
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>>> IssuesSelect(TAuthRequestModel<TPaginationRequestModel<SelectIssuesRequestModel>> req)
+    {
+        if (req.Payload.PageSize < 5)
+            req.Payload.PageSize = 5;
+
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+
+        IQueryable<IssueHelpdeskModelDB> q = context
+            .Issues
+            .Where(x => x.ProjectId == req.Payload.Payload.ProjectId)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.Payload.SearchQuery))
+        {
+            req.Payload.Payload.SearchQuery = req.Payload.Payload.SearchQuery.ToUpper();
+
+            q = from issue_element in q
+                join rubric_element in context.Rubrics on issue_element.RubricIssueId equals rubric_element.Id
+                into grp_rubrics
+                from c in grp_rubrics.DefaultIfEmpty()
+                where issue_element.NormalizedNameUpper!.Contains(req.Payload.Payload.SearchQuery) || c.NormalizedNameUpper!.Contains(req.Payload.Payload.SearchQuery)
+                select issue_element;
+        }
+
+        switch (req.Payload.Payload.JournalMode)
+        {
+            case HelpdeskJournalModesEnum.ActualOnly:
+                q = q.Where(x => x.StatusDocument <= StatusesDocumentsEnum.Progress);
+                break;
+            case HelpdeskJournalModesEnum.ArchiveOnly:
+                q = q.Where(x => x.StatusDocument > StatusesDocumentsEnum.Progress);
+                break;
+            default:
+                break;
+        }
+
+        switch (req.Payload.Payload.UserArea)
+        {
+            case UsersAreasHelpdeskEnum.Subscriber:
+                q = q.Where(x => context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.Payload.IdentityUsersIds.Contains(y.UserId)));
+                break;
+            case UsersAreasHelpdeskEnum.Executor:
+                q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId));
+                break;
+            case UsersAreasHelpdeskEnum.Main:
+                q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.Payload.IdentityUsersIds.Contains(y.UserId)));
+                break;
+            case UsersAreasHelpdeskEnum.Author:
+                q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId));
+                break;
+            default:
+                if (req.Payload.Payload.UserArea is not null)
+                    q = q.Where(x => req.Payload.Payload.IdentityUsersIds.Contains(x.AuthorIdentityUserId) || req.Payload.Payload.IdentityUsersIds.Contains(x.ExecutorIdentityUserId) || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && req.Payload.Payload.IdentityUsersIds.Contains(y.UserId)));
+                break;
+        }
+
+        q = req.Payload.SortingDirection == VerticalDirectionsEnum.Up
+            ? q.OrderBy(x => x.CreatedAtUTC)
+            : q.OrderByDescending(x => x.CreatedAtUTC);
+
+        var inc = q
+            .Skip(req.Payload.PageNum * req.Payload.PageSize)
+            .Take(req.Payload.PageSize)
+            .Include(x => x.RubricIssue);
+
+        List<IssueHelpdeskModelDB> data = req.Payload.Payload.IncludeSubscribers
+            ? await inc.Include(x => x.Subscribers).ToListAsync()
+            : await inc.ToListAsync();
+
+        return new()
+        {
+            Response = new()
+            {
+                PageNum = req.Payload.PageNum,
+                PageSize = req.Payload.PageSize,
+                SortingDirection = req.Payload.SortingDirection,
+                SortBy = req.Payload.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = [.. data.Select(x => IssueHelpdeskModel.Build(x))]
+            }
+        };
+    }
+
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<IssueHelpdeskModel>> ConsoleIssuesSelect(TPaginationRequestModel<ConsoleIssuesRequestModel> req)
     {
@@ -1110,416 +1562,7 @@ public class HelpdeskImplementService(
     }
     #endregion
 
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> MessageUpdateOrCreate(TAuthRequestModel<IssueMessageHelpdeskBaseModel> req)
-    {
-        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<int?> res = new();
-
-        if (string.IsNullOrWhiteSpace(req.Payload.MessageText))
-        {
-            res.AddError("Пустой текст сообщения");
-            return res;
-        }
-        req.Payload.MessageText = req.Payload.MessageText.Trim();
-
-        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
-        {
-            SenderActionUserId = req.SenderActionUserId,
-            Payload = new() { IssuesIds = [req.Payload.IssueId], IncludeSubscribersOnly = true },
-        });
-
-        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
-            return new() { Messages = issues_data.Messages };
-
-        TResponseModel<UserInfoModel[]> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
-            ? new() { Response = [UserInfoModel.BuildSystem()] }
-            : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
-
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
-
-        UserInfoModel actor = rest.Response[0];
-
-        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && !issues_data.Response.All(iss => actor.UserId == iss.AuthorIdentityUserId))
-        {
-            res.AddError("У вас не достаточно прав");
-            return res;
-        }
-        List<Task> tasks = [];
-        IssueHelpdeskModelDB issue_data = issues_data.Response.Single();
-        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
-        {
-            await SubscribeUpdate(new()
-            {
-                SenderActionUserId = GlobalStaticConstants.Roles.System,
-                Payload = new()
-                {
-                    IssueId = issue_data.Id,
-                    SetValue = true,
-                    UserId = actor.UserId,
-                    IsSilent = false,
-                }
-            });
-        }
-
-        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-        IssueMessageHelpdeskModelDB msg_db;
-        IssueReadMarkerHelpdeskModelDB? my_marker = null;
-        DateTime dtn = DateTime.UtcNow;
-        string msg;
-        PulseRequestModel p_req;
-        if (req.Payload.Id < 1)
-        {
-            msg_db = new()
-            {
-                AuthorUserId = actor.UserId,
-                CreatedAt = dtn,
-                LastUpdateAt = dtn,
-                MessageText = req.Payload.MessageText,
-                IssueId = req.Payload.IssueId,
-            };
-            msg = "Сообщение успешно добавлено к документу";
-            await context.AddAsync(msg_db);
-            await context.SaveChangesAsync();
-            res.AddInfo(msg);
-
-            res.Response = msg_db.Id;
-            if (actor.UserId != GlobalStaticConstants.Roles.System)
-            {
-                p_req = new()
-                {
-                    Payload = new()
-                    {
-                        Payload = new()
-                        {
-                            IssueId = issue_data.Id,
-                            PulseType = PulseIssuesTypesEnum.Messages,
-                            Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
-                            Description = $"Пользователь `{actor.UserName}` в обращение #{issue_data.Id} '{issue_data.Name}' добавил комментарий: {req.Payload.MessageText}",
-                        },
-                        SenderActionUserId = req.SenderActionUserId,
-                    },
-                    IsMuteEmail = true,
-                    IsMuteTelegram = true,
-                    IsMuteWhatsapp = true,
-                };
-
-                tasks = [
-                    PulsePush(p_req),
-                    Task.Run(async () => { my_marker = await context.IssueReadMarkers.FirstOrDefaultAsync(x => x.IssueId == req.Payload.IssueId && x.UserIdentityId == actor.UserId); })];
-
-                await Task.WhenAll(tasks);
-                tasks.Clear();
-
-                if (my_marker is null)
-                {
-                    my_marker = new()
-                    {
-                        LastReadAt = dtn,
-                        UserIdentityId = actor.UserId,
-                        IssueId = req.Payload.IssueId,
-                    };
-                    await context.AddAsync(my_marker);
-                    await context.SaveChangesAsync();
-                }
-                else
-                {
-                    await context.IssueReadMarkers.Where(x => x.Id == my_marker.Id)
-                        .ExecuteUpdateAsync(set => set
-                        .SetProperty(p => p.LastReadAt, dtn));
-                }
-
-                tasks.Add(context
-                    .IssueReadMarkers
-                    .Where(x => x.IssueId == req.Payload.IssueId && x.Id != my_marker.Id)
-                    .ExecuteDeleteAsync());
-
-                OrdersByIssuesSelectRequestModel req_docs = new()
-                {
-                    IssueIds = [issue_data.Id],
-                };
-
-                TelegramBotConfigModel wc = default!;
-                TResponseModel<OrderDocumentModelDB[]> find_orders = default!;
-                TResponseModel<string?> CommerceNewMessageOrderBodyNotificationWhatsapp = default!, CommerceNewMessageOrderSubjectNotification = default!, CommerceNewMessageOrderBodyNotification = default!, CommerceNewMessageOrderBodyNotificationTelegram = default!;
-
-                string safeTextMessage = req.Payload.MessageText.Replace("<p>", "").Replace("</p>", "\n").Trim();
-                safeTextMessage = safeTextMessage.Contains('>') || safeTextMessage.Contains('<')
-                    ? ""
-                    : safeTextMessage;
-
-                if (string.IsNullOrWhiteSpace(safeTextMessage))
-                {
-                    HtmlDocument doc = new();
-                    doc.LoadHtml(req.Payload.MessageText);
-                    safeTextMessage = doc.DocumentNode.InnerText;
-                }
-                if (safeTextMessage.Length > 128)
-                    safeTextMessage = $"{safeTextMessage[..125]}...";
-
-                string subject_email = "Новое сообщение";
-                string _about_document = $"Обращение '{issue_data.Name}' от [{issue_data.CreatedAtUTC.GetHumanDateTime()}]";
-                string wpMessage = $"Заявка '{issue_data.Name}' от [{issue_data.CreatedAtUTC.GetHumanDateTime()}]: Пользователь `{actor.UserName}` добавил комментарий.";
-                msg = $"<p>{_about_document}: Пользователь `{actor.UserName}` добавил комментарий.</p>";
-                string tg_message = msg.Replace("<p>", "\n").Replace("</p>", "");
-
-                tasks.Add(Task.Run(async () => { find_orders = await commRepo.OrdersByIssues(req_docs); }));
-                tasks.Add(Task.Run(async () => { wc = await webTransmissionRepo.GetWebConfig(); }));
-                tasks.Add(Task.Run(async () =>
-                {
-                    CommerceNewMessageOrderBodyNotificationWhatsapp = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationWhatsapp);
-                    if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
-                        wpMessage = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.ClearBaseUri, _about_document, true);
-                }));
-                tasks.Add(Task.Run(async () =>
-                {
-                    CommerceNewMessageOrderBodyNotificationTelegram = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotificationTelegram);
-                    if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
-                        tg_message = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
-                }));
-                tasks.Add(Task.Run(async () =>
-                {
-                    CommerceNewMessageOrderBodyNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderBodyNotification);
-                    if (CommerceNewMessageOrderBodyNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
-                        msg = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
-                }));
-                tasks.Add(Task.Run(async () =>
-                {
-                    CommerceNewMessageOrderSubjectNotification = await StorageRepo.ReadParameter<string?>(GlobalStaticConstants.CloudStorageMetadata.CommerceNewMessageOrderSubjectNotification);
-                    if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
-                        subject_email = IHelpdeskService.ReplaceTags(issue_data.Name, issue_data.CreatedAtUTC, issue_data.Id, issue_data.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
-                }));
-                await Task.WhenAll(tasks);
-                tasks.Clear();
-
-                IQueryable<SubscriberIssueHelpdeskModelDB> _qs = issue_data.Subscribers!.Where(x => !x.IsSilent).AsQueryable();
-
-                string[] users_ids = [.. _qs.Select(x => x.UserId).Union([issue_data.AuthorIdentityUserId, issue_data.ExecutorIdentityUserId]).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()]; ;
-
-                if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
-                {
-                    OrderDocumentModelDB order_obj = find_orders.Response[0];
-                    _about_document = $"Заказ '{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", IHelpdeskService.cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", IHelpdeskService.cultureInfo)}";
-                    if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
-                        subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
-
-                    if (!CommerceNewMessageOrderBodyNotification.Success() || string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotification.Response))
-                        msg = $"<p>Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.</p>";
-                    else
-                        msg = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotification.Response, wc.ClearBaseUri, _about_document);
-
-                    if (CommerceNewMessageOrderBodyNotificationTelegram.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationTelegram.Response))
-                        tg_message = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationTelegram.Response, wc.ClearBaseUri, _about_document);
-
-                    if (CommerceNewMessageOrderBodyNotificationWhatsapp.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderBodyNotificationWhatsapp.Response))
-                        wpMessage = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderBodyNotificationWhatsapp.Response, wc.ClearBaseUri, _about_document, true);
-                    else
-                        wpMessage = $"Заказ '{order_obj.Name}' от [{order_obj.CreatedAtUTC.GetHumanDateTime()}]: Новое сообщение.";
-
-                    users_ids = [.. users_ids.Union([order_obj.AuthorIdentityUserId]).Distinct()];
-                }
-                wpMessage = $"{wpMessage}\n\n> {safeTextMessage}".Trim().TrimEnd('>').Trim();
-
-                TResponseModel<UserInfoModel[]> users_notify = await webTransmissionRepo.GetUsersIdentity(users_ids);
-                if (users_notify.Success() && users_notify.Response is not null && users_notify.Response.Length != 0)
-                {
-                    foreach (UserInfoModel u in users_notify.Response)
-                    {
-                        loggerRepo.LogInformation(tg_message.Replace("<b>", "").Replace("</b>", ""));
-                        tasks.Add(webTransmissionRepo.SendEmail(new() { Email = u.Email!, Subject = subject_email, TextMessage = $"{msg}</hr>{req.Payload.MessageText}" }, false));
-
-                        if (u.TelegramId.HasValue)
-                        {
-                            SendTextMessageTelegramBotModel tg_req = new()
-                            {
-                                From = subject_email,
-                                Message = $"{tg_message}\n\n<code>{safeTextMessage}</code>".Trim(),
-                                UserTelegramId = u.TelegramId.Value,
-                                ParseModeName = "html"
-                            };
-                            tasks.Add(telegramRemoteRepo.SendTextMessageTelegram(tg_req, false));
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(u.PhoneNumber) && GlobalTools.IsPhoneNumber(u.PhoneNumber))
-                            tasks.Add(telegramRemoteRepo.SendWappiMessage(new() { Number = u.PhoneNumber, Text = wpMessage }, false));
-                    }
-                }
-
-                if (tasks.Count != 0)
-                    await Task.WhenAll(tasks);
-            }
-            else
-                await context
-                .IssueReadMarkers
-                .Where(x => x.IssueId == req.Payload.IssueId)
-                .ExecuteDeleteAsync();
-        }
-        else
-        {
-            res.Response = 0;
-            msg_db = await context.IssuesMessages.FirstAsync(x => x.Id == req.Payload.Id);
-
-            if (msg_db.MessageText == req.Payload.MessageText)
-                res.AddInfo("Изменений нет");
-            else if (!actor.IsAdmin && msg_db.AuthorUserId != actor.UserId)
-                res.AddError("Не достаточно прав");
-            else
-            {
-                p_req = new()
-                {
-                    Payload = new()
-                    {
-                        Payload = new()
-                        {
-                            IssueId = issue_data.Id,
-                            PulseType = PulseIssuesTypesEnum.Messages,
-                            Tag = GlobalStaticConstants.Routes.CHANGE_ACTION_NAME,
-                            Description = $"Пользователь <a href='/Users/Profiles/view-{actor.UserId}' target='_blank'>{actor.UserName}</a> изменил комментарий #{msg_db.Id}.<br /><dl><dt>старое:</dt><dd>{msg_db.MessageText}</dd><dt>новое:</dt><dd>{req.Payload.MessageText}</dd></dl>",
-                        },
-                        SenderActionUserId = req.SenderActionUserId,
-                    },
-                    IsMuteEmail = true,
-                    IsMuteTelegram = true,
-                    IsMuteWhatsapp = true,
-                };
-
-                tasks.Add(Task.Run(async () =>
-                {
-                    res.Response = await context
-                        .IssuesMessages
-                        .Where(x => x.Id == msg_db.Id)
-                        .ExecuteUpdateAsync(set => set
-                        .SetProperty(p => p.MessageText, req.Payload.MessageText)
-                        .SetProperty(p => p.LastUpdateAt, dtn));
-                }));
-                tasks.Add(PulsePush(p_req));
-                await Task.WhenAll(tasks);
-                msg = "Сообщение успешно обновлено";
-                res.AddSuccess(msg);
-            }
-        }
-        await ConsoleSegmentCacheEmpty(issue_data.StatusDocument);
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> MessageVote(TAuthRequestModel<VoteIssueRequestModel> req)
-    {
-        TResponseModel<bool?> res = new();
-        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req)}");
-        TResponseModel<UserInfoModel[]> rest = req.SenderActionUserId == GlobalStaticConstants.Roles.System
-            ? new() { Response = [UserInfoModel.BuildSystem()] }
-            : await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
-
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
-
-        UserInfoModel actor = rest.Response[0];
-
-        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
-        IssueMessageHelpdeskModelDB msg_db = await context.IssuesMessages.FirstAsync(x => x.Id == req.Payload.MessageId);
-
-        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
-        {
-            SenderActionUserId = actor.UserId,
-            Payload = new() { IssuesIds = [msg_db.IssueId], IncludeSubscribersOnly = true },
-        });
-
-        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length != 1)
-            return new() { Messages = issues_data.Messages };
-
-        if (!actor.IsAdmin && actor.UserId != GlobalStaticConstants.Roles.System && actor.Roles?.Any(x => GlobalStaticConstants.Roles.AllHelpDeskRoles.Any(y => y == x)) != true && !issues_data.Response.All(iss => actor.UserId == iss.AuthorIdentityUserId))
-        {
-            res.AddError("У вас не достаточно прав");
-            return res;
-        }
-        var issue_data = issues_data.Response.Single();
-        if (req.SenderActionUserId != GlobalStaticConstants.Roles.System && issue_data.Subscribers?.Any(x => x.UserId == req.SenderActionUserId) != true)
-        {
-            await SubscribeUpdate(new()
-            {
-                SenderActionUserId = GlobalStaticConstants.Roles.System,
-                Payload = new()
-                {
-                    IssueId = issue_data.Id,
-                    SetValue = true,
-                    UserId = actor.UserId,
-                    IsSilent = false,
-                }
-            });
-        }
-
-        int? vote_db_key = await context
-            .Votes
-            .Where(x => x.MessageId == msg_db.Id && x.IdentityUserId == req.SenderActionUserId)
-            .Select(x => x.Id)
-            .FirstOrDefaultAsync();
-        PulseRequestModel p_req;
-        if (req.Payload.SetStatus)
-        {
-            if (!vote_db_key.HasValue)
-            {
-                VoteHelpdeskModelDB vote_db = new() { IdentityUserId = actor.UserId, IssueId = issue_data.Id, MessageId = msg_db.Id };
-                await context.AddAsync(vote_db);
-                await context.SaveChangesAsync();
-
-                res.AddSuccess("Ваш голос учтён");
-                p_req = new()
-                {
-                    Payload = new()
-                    {
-                        SenderActionUserId = req.SenderActionUserId,
-                        Payload = new()
-                        {
-                            IssueId = issue_data.Id,
-                            PulseType = PulseIssuesTypesEnum.Vote,
-                            Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME,
-                            Description = $"Пользователь `{actor.UserName}` проголосовал за сообщение #{msg_db.Id}",
-                        }
-                    }
-                };
-
-                await PulsePush(p_req);
-            }
-            else
-                res.AddInfo("Вы уже проголосовали");
-        }
-        else
-        {
-            if (!vote_db_key.HasValue)
-                res.AddInfo("Ваш голос отсутствует");
-            else
-            {
-                await context
-                    .Votes
-                    .Where(x => x.Id == vote_db_key.Value)
-                    .ExecuteDeleteAsync();
-
-                res.AddInfo("Ваш голос удалён");
-                p_req = new()
-                {
-                    Payload = new()
-                    {
-                        SenderActionUserId = req.SenderActionUserId,
-                        Payload = new()
-                        {
-                            IssueId = issue_data.Id,
-                            PulseType = PulseIssuesTypesEnum.Vote,
-                            Tag = GlobalStaticConstants.Routes.DELETE_ACTION_NAME,
-                            Description = $"Пользователь `{actor.UserName}` удалил свой голос за сообщение #{msg_db.Id}",
-                        }
-                    }
-                };
-
-                await PulsePush(p_req);
-            }
-        }
-
-        return res;
-    }
-
+    #region pulse
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> PulsePush(PulseRequestModel req)
     {
@@ -1603,6 +1646,67 @@ public class HelpdeskImplementService(
 
         return res;
     }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TPaginationResponseModel<PulseViewModel>>> PulseJournalSelect(TAuthRequestModel<TPaginationRequestModel<UserIssueModel>> req)
+    {
+        TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([req.Payload.Payload.UserId]);
+        if (!rest.Success() || rest.Response is null || rest.Response.Length == 0)
+            return new() { Messages = rest.Messages };
+
+        if (req.Payload.PageSize < 5)
+            req.Payload.PageSize = 5;
+
+        UserInfoModel actor = rest.Response[0];
+
+        loggerRepo.LogDebug($"Запрос журнала активности пользователем: {JsonConvert.SerializeObject(actor)}");
+
+        TResponseModel<IssueHelpdeskModelDB[]> issues_data = await IssuesRead(new TAuthRequestModel<IssuesReadRequestModel>()
+        {
+            SenderActionUserId = actor.UserId,
+            Payload = new() { IssuesIds = [req.Payload.Payload.IssueId], IncludeSubscribersOnly = true },
+        });
+
+        if (!issues_data.Success() || issues_data.Response is null || issues_data.Response.Length == 0)
+        {
+            loggerRepo.LogWarning($"Запрос журнала активности пользователем {actor.UserId} - отклонён");
+            return new() { Messages = issues_data.Messages };
+        }
+        using HelpdeskContext context = await helpdeskDbFactory.CreateDbContextAsync();
+
+        IQueryable<PulseIssueModelDB> q = context
+            .PulseEvents
+            .Where(x => x.IssueId == req.Payload.Payload.IssueId);
+
+        IOrderedQueryable<PulseIssueModelDB> oq = req.Payload.SortingDirection == VerticalDirectionsEnum.Down
+            ? q.OrderByDescending(x => x.CreatedAt)
+            : q.OrderBy(x => x.CreatedAt);
+
+        return new()
+        {
+            Response = new()
+            {
+                TotalRowsCount = q.Count(),
+                PageNum = req.Payload.PageNum,
+                PageSize = req.Payload.PageSize,
+                SortBy = req.Payload.SortBy,
+                SortingDirection = req.Payload.SortingDirection,
+                Response = await oq
+                    .Skip(req.Payload.PageSize * req.Payload.PageNum)
+                    .Take(req.Payload.PageSize)
+                    .Select(x => new PulseViewModel()
+                    {
+                        AuthorUserIdentityId = x.AuthorUserIdentityId,
+                        Description = x.Description,
+                        CreatedAt = x.CreatedAt,
+                        PulseType = x.PulseType,
+                        Tag = x.Tag,
+                    })
+                    .ToListAsync()
+            }
+        };
+    }
+    #endregion
 
     /// <inheritdoc/>
     public async Task ConsoleSegmentCacheEmpty(StatusesDocumentsEnum? st = null)
