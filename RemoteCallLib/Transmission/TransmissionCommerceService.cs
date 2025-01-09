@@ -76,7 +76,7 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall<TResponseModel<int>>(GlobalStaticConstants.TransmissionQueues.OrganizationUpdateOrCreateCommerceReceive, org) ?? new();
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> PaymentDocumentDelete(int req)
+    public async Task<ResponseBaseModel> PaymentDocumentDelete(TAuthRequestModel<int> req)
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.PaymentDocumentDeleteCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>

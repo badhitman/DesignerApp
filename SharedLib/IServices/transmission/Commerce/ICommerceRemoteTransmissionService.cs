@@ -62,7 +62,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Удалить платёжный документ
     /// </summary>
-    public Task<ResponseBaseModel> PaymentDocumentDelete(int req);
+    public Task<ResponseBaseModel> PaymentDocumentDelete(TAuthRequestModel<int> req);
 
     /// <summary>
     /// Удалить строку заказа

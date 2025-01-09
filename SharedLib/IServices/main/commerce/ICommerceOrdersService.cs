@@ -9,6 +9,13 @@ namespace SharedLib;
 /// </summary>
 public partial interface ICommerceService
 {
+    #region payment-document
+    /// <summary>
+    /// PaymentDocumentDelete
+    /// </summary>
+    public Task<ResponseBaseModel> PaymentDocumentDelete(TAuthRequestModel<int> req);
+    #endregion
+
     #region price-rule
     /// <summary>
     /// PricesRulesGetForOffers

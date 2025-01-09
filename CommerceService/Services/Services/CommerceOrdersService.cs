@@ -33,6 +33,20 @@ public partial class CommerceImplementService(
 {
     private static readonly CultureInfo cultureInfo = new("ru-RU");
 
+    #region payment-document
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> PaymentDocumentDelete(TAuthRequestModel<int> req)
+    {
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        DateTime dtu = DateTime.UtcNow;
+        await context.OrdersDocuments
+                .Where(x => context.PaymentsDocuments.Any(y => y.Id == req.Payload && y.OrderDocumentId == x.Id))
+                .ExecuteUpdateAsync(set => set.SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+        return ResponseBaseModel.CreateInfo($"Изменений бд: {await context.PaymentsDocuments.Where(x => x.Id == req.Payload).ExecuteDeleteAsync()}");
+    }
+    #endregion
+
     #region price-rule
     /// <inheritdoc/>
     public async Task<TResponseModel<List<PriceRuleForOfferModelDB>>> PricesRulesGetForOffers(TAuthRequestModel<int[]> req)

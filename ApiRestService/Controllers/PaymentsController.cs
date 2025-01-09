@@ -43,5 +43,5 @@ public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : C
     [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
 #endif
     public async Task<ResponseBaseModel> PaymentDocumentDelete([FromRoute] int payment_id)
-        => await commRepo.PaymentDocumentDelete(payment_id);
+        => await commRepo.PaymentDocumentDelete(new() { Payload = payment_id, SenderActionUserId = GlobalStaticConstants.Roles.System });
 }
