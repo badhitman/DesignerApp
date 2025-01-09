@@ -33,6 +33,8 @@ public partial class CommerceImplementService(
 {
     private static readonly CultureInfo cultureInfo = new("ru-RU");
 
+    #region offers
+
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TAuthRequestModel<TPaginationRequestModel<OffersSelectRequestModel>> req)
     {
@@ -120,6 +122,111 @@ public partial class CommerceImplementService(
         return res;
     }
 
+    #endregion
+
+    #region nomenclatures
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> NomenclatureUpdate(NomenclatureModelDB nom)
+    {
+        nom.Name = nom.Name.Trim();
+        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(nom, GlobalStaticConstants.JsonSerializerSettings)}");
+        TResponseModel<int> res = new() { Response = 0 };
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        string msg, about = $"'{nom.Name}' /{nom.BaseUnit}";
+        NomenclatureModelDB? nomenclature_db = await context.Nomenclatures.FirstOrDefaultAsync(x => x.Name == nom.Name && x.BaseUnit == nom.BaseUnit && x.Id != nom.Id);
+
+        if (nomenclature_db is not null)
+        {
+            msg = $"Ошибка создания Номенклатуры {about}. Такой объект уже существует #{nomenclature_db.Id}. Требуется уникальное сочетание имени и единицы измерения";
+            loggerRepo.LogWarning(msg);
+            res.AddError(msg);
+            return res;
+        }
+        DateTime dtu = DateTime.UtcNow;
+        nom.LastAtUpdatedUTC = dtu;
+
+        if (nom.Id < 1)
+        {
+            nom.Id = 0;
+            nom.CreatedAtUTC = dtu;
+            nomenclature_db = nom;
+            nom.SortIndex = await context.Nomenclatures.MaxAsync(x => x.SortIndex) + 1;
+
+            await context.AddAsync(nomenclature_db);
+            await context.SaveChangesAsync();
+            msg = $"Номенклатура {about} создана #{nomenclature_db.Id}";
+            loggerRepo.LogInformation(msg);
+            res.AddSuccess(msg);
+            res.Response = nomenclature_db.Id;
+            return res;
+        }
+
+        res.Response = await context.Nomenclatures
+            .Where(x => x.Id == nom.Id)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.Name, nom.Name)
+            .SetProperty(p => p.NormalizedNameUpper, nom.Name.ToUpper().Trim())
+            .SetProperty(p => p.Description, nom.Description)
+            .SetProperty(p => p.BaseUnit, nom.BaseUnit)
+            .SetProperty(p => p.IsDisabled, nom.IsDisabled)
+            .SetProperty(p => p.ContextName, nom.ContextName)
+            .SetProperty(p => p.ProjectId, nom.ProjectId)
+            .SetProperty(p => p.LastAtUpdatedUTC, dtu));
+
+        msg = $"Обновление номенклатуры {about} выполнено";
+        loggerRepo.LogInformation(msg);
+        res.AddSuccess(msg);
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<List<NomenclatureModelDB>>> NomenclaturesRead(TAuthRequestModel<int[]> req)
+    {
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        return new()
+        {
+            Response = await context
+            .Nomenclatures
+            .Where(x => req.Payload.Any(y => x.Id == y))
+            .Include(x => x.Offers)
+            .ToListAsync()
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<NomenclatureModelDB>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
+    {
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        IQueryable<NomenclatureModelDB> q = string.IsNullOrEmpty(req.Payload.ContextName)
+            ? context.Nomenclatures.Where(x => x.ContextName == null || x.ContextName == "").AsQueryable()
+            : context.Nomenclatures.Where(x => x.ContextName == req.Payload.ContextName).AsQueryable();
+
+        if (req.Payload.AfterDateUpdate is not null)
+            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
+
+        IOrderedQueryable<NomenclatureModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.CreatedAtUTC)
+          : q.OrderByDescending(x => x.CreatedAtUTC);
+
+        return new()
+        {
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
+        };
+    }
+
+    #endregion
+
+    #region orders
+
     /// <inheritdoc/>
     public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssuesGet(OrdersByIssuesSelectRequestModel req)
     {
@@ -155,7 +262,7 @@ public partial class CommerceImplementService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(int[] req)
+    public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(TAuthRequestModel<int[]> req)
     {
         TResponseModel<OrderDocumentModelDB[]> res = new();
 
@@ -163,7 +270,7 @@ public partial class CommerceImplementService(
 
         IQueryable<OrderDocumentModelDB> q = context
             .OrdersDocuments
-            .Where(x => req.Any(y => x.Id == y));
+            .Where(x => req.Payload.Any(y => x.Id == y));
 
         res.Response = await q
             .Include(x => x.AddressesTabs!)
@@ -939,6 +1046,8 @@ public partial class CommerceImplementService(
         return res;
     }
 
+    #endregion
+
     /// <inheritdoc/>
     public async Task<TResponseModel<FileAttachModel>> GetOrderReportFile(TAuthRequestModel<int> req)
     {
@@ -948,7 +1057,7 @@ public partial class CommerceImplementService(
         TResponseModel<OrderDocumentModelDB[]> orderData = default!;
         List<Task> _taskList = [
             Task.Run(async () => { rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]); }),
-            Task.Run(async () => { orderData = await OrdersRead([req.Payload]); })];
+            Task.Run(async () => { orderData = await OrdersRead(new(){ Payload = [req.Payload], SenderActionUserId = req.SenderActionUserId }); })];
 
         await Task.WhenAll(_taskList);
 
@@ -1093,103 +1202,7 @@ public partial class CommerceImplementService(
         }
     }
 
-    /// <inheritdoc/>
-    public async Task<TResponseModel<int>> NomenclatureUpdate(NomenclatureModelDB nom)
-    {
-        nom.Name = nom.Name.Trim();
-        loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(nom, GlobalStaticConstants.JsonSerializerSettings)}");
-        TResponseModel<int> res = new() { Response = 0 };
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        string msg, about = $"'{nom.Name}' /{nom.BaseUnit}";
-        NomenclatureModelDB? nomenclature_db = await context.Nomenclatures.FirstOrDefaultAsync(x => x.Name == nom.Name && x.BaseUnit == nom.BaseUnit && x.Id != nom.Id);
-
-        if (nomenclature_db is not null)
-        {
-            msg = $"Ошибка создания Номенклатуры {about}. Такой объект уже существует #{nomenclature_db.Id}. Требуется уникальное сочетание имени и единицы измерения";
-            loggerRepo.LogWarning(msg);
-            res.AddError(msg);
-            return res;
-        }
-        DateTime dtu = DateTime.UtcNow;
-        nom.LastAtUpdatedUTC = dtu;
-
-        if (nom.Id < 1)
-        {
-            nom.Id = 0;
-            nom.CreatedAtUTC = dtu;
-            nomenclature_db = nom;
-            nom.SortIndex = await context.Nomenclatures.MaxAsync(x => x.SortIndex) + 1;
-
-            await context.AddAsync(nomenclature_db);
-            await context.SaveChangesAsync();
-            msg = $"Номенклатура {about} создана #{nomenclature_db.Id}";
-            loggerRepo.LogInformation(msg);
-            res.AddSuccess(msg);
-            res.Response = nomenclature_db.Id;
-            return res;
-        }
-
-        res.Response = await context.Nomenclatures
-            .Where(x => x.Id == nom.Id)
-            .ExecuteUpdateAsync(set => set
-            .SetProperty(p => p.Name, nom.Name)
-            .SetProperty(p => p.NormalizedNameUpper, nom.Name.ToUpper().Trim())
-            .SetProperty(p => p.Description, nom.Description)
-            .SetProperty(p => p.BaseUnit, nom.BaseUnit)
-            .SetProperty(p => p.IsDisabled, nom.IsDisabled)
-            .SetProperty(p => p.ContextName, nom.ContextName)
-            .SetProperty(p => p.ProjectId, nom.ProjectId)
-            .SetProperty(p => p.LastAtUpdatedUTC, dtu));
-
-        msg = $"Обновление номенклатуры {about} выполнено";
-        loggerRepo.LogInformation(msg);
-        res.AddSuccess(msg);
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<List<NomenclatureModelDB>>> NomenclaturesRead(TAuthRequestModel<int[]> req)
-    {
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        return new()
-        {
-            Response = await context
-            .Nomenclatures
-            .Where(x => req.Payload.Any(y => x.Id == y))
-            .Include(x => x.Offers)
-            .ToListAsync()
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<NomenclatureModelDB>> NomenclaturesSelect(TPaginationRequestModel<NomenclaturesSelectRequestModel> req)
-    {
-        if (req.PageSize < 10)
-            req.PageSize = 10;
-
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<NomenclatureModelDB> q = string.IsNullOrEmpty(req.Payload.ContextName)
-            ? context.Nomenclatures.Where(x => x.ContextName == null || x.ContextName == "").AsQueryable()
-            : context.Nomenclatures.Where(x => x.ContextName == req.Payload.ContextName).AsQueryable();
-
-        if (req.Payload.AfterDateUpdate is not null)
-            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
-
-        IOrderedQueryable<NomenclatureModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-          ? q.OrderBy(x => x.CreatedAtUTC)
-          : q.OrderByDescending(x => x.CreatedAtUTC);
-
-        return new()
-        {
-            PageNum = req.PageNum,
-            PageSize = req.PageSize,
-            SortingDirection = req.SortingDirection,
-            SortBy = req.SortBy,
-            TotalRowsCount = await q.CountAsync(),
-            Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
-        };
-    }
-
+    #region static
     static byte[] SaveOrderAsExcel(OrderDocumentModelDB orderDb)
     {
         string docName = $"Заказ {orderDb.Name} от {orderDb.CreatedAtUTC.GetHumanDateTime()}";
@@ -1467,4 +1480,5 @@ public partial class CommerceImplementService(
         newCell.CellValue = new CellValue(val);
         newCell.DataType = new EnumValue<CellValues>(type);
     }
+    #endregion
 }

@@ -109,7 +109,7 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
             req.FileName = fileBrowser.Name;
 
             await ms.DisposeAsync();
-            res = await FilesRepo.SaveFile(req);
+            res = await FilesRepo.SaveFile(new() { Payload = req, SenderActionUserId = CurrentUserSession.UserId });
             SnackbarRepo.ShowMessagesResponse(res.Messages);
         }
 

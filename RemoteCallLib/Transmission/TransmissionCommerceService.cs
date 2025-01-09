@@ -52,11 +52,11 @@ public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : I
         => await rabbitClient.MqRemoteCall< TResponseModel<TPaginationResponseModel<OfferModelDB>>>(GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int>> OfferUpdate(OfferModelDB offer)
+    public async Task<TResponseModel<int>> OfferUpdate(TAuthRequestModel<OfferModelDB> offer)
         => await rabbitClient.MqRemoteCall<TResponseModel<int>>(GlobalStaticConstants.TransmissionQueues.OfferUpdateCommerceReceive, offer) ?? new();
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(int[] orders_ids)
+    public async Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(TAuthRequestModel<int[]> orders_ids)
         => await rabbitClient.MqRemoteCall<TResponseModel<OrderDocumentModelDB[]>>(GlobalStaticConstants.TransmissionQueues.OrdersReadCommerceReceive, orders_ids) ?? new();
 
     /// <inheritdoc/>

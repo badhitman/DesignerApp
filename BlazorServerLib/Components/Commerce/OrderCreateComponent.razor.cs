@@ -367,7 +367,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
 
         if (rest.Success())
         {
-            TResponseModel<OrderDocumentModelDB[]> doc = await CommerceRepo.OrdersRead([rest.Response]);
+            TResponseModel<OrderDocumentModelDB[]> doc = await CommerceRepo.OrdersRead(new() { Payload = [rest.Response], SenderActionUserId = GlobalStaticConstants.Roles.System });
             CurrentCart.Information = CurrentCart.Information?.Trim();
             CurrentCart = OrderDocumentModelDB.NewEmpty(CurrentUserSession!.UserId);
 

@@ -19,7 +19,7 @@ public static class RegisterMqListenerExtension
     {
         return services
             .RegisterMqListener<SaveParameterReceive, StorageCloudParameterPayloadModel, TResponseModel<int?>>()
-            .RegisterMqListener<SaveFileReceive, StorageImageMetadataModel, TResponseModel<StorageFileModelDB>>()
+            .RegisterMqListener<SaveFileReceive, TAuthRequestModel<StorageImageMetadataModel>, TResponseModel<StorageFileModelDB>>()
             .RegisterMqListener<TagSetReceive, TagSetModel, TResponseModel<bool>>()
             .RegisterMqListener<SetWebConfigReceive, WebConfigModel, ResponseBaseModel>()
             .RegisterMqListener<ReadFileReceive, TAuthRequestModel<RequestFileReadModel>, TResponseModel<FileContentModel>>()

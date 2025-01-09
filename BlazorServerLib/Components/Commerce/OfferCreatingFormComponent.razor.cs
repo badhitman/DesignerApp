@@ -5,14 +5,13 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using MudBlazor;
 
 namespace BlazorWebLib.Components.Commerce;
 
 /// <summary>
 /// OfferCreatingFormComponent
 /// </summary>
-public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseModel
+public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
@@ -40,6 +39,9 @@ public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseModel
 
     async Task AddOffer()
     {
+        if (CurrentUserSession is null)
+            return;
+
         OfferModelDB off = new()
         {
             Name = nameOffer ?? "",
@@ -50,7 +52,7 @@ public partial class OfferCreatingFormComponent : BlazorBusyComponentBaseModel
         };
         await SetBusy();
         
-        TResponseModel<int> res = await CommerceRepo.OfferUpdate(off);
+        TResponseModel<int> res = await CommerceRepo.OfferUpdate(new() { Payload = off, SenderActionUserId = CurrentUserSession.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success() && res.Response > 0)

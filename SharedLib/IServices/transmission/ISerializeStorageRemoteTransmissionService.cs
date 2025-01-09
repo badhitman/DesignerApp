@@ -40,7 +40,7 @@ public interface ISerializeStorageRemoteTransmissionService
     /// <summary>
     /// Сохранить файл
     /// </summary>
-    public Task<TResponseModel<StorageFileModelDB>> SaveFile(StorageImageMetadataModel? req);
+    public Task<TResponseModel<StorageFileModelDB>> SaveFile(TAuthRequestModel<StorageImageMetadataModel>? req);
 
     /// <summary>
     /// Прочитать значение параметра. null - если значения нет

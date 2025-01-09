@@ -18,7 +18,7 @@ public static class StringExtensions
     static readonly string[] splitDelimiters = [" ", "\n", "\r", "\t", ",", ";", "|", @"\n", @"\r", @"\t", "!"];
 
     /// <summary>
-    /// 
+    /// Перечень числовых значений, разделённых пробелами преобразует в массив числел
     /// </summary>
     public static ImmutableList<decimal> SplitToDecimalList(this string data)
     {

@@ -35,14 +35,11 @@ public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService s
         if (string.IsNullOrWhiteSpace(AppNameStorage) || string.IsNullOrWhiteSpace(NameStorage))
             return StatusCode(401, new { location = "/img/errorimage.png" });
 
-        byte[] payload = [];
-        string? file_name = null;
-
         using MemoryStream ms = new();
 
         await file.CopyToAsync(ms);
-        payload = ms.ToArray();
-        file_name = file.Name;
+        byte[] payload = ms.ToArray();
+        string? file_name = file.Name;
 
         System.Net.Http.Headers.ContentDispositionHeaderValue cdd = System.Net.Http.Headers.ContentDispositionHeaderValue.Parse(file.ContentDisposition);
         if (!string.IsNullOrWhiteSpace(cdd.FileName))
@@ -72,7 +69,7 @@ public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService s
             ContentType = file.ContentType,
         };
 
-        TResponseModel<StorageFileModelDB> rest = await storeRepo.SaveFile(req);
+        TResponseModel<StorageFileModelDB> rest = await storeRepo.SaveFile(new() { Payload = req, SenderActionUserId = GlobalStaticConstants.Roles.System });
         if (!rest.Success() || rest.Response is null || rest.Response.Id < 1)
             return StatusCode(500, new { location = "/img/noimage-simple.png" });
 

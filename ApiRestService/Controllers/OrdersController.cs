@@ -54,7 +54,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
             return response;
         }
 
-        TResponseModel<OrderDocumentModelDB[]> call = await commRepo.OrdersRead([OrderId]);
+        TResponseModel<OrderDocumentModelDB[]> call = await commRepo.OrdersRead(new() { Payload = [OrderId], SenderActionUserId = GlobalStaticConstants.Roles.System });
 
         if (!call.Success())
         {
@@ -86,7 +86,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
             Payload = stream.ToArray(),
         };
 
-        return await storageRepo.SaveFile(reqSave);
+        return await storageRepo.SaveFile(new() { Payload = reqSave, SenderActionUserId = GlobalStaticConstants.Roles.System });
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public class OrdersController(ICommerceRemoteTransmissionService commRepo, IHelp
 #endif
     public async Task<TResponseModel<bool>> OrderStageSet([FromRoute] int OrderId, [FromRoute] StatusesDocumentsEnum Step)
     {
-        TResponseModel<OrderDocumentModelDB[]> call = await commRepo.OrdersRead([OrderId]);
+        TResponseModel<OrderDocumentModelDB[]> call = await commRepo.OrdersRead(new() { Payload = [OrderId], SenderActionUserId = GlobalStaticConstants.Roles.System });
         TResponseModel<bool> response = new() { Response = false };
         if (!call.Success())
         {

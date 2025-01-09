@@ -77,7 +77,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OrdersRead
     /// </summary>
-    public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(int[] orders_ids);
+    public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(TAuthRequestModel<int[]> orders_ids);
 
     /// <summary>
     /// OrderUpdate
@@ -112,7 +112,7 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// OrganizationUpdate
     /// </summary>
-    public Task<TResponseModel<int>> OfferUpdate(OfferModelDB offer);
+    public Task<TResponseModel<int>> OfferUpdate(TAuthRequestModel<OfferModelDB> offer);
 
     /// <summary>
     /// Установить реквизиты организации (+ сброс запроса редактирования)

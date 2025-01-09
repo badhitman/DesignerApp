@@ -9,6 +9,8 @@ namespace SharedLib;
 /// </summary>
 public partial interface ICommerceService
 {
+    #region offer
+
     /// <summary>
     /// OffersSelect
     /// </summary>
@@ -23,6 +25,10 @@ public partial interface ICommerceService
     /// OfferDelete
     /// </summary>
     public Task<ResponseBaseModel> OfferDelete(TAuthRequestModel<int> req);
+
+    #endregion
+
+    #region nomenclatures
 
     /// <summary>
     /// NomenclaturesSelect
@@ -39,15 +45,9 @@ public partial interface ICommerceService
     /// </summary>
     public Task<TResponseModel<int>> NomenclatureUpdate(NomenclatureModelDB nom);
 
-    /// <summary>
-    /// Get full price file Excel (*.xlsx)
-    /// </summary>
-    public Task<FileAttachModel> GetFullPriceFile();
+    #endregion
 
-    /// <summary>
-    /// Get order report file
-    /// </summary>
-    public Task<TResponseModel<FileAttachModel>> GetOrderReportFile(TAuthRequestModel<int> req);
+    #region orders
 
     /// <summary>
     /// Смена статуса заказу по идентификатору HelpDesk документа
@@ -81,10 +81,22 @@ public partial interface ICommerceService
     /// <summary>
     /// Orders read
     /// </summary>
-    public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(int[] req);
+    public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersRead(TAuthRequestModel<int[]> req);
 
     /// <summary>
     /// Orders by issues get
     /// </summary>
     public Task<TResponseModel<OrderDocumentModelDB[]>> OrdersByIssuesGet(OrdersByIssuesSelectRequestModel req);
+
+    #endregion
+
+    /// <summary>
+    /// Get full price file Excel (*.xlsx)
+    /// </summary>
+    public Task<FileAttachModel> GetFullPriceFile();
+
+    /// <summary>
+    /// Get order report file Excel (*.xlsx)
+    /// </summary>
+    public Task<TResponseModel<FileAttachModel>> GetOrderReportFile(TAuthRequestModel<int> req);
 }

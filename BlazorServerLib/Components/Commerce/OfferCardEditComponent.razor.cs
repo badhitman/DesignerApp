@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
-using MudBlazor;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Commerce;
@@ -42,9 +41,12 @@ public partial class OfferCardEditComponent : BlazorBusyComponentBaseAuthModel
 
     async Task SaveOffer()
     {
+        if(CurrentUserSession is null)
+            return;
+
         await SetBusy();
 
-        TResponseModel<int> res = await CommerceRepo.OfferUpdate(editOffer);
+        TResponseModel<int> res = await CommerceRepo.OfferUpdate(new() { Payload = editOffer, SenderActionUserId = CurrentUserSession.UserId });
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Success() && res.Response > 0)
