@@ -27,12 +27,12 @@ public partial interface ICommerceRemoteTransmissionService
     /// <summary>
     /// Удалить ценообразование
     /// </summary>
-    public Task<TResponseModel<bool>> PriceRuleDelete(int id);
+    public Task<ResponseBaseModel> PriceRuleDelete(TAuthRequestModel<int> id);
 
     /// <summary>
     /// Обновить/создать правило ценообразования
     /// </summary>
-    public Task<TResponseModel<int>> PriceRuleUpdate(PriceRuleForOfferModelDB price_rule);
+    public Task<TResponseModel<int>> PriceRuleUpdate(TAuthRequestModel<PriceRuleForOfferModelDB> price_rule);
 
     /// <summary>
     /// Обновить/создать платёжный документ

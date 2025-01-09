@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// PriceRuleElementComponent
 /// </summary>
-public partial class PriceRuleElementComponent : BlazorBusyComponentBaseModel
+public partial class PriceRuleElementComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
@@ -40,9 +40,11 @@ public partial class PriceRuleElementComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     public async Task SaveRule()
     {
+        if (CurrentUserSession is null)
+            return;
+
         await SetBusy();
-        
-        TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(PriceRule);
+        TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(new() { Payload = PriceRule, SenderActionUserId = CurrentUserSession.UserId });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await OwnerComponent.ReloadRules();
     }
@@ -50,16 +52,19 @@ public partial class PriceRuleElementComponent : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     public async Task DeleteRule()
     {
+        if (CurrentUserSession is null)
+            return;
+
         await SetBusy();
-        
-        TResponseModel<bool> res = await CommerceRepo.PriceRuleDelete(PriceRule.Id);
+        ResponseBaseModel res = await CommerceRepo.PriceRuleDelete(new() { Payload = PriceRule.Id, SenderActionUserId = CurrentUserSession.UserId });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await OwnerComponent.ReloadRules();
     }
 
     /// <inheritdoc/>
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         OwnerComponent.RulesViewsComponents.Add(this);
     }
 }

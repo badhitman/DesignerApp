@@ -9,6 +9,18 @@ namespace SharedLib;
 /// </summary>
 public partial interface ICommerceService
 {
+    #region price-rule
+    /// <summary>
+    /// PriceRuleUpdate
+    /// </summary>
+    public Task<TResponseModel<int>> PriceRuleUpdate(TAuthRequestModel<PriceRuleForOfferModelDB> req);
+
+    /// <summary>
+    /// PriceRuleDelete
+    /// </summary>
+    public Task<ResponseBaseModel> PriceRuleDelete(TAuthRequestModel<int> req);
+    #endregion
+
     #region offer
     /// <summary>
     /// OfferUpdate

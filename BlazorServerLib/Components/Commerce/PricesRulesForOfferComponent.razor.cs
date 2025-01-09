@@ -53,9 +53,11 @@ public partial class PricesRulesForOfferComponent : BlazorBusyComponentBaseAuthM
     /// <inheritdoc/>
     public async Task SaveRule(PriceRuleForOfferModelDB rule)
     {
-        await SetBusy();
+        if (CurrentUserSession is null)
+            return;
 
-        TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(rule);
+        await SetBusy();
+        TResponseModel<int> res = await CommerceRepo.PriceRuleUpdate(new() { Payload = rule, SenderActionUserId = CurrentUserSession.UserId });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         LoggerRepo.LogWarning("Правило изменено");
         await ReloadRules();

@@ -33,6 +33,66 @@ public partial class CommerceImplementService(
 {
     private static readonly CultureInfo cultureInfo = new("ru-RU");
 
+    #region price-rule
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int>> PriceRuleUpdate(TAuthRequestModel<PriceRuleForOfferModelDB> req)
+    {
+        TResponseModel<int> res = new() { Response = 0 };
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+        req.Payload.Name = req.Payload.Name.Trim();
+        if (req.Payload.QuantityRule <= 1)
+        {
+            res.AddError("Количество должно быть больше одного");
+            return res;
+        }
+        if (await context.PricesRules.AnyAsync(x => x.Id != req.Payload.Id && x.OfferId == req.Payload.OfferId && x.QuantityRule == req.Payload.QuantityRule))
+        {
+            res.AddError("Правило с таким количеством уже существует");
+            return res;
+        }
+
+        if (req.Payload.Id < 1)
+        {
+            req.Payload.CreatedAtUTC = DateTime.UtcNow;
+            req.Payload.LastAtUpdatedUTC = DateTime.UtcNow;
+            await context.AddAsync(req);
+            await context.SaveChangesAsync();
+            res.AddSuccess("Создано новое правило ценообразования");
+        }
+        else
+        {
+            await context
+                .PricesRules
+                .Where(x => x.Id == req.Payload.Id)
+                .ExecuteUpdateAsync(set => set
+                .SetProperty(p => p.IsDisabled, req.Payload.IsDisabled)
+                .SetProperty(p => p.Name, req.Payload.Name)
+                .SetProperty(p => p.PriceRule, req.Payload.PriceRule)
+                .SetProperty(p => p.QuantityRule, req.Payload.QuantityRule)
+                .SetProperty(p => p.LastAtUpdatedUTC, DateTime.UtcNow));
+
+            res.AddSuccess("Правило ценообразования обновлено");
+        }
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> PriceRuleDelete(TAuthRequestModel<int> req)
+    {
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        ResponseBaseModel res = new();
+
+        if (await context.PricesRules.Where(x => x.Id == req.Payload).ExecuteDeleteAsync() > 0)
+            res.AddSuccess("Правило ценообразования успешно удалено");
+        else
+            res.AddInfo("Правило отсутствует");
+
+        return res;
+    }
+    #endregion
+
     #region offers
 
     /// <inheritdoc/>
