@@ -114,7 +114,9 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
     .AddScoped<ICommerceRemoteTransmissionService, TransmissionCommerceService>()
     .AddScoped<IHelpdeskService, HelpdeskImplementService>()
-    .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
+    .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
+    .AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
+    ;
     // 
     services.HelpdeskRegisterMqListeners();
     //  

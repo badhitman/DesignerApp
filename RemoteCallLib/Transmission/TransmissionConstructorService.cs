@@ -205,7 +205,7 @@ public class TransmissionConstructorService(IRabbitClient rabbitClient) : IConst
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TabOfDocumentSchemeConstructorModelDB>> GetTabOfDocumentScheme(int req, CancellationToken cancellationToken = default)
-     => await rabbitClient.MqRemoteCall< TResponseModel<TabOfDocumentSchemeConstructorModelDB>>(GlobalStaticConstants.TransmissionQueues.GetTabOfDocumentSchemeReceive, req) ?? new();
+     => await rabbitClient.MqRemoteCall<TResponseModel<TabOfDocumentSchemeConstructorModelDB>>(GlobalStaticConstants.TransmissionQueues.GetTabOfDocumentSchemeReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteTabOfDocumentScheme(TAuthRequestModel<int> req, CancellationToken cancellationToken = default)
@@ -213,7 +213,7 @@ public class TransmissionConstructorService(IRabbitClient rabbitClient) : IConst
 
     /// <inheritdoc/>
     public async Task<TResponseModel<FormToTabJoinConstructorModelDB>> GetTabDocumentSchemeJoinForm(int req, CancellationToken cancellationToken = default)
-     => await rabbitClient.MqRemoteCall< TResponseModel<FormToTabJoinConstructorModelDB>>(GlobalStaticConstants.TransmissionQueues.GetTabDocumentSchemeJoinFormReceive, req) ?? new();
+     => await rabbitClient.MqRemoteCall<TResponseModel<FormToTabJoinConstructorModelDB>>(GlobalStaticConstants.TransmissionQueues.GetTabDocumentSchemeJoinFormReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateOrUpdateTabDocumentSchemeJoinForm(TAuthRequestModel<FormToTabJoinConstructorModelDB> req, CancellationToken cancellationToken = default)
@@ -252,7 +252,7 @@ public class TransmissionConstructorService(IRabbitClient rabbitClient) : IConst
     /// <inheritdoc/>
     public async Task<TResponseModel<EntryDictModel[]>> FindSessionsDocumentsByFormFieldName(FormFieldModel req, CancellationToken cancellationToken = default)
      => await rabbitClient.MqRemoteCall<TResponseModel<EntryDictModel[]>>(GlobalStaticConstants.TransmissionQueues.FindSessionsDocumentsByFormFieldNameReceive, req) ?? new();
-    
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ClearValuesForFieldName(FormFieldOfSessionModel req, CancellationToken cancellationToken = default)
      => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.ClearValuesForFieldNameReceive, req) ?? new();

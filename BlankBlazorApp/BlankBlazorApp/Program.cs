@@ -194,8 +194,6 @@ builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>(
 //
 builder.Services.AddScoped<IdentityTools>();
 
-
-
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
@@ -205,6 +203,7 @@ builder.Services
     .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
     .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
     .AddScoped<IConstructorRemoteTransmissionService, TransmissionConstructorService>()
+    .AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>();
 //
 builder.Services.WebAppRegisterMqListeners();

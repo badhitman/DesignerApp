@@ -102,6 +102,7 @@ builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService
 .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
 .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
 .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
+.AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
 ;
 //
 builder.Services.ConstructorRegisterMqListeners();

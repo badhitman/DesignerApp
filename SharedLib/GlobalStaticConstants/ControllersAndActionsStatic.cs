@@ -913,6 +913,11 @@ public static partial class GlobalStaticConstants
         public const string GET_ACTION_NAME = "get";
 
         /// <summary>
+        /// Flush
+        /// </summary>
+        public const string FLUSH_ACTION_NAME = "flush";
+
+        /// <summary>
         /// exe
         /// </summary>
         public const string EXE_ACTION_NAME = "exe";

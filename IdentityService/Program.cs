@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlankBlazorApp;
 using IdentityLib;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -98,6 +99,21 @@ public class Program
         builder.Services
             .AddSingleton<IMailProviderService, MailProviderService>()
             ;
+
+        // Scoped
+        builder.Services.AddScoped<IdentityTools>();
+
+        #region MQ Transmission (remote methods call)
+        builder.Services.AddScoped<IRabbitClient, RabbitClient>();
+
+        builder.Services
+            .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
+            .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
+            .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
+            ;
+
+        builder.Services.IdentityRegisterMqListeners();
+        #endregion
 
         builder.Services.AddMemoryCache();
         builder.Services.AddStackExchangeRedisCache(options =>

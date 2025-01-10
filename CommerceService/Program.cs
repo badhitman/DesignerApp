@@ -111,7 +111,9 @@ builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
 .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
 .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
-.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
+.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
+.AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
+;
 //
 builder.Services.CommerceRegisterMqListeners();
 #endregion

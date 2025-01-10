@@ -132,7 +132,9 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<IRabbitClient, RabbitClient>()
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
     .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
-    .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>();
+    .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
+    .AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
+    ;
     //
     services.TelegramBotRegisterMqListeners();
     #endregion

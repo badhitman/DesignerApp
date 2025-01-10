@@ -920,7 +920,7 @@ public class UsersProfilesService(
         user_db.LastName = lastName;
         user_db.NormalizedLastNameUpper = lastName.ToUpper();
 
-        await IdentityToolsRepo.ClaimsUpdateForUser(user_db);
+        await IdentityToolsRepo.ClaimsUserFlush(user_db.Id);
 
         return ResponseBaseModel.CreateSuccess("First/Last names (and phone) update");
     }

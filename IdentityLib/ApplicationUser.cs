@@ -9,7 +9,7 @@ using SharedLib;
 namespace IdentityLib;
 
 /// <summary>
-/// Add profile data for application users by adding properties to the ApplicationUser class
+/// Пользователь [Identity]
 /// </summary>
 [Index(nameof(ChatTelegramId))]
 [Index(nameof(NormalizedFirstNameUpper)), Index(nameof(NormalizedLastNameUpper))]

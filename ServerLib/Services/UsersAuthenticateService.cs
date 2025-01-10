@@ -262,7 +262,9 @@ public class UsersAuthenticateService(
         if (currentAppUser is null)
             return (IdentityResultResponseModel)ResponseBaseModel.CreateError($"current user by email '{userEmail}' is null. error {{A19FC284-C437-4CC6-A7D2-C96FC6F6A42F}}");
 
-        if (await identityToolsRepo.ClaimsUpdateForUser(currentAppUser))
+        ResponseBaseModel flushRes = await identityToolsRepo.ClaimsUserFlush(currentAppUser.Id);
+
+        if (flushRes.Success())
             await signInManager.RefreshSignInAsync(currentAppUser);
 
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();

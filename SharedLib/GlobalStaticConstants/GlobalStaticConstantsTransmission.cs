@@ -19,8 +19,12 @@ public static partial class GlobalStaticConstants
     /// </summary>
     public static class TransmissionQueues
     {
-        #region Web
         #region Identity
+        /// <summary>
+        /// Получить пользователей из Identity по их идентификаторам
+        /// </summary>
+        public readonly static string ClaimsForUserFlushReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.CLAIMS_CONTROLLER_NAME}", Routes.FLUSH_ACTION_NAME);
+
         /// <summary>
         /// Получить пользователей из Identity по их идентификаторам
         /// </summary>
@@ -40,6 +44,8 @@ public static partial class GlobalStaticConstants
         /// <inheritdoc/>
         public readonly static string GetUsersOfIdentityByTelegramIdsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, $"{Routes.GET_ACTION_NAME}-by-{Routes.TELEGRAM_CONTROLLER_NAME}");
         #endregion
+
+        #region Web
 
         /// <inheritdoc/>
         public readonly static string SendEmailReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.EMAIL_CONTROLLER_NAME, Routes.OUTGOING_CONTROLLER_NAME, Routes.SEND_ACTION_NAME);

@@ -104,7 +104,9 @@ builder.ConfigureServices((context, services) =>
     services.AddScoped<IRabbitClient, RabbitClient>()
     .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
     .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
-    .AddScoped<ISerializeStorage, StorageServiceImpl>();
+    .AddScoped<ISerializeStorage, StorageServiceImpl>()
+    .AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
+    ;
     //
     services.StorageRegisterMqListeners();
     //
