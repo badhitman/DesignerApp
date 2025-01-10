@@ -2,9 +2,7 @@
 title: Структура (зависимости) проектов в решении
 ---
 classDiagram
-note for DbPostgreLib "Если используется другая СУБД, тогда
-указатели  от [ServerLib] [Telegram.Bot.Polling], [HelpdeskService] и [RemoteCallLib]
-должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]"
+note for DbPostgreLib "Если используется другая СУБД, тогда указатели  от [ServerLib] [Telegram.Bot.Polling], [HelpdeskService] и [RemoteCallLib] должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]"
     SharedLib <|-- CodegeneratorLib
     SharedLib <|-- IdentityLib
     SharedLib <|-- DbLayerLib
