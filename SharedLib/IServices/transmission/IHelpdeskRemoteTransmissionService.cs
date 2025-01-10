@@ -12,7 +12,7 @@ public interface IHelpdeskRemoteTransmissionService
     /// <summary>
     /// Входящее сообщение от клиента в TelegramBot
     /// </summary>
-    public Task<TResponseModel<bool>> TelegramMessageIncoming(TelegramIncomingMessageModel req);
+    public Task<ResponseBaseModel> TelegramMessageIncoming(TelegramIncomingMessageModel req);
 
     #region articles
     /// <summary>

@@ -10,7 +10,7 @@ namespace RemoteCallLib;
 public class TransmissionHelpdeskService(IRabbitClient rabbitClient) : IHelpdeskRemoteTransmissionService
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> TelegramMessageIncoming(TelegramIncomingMessageModel req)
+    public async Task<ResponseBaseModel> TelegramMessageIncoming(TelegramIncomingMessageModel req)
         => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.IncomingTelegramMessageHelpdeskReceive, req) ?? new();
 
     #region articles

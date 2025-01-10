@@ -130,6 +130,19 @@ public interface IHelpdeskService
     #endregion
 
     /// <summary>
+    /// Обработка входящего Telegram сообщения
+    /// </summary>
+    /// <remarks>
+    /// Если это ответ в контексте заявки, тогда оно регистрируется и переправляется
+    /// </remarks>
+    public Task<ResponseBaseModel> TelegramMessageIncoming(TelegramIncomingMessageModel req);
+
+    /// <summary>
+    /// SetWebConfig
+    /// </summary>
+    public Task<ResponseBaseModel> SetWebConfig(HelpdeskConfigModel req);
+
+    /// <summary>
     /// Очистить кеш сегмента консоли
     /// </summary>
     public Task ConsoleSegmentCacheEmpty(StatusesDocumentsEnum? Status = null);
