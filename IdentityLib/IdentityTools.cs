@@ -12,7 +12,10 @@ namespace IdentityLib;
 /// <summary>
 /// IdentityTools
 /// </summary>
-public class IdentityTools(IDbContextFactory<IdentityAppDbContext> identityDbFactory)
+public class IdentityTools(
+    //IUserStore<ApplicationUser> userStore,
+    //UserManager<ApplicationUser> userManager,
+    IDbContextFactory<IdentityAppDbContext> identityDbFactory)
 {
     /// <summary>
     /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]

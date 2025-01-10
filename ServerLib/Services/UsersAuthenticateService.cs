@@ -22,10 +22,10 @@ public class UsersAuthenticateService(
     ILogger<UsersAuthenticateService> loggerRepo,
     IUsersProfilesService usersProfilesRepo,
     UserManager<ApplicationUser> userManager,
-    IUserStore<ApplicationUser> userStore,
-    IIdentityRemoteTransmissionService identityRepo,
-    IEmailSender<ApplicationUser> emailSender,
     SignInManager<ApplicationUser> signInManager,
+    IUserStore<ApplicationUser> userStore,
+    IEmailSender<ApplicationUser> emailSender,
+    IIdentityRemoteTransmissionService identityRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {

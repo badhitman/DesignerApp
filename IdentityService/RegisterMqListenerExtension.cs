@@ -21,7 +21,6 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<ClaimsUserFlushReceive, string, TResponseModel<bool>>()
             .RegisterMqListener<GetUsersIdentityByEmailReceive, string[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], TResponseModel<UserInfoModel[]>>()
-
             .RegisterMqListener<GetUsersOfIdentityReceive, string[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, ResponseBaseModel>()
             .RegisterMqListener<SetRoleForUserReceive, SetRoleFoeUserRequestModel, TResponseModel<string[]>>()
