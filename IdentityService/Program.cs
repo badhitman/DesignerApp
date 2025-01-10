@@ -2,15 +2,14 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlankBlazorApp;
-using IdentityLib;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using NLog;
 using NLog.Extensions.Logging;
 using RemoteCallLib;
+using IdentityLib;
 using ServerLib;
 using SharedLib;
+using NLog;
 
 namespace IdentityService;
 
@@ -76,7 +75,6 @@ public class Program
         builder.Configuration.AddEnvironmentVariables();
         builder.Configuration.AddCommandLine(args);
 
-
         builder.Services
             .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
             .Configure<SmtpConfigModel>(builder.Configuration.GetSection("SmtpConfig"))
@@ -94,7 +92,6 @@ public class Program
             .AddErrorDescriber<LocalizedIdentityErrorDescriber>()
             .AddDefaultTokenProviders();
 
-
         //Singleton
         builder.Services
             .AddSingleton<IMailProviderService, MailProviderService>()
@@ -109,11 +106,14 @@ public class Program
         builder.Services
             .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
             .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
+            .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
             .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
             ;
 
         builder.Services.IdentityRegisterMqListeners();
         #endregion
+
+        // IdentityServiceTransmission(IRabbitClient rabbitClient) : IIdentityRemoteTransmissionService
 
         builder.Services.AddMemoryCache();
         builder.Services.AddStackExchangeRedisCache(options =>

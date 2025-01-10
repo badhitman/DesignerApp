@@ -23,7 +23,7 @@ public class UsersAuthenticateService(
     IUsersProfilesService usersProfilesRepo,
     UserManager<ApplicationUser> userManager,
     IUserStore<ApplicationUser> userStore,
-    IdentityTools identityToolsRepo,
+    IIdentityRemoteTransmissionService identityRepo,
     IEmailSender<ApplicationUser> emailSender,
     SignInManager<ApplicationUser> signInManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
@@ -262,7 +262,7 @@ public class UsersAuthenticateService(
         if (currentAppUser is null)
             return (IdentityResultResponseModel)ResponseBaseModel.CreateError($"current user by email '{userEmail}' is null. error {{A19FC284-C437-4CC6-A7D2-C96FC6F6A42F}}");
 
-        ResponseBaseModel flushRes = await identityToolsRepo.ClaimsUserFlush(currentAppUser.Id);
+        ResponseBaseModel flushRes = await identityRepo.ClaimsUserFlush(currentAppUser.Id);
 
         if (flushRes.Success())
             await signInManager.RefreshSignInAsync(currentAppUser);

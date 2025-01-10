@@ -23,7 +23,7 @@ public class WebAppService(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IHttpContextAccessor httpContextAccessor,
     IMailProviderService mailRepo,
-    IdentityTools identityToolsRepo,
+    IIdentityRemoteTransmissionService identityRepo,
     IOptions<TelegramBotConfigModel> webConfig,
     IWebRemoteTransmissionService webTransmissionRepo,
     ILogger<WebAppService> LoggerRepo)
@@ -121,7 +121,7 @@ public class WebAppService(
                     .ExecuteUpdateAsync(set => set.SetProperty(p => p.UserIdentityId, appUserDb.Id));
             }
 
-            await identityToolsRepo.ClaimsUserFlush(appUserDb.Id);
+            await identityRepo.ClaimsUserFlush(appUserDb.Id);
 
         }
         else
@@ -274,7 +274,7 @@ public class WebAppService(
         identityContext.Update(appUserDb);
         await identityContext.SaveChangesAsync();
 
-        await identityToolsRepo.ClaimsUserFlush(appUserDb.Id);
+        await identityRepo.ClaimsUserFlush(appUserDb.Id);
         string msg;
 
         List<ApplicationUser> other_joins = await identityContext.Users

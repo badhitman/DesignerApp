@@ -191,8 +191,6 @@ builder.Services
 builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>()
     .AddScoped<IUsersProfilesService, UsersProfilesService>()
     .AddScoped<IWebAppService, WebAppService>();
-//
-builder.Services.AddScoped<IdentityTools>();
 
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();

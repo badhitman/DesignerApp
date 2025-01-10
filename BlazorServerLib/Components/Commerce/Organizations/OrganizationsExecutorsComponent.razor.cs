@@ -22,6 +22,9 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
     protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
     [Inject]
+    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+
+    [Inject]
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
 
@@ -65,7 +68,7 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
             return;
         await SetBusy();
 
-        TResponseModel<UserInfoModel[]> res = await WebRepo.GetUsersIdentityByEmails([AddingUserEmail]);
+        TResponseModel<UserInfoModel[]> res = await IdentityRepo.GetUsersIdentityByEmails([AddingUserEmail]);
 
         if (!res.Success() || res.Response is null || res.Response.Length != 1)
         {

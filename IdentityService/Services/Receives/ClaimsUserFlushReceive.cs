@@ -6,7 +6,7 @@ using RemoteCallLib;
 using IdentityLib;
 using SharedLib;
 
-namespace IdentityService.Services.Receives;
+namespace Transmission.Receives.Identity;
 
 /// <summary>
 /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]

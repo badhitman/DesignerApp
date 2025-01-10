@@ -9,7 +9,7 @@ using RemoteCallLib;
 using IdentityLib;
 using SharedLib;
 
-namespace Transmission.Receives.web;
+namespace Transmission.Receives.Identity;
 
 /// <summary>
 /// Получить пользователей из Identity по их Email

@@ -18,6 +18,9 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
     IWebRemoteTransmissionService WebRepo { get; set; } = default!;
 
     [Inject]
+    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+
+    [Inject]
     IWebRemoteTransmissionService WebRemoteTransmissionRepo { get; set; } = default!;
 
     UserInfoModel? Executor;
@@ -38,7 +41,7 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
         if (!string.IsNullOrWhiteSpace(editExecutorEmail))
         {
             await SetBusy();
-            TResponseModel<UserInfoModel[]> res = await WebRepo.GetUsersIdentityByEmails([editExecutorEmail]);
+            TResponseModel<UserInfoModel[]> res = await IdentityRepo.GetUsersIdentityByEmails([editExecutorEmail]);
             user_by_email = res.Response?.FirstOrDefault();
             IsBusyProgress = false;
             if (user_by_email is null)

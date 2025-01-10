@@ -23,7 +23,7 @@ public class UsersProfilesService(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     RoleManager<ApplicationRole> roleManager,
     UserManager<ApplicationUser> userManager,
-    IdentityTools IdentityToolsRepo,
+    IIdentityRemoteTransmissionService IdentityRepo,
     SignInManager<ApplicationUser> signInManager,
     IUserStore<ApplicationUser> userStore,
     IHttpContextAccessor httpContextAccessor,
@@ -920,7 +920,7 @@ public class UsersProfilesService(
         user_db.LastName = lastName;
         user_db.NormalizedLastNameUpper = lastName.ToUpper();
 
-        await IdentityToolsRepo.ClaimsUserFlush(user_db.Id);
+        await IdentityRepo.ClaimsUserFlush(user_db.Id);
 
         return ResponseBaseModel.CreateSuccess("First/Last names (and phone) update");
     }

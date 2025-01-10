@@ -2,11 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Transmission.Receives.web;
 using SharedLib;
-using IdentityService.Services.Receives;
+using Transmission.Receives.Identity;
 
-namespace BlankBlazorApp;
+namespace IdentityService;
 
 /// <summary>
 /// MQ listen
@@ -20,6 +19,8 @@ public static class RegisterMqListenerExtension
     {
         return services
             .RegisterMqListener<ClaimsUserFlushReceive, string, TResponseModel<bool>>()
+            .RegisterMqListener<GetUsersIdentityByEmailReceive, string[], TResponseModel<UserInfoModel[]>>()
+            .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], TResponseModel<UserInfoModel[]>>()
             ;
     }
 }
