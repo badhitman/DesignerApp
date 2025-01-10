@@ -25,7 +25,6 @@ public class WebAppService(
     IMailProviderService mailRepo,
     IIdentityRemoteTransmissionService identityRepo,
     IOptions<TelegramBotConfigModel> webConfig,
-    IWebRemoteTransmissionService webTransmissionRepo,
     ILogger<WebAppService> LoggerRepo)
 #pragma warning disable CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
     : GetUserServiceAbstract(httpContextAccessor, userManager, LoggerRepo), IWebAppService
@@ -137,7 +136,7 @@ public class WebAppService(
 
         if (!string.IsNullOrWhiteSpace(userId))
         {
-            TResponseModel<UserInfoModel[]> rest = await webTransmissionRepo.GetUsersIdentity([userId]);
+            TResponseModel<UserInfoModel[]> rest = await identityRepo.GetUsersIdentity([userId]);
             if (!rest.Success() || rest.Response is null || rest.Response.Length != 1 || string.IsNullOrWhiteSpace(rest.Response[0].Email))
                 throw new Exception();
 

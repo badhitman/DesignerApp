@@ -12,27 +12,7 @@ public interface IWebRemoteTransmissionService
     /// <summary>
     /// Получить `web config` сайта
     /// </summary>
-    public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleFoeUserRequestModel req);
-
-    /// <summary>
-    /// Получить `web config` сайта
-    /// </summary>
     public Task<TelegramBotConfigModel> GetWebConfig();
-
-    /// <summary>
-    /// Получить пользователей из Identity по их идентификаторам
-    /// </summary>
-    public Task<TResponseModel<UserInfoModel[]>> GetUsersIdentity(IEnumerable<string> ids_users);
-
-    /// <summary>
-    /// SelectUsersOfIdentity
-    /// </summary>
-    public Task<TPaginationResponseModel<UserInfoModel>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req);
-
-    /// <summary>
-    /// Отправка Email
-    /// </summary>
-    public Task<ResponseBaseModel> SendEmail(SendEmailRequestModel req, bool waitResponse = true);
 
     #region tg
     /// <summary>

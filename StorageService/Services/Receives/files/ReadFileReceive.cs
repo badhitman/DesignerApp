@@ -17,10 +17,10 @@ namespace Transmission.Receives.storage;
 /// Read file
 /// </summary>
 public class ReadFileReceive(IMongoDatabase mongoFs,
+    IIdentityRemoteTransmissionService identityRepo,
     ILogger<ReadFileReceive> LoggerRepo,
     IHelpdeskRemoteTransmissionService hdRepo,
-    IDbContextFactory<StorageContext> cloudParametersDbFactory,
-    IWebRemoteTransmissionService webRepo) : IResponseReceive<TAuthRequestModel<RequestFileReadModel>?, TResponseModel<FileContentModel>?>
+    IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<TAuthRequestModel<RequestFileReadModel>?, TResponseModel<FileContentModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ReadFileReceive;
@@ -57,7 +57,7 @@ public class ReadFileReceive(IMongoDatabase mongoFs,
         UserInfoModel? currentUser = null;
         if (!allowed && !string.IsNullOrWhiteSpace(req.SenderActionUserId))
         {
-            TResponseModel<UserInfoModel[]> findUserRes = await webRepo.GetUsersIdentity([req.SenderActionUserId]);
+            TResponseModel<UserInfoModel[]> findUserRes = await identityRepo.GetUsersIdentity([req.SenderActionUserId]);
             currentUser = findUserRes.Response?.Single();
             if (currentUser is null)
             {

@@ -113,8 +113,6 @@ public class Program
         builder.Services.IdentityRegisterMqListeners();
         #endregion
 
-        // IdentityServiceTransmission(IRabbitClient rabbitClient) : IIdentityRemoteTransmissionService
-
         builder.Services.AddMemoryCache();
         builder.Services.AddStackExchangeRedisCache(options =>
         {

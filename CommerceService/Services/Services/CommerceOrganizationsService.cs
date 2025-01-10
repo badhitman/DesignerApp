@@ -238,7 +238,7 @@ public partial class CommerceImplementService : ICommerceService
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<OrganizationModelDB>> OrganizationsSelect(TPaginationRequestAuthModel<OrganizationsSelectRequestModel> req)
     {
-        TResponseModel<UserInfoModel[]> res = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> res = await identityRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!res.Success() || res.Response?.Length != 1)
             return new();
 
@@ -298,7 +298,7 @@ public partial class CommerceImplementService : ICommerceService
         await Task.WhenAll([
             Task.Run(async () =>
             {
-                TResponseModel<UserInfoModel[]> userFind = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+                TResponseModel<UserInfoModel[]> userFind = await identityRepo.GetUsersIdentity([req.SenderActionUserId]);
                 actor = userFind.Response!.First();
                 }),
             Task.Run(async () => { duple = await context.Organizations.FirstOrDefaultAsync(x => x.INN == req.Payload.INN || x.OGRN == req.Payload.OGRN || (x.BankBIC == req.Payload.BankBIC && x.CurrentAccount == req.Payload.CurrentAccount && x.CorrespondentAccount == req.Payload.CorrespondentAccount)); })
@@ -330,7 +330,7 @@ public partial class CommerceImplementService : ICommerceService
                         context.SaveChangesAsync(),
                         Task.Run(async () =>
                         {
-                            await webTransmissionRepo.SendEmail(new SendEmailRequestModel()
+                            await identityRepo.SendEmail(new SendEmailRequestModel()
                             {
                                 TextMessage = $"В компанию `{sq}` добавлен сотрудник: {actor}",
                                 Email = "*",

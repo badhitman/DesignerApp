@@ -14,12 +14,11 @@ namespace BlazorWebLib.Components.Articles;
 /// </summary>
 public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
 {
-
     [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
 
 
     private MudTable<ArticleModelDB> table = default!;
@@ -67,7 +66,7 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
 
         await SetBusy();
 
-        TResponseModel<UserInfoModel[]> res = await WebRepo.GetUsersIdentity(_ids);
+        TResponseModel<UserInfoModel[]> res = await IdentityRepo.GetUsersIdentity(_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response is null)

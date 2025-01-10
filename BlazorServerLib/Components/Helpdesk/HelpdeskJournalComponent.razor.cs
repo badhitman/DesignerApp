@@ -16,19 +16,10 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ILogger<HelpdeskJournalComponent> LoggerRepo { get; set; } = default!;
-
-    [Inject]
-    NavigationManager NavRepo { get; set; } = default!;
-
-    [Inject]
     IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
-
-    [Inject]
-    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -127,7 +118,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseAuthModel
 
         await SetBusy();
 
-        TResponseModel<UserInfoModel[]> res = await WebRepo.GetUsersIdentity(_ids);
+        TResponseModel<UserInfoModel[]> res = await IdentityRepo.GetUsersIdentity(_ids);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         if (res.Response is null)

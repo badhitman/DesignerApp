@@ -35,7 +35,7 @@ public partial class CommerceImplementService : ICommerceService
             return res;
         }
 
-        TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([workSchedules.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> actorRes = await identityRepo.GetUsersIdentity([workSchedules.SenderActionUserId]);
         if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
         {
             res.AddRangeMessages(actorRes.Messages);
@@ -217,7 +217,7 @@ public partial class CommerceImplementService : ICommerceService
             msg_for_tg = CommerceNewOrderBodyNotificationTelegram.Response;
         msg_for_tg = IHelpdeskService.ReplaceTags(msg_for_tg, _dt, issue.Response, StatusesDocumentsEnum.Created, msg_for_tg, _webConf.ClearBaseUri, _about_order);
 
-        tasks = [webTransmissionRepo.SendEmail(new() { Email = actor.Email!, Subject = subject_email, TextMessage = msg }, false)];
+        tasks = [identityRepo.SendEmail(new() { Email = actor.Email!, Subject = subject_email, TextMessage = msg }, false)];
 
         if (actor.TelegramId.HasValue)
             tasks.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.TelegramId!.Value }, false));
@@ -253,7 +253,7 @@ public partial class CommerceImplementService : ICommerceService
         await Task.WhenAll([
             Task.Run(async () => { orderAttendanceDB = await context.OrdersAttendances.FirstOrDefaultAsync(x => x.Id == req.Payload); }),
             Task.Run(async () => {
-                TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+                TResponseModel<UserInfoModel[]> actorRes = await identityRepo.GetUsersIdentity([req.SenderActionUserId]);
                 if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length != 1)
                 {
                     res.AddRangeMessages(actorRes.Messages);
@@ -309,7 +309,7 @@ public partial class CommerceImplementService : ICommerceService
     public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
     {
         TResponseModel<bool> res = new();
-        TResponseModel<UserInfoModel[]> actorRes = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]);
+        TResponseModel<UserInfoModel[]> actorRes = await identityRepo.GetUsersIdentity([req.SenderActionUserId]);
         if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length == 0)
         {
             res.AddRangeMessages(actorRes.Messages);

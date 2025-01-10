@@ -15,9 +15,9 @@ namespace ServerLib;
 /// Journal Constructor
 /// </summary>
 public partial class JournalConstructorService(
+    IIdentityRemoteTransmissionService IdentityRepo,
     IDbContextFactory<ConstructorContext> mainDbFactory,
-    IHttpContextAccessor httpContextAccessor,
-    IWebRemoteTransmissionService webRepo) : IJournalUniversalService
+    IHttpContextAccessor httpContextAccessor) : IJournalUniversalService
 {
     /// <inheritdoc/>
     public async Task<DocumentFitModel> GetDocumentMetadata(string document_name_or_id, int? projectId = null)
@@ -250,7 +250,7 @@ public partial class JournalConstructorService(
             return res;
         }
 
-        TResponseModel<UserInfoModel[]> users_find = await webRepo.GetUsersIdentity([user_id]);
+        TResponseModel<UserInfoModel[]> users_find = await IdentityRepo.GetUsersIdentity([user_id]);
         UserInfoModel current_user = users_find.Response![0];
 
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
@@ -293,7 +293,7 @@ public partial class JournalConstructorService(
         if (user_id is null)
             return [];
 
-        TResponseModel<UserInfoModel[]> users_find = await webRepo.GetUsersIdentity([user_id]);
+        TResponseModel<UserInfoModel[]> users_find = await IdentityRepo.GetUsersIdentity([user_id]);
         UserInfoModel current_user = users_find.Response![0];
 
 

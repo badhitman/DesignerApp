@@ -23,6 +23,7 @@ namespace CommerceService;
 /// Commerce
 /// </summary>
 public partial class CommerceImplementService(
+    IIdentityRemoteTransmissionService identityRepo,
     IDbContextFactory<CommerceContext> commerceDbFactory,
     IWebRemoteTransmissionService webTransmissionRepo,
     IHelpdeskRemoteTransmissionService HelpdeskRepo,
@@ -874,7 +875,7 @@ public partial class CommerceImplementService(
 
         req.Name = req.Name.Trim();
 
-        TResponseModel<UserInfoModel[]> actor = await webTransmissionRepo.GetUsersIdentity([req.AuthorIdentityUserId]);
+        TResponseModel<UserInfoModel[]> actor = await identityRepo.GetUsersIdentity([req.AuthorIdentityUserId]);
         if (!actor.Success() || actor.Response is null || actor.Response.Length == 0)
         {
             res.AddRangeMessages(actor.Messages);
@@ -1076,7 +1077,7 @@ public partial class CommerceImplementService(
                     msg_for_tg = CommerceNewOrderBodyNotificationTelegram.Response;
                 msg_for_tg = IHelpdeskService.ReplaceTags(msg_for_tg, _dt, issue.Response, StatusesDocumentsEnum.Created, msg_for_tg, _webConf.ClearBaseUri, _about_order);
 
-                tasks = [webTransmissionRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg }, false)];
+                tasks = [identityRepo.SendEmail(new() { Email = actor.Response[0].Email!, Subject = subject_email, TextMessage = msg }, false)];
 
                 if (actor.Response[0].TelegramId.HasValue)
                     tasks.Add(tgRepo.SendTextMessageTelegram(new() { Message = msg_for_tg, UserTelegramId = actor.Response[0].TelegramId!.Value }, false));
@@ -1273,7 +1274,7 @@ public partial class CommerceImplementService(
         TResponseModel<UserInfoModel[]> rest = default!;
         TResponseModel<OrderDocumentModelDB[]> orderData = default!;
         List<Task> _taskList = [
-            Task.Run(async () => { rest = await webTransmissionRepo.GetUsersIdentity([req.SenderActionUserId]); }),
+            Task.Run(async () => { rest = await identityRepo.GetUsersIdentity([req.SenderActionUserId]); }),
             Task.Run(async () => { orderData = await OrdersRead(new(){ Payload = [req.Payload], SenderActionUserId = req.SenderActionUserId }); })];
 
         await Task.WhenAll(_taskList);

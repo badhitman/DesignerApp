@@ -15,19 +15,17 @@ namespace ServerLib;
 
 /// <inheritdoc/>
 public class ManufactureService(
+    IIdentityRemoteTransmissionService IdentityRepo,
     IDbContextFactory<ConstructorContext> mainDbFactory,
-    IWebRemoteTransmissionService webRepo,
     IHttpContextAccessor httpContextAccessor,
     IUsersProfilesService usersProfilesRepo) : IManufactureService
 {
     /// <inheritdoc/>
     public async Task CreateSnapshot(StructureProjectModel dump, int projectId, string name)
     {
-
-
         string user_id = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception();
 
-        TResponseModel<UserInfoModel[]> users_find = await webRepo.GetUsersIdentity([user_id]);
+        TResponseModel<UserInfoModel[]> users_find = await IdentityRepo.GetUsersIdentity([user_id]);
         UserInfoModel current_user = users_find.Response![0];
 
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();

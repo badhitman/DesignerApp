@@ -18,7 +18,7 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
     ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
 
     [Inject]
-    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -61,7 +61,7 @@ public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthMo
         else if (!string.IsNullOrWhiteSpace(UserId))
         {
             await SetBusy();
-            TResponseModel<UserInfoModel[]> user_res = await WebRepo.GetUsersIdentity([UserId]);
+            TResponseModel<UserInfoModel[]> user_res = await IdentityRepo.GetUsersIdentity([UserId]);
             SnackbarRepo.ShowMessagesResponse(user_res.Messages);
             CurrentViewUser = user_res.Response?.FirstOrDefault();
             await SetBusy(false);

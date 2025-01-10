@@ -23,11 +23,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<TelegramJoinAccountDeleteReceive, long?, ResponseBaseModel>()
             .RegisterMqListener<GetWebConfigReceive, object, TelegramBotConfigModel>()
             .RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, ResponseBaseModel>()
-            .RegisterMqListener<GetTelegramUserReceive, long?, TResponseModel<TelegramUserBaseModel>>()
-            .RegisterMqListener<GetUsersOfIdentityReceive, string[], TResponseModel<UserInfoModel[]>>()            
-            .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, ResponseBaseModel>()            
-            .RegisterMqListener<SetRoleForUserReceive, SetRoleFoeUserRequestModel, TResponseModel<string[]>>()
-            .RegisterMqListener<SelectUsersOfIdentityReceive, TPaginationRequestModel<SimpleBaseRequestModel>, TPaginationResponseModel<UserInfoModel>>()
+            .RegisterMqListener<GetTelegramUserReceive, long?, TResponseModel<TelegramUserBaseModel>>()            
             ;
     }
 }

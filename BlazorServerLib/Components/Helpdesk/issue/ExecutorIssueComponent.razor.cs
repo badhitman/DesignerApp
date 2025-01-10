@@ -15,13 +15,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class ExecutorIssueComponent : IssueWrapBaseModel
 {
     [Inject]
-    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
-
-    [Inject]
     IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
-
-    [Inject]
-    IWebRemoteTransmissionService WebRemoteTransmissionRepo { get; set; } = default!;
 
     UserInfoModel? Executor;
     string? editExecutorEmail;
@@ -81,7 +75,7 @@ public partial class ExecutorIssueComponent : IssueWrapBaseModel
         if (UsersIdentityDump.Any(x => x.UserId == user_id) != true)
         {
             await SetBusy();
-            TResponseModel<UserInfoModel[]> res_user = await WebRemoteTransmissionRepo.GetUsersIdentity([user_id]);
+            TResponseModel<UserInfoModel[]> res_user = await IdentityRepo.GetUsersIdentity([user_id]);
             IsBusyProgress = false;
 
             SnackbarRepo.ShowMessagesResponse(res_user.Messages);

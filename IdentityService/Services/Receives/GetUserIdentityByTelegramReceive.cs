@@ -14,8 +14,8 @@ namespace Transmission.Receives.Identity;
 /// Find user identity by telegram - receive
 /// </summary>
 public class GetUserIdentityByTelegramReceive(
+    IIdentityRemoteTransmissionService IdentityRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
-    IWebRemoteTransmissionService webRepo,
     IMemoryCache cache) : IResponseReceive<long[]?, TResponseModel<UserInfoModel[]>?>
 {
     /// <inheritdoc/>
@@ -57,7 +57,7 @@ public class GetUserIdentityByTelegramReceive(
 
         string[] users_ids = [.. users.Select(x => x.Id)];
 
-        TResponseModel<UserInfoModel[]> res_find_users_identity = await webRepo.GetUsersIdentity(users_ids);
+        TResponseModel<UserInfoModel[]> res_find_users_identity = await IdentityRepo.GetUsersIdentity(users_ids);
         if (!res_find_users_identity.Success())
         {
             response.AddRangeMessages(res_find_users_identity.Messages);

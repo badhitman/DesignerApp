@@ -14,8 +14,7 @@ namespace BlazorLib;
 public abstract class BlazorBusyComponentUsersCachedModel : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
-
+    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
 
     /// <summary>
     /// UsersCache
@@ -33,7 +32,7 @@ public abstract class BlazorBusyComponentUsersCachedModel : BlazorBusyComponentB
             return;
 
         await SetBusy();
-        TResponseModel<UserInfoModel[]> users = await WebRepo.GetUsersIdentity(usersIds);
+        TResponseModel<UserInfoModel[]> users = await IdentityRepo.GetUsersIdentity(usersIds);
         SnackbarRepo.ShowMessagesResponse(users.Messages);
         if (users.Success() && users.Response is not null && users.Response.Length != 0)
             lock (UsersCache)

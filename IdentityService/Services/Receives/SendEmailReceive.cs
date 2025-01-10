@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 
-namespace Transmission.Receives.web;
+namespace Transmission.Receives.Identity;
 
 /// <summary>
 /// Отправка Email - receive

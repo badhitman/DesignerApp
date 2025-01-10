@@ -14,8 +14,7 @@ namespace BlazorWebLib.Components;
 public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoModel>
 {
     [Inject]
-    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
-
+    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
 
     /// <summary>
     /// Selected chat
@@ -28,7 +27,7 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
     public override async Task LoadPartData()
     {
         await SetBusy();
-        TPaginationResponseModel<UserInfoModel> rest = await WebRepo
+        TPaginationResponseModel<UserInfoModel> rest = await IdentityRepo
             .SelectUsersOfIdentity(new()
             {
                 Payload = new() { SearchQuery = _selectedValueText },
@@ -65,7 +64,7 @@ public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoMo
         }
 
         await SetBusy();
-        TResponseModel<UserInfoModel[]> rest = await WebRepo.GetUsersIdentity([SelectedUser]);
+        TResponseModel<UserInfoModel[]> rest = await IdentityRepo.GetUsersIdentity([SelectedUser]);
         IsBusyProgress = false;
         SnackbarRepo.ShowMessagesResponse(rest.Messages);
         if (rest.Response is null || rest.Response.Length == 0)
