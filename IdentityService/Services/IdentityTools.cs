@@ -205,7 +205,7 @@ public class IdentityTools(
     }
 
     /// <inheritdoc/>
-    public async Task<RegistrationNewUserResponseModel> CreateNewUserAsync(RegisterNewUserModel req)
+    public async Task<RegistrationNewUserResponseModel> CreateNewUserAsync(RegisterNewUserPasswordModel req)
     {
         ApplicationUser user = IdentityStatic.CreateInstanceUser();
 

@@ -13,7 +13,7 @@ public interface IIdentityRemoteTransmissionService
     /// Регистрация нового пользователя
     /// </summary>
     /// <param name="req">Email + Пароль + Адрес сайта/домена (для формирования ссылки подтверждения)</param>
-    public Task<RegistrationNewUserResponseModel> CreateNewUser(RegisterNewUserModel req);
+    public Task<RegistrationNewUserResponseModel> CreateNewUser(RegisterNewUserPasswordModel req);
 
     /// <summary>
     /// Проверяет, соответствует ли токен подтверждения электронной почты указанному пользователю.

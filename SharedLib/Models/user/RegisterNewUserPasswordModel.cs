@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Создание нового пользователя (Identity)
 /// </summary>
-public class RegisterNewUserModel : UserAuthorizationLiteModel
+public class RegisterNewUserPasswordModel : UserAuthorizationLiteModel
 {
     /// <summary>
     /// BaseAddress

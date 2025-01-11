@@ -153,7 +153,7 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<RegistrationNewUserResponseModel> RegisterNewUserAsync(RegisterNewUserModel req)
+    public async Task<RegistrationNewUserResponseModel> RegisterNewUserAsync(RegisterNewUserPasswordModel req)
     {
         if (!UserConfMan.UserRegistrationIsAllowed(req.Email))
             return new() { Messages = [new() { Text = $"Ошибка регистрации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };

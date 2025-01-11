@@ -12,7 +12,7 @@ namespace Transmission.Receives.Identity;
 /// Регистрация нового пользователя (Identity)
 /// </summary>
 public class CreateNewUserReceive(IIdentityTools idRepo, ILogger<CreateNewUserReceive> loggerRepo)
-    : IResponseReceive<RegisterNewUserModel?, RegistrationNewUserResponseModel?>
+    : IResponseReceive<RegisterNewUserPasswordModel?, RegistrationNewUserResponseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RegistrationNewUserReceive;
@@ -20,7 +20,7 @@ public class CreateNewUserReceive(IIdentityTools idRepo, ILogger<CreateNewUserRe
     /// <summary>
     /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
     /// </summary>
-    public async Task<RegistrationNewUserResponseModel?> ResponseHandleAction(RegisterNewUserModel? req)
+    public async Task<RegistrationNewUserResponseModel?> ResponseHandleAction(RegisterNewUserPasswordModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogWarning(JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings));

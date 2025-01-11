@@ -23,7 +23,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<GetUsersOfIdentityReceive, string[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, ResponseBaseModel>()
-            .RegisterMqListener<CreateNewUserReceive, RegisterNewUserModel, RegistrationNewUserResponseModel>()
+            .RegisterMqListener<CreateNewUserReceive, RegisterNewUserPasswordModel, RegistrationNewUserResponseModel>()
             .RegisterMqListener<ConfirmUserEmailCodeIdentityReceive, UserCodeModel, ResponseBaseModel>()
             .RegisterMqListener<SetRoleForUserReceive, SetRoleFoeUserRequestModel, TResponseModel<string[]>>()
             .RegisterMqListener<SelectUsersOfIdentityReceive, TPaginationRequestModel<SimpleBaseRequestModel>, TPaginationResponseModel<UserInfoModel>>()
