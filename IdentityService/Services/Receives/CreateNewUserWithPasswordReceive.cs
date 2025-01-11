@@ -9,9 +9,9 @@ using SharedLib;
 namespace Transmission.Receives.Identity;
 
 /// <summary>
-/// Регистрация нового пользователя (Identity)
+/// Регистрация нового пользователя с паролем (Identity)
 /// </summary>
-public class CreateNewUserReceive(IIdentityTools idRepo, ILogger<CreateNewUserReceive> loggerRepo)
+public class CreateNewUserWithPasswordReceive(IIdentityTools idRepo, ILogger<CreateNewUserWithPasswordReceive> loggerRepo)
     : IResponseReceive<RegisterNewUserPasswordModel?, RegistrationNewUserResponseModel?>
 {
     /// <inheritdoc/>
