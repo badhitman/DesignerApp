@@ -183,9 +183,8 @@ builder.Services.AddHttpContextAccessor();
 //Singleton
 builder.Services
     .AddSingleton<IMailProviderService, MailProviderService>()
-    .AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
-
-
+    .AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>()
+    ;
 
 // Scoped
 builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>()

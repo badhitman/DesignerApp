@@ -95,6 +95,7 @@ public class Program
         //Singleton
         builder.Services
             .AddSingleton<IMailProviderService, MailProviderService>()
+            .AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>()
             ;
 
         // Scoped

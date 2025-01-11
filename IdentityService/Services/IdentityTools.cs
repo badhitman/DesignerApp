@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using SharedLib;
+using IdentityLib;
 
-namespace IdentityLib;
+namespace IdentityService;
 
 /// <summary>
 /// IdentityTools
