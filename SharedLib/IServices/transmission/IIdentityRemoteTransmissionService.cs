@@ -10,6 +10,12 @@ namespace SharedLib;
 public interface IIdentityRemoteTransmissionService
 {
     /// <summary>
+    /// Регистрация нового пользователя
+    /// </summary>
+    /// <param name="req">Email + Пароль + Адрес сайта/домена (для формирования ссылки подтверждения)</param>
+    public Task<RegistrationNewUserResponseModel> CreateNewUser(RegisterNewUserModel req);
+
+    /// <summary>
     /// Проверяет, соответствует ли токен подтверждения электронной почты указанному пользователю.
     /// </summary>
     /// <param name="req">Пользователь, для которого необходимо проверить токен подтверждения электронной почты.</param>

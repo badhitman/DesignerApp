@@ -12,10 +12,10 @@ public class FlushUserRolesModel
     /// <summary>
     /// Email пользователя
     /// </summary>
-    public string EmailUser { get; set; } = default!;
+    public required string EmailUser { get; set; }
 
     /// <summary>
     /// Роли, которые нужно назначить пользователю. Если null, то пользователь лишится всех ролей
     /// </summary>
-    public string[] SetRoles { get; set; } = default!;
+    public required string[] SetRoles { get; set; }
 }

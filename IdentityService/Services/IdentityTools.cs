@@ -16,6 +16,8 @@ namespace IdentityService;
 /// IdentityTools
 /// </summary>
 public class IdentityTools(
+    IEmailSender<ApplicationUser> emailSender,
+    ILogger<IdentityTools> loggerRepo,
     IUserStore<ApplicationUser> userStore,
     RoleManager<ApplicationRole> roleManager,
     UserManager<ApplicationUser> userManager,
@@ -200,5 +202,55 @@ public class IdentityTools(
         }
 
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<RegistrationNewUserResponseModel> CreateNewUserAsync(RegisterNewUserModel req)
+    {
+        ApplicationUser user = IdentityStatic.CreateInstanceUser();
+
+        await userStore.SetUserNameAsync(user, req.Email, CancellationToken.None);
+        IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
+        await emailStore.SetEmailAsync(user, req.Email, CancellationToken.None);
+        IdentityResult result = await userManager.CreateAsync(user, req.Password);
+
+        if (!result.Succeeded)
+            return new() { Messages = result.Errors.Select(x => new ResultMessage() { Text = $"[{x.Code}: {x.Description}]", TypeMessage = ResultTypesEnum.Error }).ToList() };
+
+        string userId = await userManager.GetUserIdAsync(user);
+        loggerRepo.LogInformation($"User #{userId} [{req.Email}] created a new account with password.");
+
+        string code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+        string callbackUrl = $"{req.BaseAddress}?userId={userId}&code={code}";
+
+        await emailSender.SendConfirmationLinkAsync(user, req.Email, System.Text.Encodings.Web.HtmlEncoder.Default.Encode(callbackUrl));
+
+        RegistrationNewUserResponseModel res = new()
+        {
+            RequireConfirmedAccount = userManager.Options.SignIn.RequireConfirmedAccount,
+            RequireConfirmedEmail = userManager.Options.SignIn.RequireConfirmedEmail,
+            RequireConfirmedPhoneNumber = userManager.Options.SignIn.RequireConfirmedPhoneNumber,
+            Response = userId
+        };
+        res.AddSuccess("Регистрация выполнена.");
+
+        if (userManager.Options.SignIn.RequireConfirmedAccount)
+        {
+            res.AddInfo("Требуется подтверждение учетной записи.");
+            res.AddWarning("Проверьте свой E-mail .");
+        }
+
+        return res;
+    }
+
+    IUserEmailStore<ApplicationUser> GetEmailStore()
+    {
+        if (!userManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("Для пользовательского интерфейса по умолчанию требуется хранилище пользователей с поддержкой электронной почты.");
+        }
+        return (IUserEmailStore<ApplicationUser>)userStore;
     }
 }

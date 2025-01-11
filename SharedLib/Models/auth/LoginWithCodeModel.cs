@@ -3,7 +3,7 @@
 namespace SharedLib;
 
 /// <summary>
-/// 
+/// LoginWithCodeModel
 /// </summary>
 public class LoginWithCodeModel
 {

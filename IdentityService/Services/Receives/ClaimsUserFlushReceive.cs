@@ -3,9 +3,7 @@
 ////////////////////////////////////////////////
 
 using RemoteCallLib;
-using IdentityLib;
 using SharedLib;
-using IdentityService;
 
 namespace Transmission.Receives.Identity;
 

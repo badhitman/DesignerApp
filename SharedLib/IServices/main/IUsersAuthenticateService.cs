@@ -22,10 +22,8 @@ public interface IUsersAuthenticateService
     /// <summary>
     /// Регистрация нового пользователя
     /// </summary>
-    /// <param name="userEmail">Email</param>
-    /// <param name="password">Пароль</param>
-    /// <param name="baseAddress">Адрес сайта/домена (для формирования ссылки подтверждения)</param>
-    public Task<RegistrationNewUserResponseModel> RegisterNewUserAsync(string userEmail, string password, string baseAddress);
+    /// <param name="req">Email + Пароль + Адрес сайта/домена (для формирования ссылки подтверждения)</param>
+    public Task<RegistrationNewUserResponseModel> RegisterNewUserAsync(RegisterNewUserModel req);
 
     /// <summary>
     /// [External] Регистрация нового пользователя

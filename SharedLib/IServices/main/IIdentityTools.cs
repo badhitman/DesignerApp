@@ -12,6 +12,11 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// CreateNewUserAsync
+    /// </summary>
+    public Task<RegistrationNewUserResponseModel> CreateNewUserAsync(RegisterNewUserModel req);
+
+    /// <summary>
     /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
     /// </summary>
     public Task<TResponseModel<bool>> ClaimsUserFlush(string user_id);

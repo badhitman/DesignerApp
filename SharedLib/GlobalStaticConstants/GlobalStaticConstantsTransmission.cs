@@ -21,7 +21,12 @@ public static partial class GlobalStaticConstants
     {
         #region Identity
         /// <summary>
-        /// Получить пользователей из Identity по их идентификаторам
+        /// Регистрация нового пользователя
+        /// </summary>
+        public readonly static string RegistrationNewUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.REGISTRATION_ACTION_NAME);
+
+        /// <summary>
+        /// Отразить в Claim`s мета-данные пользователя
         /// </summary>
         public readonly static string ClaimsForUserFlushReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.CLAIMS_CONTROLLER_NAME}", Routes.FLUSH_ACTION_NAME);
 

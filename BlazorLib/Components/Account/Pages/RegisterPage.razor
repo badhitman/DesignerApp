@@ -45,11 +45,11 @@
 
 @code {
     [SupplyParameterFromForm]
-// #if DEMO
-//     private UserRegistrationModel Input { get; set; } = new() { Password = "Qwerty123!", ConfirmPassword = "Qwerty123!" };
-// #else
+    // #if DEMO
+    //     private UserRegistrationModel Input { get; set; } = new() { Password = "Qwerty123!", ConfirmPassword = "Qwerty123!" };
+    // #else
     private UserRegistrationModel Input { get; set; } = new();
-//#endif
+    //#endif
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
@@ -59,7 +59,13 @@
     public async Task RegisterUser(EditContext editContext)
     {
         identityErrors = null;
-        RegistrationNewUserResponseModel result = await UserAuthRepo.RegisterNewUserAsync(Input.Email, Input.Password, NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").ToString());
+        RegistrationNewUserResponseModel result = await UserAuthRepo.RegisterNewUserAsync(new()
+            {
+                Email = Input.Email,
+                Password = Input.Password,
+                BaseAddress = NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").ToString()
+            });
+
         identityErrors = result.Messages;
         if (!result.Success())
             return;

@@ -11,9 +11,11 @@ namespace RemoteCallLib;
 /// </summary>
 public class IdentityServiceTransmission(IRabbitClient rabbitClient) : IIdentityRemoteTransmissionService
 {
-    /// <summary>
-    /// ConfirmUserEmailCode
-    /// </summary>
+    /// <inheritdoc/>
+    public async Task<RegistrationNewUserResponseModel> CreateNewUser(RegisterNewUserModel req)
+        => await rabbitClient.MqRemoteCall<RegistrationNewUserResponseModel>(GlobalStaticConstants.TransmissionQueues.RegistrationNewUserReceive, req) ?? new();
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> ConfirmUserEmailCode(UserCodeModel req)
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.ConfirmUserEmailCodeIdentityReceive, req) ?? new();
 
