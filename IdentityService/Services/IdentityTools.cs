@@ -205,7 +205,26 @@ public class IdentityTools(
     }
 
     /// <inheritdoc/>
-    public async Task<RegistrationNewUserResponseModel> CreateNewUserAsync(RegisterNewUserPasswordModel req)
+    public async Task<RegistrationNewUserResponseModel> CreateNewUserAsync(SimpleUserIdentityModel req)
+    {
+        IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
+        ApplicationUser user = IdentityStatic.CreateInstanceUser();
+        await userStore.SetUserNameAsync(user, req.Email, CancellationToken.None);
+        await emailStore.SetEmailAsync(user, req.Email, CancellationToken.None);
+
+        IdentityResult result = await userManager.CreateAsync(user);
+
+        return new()
+        {
+            RequireConfirmedAccount = userManager.Options.SignIn.RequireConfirmedAccount,
+            RequireConfirmedEmail = userManager.Options.SignIn.RequireConfirmedEmail,
+            RequireConfirmedPhoneNumber = userManager.Options.SignIn.RequireConfirmedPhoneNumber,
+            Response = user.Id,
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<RegistrationNewUserResponseModel> CreateNewUserWithPasswordAsync(RegisterNewUserPasswordModel req)
     {
         ApplicationUser user = IdentityStatic.CreateInstanceUser();
 

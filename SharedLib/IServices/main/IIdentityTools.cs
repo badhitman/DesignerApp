@@ -14,7 +14,12 @@ public interface IIdentityTools
     /// <summary>
     /// CreateNewUserAsync
     /// </summary>
-    public Task<RegistrationNewUserResponseModel> CreateNewUserAsync(RegisterNewUserPasswordModel req);
+    public Task<RegistrationNewUserResponseModel> CreateNewUserAsync(SimpleUserIdentityModel req);
+
+    /// <summary>
+    /// CreateNewUserAsync
+    /// </summary>
+    public Task<RegistrationNewUserResponseModel> CreateNewUserWithPasswordAsync(RegisterNewUserPasswordModel req);
 
     /// <summary>
     /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]

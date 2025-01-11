@@ -183,7 +183,6 @@ public class UsersAuthenticateService(
 
         IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
         ApplicationUser user = IdentityStatic.CreateInstanceUser();
-
         await userStore.SetUserNameAsync(user, userEmail, CancellationToken.None);
         await emailStore.SetEmailAsync(user, userEmail, CancellationToken.None);
 

@@ -36,6 +36,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
     BlankBlazorApp_Client  <|-- BlankBlazorApp
 	BlazorWebLib  <|-- BlankBlazorApp
 	ServerLib  <|-- BlankBlazorApp
+	IdentityService  <|-- BlankBlazorApp
     RemoteCallLib <|-- Telegram_Bot_Polling
 	DbPostgreLib <|-- Telegram_Bot_Polling
     RemoteCallLib <|-- StorageService
@@ -72,38 +73,43 @@ note for DbPostgreLib "Если используется другая СУБД, 
     class RemoteCallLib{
         Трансмиссия
     }
-    class StorageService{
-        @Микросервис
-    }
-    class ConstructorService{
-        @Микросервис
-    }
-    class HtmlGenerator{
-        Внешний репозиторий
-    }
-    class BlankBlazorApp{
-        @Микросервис
-    }
     class BlankBlazorApp_Client["BlankBlazorApp.Client"]{
         CSR Blazor WebAssembly
-    }
-    class Telegram_Bot_Polling["Telegram.Bot.Polling"]{
-        @Микросервис
     }
     class BlazorWebLib{
         SSR Blazor Server
     }
+
+    class BlankBlazorApp{
+        @Микросервис - Вебсервер/ServerSideRender
+    }
+    class IdentityService{
+        @Микросервис - Пользователи/Регистрация/Авторизация
+    }
+    class StorageService{
+        @Микросервис - Файлы/Тэги/CMS
+    }
+    class ConstructorService{
+        @Микросервис - ВебКонструктор/ВебФормы
+    }
+    class Telegram_Bot_Polling["Telegram.Bot.Polling"]{
+        @Микросервис - TelegramBot/Wappi
+    }
     class HelpdeskService{
-        @Микросервис        
+        @Микросервис - Хелпдеск/Сервисдеск/Таскменеджер
     }
     class CommerceService{
-        @Микросервис        
+        @Микросервис - Склад/Продажи/Расписания
     }
     class ApiRestService{
-        @Микросервис        
+        @Микросервис - Api/Rest
     }
     class ToolsMauiApp{
-      @Win/Android Клиент
+      @Клиент - Win/Android
+    }
+
+    class HtmlGenerator{
+        Внешний репозиторий
     }
 ```
 
@@ -123,6 +129,10 @@ note for DbPostgreLib "Если используется другая СУБД, 
 - Авторизация типовая `Microsoft.AspNetCore.Identity` ([documents](https://learn.microsoft.com/ru-ru/aspnet/core/security/authentication/identity?view=aspnetcore-8.0&tabs=visual-studio)).
 - В Frontend добавлен базовый функционал для работы с Пользователями, Ролями, Claims и Telegram[^4]. 
 - Служба равно как и другие службы использует RabbitMQ для обслуживания входящих команд, на которые она зарегистрировала свои обработчики[^1]. Кроме того, Web служба обрабатывает запросы для [Identity](https://learn.microsoft.com/ru-ru/aspnet/core/security/authentication/identity?view=aspnetcore-8.0&tabs=visual-studio). У Identity свой автономный контекст БД.
+
+#### [IdentityService](https://github.com/badhitman/DesignerApp/tree/main/IdentityService)
+- Управление пользователями: регистрация, авторизация и т.д.
+- Управление ролями (правами) пользователей
 
 #### [HelpdeskService](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) 
 - Система документооборота со своим собственным контекстом: `HelpdeskContext`.

@@ -22,6 +22,7 @@ note for DbPostgreLib "Если используется другая СУБД, тогда указатели  от [Serve
     BlankBlazorApp_Client  <|-- BlankBlazorApp
 	BlazorWebLib  <|-- BlankBlazorApp
 	ServerLib  <|-- BlankBlazorApp
+	IdentityService  <|-- BlankBlazorApp
     RemoteCallLib <|-- Telegram_Bot_Polling
 	DbPostgreLib <|-- Telegram_Bot_Polling
     RemoteCallLib <|-- StorageService
@@ -58,36 +59,41 @@ note for DbPostgreLib "Если используется другая СУБД, тогда указатели  от [Serve
     class RemoteCallLib{
         Трансмиссия
     }
-    class StorageService{
-        @Микросервис
-    }
-    class ConstructorService{
-        @Микросервис
-    }
-    class HtmlGenerator{
-        Внешний репозиторий
-    }
-    class BlankBlazorApp{
-        @Микросервис
-    }
     class BlankBlazorApp_Client["BlankBlazorApp.Client"]{
         CSR Blazor WebAssembly
-    }
-    class Telegram_Bot_Polling["Telegram.Bot.Polling"]{
-        @Микросервис
     }
     class BlazorWebLib{
         SSR Blazor Server
     }
+
+    class BlankBlazorApp{
+        @Микросервис - Вебсервер/ServerSideRender
+    }
+    class IdentityService{
+        @Микросервис - Пользователи/Регистрация/Авторизация
+    }
+    class StorageService{
+        @Микросервис - Файлы/Тэги/CMS
+    }
+    class ConstructorService{
+        @Микросервис - ВебКонструктор/ВебФормы
+    }
+    class Telegram_Bot_Polling["Telegram.Bot.Polling"]{
+        @Микросервис - TelegramBot/Wappi
+    }
     class HelpdeskService{
-        @Микросервис        
+        @Микросервис - Хелпдеск/Сервисдеск/Таскменеджер
     }
     class CommerceService{
-        @Микросервис        
+        @Микросервис - Склад/Продажи/Расписания
     }
     class ApiRestService{
-        @Микросервис        
+        @Микросервис - Api/Rest
     }
     class ToolsMauiApp{
-      @Win/Android Клиент
+      @Клиент - Win/Android
+    }
+
+    class HtmlGenerator{
+        Внешний репозиторий
     }

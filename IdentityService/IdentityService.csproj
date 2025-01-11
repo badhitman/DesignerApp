@@ -15,10 +15,11 @@
 		<PackageReference Include="NLog.Database" Version="5.3.4" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
 	</ItemGroup>
-	<ItemGroup>
-		<None Update="nlog.config" CopyToOutputDirectory="Always" />
-	</ItemGroup>
+
 	<ItemGroup>
 	  <ProjectReference Include="..\ServerLib\ServerLib.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="nlog.config" CopyToOutputDirectory="Always" />
 	</ItemGroup>
 </Project>
