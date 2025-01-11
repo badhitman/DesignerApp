@@ -13,7 +13,7 @@ public class IdentityServiceTransmission(IRabbitClient rabbitClient) : IIdentity
 {
     /// <inheritdoc/>
     public async Task<RegistrationNewUserResponseModel> CreateNewUser(RegisterNewUserPasswordModel req)
-        => await rabbitClient.MqRemoteCall<RegistrationNewUserResponseModel>(GlobalStaticConstants.TransmissionQueues.RegistrationNewUserReceive, req) ?? new();
+        => await rabbitClient.MqRemoteCall<RegistrationNewUserResponseModel>(GlobalStaticConstants.TransmissionQueues.RegistrationNewUserWithPasswordReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ConfirmUserEmailCode(UserCodeModel req)

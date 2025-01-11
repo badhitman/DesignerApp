@@ -23,7 +23,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Регистрация нового пользователя
         /// </summary>
-        public readonly static string RegistrationNewUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.REGISTRATION_ACTION_NAME);
+        public readonly static string RegistrationNewUserWithPasswordReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.PASSWORD_CONTROLLER_NAME}-with-{Routes.REGISTRATION_ACTION_NAME}");
 
         /// <summary>
         /// Отразить в Claim`s мета-данные пользователя

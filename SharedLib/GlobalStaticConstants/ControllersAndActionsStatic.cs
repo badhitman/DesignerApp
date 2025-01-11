@@ -759,6 +759,10 @@ public static partial class GlobalStaticConstants
         /// </summary>
         public const string USERSPROFILES_CONTROLLER_NAME = "users-profiles";
 
+        /// <summary>
+        /// Пароль
+        /// </summary>
+        public const string PASSWORD_CONTROLLER_NAME = "password";
         #endregion
 
         #region ACTION
