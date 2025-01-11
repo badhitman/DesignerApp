@@ -10,6 +10,12 @@ namespace SharedLib;
 public interface IIdentityRemoteTransmissionService
 {
     /// <summary>
+    /// Проверяет, соответствует ли токен подтверждения электронной почты указанному пользователю.
+    /// </summary>
+    /// <param name="req">Пользователь, для которого необходимо проверить токен подтверждения электронной почты.</param>
+    public Task<ResponseBaseModel> ConfirmUserEmailCode(UserCodeModel req);
+
+    /// <summary>
     /// Получить `web config` сайта
     /// </summary>
     public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleFoeUserRequestModel req);

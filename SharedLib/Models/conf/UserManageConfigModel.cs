@@ -36,8 +36,11 @@ public class UserManageConfigModel
     }
 
     /// <summary>
-    /// Разрешён ли пользователю регистрация.
+    /// Разрешена ли пользователю регистрация.
     /// </summary>
+    /// <remarks>
+    /// Проверяет валидность адреса и установленный режим авторизации/регистрации в конфигурациях
+    /// </remarks>
     public bool UserRegistrationIsAllowed(string userEmail)
     {
         return MailAddress.TryCreate(userEmail, out _) &&

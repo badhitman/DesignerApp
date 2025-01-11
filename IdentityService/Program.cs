@@ -99,7 +99,7 @@ public class Program
             ;
 
         // Scoped
-        builder.Services.AddScoped<IdentityTools>();
+        builder.Services.AddScoped<IIdentityTools, IdentityTools>();
 
         #region MQ Transmission (remote methods call)
         builder.Services.AddScoped<IRabbitClient, RabbitClient>();

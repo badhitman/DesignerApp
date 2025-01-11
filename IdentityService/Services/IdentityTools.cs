@@ -2,11 +2,13 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using SharedLib;
 using IdentityLib;
+using System.Text;
+using SharedLib;
 
 namespace IdentityService;
 
@@ -14,13 +16,31 @@ namespace IdentityService;
 /// IdentityTools
 /// </summary>
 public class IdentityTools(
-    //IUserStore<ApplicationUser> userStore,
-    //UserManager<ApplicationUser> userManager,
-    IDbContextFactory<IdentityAppDbContext> identityDbFactory)
+    IUserStore<ApplicationUser> userStore,
+    RoleManager<ApplicationRole> roleManager,
+    UserManager<ApplicationUser> userManager,
+    IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
-    /// <summary>
-    /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
-    /// </summary>
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ConfirmEmailAsync(UserCodeModel req)
+    {
+        if (req.UserId is null || req.Code is null)
+            return ResponseBaseModel.CreateError("UserId is null || Code is null. error {715DE145-87B0-48B0-9341-0A21962045BF}");
+
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId);
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Ошибка загрузки пользователя с идентификатором {req.UserId}");
+        else
+        {
+            string code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(req.Code));
+            IdentityResult result = await userManager.ConfirmEmailAsync(user, code);
+            return result.Succeeded
+                ? ResponseBaseModel.CreateSuccess("Благодарим вас за подтверждение вашего адреса электронной почты. Теперь вы можете авторизоваться!")
+                : ResponseBaseModel.CreateError($"Ошибка подтверждения электронной почты: {string.Join(";", result.Errors.Select(x => $"[{x.Code}: {x.Description}]"))}");
+        }
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool>> ClaimsUserFlush(string user_id)
     {
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();

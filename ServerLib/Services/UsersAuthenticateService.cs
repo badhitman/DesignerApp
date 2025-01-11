@@ -96,25 +96,6 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ConfirmEmailAsync(string UserId, string Code)
-    {
-        if (UserId is null || Code is null)
-            return ResponseBaseModel.CreateError("UserId is null || Code is null. error {715DE145-87B0-48B0-9341-0A21962045BF}");
-
-        ApplicationUser? user = await userManager.FindByIdAsync(UserId);
-        if (user is null)
-            return ResponseBaseModel.CreateError($"Ошибка загрузки пользователя с идентификатором {UserId}");
-        else
-        {
-            string code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
-            IdentityResult result = await userManager.ConfirmEmailAsync(user, code);
-            return result.Succeeded
-                ? ResponseBaseModel.CreateSuccess("Благодарим вас за подтверждение вашего адреса электронной почты. Теперь вы можете авторизоваться!")
-                : ResponseBaseModel.CreateError($"Ошибка подтверждения электронной почты: {string.Join(";", result.Errors.Select(x => $"[{x.Code}: {x.Description}]"))}");
-        }
-    }
-
-    /// <inheritdoc/>
     public async Task<UserLoginInfoResponseModel> GetExternalLoginInfoAsync(string? expectedXsrf = null)
     {
         ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync(expectedXsrf);
@@ -177,7 +158,7 @@ public class UsersAuthenticateService(
         if (!UserConfMan.UserRegistrationIsAllowed(userEmail))
             return new() { Messages = [new() { Text = $"Ошибка регистрации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
-        ApplicationUser user = CreateInstanceUser();
+        ApplicationUser user = IdentityStatic.CreateInstanceUser();
 
         await userStore.SetUserNameAsync(user, userEmail, CancellationToken.None);
         IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
@@ -228,7 +209,7 @@ public class UsersAuthenticateService(
 
         if (user is null)
             return ResponseBaseModel.CreateError("Пользователь не найден");
-        
+
         await signInManager.SignInAsync(user, isPersistent: false);
         return ResponseBaseModel.CreateSuccess("Пользователь авторизован");
     }
@@ -294,7 +275,7 @@ public class UsersAuthenticateService(
             return (RegistrationNewUserResponseModel)ResponseBaseModel.CreateError("externalLoginInfo == null. error {D991FA4A-9566-4DD4-B23A-DEB497931FF5}");
 
         IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
-        ApplicationUser user = CreateInstanceUser();
+        ApplicationUser user = IdentityStatic.CreateInstanceUser();
 
         await userStore.SetUserNameAsync(user, userEmail, CancellationToken.None);
         await emailStore.SetEmailAsync(user, userEmail, CancellationToken.None);
@@ -338,19 +319,6 @@ public class UsersAuthenticateService(
     public async Task SignOutAsync()
         => await signInManager.SignOutAsync();
 
-
-    ApplicationUser CreateInstanceUser()
-    {
-        try
-        {
-            return Activator.CreateInstance<ApplicationUser>();
-        }
-        catch
-        {
-            throw new InvalidOperationException($"Не могу создать экземпляр '{nameof(ApplicationUser)}'. " +
-                $"Убедитесь, что '{nameof(ApplicationUser)}' не является абстрактным классом и имеет конструктор без параметров.");
-        }
-    }
 
     IUserEmailStore<ApplicationUser> GetEmailStore()
     {

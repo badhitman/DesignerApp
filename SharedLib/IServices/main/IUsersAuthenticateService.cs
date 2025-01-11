@@ -35,13 +35,6 @@ public interface IUsersAuthenticateService
     public Task<RegistrationNewUserResponseModel> ExternalRegisterNewUserAsync(string userEmail, string baseAddress);
 
     /// <summary>
-    /// Проверяет, соответствует ли токен подтверждения электронной почты указанному <paramref name="user_id"/>.
-    /// </summary>
-    /// <param name="user_id">Пользователь, для которого необходимо проверить токен.</param>
-    /// <param name="token">Токен подтверждения электронной почты для проверки.</param>
-    public Task<ResponseBaseModel> ConfirmEmailAsync(string user_id, string token);
-
-    /// <summary>
     /// Получает информацию о внешнем входе для текущего входа в виде асинхронной операции.
     /// Gets the external login information for the current login, as an asynchronous operation.
     /// </summary>

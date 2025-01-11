@@ -30,6 +30,11 @@ public static partial class GlobalStaticConstants
         public const string USERS_CONTROLLER_NAME = "users";
 
         /// <summary>
+        /// Code
+        /// </summary>
+        public const string CODE_CONTROLLER_NAME = "code";
+
+        /// <summary>
         /// Notes
         /// </summary>
         public const string NOTES_CONTROLLER_NAME = "notes";

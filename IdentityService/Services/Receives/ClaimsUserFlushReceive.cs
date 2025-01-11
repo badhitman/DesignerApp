@@ -12,7 +12,7 @@ namespace Transmission.Receives.Identity;
 /// <summary>
 /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
 /// </summary>
-public class ClaimsUserFlushReceive(IdentityTools idRepo)
+public class ClaimsUserFlushReceive(IIdentityTools idRepo)
     : IResponseReceive<string?, TResponseModel<bool>?>
 {
     /// <inheritdoc/>
