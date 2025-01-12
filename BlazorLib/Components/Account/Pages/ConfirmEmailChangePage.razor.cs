@@ -50,7 +50,7 @@ public partial class ConfirmEmailChangePage : ComponentBase
         }
 
         string code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
-        ResponseBaseModel result = await UserProfilesManage.ChangeEmailAsync(user.Response.UserId, Email, code);
+        ResponseBaseModel result = await UserProfilesManage.ChangeEmailAsync(new() { Email = Email, Token = code, UserId = user.Response.UserId });
         Messages = result.Messages;
     }
 }

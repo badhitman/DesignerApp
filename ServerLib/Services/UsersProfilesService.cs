@@ -32,19 +32,19 @@ public class UsersProfilesService(
 #pragma warning restore CS9107
     
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ChangeEmailAsync(string user_id, string newEmail, string token)
+    public async Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req)
     {
-        ApplicationUser? user = await userManager.FindByIdAsync(user_id); ;
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
-            return ResponseBaseModel.CreateError($"Пользователь #{user_id} не найден");
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
 
-        string code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+        string code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(req.Token));
 
-        IdentityResult result = await userManager.ChangeEmailAsync(user, newEmail, code);
+        IdentityResult result = await userManager.ChangeEmailAsync(user, req.Email, code);
         if (!result.Succeeded)
             return ResponseBaseModel.CreateError("Ошибка при смене электронной почты.");
 
-        IdentityResult setUserNameResult = await userManager.SetUserNameAsync(user, newEmail);
+        IdentityResult setUserNameResult = await userManager.SetUserNameAsync(user, req.Email);
 
         if (!setUserNameResult.Succeeded)
             return ResponseBaseModel.CreateError("Ошибка изменения имени пользователя.");

@@ -31,12 +31,10 @@ public partial interface IUsersProfilesService
     public Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string userId);
 
     /// <summary>
-    /// Обновляет адрес Email, если токен <paramref name="token"/> действительный для пользователя <paramref name="userId"/>.
+    /// Обновляет адрес Email, если токен действительный для пользователя.
     /// </summary>
-    /// <param name="userId">Пользователь, адрес электронной почты которого необходимо обновить.</param>
-    /// <param name="newEmail">Новый адрес электронной почты.</param>
-    /// <param name="token">Измененный токен электронной почты, который необходимо подтвердить.</param>
-    public Task<ResponseBaseModel> ChangeEmailAsync(string userId, string newEmail, string token);
+    /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>
+    public Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req);
 
     /// <summary>
     /// Получает флаг, указывающий, есть ли у пользователя пароль.
