@@ -25,6 +25,28 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> CateNewRole(string role_name)
+    {
+        role_name = role_name.Trim();
+        if (string.IsNullOrEmpty(role_name))
+            return ResponseBaseModel.CreateError("Не указано имя роли");
+        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
+        if (role_db is not null)
+            return ResponseBaseModel.CreateWarning($"Роль '{role_db.Name}' уже существует");
+
+        role_db = new ApplicationRole(role_name);
+        IdentityResult ir = await roleManager.CreateAsync(role_db);
+
+        if (ir.Succeeded)
+            return ResponseBaseModel.CreateSuccess($"Роль '{role_name}' успешно создана");
+
+        return new()
+        {
+            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
+        };
+    }
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteRole(string role_name)
     {
         ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);

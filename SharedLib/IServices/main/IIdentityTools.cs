@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Создать новую роль
+    /// </summary>
+    public Task<ResponseBaseModel> CateNewRole(string role_name);
+
+    /// <summary>
     /// Удалить роль (если у роли нет пользователей).
     /// </summary>
     public Task<ResponseBaseModel> DeleteRole(string roleName);

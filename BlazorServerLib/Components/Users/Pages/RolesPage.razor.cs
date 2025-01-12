@@ -102,7 +102,7 @@ public partial class RolesPage
         }
         ResponseBaseModel rest = !string.IsNullOrEmpty(UserInfo?.Email)
         ? await IdentityRepo.AddRoleToUser(new() { Email = UserInfo.Email, RoleName = added_role_name })
-        : await UsersManageRepo.CateNewRole(added_role_name.Trim());
+        : await IdentityRepo.CateNewRole(added_role_name.Trim());
 
         Messages = rest.Messages;
         if (!rest.Success())

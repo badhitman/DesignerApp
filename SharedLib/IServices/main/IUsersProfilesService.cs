@@ -20,11 +20,6 @@ public partial interface IUsersProfilesService
     public Task<TPaginationStrictResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
 
     /// <summary>
-    /// Создать новую роль
-    /// </summary>
-    public Task<ResponseBaseModel> CateNewRole(string role_name);
-
-    /// <summary>
     /// Get Role (by id)
     /// </summary>
     public Task<TResponseModel<RoleInfoModel?>> GetRole(string role_id);
