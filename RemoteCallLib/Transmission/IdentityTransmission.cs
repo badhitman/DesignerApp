@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DocumentFormat.OpenXml.Drawing;
 using SharedLib;
 
 namespace RemoteCallLib;
@@ -12,6 +11,13 @@ namespace RemoteCallLib;
 /// </summary>
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
+    public async Task<TPaginationResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<UserInfoModel>>(GlobalStaticConstants.TransmissionQueues.FindUsersReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<RoleInfoModel>>(GlobalStaticConstants.TransmissionQueues.FindRolesAsyncReceive, req) ?? new();
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CateNewRole(string roleName)
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.CateNewRoleReceive, roleName) ?? new();

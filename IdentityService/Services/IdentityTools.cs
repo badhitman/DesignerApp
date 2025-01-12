@@ -24,6 +24,97 @@ public class IdentityTools(
     UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        IQueryable<ApplicationUser> q = identityContext.Users
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.OwnerId))
+            q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.UserId && req.OwnerId == y.RoleId));
+
+        if (!string.IsNullOrWhiteSpace(req.FindQuery))
+        {
+            string upp_query = req.FindQuery.ToUpper();
+            q = q.Where(x => EF.Functions.Like(x.NormalizedEmail, $"%{userManager.KeyNormalizer.NormalizeEmail(req.FindQuery)}%") || EF.Functions.Like(x.NormalizedFirstNameUpper, $"%{upp_query}%") || EF.Functions.Like(x.NormalizedLastNameUpper, $"%{upp_query}%") || x.Id == req.FindQuery);
+        }
+        int total = q.Count();
+        q = q.OrderBy(x => x.UserName).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        var users = await q
+            .Select(x => new
+            {
+                x.Id,
+                x.UserName,
+                x.Email,
+                x.PhoneNumber,
+                x.ChatTelegramId,
+                x.EmailConfirmed,
+                x.LockoutEnd,
+                x.LockoutEnabled,
+                x.AccessFailedCount,
+                x.FirstName,
+                x.LastName,
+            })
+            .ToArrayAsync();
+        string[] users_ids = users.Select(x => x.Id).ToArray();
+        var roles =
+           await (from link in identityContext.UserRoles.Where(x => users_ids.Contains(x.UserId))
+                  join role in identityContext.Roles on link.RoleId equals role.Id
+                  select new { RoleName = role.Name, link.UserId }).ToArrayAsync();
+
+        var claims =
+           await (from claim in identityContext.UserClaims.Where(x => users_ids.Contains(x.UserId))
+                  select new { claim.ClaimValue, claim.ClaimType, claim.UserId }).ToArrayAsync();
+
+        return new()
+        {
+            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.ChatTelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, firstName: x.FirstName, lastName: x.LastName, roles: roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray(), claims: claims.Where(o => o.UserId == x.Id).Select(q => new EntryAltModel() { Id = q.ClaimType, Name = q.ClaimValue }).ToArray())).ToList(),
+            TotalRowsCount = total,
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortBy = req.SortBy,
+            SortingDirection = req.SortingDirection
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        IQueryable<ApplicationRole> q = identityContext.Roles
+           .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.OwnerId))
+            q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.RoleId && req.OwnerId == y.UserId));
+
+        if (!string.IsNullOrWhiteSpace(req.FindQuery))
+            q = q.Where(x => EF.Functions.Like(x.NormalizedName, $"%{roleManager.KeyNormalizer.NormalizeName(req.FindQuery)}%") || x.Id == req.FindQuery);
+
+        int total = q.Count();
+        q = q.OrderBy(x => x.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        var roles = await
+            q.Select(x => new
+            {
+                x.Id,
+                x.Name,
+                x.Title,
+                UsersCount = identityContext.UserRoles.Count(z => z.RoleId == x.Id)
+            })
+            .ToArrayAsync();
+
+        return new()
+        {
+            Response = roles.Select(x => new RoleInfoModel() { Id = x.Id, Name = x.Name, Title = x.Title, UsersCount = x.UsersCount }).ToList(),
+            TotalRowsCount = total,
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortBy = req.SortBy,
+            SortingDirection = req.SortingDirection
+        };
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CateNewRole(string role_name)
     {

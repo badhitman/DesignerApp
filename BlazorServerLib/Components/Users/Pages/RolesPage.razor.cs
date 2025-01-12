@@ -48,7 +48,7 @@ public partial class RolesPage
 
         foodRecallProvider = async req =>
         {
-            TPaginationStrictResponseModel<RoleInfoModel> res = await UsersManageRepo.FindRolesAsync(new FindWithOwnedRequestModel()
+            TPaginationResponseModel<RoleInfoModel> res = await IdentityRepo.FindRolesAsync(new FindWithOwnedRequestModel()
             {
                 OwnerId = OwnerUserId,
                 FindQuery = nameFilter,

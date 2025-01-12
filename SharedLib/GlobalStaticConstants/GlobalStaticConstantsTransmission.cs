@@ -46,6 +46,16 @@ public static partial class GlobalStaticConstants
         public readonly static string AddRoleToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-to-{Routes.USER_CONFIRMATION_NAME}");
 
         /// <summary>
+        /// FindUsersReceive
+        /// </summary>
+        public readonly static string FindUsersReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
+
+        /// <summary>
+        /// FindRolesAsyncReceive
+        /// </summary>
+        public readonly static string FindRolesAsyncReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLES_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
+        
+        /// <summary>
         /// CateNewRoleReceive
         /// </summary>
         public readonly static string CateNewRoleReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, Routes.CREATE_ACTION_NAME);

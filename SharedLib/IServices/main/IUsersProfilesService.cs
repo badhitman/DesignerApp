@@ -8,17 +8,7 @@ namespace SharedLib;
 /// Сервис работы с профилями пользователей
 /// </summary>
 public partial interface IUsersProfilesService
-{
-    /// <summary>
-    /// Пользователи
-    /// </summary>
-    public Task<TPaginationStrictResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req);
-
-    /// <summary>
-    /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
-    /// </summary>
-    public Task<TPaginationStrictResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
-
+{    
     /// <summary>
     /// Get Role (by id)
     /// </summary>

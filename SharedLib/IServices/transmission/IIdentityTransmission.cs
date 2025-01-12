@@ -10,6 +10,16 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Пользователи
+    /// </summary>
+    public Task<TPaginationResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req);
+
+    /// <summary>
+    /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
+    /// </summary>
+    public Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
+
+    /// <summary>
     /// Создать новую роль
     /// </summary>
     public Task<ResponseBaseModel> CateNewRole(string role_name);

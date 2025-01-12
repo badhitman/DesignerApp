@@ -595,6 +595,11 @@ public static partial class GlobalStaticConstants
         public const string ROLE_CONTROLLER_NAME = "role";
 
         /// <summary>
+        /// Roles
+        /// </summary>
+        public const string ROLES_CONTROLLER_NAME = "roles";
+
+        /// <summary>
         /// Console
         /// </summary>
         public const string CONSOLE_CONTROLLER_NAME = "console";
