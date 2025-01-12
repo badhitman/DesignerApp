@@ -2,8 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using SharedLib;
-
 namespace SharedLib;
 
 /// <summary>
@@ -12,9 +10,18 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Создает и отправляет токен подтверждения электронной почты для указанного пользователя.
+    /// </summary>
+    /// <remarks>
+    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
+    /// Он должен быть реализован в приложении, чтобы  Identityинфраструктура могла отправлять электронные письма с подтверждением.
+    /// </remarks>
+    public Task<ResponseBaseModel> GenerateEmailConfirmation(SimpleUserIdentityModel req);
+
+    /// <summary>
     /// CreateNewUserAsync
     /// </summary>
-    public Task<RegistrationNewUserResponseModel> CreateNewUserAsync(SimpleUserIdentityModel req);
+    public Task<RegistrationNewUserResponseModel> CreateNewUserEmailAsync(string req);
 
     /// <summary>
     /// CreateNewUserAsync

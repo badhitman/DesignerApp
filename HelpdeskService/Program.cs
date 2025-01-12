@@ -109,13 +109,13 @@ builder.ConfigureServices((context, services) =>
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>();
     //
-    services.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
-    .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
-    .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
-    .AddScoped<ICommerceRemoteTransmissionService, TransmissionCommerceService>()
+    services.AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
+    .AddScoped<IWebRemoteTransmissionService, WebTransmission>()
+    .AddScoped<ITelegramRemoteTransmissionService, TelegramTransmission>()
+    .AddScoped<ICommerceRemoteTransmissionService, CommerceTransmission>()
     .AddScoped<IHelpdeskService, HelpdeskImplementService>()
-    .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
-    .AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
+    .AddScoped<ISerializeStorageRemoteTransmissionService, StorageTransmission>()
+    .AddScoped<IIdentityRemoteTransmissionService, IdentityTransmission>()
     ;
     // 
     services.HelpdeskRegisterMqListeners();

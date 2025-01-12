@@ -9,6 +9,7 @@ using System.Security.Claims;
 using IdentityLib;
 using System.Text;
 using SharedLib;
+using System.Text.Encodings.Web;
 
 namespace IdentityService;
 
@@ -23,6 +24,21 @@ public class IdentityTools(
     UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> GenerateEmailConfirmation(SimpleUserIdentityModel req)
+    {
+        ApplicationUser? user = await userManager.FindByEmailAsync(req.Email);
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь не найден: {req.Email}");
+
+        string code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        string callbackUrl = $"{req.BaseAddress}?userId={user.Id}&code={code}";
+        await emailSender.SendConfirmationLinkAsync(user, req.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
+        return ResponseBaseModel.CreateSuccess($"Ссылка подтверждения отправлена: {req.Email}");
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ConfirmEmailAsync(UserCodeModel req)
     {
@@ -205,14 +221,16 @@ public class IdentityTools(
     }
 
     /// <inheritdoc/>
-    public async Task<RegistrationNewUserResponseModel> CreateNewUserAsync(SimpleUserIdentityModel req)
+    public async Task<RegistrationNewUserResponseModel> CreateNewUserEmailAsync(string email)
     {
         IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
         ApplicationUser user = IdentityStatic.CreateInstanceUser();
-        await userStore.SetUserNameAsync(user, req.Email, CancellationToken.None);
-        await emailStore.SetEmailAsync(user, req.Email, CancellationToken.None);
+        await userStore.SetUserNameAsync(user, email, CancellationToken.None);
+        await emailStore.SetEmailAsync(user, email, CancellationToken.None);
 
         IdentityResult result = await userManager.CreateAsync(user);
+        if (!result.Succeeded)
+            return new() { Messages = result.Errors.Select(x => new ResultMessage() { Text = $"[{x.Code}: {x.Description}]", TypeMessage = ResultTypesEnum.Error }).ToList() };
 
         return new()
         {

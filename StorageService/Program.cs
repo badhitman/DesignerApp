@@ -97,15 +97,15 @@ builder.ConfigureServices((context, services) =>
     opt.UseNpgsql(connectionIdentityString));
 
     services
-    .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
-    .AddScoped<ICommerceRemoteTransmissionService, TransmissionCommerceService>();
+    .AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
+    .AddScoped<ICommerceRemoteTransmissionService, CommerceTransmission>();
 
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>()
-    .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
-    .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
+    .AddScoped<IWebRemoteTransmissionService, WebTransmission>()
+    .AddScoped<ITelegramRemoteTransmissionService, TelegramTransmission>()
     .AddScoped<ISerializeStorage, StorageServiceImpl>()
-    .AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
+    .AddScoped<IIdentityRemoteTransmissionService, IdentityTransmission>()
     ;
     //
     services.StorageRegisterMqListeners();

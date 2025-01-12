@@ -108,11 +108,11 @@ builder.Services.AddMemoryCache();
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
-builder.Services.AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
-.AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
-.AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
-.AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
-.AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
+builder.Services.AddScoped<IWebRemoteTransmissionService, WebTransmission>()
+.AddScoped<ITelegramRemoteTransmissionService, TelegramTransmission>()
+.AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
+.AddScoped<ISerializeStorageRemoteTransmissionService, StorageTransmission>()
+.AddScoped<IIdentityRemoteTransmissionService, IdentityTransmission>()
 ;
 //
 builder.Services.CommerceRegisterMqListeners();

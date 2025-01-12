@@ -130,10 +130,10 @@ builder.ConfigureServices((context, services) =>
     #region MQ Transmission (remote methods call)
     services
     .AddScoped<IRabbitClient, RabbitClient>()
-    .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
-    .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
-    .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
-    .AddScoped<IIdentityRemoteTransmissionService, IdentityServiceTransmission>()
+    .AddScoped<IWebRemoteTransmissionService, WebTransmission>()
+    .AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
+    .AddScoped<ISerializeStorageRemoteTransmissionService, StorageTransmission>()
+    .AddScoped<IIdentityRemoteTransmissionService, IdentityTransmission>()
     ;
     //
     services.TelegramBotRegisterMqListeners();

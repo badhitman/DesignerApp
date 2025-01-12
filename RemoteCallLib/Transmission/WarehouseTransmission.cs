@@ -6,7 +6,7 @@ using SharedLib;
 
 namespace RemoteCallLib;
 
-public partial class TransmissionCommerceService
+public partial class CommerceTransmission
 {
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<OfferAvailabilityModelDB>> OffersRegistersSelect(TPaginationRequestModel<RegistersSelectRequestBaseModel> req)

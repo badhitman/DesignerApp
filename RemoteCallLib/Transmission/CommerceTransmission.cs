@@ -7,9 +7,9 @@ using SharedLib;
 namespace RemoteCallLib;
 
 /// <summary>
-/// TransmissionCommerceService
+/// CommerceTransmission
 /// </summary>
-public partial class TransmissionCommerceService(IRabbitClient rabbitClient) : ICommerceRemoteTransmissionService
+public partial class CommerceTransmission(IRabbitClient rabbitClient) : ICommerceRemoteTransmissionService
 {
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> req)

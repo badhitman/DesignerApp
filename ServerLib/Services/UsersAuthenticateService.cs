@@ -158,7 +158,7 @@ public class UsersAuthenticateService(
         if (!UserConfMan.UserRegistrationIsAllowed(req.Email))
             return new() { Messages = [new() { Text = $"Ошибка регистрации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
-        RegistrationNewUserResponseModel regUserRes = await identityRepo.CreateNewUser(req);
+        RegistrationNewUserResponseModel regUserRes = await identityRepo.CreateNewUserWithPassword(req);
         if (!regUserRes.Success() || string.IsNullOrWhiteSpace(regUserRes.Response) || regUserRes.RequireConfirmedEmail == true)
             return regUserRes;
 
@@ -180,35 +180,38 @@ public class UsersAuthenticateService(
         if (externalLoginInfo == null)
             return (RegistrationNewUserResponseModel)ResponseBaseModel.CreateError("externalLoginInfo == null. error {D991FA4A-9566-4DD4-B23A-DEB497931FF5}");
 
+        RegistrationNewUserResponseModel regUserRes = await identityRepo.CreateNewUser(userEmail);
+        if (!regUserRes.Success() || string.IsNullOrWhiteSpace(regUserRes.Response))
+            return regUserRes;
 
-        IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
-        ApplicationUser user = IdentityStatic.CreateInstanceUser();
-        await userStore.SetUserNameAsync(user, userEmail, CancellationToken.None);
-        await emailStore.SetEmailAsync(user, userEmail, CancellationToken.None);
+        ApplicationUser? user = await userManager.FindByIdAsync(regUserRes.Response);
+        if (user is null)
+        {
+            regUserRes.AddError("Созданный пользователь не найден");
+            return regUserRes;
+        }
 
-        IdentityResult result = await userManager.CreateAsync(user);
+        IdentityResult result = await userManager.AddLoginAsync(user, externalLoginInfo);
         if (result.Succeeded)
         {
-            result = await userManager.AddLoginAsync(user, externalLoginInfo);
-            if (result.Succeeded)
+            loggerRepo.LogInformation("Пользователь создал учетную запись с помощью провайдера {Name}.", externalLoginInfo.LoginProvider);
+
+
+            string userId = await userManager.GetUserIdAsync(user);
+            string code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            string callbackUrl = $"{baseAddress}?userId={userId}&code={code}";
+            await emailSender.SendConfirmationLinkAsync(user, userEmail, HtmlEncoder.Default.Encode(callbackUrl));
+
+
+            if (regUserRes.RequireConfirmedAccount == true)
             {
-                loggerRepo.LogInformation("Пользователь создал учетную запись с помощью провайдера {Name}.", externalLoginInfo.LoginProvider);
-
-                string userId = await userManager.GetUserIdAsync(user);
-                string code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                string callbackUrl = $"{baseAddress}?userId={userId}&code={code}";
-
-                await emailSender.SendConfirmationLinkAsync(user, userEmail, HtmlEncoder.Default.Encode(callbackUrl));
-
-                if (userManager.Options.SignIn.RequireConfirmedAccount)
-                {
-                    return new() { RequireConfirmedAccount = true };
-                }
-
-                await signInManager.SignInAsync(user, isPersistent: false, externalLoginInfo.LoginProvider);
-                return (RegistrationNewUserResponseModel)ResponseBaseModel.CreateSuccess("Вход выполнен");
+                return new() { RequireConfirmedAccount = true };
             }
+
+            await signInManager.SignInAsync(user, isPersistent: false, externalLoginInfo.LoginProvider);
+            return (RegistrationNewUserResponseModel)ResponseBaseModel.CreateSuccess("Вход выполнен");
+
         }
 
         return new()

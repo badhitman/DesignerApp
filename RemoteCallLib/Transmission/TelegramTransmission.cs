@@ -9,7 +9,7 @@ namespace RemoteCallLib;
 /// <summary>
 /// Удалённый вызов команд в TelegramBot службе
 /// </summary>
-public class TransmissionTelegramService(IRabbitClient rabbitClient) : ITelegramRemoteTransmissionService
+public class TelegramTransmission(IRabbitClient rabbitClient) : ITelegramRemoteTransmissionService
 {
     /// <inheritdoc/>
     public async Task<List<ChatTelegramModelDB>> ChatsFindForUser(long[] usersTelegramIds)

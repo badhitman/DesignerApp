@@ -105,10 +105,10 @@ public class Program
         builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 
         builder.Services
-            .AddScoped<ITelegramRemoteTransmissionService, TransmissionTelegramService>()
-            .AddScoped<IHelpdeskRemoteTransmissionService, TransmissionHelpdeskService>()
-            .AddScoped<IWebRemoteTransmissionService, TransmissionWebService>()
-            .AddScoped<ISerializeStorageRemoteTransmissionService, SerializeStorageRemoteTransmissionService>()
+            .AddScoped<ITelegramRemoteTransmissionService, TelegramTransmission>()
+            .AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
+            .AddScoped<IWebRemoteTransmissionService, WebTransmission>()
+            .AddScoped<ISerializeStorageRemoteTransmissionService, StorageTransmission>()
             ;
 
         builder.Services.IdentityRegisterMqListeners();

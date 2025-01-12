@@ -17,9 +17,7 @@ public class CreateNewUserWithPasswordReceive(IIdentityTools idRepo, ILogger<Cre
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.RegistrationNewUserWithPasswordReceive;
 
-    /// <summary>
-    /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
-    /// </summary>
+    /// <inheritdoc/>
     public async Task<RegistrationNewUserResponseModel?> ResponseHandleAction(RegisterNewUserPasswordModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);

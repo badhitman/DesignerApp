@@ -10,10 +10,18 @@ namespace SharedLib;
 public interface IIdentityRemoteTransmissionService
 {
     /// <summary>
+    /// Регистрация нового email/пользователя
+    /// </summary>
+    /// <remarks>
+    /// Без пароля
+    /// </remarks>
+    public Task<RegistrationNewUserResponseModel> CreateNewUser(string userEmail);
+
+    /// <summary>
     /// Регистрация нового пользователя
     /// </summary>
     /// <param name="req">Email + Пароль + Адрес сайта/домена (для формирования ссылки подтверждения)</param>
-    public Task<RegistrationNewUserResponseModel> CreateNewUser(RegisterNewUserPasswordModel req);
+    public Task<RegistrationNewUserResponseModel> CreateNewUserWithPassword(RegisterNewUserPasswordModel req);
 
     /// <summary>
     /// Проверяет, соответствует ли токен подтверждения электронной почты указанному пользователю.

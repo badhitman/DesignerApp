@@ -9,7 +9,7 @@ namespace RemoteCallLib;
 /// <summary>
 /// TransmissionConstructorService
 /// </summary>
-public class TransmissionConstructorService(IRabbitClient rabbitClient) : IConstructorRemoteTransmissionService
+public class ConstructorTransmission(IRabbitClient rabbitClient) : IConstructorRemoteTransmissionService
 {
     #region public
     /// <inheritdoc/>

@@ -23,7 +23,12 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// Регистрация нового пользователя
         /// </summary>
-        public readonly static string RegistrationNewUserWithPasswordReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.PASSWORD_CONTROLLER_NAME}-with-{Routes.REGISTRATION_ACTION_NAME}");
+        public readonly static string RegistrationNewUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, Routes.REGISTRATION_ACTION_NAME);
+
+        /// <summary>
+        /// Регистрация нового пользователя
+        /// </summary>
+        public readonly static string RegistrationNewUserWithPasswordReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.REGISTRATION_ACTION_NAME}-with-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
         /// Отразить в Claim`s мета-данные пользователя
@@ -50,7 +55,10 @@ public static partial class GlobalStaticConstants
         public readonly static string GetUsersOfIdentityByTelegramIdsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, $"{Routes.GET_ACTION_NAME}-by-{Routes.TELEGRAM_CONTROLLER_NAME}");
 
         /// <inheritdoc/>
-        public readonly static string ConfirmUserEmailCodeIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.CONFIRM_ACTION_NAME}", $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.CODE_CONTROLLER_NAME}");
+        public readonly static string ConfirmUserEmailCodeIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONFIRMATION_NAME}-{Routes.CONFIRM_ACTION_NAME}", $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.CODE_CONTROLLER_NAME}");
+
+        /// <inheritdoc/>
+        public readonly static string GenerateEmailConfirmationIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.CONFIRM_ACTION_NAME}", $"{Routes.SEND_ACTION_NAME}");
         #endregion
 
         #region Web
