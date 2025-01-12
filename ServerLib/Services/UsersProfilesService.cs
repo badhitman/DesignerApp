@@ -28,18 +28,7 @@ public class UsersProfilesService(
     IHttpContextAccessor httpContextAccessor,
     ILogger<UsersProfilesService> LoggerRepo) : GetUserServiceAbstract(httpContextAccessor, userManager, LoggerRepo), IUsersProfilesService
 {
-#pragma warning restore CS9107    
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req)
-    {
-        ApplicationUserResponseModel user = await GetUser(req.UserId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        await userManager.SetLockoutEndDateAsync(user.ApplicationUser, req.Set ? DateTimeOffset.MaxValue : null);
-        return ResponseBaseModel.CreateSuccess($"Пользователь успешно [{user.ApplicationUser.Email}] {(req.Set ? "заблокирован" : "разблокирован")}");
-    }
-
+#pragma warning restore CS9107
     /// <inheritdoc/>
     public async Task<ClaimBaseModel[]> GetClaims(ClaimAreaOwnerModel req)
     {

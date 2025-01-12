@@ -25,6 +25,17 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req)
+    {
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId);
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь не найден: {req.UserId}");
+
+        await userManager.SetLockoutEndDateAsync(user, req.Set ? DateTimeOffset.MaxValue : null);
+        return ResponseBaseModel.CreateSuccess($"Пользователь успешно [{user.Email}] {(req.Set ? "заблокирован" : "разблокирован")}");
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<RoleInfoModel>> GetRole(string role_id)
     {
         ApplicationRole? role_db = await roleManager.FindByIdAsync(role_id);

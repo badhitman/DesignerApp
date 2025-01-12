@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Установить блокировку пользователю
+    /// </summary>
+    public Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req);
+
+    /// <summary>
     /// Get Role (by id)
     /// </summary>
     public Task<TResponseModel<RoleInfoModel>> GetRole(string role_id);

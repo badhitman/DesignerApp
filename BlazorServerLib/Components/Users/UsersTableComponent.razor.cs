@@ -119,7 +119,7 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
 
     async Task SetUserLock(string userId, bool locked_set)
     {
-        ResponseBaseModel rest = await UsersManageRepo.SetLockUser(new() { Set = locked_set, UserId = userId });
+        ResponseBaseModel rest = await IdentityRepo.SetLockUser(new() { Set = locked_set, UserId = userId });
         Messages = rest.Messages;
         if (myGrid is not null)
             await myGrid.RefreshDataAsync();

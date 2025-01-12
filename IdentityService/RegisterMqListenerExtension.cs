@@ -24,6 +24,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<GetUsersOfIdentityReceive, string[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, ResponseBaseModel>()
             .RegisterMqListener<GetRoleReceive, string, TResponseModel<RoleInfoModel>>()
+            .RegisterMqListener<SetLockUserReceive, IdentityBooleanModel, ResponseBaseModel>()
             .RegisterMqListener<FindUsersReceive, FindWithOwnedRequestModel, TPaginationResponseModel<UserInfoModel>>()
             .RegisterMqListener<FindRolesAsyncReceive, FindWithOwnedRequestModel, TPaginationResponseModel<RoleInfoModel>>()
             .RegisterMqListener<CateNewRoleReceive, string, ResponseBaseModel>()

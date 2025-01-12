@@ -35,6 +35,11 @@ public static partial class GlobalStaticConstants
         public const string USER_CONFIRMATION_NAME = "confirmation";
 
         /// <summary>
+        /// Lock
+        /// </summary>
+        public const string LOCK_CONFIRMATION_NAME = "lock";
+
+        /// <summary>
         /// Code
         /// </summary>
         public const string CODE_CONTROLLER_NAME = "code";
