@@ -10,11 +10,6 @@ namespace SharedLib;
 public partial interface IUsersProfilesService
 {    
     /// <summary>
-    /// Get Role (by id)
-    /// </summary>
-    public Task<TResponseModel<RoleInfoModel?>> GetRole(string role_id);
-
-    /// <summary>
     /// Установить блокировку пользователю
     /// </summary>
     public Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req);

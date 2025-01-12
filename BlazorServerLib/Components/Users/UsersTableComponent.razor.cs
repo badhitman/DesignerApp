@@ -193,7 +193,7 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
 
         if (!string.IsNullOrWhiteSpace(OwnerRoleId))
         {
-            TResponseModel<RoleInfoModel?> rest = await UsersManageRepo.GetRole(OwnerRoleId);
+            TResponseModel<RoleInfoModel> rest = await IdentityRepo.GetRole(OwnerRoleId);
             Messages = rest.Messages;
             if (!rest.Success())
                 return;

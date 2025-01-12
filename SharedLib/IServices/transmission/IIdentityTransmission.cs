@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Get Role (by id)
+    /// </summary>
+    public Task<TResponseModel<RoleInfoModel>> GetRole(string roleName);
+
+    /// <summary>
     /// Пользователи
     /// </summary>
     public Task<TPaginationResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req);

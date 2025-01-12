@@ -21,7 +21,6 @@ namespace ServerLib;
 public class UsersProfilesService(
     IEmailSender<ApplicationUser> emailSender,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
-    RoleManager<ApplicationRole> roleManager,
     UserManager<ApplicationUser> userManager,
     IIdentityTransmission IdentityRepo,
     SignInManager<ApplicationUser> signInManager,
@@ -30,25 +29,6 @@ public class UsersProfilesService(
     ILogger<UsersProfilesService> LoggerRepo) : GetUserServiceAbstract(httpContextAccessor, userManager, LoggerRepo), IUsersProfilesService
 {
 #pragma warning restore CS9107    
-    /// <inheritdoc/>
-    public async Task<TResponseModel<RoleInfoModel?>> GetRole(string role_id)
-    {
-        ApplicationRole? role_db = await roleManager.FindByIdAsync(role_id);
-        if (role_db is null)
-            return new() { Messages = ResponseBaseModel.ErrorMessage($"Роль #{role_id} не найдена в БД") };
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        return new()
-        {
-            Response = new RoleInfoModel()
-            {
-                Id = role_id,
-                Name = role_db.Name,
-                Title = role_db.Title,
-                UsersCount = await identityContext.UserRoles.CountAsync(x => x.RoleId == role_id)
-            }
-        };
-    }
-
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req)
     {

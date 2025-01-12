@@ -24,6 +24,24 @@ public class IdentityTools(
     UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<RoleInfoModel>> GetRole(string role_id)
+    {
+        ApplicationRole? role_db = await roleManager.FindByIdAsync(role_id);
+        if (role_db is null)
+            return new() { Messages = ResponseBaseModel.ErrorMessage($"Роль #{role_id} не найдена в БД") };
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        return new()
+        {
+            Response = new RoleInfoModel()
+            {
+                Id = role_id,
+                Name = role_db.Name,
+                Title = role_db.Title,
+                UsersCount = await identityContext.UserRoles.CountAsync(x => x.RoleId == role_id)
+            }
+        };
+    }
 
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req)
