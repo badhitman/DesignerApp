@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.Document;
 public partial class TabsOfDocumentViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>

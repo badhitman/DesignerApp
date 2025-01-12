@@ -16,7 +16,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.Document;
 public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>

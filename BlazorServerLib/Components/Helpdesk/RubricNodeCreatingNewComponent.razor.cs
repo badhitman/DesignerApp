@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class RubricNodeCreatingNewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

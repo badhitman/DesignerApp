@@ -9,7 +9,7 @@ namespace RemoteCallLib;
 /// <summary>
 /// CommerceTransmission
 /// </summary>
-public partial class CommerceTransmission(IRabbitClient rabbitClient) : ICommerceRemoteTransmissionService
+public partial class CommerceTransmission(IRabbitClient rabbitClient) : ICommerceTransmission
 {
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> req)

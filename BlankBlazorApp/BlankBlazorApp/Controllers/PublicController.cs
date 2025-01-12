@@ -17,7 +17,7 @@ namespace BlankBlazorApp.Controllers;
 /// </summary>
 [Route("[controller]/[action]"), ApiController]
 [AllowAnonymous]
-public class PublicController(ITelegramRemoteTransmissionService tgRepo, IWebRemoteTransmissionService webRemoteRepo, IUsersAuthenticateService uaRepo) : ControllerBase
+public class PublicController(ITelegramTransmission tgRepo, IWebTransmission webRemoteRepo, IUsersAuthenticateService uaRepo) : ControllerBase
 {
     /// <summary>
     /// Authorize

@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components;
 public partial class NoteSimpleComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
+    IStorageTransmission StorageRepo { get; set; } = default!;
 
 
     /// <summary>

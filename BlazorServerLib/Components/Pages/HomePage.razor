@@ -21,7 +21,7 @@ else
 
 @code {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
+    IStorageTransmission StoreRepo { get; set; } = default!;
 
 
     MarkupString ms => (MarkupString)(_textValue ?? "<h1>Hello, world!</h1> Welcome to your new app.");

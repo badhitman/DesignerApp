@@ -17,7 +17,7 @@ namespace ApiRestService.Controllers;
 #else
 [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
 #endif
-public class OffersController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
+public class OffersController(ICommerceTransmission commRepo) : ControllerBase
 {
     /// <summary>
     /// Подбор офферов (поиск по параметрам)

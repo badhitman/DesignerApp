@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class RubricSelectorComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

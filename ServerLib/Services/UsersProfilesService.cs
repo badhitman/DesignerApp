@@ -23,7 +23,7 @@ public class UsersProfilesService(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     RoleManager<ApplicationRole> roleManager,
     UserManager<ApplicationUser> userManager,
-    IIdentityRemoteTransmissionService IdentityRepo,
+    IIdentityTransmission IdentityRepo,
     SignInManager<ApplicationUser> signInManager,
     IUserStore<ApplicationUser> userStore,
     IHttpContextAccessor httpContextAccessor,

@@ -15,10 +15,10 @@ namespace BlazorWebLib.Components.Articles;
 public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
 
     private MudTable<ArticleModelDB> table = default!;

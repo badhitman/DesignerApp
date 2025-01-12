@@ -16,7 +16,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.Projects;
 public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
     [Inject]
     IUsersProfilesService UserProfilesManage { get; set; } = default!;

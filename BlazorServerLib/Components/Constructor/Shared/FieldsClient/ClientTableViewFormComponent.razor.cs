@@ -20,7 +20,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
     IDialogService DialogServiceRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

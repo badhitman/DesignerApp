@@ -17,7 +17,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.Form;
 public partial class EditFormDialogComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     [CascadingParameter]

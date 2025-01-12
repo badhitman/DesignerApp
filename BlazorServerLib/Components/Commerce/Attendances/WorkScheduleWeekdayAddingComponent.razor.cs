@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 public partial class WorkScheduleWeekdayAddingComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     /// <summary>

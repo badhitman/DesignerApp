@@ -17,7 +17,7 @@ namespace ApiRestService.Controllers;
 #else
 [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrganizationsReadCommerce)},{nameof(ExpressApiRolesEnum.OrganizationsWriteCommerce)}"), LoggerNolog]
 #endif
-public class OrganizationsController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
+public class OrganizationsController(ICommerceTransmission commRepo) : ControllerBase
 {
     /// <summary>
     /// Прочитать данные организаций по их идентификаторам

@@ -16,7 +16,7 @@ public partial class DirectoryFieldFormUIComponent : BlazorBusyComponentBaseMode
 {
     /// <inheritdoc/>
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

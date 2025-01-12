@@ -15,10 +15,10 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class CreateIssueComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
+    IStorageTransmission SerializeStorageRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

@@ -18,7 +18,7 @@ public partial class FieldDirectoryFormRowEditComponent : BlazorBusyComponentBas
 {
     /// <inheritdoc/>
     [Inject]
-    protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    protected IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

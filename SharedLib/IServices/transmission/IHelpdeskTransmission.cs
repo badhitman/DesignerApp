@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Удалённый вызов команд в Helpdesk службе
 /// </summary>
-public interface IHelpdeskRemoteTransmissionService
+public interface IHelpdeskTransmission
 {
     /// <summary>
     /// Входящее сообщение от клиента в TelegramBot

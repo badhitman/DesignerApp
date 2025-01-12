@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class NotificationsAreaTelegramIssueConfigComponent : IssueWrapBaseModel
 {
     [Inject]
-    ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
+    ITelegramTransmission TelegramRepo { get; set; } = default!;
 
 
     List<ChatTelegramModelDB>? chatsTelegram;

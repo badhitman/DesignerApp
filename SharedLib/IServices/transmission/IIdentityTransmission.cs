@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Identity
 /// </summary>
-public interface IIdentityRemoteTransmissionService
+public interface IIdentityTransmission
 {
     /// <summary>
     /// Регистрация нового email/пользователя

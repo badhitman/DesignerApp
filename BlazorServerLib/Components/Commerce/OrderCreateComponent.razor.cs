@@ -16,13 +16,13 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
+    IStorageTransmission StorageRepo { get; set; } = default!;
 
     [Inject]
     NavigationManager NavRepo { get; set; } = default!;
 
     [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     bool _visibleChangeAddresses;

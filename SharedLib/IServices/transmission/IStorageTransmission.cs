@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Serialize Remote Transmission Service
 /// </summary>
-public interface ISerializeStorageRemoteTransmissionService
+public interface IStorageTransmission
 {
     /// <summary>
     /// TagSet

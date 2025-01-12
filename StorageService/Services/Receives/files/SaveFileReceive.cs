@@ -22,8 +22,8 @@ namespace Transmission.Receives.storage;
 public class SaveFileReceive(
     ILogger<SaveFileReceive> LoggerRepo,
     IMongoDatabase mongoFs,
-    IHelpdeskRemoteTransmissionService HelpdeskRepo,
-    ICommerceRemoteTransmissionService commRepo,
+    IHelpdeskTransmission HelpdeskRepo,
+    ICommerceTransmission commRepo,
     IOptions<WebConfigModel> webConfig,
     IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<TAuthRequestModel<StorageImageMetadataModel>?, TResponseModel<StorageFileModelDB>?>
 {

@@ -97,15 +97,15 @@ builder.ConfigureServices((context, services) =>
     opt.UseNpgsql(connectionIdentityString));
 
     services
-    .AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
-    .AddScoped<ICommerceRemoteTransmissionService, CommerceTransmission>();
+    .AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()
+    .AddScoped<ICommerceTransmission, CommerceTransmission>();
 
     #region MQ Transmission (remote methods call)
     services.AddScoped<IRabbitClient, RabbitClient>()
-    .AddScoped<IWebRemoteTransmissionService, WebTransmission>()
-    .AddScoped<ITelegramRemoteTransmissionService, TelegramTransmission>()
+    .AddScoped<IWebTransmission, WebTransmission>()
+    .AddScoped<ITelegramTransmission, TelegramTransmission>()
     .AddScoped<ISerializeStorage, StorageServiceImpl>()
-    .AddScoped<IIdentityRemoteTransmissionService, IdentityTransmission>()
+    .AddScoped<IIdentityTransmission, IdentityTransmission>()
     ;
     //
     services.StorageRegisterMqListeners();
@@ -119,7 +119,7 @@ IHost app = builder.Build();
 using (IServiceScope ss = app.Services.CreateScope())
 {
     IOptions<WebConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<WebConfigModel>>();
-    IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
+    IWebTransmission webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebTransmission>();
     TelegramBotConfigModel wc_remote = await webRemoteCall.GetWebConfig();
     if (Uri.TryCreate(wc_remote.BaseUri, UriKind.Absolute, out _))
         wc_main.Value.Update(wc_remote.BaseUri);

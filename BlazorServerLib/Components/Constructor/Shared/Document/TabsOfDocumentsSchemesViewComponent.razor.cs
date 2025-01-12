@@ -17,7 +17,7 @@ public partial class TabsOfDocumentsSchemesViewComponent : BlazorBusyComponentBa
 {
     /// <inheritdoc/>
     [Inject]
-    protected IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    protected IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

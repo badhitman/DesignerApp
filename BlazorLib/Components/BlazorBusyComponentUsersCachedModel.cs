@@ -14,7 +14,7 @@ namespace BlazorLib;
 public abstract class BlazorBusyComponentUsersCachedModel : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
     /// <summary>
     /// UsersCache

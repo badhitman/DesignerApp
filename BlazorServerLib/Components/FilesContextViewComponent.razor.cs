@@ -23,13 +23,13 @@ public partial class FilesContextViewComponent : MetaPropertyBaseComponent
     IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Inject]
-    ISerializeStorageRemoteTransmissionService FilesRepo { get; set; } = default!;
+    IStorageTransmission FilesRepo { get; set; } = default!;
 
     [Inject]
-    IHelpdeskRemoteTransmissionService HdRepo { get; set; } = default!;
+    IHelpdeskTransmission HdRepo { get; set; } = default!;
 
     [Inject]
-    ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
+    ICommerceTransmission CommRepo { get; set; } = default!;
 
 
     bool CanAddingFile => OwnerPrimaryKey.HasValue && OwnerPrimaryKey.Value > 0 &&

@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class ConsoleHelpdeskComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
+    IStorageTransmission StorageRepo { get; set; } = default!;
 
 
     readonly List<StatusesDocumentsEnum> Steps = [.. Enum.GetValues(typeof(StatusesDocumentsEnum)).Cast<StatusesDocumentsEnum>()];

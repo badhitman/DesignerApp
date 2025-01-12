@@ -130,10 +130,10 @@ builder.ConfigureServices((context, services) =>
     #region MQ Transmission (remote methods call)
     services
     .AddScoped<IRabbitClient, RabbitClient>()
-    .AddScoped<IWebRemoteTransmissionService, WebTransmission>()
-    .AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
-    .AddScoped<ISerializeStorageRemoteTransmissionService, StorageTransmission>()
-    .AddScoped<IIdentityRemoteTransmissionService, IdentityTransmission>()
+    .AddScoped<IWebTransmission, WebTransmission>()
+    .AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()
+    .AddScoped<IStorageTransmission, StorageTransmission>()
+    .AddScoped<IIdentityTransmission, IdentityTransmission>()
     ;
     //
     services.TelegramBotRegisterMqListeners();
@@ -145,7 +145,7 @@ IHost app = builder.Build();
 using (IServiceScope ss = app.Services.CreateScope())
 {
     TelegramBotConfigModel wc_main = ss.ServiceProvider.GetRequiredService<TelegramBotConfigModel>();
-    IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
+    IWebTransmission webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebTransmission>();
     TelegramBotConfigModel wc_remote = await webRemoteCall.GetWebConfig();
     wc_main.Update(wc_remote);
 }

@@ -15,16 +15,16 @@ namespace BlazorWebLib.Components.Helpdesk.Pages;
 public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
+    ICommerceTransmission CommRepo { get; set; } = default!;
 
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo { get; set; } = default!;
+    IStorageTransmission StorageTransmissionRepo { get; set; } = default!;
 
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
 
     /// <summary>

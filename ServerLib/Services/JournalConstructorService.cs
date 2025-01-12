@@ -15,7 +15,7 @@ namespace ServerLib;
 /// Journal Constructor
 /// </summary>
 public partial class JournalConstructorService(
-    IIdentityRemoteTransmissionService IdentityRepo,
+    IIdentityTransmission IdentityRepo,
     IDbContextFactory<ConstructorContext> mainDbFactory,
     IHttpContextAccessor httpContextAccessor) : IJournalUniversalService
 {

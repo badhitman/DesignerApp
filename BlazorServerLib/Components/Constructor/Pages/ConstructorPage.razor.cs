@@ -13,7 +13,7 @@ namespace BlazorWebLib.Components.Constructor.Pages;
 public partial class ConstructorPage : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
     //[Inject]
     //IManufactureService ManufactureRepo { get; set; } = default!;

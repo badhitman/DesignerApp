@@ -22,7 +22,7 @@ namespace Transmission.Receives.telegram;
 /// </summary>
 public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
-    IWebRemoteTransmissionService webRemoteCall,
+    IWebTransmission webRemoteCall,
     StoreTelegramService storeTgRepo,
     ILogger<SendTextMessageTelegramReceive> _logger) : IResponseReceive<SendTextMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
 {

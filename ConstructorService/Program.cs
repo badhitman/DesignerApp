@@ -98,11 +98,11 @@ builder.Services.AddScoped<IConstructorService, FormsConstructorService>();
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
-builder.Services.AddScoped<IWebRemoteTransmissionService, WebTransmission>()
-.AddScoped<ITelegramRemoteTransmissionService, TelegramTransmission>()
-.AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
-.AddScoped<ISerializeStorageRemoteTransmissionService, StorageTransmission>()
-.AddScoped<IIdentityRemoteTransmissionService, IdentityTransmission>()
+builder.Services.AddScoped<IWebTransmission, WebTransmission>()
+.AddScoped<ITelegramTransmission, TelegramTransmission>()
+.AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()
+.AddScoped<IStorageTransmission, StorageTransmission>()
+.AddScoped<IIdentityTransmission, IdentityTransmission>()
 ;
 //
 builder.Services.ConstructorRegisterMqListeners();
@@ -113,7 +113,7 @@ IHost host = builder.Build();
 using (IServiceScope ss = host.Services.CreateScope())
 {
     IOptions<ConstructorConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<ConstructorConfigModel>>();
-    IWebRemoteTransmissionService webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebRemoteTransmissionService>();
+    IWebTransmission webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebTransmission>();
     wc_main.Value.WebConfig = await webRemoteCall.GetWebConfig();
 }
 

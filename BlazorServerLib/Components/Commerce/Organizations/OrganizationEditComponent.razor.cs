@@ -18,7 +18,7 @@ public partial class OrganizationEditComponent : BlazorBusyComponentBaseAuthMode
     NavigationManager NavigationRepo { get; set; } = default!;
 
     [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     /// <summary>

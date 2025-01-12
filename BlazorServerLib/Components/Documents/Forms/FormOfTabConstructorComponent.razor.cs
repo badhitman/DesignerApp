@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Documents.Forms;
 public partial class FormOfTabConstructorComponent : FormBaseModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Удалённый вызов команд в TelegramBot службе
 /// </summary>
-public interface ITelegramRemoteTransmissionService
+public interface ITelegramTransmission
 {
     /// <summary>
     /// Получить токен TG бота (для расчёта HMAC хеша)

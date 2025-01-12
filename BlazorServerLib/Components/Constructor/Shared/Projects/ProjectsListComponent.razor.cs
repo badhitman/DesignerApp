@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.Projects;
 public partial class ProjectsListComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
     [Inject]
     IDialogService DialogService { get; set; } = default!;

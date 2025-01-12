@@ -16,13 +16,13 @@ namespace BlazorWebLib.Components.Warehouse;
 public partial class WarehouseEditingComponent : OffersTableBaseComponent
 {
     [Inject]
-    ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
+    ICommerceTransmission CommRepo { get; set; } = default!;
 
     [Inject]
     NavigationManager NavRepo { get; set; } = default!;
 
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
 
     /// <summary>

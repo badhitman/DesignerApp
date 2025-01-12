@@ -15,10 +15,10 @@ namespace BlazorWebLib.Components.Commerce.Organizations;
 public partial class OrganizationsTableComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    ICommerceTransmission CommerceRepo { get; set; } = default!;
 
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
 
     /// <summary>

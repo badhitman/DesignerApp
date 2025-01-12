@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public abstract class IssueWrapBaseModel : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    internal IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    internal IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
     [Inject]
     internal NavigationManager NavRepo { get; set; } = default!;

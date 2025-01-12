@@ -17,7 +17,7 @@ public partial class AttendancesManagePage : BlazorBusyComponentBaseModel
     /// Commerce
     /// </summary>
     [Inject]
-    protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    protected ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     /// <summary>

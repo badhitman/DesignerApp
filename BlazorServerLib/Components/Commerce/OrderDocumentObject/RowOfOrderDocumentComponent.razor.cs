@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Commerce.OrderDocumentObject;
 public partial class RowOfOrderDocumentComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
+    ICommerceTransmission CommRepo { get; set; } = default!;
 
 
     /// <summary>

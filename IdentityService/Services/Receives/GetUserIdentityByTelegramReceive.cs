@@ -14,7 +14,7 @@ namespace Transmission.Receives.Identity;
 /// Find user identity by telegram - receive
 /// </summary>
 public class GetUserIdentityByTelegramReceive(
-    IIdentityRemoteTransmissionService IdentityRepo,
+    IIdentityTransmission IdentityRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IMemoryCache cache) : IResponseReceive<long[]?, TResponseModel<UserInfoModel[]>?>
 {

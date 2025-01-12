@@ -15,19 +15,19 @@ namespace BlazorWebLib.Components.Telegram;
 public partial class ChatsTableComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ITelegramRemoteTransmissionService TgRepo { get; set; } = default!;
+    ITelegramTransmission TgRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackBarRepo { get; set; } = default!;
 
     [Inject]
-    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+    IWebTransmission WebRepo { get; set; } = default!;
 
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
 
     private IEnumerable<ChatTelegramModelDB> pagedData = [];

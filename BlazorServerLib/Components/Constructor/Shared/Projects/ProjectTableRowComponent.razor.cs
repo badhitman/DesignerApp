@@ -19,7 +19,7 @@ public partial class ProjectTableRowComponent : BlazorBusyComponentBaseAuthModel
     IDialogService DialogService { get; set; } = default!;
 
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>

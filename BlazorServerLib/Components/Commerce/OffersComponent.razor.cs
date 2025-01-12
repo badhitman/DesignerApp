@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class OffersComponent : BlazorBusyComponentRegistersModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo { get; set; } = default!;
+    IStorageTransmission StorageTransmissionRepo { get; set; } = default!;
 
     /// <summary>
     /// CurrentNomenclature

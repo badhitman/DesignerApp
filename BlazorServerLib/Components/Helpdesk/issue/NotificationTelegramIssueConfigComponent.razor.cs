@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class NotificationTelegramIssueConfigComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
+    IStorageTransmission StorageRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

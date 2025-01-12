@@ -18,12 +18,12 @@ namespace ServerLib;
 /// Telegram
 /// </summary>
 public class WebAppService(
-    ITelegramRemoteTransmissionService tgRemoteRepo,
+    ITelegramTransmission tgRemoteRepo,
     UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IHttpContextAccessor httpContextAccessor,
     IMailProviderService mailRepo,
-    IIdentityRemoteTransmissionService identityRepo,
+    IIdentityTransmission identityRepo,
     IOptions<TelegramBotConfigModel> webConfig,
     ILogger<WebAppService> LoggerRepo)
 #pragma warning disable CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.

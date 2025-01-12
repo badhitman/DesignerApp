@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.ParametersShared;
 public partial class BoolSimpleStorageComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo { get; set; } = default!;
+    IStorageTransmission StorageTransmissionRepo { get; set; } = default!;
 
 
     /// <summary>

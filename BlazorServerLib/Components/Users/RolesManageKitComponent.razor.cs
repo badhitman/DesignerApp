@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Users;
 public partial class RolesManageKitComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
 
     /// <summary>

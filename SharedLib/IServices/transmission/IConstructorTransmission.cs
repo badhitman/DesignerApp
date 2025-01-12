@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Constructor Remote Transmission Service
 /// </summary>
-public interface IConstructorRemoteTransmissionService
+public interface IConstructorTransmission
 {
     #region public
     /// <summary>

@@ -19,16 +19,16 @@ namespace HelpdeskService;
 /// Helpdesk - Implement
 /// </summary>
 public class HelpdeskImplementService(
-    IIdentityRemoteTransmissionService IdentityRepo,
+    IIdentityTransmission IdentityRepo,
     ILogger<HelpdeskImplementService> loggerRepo,
     IDbContextFactory<HelpdeskContext> helpdeskDbFactory,
     IManualCustomCacheService cacheRepo,
     IOptions<HelpdeskConfigModel> hdConf,
-    ICommerceRemoteTransmissionService commRepo,
+    ICommerceTransmission commRepo,
     IMemoryCache cache,
-    ITelegramRemoteTransmissionService telegramRemoteRepo,
-    ISerializeStorageRemoteTransmissionService StorageRepo,
-    IWebRemoteTransmissionService webTransmissionRepo) : IHelpdeskService
+    ITelegramTransmission telegramRemoteRepo,
+    IStorageTransmission StorageRepo,
+    IWebTransmission webTransmissionRepo) : IHelpdeskService
 {
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 

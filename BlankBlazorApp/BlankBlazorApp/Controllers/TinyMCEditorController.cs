@@ -13,7 +13,7 @@ namespace BlankBlazorApp.Controllers;
 /// </summary>
 [Route("[controller]/[action]"), ApiController]
 [AllowAnonymous]
-public class TinyMCEditorController(ISerializeStorageRemoteTransmissionService storeRepo) : ControllerBase
+public class TinyMCEditorController(IStorageTransmission storeRepo) : ControllerBase
 {
     /// <summary>
     /// Upload Image

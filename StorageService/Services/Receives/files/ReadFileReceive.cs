@@ -17,9 +17,9 @@ namespace Transmission.Receives.storage;
 /// Read file
 /// </summary>
 public class ReadFileReceive(IMongoDatabase mongoFs,
-    IIdentityRemoteTransmissionService identityRepo,
+    IIdentityTransmission identityRepo,
     ILogger<ReadFileReceive> LoggerRepo,
-    IHelpdeskRemoteTransmissionService hdRepo,
+    IHelpdeskTransmission hdRepo,
     IDbContextFactory<StorageContext> cloudParametersDbFactory) : IResponseReceive<TAuthRequestModel<RequestFileReadModel>?, TResponseModel<FileContentModel>?>
 {
     /// <inheritdoc/>

@@ -16,7 +16,7 @@ namespace BlazorWebLib.Components.Telegram;
 public partial class FileItemForMessageComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ITelegramRemoteTransmissionService telegramRepo { get; set; } = default!;
+    ITelegramTransmission telegramRepo { get; set; } = default!;
 
     [Inject]
     IJSRuntime JSRepo { get; set; } = default!;

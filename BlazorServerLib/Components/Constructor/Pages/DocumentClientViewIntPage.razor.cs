@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Constructor.Pages;
 public partial class DocumentClientViewIntPage : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

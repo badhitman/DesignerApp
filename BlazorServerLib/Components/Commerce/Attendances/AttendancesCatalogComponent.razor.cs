@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Commerce.Attendances;
 public partial class AttendancesCatalogComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     bool _expanded;

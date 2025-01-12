@@ -11,7 +11,7 @@ namespace BlazorWebLib.Components.Account.Pages;
 public partial class ConfirmEmailPage : ComponentBase
 {
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
     [Inject]
     IUsersProfilesService UserProfilesManage { get; set; } = default!;

@@ -195,13 +195,13 @@ builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>(
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
 builder.Services
-    .AddScoped<ICommerceRemoteTransmissionService, CommerceTransmission>()
-    .AddScoped<ITelegramRemoteTransmissionService, TelegramTransmission>()
-    .AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
-    .AddScoped<ISerializeStorageRemoteTransmissionService, StorageTransmission>()
-    .AddScoped<IConstructorRemoteTransmissionService, ConstructorTransmission>()
-    .AddScoped<IIdentityRemoteTransmissionService, IdentityTransmission>()
-    .AddScoped<IWebRemoteTransmissionService, WebTransmission>();
+    .AddScoped<ICommerceTransmission, CommerceTransmission>()
+    .AddScoped<ITelegramTransmission, TelegramTransmission>()
+    .AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()
+    .AddScoped<IStorageTransmission, StorageTransmission>()
+    .AddScoped<IConstructorTransmission, ConstructorTransmission>()
+    .AddScoped<IIdentityTransmission, IdentityTransmission>()
+    .AddScoped<IWebTransmission, WebTransmission>();
 //
 builder.Services.WebAppRegisterMqListeners();
 #endregion

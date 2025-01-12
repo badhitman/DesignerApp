@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class NomenclatureCreatingFormComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     /// <summary>

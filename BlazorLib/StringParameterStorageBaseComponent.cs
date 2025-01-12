@@ -14,7 +14,7 @@ namespace BlazorLib;
 public class StringParameterStorageBaseComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
+    IStorageTransmission StoreRepo { get; set; } = default!;
 
 
     /// <summary>

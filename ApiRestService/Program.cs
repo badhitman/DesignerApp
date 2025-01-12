@@ -111,11 +111,11 @@ RestApiConfigBaseModel restConf = builder.Configuration.GetSection("ApiAccess").
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 //
 builder.Services
-    .AddScoped<IWebRemoteTransmissionService, WebTransmission>()
-    .AddScoped<ITelegramRemoteTransmissionService, TelegramTransmission>()
-    .AddScoped<IHelpdeskRemoteTransmissionService, HelpdeskTransmission>()
-    .AddScoped<ICommerceRemoteTransmissionService, CommerceTransmission>()
-    .AddScoped<ISerializeStorageRemoteTransmissionService, StorageTransmission>();
+    .AddScoped<IWebTransmission, WebTransmission>()
+    .AddScoped<ITelegramTransmission, TelegramTransmission>()
+    .AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()
+    .AddScoped<ICommerceTransmission, CommerceTransmission>()
+    .AddScoped<IStorageTransmission, StorageTransmission>();
 #endregion
 
 builder.Services.AddScoped<IToolsSystemService, ToolsSystemService>();

@@ -4,7 +4,7 @@
 
 namespace SharedLib;
 
-public partial interface ICommerceRemoteTransmissionService
+public partial interface ICommerceTransmission
 {
     /// <summary>
     /// Получить остатки

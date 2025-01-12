@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.DirectoriesCatalog;
 public partial class DirectoryViewComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>

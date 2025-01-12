@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Constructor.Pages;
 public partial class DocumentClientViewPage : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

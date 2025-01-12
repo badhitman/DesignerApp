@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Helpdesk;
 public partial class RubricsParametersComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
+    IStorageTransmission SerializeStorageRepo { get; set; } = default!;
 
 
     bool _showDisabledRubrics;

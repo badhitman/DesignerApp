@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// E-Commerce Remote Transmission Service
 /// </summary>
-public partial interface ICommerceRemoteTransmissionService
+public partial interface ICommerceTransmission
 {
     /// <summary>
     /// Price Full - file get

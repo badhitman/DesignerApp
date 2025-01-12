@@ -18,7 +18,7 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseAuthMod
     /// Commerce
     /// </summary>
     [Inject]
-    protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    protected ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     OfferModelDB? SelectedOffer { get; set; }

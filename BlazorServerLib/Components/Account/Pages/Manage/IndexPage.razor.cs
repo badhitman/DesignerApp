@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Account.Pages.Manage;
 public partial class IndexPage : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IWebRemoteTransmissionService webRepo { get; set; } = default!;
+    IWebTransmission webRepo { get; set; } = default!;
 
     [Inject]
     AuthenticationStateProvider AuthRepo { get; set; } = default!;

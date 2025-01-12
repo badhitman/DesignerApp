@@ -20,7 +20,7 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseAuthMode
     IJSRuntime JsRuntimeRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>

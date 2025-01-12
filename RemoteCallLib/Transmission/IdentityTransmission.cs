@@ -9,7 +9,7 @@ namespace RemoteCallLib;
 /// <summary>
 /// Identity Service
 /// </summary>
-public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityRemoteTransmissionService
+public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
     /// <inheritdoc/>
     public async Task<RegistrationNewUserResponseModel> CreateNewUser(string userEmail)

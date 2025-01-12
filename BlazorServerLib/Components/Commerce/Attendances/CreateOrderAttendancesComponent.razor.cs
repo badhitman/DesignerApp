@@ -18,7 +18,7 @@ public partial class CreateOrderAttendancesComponent : BlazorBusyComponentBaseAu
     /// Commerce
     /// </summary>
     [Inject]
-    protected ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    protected ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     List<WorkScheduleModel>? Elements;

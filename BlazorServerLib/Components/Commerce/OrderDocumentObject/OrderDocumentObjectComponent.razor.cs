@@ -16,13 +16,13 @@ namespace BlazorWebLib.Components.Commerce.OrderDocumentObject;
 public partial class OrderDocumentObjectComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ICommerceRemoteTransmissionService CommRepo { get; set; } = default!;
+    ICommerceTransmission CommRepo { get; set; } = default!;
 
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
+    IStorageTransmission StorageRepo { get; set; } = default!;
 
     [Inject]
     NavigationManager NavRepo { get; set; } = default!;

@@ -15,7 +15,7 @@ namespace ServerLib;
 
 /// <inheritdoc/>
 public class ManufactureService(
-    IIdentityRemoteTransmissionService IdentityRepo,
+    IIdentityTransmission IdentityRepo,
     IDbContextFactory<ConstructorContext> mainDbFactory,
     IHttpContextAccessor httpContextAccessor,
     IUsersProfilesService usersProfilesRepo) : IManufactureService

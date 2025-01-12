@@ -17,7 +17,7 @@ namespace BlazorWebLib.Components.Users;
 public partial class UsersTableComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
+    IStorageTransmission SerializeStorageRepo { get; set; } = default!;
 
     /// <summary>
     /// JS

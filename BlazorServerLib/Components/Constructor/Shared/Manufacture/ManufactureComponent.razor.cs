@@ -18,7 +18,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.Manufacture;
 public partial class ManufactureComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
     //[Inject]
     //IManufactureService ManufactureRepo { get; set; } = default!;

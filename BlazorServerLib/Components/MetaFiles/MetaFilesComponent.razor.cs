@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.MetaFiles;
 public partial class MetaFilesComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService FilesRepo { get; set; } = default!;
+    IStorageTransmission FilesRepo { get; set; } = default!;
 
     [Inject]
     NavigationManager NavRepo { get; set; } = default!;

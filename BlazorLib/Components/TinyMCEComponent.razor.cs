@@ -13,7 +13,7 @@ namespace BlazorLib.Components;
 public partial class TinyMCEComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
+    IStorageTransmission StoreRepo { get; set; } = default!;
 
     [Inject]
     NavigationManager NavRepo { get; set; } = default!;

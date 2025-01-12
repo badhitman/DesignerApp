@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Telegram;
 public partial class ChatSelectComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageRepo { get; set; } = default!;
+    IStorageTransmission StorageRepo { get; set; } = default!;
 
 
     /// <summary>

@@ -15,10 +15,10 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseComponent
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo { get; set; } = default!;
+    IStorageTransmission StorageTransmissionRepo { get; set; } = default!;
 
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
 
     /// <summary>

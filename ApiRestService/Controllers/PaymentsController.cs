@@ -17,7 +17,7 @@ namespace ApiRestService.Controllers;
 #else
 [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.PaymentsReadCommerce)},{nameof(ExpressApiRolesEnum.PaymentsWriteCommerce)}")]
 #endif
-public class PaymentsController(ICommerceRemoteTransmissionService commRepo) : ControllerBase
+public class PaymentsController(ICommerceTransmission commRepo) : ControllerBase
 {
     /// <summary>
     /// Обновить/создать платёжный документ

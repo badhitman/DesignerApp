@@ -19,7 +19,7 @@ namespace ConstructorService;
 /// Constructor служба
 /// </summary>
 public partial class FormsConstructorService(
-    IIdentityRemoteTransmissionService identityRepo,
+    IIdentityTransmission identityRepo,
     IDbContextFactory<ConstructorContext> mainDbFactory,
     ILogger<FormsConstructorService> logger,
     IOptions<ConstructorConfigModel> _conf) : IConstructorService

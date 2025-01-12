@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Удалённый вызов команд в Web службе
 /// </summary>
-public interface IWebRemoteTransmissionService
+public interface IWebTransmission
 {
     /// <summary>
     /// Получить `web config` сайта

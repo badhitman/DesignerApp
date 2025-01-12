@@ -17,7 +17,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class IssueMessagesComponent : IssueWrapBaseModel
 {
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
 
     MudTable<IssueMessageHelpdeskModelDB>? tableRef;

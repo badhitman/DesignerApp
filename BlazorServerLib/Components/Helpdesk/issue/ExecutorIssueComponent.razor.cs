@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class ExecutorIssueComponent : IssueWrapBaseModel
 {
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
     UserInfoModel? Executor;
     string? editExecutorEmail;

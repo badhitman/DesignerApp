@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Telegram;
 public partial class ChatSelectInputComponent : LazySelectorComponent<ChatTelegramModelDB>
 {
     [Inject]
-    ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
+    ITelegramTransmission TelegramRepo { get; set; } = default!;
 
 
     /// <summary>

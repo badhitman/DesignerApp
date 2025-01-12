@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Telegram;
 public partial class TelegramChatWrapComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
+    ITelegramTransmission TelegramRepo { get; set; } = default!;
 
 
     /// <summary>

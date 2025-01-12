@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class IssueBodyComponent : IssueWrapBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService SerializeStorageRepo { get; set; } = default!;
+    IStorageTransmission SerializeStorageRepo { get; set; } = default!;
 
 
     /// <summary>

@@ -20,7 +20,7 @@ public partial class ReadCloudFileMiddleware(RequestDelegate next)
     /// <summary>
     /// Конвейер
     /// </summary>
-    public async Task Invoke(HttpContext http_context, ISerializeStorageRemoteTransmissionService storeRepo, ILogger<ReadCloudFileMiddleware> _logger)
+    public async Task Invoke(HttpContext http_context, IStorageTransmission storeRepo, ILogger<ReadCloudFileMiddleware> _logger)
     {
         _http_context = http_context;
         ClaimsPrincipal user = http_context.User;

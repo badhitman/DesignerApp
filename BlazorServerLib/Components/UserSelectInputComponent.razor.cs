@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components;
 public partial class UserSelectInputComponent : LazySelectorComponent<UserInfoModel>
 {
     [Inject]
-    IIdentityRemoteTransmissionService IdentityRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
     /// <summary>
     /// Selected chat

@@ -25,7 +25,7 @@ public class UsersAuthenticateService(
     SignInManager<ApplicationUser> signInManager,
     IUserStore<ApplicationUser> userStore,
     IEmailSender<ApplicationUser> emailSender,
-    IIdentityRemoteTransmissionService identityRepo,
+    IIdentityTransmission identityRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {

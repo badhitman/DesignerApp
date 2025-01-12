@@ -15,10 +15,10 @@ namespace BlazorWebLib.Components.Helpdesk.Pages;
 public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
+    ITelegramTransmission TelegramRepo { get; set; } = default!;
 
     [Inject]
-    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+    IWebTransmission WebRepo { get; set; } = default!;
 
 
     /// <summary>

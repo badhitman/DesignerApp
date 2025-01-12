@@ -15,10 +15,10 @@ namespace BlazorWebLib.Components.ParametersShared;
 public partial class RubricParameterStorageComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
+    IStorageTransmission StoreRepo { get; set; } = default!;
 
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
 
     /// <summary>

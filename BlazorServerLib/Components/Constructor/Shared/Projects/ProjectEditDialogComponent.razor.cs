@@ -17,7 +17,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.Projects;
 public partial class ProjectEditDialogComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <inheritdoc/>

@@ -15,10 +15,10 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class OrderDocumentComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IWebRemoteTransmissionService WebRepo { get; set; } = default!;
+    IWebTransmission WebRepo { get; set; } = default!;
 
     [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     /// <summary>

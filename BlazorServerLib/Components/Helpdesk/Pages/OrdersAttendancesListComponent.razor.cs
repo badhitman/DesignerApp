@@ -11,7 +11,7 @@ namespace BlazorWebLib.Components.Helpdesk.Pages;
 /// <summary>
 /// OrdersAttendancesListComponent
 /// </summary>
-public partial class OrdersAttendancesListComponent(ICommerceRemoteTransmissionService CommerceRepo) : BlazorBusyComponentBaseAuthModel
+public partial class OrdersAttendancesListComponent(ICommerceTransmission CommerceRepo) : BlazorBusyComponentBaseAuthModel
 {
     /// <summary>
     /// OrdersAttendances

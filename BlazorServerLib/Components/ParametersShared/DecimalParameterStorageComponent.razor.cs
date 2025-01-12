@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.ParametersShared;
 public partial class DecimalParameterStorageComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
+    IStorageTransmission StoreRepo { get; set; } = default!;
 
 
     /// <summary>

@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components;
 public partial class TagsViewComponent : MetaPropertyBaseComponent
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService TagsRepo { get; set; } = default!;
+    IStorageTransmission TagsRepo { get; set; } = default!;
 
 
     List<TagModelDB> TagsSets { get; set; } = [];

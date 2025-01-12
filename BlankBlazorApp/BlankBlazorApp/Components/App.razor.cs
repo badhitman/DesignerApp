@@ -11,10 +11,10 @@ namespace BlankBlazorApp.Components;
 public partial class App
 {
     [Inject]
-    ISerializeStorageRemoteTransmissionService StoreRepo { get; set; } = default!;
+    IStorageTransmission StoreRepo { get; set; } = default!;
 
     [Inject]
-    ITelegramRemoteTransmissionService TgRemoteCall { get; set; } = default!;
+    ITelegramTransmission TgRemoteCall { get; set; } = default!;
 
     [Inject]
     IOptions<TelegramBotConfigModel> WebConfig { get; set; } = default!;

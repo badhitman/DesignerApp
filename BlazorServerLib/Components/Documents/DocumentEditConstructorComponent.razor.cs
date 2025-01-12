@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Documents;
 public partial class DocumentEditConstructorComponent : DocumentEditBaseComponent
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>

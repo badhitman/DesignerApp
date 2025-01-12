@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Constructor.Shared;
 public partial class SessionsValuesOfFieldViewComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
 
     /// <summary>

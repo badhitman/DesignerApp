@@ -10,7 +10,7 @@ namespace RemoteCallLib;
 /// <summary>
 /// Serialize Storage Remote Transmission Service
 /// </summary>
-public class StorageTransmission(IRabbitClient rabbitClient) : ISerializeStorageRemoteTransmissionService
+public class StorageTransmission(IRabbitClient rabbitClient) : IStorageTransmission
 {
     /// <inheritdoc/>
     public async Task<TResponseModel<List<T>?>> ReadParameters<T>(StorageMetadataModel[] req)

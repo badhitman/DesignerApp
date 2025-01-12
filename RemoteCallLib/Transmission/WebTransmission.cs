@@ -9,7 +9,7 @@ namespace RemoteCallLib;
 /// <summary>
 /// Удалённый вызов команд в Web службе
 /// </summary>
-public class WebTransmission(IRabbitClient rabbitClient) : IWebRemoteTransmissionService
+public class WebTransmission(IRabbitClient rabbitClient) : IWebTransmission
 {
     /// <inheritdoc/>
     public async Task<TelegramBotConfigModel> GetWebConfig()

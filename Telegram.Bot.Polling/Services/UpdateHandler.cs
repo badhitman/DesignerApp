@@ -17,9 +17,9 @@ public class UpdateHandler(
     StoreTelegramService storeRepo,
     ITelegramBotClient botClient,
     ILogger<UpdateHandler> logger,
-    ISerializeStorageRemoteTransmissionService serializeStorageRepo,
-    IWebRemoteTransmissionService webRemoteRepo,
-    IHelpdeskRemoteTransmissionService helpdeskRepo,
+    IStorageTransmission serializeStorageRepo,
+    IWebTransmission webRemoteRepo,
+    IHelpdeskTransmission helpdeskRepo,
     IServiceProvider servicesProvider) : IUpdateHandler
 {
     static readonly Type defHandlerType = typeof(DefaultTelegramDialogHandle);

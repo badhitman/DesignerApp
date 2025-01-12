@@ -14,7 +14,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class ChatsWappiIssueComponent : IssueWrapBaseModel
 {
     [Inject]
-    ITelegramRemoteTransmissionService TelegramRepo { get; set; } = default!;
+    ITelegramTransmission TelegramRepo { get; set; } = default!;
 
 
     string[]? chats = null;

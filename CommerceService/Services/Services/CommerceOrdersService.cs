@@ -23,14 +23,14 @@ namespace CommerceService;
 /// Commerce
 /// </summary>
 public partial class CommerceImplementService(
-    IIdentityRemoteTransmissionService identityRepo,
+    IIdentityTransmission identityRepo,
     IDbContextFactory<CommerceContext> commerceDbFactory,
-    IWebRemoteTransmissionService webTransmissionRepo,
-    IHelpdeskRemoteTransmissionService HelpdeskRepo,
-    ITelegramRemoteTransmissionService tgRepo,
+    IWebTransmission webTransmissionRepo,
+    IHelpdeskTransmission HelpdeskRepo,
+    ITelegramTransmission tgRepo,
     ILogger<CommerceImplementService> loggerRepo,
     WebConfigModel _webConf,
-    ISerializeStorageRemoteTransmissionService StorageTransmissionRepo) : ICommerceService
+    IStorageTransmission StorageTransmissionRepo) : ICommerceService
 {
     private static readonly CultureInfo cultureInfo = new("ru-RU");
 

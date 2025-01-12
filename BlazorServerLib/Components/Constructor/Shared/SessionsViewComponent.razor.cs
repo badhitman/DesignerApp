@@ -19,7 +19,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseAuthModel
     IDialogService DialogServiceRepo { get; set; } = default!;
 
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
     [Inject]
     IUsersProfilesService UsersProfilesRepo { get; set; } = default!;

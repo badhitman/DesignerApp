@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Constructor.Shared.FieldsClient;
 public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IConstructorRemoteTransmissionService ConstructorRepo { get; set; } = default!;
+    IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter]

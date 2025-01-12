@@ -16,10 +16,10 @@ namespace BlazorWebLib.Components.Helpdesk.console;
 public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IHelpdeskRemoteTransmissionService HelpdeskRepo { get; set; } = default!;
+    IHelpdeskTransmission HelpdeskRepo { get; set; } = default!;
 
     [Inject]
-    ICommerceRemoteTransmissionService commRepo { get; set; } = default!;
+    ICommerceTransmission commRepo { get; set; } = default!;
 
 
     /// <summary>

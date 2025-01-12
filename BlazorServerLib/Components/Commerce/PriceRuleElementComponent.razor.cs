@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Commerce;
 public partial class PriceRuleElementComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    ICommerceRemoteTransmissionService CommerceRepo { get; set; } = default!;
+    ICommerceTransmission CommerceRepo { get; set; } = default!;
 
 
     /// <summary>
