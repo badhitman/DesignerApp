@@ -31,6 +31,8 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
     [Inject]
     IUsersProfilesService UsersManageRepo { get; set; } = default!;
 
+    [Inject]
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
     /// <summary>
     /// OwnerRoleId
@@ -117,7 +119,7 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
 
     async Task SetUserLock(string userId, bool locked_set)
     {
-        ResponseBaseModel rest = await UsersManageRepo.SetLockUser(userId, locked_set);
+        ResponseBaseModel rest = await UsersManageRepo.SetLockUser(new() { Set = locked_set, UserId = userId });
         Messages = rest.Messages;
         if (myGrid is not null)
             await myGrid.RefreshDataAsync();
@@ -137,7 +139,7 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        ResponseBaseModel rest = await UsersManageRepo.DeleteRoleFromUser(RoleInfo.Name, user_email);
+        ResponseBaseModel rest = await IdentityRepo.DeleteRoleFromUser(new() { Email = user_email, RoleName = RoleInfo.Name });
 
         Messages = rest.Messages;
         if (!rest.Success())
@@ -161,7 +163,7 @@ public partial class UsersTableComponent : BlazorBusyComponentBaseModel
             return;
         }
 
-        ResponseBaseModel rest = await UsersManageRepo.AddRoleToUser(RoleInfo.Name, added_user_email);
+        ResponseBaseModel rest = await IdentityRepo.AddRoleToUser(new() { Email = added_user_email, RoleName = RoleInfo.Name });
         Messages = rest.Messages;
         if (!rest.Success())
             return;

@@ -2,7 +2,7 @@
 
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
-@inject IUsersProfilesService UsersProfilesRepo
+@inject IIdentityTransmission IdentityRepo
 
 <PageTitle>Повторно отправить подтверждение по электронной почте</PageTitle>
 
@@ -33,7 +33,7 @@
 
     private async Task OnValidSubmitAsync()
     {
-        ResponseBaseModel user = await UsersProfilesRepo.GenerateEmailConfirmationTokenAsync(Input.Email, NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri);
+        ResponseBaseModel user = await IdentityRepo.GenerateEmailConfirmation(new SimpleUserIdentityModel() { Email = Input.Email, BaseAddress = NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri });
         Messages = user.Messages;
     }
 }

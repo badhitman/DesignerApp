@@ -50,7 +50,7 @@ public partial class IndexPage : BlazorBusyComponentBaseAuthModel
         if (CurrentUserSession is null)
             throw new ArgumentNullException(nameof(CurrentUserSession));
 
-        if(!string.IsNullOrWhiteSpace(phoneNum) && !GlobalTools.IsPhoneNumber(phoneNum))
+        if (!string.IsNullOrWhiteSpace(phoneNum) && !GlobalTools.IsPhoneNumber(phoneNum))
         {
             SnackbarRepo.Error("Телефон должен быть в формате: +79994440011");
             return;
@@ -59,7 +59,7 @@ public partial class IndexPage : BlazorBusyComponentBaseAuthModel
         Messages = [];
         await SetBusy();
 
-        ResponseBaseModel rest = await UsersProfilesRepo.UpdateFirstLastNamesUser(CurrentUserSession.UserId, firstName, lastName, phoneNum);
+        ResponseBaseModel rest = await UsersProfilesRepo.UpdateFirstLastNamesUser(new() { UserId = CurrentUserSession.UserId, FirstName = firstName, LastName = lastName, PhoneNum = phoneNum });
         AuthenticationState ar = await AuthRepo.GetAuthenticationStateAsync();
         // ar.User.Claims.ToList().ForEach(x => { x. });
         await SetBusy(false);

@@ -74,7 +74,7 @@
     async Task SaveClaim()
     {
         await SetBusy();
-        ResponseBaseModel res = await UsersProfilesRepo.ClaimUpdateOrCreate(ClaimModel.Build(Claim.Id, claimType, claimValue, OwnerId), ClaimArea);
+        ResponseBaseModel res = await UsersProfilesRepo.ClaimUpdateOrCreate(new() { ClaimArea = ClaimArea, ClaimUpdate = ClaimModel.Build(Claim.Id, claimType, claimValue, OwnerId) });
         IsBusyProgress = false;
         if (!res.Success())
             throw new Exception(res.Message());
@@ -93,7 +93,7 @@
         }
 
         await SetBusy();
-        ResponseBaseModel res = await UsersProfilesRepo.ClaimDelete(ClaimArea, Claim.Id);
+        ResponseBaseModel res = await UsersProfilesRepo.ClaimDelete(new() { ClaimArea = ClaimArea, Id = Claim.Id });
         IsBusyProgress = false;
         initRemoveClaim = false;
         if (!res.Success())

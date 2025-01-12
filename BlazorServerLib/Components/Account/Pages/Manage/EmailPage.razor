@@ -4,6 +4,7 @@
 
 @inject NavigationManager NavigationManager
 @inject IUsersProfilesService UsersProfilesRepo
+@inject IIdentityTransmission IdentityRepo
 
 <PageTitle>Управление электронной почтой</PageTitle>
 
@@ -85,7 +86,7 @@
             Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"email [{email}] имеет не корректный формат" }];
             return;
         }
-        ResponseBaseModel rest = await UsersProfilesRepo.GenerateEmailConfirmationTokenAsync(email, NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri);
+        ResponseBaseModel rest = await IdentityRepo.GenerateEmailConfirmation(new() { Email = email, BaseAddress = NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri });
         Messages = rest.Messages;
     }
 }

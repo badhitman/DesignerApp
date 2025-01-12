@@ -41,6 +41,26 @@ public static partial class GlobalStaticConstants
         public readonly static string ClaimsForUserFlushReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.CLAIMS_CONTROLLER_NAME}", Routes.FLUSH_ACTION_NAME);
 
         /// <summary>
+        /// AddRoleToUserReceive
+        /// </summary>
+        public readonly static string AddRoleToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-to-{Routes.USER_CONFIRMATION_NAME}");
+
+        /// <summary>
+        /// DeleteRoleReceive
+        /// </summary>
+        public readonly static string DeleteRoleReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);
+        
+        /// <summary>
+        /// DeleteRoleFromUser
+        /// </summary>
+        public readonly static string DeleteRoleFromUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, $"{Routes.DELETE_ACTION_NAME}-from-{Routes.USER_CONFIRMATION_NAME}");
+        
+        /// <summary>
+        /// ResetPasswordForUserReceive
+        /// </summary>
+        public readonly static string ResetPasswordForUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}", Routes.RESET_ACTION_NAME);
+        
+        /// <summary>
         /// Получить пользователей из Identity по их идентификаторам
         /// </summary>
         public readonly static string GetUsersOfIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, Routes.GET_ACTION_NAME);

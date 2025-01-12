@@ -10,6 +10,27 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Удалить роль (если у роли нет пользователей).
+    /// </summary>
+    public Task<ResponseBaseModel> DeleteRole(string roleName);
+
+    /// <summary>
+    /// Исключить пользователя из роли (лишить пользователя роли)
+    /// </summary>
+    public Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req);
+
+    /// <summary>
+    /// Добавить роль пользователю (включить пользователя в роль)
+    /// </summary>
+    public Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req);
+
+    /// <summary>
+    /// Сбрасывает пароль на указанный
+    /// после проверки заданного сброса пароля.
+    /// </summary>
+    public Task<ResponseBaseModel> ResetPasswordAsync(IdentityPasswordTokenModel req);
+
+    /// <summary>
     /// FindByEmailAsync
     /// </summary>
     public Task<TResponseModel<UserInfoModel>> FindByEmailAsync(string email);

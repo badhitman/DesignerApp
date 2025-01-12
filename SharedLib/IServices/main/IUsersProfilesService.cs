@@ -10,19 +10,49 @@ namespace SharedLib;
 public partial interface IUsersProfilesService
 {
     /// <summary>
+    /// Пользователи
+    /// </summary>
+    public Task<TPaginationStrictResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req);
+
+    /// <summary>
+    /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
+    /// </summary>
+    public Task<TPaginationStrictResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
+
+    /// <summary>
+    /// Создать новую роль
+    /// </summary>
+    public Task<ResponseBaseModel> CateNewRole(string role_name);
+
+    /// <summary>
+    /// Get Role (by id)
+    /// </summary>
+    public Task<TResponseModel<RoleInfoModel?>> GetRole(string role_id);
+
+    /// <summary>
+    /// Установить блокировку пользователю
+    /// </summary>
+    public Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req);
+
+    /// <summary>
+    /// Обновить пользователю поля: FirstName и LastName
+    /// </summary>
+    public Task<ResponseBaseModel> UpdateFirstLastNamesUser(IdentityDetailsModel req);
+
+    /// <summary>
     /// Get claims
     /// </summary>
-    public Task<ClaimBaseModel[]> GetClaims(ClaimAreasEnum claimArea, string ownerId);
+    public Task<ClaimBaseModel[]> GetClaims(ClaimAreaOwnerModel req);
 
     /// <summary>
     /// Claim: Update or create
     /// </summary>
-    public Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimModel claim, ClaimAreasEnum claimArea);
+    public Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req);
 
     /// <summary>
     /// Claim: Remove
     /// </summary>
-    public Task<ResponseBaseModel> ClaimDelete(ClaimAreasEnum claimArea, int id);
+    public Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req);
 
     /// <summary>
     /// Найти пользователя по <paramref name="userId"/>.
@@ -79,17 +109,6 @@ public partial interface IUsersProfilesService
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
     public Task<ResponseBaseModel> SetTwoFactorEnabledAsync(bool enabled_set, string? userId = null);
-
-    /// <summary>
-    /// Сбрасывает пароль <paramref name="userId"/> на указанный <paramref name="newPassword"/>
-    /// после проверки заданного сброса пароля <paramref name="token"/>.
-    /// </summary>
-    public Task<ResponseBaseModel> ResetPasswordAsync(string userId, string token, string newPassword);
-
-    /// <summary>
-    /// Создать токен подтверждения электронной почты для указанного пользователя.
-    /// </summary>
-    public Task<ResponseBaseModel> GenerateEmailConfirmationTokenAsync(string userEmail, string baseAddress);
 
     /// <summary>
     /// Создает токен изменения адреса электронной почты для указанного пользователя.
@@ -209,49 +228,4 @@ public partial interface IUsersProfilesService
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
     public Task<ResponseBaseModel> TryAddRolesToUser(IEnumerable<string> addRoles, string? userId = null);
-
-    /// <summary>
-    /// Пользователи
-    /// </summary>
-    public Task<TPaginationStrictResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req);
-
-    /// <summary>
-    /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
-    /// </summary>
-    public Task<TPaginationStrictResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
-
-    /// <summary>
-    /// Создать новую роль
-    /// </summary>
-    public Task<ResponseBaseModel> CateNewRole(string role_name);
-
-    /// <summary>
-    /// Удалить роль (если у роли нет пользователей).
-    /// </summary>
-    public Task<ResponseBaseModel> DeleteRole(string role_id);
-
-    /// <summary>
-    /// Исключить пользователя из роли (лишить пользователя роли)
-    /// </summary>
-    public Task<ResponseBaseModel> DeleteRoleFromUser(string role_name, string user_email);
-
-    /// <summary>
-    /// Добавить роль пользователю (включить пользователя в роль)
-    /// </summary>
-    public Task<ResponseBaseModel> AddRoleToUser(string role_name, string user_email);
-
-    /// <summary>
-    /// Get Role (by id)
-    /// </summary>
-    public Task<TResponseModel<RoleInfoModel?>> GetRole(string role_id);
-
-    /// <summary>
-    /// Установить блокировку пользователю
-    /// </summary>
-    public Task<ResponseBaseModel> SetLockUser(string userId, bool locketSet);
-
-    /// <summary>
-    /// Обновить пользователю поля: FirstName и LastName
-    /// </summary>
-    public Task<ResponseBaseModel> UpdateFirstLastNamesUser(string userId, string? firstName, string? lastName, string? phoneNum);
 }

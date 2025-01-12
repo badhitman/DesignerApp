@@ -2,7 +2,6 @@
 @attribute [Authorize(Roles = GlobalStaticConstants.Roles.Admin)]
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@inject IUsersProfilesService UsersManageRepo
 
 <PageTitle>Роли</PageTitle>
 
@@ -20,13 +19,13 @@
         <span class="input-group-text">
             @(UserInfo is null ? "Новая" : "Добавить") роль
             Новая роль
-            </span>
+        </span>
         <input @bind-value="added_role_name" @bind-value:event="oninput" type="text" class="form-control" aria-label="Имя создаваемой роли">
         <button disabled="@(string.IsNullOrWhiteSpace(added_role_name))" @onclick="AddNewRole" class="btn btn-outline-secondary" type="button">
             @(UserInfo is null ? "Создать новую роль" : "Добавить роль пользователю")
         </button>
     </div>
-    <div class="grid">        
+    <div class="grid">
         <QuickGrid ItemsProvider="@foodRecallProvider" Pagination="@pagination" @ref="myGrid">
             <TemplateColumn Title="Роль">
                 <NavLink href="@($"/Users/Roles/view-{context.Id}")">@context.Name</NavLink>
@@ -45,95 +44,3 @@
         <Paginator State="@pagination" />
     </div>
 </div>
-
-@code {
-    [Parameter]
-    public string? OwnerUserId { get; set; }
-
-    PaginationState pagination = new PaginationState { ItemsPerPage = 15 };
-    string nameFilter = string.Empty;
-    QuickGrid<RoleInfoModel>? myGrid;
-    int numResults;
-    GridItemsProvider<RoleInfoModel>? foodRecallProvider;
-    string? added_role_name;
-    IEnumerable<ResultMessage>? Messages;
-    UserInfoModel? UserInfo;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (!string.IsNullOrWhiteSpace(OwnerUserId))
-        {
-            TResponseModel<UserInfoModel?> rest = await UsersManageRepo.FindByIdAsync(OwnerUserId);
-            Messages = rest.Messages;
-            if (!rest.Success())
-                return;
-            UserInfo = rest.Response;
-        }
-
-        foodRecallProvider = async req =>
-        {
-            TPaginationStrictResponseModel<RoleInfoModel> res = await UsersManageRepo.FindRolesAsync(new FindWithOwnedRequestModel()
-                {
-                    OwnerId = OwnerUserId,
-                    FindQuery = nameFilter,
-                    PageNum = pagination.CurrentPageIndex,
-                    PageSize = pagination.ItemsPerPage
-                });
-
-            if (res.Response is null)
-            {
-                string msg = "Roles is null. error {CEB87925-CA09-46EE-BCA4-93B7A5DF52EE}";
-                throw new Exception(msg);
-            }
-
-            if (numResults != res.TotalRowsCount)
-            {
-                numResults = res.TotalRowsCount;
-                StateHasChanged();
-            }
-
-            return GridItemsProviderResult.From<RoleInfoModel>(res.Response, res.TotalRowsCount);
-        };
-    }
-
-    async Task DeleteRole(string? roleName)
-    {
-        if (string.IsNullOrWhiteSpace(roleName))
-        {
-            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "удаление роли без имени" }];
-            return;
-        }
-
-        ResponseBaseModel rest = !string.IsNullOrEmpty(UserInfo?.Email)
-        ? await UsersManageRepo.DeleteRoleFromUser(roleName, UserInfo.Email)
-        : await UsersManageRepo.DeleteRole(roleName.Trim());
-
-        Messages = rest.Messages;
-        if (!rest.Success())
-            return;
-        added_role_name = "";
-
-        if (myGrid is not null)
-            await myGrid.RefreshDataAsync();
-    }
-
-    async Task AddNewRole()
-    {
-        if (string.IsNullOrWhiteSpace(added_role_name))
-        {
-            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "Не указано имя роли" }];
-            return;
-        }
-        ResponseBaseModel rest = !string.IsNullOrEmpty(UserInfo?.Email)
-        ? await UsersManageRepo.AddRoleToUser(added_role_name, UserInfo.Email)
-        : await UsersManageRepo.CateNewRole(added_role_name.Trim());
-
-        Messages = rest.Messages;
-        if (!rest.Success())
-            return;
-        added_role_name = "";
-
-        if (myGrid is not null)
-            await myGrid.RefreshDataAsync();
-    }
-}

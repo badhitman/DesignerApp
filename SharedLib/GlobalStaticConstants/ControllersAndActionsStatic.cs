@@ -932,6 +932,11 @@ public static partial class GlobalStaticConstants
         public const string FLUSH_ACTION_NAME = "flush";
 
         /// <summary>
+        /// Reset
+        /// </summary>
+        public const string RESET_ACTION_NAME = "reset";
+
+        /// <summary>
         /// exe
         /// </summary>
         public const string EXE_ACTION_NAME = "exe";

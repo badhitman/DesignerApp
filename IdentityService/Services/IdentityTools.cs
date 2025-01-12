@@ -25,6 +25,108 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> DeleteRole(string role_name)
+    {
+        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
+        if (role_db is null)
+            return ResponseBaseModel.CreateError($"Роль #{role_name} не найдена в БД");
+
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        var users_linked =
+           await (from link in identityContext.UserRoles.Where(x => x.RoleId == role_db.Id)
+                  join user in identityContext.Users on link.UserId equals user.Id
+                  select new { user.Id, user.Email }).ToArrayAsync();
+
+        if (users_linked.Length != 0)
+            return ResponseBaseModel.CreateError($"Роль '{role_db.Name}' нельзя удалить! Предварительно исключите из неё пользователей: {string.Join("; ", users_linked.Select(x => $"[{x.Email}]"))};");
+
+        IdentityResult ir = await roleManager.DeleteAsync(role_db);
+
+        if (ir.Succeeded)
+            ResponseBaseModel.CreateSuccess($"Роль '{role_db.Name}' успешно удалена!");
+
+        return new()
+        {
+            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req)
+    {
+        ApplicationRole? role_db = await roleManager.FindByNameAsync(req.RoleName);
+        if (role_db is null)
+            return ResponseBaseModel.CreateError($"Роль с именем '{req.RoleName}' не найдена в БД");
+
+        ApplicationUser? user_db = await userManager.FindByEmailAsync(req.Email);
+        if (user_db is null)
+            return ResponseBaseModel.CreateError($"Пользователь `{req.Email}` не найден в БД");
+
+        if (!await userManager.IsInRoleAsync(user_db, req.RoleName))
+            return ResponseBaseModel.CreateWarning($"Роль '{req.RoleName}' у пользователя '{req.Email}' отсутствует.");
+
+        IdentityResult ir = await userManager.RemoveFromRoleAsync(user_db, req.RoleName);
+
+        if (ir.Succeeded)
+            return ResponseBaseModel.CreateSuccess($"Пользователь '{req.Email}' исключён из роли '{req.RoleName}'");
+
+        return new()
+        {
+            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req)
+    {
+        ApplicationRole? role_db = await roleManager.FindByNameAsync(req.RoleName);
+        if (role_db is null)
+            return ResponseBaseModel.CreateError($"Роль с именем '{req.RoleName}' не найдена в БД");
+
+        ApplicationUser? user_db = await userManager.FindByEmailAsync(req.Email);
+        if (user_db is null)
+            return ResponseBaseModel.CreateError($"Пользователь `{req.Email}` не найден в БД");
+
+        if (await userManager.IsInRoleAsync(user_db, req.RoleName))
+            return ResponseBaseModel.CreateWarning($"Роль '{req.RoleName}' у пользователя '{req.Email}' уже присутствует.");
+
+        IdentityResult ir = await userManager.AddToRoleAsync(user_db, req.RoleName);
+
+        if (ir.Succeeded)
+            return ResponseBaseModel.CreateSuccess($"Пользователю '{req.Email}' добавлена роль '{req.RoleName}'");
+
+        return new()
+        {
+            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ResetPasswordAsync(IdentityPasswordTokenModel req)
+    {
+        string msg;
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId);
+        if (user is null)
+        {
+            msg = $"Identity user ({nameof(req.UserId)}: `{req.UserId}`) не найден. error {{9D6C3816-7A39-424F-8EF1-B86732D46BD7}}";
+            return (ApplicationUserResponseModel)ResponseBaseModel.CreateError(msg);
+        }
+
+        IdentityResult result = await userManager.ResetPasswordAsync(user, req.Token, req.Password);
+        if (!result.Succeeded)
+            return new()
+            {
+                Messages = result.Errors.Select(x => new ResultMessage()
+                {
+                    TypeMessage = ResultTypesEnum.Error,
+                    Text = $"[{x.Code}: {x.Description}]"
+                }).ToList()
+            };
+
+        return ResponseBaseModel.CreateSuccess("Пароль успешно сброшен");
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<UserInfoModel>> FindByEmailAsync(string email)
     {
         TResponseModel<UserInfoModel> res = new();
@@ -67,8 +169,7 @@ public class IdentityTools(
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         string callbackUrl = $"{req.BaseAddress}?userId={user.Id}&code={code}";
         await emailSender.SendConfirmationLinkAsync(user, req.Email, HtmlEncoder.Default.Encode(callbackUrl));
-
-        return ResponseBaseModel.CreateSuccess($"Ссылка подтверждения отправлена: {req.Email}");
+        return ResponseBaseModel.CreateSuccess($"Письмо с ссылкой подтверждением отправлено на адрес {req.Email}. Пожалуйста, проверьте электронную почту.");
     }
 
     /// <inheritdoc/>

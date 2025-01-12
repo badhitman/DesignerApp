@@ -52,7 +52,7 @@ public partial class ResetPasswordPage
             RedirectManager.RedirectTo("Account/ResetPasswordConfirmation");
         }
 
-        ResponseBaseModel result = await UsersProfilesRepo.ResetPasswordAsync(user.Response.UserId, Input.Code, Input.Password);
+        ResponseBaseModel result = await IdentityRepo.ResetPassword(new() { Password = Input.Password, Token = Input.Code, UserId = user.Response.UserId });
         Messages = result.Messages;
         if (result.Success())
         {

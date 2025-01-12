@@ -29,8 +29,290 @@ public class UsersProfilesService(
     IHttpContextAccessor httpContextAccessor,
     ILogger<UsersProfilesService> LoggerRepo) : GetUserServiceAbstract(httpContextAccessor, userManager, LoggerRepo), IUsersProfilesService
 {
-#pragma warning restore CS9107
-    
+#pragma warning restore CS9107    
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> CateNewRole(string role_name)
+    {
+        role_name = role_name.Trim();
+        if (string.IsNullOrEmpty(role_name))
+            return ResponseBaseModel.CreateError("Не указано имя роли");
+        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
+        if (role_db is not null)
+            return ResponseBaseModel.CreateWarning($"Роль '{role_db.Name}' уже существует");
+
+        role_db = new ApplicationRole(role_name);
+        IdentityResult ir = await roleManager.CreateAsync(role_db);
+
+        if (ir.Succeeded)
+            return ResponseBaseModel.CreateSuccess($"Роль '{role_name}' успешно создана");
+
+        return new()
+        {
+            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TPaginationStrictResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        IQueryable<ApplicationRole> q = identityContext.Roles
+           .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.OwnerId))
+            q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.RoleId && req.OwnerId == y.UserId));
+
+        if (!string.IsNullOrWhiteSpace(req.FindQuery))
+            q = q.Where(x => EF.Functions.Like(x.NormalizedName, $"%{roleManager.KeyNormalizer.NormalizeName(req.FindQuery)}%") || x.Id == req.FindQuery);
+
+        int total = q.Count();
+        q = q.OrderBy(x => x.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        var roles = await
+            q.Select(x => new
+            {
+                x.Id,
+                x.Name,
+                x.Title,
+                UsersCount = identityContext.UserRoles.Count(z => z.RoleId == x.Id)
+            })
+            .ToArrayAsync();
+
+        return new()
+        {
+            Response = roles.Select(x => new RoleInfoModel() { Id = x.Id, Name = x.Name, Title = x.Title, UsersCount = x.UsersCount }).ToList(),
+            TotalRowsCount = total,
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortBy = req.SortBy,
+            SortingDirection = req.SortingDirection
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<RoleInfoModel?>> GetRole(string role_id)
+    {
+        ApplicationRole? role_db = await roleManager.FindByIdAsync(role_id);
+        if (role_db is null)
+            return new() { Messages = ResponseBaseModel.ErrorMessage($"Роль #{role_id} не найдена в БД") };
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        return new()
+        {
+            Response = new RoleInfoModel()
+            {
+                Id = role_id,
+                Name = role_db.Name,
+                Title = role_db.Title,
+                UsersCount = await identityContext.UserRoles.CountAsync(x => x.RoleId == role_id)
+            }
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TPaginationStrictResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        IQueryable<ApplicationUser> q = identityContext.Users
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.OwnerId))
+            q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.UserId && req.OwnerId == y.RoleId));
+
+        if (!string.IsNullOrWhiteSpace(req.FindQuery))
+        {
+            string upp_query = req.FindQuery.ToUpper();
+            q = q.Where(x => EF.Functions.Like(x.NormalizedEmail, $"%{userManager.KeyNormalizer.NormalizeEmail(req.FindQuery)}%") || EF.Functions.Like(x.NormalizedFirstNameUpper, $"%{upp_query}%") || EF.Functions.Like(x.NormalizedLastNameUpper, $"%{upp_query}%") || x.Id == req.FindQuery);
+        }
+        int total = q.Count();
+        q = q.OrderBy(x => x.UserName).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        var users = await q
+            .Select(x => new
+            {
+                x.Id,
+                x.UserName,
+                x.Email,
+                x.PhoneNumber,
+                x.ChatTelegramId,
+                x.EmailConfirmed,
+                x.LockoutEnd,
+                x.LockoutEnabled,
+                x.AccessFailedCount,
+                x.FirstName,
+                x.LastName,
+            })
+            .ToArrayAsync();
+        string[] users_ids = users.Select(x => x.Id).ToArray();
+        var roles =
+           await (from link in identityContext.UserRoles.Where(x => users_ids.Contains(x.UserId))
+                  join role in identityContext.Roles on link.RoleId equals role.Id
+                  select new { RoleName = role.Name, link.UserId }).ToArrayAsync();
+
+        var claims =
+           await (from claim in identityContext.UserClaims.Where(x => users_ids.Contains(x.UserId))
+                  select new { claim.ClaimValue, claim.ClaimType, claim.UserId }).ToArrayAsync();
+
+        return new()
+        {
+            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.ChatTelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, firstName: x.FirstName, lastName: x.LastName, roles: roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray(), claims: claims.Where(o => o.UserId == x.Id).Select(q => new EntryAltModel() { Id = q.ClaimType, Name = q.ClaimValue }).ToArray())).ToList(),
+            TotalRowsCount = total,
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortBy = req.SortBy,
+            SortingDirection = req.SortingDirection
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req)
+    {
+        ApplicationUserResponseModel user = await GetUser(req.UserId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        await userManager.SetLockoutEndDateAsync(user.ApplicationUser, req.Set ? DateTimeOffset.MaxValue : null);
+        return ResponseBaseModel.CreateSuccess($"Пользователь успешно [{user.ApplicationUser.Email}] {(req.Set ? "заблокирован" : "разблокирован")}");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ClaimBaseModel[]> GetClaims(ClaimAreaOwnerModel req)
+    {
+        using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
+
+        ClaimBaseModel[] res = req.ClaimArea switch
+        {
+            ClaimAreasEnum.ForRole => await identityContext.RoleClaims.Where(x => x.RoleId == req.OwnerId).Select(x => new ClaimBaseModel() { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue }).ToArrayAsync(),
+            ClaimAreasEnum.ForUser => await identityContext.UserClaims.Where(x => x.UserId == req.OwnerId).Select(x => new ClaimBaseModel() { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue }).ToArrayAsync(),
+            _ => throw new NotImplementedException("error {61909910-B126-4204-8AE6-673E11D49BCD}")
+        };
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+
+        switch (req.ClaimArea)
+        {
+            case ClaimAreasEnum.ForRole:
+                IdentityRoleClaim<string>? claim_role_db;
+                if (req.ClaimUpdate.Id < 1)
+                {
+                    claim_role_db = new IdentityRoleClaim<string>() { RoleId = req.ClaimUpdate.OwnerId, ClaimType = req.ClaimUpdate.ClaimType, ClaimValue = req.ClaimUpdate.ClaimValue };
+                    await identityContext.RoleClaims.AddAsync(claim_role_db);
+                }
+                else
+                {
+                    claim_role_db = await identityContext.RoleClaims.FirstOrDefaultAsync(x => x.RoleId == req.ClaimUpdate.OwnerId);
+                    if (claim_role_db is null)
+                        return ResponseBaseModel.CreateError($"Claim #{req.ClaimUpdate.OwnerId} не найден в БД");
+                    else if (claim_role_db.ClaimType?.Equals(req.ClaimUpdate.ClaimType) == true && claim_role_db.ClaimValue?.Equals(req.ClaimUpdate.ClaimValue) == true)
+                        return ResponseBaseModel.CreateInfo($"Claim #{req.ClaimUpdate.OwnerId} не изменён");
+
+                    claim_role_db.ClaimType = req.ClaimUpdate.ClaimType;
+                    claim_role_db.ClaimValue = req.ClaimUpdate.ClaimValue;
+                    identityContext.RoleClaims.Update(claim_role_db);
+                }
+
+                break;
+            case ClaimAreasEnum.ForUser:
+                IdentityUserClaim<string>? claim_user_db;
+
+                if (req.ClaimUpdate.Id < 1)
+                {
+                    claim_user_db = new IdentityUserClaim<string>() { UserId = req.ClaimUpdate.OwnerId, ClaimType = req.ClaimUpdate.ClaimType, ClaimValue = req.ClaimUpdate.ClaimValue };
+                    await identityContext.UserClaims.AddAsync(claim_user_db);
+                }
+                else
+                {
+                    claim_user_db = await identityContext.UserClaims.FirstOrDefaultAsync(x => x.UserId == req.ClaimUpdate.OwnerId);
+                    if (claim_user_db is null)
+                        return ResponseBaseModel.CreateError($"Claim #{req.ClaimUpdate.OwnerId} не найден в БД");
+                    else if (claim_user_db.ClaimType?.Equals(req.ClaimUpdate.ClaimType) == true && claim_user_db.ClaimValue?.Equals(req.ClaimUpdate.ClaimValue) == true)
+                        return ResponseBaseModel.CreateInfo($"Claim #{req.ClaimUpdate.OwnerId} не изменён");
+
+                    claim_user_db.ClaimType = req.ClaimUpdate.ClaimType;
+                    claim_user_db.ClaimValue = req.ClaimUpdate.ClaimValue;
+                    identityContext.UserClaims.Update(claim_user_db);
+                }
+
+                break;
+            default:
+                throw new NotImplementedException("error {33A20922-0E76-421F-B2C4-109B7A420827}");
+        }
+
+        await identityContext.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess("Запрос успешно обработан");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+
+        switch (req.ClaimArea)
+        {
+            case ClaimAreasEnum.ForRole:
+                IdentityRoleClaim<string>? claim_role_db = await identityContext.RoleClaims.FirstOrDefaultAsync(x => x.Id == req.Id);
+
+                if (claim_role_db is null)
+                    return ResponseBaseModel.CreateWarning($"Claim #{req.Id} не найден в БД");
+
+                identityContext.RoleClaims.Remove(claim_role_db);
+                break;
+            case ClaimAreasEnum.ForUser:
+                IdentityUserClaim<string>? claim_user_db = await identityContext.UserClaims.FirstOrDefaultAsync(x => x.Id == req.Id);
+
+                if (claim_user_db is null)
+                    return ResponseBaseModel.CreateError($"Claim #{req.Id} не найден в БД");
+
+                identityContext.UserClaims.Remove(claim_user_db);
+                break;
+            default:
+                throw new NotImplementedException("error {7F5317DC-EA89-47C3-BE2A-8A90838A113C}");
+        }
+
+        await identityContext.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess("Claim успешно удалён");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> UpdateFirstLastNamesUser(IdentityDetailsModel req)
+    {
+        req.FirstName ??= "";
+        req.LastName ??= "";
+
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        ApplicationUser? user_db = await identityContext
+            .Users
+            .FirstOrDefaultAsync(x => x.Id == req.UserId && (x.FirstName != req.FirstName || x.LastName != req.LastName || x.PhoneNumber != req.PhoneNum));
+
+        if (user_db is null)
+            return ResponseBaseModel.CreateInfo("Без изменений");
+
+        await identityContext
+            .Users
+            .Where(x => x.Id == req.UserId)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.PhoneNumber, req.PhoneNum)
+            .SetProperty(p => p.FirstName, req.FirstName)
+            .SetProperty(p => p.NormalizedFirstNameUpper, req.FirstName.ToUpper())
+            .SetProperty(p => p.LastName, req.LastName)
+            .SetProperty(p => p.NormalizedLastNameUpper, req.LastName.ToUpper()));
+
+        user_db.PhoneNumber = req.PhoneNum;
+        user_db.FirstName = req.FirstName;
+        user_db.NormalizedFirstNameUpper = req.FirstName.ToUpper();
+        user_db.LastName = req.LastName;
+        user_db.NormalizedLastNameUpper = req.LastName.ToUpper();
+
+        await IdentityRepo.ClaimsUserFlush(user_db.Id);
+
+        return ResponseBaseModel.CreateSuccess("First/Last names (and phone) update");
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req)
     {
@@ -73,6 +355,8 @@ public class UsersProfilesService(
 
         return new() { Response = rest.Response[0] };
     }
+
+
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null)
@@ -224,405 +508,6 @@ public class UsersProfilesService(
             UserInfo = rest.Response[0]
         };
     }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ResetPasswordAsync(string userId, string token, string newPassword)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        IdentityResult result = await userManager.ResetPasswordAsync(user.ApplicationUser, token, newPassword);
-        if (!result.Succeeded)
-            return new()
-            {
-                Messages = result.Errors.Select(x => new ResultMessage()
-                {
-                    TypeMessage = ResultTypesEnum.Error,
-                    Text = $"[{x.Code}: {x.Description}]"
-                }).ToList()
-            };
-
-        return ResponseBaseModel.CreateSuccess("Пароль успешно сброшен");
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> GenerateEmailConfirmationTokenAsync(string userEmail, string baseAddress)
-    {
-        string msg = "Письмо с подтверждением отправлено. Пожалуйста, проверьте свою электронную почту.";
-        ApplicationUser? user = await userManager.FindByEmailAsync(userEmail);
-        if (user is null)
-            return ResponseBaseModel.CreateError(msg);
-
-        string userId = await userManager.GetUserIdAsync(user);
-        string code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        string callbackUrl = $"{baseAddress}?userId={userId}&code={code}";
-        await emailSender.SendConfirmationLinkAsync(user, userEmail, HtmlEncoder.Default.Encode(callbackUrl));
-        return ResponseBaseModel.CreateInfo(msg);
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> AddRoleToUser(string role_name, string user_email)
-    {
-        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
-        if (role_db is null)
-            return ResponseBaseModel.CreateError($"Роль с именем '{role_name}' не найдена в БД");
-
-        ApplicationUser? user_db = await userManager.FindByEmailAsync(user_email);
-        if (user_db is null)
-            return ResponseBaseModel.CreateError($"Пользователь `{user_email}` не найден в БД");
-
-        if (await userManager.IsInRoleAsync(user_db, role_name))
-            return ResponseBaseModel.CreateWarning($"Роль '{role_name}' у пользователя '{user_email}' уже присутствует.");
-
-        IdentityResult ir = await userManager.AddToRoleAsync(user_db, role_name);
-
-        if (ir.Succeeded)
-            return ResponseBaseModel.CreateSuccess($"Пользователю '{user_email}' добавлена роль '{role_name}'");
-
-        return new()
-        {
-            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteRoleFromUser(string role_name, string user_email)
-    {
-        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
-        if (role_db is null)
-            return ResponseBaseModel.CreateError($"Роль с именем '{role_name}' не найдена в БД");
-
-        ApplicationUser? user_db = await userManager.FindByEmailAsync(user_email);
-        if (user_db is null)
-            return ResponseBaseModel.CreateError($"Пользователь `{user_email}` не найден в БД");
-
-        if (!await userManager.IsInRoleAsync(user_db, role_name))
-            return ResponseBaseModel.CreateWarning($"Роль '{role_name}' у пользователя '{user_email}' отсутствует.");
-
-        IdentityResult ir = await userManager.RemoveFromRoleAsync(user_db, role_name);
-
-        if (ir.Succeeded)
-            return ResponseBaseModel.CreateSuccess($"Пользователь '{user_email}' исключён из роли '{role_name}'");
-
-        return new()
-        {
-            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteRole(string role_name)
-    {
-        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
-        if (role_db is null)
-            return ResponseBaseModel.CreateError($"Роль #{role_name} не найдена в БД");
-
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        var users_linked =
-           await (from link in identityContext.UserRoles.Where(x => x.RoleId == role_db.Id)
-                  join user in identityContext.Users on link.UserId equals user.Id
-                  select new { user.Id, user.Email }).ToArrayAsync();
-
-        if (users_linked.Length != 0)
-            return ResponseBaseModel.CreateError($"Роль '{role_db.Name}' нельзя удалить! Предварительно исключите из неё пользователей: {string.Join("; ", users_linked.Select(x => $"[{x.Email}]"))};");
-
-        IdentityResult ir = await roleManager.DeleteAsync(role_db);
-
-        if (ir.Succeeded)
-            ResponseBaseModel.CreateSuccess($"Роль '{role_db.Name}' успешно удалена!");
-
-        return new()
-        {
-            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> CateNewRole(string role_name)
-    {
-        role_name = role_name.Trim();
-        if (string.IsNullOrEmpty(role_name))
-            return ResponseBaseModel.CreateError("Не указано имя роли");
-        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
-        if (role_db is not null)
-            return ResponseBaseModel.CreateWarning($"Роль '{role_db.Name}' уже существует");
-
-        role_db = new ApplicationRole(role_name);
-        IdentityResult ir = await roleManager.CreateAsync(role_db);
-
-        if (ir.Succeeded)
-            return ResponseBaseModel.CreateSuccess($"Роль '{role_name}' успешно создана");
-
-        return new()
-        {
-            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<TPaginationStrictResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req)
-    {
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        IQueryable<ApplicationRole> q = identityContext.Roles
-           .AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(req.OwnerId))
-            q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.RoleId && req.OwnerId == y.UserId));
-
-        if (!string.IsNullOrWhiteSpace(req.FindQuery))
-            q = q.Where(x => EF.Functions.Like(x.NormalizedName, $"%{roleManager.KeyNormalizer.NormalizeName(req.FindQuery)}%") || x.Id == req.FindQuery);
-
-        int total = q.Count();
-        q = q.OrderBy(x => x.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
-        var roles = await
-            q.Select(x => new
-            {
-                x.Id,
-                x.Name,
-                x.Title,
-                UsersCount = identityContext.UserRoles.Count(z => z.RoleId == x.Id)
-            })
-            .ToArrayAsync();
-
-        return new()
-        {
-            Response = roles.Select(x => new RoleInfoModel() { Id = x.Id, Name = x.Name, Title = x.Title, UsersCount = x.UsersCount }).ToList(),
-            TotalRowsCount = total,
-            PageNum = req.PageNum,
-            PageSize = req.PageSize,
-            SortBy = req.SortBy,
-            SortingDirection = req.SortingDirection
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<RoleInfoModel?>> GetRole(string role_id)
-    {
-        ApplicationRole? role_db = await roleManager.FindByIdAsync(role_id);
-        if (role_db is null)
-            return new() { Messages = ResponseBaseModel.ErrorMessage($"Роль #{role_id} не найдена в БД") };
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        return new()
-        {
-            Response = new RoleInfoModel()
-            {
-                Id = role_id,
-                Name = role_db.Name,
-                Title = role_db.Title,
-                UsersCount = await identityContext.UserRoles.CountAsync(x => x.RoleId == role_id)
-            }
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<TPaginationStrictResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req)
-    {
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        IQueryable<ApplicationUser> q = identityContext.Users
-            .AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(req.OwnerId))
-            q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.UserId && req.OwnerId == y.RoleId));
-
-        if (!string.IsNullOrWhiteSpace(req.FindQuery))
-        {
-            string upp_query = req.FindQuery.ToUpper();
-            q = q.Where(x => EF.Functions.Like(x.NormalizedEmail, $"%{userManager.KeyNormalizer.NormalizeEmail(req.FindQuery)}%") || EF.Functions.Like(x.NormalizedFirstNameUpper, $"%{upp_query}%") || EF.Functions.Like(x.NormalizedLastNameUpper, $"%{upp_query}%") || x.Id == req.FindQuery);
-        }
-        int total = q.Count();
-        q = q.OrderBy(x => x.UserName).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
-        var users = await q
-            .Select(x => new
-            {
-                x.Id,
-                x.UserName,
-                x.Email,
-                x.PhoneNumber,
-                x.ChatTelegramId,
-                x.EmailConfirmed,
-                x.LockoutEnd,
-                x.LockoutEnabled,
-                x.AccessFailedCount,
-                x.FirstName,
-                x.LastName,
-            })
-            .ToArrayAsync();
-        string[] users_ids = users.Select(x => x.Id).ToArray();
-        var roles =
-           await (from link in identityContext.UserRoles.Where(x => users_ids.Contains(x.UserId))
-                  join role in identityContext.Roles on link.RoleId equals role.Id
-                  select new { RoleName = role.Name, link.UserId }).ToArrayAsync();
-
-        var claims =
-           await (from claim in identityContext.UserClaims.Where(x => users_ids.Contains(x.UserId))
-                  select new { claim.ClaimValue, claim.ClaimType, claim.UserId }).ToArrayAsync();
-
-        return new()
-        {
-            Response = users.Select(x => UserInfoModel.Build(userId: x.Id, userName: x.UserName, email: x.Email, phoneNumber: x.PhoneNumber, telegramId: x.ChatTelegramId, emailConfirmed: x.EmailConfirmed, lockoutEnd: x.LockoutEnd, lockoutEnabled: x.LockoutEnabled, accessFailedCount: x.AccessFailedCount, firstName: x.FirstName, lastName: x.LastName, roles: roles.Where(y => y.UserId == x.Id).Select(z => z.RoleName).ToArray(), claims: claims.Where(o => o.UserId == x.Id).Select(q => new EntryAltModel() { Id = q.ClaimType, Name = q.ClaimValue }).ToArray())).ToList(),
-            TotalRowsCount = total,
-            PageNum = req.PageNum,
-            PageSize = req.PageSize,
-            SortBy = req.SortBy,
-            SortingDirection = req.SortingDirection
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetLockUser(string userId, bool locketSet)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        await userManager.SetLockoutEndDateAsync(user.ApplicationUser, locketSet ? DateTimeOffset.MaxValue : null);
-        return ResponseBaseModel.CreateSuccess($"Пользователь успешно [{user.ApplicationUser.Email}] {(locketSet ? "заблокирован" : "разблокирован")}");
-    }
-
-    /// <inheritdoc/>
-    public async Task<ClaimBaseModel[]> GetClaims(ClaimAreasEnum claimArea, string ownerId)
-    {
-        using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
-
-        ClaimBaseModel[] res = claimArea switch
-        {
-            ClaimAreasEnum.ForRole => await identityContext.RoleClaims.Where(x => x.RoleId == ownerId).Select(x => new ClaimBaseModel() { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue }).ToArrayAsync(),
-            ClaimAreasEnum.ForUser => await identityContext.UserClaims.Where(x => x.UserId == ownerId).Select(x => new ClaimBaseModel() { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue }).ToArrayAsync(),
-            _ => throw new NotImplementedException("error {61909910-B126-4204-8AE6-673E11D49BCD}")
-        };
-
-        return res;
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimModel claim, ClaimAreasEnum claimArea)
-    {
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-
-        switch (claimArea)
-        {
-            case ClaimAreasEnum.ForRole:
-                IdentityRoleClaim<string>? claim_role_db;
-                if (claim.Id < 1)
-                {
-                    claim_role_db = new IdentityRoleClaim<string>() { RoleId = claim.OwnerId, ClaimType = claim.ClaimType, ClaimValue = claim.ClaimValue };
-                    await identityContext.RoleClaims.AddAsync(claim_role_db);
-                }
-                else
-                {
-                    claim_role_db = await identityContext.RoleClaims.FirstOrDefaultAsync(x => x.RoleId == claim.OwnerId);
-                    if (claim_role_db is null)
-                        return ResponseBaseModel.CreateError($"Claim #{claim.OwnerId} не найден в БД");
-                    else if (claim_role_db.ClaimType?.Equals(claim.ClaimType) == true && claim_role_db.ClaimValue?.Equals(claim.ClaimValue) == true)
-                        return ResponseBaseModel.CreateInfo($"Claim #{claim.OwnerId} не изменён");
-
-                    claim_role_db.ClaimType = claim.ClaimType;
-                    claim_role_db.ClaimValue = claim.ClaimValue;
-                    identityContext.RoleClaims.Update(claim_role_db);
-                }
-
-                break;
-            case ClaimAreasEnum.ForUser:
-                IdentityUserClaim<string>? claim_user_db;
-
-                if (claim.Id < 1)
-                {
-                    claim_user_db = new IdentityUserClaim<string>() { UserId = claim.OwnerId, ClaimType = claim.ClaimType, ClaimValue = claim.ClaimValue };
-                    await identityContext.UserClaims.AddAsync(claim_user_db);
-                }
-                else
-                {
-                    claim_user_db = await identityContext.UserClaims.FirstOrDefaultAsync(x => x.UserId == claim.OwnerId);
-                    if (claim_user_db is null)
-                        return ResponseBaseModel.CreateError($"Claim #{claim.OwnerId} не найден в БД");
-                    else if (claim_user_db.ClaimType?.Equals(claim.ClaimType) == true && claim_user_db.ClaimValue?.Equals(claim.ClaimValue) == true)
-                        return ResponseBaseModel.CreateInfo($"Claim #{claim.OwnerId} не изменён");
-
-                    claim_user_db.ClaimType = claim.ClaimType;
-                    claim_user_db.ClaimValue = claim.ClaimValue;
-                    identityContext.UserClaims.Update(claim_user_db);
-                }
-
-                break;
-            default:
-                throw new NotImplementedException("error {33A20922-0E76-421F-B2C4-109B7A420827}");
-        }
-
-        await identityContext.SaveChangesAsync();
-
-        return ResponseBaseModel.CreateSuccess("Запрос успешно обработан");
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ClaimDelete(ClaimAreasEnum claimArea, int id)
-    {
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-
-        switch (claimArea)
-        {
-            case ClaimAreasEnum.ForRole:
-                IdentityRoleClaim<string>? claim_role_db = await identityContext.RoleClaims.FirstOrDefaultAsync(x => x.Id == id);
-
-                if (claim_role_db is null)
-                    return ResponseBaseModel.CreateWarning($"Claim #{id} не найден в БД");
-
-                identityContext.RoleClaims.Remove(claim_role_db);
-                break;
-            case ClaimAreasEnum.ForUser:
-                IdentityUserClaim<string>? claim_user_db = await identityContext.UserClaims.FirstOrDefaultAsync(x => x.Id == id);
-
-                if (claim_user_db is null)
-                    return ResponseBaseModel.CreateError($"Claim #{id} не найден в БД");
-
-                identityContext.UserClaims.Remove(claim_user_db);
-                break;
-            default:
-                throw new NotImplementedException("error {7F5317DC-EA89-47C3-BE2A-8A90838A113C}");
-        }
-
-        await identityContext.SaveChangesAsync();
-
-        return ResponseBaseModel.CreateSuccess("Claim успешно удалён");
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> UpdateFirstLastNamesUser(string userId, string? firstName, string? lastName, string? phoneNum)
-    {
-        firstName ??= "";
-        lastName ??= "";
-
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        ApplicationUser? user_db = await identityContext
-            .Users
-            .FirstOrDefaultAsync(x => x.Id == userId && (x.FirstName != firstName || x.LastName != lastName || x.PhoneNumber != phoneNum));
-
-        if (user_db is null)
-            return ResponseBaseModel.CreateInfo("Без изменений");
-
-        await identityContext
-            .Users
-            .Where(x => x.Id == userId)
-            .ExecuteUpdateAsync(set => set
-            .SetProperty(p => p.PhoneNumber, phoneNum)
-            .SetProperty(p => p.FirstName, firstName)
-            .SetProperty(p => p.NormalizedFirstNameUpper, firstName.ToUpper())
-            .SetProperty(p => p.LastName, lastName)
-            .SetProperty(p => p.NormalizedLastNameUpper, lastName.ToUpper()));
-
-        user_db.PhoneNumber = phoneNum;
-        user_db.FirstName = firstName;
-        user_db.NormalizedFirstNameUpper = firstName.ToUpper();
-        user_db.LastName = lastName;
-        user_db.NormalizedLastNameUpper = lastName.ToUpper();
-
-        await IdentityRepo.ClaimsUserFlush(user_db.Id);
-
-        return ResponseBaseModel.CreateSuccess("First/Last names (and phone) update");
-    }
-
-
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> GenerateChangeEmailTokenAsync(string newEmail, string baseAddress, string? userId = null)
