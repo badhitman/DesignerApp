@@ -19,7 +19,7 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
     IConstructorTransmission ConstructorRepo { get; set; } = default!;
 
     [Inject]
-    IUsersProfilesService UserProfilesManage { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -45,13 +45,13 @@ public partial class MembersOfProjectComponent : BlazorBusyComponentBaseModel
             throw new Exception($"Email не корректный '{emailForAddMember}'");
 
         await SetBusy();
-        UserInfoModel? user_info = await UserProfilesManage.FindByEmailAsync(emailForAddMember);
+        TResponseModel<UserInfoModel>? user_info = await IdentityRepo.FindUserByEmail(emailForAddMember);
 
-        if (user_info is null)
+        if (user_info.Response is null)
             SnackbarRepo.Add($"Пользователь с Email '{emailForAddMember}' не найден", Severity.Error, c => c.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
         else
         {
-            ResponseBaseModel adding_member = await ConstructorRepo.AddMembersToProject(new() { ProjectId = ProjectView.Id, UsersIds = [user_info.UserId] });
+            ResponseBaseModel adding_member = await ConstructorRepo.AddMembersToProject(new() { ProjectId = ProjectView.Id, UsersIds = [user_info.Response.UserId] });
             SnackbarRepo.ShowMessagesResponse(adding_member.Messages);
         }
         IsBusyProgress = false;

@@ -83,11 +83,6 @@ public partial interface IUsersProfilesService
     public Task<ResponseBaseModel> SetTwoFactorEnabledAsync(bool enabled_set, string? userId = null);
 
     /// <summary>
-    /// Найти пользователя по Email
-    /// </summary>
-    public Task<UserInfoModel?> FindByEmailAsync(string email);
-
-    /// <summary>
     /// Сбрасывает пароль <paramref name="userId"/> на указанный <paramref name="newPassword"/>
     /// после проверки заданного сброса пароля <paramref name="token"/>.
     /// </summary>

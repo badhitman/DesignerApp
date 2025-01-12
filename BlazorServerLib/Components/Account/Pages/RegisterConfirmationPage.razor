@@ -1,9 +1,5 @@
 ﻿@page "/Account/RegisterConfirmation"
 
-@inject NavigationManager NavigationManager
-@inject IdentityRedirectManager RedirectManager
-@inject IUsersProfilesService UsersProfilesRepo
-
 <PageTitle>Подтверждение регистрации</PageTitle>
 
 <h1>Подтверждение регистрации</h1>
@@ -11,32 +7,3 @@
 <StatusMessage Messages="@Messages" />
 
 <p>Пожалуйста, проверьте свою электронную почту, чтобы подтвердить свою учетную запись.</p>
-
-@code {
-    [SupplyParameterFromQuery]
-    private string? Email { get; set; }
-
-    [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; }
-
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
-    IEnumerable<ResultMessage>? Messages;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (Email is null)
-        {
-            RedirectManager.RedirectTo("");
-        }
-
-        UserInfoModel? user = await UsersProfilesRepo.FindByEmailAsync(Email);
-        if (user is null)
-        {
-            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-            string msg = "Ошибка поиска пользователя по адресу электронной почты.";
-            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = msg }];
-        }
-    }
-}

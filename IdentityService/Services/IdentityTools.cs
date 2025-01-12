@@ -5,11 +5,11 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Encodings.Web;
 using System.Security.Claims;
 using IdentityLib;
 using System.Text;
 using SharedLib;
-using System.Text.Encodings.Web;
 
 namespace IdentityService;
 
@@ -24,6 +24,38 @@ public class IdentityTools(
     UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<UserInfoModel>> FindByEmailAsync(string email)
+    {
+        TResponseModel<UserInfoModel> res = new();
+
+        ApplicationUser? user = await userManager.FindByEmailAsync(email);
+        if (user is null)
+        {
+            res.AddError($"Пользователь не найден: {email}");
+            return res;
+        }
+
+        IList<Claim> claims = await userManager.GetClaimsAsync(user);
+
+        res.Response = new()
+        {
+            UserId = user.Id,
+            Email = user.Email,
+            UserName = user.UserName,
+            AccessFailedCount = user.AccessFailedCount,
+            EmailConfirmed = user.EmailConfirmed,
+            LockoutEnabled = user.LockoutEnabled,
+            LockoutEnd = user.LockoutEnd,
+            PhoneNumber = user.PhoneNumber,
+            TelegramId = user.ChatTelegramId,
+            Roles = [.. (await userManager.GetRolesAsync(user))],
+            Claims = claims.Select(x => new EntryAltModel() { Id = x.Type, Name = x.Value }).ToArray(),
+        };
+
+        return res;
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> GenerateEmailConfirmation(SimpleUserIdentityModel req)
     {

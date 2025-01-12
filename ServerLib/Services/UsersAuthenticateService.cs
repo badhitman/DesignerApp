@@ -23,10 +23,7 @@ public class UsersAuthenticateService(
     IUsersProfilesService usersProfilesRepo,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    IUserStore<ApplicationUser> userStore,
-    IEmailSender<ApplicationUser> emailSender,
     IIdentityTransmission identityRepo,
-    IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {
     UserManageConfigModel UserConfMan => userManageConfig.Value;
@@ -196,22 +193,15 @@ public class UsersAuthenticateService(
         {
             loggerRepo.LogInformation("Пользователь создал учетную запись с помощью провайдера {Name}.", externalLoginInfo.LoginProvider);
 
-
-            string userId = await userManager.GetUserIdAsync(user);
-            string code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            string callbackUrl = $"{baseAddress}?userId={userId}&code={code}";
-            await emailSender.SendConfirmationLinkAsync(user, userEmail, HtmlEncoder.Default.Encode(callbackUrl));
-
-
-            if (regUserRes.RequireConfirmedAccount == true)
+            ResponseBaseModel genConfirm = await identityRepo.GenerateEmailConfirmation(new() { BaseAddress = baseAddress, Email = userEmail });
+            if (!genConfirm.Success() || regUserRes.RequireConfirmedAccount == true)
             {
-                return new() { RequireConfirmedAccount = true };
+                regUserRes.AddRangeMessages(genConfirm.Messages);
+                return regUserRes;
             }
 
             await signInManager.SignInAsync(user, isPersistent: false, externalLoginInfo.LoginProvider);
             return (RegistrationNewUserResponseModel)ResponseBaseModel.CreateSuccess("Вход выполнен");
-
         }
 
         return new()
@@ -270,8 +260,6 @@ public class UsersAuthenticateService(
         if (flushRes.Success())
             await signInManager.RefreshSignInAsync(currentAppUser);
 
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-
         FlushUserRolesModel? user_flush = userManageConfig.Value.UpdatesUsersRoles?.FirstOrDefault(x => x.EmailUser.Equals(userEmail, StringComparison.OrdinalIgnoreCase));
         if (user_flush is not null)
         {
@@ -292,14 +280,4 @@ public class UsersAuthenticateService(
     /// <inheritdoc/>
     public async Task SignOutAsync()
         => await signInManager.SignOutAsync();
-
-
-    IUserEmailStore<ApplicationUser> GetEmailStore()
-    {
-        if (!userManager.SupportsUserEmail)
-        {
-            throw new NotSupportedException("Для пользовательского интерфейса по умолчанию требуется хранилище пользователей с поддержкой электронной почты.");
-        }
-        return (IUserEmailStore<ApplicationUser>)userStore;
-    }
 }

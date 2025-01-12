@@ -15,7 +15,7 @@ namespace BlazorWebLib.Components.Helpdesk.issue;
 public partial class SubscribersIssueComponent : IssueWrapBaseModel
 {
     [Inject]
-    IUsersProfilesService UsersProfilesRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
 
     bool CanSubscribe => Issue.Subscribers?.Any(x => x.UserId == CurrentUserSession!.UserId) != true;
@@ -29,16 +29,16 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
 
         await SetBusy();
 
-        UserInfoModel? user_by_email = await UsersProfilesRepo.FindByEmailAsync(addingSubscriber);
+        TResponseModel<UserInfoModel>? user_by_email = await IdentityRepo.FindUserByEmail(addingSubscriber);
         IsBusyProgress = false;
-        if (user_by_email is null)
+        if (user_by_email.Response is null)
         {
             SnackbarRepo.Error($"Пользователь с таким email не найден: {addingSubscriber}");
             return;
         }
 
-        if (!UsersIdentityDump.Any(x => x.UserId == user_by_email.UserId))
-            UsersIdentityDump.Add(user_by_email);
+        if (!UsersIdentityDump.Any(x => x.UserId == user_by_email.Response.UserId))
+            UsersIdentityDump.Add(user_by_email.Response);
 
         await SetBusy();
 
@@ -49,7 +49,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             {
                 SetValue = true,
                 IssueId = Issue.Id,
-                UserId = user_by_email.UserId,
+                UserId = user_by_email.Response.UserId,
             }
         });
         IsBusyProgress = false;

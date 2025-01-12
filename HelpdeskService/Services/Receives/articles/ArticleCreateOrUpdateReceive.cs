@@ -9,14 +9,16 @@ using SharedLib;
 namespace Transmission.Receives.helpdesk;
 
 /// <summary>
-/// ArticleCreateOrUpdateReceive
+/// Создать/обновить статью
 /// </summary>
 public class ArticleCreateOrUpdateReceive(IArticlesService artRepo, ILogger<ArticleCreateOrUpdateReceive> loggerRepo) : IResponseReceive<ArticleModelDB?, TResponseModel<int>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ArticleUpdateHelpdeskReceive;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Создать/обновить статью
+    /// </summary>
     public async Task<TResponseModel<int>?> ResponseHandleAction(ArticleModelDB? article)
     {
         ArgumentNullException.ThrowIfNull(article);

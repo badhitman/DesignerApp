@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// FindByEmailAsync
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel>> FindByEmailAsync(string email);
+
+    /// <summary>
     /// Создает и отправляет токен подтверждения электронной почты для указанного пользователя.
     /// </summary>
     /// <remarks>
@@ -19,12 +24,12 @@ public interface IIdentityTools
     public Task<ResponseBaseModel> GenerateEmailConfirmation(SimpleUserIdentityModel req);
 
     /// <summary>
-    /// CreateNewUserAsync
+    /// Создать пользователя (без пароля)
     /// </summary>
     public Task<RegistrationNewUserResponseModel> CreateNewUserEmailAsync(string req);
 
     /// <summary>
-    /// CreateNewUserAsync
+    /// Создать пользователя с паролем
     /// </summary>
     public Task<RegistrationNewUserResponseModel> CreateNewUserWithPasswordAsync(RegisterNewUserPasswordModel req);
 

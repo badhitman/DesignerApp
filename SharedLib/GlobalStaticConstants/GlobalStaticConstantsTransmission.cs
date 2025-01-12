@@ -19,7 +19,12 @@ public static partial class GlobalStaticConstants
     /// </summary>
     public static class TransmissionQueues
     {
-        #region Identity
+        #region Identity 
+        /// <summary>
+        /// FindUserByEmailReceive
+        /// </summary>
+        public readonly static string FindUserByEmailReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.FIND_ACTION_NAME}-{Routes.USER_CONTROLLER_NAME}", $"by-{Routes.EMAIL_CONTROLLER_NAME}");
+
         /// <summary>
         /// Регистрация нового пользователя
         /// </summary>

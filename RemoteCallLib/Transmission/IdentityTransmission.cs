@@ -2,15 +2,24 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using DocumentFormat.OpenXml.Drawing;
 using SharedLib;
 
 namespace RemoteCallLib;
 
 /// <summary>
-/// Identity Service
+/// [remote]: Identity
 /// </summary>
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<UserInfoModel>> FindUserByEmail(string email)
+        => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel>>(GlobalStaticConstants.TransmissionQueues.GenerateEmailConfirmationIdentityReceive, email) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> GenerateEmailConfirmation(SimpleUserIdentityModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.GenerateEmailConfirmationIdentityReceive, req) ?? new();
+
     /// <inheritdoc/>
     public async Task<RegistrationNewUserResponseModel> CreateNewUser(string userEmail)
         => await rabbitClient.MqRemoteCall<RegistrationNewUserResponseModel>(GlobalStaticConstants.TransmissionQueues.RegistrationNewUserReceive, userEmail) ?? new();
