@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////
 
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using IdentityLib;
 using SharedLib;
@@ -13,10 +12,8 @@ namespace Transmission.Receives.Identity;
 /// <summary>
 /// Find user identity by telegram - receive
 /// </summary>
-public class GetUserIdentityByTelegramReceive(
-    IIdentityTransmission IdentityRepo,
-    IDbContextFactory<IdentityAppDbContext> identityDbFactory,
-    IMemoryCache cache) : IResponseReceive<long[]?, TResponseModel<UserInfoModel[]>?>
+public class GetUserIdentityByTelegramReceive(IIdentityTransmission IdentityRepo, IMemoryCache cache)
+    : IResponseReceive<long[]?, TResponseModel<UserInfoModel[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByTelegramIdsReceive;
@@ -28,7 +25,7 @@ public class GetUserIdentityByTelegramReceive(
     {
         ArgumentNullException.ThrowIfNull(tg_ids);
         tg_ids = [.. tg_ids.Where(x => x != 0)];
-        TResponseModel<UserInfoModel[]> response = new() { Response = [] };
+        TResponseModel<UserInfoModel[]> response = new();
         if (tg_ids.Length == 0)
         {
             response.AddError("Пустой запрос");
@@ -42,39 +39,16 @@ public class GetUserIdentityByTelegramReceive(
             return response;
         }
 
-        using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
-        ApplicationUser[] users = await identityContext
-            .Users
-            .Where(x => tg_ids.Any(y => y == x.ChatTelegramId))
-            .ToArrayAsync();
+        response = await IdentityRepo.GetUserIdentityByTelegram(tg_ids);
 
-        if (users.Length == 0)
+        if (response.Response is null || response.Response.Length == 0)
         {
             cache.Set(mem_token, Array.Empty<ApplicationUser>(), new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
             response.AddWarning("Не найдено ни одного пользователя");
             return response;
         }
 
-        string[] users_ids = [.. users.Select(x => x.Id)];
-
-        TResponseModel<UserInfoModel[]> res_find_users_identity = await IdentityRepo.GetUsersIdentity(users_ids);
-        if (!res_find_users_identity.Success())
-        {
-            response.AddRangeMessages(res_find_users_identity.Messages);
-            return response;
-        }
-
-        if (res_find_users_identity.Response is null || res_find_users_identity.Response.Length == 0)
-        {
-            response.AddError("Не найдены пользователи");
-            return response;
-        }
-        response.Response = res_find_users_identity.Response;
         cache.Set(mem_token, response.Response, new MemoryCacheEntryOptions().SetAbsoluteExpiration(_ts));
-
-        tg_ids = [.. tg_ids.Where(x => !response.Response.Any(y => y.TelegramId == x))];
-        if (tg_ids.Length != 0)
-            response.AddInfo($"Некоторые пользователи (Telegram) не найдены: {string.Join(",", tg_ids)}");
 
         return response;
     }

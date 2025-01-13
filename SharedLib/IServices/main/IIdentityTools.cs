@@ -10,6 +10,26 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// SelectUsersOfIdentity
+    /// </summary>
+    public Task<TPaginationResponseModel<UserInfoModel>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req);
+
+    /// <summary>
+    /// Получить пользователей из Identity по их идентификаторам
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel[]>> GetUsersOfIdentity(string[] req);
+
+    /// <summary>
+    /// Получить пользователей из Identity по их Email
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByEmail(string[] req);
+
+    /// <summary>
+    /// Find user identity by telegram - receive
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel[]>> GetUserIdentityByTelegram(long[] req);
+
+    /// <summary>
     /// Обновляет адрес Email, если токен действительный для пользователя.
     /// </summary>
     /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>

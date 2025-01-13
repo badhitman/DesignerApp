@@ -10,6 +10,9 @@ using System.Security.Claims;
 using IdentityLib;
 using System.Text;
 using SharedLib;
+using Microsoft.Extensions.Caching.Memory;
+using System.Net.Mail;
+using static SharedLib.GlobalStaticConstants;
 
 namespace IdentityService;
 
@@ -24,6 +27,254 @@ public class IdentityTools(
     UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<UserInfoModel>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req)
+    {
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
+        using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
+        IQueryable<ApplicationUser> q = identityContext.Users.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
+        {
+            req.Payload.SearchQuery = req.Payload.SearchQuery.ToUpper();
+            q = q.Where(x => (x.NormalizedEmail != null && x.NormalizedEmail.Contains(req.Payload.SearchQuery)) ||
+            (x.NormalizedUserName != null && x.NormalizedUserName.Contains(req.Payload.SearchQuery)) ||
+            (x.NormalizedFirstNameUpper != null && x.NormalizedFirstNameUpper.Contains(req.Payload.SearchQuery)) ||
+            (x.NormalizedLastNameUpper != null && x.NormalizedLastNameUpper.Contains(req.Payload.SearchQuery)));
+        }
+
+        return new()
+        {
+            TotalRowsCount = await q.CountAsync(),
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortBy = req.SortBy,
+            SortingDirection = req.SortingDirection,
+            Response = [..await q.OrderBy(x => x.Id)
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize)
+            .Select(x => new UserInfoModel()
+            {
+                UserId = x.Id,
+                AccessFailedCount = x.AccessFailedCount,
+                Email = x.Email,
+                EmailConfirmed = x.EmailConfirmed,
+                GivenName = x.FirstName,
+                LockoutEnabled = x.LockoutEnabled,
+                LockoutEnd = x.LockoutEnd,
+                PhoneNumber = x.PhoneNumber,
+                Surname = x.LastName,
+                TelegramId = x.ChatTelegramId,
+                UserName = x.UserName,
+            })
+            .ToListAsync()]
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<UserInfoModel[]>> GetUsersOfIdentity(string[] users_ids)
+    {
+        users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
+        TResponseModel<UserInfoModel[]> res = new() { Response = [] };
+        if (users_ids.Length == 0)
+        {
+            res.AddError("Пустой запрос");
+            return res;
+        }
+        string[] find_users_ids = [.. users_ids.Where(x => x != GlobalStaticConstants.Roles.System)];
+        if (find_users_ids.Length == 0)
+        {
+            res.Response = [.. users_ids.Select(x => UserInfoModel.BuildSystem())];
+            return res;
+        }
+
+        using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
+        ApplicationUser[] users = await identityContext
+            .Users
+            .Where(x => find_users_ids.Contains(x.Id))
+            .ToArrayAsync();
+
+        var users_roles = await identityContext
+           .UserRoles
+           .Where(x => find_users_ids.Contains(x.UserId))
+           .Select(x => new { x.RoleId, x.UserId })
+           .ToArrayAsync();
+
+        EntryAltModel[] roles_names = users_roles.Length == 0
+            ? []
+            : await identityContext
+                .Roles
+                .Where(x => users_roles.Select(x => x.RoleId).Distinct().ToArray().Contains(x.Id))
+                .Select(x => new EntryAltModel() { Id = x.Id, Name = x.Name })
+                .ToArrayAsync();
+
+        EntryAltTagModel[] claims = await identityContext
+             .UserClaims
+             .Where(x => find_users_ids.Contains(x.UserId) && x.ClaimType != null && x.ClaimType != "")
+             .Select(x => new EntryAltTagModel() { Id = x.UserId, Name = x.ClaimType, Tag = x.ClaimValue })
+             .ToArrayAsync();
+
+        string[]? roles_for_user(string user_id)
+        {
+            return roles_names
+                .Where(x => users_roles.Any(y => y.UserId == user_id && y.RoleId == x.Id))
+                .Select(x => x.Name!)
+                .Distinct()
+                .ToArray();
+        }
+
+        UserInfoModel convert_user(ApplicationUser app_user)
+        {
+            return new()
+            {
+                GivenName = app_user.FirstName,
+                Surname = app_user.LastName,
+                UserId = app_user.Id,
+                AccessFailedCount = app_user.AccessFailedCount,
+                Email = app_user.Email,
+                EmailConfirmed = app_user.EmailConfirmed,
+                LockoutEnabled = app_user.LockoutEnabled,
+                LockoutEnd = app_user.LockoutEnd,
+                PhoneNumber = app_user.PhoneNumber,
+                UserName = app_user.UserName,
+                TelegramId = app_user.ChatTelegramId,
+                Roles = [.. roles_for_user(app_user.Id)],
+                Claims = [.. claims.Where(x => x.Id == app_user.Id).Select(x => new EntryAltModel() { Id = x.Id, Name = x.Name })]
+            };
+        }
+
+        res.Response = users.Select(convert_user).ToArray();
+
+        if (users_ids.Any(x => x == GlobalStaticConstants.Roles.System))
+            res.Response = [.. res.Response.Union([UserInfoModel.BuildSystem()])];
+
+        find_users_ids = [.. find_users_ids.Where(x => !res.Response.Any(y => y.UserId == x))];
+        if (find_users_ids.Length != 0)
+            res.AddWarning($"Некоторые пользователи (Identity) не найдены: {string.Join(",", find_users_ids)}");
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByEmail(string[] users_emails)
+    {
+        users_emails = [.. users_emails.Where(x => MailAddress.TryCreate(x, out _)).Select(x => x.ToUpper())];
+        TResponseModel<UserInfoModel[]> res = new() { Response = [] };
+        if (users_emails.Length == 0)
+        {
+            res.AddError("Пустой запрос");
+            return res;
+        }
+
+        using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
+        ApplicationUser[] users = await identityContext
+            .Users
+            .Where(x => users_emails.Contains(x.NormalizedEmail))
+            .ToArrayAsync();
+
+        string[] find_users_ids = users.Select(x => x.Id).ToArray();
+        var users_roles = await identityContext
+           .UserRoles
+           .Where(x => find_users_ids.Contains(x.UserId))
+           .Select(x => new { x.RoleId, x.UserId })
+           .ToArrayAsync();
+
+        EntryAltModel[] roles_names = users_roles.Length == 0
+            ? []
+            : await identityContext
+                .Roles
+                .Where(x => users_roles.Select(x => x.RoleId).Distinct().ToArray().Contains(x.Id))
+                .Select(x => new EntryAltModel() { Id = x.Id, Name = x.Name })
+                .ToArrayAsync();
+
+        EntryAltTagModel[] claims = await identityContext
+             .UserClaims
+             .Where(x => find_users_ids.Contains(x.UserId) && x.ClaimType != null && x.ClaimType != "")
+             .Select(x => new EntryAltTagModel() { Id = x.UserId, Name = x.ClaimType, Tag = x.ClaimValue })
+             .ToArrayAsync();
+
+        string[]? roles_for_user(string user_id)
+        {
+            return roles_names
+                .Where(x => users_roles.Any(y => y.UserId == user_id && y.RoleId == x.Id))
+                .Select(x => x.Name!)
+                .Distinct()
+                .ToArray();
+        }
+
+        UserInfoModel convert_user(ApplicationUser app_user)
+        {
+            return new()
+            {
+                GivenName = app_user.FirstName,
+                Surname = app_user.LastName,
+                UserId = app_user.Id,
+                AccessFailedCount = app_user.AccessFailedCount,
+                Email = app_user.Email,
+                EmailConfirmed = app_user.EmailConfirmed,
+                LockoutEnabled = app_user.LockoutEnabled,
+                LockoutEnd = app_user.LockoutEnd,
+                PhoneNumber = app_user.PhoneNumber,
+                UserName = app_user.UserName,
+                TelegramId = app_user.ChatTelegramId,
+                Roles = [.. roles_for_user(app_user.Id)],
+                Claims = [.. claims.Where(x => x.Id == app_user.Id).Select(x => new EntryAltModel() { Id = x.Id, Name = x.Name })]
+            };
+        }
+
+        res.Response = users.Select(convert_user).ToArray();
+
+        if (users_emails.Any(x => x == GlobalStaticConstants.Roles.System))
+            res.Response = [.. res.Response.Union([UserInfoModel.BuildSystem()])];
+
+        find_users_ids = [.. find_users_ids.Where(x => !res.Response.Any(y => y.UserId == x))];
+        if (find_users_ids.Length != 0)
+            res.AddWarning($"Некоторые пользователи (Identity) не найдены: {string.Join(",", find_users_ids)}");
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<UserInfoModel[]>> GetUserIdentityByTelegram(long[] tg_ids)
+    {
+        tg_ids = [.. tg_ids.Where(x => x != 0)];
+        TResponseModel<UserInfoModel[]> response = new() { Response = [] };
+        if (tg_ids.Length == 0)
+        {
+            response.AddError("Пустой запрос");
+            return response;
+        }
+
+        using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
+        ApplicationUser[] users = await identityContext
+            .Users
+            .Where(x => tg_ids.Any(y => y == x.ChatTelegramId))
+        .ToArrayAsync();
+
+        string[] users_ids = [.. users.Select(x => x.Id)];
+
+        TResponseModel<UserInfoModel[]> res_find_users_identity = await GetUsersOfIdentity(users_ids);
+        if (!res_find_users_identity.Success())
+        {
+            response.AddRangeMessages(res_find_users_identity.Messages);
+            return response;
+        }
+
+        if (res_find_users_identity.Response is null || res_find_users_identity.Response.Length == 0)
+        {
+            response.AddError("Не найдены пользователи");
+            return response;
+        }
+        response.Response = res_find_users_identity.Response;
+
+        tg_ids = [.. tg_ids.Where(x => !response.Response.Any(y => y.TelegramId == x))];
+        if (tg_ids.Length != 0)
+            response.AddInfo($"Некоторые пользователи (Telegram) не найдены: {string.Join(",", tg_ids)}");
+
+        return response;
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req)
     {
