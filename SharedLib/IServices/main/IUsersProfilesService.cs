@@ -10,14 +10,6 @@ namespace SharedLib;
 public partial interface IUsersProfilesService
 {
     /// <summary>
-    /// Найти пользователя по <paramref name="userId"/>.
-    /// Если <paramref name="userId"/> не указан, то возвращается текущий пользователь (запрос/сессия)
-    /// </summary>
-    public Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string userId);
-
-
-
-    /// <summary>
     /// Получает флаг, указывающий, есть ли у пользователя пароль.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>

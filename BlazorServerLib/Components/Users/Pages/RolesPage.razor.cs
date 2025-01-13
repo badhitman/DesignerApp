@@ -39,11 +39,12 @@ public partial class RolesPage
     {
         if (!string.IsNullOrWhiteSpace(OwnerUserId))
         {
-            TResponseModel<UserInfoModel?> rest = await UsersManageRepo.FindByIdAsync(OwnerUserId);
-            Messages = rest.Messages;
-            if (!rest.Success())
+            TResponseModel<UserInfoModel[]> findUsers = await IdentityRepo.GetUsersIdentity([OwnerUserId]);
+            Messages = findUsers.Messages;
+            if (!findUsers.Success() || findUsers.Response is null)
                 return;
-            UserInfo = rest.Response;
+
+            UserInfo = findUsers.Response.Single();
         }
 
         foodRecallProvider = async req =>

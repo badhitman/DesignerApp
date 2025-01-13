@@ -170,19 +170,19 @@ public class ManufactureService(
     public async Task<TResponseModel<ManageManufactureModelDB>> ReadManufactureConfig(int projectId, string userId)
     {
         TResponseModel<ManageManufactureModelDB> res = new();
-        TResponseModel<UserInfoModel?> user = await usersProfilesRepo.FindByIdAsync(userId);
-
-        if (!user.Success() || user.Response is null)
+        TResponseModel<UserInfoModel[]> findUsers = await IdentityRepo.GetUsersIdentity([userId]);
+        if (!findUsers.Success() || findUsers.Response is null)
         {
-            res.AddRangeMessages(user.Messages);
+            res.AddRangeMessages(findUsers.Messages);
             return res;
         }
 
+        UserInfoModel user = findUsers.Response.Single();
         using ConstructorContext context_forms = mainDbFactory.CreateDbContext();
 
         res.Response = await context_forms
             .Manufactures
-            .FirstOrDefaultAsync(x => x.ProjectId == projectId && x.UserId == user.Response.UserId);
+            .FirstOrDefaultAsync(x => x.ProjectId == projectId && x.UserId == user.UserId);
 
         if (res.Response is null)
         {
@@ -192,7 +192,7 @@ public class ManufactureService(
                         .Select(x => new { x.Id, x.Name })
                         .FirstAsync();
 
-            res.Response = new ManageManufactureModelDB() { UserId = user.Response.UserId, Namespace = GlobalTools.TranslitToSystemName(project_db.Name), ProjectId = project_db.Id };
+            res.Response = new ManageManufactureModelDB() { UserId = user.UserId, Namespace = GlobalTools.TranslitToSystemName(project_db.Name), ProjectId = project_db.Id };
             await context_forms.AddAsync(res.Response);
             await context_forms.SaveChangesAsync();
         }

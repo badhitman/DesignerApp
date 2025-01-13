@@ -1,6 +1,6 @@
-﻿using BlazorLib;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Account.Pages;
@@ -12,9 +12,6 @@ public partial class ConfirmEmailPage : ComponentBase
 {
     [Inject]
     IIdentityTransmission IdentityRepo { get; set; } = default!;
-
-    [Inject]
-    IUsersProfilesService UserProfilesManage { get; set; } = default!;
 
     [Inject]
     IUsersAuthenticateService UserAuthManager { get; set; } = default!;
@@ -45,15 +42,16 @@ public partial class ConfirmEmailPage : ComponentBase
             RedirectManager.RedirectTo("");
         }
 
-        TResponseModel<UserInfoModel?> user = await UserProfilesManage.FindByIdAsync(UserId);
-        Messages = user.Messages;
-        if (user.Response is null)
+        TResponseModel<UserInfoModel[]> findUsers = await IdentityRepo.GetUsersIdentity([UserId]);
+        Messages = findUsers.Messages;
+        if (findUsers.Response is null)
         {
             HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
         }
         else
         {
-            ResponseBaseModel result = await IdentityRepo.ConfirmUserEmailCode(new() { Code = Code, UserId = user.Response.UserId });
+            UserInfoModel user = findUsers.Response.Single();
+            ResponseBaseModel result = await IdentityRepo.ConfirmUserEmailCode(new() { Code = Code, UserId = user.UserId });
             Messages.AddRange(result.Messages);
             if (!result.Success())
             {

@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// SetRoleForUser
+    /// </summary>
+    public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleFoeUserRequestModel req);
+
+    /// <summary>
     /// SelectUsersOfIdentity
     /// </summary>
     public Task<TPaginationResponseModel<UserInfoModel>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req);

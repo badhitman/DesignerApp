@@ -29,28 +29,6 @@ public class UsersProfilesService(
     ILogger<UsersProfilesService> LoggerRepo) : GetUserServiceAbstract(httpContextAccessor, userManager, LoggerRepo), IUsersProfilesService
 {
 #pragma warning restore CS9107
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string userId)
-    {
-        TResponseModel<UserInfoModel[]> rest;
-        if (!string.IsNullOrWhiteSpace(userId))
-        {
-            rest = await IdentityRepo.GetUsersIdentity([userId]);
-            return new() { Response = rest.Response?.FirstOrDefault(), Messages = rest.Messages };
-        }
-
-        ApplicationUserResponseModel user = await GetUser();
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        rest = await IdentityRepo.GetUsersIdentity([user.ApplicationUser.Id]);
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
-
-        return new() { Response = rest.Response[0] };
-    }
-
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null)
     {
