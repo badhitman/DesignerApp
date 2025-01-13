@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorWebLib.Components.Account.Pages.Manage;
 
@@ -15,10 +14,8 @@ namespace BlazorWebLib.Components.Account.Pages.Manage;
 public partial class IndexPage : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
-    IWebTransmission webRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
-    [Inject]
-    AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
     string? username;
     string? firstName;
@@ -59,8 +56,8 @@ public partial class IndexPage : BlazorBusyComponentBaseAuthModel
         Messages = [];
         await SetBusy();
 
-        ResponseBaseModel rest = await UsersProfilesRepo.UpdateFirstLastNamesUser(new() { UserId = CurrentUserSession.UserId, FirstName = firstName, LastName = lastName, PhoneNum = phoneNum });
-        AuthenticationState ar = await AuthRepo.GetAuthenticationStateAsync();
+        ResponseBaseModel rest = await IdentityRepo.UpdateUserDetails(new() { UserId = CurrentUserSession.UserId, FirstName = firstName, LastName = lastName, PhoneNum = phoneNum });
+        //AuthenticationState ar = await AuthRepo.GetAuthenticationStateAsync();
         // ar.User.Claims.ToList().ForEach(x => { x. });
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(rest.Messages);

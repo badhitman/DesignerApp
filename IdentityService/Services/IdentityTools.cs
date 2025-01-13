@@ -25,6 +25,41 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> UpdateUserDetails(IdentityDetailsModel req)
+    {
+        req.FirstName ??= "";
+        req.LastName ??= "";
+
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        ApplicationUser? user_db = await identityContext
+            .Users
+            .FirstOrDefaultAsync(x => x.Id == req.UserId && (x.FirstName != req.FirstName || x.LastName != req.LastName || x.PhoneNumber != req.PhoneNum));
+
+        if (user_db is null)
+            return ResponseBaseModel.CreateInfo("Без изменений");
+
+        await identityContext
+            .Users
+            .Where(x => x.Id == req.UserId)
+            .ExecuteUpdateAsync(set => set
+            .SetProperty(p => p.PhoneNumber, req.PhoneNum)
+            .SetProperty(p => p.FirstName, req.FirstName)
+            .SetProperty(p => p.NormalizedFirstNameUpper, req.FirstName.ToUpper())
+            .SetProperty(p => p.LastName, req.LastName)
+            .SetProperty(p => p.NormalizedLastNameUpper, req.LastName.ToUpper()));
+
+        user_db.PhoneNumber = req.PhoneNum;
+        user_db.FirstName = req.FirstName;
+        user_db.NormalizedFirstNameUpper = req.FirstName.ToUpper();
+        user_db.LastName = req.LastName;
+        user_db.NormalizedLastNameUpper = req.LastName.ToUpper();
+
+        await ClaimsUserFlush(user_db.Id);
+
+        return ResponseBaseModel.CreateSuccess("First/Last names (and phone) update");
+    }
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();

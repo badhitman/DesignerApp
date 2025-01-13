@@ -10,11 +10,6 @@ namespace SharedLib;
 public partial interface IUsersProfilesService
 {
     /// <summary>
-    /// Обновить пользователю поля: FirstName и LastName
-    /// </summary>
-    public Task<ResponseBaseModel> UpdateFirstLastNamesUser(IdentityDetailsModel req);
-
-    /// <summary>
     /// Найти пользователя по <paramref name="userId"/>.
     /// Если <paramref name="userId"/> не указан, то возвращается текущий пользователь (запрос/сессия)
     /// </summary>

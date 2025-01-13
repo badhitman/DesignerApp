@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Обновить пользователю поля: FirstName и LastName
+    /// </summary>
+    public Task<ResponseBaseModel> UpdateUserDetails(IdentityDetailsModel req);
+
+    /// <summary>
     /// Claim: Remove
     /// </summary>
     public Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req);

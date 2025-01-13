@@ -43,8 +43,13 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// AddRoleToUserReceive
         /// </summary>
-        public readonly static string AddRoleToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-to-{Routes.USER_CONFIRMATION_NAME}");
+        public readonly static string AddRoleToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-to-{Routes.USER_CONTROLLER_NAME}");
 
+        /// <summary>
+        /// UpdateUserDetailsReceive
+        /// </summary>
+        public readonly static string UpdateUserDetailsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.DETAILS_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
+        
         /// <summary>
         /// ClaimDeleteReceive
         /// </summary>
@@ -63,7 +68,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// SetLockUserReceive
         /// </summary>
-        public readonly static string SetLockUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONFIRMATION_NAME, $"{Routes.LOCK_CONFIRMATION_NAME}-{Routes.SET_ACTION_NAME}");
+        public readonly static string SetLockUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.LOCK_CONFIRMATION_NAME}-{Routes.SET_ACTION_NAME}");
 
         /// <summary>
         /// GetRoleReceive
@@ -93,7 +98,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// DeleteRoleFromUser
         /// </summary>
-        public readonly static string DeleteRoleFromUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, $"{Routes.DELETE_ACTION_NAME}-from-{Routes.USER_CONFIRMATION_NAME}");
+        public readonly static string DeleteRoleFromUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, $"{Routes.DELETE_ACTION_NAME}-from-{Routes.USER_CONTROLLER_NAME}");
         
         /// <summary>
         /// ResetPasswordForUserReceive
@@ -120,7 +125,7 @@ public static partial class GlobalStaticConstants
         public readonly static string GetUsersOfIdentityByTelegramIdsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, $"{Routes.GET_ACTION_NAME}-by-{Routes.TELEGRAM_CONTROLLER_NAME}");
 
         /// <inheritdoc/>
-        public readonly static string ConfirmUserEmailCodeIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONFIRMATION_NAME}-{Routes.CONFIRM_ACTION_NAME}", $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.CODE_CONTROLLER_NAME}");
+        public readonly static string ConfirmUserEmailCodeIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.CONFIRM_ACTION_NAME}", $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.CODE_CONTROLLER_NAME}");
 
         /// <inheritdoc/>
         public readonly static string GenerateEmailConfirmationIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.CONFIRM_ACTION_NAME}", $"{Routes.SEND_ACTION_NAME}");
