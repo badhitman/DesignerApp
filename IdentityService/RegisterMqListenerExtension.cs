@@ -26,6 +26,8 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<GetRoleReceive, string, TResponseModel<RoleInfoModel>>()
             .RegisterMqListener<ClaimUpdateOrCreateReceive, ClaimUpdateModel, ResponseBaseModel>()
             .RegisterMqListener<ClaimDeleteReceive, ClaimAreaIdModel, ResponseBaseModel>()
+            .RegisterMqListener<ChangePasswordReceive, IdentityChangePasswordModel, ResponseBaseModel>()
+            .RegisterMqListener<AddPasswordReceive, IdentityPasswordModel, ResponseBaseModel>()
             .RegisterMqListener<ChangeEmailReceive, IdentityEmailTokenModel, ResponseBaseModel>()
             .RegisterMqListener<UpdateUserDetailsReceive, IdentityDetailsModel, ResponseBaseModel>()
             .RegisterMqListener<GetClaimsReceive, ClaimAreaOwnerModel, List<ClaimBaseModel>>()

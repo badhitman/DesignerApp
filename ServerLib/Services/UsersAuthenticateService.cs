@@ -2,14 +2,11 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using System.Text;
 using IdentityLib;
 using SharedLib;
 
@@ -23,6 +20,7 @@ public class UsersAuthenticateService(
     IUsersProfilesService usersProfilesRepo,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
+    // IHttpContextAccessor httpContextAccessor,
     IIdentityTransmission identityRepo,
     IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {

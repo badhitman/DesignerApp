@@ -25,6 +25,50 @@ public class IdentityTools(
     UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ChangePasswordAsync(IdentityChangePasswordModel req)
+    {
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+
+         string msg;
+        IdentityResult changePasswordResult = await userManager.ChangePasswordAsync(user, req.CurrentPassword, req.NewPassword);
+        if (!changePasswordResult.Succeeded)
+            return new()
+            {
+                Messages = [.. changePasswordResult.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" })],
+            };
+
+        msg = $"Пользователю [`{user.Id}`/`{user.Email}`] успешно изменён пароль.";
+        loggerRepo.LogInformation(msg);
+        return ResponseBaseModel.CreateSuccess(msg);
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> AddPasswordAsync(IdentityPasswordModel req)
+    {
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+
+        IdentityResult addPasswordResult = await userManager.AddPasswordAsync(user, req.Password);
+        if (!addPasswordResult.Succeeded)
+        {
+            return new()
+            {
+                Messages = addPasswordResult.Errors.Select(e => new ResultMessage()
+                {
+                    TypeMessage = ResultTypesEnum.Error,
+                    Text = $"[{e.Code}: {e.Description}]"
+                }).ToList()
+            };
+        }
+
+        return ResponseBaseModel.CreateSuccess("Пароль установлен");
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<string[]>> SetRoleForUser(SetRoleFoeUserRequestModel req)
     {
         TResponseModel<string[]> res = new();

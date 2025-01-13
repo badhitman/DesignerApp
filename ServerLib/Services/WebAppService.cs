@@ -21,16 +21,44 @@ public class WebAppService(
     ITelegramTransmission tgRemoteRepo,
     UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
-    IHttpContextAccessor httpContextAccessor,
     IMailProviderService mailRepo,
     IIdentityTransmission identityRepo,
     IOptions<TelegramBotConfigModel> webConfig,
+    IUsersProfilesService PrfilesRepo,
     ILogger<WebAppService> LoggerRepo)
 #pragma warning disable CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
-    : GetUserServiceAbstract(httpContextAccessor, userManager, LoggerRepo), IWebAppService
+    : IWebAppService
 #pragma warning restore CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
 {
     #region Telegram
+    async Task<(string id, string email, long? tg)> GetEmailAndIdForUser(string? userId = null)
+    {
+        string user_id, user_email;
+        long? telegram_id;
+
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            TResponseModel<UserInfoModel[]> rest = await identityRepo.GetUsersIdentity([userId]);
+            if (!rest.Success() || rest.Response is null || rest.Response.Length != 1 || string.IsNullOrWhiteSpace(rest.Response[0].Email))
+                throw new Exception();
+
+            user_id = rest.Response[0].UserId;
+            user_email = rest.Response[0].Email!;
+            telegram_id = rest.Response[0].TelegramId;
+        }
+        else
+        {
+            ApplicationUserResponseModel user = await ((UsersProfilesService)PrfilesRepo).GetUser(userId);
+            if (!user.Success() || user.ApplicationUser is null || string.IsNullOrWhiteSpace(user.ApplicationUser.Email))
+                throw new Exception();
+
+            user_id = user.ApplicationUser.Id;
+            user_email = user.ApplicationUser.Email;
+            telegram_id = user.ApplicationUser.ChatTelegramId;
+        }
+        return (user_id, user_email, telegram_id);
+    }
+
     /// <inheritdoc/>
     public async Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user)
     {
@@ -127,34 +155,6 @@ public class WebAppService(
             res.AddWarning("Пользователь Telegram не связан с учётной записью на сайте");
 
         return res;
-    }
-
-    async Task<(string id, string email, long? tg)> GetEmailAndIdForUser(string? userId = null)
-    {
-        string user_id, user_email;
-        long? telegram_id;
-
-        if (!string.IsNullOrWhiteSpace(userId))
-        {
-            TResponseModel<UserInfoModel[]> rest = await identityRepo.GetUsersIdentity([userId]);
-            if (!rest.Success() || rest.Response is null || rest.Response.Length != 1 || string.IsNullOrWhiteSpace(rest.Response[0].Email))
-                throw new Exception();
-
-            user_id = rest.Response[0].UserId;
-            user_email = rest.Response[0].Email!;
-            telegram_id = rest.Response[0].TelegramId;
-        }
-        else
-        {
-            ApplicationUserResponseModel user = await GetUser(userId);
-            if (!user.Success() || user.ApplicationUser is null || string.IsNullOrWhiteSpace(user.ApplicationUser.Email))
-                throw new Exception();
-
-            user_id = user.ApplicationUser.Id;
-            user_email = user.ApplicationUser.Email;
-            telegram_id = user.ApplicationUser.ChatTelegramId;
-        }
-        return (user_id, user_email, telegram_id);
     }
 
     /// <inheritdoc/>

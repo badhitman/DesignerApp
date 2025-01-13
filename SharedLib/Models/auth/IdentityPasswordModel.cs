@@ -5,12 +5,17 @@
 namespace SharedLib;
 
 /// <summary>
-/// IdentityPasswordTokenModel
+/// IdentityPasswordModel
 /// </summary>
-public class IdentityPasswordTokenModel: IdentityPasswordModel
+public class IdentityPasswordModel
 {
     /// <summary>
-    /// Token
+    /// UserId
     /// </summary>
-    public required string Token { get; set; }
+    public required string UserId { get; set; }
+
+    /// <summary>
+    /// Email
+    /// </summary>
+    public required string Password { get; set; }
 }

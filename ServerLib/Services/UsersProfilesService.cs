@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using System.Text.Encodings.Web;
+using System.Security.Claims;
 using System.Net.Mail;
 using IdentityLib;
 using System.Text;
@@ -26,55 +27,9 @@ public class UsersProfilesService(
     SignInManager<ApplicationUser> signInManager,
     IUserStore<ApplicationUser> userStore,
     IHttpContextAccessor httpContextAccessor,
-    ILogger<UsersProfilesService> LoggerRepo) : GetUserServiceAbstract(httpContextAccessor, userManager, LoggerRepo), IUsersProfilesService
+    ILogger<UsersProfilesService> LoggerRepo) : IUsersProfilesService
 {
 #pragma warning restore CS9107
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        IdentityResult addPasswordResult = await userManager.AddPasswordAsync(user.ApplicationUser, password);
-
-        if (!addPasswordResult.Succeeded)
-        {
-            return new()
-            {
-                Messages = addPasswordResult.Errors.Select(e => new ResultMessage()
-                {
-                    TypeMessage = ResultTypesEnum.Error,
-                    Text = $"[{e.Code}: {e.Description}]"
-                }).ToList()
-            };
-        }
-
-        await signInManager.RefreshSignInAsync(user.ApplicationUser);
-        return ResponseBaseModel.CreateSuccess("Пароль установлен");
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ChangePasswordAsync(string currentPassword, string newPassword, string? userId = null)
-    {
-        string msg;
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        IdentityResult changePasswordResult = await userManager.ChangePasswordAsync(user.ApplicationUser, currentPassword, newPassword);
-        if (!changePasswordResult.Succeeded)
-            return new()
-            {
-                Messages = [.. changePasswordResult.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" })],
-            };
-
-        await signInManager.RefreshSignInAsync(user.ApplicationUser);
-        msg = $"Пользователю [`{user.ApplicationUser.Id}`/`{user.ApplicationUser.Email}`] успешно изменён пароль.";
-        LoggerRepo.LogInformation(msg);
-        return ResponseBaseModel.CreateSuccess(msg);
-    }
-
     /// <inheritdoc/>
     public async Task<UserBooleanResponseModel> CheckUserPasswordAsync(string password, string? userId = null)
     {
@@ -143,6 +98,46 @@ public class UsersProfilesService(
 
         return new() { Response = await userManager.GetTwoFactorEnabledAsync(user.ApplicationUser) };
     }
+
+    #region done
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ChangePasswordAsync(string currentPassword, string newPassword, string? userId = null)
+    {
+        ApplicationUserResponseModel user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        ResponseBaseModel res = await IdentityRepo.ChangePassword(new() { CurrentPassword = currentPassword, NewPassword = newPassword, UserId = user.ApplicationUser.Id });
+        if (!res.Success())
+            return res;
+
+        user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        await signInManager.RefreshSignInAsync(user.ApplicationUser);
+        return ResponseBaseModel.CreateSuccess($"Пользователю [`{user.ApplicationUser.Id}`/`{user.ApplicationUser.Email}`] успешно изменён пароль.");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null)
+    {
+        ApplicationUserResponseModel user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        ResponseBaseModel addPassRes = await IdentityRepo.AddPassword(new() { Password = password, UserId = user.ApplicationUser.Id });
+        if (!addPassRes.Success())
+            return addPassRes;
+        user = await GetUser(userId);
+
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        await signInManager.RefreshSignInAsync(user.ApplicationUser);
+        return ResponseBaseModel.CreateSuccess("Пароль установлен");
+    }
+    #endregion
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetTwoFactorEnabledAsync(bool enabled_set, string? userId = null)
@@ -473,5 +468,48 @@ public class UsersProfilesService(
 
         await signInManager.RefreshSignInAsync(user);
         return ResponseBaseModel.CreateSuccess("Благодарим вас за подтверждение изменения адреса электронной почты.");
+    }
+
+    /// <summary>
+    /// Read Identity user data.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public async Task<ApplicationUserResponseModel> GetUser(string? userId = null)
+    {
+        ApplicationUser? user;
+
+        string msg;
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            LoggerRepo.LogInformation($"IsAuthenticated:{httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated}");
+            LoggerRepo.LogInformation($"Name:{httpContextAccessor.HttpContext?.User.Identity?.Name}");
+            if (httpContextAccessor.HttpContext is not null)
+                LoggerRepo.LogInformation($"Claims:{string.Join(",", httpContextAccessor.HttpContext.User.Claims.Select(x => $"[{x.ValueType}:{x.Value}]"))}");
+
+            string? user_id = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (user_id is null)
+            {
+                msg = "HttpContext is null (текущий пользователь) не авторизован. info D485BA3C-081C-4E2F-954D-759A181DCE78";
+                return new() { Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Info, Text = msg }] };
+            }
+            else
+            {
+                user = await userManager.FindByIdAsync(user_id);
+                return new()
+                {
+                    ApplicationUser = user
+                };
+            }
+        }
+        user = await userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            msg = $"Identity user ({nameof(userId)}: `{userId}`) не найден. error {{9D6C3816-7A39-424F-8EF1-B86732D46BD7}}";
+            return (ApplicationUserResponseModel)ResponseBaseModel.CreateError(msg);
+        }
+        return new()
+        {
+            ApplicationUser = user
+        };
     }
 }

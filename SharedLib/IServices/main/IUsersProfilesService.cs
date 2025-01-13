@@ -10,12 +10,6 @@ namespace SharedLib;
 public partial interface IUsersProfilesService
 {
     /// <summary>
-    /// Получает флаг, указывающий, есть ли у пользователя пароль.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<UserBooleanResponseModel> UserHasPasswordAsync(string? userId = null);
-
-    /// <summary>
     /// Изменяет пароль пользователя после подтверждения правильности указанного <paramref name="currentPassword"/>.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
@@ -23,6 +17,12 @@ public partial interface IUsersProfilesService
     /// <param name="newPassword">Новый пароль, который необходимо установить для указанного <paramref name="userId"/>.</param>
     /// <param name="userId">Пользователь, пароль которого должен быть установлен. Если не указан, то для текущего пользователя (запрос/сессия)</param>
     public Task<ResponseBaseModel> ChangePasswordAsync(string currentPassword, string newPassword, string? userId = null);
+
+    /// <summary>
+    /// Получает флаг, указывающий, есть ли у пользователя пароль.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<UserBooleanResponseModel> UserHasPasswordAsync(string? userId = null);
 
     /// <summary>
     /// Возвращает флаг, указывающий, действителен ли данный <paramref name="password"/> для указанного <paramref name="userId"/>.
@@ -41,6 +41,14 @@ public partial interface IUsersProfilesService
     /// </summary>
     public Task<ResponseBaseModel> DeleteUserDataAsync(string password, string? userId = null);
 
+    #region done
+    /// <summary>
+    /// Добавляет <paramref name="password"/> к указанному <paramref name="userId"/>, только если у пользователя еще нет пароля.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null);
+    #endregion
+
     /// <summary>
     /// Включена ли для указанного <paramref name="userId"/> двухфакторная аутентификация.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
@@ -58,12 +66,6 @@ public partial interface IUsersProfilesService
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
     public Task<ResponseBaseModel> GenerateChangeEmailTokenAsync(string userEmail, string baseAddress, string? userId = null);
-
-    /// <summary>
-    /// Добавляет <paramref name="password"/> к указанному <paramref name="userId"/>, только если у пользователя еще нет пароля.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null);
 
     /// <summary>
     /// Был ли подтвержден адрес электронной почты для указанного <paramref name="userId"/>; true, если адрес электронной почты проверен/подтвержден.
