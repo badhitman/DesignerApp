@@ -15,12 +15,6 @@ public partial interface IUsersProfilesService
     /// </summary>
     public Task<TResponseModel<UserInfoModel?>> FindByIdAsync(string userId);
 
-    /// <summary>
-    /// Обновляет адрес Email, если токен действительный для пользователя.
-    /// </summary>
-    /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>
-    public Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req);
-
 
 
     /// <summary>
@@ -185,4 +179,12 @@ public partial interface IUsersProfilesService
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
     public Task<ResponseBaseModel> TryAddRolesToUser(IEnumerable<string> addRoles, string? userId = null);
+
+
+
+    /// <summary>
+    /// Обновляет адрес Email, если токен действительный для пользователя.
+    /// </summary>
+    /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>
+    public Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req);
 }

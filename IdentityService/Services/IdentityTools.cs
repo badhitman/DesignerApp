@@ -25,6 +25,27 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req)
+    {
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+
+        string code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(req.Token));
+
+        IdentityResult result = await userManager.ChangeEmailAsync(user, req.Email, code);
+        if (!result.Succeeded)
+            return ResponseBaseModel.CreateError("Ошибка при смене электронной почты.");
+
+        IdentityResult setUserNameResult = await userManager.SetUserNameAsync(user, req.Email);
+
+        if (!setUserNameResult.Succeeded)
+            return ResponseBaseModel.CreateError("Ошибка изменения имени пользователя.");
+
+        return ResponseBaseModel.CreateSuccess("Благодарим вас за подтверждение изменения адреса электронной почты.");
+    }
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> UpdateUserDetails(IdentityDetailsModel req)
     {
         req.FirstName ??= "";

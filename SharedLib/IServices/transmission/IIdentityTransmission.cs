@@ -10,6 +10,12 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Обновляет адрес Email, если токен действительный для пользователя.
+    /// </summary>
+    /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>
+    public Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req);
+
+    /// <summary>
     /// Обновить пользователю поля: FirstName и LastName
     /// </summary>
     public Task<ResponseBaseModel> UpdateUserDetails(IdentityDetailsModel req);
