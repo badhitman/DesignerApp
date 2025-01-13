@@ -12,6 +12,18 @@ namespace RemoteCallLib;
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.ClaimDeleteReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.ClaimUpdateOrCreateReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<List<ClaimBaseModel>> GetClaims(ClaimAreaOwnerModel req)
+        => await rabbitClient.MqRemoteCall<List<ClaimBaseModel>>(GlobalStaticConstants.TransmissionQueues.GetClaimsReceive, req) ?? [];
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req)
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.SetLockUserReceive, req) ?? new();
 

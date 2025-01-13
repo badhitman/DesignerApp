@@ -1,7 +1,5 @@
 ﻿@using MudBlazor
 @using System.Security.Claims
-@inject IUsersProfilesService UsersProfilesRepo
-@inject ISnackbar SnackbarRepo
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
@@ -14,7 +12,7 @@
     <button @onclick="AddClaim" disabled="@(string.IsNullOrWhiteSpace(claimType) || string.IsNullOrWhiteSpace(claimValue))" class="btn btn-outline-secondary" type="button" id="button-addon2">Добавить</button>
 </div>
 
-@if (claims is null || claims.Length == 0)
+@if (claims is null || claims.Count == 0)
 {
     <figure class="text-center">
         <blockquote class="blockquote">
@@ -34,65 +32,8 @@ else
         <tbody>
             @foreach (ClaimBaseModel claim in claims)
             {
-                <ClaimRowComponent Claim="claim" ClaimArea="ClaimArea" OwnerId="@OwnerId" ReloadHandler="async () => {claims = await UsersProfilesRepo.GetClaims(new(){ ClaimArea = ClaimArea, OwnerId = OwnerId}); StateHasChanged(); }" />
+                <ClaimRowComponent Claim="claim" ClaimArea="ClaimArea" OwnerId="@OwnerId" ReloadHandler="async () => {claims = await IdentityRepo.GetClaims(new(){ ClaimArea = ClaimArea, OwnerId = OwnerId}); StateHasChanged(); }" />
             }
         </tbody>
     </table>
-}
-
-@code {
-    [Parameter, EditorRequired]
-    public ClaimAreasEnum ClaimArea { get; set; }
-
-    [Parameter, EditorRequired]
-    public required string OwnerId { get; set; }
-
-    ClaimBaseModel[]? claims;
-    IEnumerable<ResultMessage>? Messages;
-    string? claimType;
-    string? claimValue;
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            claims = await UsersProfilesRepo.GetClaims(new() { ClaimArea = ClaimArea, OwnerId = OwnerId });//
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-
-    }
-
-    async Task AddClaim()
-    {
-        if (string.IsNullOrWhiteSpace(claimValue) || string.IsNullOrWhiteSpace(claimType))
-        {
-            SnackbarRepo.Error("Укажите имя и значение");
-            return;
-        }
-
-        claimType = claimType.Trim();
-        claimValue = claimValue.Trim();
-
-        if (claimType == GlobalStaticConstants.TelegramIdClaimName || claimType == ClaimTypes.GivenName || claimType == ClaimTypes.Surname)
-        {
-            SnackbarRepo.Error("Имя зарезервировано. Укажите другое");
-            return;
-        }
-
-        ResponseBaseModel res = await UsersProfilesRepo.ClaimUpdateOrCreate(new() { ClaimArea = ClaimArea, ClaimUpdate = new() { ClaimType = claimType?.Trim(), ClaimValue = claimValue?.Trim(), OwnerId = OwnerId } });
-
-        if (!res.Success())
-        {
-            Messages = res.Messages;
-            return;
-        }
-
-        claimType = null;
-        claimValue = null;
-
-        claims = await UsersProfilesRepo.GetClaims(new() { ClaimArea = ClaimArea, OwnerId = OwnerId });
-    }
 }

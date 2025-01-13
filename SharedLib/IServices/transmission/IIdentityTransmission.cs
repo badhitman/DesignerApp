@@ -10,6 +10,21 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Claim: Remove
+    /// </summary>
+    public Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req);
+
+    /// <summary>
+    /// Claim: Update or create
+    /// </summary>
+    public Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req);
+
+    /// <summary>
+    /// Get claims
+    /// </summary>
+    public Task<List<ClaimBaseModel>> GetClaims(ClaimAreaOwnerModel req);
+
+    /// <summary>
     /// Установить блокировку пользователю
     /// </summary>
     public Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req);

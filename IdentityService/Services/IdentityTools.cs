@@ -25,6 +25,112 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+
+        switch (req.ClaimArea)
+        {
+            case ClaimAreasEnum.ForRole:
+                IdentityRoleClaim<string>? claim_role_db = await identityContext.RoleClaims.FirstOrDefaultAsync(x => x.Id == req.Id);
+
+                if (claim_role_db is null)
+                    return ResponseBaseModel.CreateWarning($"Claim #{req.Id} не найден в БД");
+
+                identityContext.RoleClaims.Remove(claim_role_db);
+                break;
+            case ClaimAreasEnum.ForUser:
+                IdentityUserClaim<string>? claim_user_db = await identityContext.UserClaims.FirstOrDefaultAsync(x => x.Id == req.Id);
+
+                if (claim_user_db is null)
+                    return ResponseBaseModel.CreateError($"Claim #{req.Id} не найден в БД");
+
+                identityContext.UserClaims.Remove(claim_user_db);
+                break;
+            default:
+                throw new NotImplementedException("error {7F5317DC-EA89-47C3-BE2A-8A90838A113C}");
+        }
+
+        await identityContext.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess("Claim успешно удалён");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+
+        switch (req.ClaimArea)
+        {
+            case ClaimAreasEnum.ForRole:
+                IdentityRoleClaim<string>? claim_role_db;
+                if (req.ClaimUpdate.Id < 1)
+                {
+                    claim_role_db = new IdentityRoleClaim<string>() { RoleId = req.ClaimUpdate.OwnerId, ClaimType = req.ClaimUpdate.ClaimType, ClaimValue = req.ClaimUpdate.ClaimValue };
+                    await identityContext.RoleClaims.AddAsync(claim_role_db);
+                }
+                else
+                {
+                    claim_role_db = await identityContext.RoleClaims.FirstOrDefaultAsync(x => x.RoleId == req.ClaimUpdate.OwnerId);
+                    if (claim_role_db is null)
+                        return ResponseBaseModel.CreateError($"Claim #{req.ClaimUpdate.OwnerId} не найден в БД");
+                    else if (claim_role_db.ClaimType?.Equals(req.ClaimUpdate.ClaimType) == true && claim_role_db.ClaimValue?.Equals(req.ClaimUpdate.ClaimValue) == true)
+                        return ResponseBaseModel.CreateInfo($"Claim #{req.ClaimUpdate.OwnerId} не изменён");
+
+                    claim_role_db.ClaimType = req.ClaimUpdate.ClaimType;
+                    claim_role_db.ClaimValue = req.ClaimUpdate.ClaimValue;
+                    identityContext.RoleClaims.Update(claim_role_db);
+                }
+
+                break;
+            case ClaimAreasEnum.ForUser:
+                IdentityUserClaim<string>? claim_user_db;
+
+                if (req.ClaimUpdate.Id < 1)
+                {
+                    claim_user_db = new IdentityUserClaim<string>() { UserId = req.ClaimUpdate.OwnerId, ClaimType = req.ClaimUpdate.ClaimType, ClaimValue = req.ClaimUpdate.ClaimValue };
+                    await identityContext.UserClaims.AddAsync(claim_user_db);
+                }
+                else
+                {
+                    claim_user_db = await identityContext.UserClaims.FirstOrDefaultAsync(x => x.UserId == req.ClaimUpdate.OwnerId);
+                    if (claim_user_db is null)
+                        return ResponseBaseModel.CreateError($"Claim #{req.ClaimUpdate.OwnerId} не найден в БД");
+                    else if (claim_user_db.ClaimType?.Equals(req.ClaimUpdate.ClaimType) == true && claim_user_db.ClaimValue?.Equals(req.ClaimUpdate.ClaimValue) == true)
+                        return ResponseBaseModel.CreateInfo($"Claim #{req.ClaimUpdate.OwnerId} не изменён");
+
+                    claim_user_db.ClaimType = req.ClaimUpdate.ClaimType;
+                    claim_user_db.ClaimValue = req.ClaimUpdate.ClaimValue;
+                    identityContext.UserClaims.Update(claim_user_db);
+                }
+
+                break;
+            default:
+                throw new NotImplementedException("error {33A20922-0E76-421F-B2C4-109B7A420827}");
+        }
+
+        await identityContext.SaveChangesAsync();
+
+        return ResponseBaseModel.CreateSuccess("Запрос успешно обработан");
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<ClaimBaseModel>> GetClaims(ClaimAreaOwnerModel req)
+    {
+        using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
+
+        List<ClaimBaseModel> res = req.ClaimArea switch
+        {
+            ClaimAreasEnum.ForRole => await identityContext.RoleClaims.Where(x => x.RoleId == req.OwnerId).Select(x => new ClaimBaseModel() { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue }).ToListAsync(),
+            ClaimAreasEnum.ForUser => await identityContext.UserClaims.Where(x => x.UserId == req.OwnerId).Select(x => new ClaimBaseModel() { Id = x.Id, ClaimType = x.ClaimType, ClaimValue = x.ClaimValue }).ToListAsync(),
+            _ => throw new NotImplementedException("error {61909910-B126-4204-8AE6-673E11D49BCD}")
+        };
+
+        return res;
+    }
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req)
     {
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId);

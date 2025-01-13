@@ -95,6 +95,11 @@ public static partial class GlobalStaticConstants
         public const string CLAIMS_CONTROLLER_NAME = "claims";
 
         /// <summary>
+        /// Claim
+        /// </summary>
+        public const string CLAIM_CONTROLLER_NAME = "claim";
+
+        /// <summary>
         /// Orders
         /// </summary>
         public const string ORDERS_CONTROLLER_NAME = "orders";

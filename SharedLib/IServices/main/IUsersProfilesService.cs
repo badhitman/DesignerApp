@@ -15,21 +15,6 @@ public partial interface IUsersProfilesService
     public Task<ResponseBaseModel> UpdateFirstLastNamesUser(IdentityDetailsModel req);
 
     /// <summary>
-    /// Get claims
-    /// </summary>
-    public Task<ClaimBaseModel[]> GetClaims(ClaimAreaOwnerModel req);
-
-    /// <summary>
-    /// Claim: Update or create
-    /// </summary>
-    public Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req);
-
-    /// <summary>
-    /// Claim: Remove
-    /// </summary>
-    public Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req);
-
-    /// <summary>
     /// Найти пользователя по <paramref name="userId"/>.
     /// Если <paramref name="userId"/> не указан, то возвращается текущий пользователь (запрос/сессия)
     /// </summary>
