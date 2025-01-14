@@ -22,7 +22,7 @@ namespace Transmission.Receives.telegram;
 /// </summary>
 public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
-    IWebTransmission webRemoteCall,
+    IIdentityTransmission IdentityRepo,
     StoreTelegramService storeTgRepo,
     ILogger<SendTextMessageTelegramReceive> _logger) : IResponseReceive<SendTextMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
 {
@@ -167,7 +167,7 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
                 await _botClient.DeleteMessage(chatId: message.UserTelegramId, message.MainTelegramMessageId.Value);
             }
             finally { }
-            await webRemoteCall.UpdateTelegramMainUserMessage(new() { MessageId = 0, UserId = message.UserTelegramId });
+            await IdentityRepo.UpdateTelegramMainUserMessage(new() { MessageId = 0, UserId = message.UserTelegramId });
         }
 
         return res;

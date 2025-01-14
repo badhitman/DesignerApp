@@ -17,8 +17,8 @@ public class UpdateHandler(
     StoreTelegramService storeRepo,
     ITelegramBotClient botClient,
     ILogger<UpdateHandler> logger,
+    TelegramBotConfigModel tgConf,
     IStorageTransmission serializeStorageRepo,
-    IWebTransmission webRemoteRepo,
     IHelpdeskTransmission helpdeskRepo,
     IIdentityTransmission identityRepo,
     IServiceProvider servicesProvider) : IUpdateHandler
@@ -64,10 +64,10 @@ public class UpdateHandler(
             if (messageText.StartsWith("/start ") && Guid.TryParse(messageText[7..], out _))
             {
                 messageText = messageText[7..];
-                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramId = message.From.Id, Token = messageText.Trim() });
+                check_token = await identityRepo.TelegramJoinAccountConfirmToken(new() { TelegramId = message.From.Id, Token = messageText.Trim(), ClearBaseUri = tgConf.ClearBaseUri ?? "https://", TelegramJoinAccountTokenLifetimeMinutes = tgConf.TelegramJoinAccountTokenLifetimeMinutes });
             }
             else if (Guid.TryParse(messageText.Trim(), out _))
-                check_token = await webRemoteRepo.TelegramJoinAccountConfirmToken(new() { TelegramId = message.From.Id, Token = messageText.Trim() });
+                check_token = await identityRepo.TelegramJoinAccountConfirmToken(new() { TelegramId = message.From.Id, Token = messageText.Trim(), ClearBaseUri = tgConf.ClearBaseUri ?? "https://", TelegramJoinAccountTokenLifetimeMinutes = tgConf.TelegramJoinAccountTokenLifetimeMinutes });
 
             if (check_token is not null)
             {
@@ -286,7 +286,7 @@ public class UpdateHandler(
                                         parseMode: ParseMode.Html,
                                         replyMarkup: replyKB,
                                         cancellationToken: cancellationToken);
-                    upd_main_msg_res = await webRemoteRepo
+                    upd_main_msg_res = await identityRepo
                     .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = uc.TelegramId });
 
                     if (!upd_main_msg_res.Success())
@@ -313,7 +313,7 @@ public class UpdateHandler(
                                     parseMode: ParseMode.Html,
                                     replyMarkup: replyKB,
                                     cancellationToken: cancellationToken);
-                upd_main_msg_res = await webRemoteRepo
+                upd_main_msg_res = await identityRepo
                 .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = uc.TelegramId });
 
                 if (!upd_main_msg_res.Success())
@@ -345,7 +345,7 @@ public class UpdateHandler(
                                                     messageId: uc.MainTelegramMessageId.Value,
                                                     cancellationToken: cancellationToken);
                     logger.LogDebug($"[Основное сообщение #{uc.MainTelegramMessageId.Value}] Telegram бота для {uc} удалено (сервис обработки входящих сообщений запросил удаление).");
-                    upd_main_msg_res = await webRemoteRepo
+                    upd_main_msg_res = await identityRepo
                 .UpdateTelegramMainUserMessage(new() { MessageId = 0, UserId = uc.TelegramId });
 
                     if (!upd_main_msg_res.Success())
@@ -377,7 +377,7 @@ public class UpdateHandler(
                 );
 #endif
 
-            upd_main_msg_res = await webRemoteRepo
+            upd_main_msg_res = await identityRepo
                 .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = uc.TelegramId });
 
             if (!upd_main_msg_res.Success())
@@ -419,7 +419,7 @@ public class UpdateHandler(
                     cancellationToken: cancellationToken);
 #endif
 
-                upd_main_msg_res = await webRemoteRepo
+                upd_main_msg_res = await identityRepo
                 .UpdateTelegramMainUserMessage(new() { MessageId = messageSended.MessageId, UserId = uc.TelegramId });
 
                 if (!upd_main_msg_res.Success())

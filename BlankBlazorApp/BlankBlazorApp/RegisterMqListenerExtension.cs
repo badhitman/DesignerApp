@@ -18,12 +18,7 @@ public static class RegisterMqListenerExtension
     public static IServiceCollection WebAppRegisterMqListeners(this IServiceCollection services)
     {
         return services
-            .RegisterMqListener<UpdateTelegramUserReceive, CheckTelegramUserHandleModel, TResponseModel<CheckTelegramUserAuthModel>>()
-            .RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, ResponseBaseModel>()
-            .RegisterMqListener<TelegramJoinAccountDeleteReceive, long?, ResponseBaseModel>()
-            .RegisterMqListener<GetWebConfigReceive, object, TelegramBotConfigModel>()
-            .RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, ResponseBaseModel>()
-            .RegisterMqListener<GetTelegramUserReceive, long?, TResponseModel<TelegramUserBaseModel>>()            
+            .RegisterMqListener<GetWebConfigReceive, object, TelegramBotConfigModel>()           
             ;
     }
 }

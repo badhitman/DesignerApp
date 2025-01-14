@@ -12,7 +12,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// TelegramJoinAccountConfirm receive
 /// </summary>
-public class TelegramJoinAccountConfirmReceive(IWebAppService tgWebRepo, ILogger<TelegramJoinAccountConfirmReceive> _logger) : IResponseReceive<TelegramJoinAccountConfirmModel?, ResponseBaseModel?>
+public class TelegramJoinAccountConfirmReceive(IIdentityTools identityRepo, ILogger<TelegramJoinAccountConfirmReceive> _logger) : IResponseReceive<TelegramJoinAccountConfirmModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive;
@@ -35,7 +35,7 @@ public class TelegramJoinAccountConfirmReceive(IWebAppService tgWebRepo, ILogger
 
         try
         {
-            ResponseBaseModel userCheck = await tgWebRepo.TelegramJoinAccountConfirmTokenFromTelegram(confirm);
+            ResponseBaseModel userCheck = await identityRepo.TelegramJoinAccountConfirmTokenFromTelegram(confirm);
             res.AddRangeMessages(userCheck.Messages);
         }
         catch (Exception ex)

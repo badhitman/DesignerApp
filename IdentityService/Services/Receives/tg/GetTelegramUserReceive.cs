@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.Extensions.Logging;
 using RemoteCallLib;
 using SharedLib;
 
@@ -12,7 +11,7 @@ namespace Transmission.Receives.web;
 /// Получить информацию по пользователю (из БД).
 /// Данные возвращаются из кэша: каждое сообщение в TelegramBot кеширует информацию о пользователе в БД
 /// </summary>
-public class GetTelegramUserReceive(IWebAppService tgWebRepo, ILogger<GetTelegramUserReceive> _logger) : IResponseReceive<long?, TResponseModel<TelegramUserBaseModel>?>
+public class GetTelegramUserReceive(IIdentityTools identityRepo, ILogger<GetTelegramUserReceive> _logger) : IResponseReceive<long?, TResponseModel<TelegramUserBaseModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive;
@@ -34,7 +33,7 @@ public class GetTelegramUserReceive(IWebAppService tgWebRepo, ILogger<GetTelegra
 
         try
         {
-            res = await tgWebRepo.GetTelegramUserCachedInfo(payload.Value);
+            res = await identityRepo.GetTelegramUserCachedInfo(payload.Value);
         }
         catch (Exception ex)
         {

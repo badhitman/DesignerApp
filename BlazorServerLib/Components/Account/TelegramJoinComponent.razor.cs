@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
+using Microsoft.Extensions.Options;
 
 namespace BlazorWebLib.Components.Account;
 
@@ -18,13 +19,13 @@ public partial class TelegramJoinComponent : BlazorBusyComponentBaseModel
     ITelegramTransmission TelegramRemoteRepo { get; set; } = default!;
 
     [Inject]
-    IWebAppService TgWebRepo { get; set; } = default!;
-
-    [Inject]
     AuthenticationStateProvider AuthRepo { get; set; } = default!;
 
     [Inject]
     IIdentityTransmission IdentityRepo { get; set; } = default!;
+
+    [Inject]
+    IOptions<TelegramBotConfigModel> WebConfig { get; set; } = default!;
 
 
     /// <summary>
@@ -65,7 +66,7 @@ public partial class TelegramJoinComponent : BlazorBusyComponentBaseModel
     async Task ReadState(bool notify_email)
     {
         await SetBusy();
-        TResponseModel<TelegramJoinAccountModelDb> rest = await TgWebRepo.TelegramJoinAccountState(notify_email, User.UserId);
+        TResponseModel<TelegramJoinAccountModelDb> rest = await IdentityRepo.TelegramJoinAccountState(new() { UserId = User.UserId, EmailNotify = notify_email, TelegramJoinAccountTokenLifetimeMinutes = WebConfig.Value.TelegramJoinAccountTokenLifetimeMinutes });
         IsBusyProgress = false;
         if (!rest.Success())
         {
@@ -78,7 +79,7 @@ public partial class TelegramJoinComponent : BlazorBusyComponentBaseModel
     async Task CreateToken()
     {
         await SetBusy();
-        TResponseModel<TelegramJoinAccountModelDb> rest = await TgWebRepo.TelegramJoinAccountCreate();
+        TResponseModel<TelegramJoinAccountModelDb> rest = await IdentityRepo.TelegramJoinAccountCreate(User.UserId);
         Messages = rest.Messages;
         TelegramJoinAccount = rest.Response;
         IsBusyProgress = false;
@@ -87,9 +88,9 @@ public partial class TelegramJoinComponent : BlazorBusyComponentBaseModel
     async Task DeleteToken()
     {
         await SetBusy();
-        ResponseBaseModel rest = await TgWebRepo.TelegramJoinAccountDeleteAction();
+        ResponseBaseModel rest = await IdentityRepo.TelegramJoinAccountDeleteAction(User.UserId);
         Messages = rest.Messages;
-        TResponseModel<TelegramJoinAccountModelDb> rest_state = await TgWebRepo.TelegramJoinAccountState(false, User.UserId);
+        TResponseModel<TelegramJoinAccountModelDb> rest_state = await IdentityRepo.TelegramJoinAccountState(new() { UserId = User.UserId, EmailNotify = false, TelegramJoinAccountTokenLifetimeMinutes = WebConfig.Value.TelegramJoinAccountTokenLifetimeMinutes });//, 
         IsBusyProgress = false;
         TelegramJoinAccount = rest_state.Response;
 
@@ -128,7 +129,7 @@ public partial class TelegramJoinComponent : BlazorBusyComponentBaseModel
         {
             await SetBusy();
 
-            TResponseModel<TelegramUserBaseModel> rest = await TgWebRepo.GetTelegramUserCachedInfo(User.TelegramId.Value);
+            TResponseModel<TelegramUserBaseModel> rest = await IdentityRepo.GetTelegramUser(User.TelegramId.Value);
             IsBusyProgress = false;
             Messages.AddRange(rest.Messages);
             TelegramUser = rest.Response;

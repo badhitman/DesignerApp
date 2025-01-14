@@ -9,6 +9,60 @@ namespace SharedLib;
 /// </summary>
 public interface IIdentityTransmission
 {
+    #region tg
+    /// <summary>
+    /// Find user identity by telegram - receive
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByTelegram(List<long> req);
+
+    /// <summary>
+    /// Удалить связь Telegram аккаунта с учётной записью сайта
+    /// </summary>
+    public Task<ResponseBaseModel> TelegramAccountRemoveIdentityJoin(TelegramAccountRemoveJoinRequestIdentityModel req);
+
+    /// <summary>
+    /// Удалить текущую процедуру привязки Telegram аккаунта к учётной записи сайта
+    /// </summary>
+    public Task<ResponseBaseModel> TelegramJoinAccountDeleteAction(string userId);
+
+    /// <summary>
+    /// Инициировать новую процедуру привязки Telegram аккаунта к учётной записи сайта
+    /// </summary>
+    public Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountCreate(string userId);
+
+    /// <summary>
+    /// Telegram пользователи (сохранённые).
+    /// Все пользователи, которые когда либо писали что либо в бота - сохраняются/кэшируются в БД.
+    /// </summary>
+    public Task<TPaginationResponseModel<TelegramUserViewModel>> FindUsersTelegram(FindRequestModel req);
+
+    /// <summary>
+    /// Проверка Telegram пользователя
+    /// </summary>
+    public Task<ResponseBaseModel> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true);
+
+    /// <summary>
+    /// Удалить связь Telegram аккаунта с учётной записью сайта
+    /// </summary>
+    public Task<ResponseBaseModel> TelegramJoinAccountDelete(TelegramAccountRemoveJoinRequestTelegramModel req);
+
+    /// <summary>
+    /// Основное сообщение в чате в котором Bot ведёт диалог с пользователем.
+    /// Бот может отвечать новым сообщением или редактировать своё ранее отправленное в зависимости от ситуации.
+    /// </summary>
+    public Task<ResponseBaseModel> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage);
+
+    /// <summary>
+    /// Получить данные пользователя из кэша
+    /// </summary>
+    public Task<TResponseModel<TelegramUserBaseModel>> GetTelegramUser(long telegramUserId);
+    #endregion
+
+    /// <summary>
+    /// TelegramJoinAccountState
+    /// </summary>
+    public Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(TelegramJoinAccountStateRequestModel req);
+
     /// <summary>
     /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
     /// </summary>

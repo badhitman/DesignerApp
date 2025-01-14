@@ -12,7 +12,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// UpdateTelegramUser
 /// </summary>
-public class UpdateTelegramUserReceive(IIdentityTransmission identityRepo, ILogger<UpdateTelegramUserReceive> _logger) 
+public class UpdateTelegramUserReceive(IIdentityTools identityRepo, ILogger<UpdateTelegramUserReceive> _logger) 
     : IResponseReceive<CheckTelegramUserHandleModel?, TResponseModel<CheckTelegramUserAuthModel>?>
 {
     /// <inheritdoc/>

@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
-using MudBlazor;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Helpdesk.Pages;
@@ -18,7 +17,7 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
     ITelegramTransmission TelegramRepo { get; set; } = default!;
 
     [Inject]
-    IWebTransmission WebRepo { get; set; } = default!;
+    IIdentityTransmission IdentityRepo { get; set; } = default!;
 
 
     /// <summary>
@@ -53,7 +52,7 @@ public partial class ChatTelegramComponent : BlazorBusyComponentBaseModel
         Chat = await TelegramRepo.ChatTelegramRead(ChatId.Value);
         IsBusyProgress = false;
         await SetBusy();
-        TResponseModel<TelegramUserBaseModel> get_user = await WebRepo.GetTelegramUser(Chat.ChatTelegramId);
+        TResponseModel<TelegramUserBaseModel> get_user = await IdentityRepo.GetTelegramUser(Chat.ChatTelegramId);
         IsBusyProgress = false;
         //SnackbarRepo.ShowMessagesResponse(get_user.Messages);
         CurrentUser = get_user.Response;

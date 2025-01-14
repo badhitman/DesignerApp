@@ -10,7 +10,7 @@ namespace ServerLib;
 /// <summary>
 /// Default: handle telegram dialog
 /// </summary>
-public class DefaultTelegramDialogHandle(IWebTransmission webRemoteRepo, ILogger<DefaultTelegramDialogHandle> _logger, TelegramBotConfigModel webConf) : ITelegramDialogService
+public class DefaultTelegramDialogHandle(IIdentityTransmission identityRepo, ILogger<DefaultTelegramDialogHandle> _logger, TelegramBotConfigModel webConf) : ITelegramDialogService
 {
     /// <inheritdoc/>
     public async Task<TelegramDialogResponseModel> TelegramDialogHandle(TelegramDialogRequestModel tgDialog)
@@ -27,7 +27,7 @@ public class DefaultTelegramDialogHandle(IWebTransmission webRemoteRepo, ILogger
                 resp.ReplyKeyboard = [[new ButtonActionModel() { Data = "/logout.2", Title = "Подтвердить выход" }]];
                 break;
             case "/logout.2":
-                ResponseBaseModel rest = await webRemoteRepo.TelegramJoinAccountDelete(tgDialog.TelegramUser.TelegramId);
+                ResponseBaseModel rest = await identityRepo.TelegramJoinAccountDelete(new() { TelegramId = tgDialog.TelegramUser.TelegramId, ClearBaseUri = webConf.ClearBaseUri ?? "https://" });
                 if (!rest.Success())
                 {
                     _logger.LogError(rest.Message());

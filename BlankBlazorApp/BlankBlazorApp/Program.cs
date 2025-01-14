@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using BlankBlazorApp.Components;
-using Transmission.Receives.web;
 using System.Globalization;
 using MudBlazor.Services;
 using RemoteCallLib;
@@ -189,7 +188,7 @@ builder.Services
 // Scoped
 builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>()
     .AddScoped<IUsersProfilesService, UsersProfilesService>()
-    .AddScoped<IWebAppService, WebAppService>();
+    ;
 
 #region MQ Transmission (remote methods call)
 builder.Services.AddScoped<IRabbitClient, RabbitClient>();

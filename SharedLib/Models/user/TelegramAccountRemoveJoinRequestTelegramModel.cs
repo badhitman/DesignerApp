@@ -4,18 +4,18 @@
 
 namespace SharedLib;
 
-/// <inheritdoc/>
-public class TelegramJoinAccountConfirmModel
+/// <summary>
+/// TelegramAccountRemoveJoinRequestModel
+/// </summary>
+public class TelegramAccountRemoveJoinRequestTelegramModel
 {
-    /// <inheritdoc/>
-    public required string Token { get; set; }
-
-    /// <inheritdoc/>
+    /// <summary>
+    /// TelegramId
+    /// </summary>
     public required long TelegramId { get; set; }
 
-    /// <inheritdoc/>
-    public required uint TelegramJoinAccountTokenLifetimeMinutes { get; set; }
-
-    /// <inheritdoc/>
+    /// <summary>
+    /// ClearBaseUri
+    /// </summary>
     public required string ClearBaseUri { get; set; }
 }

@@ -570,6 +570,11 @@ public static partial class GlobalStaticConstants
         public const string ACCOUNT_CONTROLLER_NAME = "account";
 
         /// <summary>
+        /// Flow
+        /// </summary>
+        public const string FLOW_CONTROLLER_NAME = "flow";
+
+        /// <summary>
         /// Null
         /// </summary>
         public const string NULL_CONTROLLER_NAME = "null";
@@ -1035,6 +1040,11 @@ public static partial class GlobalStaticConstants
         /// Статус
         /// </summary>
         public const string STATUS_ACTION_NAME = "status";
+
+        /// <summary>
+        /// State
+        /// </summary>
+        public const string STATE_ACTION_NAME = "state";
 
         /// <summary>
         /// 

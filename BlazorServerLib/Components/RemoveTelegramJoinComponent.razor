@@ -1,7 +1,9 @@
-﻿@inherits BlazorBusyComponentBaseModel
+﻿@using Microsoft.Extensions.Options
+@inherits BlazorBusyComponentBaseModel
 
-@inject IWebAppService telegramWebRepo;
+@inject IIdentityTransmission IdentityRepo;
 @inject NavigationManager navManager
+@inject IOptions<TelegramBotConfigModel> webConfig
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
@@ -52,8 +54,8 @@ else
         await SetBusy();
 
         ResponseBaseModel rest = TelegramUserId.HasValue
-        ? await telegramWebRepo.TelegramAccountRemoveJoin(TelegramUserId.Value)
-        : await telegramWebRepo.TelegramAccountRemoveJoin(IdentityUserId!);
+        ? await IdentityRepo.TelegramJoinAccountDelete(new() { TelegramId = TelegramUserId.Value, ClearBaseUri = webConfig.Value.ClearBaseUri ?? "https://" })
+        : await IdentityRepo.TelegramAccountRemoveIdentityJoin(new() { UserId = IdentityUserId!, ClearBaseUri = webConfig.Value.ClearBaseUri ?? "https://" });
         IsBusyProgress = false;
         DeleteInit = false;
         if (!rest.Success())

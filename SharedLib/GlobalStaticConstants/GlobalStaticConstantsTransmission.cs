@@ -51,15 +51,20 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// TelegramJoinAccountStateReceive
+        /// </summary>
+        public readonly static string TelegramJoinAccountStateReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.ACCOUNT_CONTROLLER_NAME}", $"{Routes.JOIN_ACTION_NAME}-{Routes.STATE_ACTION_NAME}");
+
+        /// <summary>
         /// SendPasswordResetLinkReceive
         /// </summary>
         public readonly static string SendPasswordResetLinkReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}", $"{Routes.SEND_ACTION_NAME}-{Routes.RESET_ACTION_NAME}-{Routes.LINK_ACTION_NAME}");
-        
+
         /// <summary>
         /// TryAddRolesToUserReceive
         /// </summary>
         public readonly static string TryAddRolesToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLES_CONTROLLER_NAME, $"{Routes.TRY_ACTION_NAME}-{Routes.ADD_ACTION_NAME}-to-{Routes.USER_CONTROLLER_NAME}");
-        
+
         /// <summary>
         /// ChangePasswordToUserReceive
         /// </summary>
@@ -69,27 +74,27 @@ public static partial class GlobalStaticConstants
         /// ChangeEmailReceive
         /// </summary>
         public readonly static string ChangeEmailForUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.USER_CONTROLLER_NAME}", Routes.CHANGE_ACTION_NAME);
-        
+
         /// <summary>
         /// UpdateUserDetailsReceive
         /// </summary>
         public readonly static string UpdateUserDetailsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.DETAILS_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
-        
+
         /// <summary>
         /// ClaimDeleteReceive
         /// </summary>
         public readonly static string ClaimDeleteReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.CLAIM_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);
-        
+
         /// <summary>
         /// ClaimUpdateOrCreateReceive
         /// </summary>
         public readonly static string ClaimUpdateOrCreateReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.CLAIM_CONTROLLER_NAME, Routes.UPDATE_ACTION_NAME);
-        
+
         /// <summary>
         /// GetClaimsReceive
         /// </summary>
         public readonly static string GetClaimsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.CLAIMS_CONTROLLER_NAME, Routes.GET_ACTION_NAME);
-        
+
         /// <summary>
         /// SetLockUserReceive
         /// </summary>
@@ -109,27 +114,27 @@ public static partial class GlobalStaticConstants
         /// FindRolesAsyncReceive
         /// </summary>
         public readonly static string FindRolesAsyncReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLES_CONTROLLER_NAME, Routes.FIND_ACTION_NAME);
-        
+
         /// <summary>
         /// CateNewRoleReceive
         /// </summary>
         public readonly static string CateNewRoleReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, Routes.CREATE_ACTION_NAME);
-        
+
         /// <summary>
         /// DeleteRoleReceive
         /// </summary>
         public readonly static string DeleteRoleReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, Routes.DELETE_ACTION_NAME);
-        
+
         /// <summary>
         /// DeleteRoleFromUser
         /// </summary>
         public readonly static string DeleteRoleFromUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLE_CONTROLLER_NAME, $"{Routes.DELETE_ACTION_NAME}-from-{Routes.USER_CONTROLLER_NAME}");
-        
+
         /// <summary>
         /// ResetPasswordForUserReceive
         /// </summary>
         public readonly static string ResetPasswordForUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}", Routes.RESET_ACTION_NAME);
-        
+
         /// <summary>
         /// Получить пользователей из Identity по их идентификаторам
         /// </summary>
@@ -154,33 +159,48 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string GenerateEmailConfirmationIdentityReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.CONFIRM_ACTION_NAME}", $"{Routes.SEND_ACTION_NAME}");
+
+        /// <inheritdoc/>
+        public readonly static string GetTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.IDENTITY_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.USER_CONTROLLER_NAME}-{Routes.CACHE_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string FindUsersTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}", Routes.FIND_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string TelegramJoinAccountDeleteActionReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.ACCOUNT_CONTROLLER_NAME}-{Routes.JOIN_ACTION_NAME}", $"{Routes.DELETE_ACTION_NAME}-{Routes.FLOW_CONTROLLER_NAME}");
+
+        /// <inheritdoc/>
+        public readonly static string TelegramAccountRemoveIdentityJoinReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.ACCOUNT_CONTROLLER_NAME}", $"{Routes.DELETE_ACTION_NAME}-{Routes.JOIN_ACTION_NAME}-of-{Routes.IDENTITY_CONTROLLER_NAME}");
+
+        /// <inheritdoc/>
+        public readonly static string GetUsersIdentityByTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, $"{Routes.GET_ACTION_NAME}-by-{Routes.TELEGRAM_CONTROLLER_NAME}");
+        
+        /// <inheritdoc/>
+        public readonly static string TelegramJoinAccountCreateReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.ACCOUNT_CONTROLLER_NAME}", $"{Routes.JOIN_ACTION_NAME}-{Routes.CREATE_ACTION_NAME}");
+        // 
+
+        /// <inheritdoc/>
+        public readonly static string TelegramJoinAccountConfirmReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.IDENTITY_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.JOIN_ACTION_NAME}-{Routes.ACCOUNT_CONTROLLER_NAME}", Routes.CONFIRM_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string TelegramJoinAccountDeleteReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.IDENTITY_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.JOIN_ACTION_NAME}-{Routes.ACCOUNT_CONTROLLER_NAME}", Routes.DELETE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string UpdateTelegramMainUserMessageReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.IDENTITY_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.MAIN_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
+
+        /// <inheritdoc/>
+        public readonly static string UpdateTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.IDENTITY_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.USER_CONTROLLER_NAME}-{Routes.CACHE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
         #endregion
 
         #region Web
-
         /// <inheritdoc/>
         public readonly static string SendEmailReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.EMAIL_CONTROLLER_NAME, Routes.OUTGOING_CONTROLLER_NAME, Routes.SEND_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string CheckTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.USER_CONTROLLER_NAME}", Routes.CHECK_ACTION_NAME);
-        
-        /// <inheritdoc/>
-        public readonly static string GetTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.USER_CONTROLLER_NAME}_{Routes.CACHE_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
 
         /// <inheritdoc/>
         public readonly static string GetWebConfigReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.WEB_CONTROLLER_NAME, Routes.CONFIGURATION_CONTROLLER_NAME, Routes.READ_ACTION_NAME);
-
-        /// <inheritdoc/>
-        public readonly static string TelegramJoinAccountConfirmReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.JOIN_ACTION_NAME}_{Routes.ACCOUNT_CONTROLLER_NAME}", Routes.CONFIRM_ACTION_NAME);
-
-        /// <inheritdoc/>
-        public readonly static string TelegramJoinAccountDeleteReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.JOIN_ACTION_NAME}_{Routes.ACCOUNT_CONTROLLER_NAME}", Routes.DELETE_ACTION_NAME);
-
-        /// <inheritdoc/>
-        public readonly static string UpdateTelegramMainUserMessageReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.MAIN_CONTROLLER_NAME}_{Routes.MESSAGE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
-
-        /// <inheritdoc/>
-        public readonly static string UpdateTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.USER_CONTROLLER_NAME}_{Routes.CACHE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
         #endregion
 
         #region TelegramBot

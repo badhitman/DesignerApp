@@ -12,7 +12,7 @@ namespace Transmission.Receives.web;
 /// <summary>
 /// Update Telegram main user message
 /// </summary>
-public class UpdateTelegramMainUserMessageReceive(IWebAppService tgWebRepo, ILogger<UpdateTelegramMainUserMessageReceive> _logger) : IResponseReceive<MainUserMessageModel?, ResponseBaseModel?>
+public class UpdateTelegramMainUserMessageReceive(IIdentityTools identityRepo, ILogger<UpdateTelegramMainUserMessageReceive> _logger) : IResponseReceive<MainUserMessageModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive;
@@ -35,7 +35,7 @@ public class UpdateTelegramMainUserMessageReceive(IWebAppService tgWebRepo, ILog
 
         try
         {
-            return await tgWebRepo.UpdateTelegramMainUserMessage(setMainMessage);
+            return await identityRepo.UpdateTelegramMainUserMessage(setMainMessage);
         }
         catch (Exception ex)
         {
