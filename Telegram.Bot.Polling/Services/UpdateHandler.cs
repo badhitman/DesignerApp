@@ -20,6 +20,7 @@ public class UpdateHandler(
     IStorageTransmission serializeStorageRepo,
     IWebTransmission webRemoteRepo,
     IHelpdeskTransmission helpdeskRepo,
+    IIdentityTransmission identityRepo,
     IServiceProvider servicesProvider) : IUpdateHandler
 {
     static readonly Type defHandlerType = typeof(DefaultTelegramDialogHandle);
@@ -113,7 +114,7 @@ public class UpdateHandler(
             }
         }
 
-        TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
+        TResponseModel<CheckTelegramUserAuthModel> uc = await identityRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(message.From.Id, message.From.FirstName, message.From.LastName, message.From.Username, message.From.IsBot));
 
         if (uc.Response is not null)
         {
@@ -176,7 +177,7 @@ public class UpdateHandler(
             return;
 
         await botClient.SendChatAction(callbackQuery.Message.Chat.Id, ChatAction.Typing, cancellationToken: cancellationToken);
-        TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(callbackQuery.From.Id, callbackQuery.From.FirstName, callbackQuery.From.LastName, callbackQuery.From.Username, callbackQuery.From.IsBot));
+        TResponseModel<CheckTelegramUserAuthModel> uc = await identityRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(callbackQuery.From.Id, callbackQuery.From.FirstName, callbackQuery.From.LastName, callbackQuery.From.Username, callbackQuery.From.IsBot));
         await Usage(uc.Response!, callbackQuery.Message.MessageId, MessagesTypesEnum.CallbackQuery, callbackQuery.Message.Chat.Id, callbackQuery.Data, cancellationToken);
     }
 

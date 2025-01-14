@@ -162,6 +162,9 @@ public static partial class GlobalStaticConstants
         public readonly static string SendEmailReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.EMAIL_CONTROLLER_NAME, Routes.OUTGOING_CONTROLLER_NAME, Routes.SEND_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string CheckTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.USER_CONTROLLER_NAME}", Routes.CHECK_ACTION_NAME);
+        
+        /// <inheritdoc/>
         public readonly static string GetTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.USER_CONTROLLER_NAME}_{Routes.CACHE_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
 
         /// <inheritdoc/>

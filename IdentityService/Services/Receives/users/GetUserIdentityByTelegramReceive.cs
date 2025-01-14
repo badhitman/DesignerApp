@@ -7,7 +7,7 @@ using RemoteCallLib;
 using IdentityLib;
 using SharedLib;
 
-namespace Transmission.Receives.Identity;
+namespace IdentityService.Services.Receives.users;
 
 /// <summary>
 /// Find user identity by telegram - receive

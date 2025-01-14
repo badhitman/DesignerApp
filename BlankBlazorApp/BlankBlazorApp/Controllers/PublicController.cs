@@ -3,12 +3,12 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using SharedLib;
-using System.Security.Cryptography;
 using System.Text;
 using System.Web;
+using SharedLib;
 
 namespace BlankBlazorApp.Controllers;
 
@@ -17,7 +17,7 @@ namespace BlankBlazorApp.Controllers;
 /// </summary>
 [Route("[controller]/[action]"), ApiController]
 [AllowAnonymous]
-public class PublicController(ITelegramTransmission tgRepo, IWebTransmission webRemoteRepo, IUsersAuthenticateService uaRepo) : ControllerBase
+public class PublicController(ITelegramTransmission tgRepo, IIdentityTransmission identityRepo, IUsersAuthenticateService uaRepo) : ControllerBase
 {
     /// <summary>
     /// Authorize
@@ -56,7 +56,7 @@ public class PublicController(ITelegramTransmission tgRepo, IWebTransmission web
         {
             string telegramUserJsonData = dataDict["user"];
             TelegramUserData userData = JsonConvert.DeserializeObject<TelegramUserData>(telegramUserJsonData)!;
-            TResponseModel<CheckTelegramUserAuthModel?> uc = await webRemoteRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(userData.Id, userData.FirstName, userData.LastName, userData.UserName, userData.IsBot));
+            TResponseModel<CheckTelegramUserAuthModel> uc = await identityRepo.CheckTelegramUser(CheckTelegramUserHandleModel.Build(userData.Id, userData.FirstName, userData.LastName, userData.UserName, userData.IsBot));
             if (!uc.Success())
                 return NotFound(uc.Messages);
             if (uc.Response is null)
@@ -76,8 +76,8 @@ public class PublicController(ITelegramTransmission tgRepo, IWebTransmission web
     [HttpGet($"/{GlobalStaticConstants.Routes.AUTHORIZE_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PING_ACTION_NAME}")]
     public IActionResult Ping()
     {
-        return HttpContext.User.Identity?.IsAuthenticated == true 
-            ? Ok(ResponseBaseModel.CreateSuccess($"Авторизованный: {HttpContext.User.Identity.Name}")) 
+        return HttpContext.User.Identity?.IsAuthenticated == true
+            ? Ok(ResponseBaseModel.CreateSuccess($"Авторизованный: {HttpContext.User.Identity.Name}"))
             : Unauthorized(ResponseBaseModel.CreateError("Вы не авторизованы"));
     }
 }

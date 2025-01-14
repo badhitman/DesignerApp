@@ -11,6 +11,7 @@ using IdentityLib;
 using System.Text;
 using SharedLib;
 using System.Net.Mail;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace IdentityService;
 
@@ -25,6 +26,104 @@ public class IdentityTools(
     UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user)
+    {
+        TResponseModel<CheckTelegramUserAuthModel> res = new();
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        TelegramUserModelDb? tgUserDb = await identityContext.TelegramUsers.FirstOrDefaultAsync(x => x.TelegramId == user.TelegramUserId);
+
+        if (tgUserDb is null)
+        {
+            using IDbContextTransaction transaction = identityContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+            ApplicationUser app_user = new()
+            {
+                ChatTelegramId = user.TelegramUserId,
+                EmailConfirmed = true,
+
+                Email = $"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}",
+                NormalizedEmail = userManager.NormalizeEmail($"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}"),
+
+                UserName = $"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}",
+                NormalizedUserName = userManager.NormalizeEmail($"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}"),
+
+                FirstName = user.FirstName,
+                NormalizedFirstNameUpper = user.FirstName.ToUpper(),
+                LastName = user.LastName,
+                NormalizedLastNameUpper = user.LastName?.ToUpper(),
+            };
+
+            await identityContext.AddAsync(app_user);
+            await identityContext.SaveChangesAsync();
+
+            tgUserDb = TelegramUserModelDb.Build(user, app_user.Id);
+            await identityContext.AddAsync(tgUserDb);
+            await identityContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+        }
+        else
+        {
+            tgUserDb!.FirstName = user.FirstName;
+            tgUserDb.NormalizedFirstNameUpper = user.FirstName.ToUpper();
+
+            tgUserDb.LastName = user.LastName;
+            tgUserDb.NormalizedLastNameUpper = user.LastName?.ToUpper();
+
+            tgUserDb.Username = user.Username ?? "";
+            tgUserDb.NormalizedUserNameUpper = user.Username?.ToUpper();
+
+            tgUserDb.FirstName = user.FirstName;
+            tgUserDb.NormalizedFirstNameUpper = user.FirstName.ToUpper();
+            tgUserDb.LastName = user.LastName;
+            tgUserDb.NormalizedLastNameUpper = user.LastName?.ToUpper();
+
+            tgUserDb.TelegramId = user.TelegramUserId;
+            tgUserDb.IsBot = user.IsBot;
+            identityContext.Update(tgUserDb);
+            await identityContext.SaveChangesAsync();
+        }
+
+        ApplicationUser? appUserDb = await identityContext.Users.FirstOrDefaultAsync(x => x.ChatTelegramId == user.TelegramUserId);
+
+        if (appUserDb is not null)
+        {
+            res.Response = new()
+            {
+                FirstName = tgUserDb.FirstName,
+                LastName = tgUserDb.LastName,
+                UserIdentityId = appUserDb.Id,
+                TwoFactorEnabled = appUserDb.TwoFactorEnabled,
+                UserEmail = appUserDb.Email,
+                Username = tgUserDb.Username,
+                TelegramId = user.TelegramUserId,
+                MainTelegramMessageId = tgUserDb.MainTelegramMessageId,
+                AccessFailedCount = appUserDb.AccessFailedCount,
+                EmailConfirmed = appUserDb.EmailConfirmed,
+                IsBot = user.IsBot,
+                LockoutEnd = appUserDb.LockoutEnd,
+                PhoneNumber = appUserDb.PhoneNumber,
+                PhoneNumberConfirmed = appUserDb.PhoneNumberConfirmed,
+                LockoutEnabled = appUserDb.LockoutEnabled,
+            };
+
+            if (tgUserDb.UserIdentityId != appUserDb.Id)
+            {
+                await identityContext
+                    .TelegramUsers
+                    .Where(x => x.Id == tgUserDb.Id)
+                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.UserIdentityId, appUserDb.Id));
+            }
+
+            await ClaimsUserFlush(appUserDb.Id);
+
+        }
+        else
+            res.AddWarning("Пользователь Telegram не связан с учётной записью на сайте");
+
+        return res;
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req)
     {

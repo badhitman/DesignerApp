@@ -18,11 +18,6 @@ public interface IWebTransmission
     /// <summary>
     /// Проверка Telegram пользователя
     /// </summary>
-    public Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user);
-
-    /// <summary>
-    /// Проверка Telegram пользователя
-    /// </summary>
     public Task<ResponseBaseModel> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true);
 
     /// <summary>

@@ -3,43 +3,43 @@
 ////////////////////////////////////////////////
 
 using Microsoft.Extensions.Caching.Memory;
-using System.Net.Mail;
 using RemoteCallLib;
 using IdentityLib;
 using SharedLib;
 
-namespace Transmission.Receives.Identity;
+namespace IdentityService.Services.Receives.users;
 
 /// <summary>
-/// Получить пользователей из Identity по их Email
+/// Получить пользователей из Identity по их идентификаторам
 /// </summary>
-public class GetUsersIdentityByEmailReceive(IIdentityTools IdentityRepo, IMemoryCache cache)
+public class GetUsersOfIdentityReceive(IIdentityTools identityRepo, IMemoryCache cache)
     : IResponseReceive<string[]?, TResponseModel<UserInfoModel[]>?>
 {
     /// <inheritdoc/>
-    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByEmailReceive;
+    public static string QueueName => GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityReceive;
 
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]>?> ResponseHandleAction(string[]? users_emails = null)
+    public async Task<TResponseModel<UserInfoModel[]>?> ResponseHandleAction(string[]? users_ids = null)
     {
-        ArgumentNullException.ThrowIfNull(users_emails);
-        users_emails = [.. users_emails.Where(x => MailAddress.TryCreate(x, out _)).Select(x => x.ToUpper())];
-        TResponseModel<UserInfoModel[]> res = new() { Response = [] };
-        if (users_emails.Length == 0)
+        ArgumentNullException.ThrowIfNull(users_ids);
+        users_ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct()];
+        TResponseModel<UserInfoModel[]> res = new();
+        if (users_ids.Length == 0)
         {
             res.AddError("Пустой запрос");
             return res;
         }
+        string[] find_users_ids = [.. users_ids.Where(x => x != GlobalStaticConstants.Roles.System).Order()];
 
-        string mem_token = $"{QueueName}-identity-e/{string.Join(",", users_emails)}";
+        string mem_token = $"{QueueName}-identity/{string.Join(",", find_users_ids)}";
         if (cache.TryGetValue(mem_token, out UserInfoModel[]? users_cache))
         {
             res.Response = users_cache;
             return res;
         }
-        res = await IdentityRepo.GetUsersIdentityByEmail(users_emails);
+        res = await identityRepo.GetUsersOfIdentity(users_ids);
 
         if (res.Response is null || res.Response.Length == 0)
         {

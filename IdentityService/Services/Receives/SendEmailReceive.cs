@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
@@ -12,7 +11,8 @@ namespace Transmission.Receives.Identity;
 /// <summary>
 /// Отправка Email - receive
 /// </summary>
-public class SendEmailReceive(IMailProviderService mailRepo, ILogger<SendEmailReceive> _logger) : IResponseReceive<SendEmailRequestModel?, ResponseBaseModel?>
+public class SendEmailReceive(IMailProviderService mailRepo, ILogger<SendEmailReceive> _logger)
+    : IResponseReceive<SendEmailRequestModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SendEmailReceive;

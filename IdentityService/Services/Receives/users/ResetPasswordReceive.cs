@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
 
-namespace Transmission.Receives.Identity;
+namespace IdentityService.Services.Receives.users;
 
 /// <summary>
 /// Сбрасывает пароль на указанный

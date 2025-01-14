@@ -5,8 +5,9 @@
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
+using Transmission.Receives.Identity;
 
-namespace Transmission.Receives.Identity;
+namespace IdentityService.Services.Receives.users;
 
 /// <summary>
 /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.

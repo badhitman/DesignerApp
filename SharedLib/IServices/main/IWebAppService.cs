@@ -11,11 +11,6 @@ public interface IWebAppService
 {
     #region Telegram
     /// <summary>
-    /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
-    /// </summary>
-    public Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user);
-
-    /// <summary>
     /// Получить состояние процедуры привязки аккаунта Telegram к учётной записи сайта (если есть).
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>

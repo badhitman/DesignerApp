@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
-using SharedLib;
-using DbcLib;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using SharedLib;
+using DbcLib;
 
 namespace ServerLib;
 
@@ -17,8 +17,7 @@ namespace ServerLib;
 public class ManufactureService(
     IIdentityTransmission IdentityRepo,
     IDbContextFactory<ConstructorContext> mainDbFactory,
-    IHttpContextAccessor httpContextAccessor,
-    IUsersProfilesService usersProfilesRepo) : IManufactureService
+    IHttpContextAccessor httpContextAccessor) : IManufactureService
 {
     /// <inheritdoc/>
     public async Task CreateSnapshot(StructureProjectModel dump, int projectId, string name)

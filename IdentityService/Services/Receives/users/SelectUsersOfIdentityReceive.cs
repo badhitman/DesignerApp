@@ -5,7 +5,7 @@
 using RemoteCallLib;
 using SharedLib;
 
-namespace Transmission.Receives.Identity;
+namespace IdentityService.Services.Receives.users;
 
 /// <summary>
 /// SelectUsersOfIdentityReceive

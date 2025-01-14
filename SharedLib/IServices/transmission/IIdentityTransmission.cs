@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
+    /// </summary>
+    public Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user);
+
+    /// <summary>
     /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
     /// Он должен быть реализован в приложении, чтобы инфраструктура идентификации могла отправлять электронные письма для сброса пароля.
     /// </summary>

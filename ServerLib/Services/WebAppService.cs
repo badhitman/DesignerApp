@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Http;
 using System.Net.Mail;
 using IdentityLib;
 using SharedLib;
@@ -19,7 +18,6 @@ namespace ServerLib;
 /// </summary>
 public class WebAppService(
     ITelegramTransmission tgRemoteRepo,
-    UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     IMailProviderService mailRepo,
     IIdentityTransmission identityRepo,
@@ -31,132 +29,6 @@ public class WebAppService(
 #pragma warning restore CS9107 // Параметр записан в состоянии включающего типа, а его значение также передается базовому конструктору. Значение также может быть записано базовым классом.
 {
     #region Telegram
-    async Task<(string id, string email, long? tg)> GetEmailAndIdForUser(string? userId = null)
-    {
-        string user_id, user_email;
-        long? telegram_id;
-
-        if (!string.IsNullOrWhiteSpace(userId))
-        {
-            TResponseModel<UserInfoModel[]> rest = await identityRepo.GetUsersIdentity([userId]);
-            if (!rest.Success() || rest.Response is null || rest.Response.Length != 1 || string.IsNullOrWhiteSpace(rest.Response[0].Email))
-                throw new Exception();
-
-            user_id = rest.Response[0].UserId;
-            user_email = rest.Response[0].Email!;
-            telegram_id = rest.Response[0].TelegramId;
-        }
-        else
-        {
-            ApplicationUserResponseModel user = await ((UsersProfilesService)PrfilesRepo).GetUser(userId);
-            if (!user.Success() || user.ApplicationUser is null || string.IsNullOrWhiteSpace(user.ApplicationUser.Email))
-                throw new Exception();
-
-            user_id = user.ApplicationUser.Id;
-            user_email = user.ApplicationUser.Email;
-            telegram_id = user.ApplicationUser.ChatTelegramId;
-        }
-        return (user_id, user_email, telegram_id);
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<CheckTelegramUserAuthModel?>> CheckTelegramUser(CheckTelegramUserHandleModel user)
-    {
-        TResponseModel<CheckTelegramUserAuthModel?> res = new();
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        TelegramUserModelDb? tgUserDb = await identityContext.TelegramUsers.FirstOrDefaultAsync(x => x.TelegramId == user.TelegramUserId);
-
-        if (tgUserDb is null)
-        {
-            using IDbContextTransaction transaction = identityContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            ApplicationUser app_user = new()
-            {
-                ChatTelegramId = user.TelegramUserId,
-                EmailConfirmed = true,
-
-                Email = $"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}",
-                NormalizedEmail = userManager.NormalizeEmail($"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}"),
-
-                UserName = $"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}",
-                NormalizedUserName = userManager.NormalizeEmail($"tg.{user.TelegramUserId}@{GlobalStaticConstants.FakeHost}"),
-
-                FirstName = user.FirstName,
-                NormalizedFirstNameUpper = user.FirstName.ToUpper(),
-                LastName = user.LastName,
-                NormalizedLastNameUpper = user.LastName?.ToUpper(),
-            };
-
-            await identityContext.AddAsync(app_user);
-            await identityContext.SaveChangesAsync();
-
-            tgUserDb = TelegramUserModelDb.Build(user, app_user.Id);
-            await identityContext.AddAsync(tgUserDb);
-            await identityContext.SaveChangesAsync();
-
-            await transaction.CommitAsync();
-        }
-        else
-        {
-            tgUserDb!.FirstName = user.FirstName;
-            tgUserDb.NormalizedFirstNameUpper = user.FirstName.ToUpper();
-
-            tgUserDb.LastName = user.LastName;
-            tgUserDb.NormalizedLastNameUpper = user.LastName?.ToUpper();
-
-            tgUserDb.Username = user.Username ?? "";
-            tgUserDb.NormalizedUserNameUpper = user.Username?.ToUpper();
-
-            tgUserDb.FirstName = user.FirstName;
-            tgUserDb.NormalizedFirstNameUpper = user.FirstName.ToUpper();
-            tgUserDb.LastName = user.LastName;
-            tgUserDb.NormalizedLastNameUpper = user.LastName?.ToUpper();
-
-            tgUserDb.TelegramId = user.TelegramUserId;
-            tgUserDb.IsBot = user.IsBot;
-            identityContext.Update(tgUserDb);
-            await identityContext.SaveChangesAsync();
-        }
-
-        ApplicationUser? appUserDb = await identityContext.Users.FirstOrDefaultAsync(x => x.ChatTelegramId == user.TelegramUserId);
-
-        if (appUserDb is not null)
-        {
-            res.Response = new()
-            {
-                FirstName = tgUserDb.FirstName,
-                LastName = tgUserDb.LastName,
-                UserIdentityId = appUserDb.Id,
-                TwoFactorEnabled = appUserDb.TwoFactorEnabled,
-                UserEmail = appUserDb.Email,
-                Username = tgUserDb.Username,
-                TelegramId = user.TelegramUserId,
-                MainTelegramMessageId = tgUserDb.MainTelegramMessageId,
-                AccessFailedCount = appUserDb.AccessFailedCount,
-                EmailConfirmed = appUserDb.EmailConfirmed,
-                IsBot = user.IsBot,
-                LockoutEnd = appUserDb.LockoutEnd,
-                PhoneNumber = appUserDb.PhoneNumber,
-                PhoneNumberConfirmed = appUserDb.PhoneNumberConfirmed,
-                LockoutEnabled = appUserDb.LockoutEnabled,
-            };
-
-            if (tgUserDb.UserIdentityId != appUserDb.Id)
-            {
-                await identityContext
-                    .TelegramUsers
-                    .Where(x => x.Id == tgUserDb.Id)
-                    .ExecuteUpdateAsync(set => set.SetProperty(p => p.UserIdentityId, appUserDb.Id));
-            }
-
-            await identityRepo.ClaimsUserFlush(appUserDb.Id);
-
-        }
-        else
-            res.AddWarning("Пользователь Telegram не связан с учётной записью на сайте");
-
-        return res;
-    }
-
     /// <inheritdoc/>
     public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(bool email_notify = false, string? userId = null)
     {
@@ -453,4 +325,34 @@ public class WebAppService(
         return ResponseBaseModel.CreateSuccess($"Успешно. Пользователю {user_db} установлен/обновлён идентификатор `{nameof(user_db.MainTelegramMessageId)}` set:{setMainUserMessage.MessageId}");
     }
     #endregion
+
+
+    /// <inheritdoc/>
+    async Task<(string id, string email, long? tg)> GetEmailAndIdForUser(string? userId = null)
+    {
+        string user_id, user_email;
+        long? telegram_id;
+
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            TResponseModel<UserInfoModel[]> rest = await identityRepo.GetUsersIdentity([userId]);
+            if (!rest.Success() || rest.Response is null || rest.Response.Length != 1 || string.IsNullOrWhiteSpace(rest.Response[0].Email))
+                throw new Exception();
+
+            user_id = rest.Response[0].UserId;
+            user_email = rest.Response[0].Email!;
+            telegram_id = rest.Response[0].TelegramId;
+        }
+        else
+        {
+            ApplicationUserResponseModel user = await ((UsersProfilesService)PrfilesRepo).GetUser(userId);
+            if (!user.Success() || user.ApplicationUser is null || string.IsNullOrWhiteSpace(user.ApplicationUser.Email))
+                throw new Exception();
+
+            user_id = user.ApplicationUser.Id;
+            user_email = user.ApplicationUser.Email;
+            telegram_id = user.ApplicationUser.ChatTelegramId;
+        }
+        return (user_id, user_email, telegram_id);
+    }
 }

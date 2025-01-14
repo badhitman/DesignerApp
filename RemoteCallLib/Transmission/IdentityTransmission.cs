@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using DocumentFormat.OpenXml.Drawing;
 using SharedLib;
 
 namespace RemoteCallLib;
@@ -11,6 +12,10 @@ namespace RemoteCallLib;
 /// </summary>
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user)
+        => await rabbitClient.MqRemoteCall<TResponseModel<CheckTelegramUserAuthModel>>(GlobalStaticConstants.TransmissionQueues.CheckTelegramUserReceive, user) ?? new();
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req)
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.SendPasswordResetLinkReceive, req) ?? new();
