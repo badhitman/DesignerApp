@@ -19,6 +19,14 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\ServerLib\ServerLib.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	</ItemGroup>
 	<ItemGroup>
 		<None Update="nlog.config" CopyToOutputDirectory="Always" />
 	</ItemGroup>

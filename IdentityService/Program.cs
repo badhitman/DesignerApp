@@ -10,6 +10,9 @@ using IdentityLib;
 using ServerLib;
 using SharedLib;
 using NLog;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 namespace IdentityService;
 
@@ -91,6 +94,29 @@ public class Program
             .AddSignInManager()
             .AddErrorDescriber<LocalizedIdentityErrorDescriber>()
             .AddDefaultTokenProviders();
+
+        Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+        builder.Services.AddLocalization(lo => lo.ResourcesPath = "Resources");
+        builder.Services.Configure<RequestLocalizationOptions>(options =>
+        {
+            CultureInfo[] supportedCultures = [new CultureInfo("en-US"), new CultureInfo("ru-RU")];
+            options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+
+            IRequestCultureProvider? defaultCookieRequestProvider =
+                options.RequestCultureProviders.FirstOrDefault(rcp =>
+                    rcp.GetType() == typeof(CookieRequestCultureProvider));
+            if (defaultCookieRequestProvider != null)
+                options.RequestCultureProviders.Remove(defaultCookieRequestProvider);
+
+            options.RequestCultureProviders.Insert(0,
+                new CookieRequestCultureProvider()
+                {
+                    CookieName = ".AspNetCore.Culture",
+                    Options = options
+                });
+        });
 
         //Singleton
         builder.Services

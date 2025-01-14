@@ -12,7 +12,7 @@ namespace IdentityService.Services.Receives.users;
 /// <summary>
 /// Find user identity by telegram - receive
 /// </summary>
-public class GetUserIdentityByTelegramReceive(IIdentityTransmission IdentityRepo, IMemoryCache cache)
+public class GetUserIdentityByTelegramReceive(IIdentityTools IdentityRepo, IMemoryCache cache)
     : IResponseReceive<long[]?, TResponseModel<UserInfoModel[]>?>
 {
     /// <inheritdoc/>
@@ -39,7 +39,7 @@ public class GetUserIdentityByTelegramReceive(IIdentityTransmission IdentityRepo
             return response;
         }
 
-        response = await IdentityRepo.GetUserIdentityByTelegram(tg_ids);
+        response = await IdentityRepo.GetUsersIdentityByTelegram([.. tg_ids]);
 
         if (response.Response is null || response.Response.Length == 0)
         {
