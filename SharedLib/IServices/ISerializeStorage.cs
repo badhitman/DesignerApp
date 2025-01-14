@@ -12,6 +12,39 @@ namespace SharedLib;
 /// </remarks>
 public interface ISerializeStorage
 {
+    #region tags
+    /// <summary>
+    /// FilesAreaGetMetadata
+    /// </summary>
+    public Task<TResponseModel<FilesAreaMetadataModel[]>> FilesAreaGetMetadata(FilesAreaMetadataRequestModel req);
+
+    /// <summary>
+    /// FilesSelect
+    /// </summary>
+    public Task<TPaginationResponseModel<StorageFileModelDB>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req);
+
+    /// <summary>
+    /// ReadFile
+    /// </summary>
+    public Task<TResponseModel<FileContentModel>> ReadFile(TAuthRequestModel<RequestFileReadModel> req);
+
+    /// <summary>
+    /// SaveFile
+    /// </summary>
+    public Task<TResponseModel<StorageFileModelDB>> SaveFile(TAuthRequestModel<StorageImageMetadataModel> req);
+
+    /// <summary>
+    /// TagSet
+    /// </summary>
+    public Task<ResponseBaseModel> TagSet(TagSetModel req);
+
+    /// <summary>
+    /// TagsSelect
+    /// </summary>
+    public Task<TPaginationResponseModel<TagModelDB>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req);
+    #endregion
+
+    #region storage parameters
     /// <summary>
     /// Сохранить параметр
     /// </summary>
@@ -64,4 +97,5 @@ public interface ISerializeStorage
     /// Поиск значений параметров
     /// </summary>
     public Task<TResponseModel<FoundParameterModel[]?>> Find(RequestStorageBaseModel req);
+    #endregion
 }

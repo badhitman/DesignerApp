@@ -91,9 +91,6 @@ public class Program
             .AddRoles<ApplicationRole>()
             .AddRoleManager<RoleManager<ApplicationRole>>()
             .AddEntityFrameworkStores<IdentityAppDbContext>()
-            //.AddSignInManager()
-            //.AddErrorDescriber<LocalizedIdentityErrorDescriber>()
-            //.AddDefaultTokenProviders()
             ;
 
         Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");

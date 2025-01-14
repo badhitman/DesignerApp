@@ -8,6 +8,12 @@ using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
+using ImageMagick;
+using MongoDB.Bson;
+using MongoDB.Driver.GridFS;
+using System.Text.RegularExpressions;
+using MongoDB.Driver;
+using Microsoft.Extensions.Options;
 
 namespace StorageService;
 
@@ -15,14 +21,415 @@ namespace StorageService;
 public class StorageServiceImpl(
     IDbContextFactory<StorageContext> cloudParametersDbFactory,
     IMemoryCache cache,
+    IMongoDatabase mongoFs,
+    IIdentityTransmission identityRepo,
+    ICommerceTransmission commRepo,
+    IHelpdeskTransmission HelpdeskRepo,
+    IOptions<WebConfigModel> webConfig,
     ILogger<StorageServiceImpl> loggerRepo) : ISerializeStorage
 {
 #if DEBUG
-    static readonly TimeSpan _ts = TimeSpan.FromSeconds(10);
+    static readonly TimeSpan _ts = TimeSpan.FromSeconds(2);
 #else
-    static readonly TimeSpan _ts = TimeSpan.FromSeconds(60);
+    static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
 #endif
 
+    #region tags
+    /// <inheritdoc/>
+    public async Task<TResponseModel<FilesAreaMetadataModel[]>> FilesAreaGetMetadata(FilesAreaMetadataRequestModel req)
+    {
+        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        IQueryable<StorageFileModelDB> q = context
+            .CloudFiles
+            .AsQueryable();
+
+        if (req.ApplicationsNamesFilter is not null && req.ApplicationsNamesFilter.Length != 0)
+            q = q.Where(x => req.ApplicationsNamesFilter.Contains(x.ApplicationName));
+
+        var res = await q
+            .GroupBy(x => x.ApplicationName)
+            .Select(x => new
+            {
+                AppName = x.Key,
+                CountFiles = x.Count(),
+                SummSize = x.Sum(y => y.FileLength)
+            })
+            .ToArrayAsync();
+
+        return new()
+        {
+            Response =
+            [.. res
+            .Select(x => new FilesAreaMetadataModel()
+            {
+                ApplicationName = x.AppName,
+                CountFiles = x.CountFiles,
+                SizeFilesSum = x.SummSize
+            })]
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<StorageFileModelDB>> FilesSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
+    {
+        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+
+        if (req.PageSize < 5)
+            req.PageSize = 5;
+
+        IQueryable<StorageFileModelDB> q = context
+            .CloudFiles
+            .AsQueryable();
+
+        if (req.Payload.ApplicationsNames is not null && req.Payload.ApplicationsNames.Length != 0)
+            q = q.Where(x => req.Payload.ApplicationsNames.Any(y => y == x.ApplicationName));
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.PropertyName))
+            q = q.Where(x => x.PropertyName == req.Payload.PropertyName);
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.PrefixPropertyName))
+            q = q.Where(x => x.PrefixPropertyName == req.Payload.PrefixPropertyName);
+
+        if (req.Payload.OwnerPrimaryKey.HasValue && req.Payload.OwnerPrimaryKey.Value > 0)
+            q = q.Where(x => x.OwnerPrimaryKey == req.Payload.OwnerPrimaryKey.Value);
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
+            q = q.Where(x => x.NormalizedFileNameUpper!.Contains(req.Payload.SearchQuery.ToUpper()));
+
+        IQueryable<StorageFileModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.CreatedAt).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
+          : q.OrderByDescending(x => x.CreatedAt).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+
+        int trc = await q.CountAsync();
+        TPaginationResponseModel<StorageFileModelDB> res = new()
+        {
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = trc,
+            Response = await oq.ToListAsync(),
+        };
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<FileContentModel>> ReadFile(TAuthRequestModel<RequestFileReadModel> req)
+    {
+        TResponseModel<FileContentModel> res = new();
+        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        StorageFileModelDB? file_db = await context
+            .CloudFiles
+            .Include(x => x.AccessRules)
+            .FirstOrDefaultAsync(x => x.Id == req.Payload.FileId);
+
+        if (file_db is null)
+        {
+            res.AddError($"Файл #{req.Payload} не найден");
+            return res;
+        }
+
+        // если правил для файла не установлено или вызывающий является владельцем (тот кто его загрузил) файла
+        bool allowed = file_db.AccessRules is null || file_db.AccessRules.Count == 0 || (!string.IsNullOrEmpty(req.SenderActionUserId) && file_db.AuthorIdentityId == req.SenderActionUserId);
+
+        string[] abs_rules = ["*", "all", "any"];
+        // правило: доступ любому авторизованному пользователю
+        allowed = allowed ||
+            (!string.IsNullOrWhiteSpace(req.SenderActionUserId) && file_db.AccessRules?.Any(x => x.AccessRuleType == FileAccessRulesTypesEnum.User && (x.Option == req.SenderActionUserId || abs_rules.Contains(x.Option.Trim().ToLower()))) == true);
+
+        // проверка токена прямого доступа к файлу
+        allowed = allowed || (!string.IsNullOrWhiteSpace(req.Payload.TokenAccess) && file_db.AccessRules?.Any(x => x.AccessRuleType == FileAccessRulesTypesEnum.Token && x.Option == req.SenderActionUserId) == true);
+
+        UserInfoModel? currentUser = null;
+        if (!allowed && !string.IsNullOrWhiteSpace(req.SenderActionUserId))
+        {
+            TResponseModel<UserInfoModel[]> findUserRes = await identityRepo.GetUsersIdentity([req.SenderActionUserId]);
+            currentUser = findUserRes.Response?.Single();
+            if (currentUser is null)
+            {
+                res.AddError($"Пользователь #{req.SenderActionUserId} не найден");
+                return res;
+            }
+            allowed = currentUser.IsAdmin;
+        }
+
+        if (!allowed)
+        {
+            List<string>? issues_rules = file_db
+                        .AccessRules?
+                        .Where(x => x.AccessRuleType == FileAccessRulesTypesEnum.Issue)
+                        .Select(x => x.Option)
+                        .ToList();
+
+            if (issues_rules is not null && issues_rules.Count != 0)
+            {
+                List<int> issues_ids = [];
+                issues_rules.ForEach(x => { if (int.TryParse(x, out int issue_id)) { issues_ids.Add(issue_id); } });
+                if (issues_ids.Count > 0)
+                {
+                    TAuthRequestModel<IssuesReadRequestModel> reqIssues = new()
+                    {
+                        SenderActionUserId = req.SenderActionUserId,
+                        Payload = new()
+                        {
+                            IssuesIds = [.. issues_ids],
+                            IncludeSubscribersOnly = false,
+                        }
+                    };
+                    TResponseModel<IssueHelpdeskModelDB[]> findIssues = await HelpdeskRepo.IssuesRead(reqIssues);
+                    allowed = findIssues.Success() &&
+                        findIssues.Response?.Any(x => x.AuthorIdentityUserId == req.SenderActionUserId || x.ExecutorIdentityUserId == req.SenderActionUserId || x.Subscribers?.Any(y => y.UserId == req.SenderActionUserId) == true) == true;
+                }
+            }
+        }
+
+        if (!allowed)
+        {
+            res.AddError($"Файл #{req.Payload} не прочитан");
+            return res;
+        }
+
+        using MemoryStream stream = new();
+        GridFSBucket gridFS = new(mongoFs);
+        await gridFS.DownloadToStreamAsync(new ObjectId(file_db.PointId), stream);
+
+        res.Response = new()
+        {
+            ApplicationName = file_db.ApplicationName,
+            AuthorIdentityId = file_db.AuthorIdentityId,
+            FileName = file_db.FileName,
+            PropertyName = file_db.PropertyName,
+            CreatedAt = file_db.CreatedAt,
+            OwnerPrimaryKey = file_db.OwnerPrimaryKey,
+            PointId = file_db.PointId,
+            PrefixPropertyName = file_db.PrefixPropertyName,
+            Payload = stream.ToArray(),
+            Id = file_db.Id,
+            ContentType = file_db.ContentType,
+        };
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<StorageFileModelDB>> SaveFile(TAuthRequestModel<StorageImageMetadataModel> req)
+    {
+        TResponseModel<StorageFileModelDB> res = new();
+        GridFSBucket gridFS = new(mongoFs);
+        Regex rx = new(@"\s+", RegexOptions.Compiled);
+        string _file_name = rx.Replace(req.Payload.FileName.Trim(), " ");
+        if (string.IsNullOrWhiteSpace(_file_name))
+            _file_name = $"без имени: {DateTime.UtcNow}";
+
+        using MemoryStream stream = new(req.Payload.Payload);
+        ObjectId _uf = await gridFS.UploadFromStreamAsync(_file_name, stream);
+        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        res.Response = new StorageFileModelDB()
+        {
+            ApplicationName = req.Payload.ApplicationName,
+            AuthorIdentityId = req.Payload.AuthorUserIdentity,
+            FileName = _file_name,
+            NormalizedFileNameUpper = _file_name.ToUpper(),
+            ContentType = req.Payload.ContentType,
+            PropertyName = req.Payload.PropertyName,
+            PointId = _uf.ToString(),
+            CreatedAt = DateTime.UtcNow,
+            OwnerPrimaryKey = req.Payload.OwnerPrimaryKey,
+            PrefixPropertyName = req.Payload.PrefixPropertyName,
+            ReferrerMain = req.Payload.Referrer,
+            FileLength = req.Payload.Payload.Length,
+        };
+
+        await context.AddAsync(res.Response);
+        await context.SaveChangesAsync();
+
+        if (GlobalTools.IsImageFile(_file_name))
+        {
+            using MagickImage image = new(req.Payload.Payload);
+            //
+            string _h = $"Height:{image.Height}", _w = $"Width:{image.Width}";
+            await context.AddAsync(new TagModelDB()
+            {
+                ApplicationName = GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME,
+                PropertyName = GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME,
+                CreatedAt = DateTime.UtcNow,
+                NormalizedTagNameUpper = _h.ToUpper(),
+                TagName = _h,
+                OwnerPrimaryKey = res.Response.Id,
+                PrefixPropertyName = GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME,
+            });
+            await context.AddAsync(new TagModelDB()
+            {
+                ApplicationName = GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME,
+                PropertyName = GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME,
+                CreatedAt = DateTime.UtcNow,
+                NormalizedTagNameUpper = _w.ToUpper(),
+                TagName = _w,
+                OwnerPrimaryKey = res.Response.Id,
+                PrefixPropertyName = GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME,
+            });
+            await context.AddAsync(new TagModelDB()
+            {
+                ApplicationName = GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME,
+                PropertyName = GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME,
+                CreatedAt = DateTime.UtcNow,
+                NormalizedTagNameUpper = nameof(GlobalTools.IsImageFile).ToUpper(),
+                TagName = nameof(GlobalTools.IsImageFile),
+                OwnerPrimaryKey = res.Response.Id,
+                PrefixPropertyName = GlobalStaticConstants.Routes.DEFAULT_CONTROLLER_NAME,
+            });
+        }
+
+        if (req.Payload.OwnerPrimaryKey.HasValue && req.Payload.OwnerPrimaryKey.Value > 0)
+        {
+            PulseRequestModel reqPulse;
+            string msg;
+            switch (req.Payload.ApplicationName)
+            {
+                case GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME:
+                    TResponseModel<OrderDocumentModelDB[]> get_order = await commRepo.OrdersRead(new() { Payload = [req.Payload.OwnerPrimaryKey.Value], SenderActionUserId = req.SenderActionUserId });
+                    if (!get_order.Success() || get_order.Response is null)
+                        res.AddRangeMessages(get_order.Messages);
+                    else
+                    {
+                        OrderDocumentModelDB orderDb = get_order.Response.Single();
+                        if (orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
+                        {
+                            msg = $"В <a href=\"{webConfig.Value.ClearBaseUri}/issue-card/{orderDb.HelpdeskId.Value}\">заказ #{orderDb.Id}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Payload.Length)}";
+                            loggerRepo.LogInformation($"{msg} [{nameof(res.Response.PointId)}:{_uf}]");
+                            reqPulse = new()
+                            {
+                                Payload = new()
+                                {
+                                    Payload = new()
+                                    {
+                                        Description = msg,
+                                        IssueId = orderDb.HelpdeskId.Value,
+                                        PulseType = PulseIssuesTypesEnum.Files,
+                                        Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME
+                                    },
+                                    SenderActionUserId = GlobalStaticConstants.Roles.System,
+                                }
+                            };
+
+                            await HelpdeskRepo.PulsePush(reqPulse, false);
+                        }
+                    }
+                    break;
+                case GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME:
+                    msg = $"В <a href=\"{webConfig.Value.ClearBaseUri}/issue-card/{req.Payload.OwnerPrimaryKey.Value}\">заявку #{req.Payload.OwnerPrimaryKey.Value}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Payload.Length)}";
+                    loggerRepo.LogInformation($"{msg} [{nameof(res.Response.PointId)}:{_uf}]");
+                    reqPulse = new()
+                    {
+                        Payload = new()
+                        {
+                            Payload = new()
+                            {
+                                Description = msg,
+                                IssueId = req.Payload.OwnerPrimaryKey.Value,
+                                PulseType = PulseIssuesTypesEnum.Files,
+                                Tag = GlobalStaticConstants.Routes.ADD_ACTION_NAME
+                            },
+                            SenderActionUserId = GlobalStaticConstants.Roles.System,
+                        }
+                    };
+                    await HelpdeskRepo.PulsePush(reqPulse, false);
+                    break;
+            }
+        }
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> TagSet(TagSetModel req)
+    {
+        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+        ResponseBaseModel res = new();
+
+        IQueryable<TagModelDB> q = context
+            .CloudTags
+            .Where(x =>
+            x.OwnerPrimaryKey == req.Id &&
+            x.ApplicationName == req.ApplicationName &&
+            x.NormalizedTagNameUpper == req.Name.ToUpper() &&
+            x.PropertyName == req.PropertyName &&
+            x.PrefixPropertyName == req.PrefixPropertyName);
+
+        if (req.Set)
+        {
+            if (await q.AnyAsync())
+                res.AddInfo("Тег уже установлен");
+            else
+            {
+                await context.AddAsync(new TagModelDB()
+                {
+                    ApplicationName = req.ApplicationName,
+                    TagName = req.Name,
+                    PropertyName = req.PropertyName,
+                    CreatedAt = DateTime.UtcNow,
+                    NormalizedTagNameUpper = req.Name.ToUpper(),
+                    PrefixPropertyName = req.PrefixPropertyName,
+                    OwnerPrimaryKey = req.Id,
+                });
+                await context.SaveChangesAsync();
+            }
+        }
+        else
+        {
+            if (q.Any())
+                res.AddSuccess("Тег успешно установлен");
+            else
+                res.AddInfo("Тег отсутствует");
+        }
+
+        return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<TagModelDB>> TagsSelect(TPaginationRequestModel<SelectMetadataRequestModel> req)
+    {
+        if (req.PageSize < 5)
+            req.PageSize = 5;
+        using StorageContext context = await cloudParametersDbFactory.CreateDbContextAsync();
+
+        IQueryable<TagModelDB> q = context
+            .CloudTags
+            .AsQueryable();
+
+        if (req.Payload.ApplicationsNames is not null && req.Payload.ApplicationsNames.Length != 0)
+            q = q.Where(x => req.Payload.ApplicationsNames.Any(y => y == x.ApplicationName));
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.PropertyName))
+            q = q.Where(x => x.PropertyName == req.Payload.PropertyName);
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.PrefixPropertyName))
+            q = q.Where(x => x.PrefixPropertyName == req.Payload.PrefixPropertyName);
+
+        if (req.Payload.OwnerPrimaryKey.HasValue && req.Payload.OwnerPrimaryKey.Value > 0)
+            q = q.Where(x => x.OwnerPrimaryKey == req.Payload.OwnerPrimaryKey.Value);
+
+        if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
+            q = q.Where(x => x.NormalizedTagNameUpper!.Contains(req.Payload.SearchQuery.ToUpper()));
+
+        IQueryable<TagModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.TagName).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
+          : q.OrderByDescending(x => x.TagName).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+
+        int trc = await q.CountAsync();
+        return new()
+        {
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = trc,
+            Response = await oq.ToListAsync(),
+        };
+    }
+    #endregion
+
+    #region storage parameters
     /// <inheritdoc/>
     public async Task<T?[]> Find<T>(RequestStorageBaseModel req)
     {
@@ -257,4 +664,5 @@ public class StorageServiceImpl(
 
         return res;
     }
+    #endregion
 }
