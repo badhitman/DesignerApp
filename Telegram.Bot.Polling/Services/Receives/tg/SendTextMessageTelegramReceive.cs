@@ -5,6 +5,7 @@
 using Telegram.Bot.Types.ReplyMarkups;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Services;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -13,7 +14,6 @@ using RemoteCallLib;
 using Telegram.Bot;
 using SharedLib;
 using DbcLib;
-using Telegram.Bot.Exceptions;
 
 namespace Transmission.Receives.telegram;
 
@@ -24,7 +24,8 @@ public class SendTextMessageTelegramReceive(ITelegramBotClient _botClient,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
     IIdentityTransmission IdentityRepo,
     StoreTelegramService storeTgRepo,
-    ILogger<SendTextMessageTelegramReceive> _logger) : IResponseReceive<SendTextMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
+    ILogger<SendTextMessageTelegramReceive> _logger)
+    : IResponseReceive<SendTextMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SendTextMessageTelegramReceive;

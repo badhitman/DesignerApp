@@ -11,7 +11,7 @@ namespace Transmission.Receives.Identity;
 /// <summary>
 /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
 /// </summary>
-public class CheckTelegramUserReceive(IIdentityTools identityRepo, ILogger<SendEmailReceive> _logger) 
+public class CheckTelegramUserReceive(IIdentityTools identityRepo, ILogger<CheckTelegramUserReceive> _logger) 
     : IResponseReceive<CheckTelegramUserHandleModel?, TResponseModel<CheckTelegramUserAuthModel>?>
 {
     /// <inheritdoc/>

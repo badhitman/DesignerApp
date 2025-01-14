@@ -130,7 +130,7 @@ public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmi
 
     /// <inheritdoc/>
     public async Task<TResponseModel<UserInfoModel>> FindUserByEmail(string email)
-        => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel>>(GlobalStaticConstants.TransmissionQueues.GenerateEmailConfirmationIdentityReceive, email) ?? new();
+        => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel>>(GlobalStaticConstants.TransmissionQueues.FindUserByEmailReceive, email) ?? new();
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> GenerateEmailConfirmation(SimpleUserIdentityModel req)

@@ -12,7 +12,8 @@ namespace Transmission.Receives.telegram;
 /// <summary>
 /// Прочитать данные чата
 /// </summary>
-public class ChatTelegramReadReceive(IDbContextFactory<TelegramBotContext> tgDbFactory) : IResponseReceive<int, ChatTelegramModelDB?>
+public class ChatTelegramReadReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
+    : IResponseReceive<int, ChatTelegramModelDB?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ChatReadTelegramReceive;

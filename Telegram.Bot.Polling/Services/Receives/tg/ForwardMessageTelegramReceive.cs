@@ -3,14 +3,14 @@
 ////////////////////////////////////////////////
 
 using Microsoft.EntityFrameworkCore;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Services;
 using Telegram.Bot.Types;
+using Newtonsoft.Json;
 using RemoteCallLib;
 using Telegram.Bot;
 using SharedLib;
 using DbcLib;
-using Newtonsoft.Json;
-using Telegram.Bot.Exceptions;
 
 namespace Transmission.Receives.telegram;
 
@@ -21,7 +21,8 @@ public class ForwardMessageTelegramReceive(
     ITelegramBotClient _botClient,
     ILogger<ForwardMessageTelegramReceive> loggerRepo,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
-    StoreTelegramService storeTgRepo) : IResponseReceive<ForwardMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
+    StoreTelegramService storeTgRepo)
+    : IResponseReceive<ForwardMessageTelegramBotModel?, TResponseModel<MessageComplexIdsModel>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.ForwardTextMessageTelegramReceive;

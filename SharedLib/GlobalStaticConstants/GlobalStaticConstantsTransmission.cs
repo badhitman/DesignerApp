@@ -174,7 +174,7 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string GetUsersIdentityByTelegramReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USERS_CONTROLLER_NAME, $"{Routes.GET_ACTION_NAME}-by-{Routes.TELEGRAM_CONTROLLER_NAME}");
-        
+
         /// <inheritdoc/>
         public readonly static string TelegramJoinAccountCreateReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.ACCOUNT_CONTROLLER_NAME}", $"{Routes.JOIN_ACTION_NAME}-{Routes.CREATE_ACTION_NAME}");
         // 
@@ -187,9 +187,6 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string UpdateTelegramMainUserMessageReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.IDENTITY_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.MAIN_CONTROLLER_NAME}-{Routes.MESSAGE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
-
-        /// <inheritdoc/>
-        public readonly static string UpdateTelegramUserReceive = Path.Combine(TransmissionQueueNamePrefix, $"{Routes.IDENTITY_CONTROLLER_NAME}-{Routes.TELEGRAM_CONTROLLER_NAME}", $"{Routes.USER_CONTROLLER_NAME}-{Routes.CACHE_CONTROLLER_NAME}", Routes.UPDATE_ACTION_NAME);
         #endregion
 
         #region Web

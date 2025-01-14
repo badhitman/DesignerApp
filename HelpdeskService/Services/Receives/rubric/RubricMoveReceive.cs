@@ -2,12 +2,9 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
-using DbcLib;
 
 namespace Transmission.Receives.helpdesk;
 
