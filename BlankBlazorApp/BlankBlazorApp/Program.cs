@@ -152,7 +152,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<IdentityAppDbContext>()
     .AddSignInManager()
     .AddErrorDescriber<LocalizedIdentityErrorDescriber>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    ;
 
 Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 builder.Services.AddLocalization(lo => lo.ResourcesPath = "Resources");
