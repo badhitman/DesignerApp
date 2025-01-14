@@ -26,6 +26,23 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req)
+    {
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+
+        if (!MailAddress.TryCreate(user.Email, out _))
+            return ResponseBaseModel.CreateError($"email `{user.Email}` имеет не корректный формат. error {{4EE55201-8367-433D-9766-ABDE15B7BC04}}");
+
+        string code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(req.ResetToken));
+        string callbackUrl = $"{req.BaseAddress}?code={code}";
+        await emailSender.SendPasswordResetLinkAsync(user, user.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
+        return ResponseBaseModel.CreateSuccess("Письмо с токеном отправлено на Email");
+    }
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> TryAddRolesToUser(UserRolesModel req)
     {
         req.RolesNames = req.RolesNames

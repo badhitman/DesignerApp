@@ -51,6 +51,11 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// SendPasswordResetLinkReceive
+        /// </summary>
+        public readonly static string SendPasswordResetLinkReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}", $"{Routes.SEND_ACTION_NAME}-{Routes.RESET_ACTION_NAME}-{Routes.LINK_ACTION_NAME}");
+        
+        /// <summary>
         /// TryAddRolesToUserReceive
         /// </summary>
         public readonly static string TryAddRolesToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.ROLES_CONTROLLER_NAME, $"{Routes.TRY_ACTION_NAME}-{Routes.ADD_ACTION_NAME}-to-{Routes.USER_CONTROLLER_NAME}");
@@ -63,7 +68,7 @@ public static partial class GlobalStaticConstants
         /// <summary>
         /// ChangeEmailReceive
         /// </summary>
-        public readonly static string ChangeEmailReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.USER_CONTROLLER_NAME}", Routes.CHANGE_ACTION_NAME);
+        public readonly static string ChangeEmailForUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.EMAIL_CONTROLLER_NAME}-{Routes.USER_CONTROLLER_NAME}", Routes.CHANGE_ACTION_NAME);
         
         /// <summary>
         /// UpdateUserDetailsReceive

@@ -1142,6 +1142,11 @@ public static partial class GlobalStaticConstants
         public const string LINKS_ACTION_NAME = "links";
 
         /// <summary>
+        /// Ссылка
+        /// </summary>
+        public const string LINK_ACTION_NAME = "link";
+
+        /// <summary>
         /// Группы
         /// </summary>
         public const string GROUPS_ACTION_NAME = "groups";

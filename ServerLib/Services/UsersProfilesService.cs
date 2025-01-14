@@ -340,23 +340,6 @@ public class UsersProfilesService(
         };
     }
 
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SendPasswordResetLinkAsync(string baseAddress, string pass_reset_token, string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        if (!MailAddress.TryCreate(user.ApplicationUser.Email, out _))
-            return ResponseBaseModel.CreateError($"email `{user.ApplicationUser.Email}` имеет не корректный формат. error {{4EE55201-8367-433D-9766-ABDE15B7BC04}}");
-
-        string code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(pass_reset_token));
-        string callbackUrl = $"{baseAddress}?code={code}";
-        await emailSender.SendPasswordResetLinkAsync(user.ApplicationUser, user.ApplicationUser.Email, HtmlEncoder.Default.Encode(callbackUrl));
-
-        return ResponseBaseModel.CreateSuccess("Письмо с токеном отправлено на Email");
-    }
-
 
     #region done
     /// <inheritdoc/>

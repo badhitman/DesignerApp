@@ -50,8 +50,8 @@ public partial class ForgotPasswordPage
         Messages.AddRange(code_rest.Messages);
         if (string.IsNullOrEmpty(code_rest.Response))
             throw new Exception("PasswordResetToken is null. error {92318C2E-0997-4737-B746-73698FB38B39}");
-
-        ResponseBaseModel send_pass_reset_rest = await UsersProfilesRepo.SendPasswordResetLinkAsync(Input.Email, NavigationManager.ToAbsoluteUri("Account/ResetPassword").AbsoluteUri, code_rest.Response, user.Response.UserId);
+        // Input.Email, , , 
+        ResponseBaseModel send_pass_reset_rest = await IdentityRepo.SendPasswordResetLinkAsync(new() { UserId = user.Response.UserId, ResetToken = code_rest.Response, BaseAddress = NavigationManager.ToAbsoluteUri("Account/ResetPassword").AbsoluteUri });
         Messages.AddRange(send_pass_reset_rest.Messages);
         RedirectManager.RedirectTo("Account/ForgotPasswordConfirmation");
     }

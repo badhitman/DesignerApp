@@ -12,7 +12,7 @@ namespace Transmission.Receives.Identity;
 /// Добавляет password к указанному userId, только если у пользователя еще нет пароля.
 /// Если userId не указан, то команда выполняется для текущего пользователя (запрос/сессия)
 /// </summary>
-public class AddPasswordReceive(IIdentityTools idRepo, ILogger<AddPasswordReceive> loggerRepo)
+public class AddPasswordForUserReceive(IIdentityTools idRepo, ILogger<AddPasswordForUserReceive> loggerRepo)
     : IResponseReceive<IdentityPasswordModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>

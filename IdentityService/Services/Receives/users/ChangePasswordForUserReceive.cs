@@ -15,7 +15,7 @@ namespace Transmission.Receives.Identity;
 /// <param name="req">Текущий пароль, который необходимо проверить перед изменением.
 /// Новый пароль, который необходимо установить для указанного userId.Пользователь, пароль которого должен быть установлен.
 /// Если не указан, то для текущего пользователя (запрос/сессия).</param>
-public class ChangePasswordReceive(IIdentityTools idRepo, ILogger<ChangePasswordReceive> loggerRepo)
+public class ChangePasswordForUserReceive(IIdentityTools idRepo, ILogger<ChangePasswordForUserReceive> loggerRepo)
     : IResponseReceive<IdentityChangePasswordModel?, ResponseBaseModel?>
 {
     /// <inheritdoc/>

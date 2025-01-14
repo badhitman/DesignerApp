@@ -150,13 +150,6 @@ public partial interface IUsersProfilesService
     /// </summary>
     public Task<ResponseBaseModel> TryAddRolesToUser(IEnumerable<string> addRoles, string? userId = null);
 
-    /// <summary>
-    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
-    /// Он должен быть реализован в приложении, чтобы инфраструктура идентификации могла отправлять электронные письма для сброса пароля.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<ResponseBaseModel> SendPasswordResetLinkAsync(string baseAddress, string pass_reset_token, string? userId = null);
-
 
     #region done
     /// <summary>
