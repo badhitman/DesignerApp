@@ -56,7 +56,7 @@ public partial class RolesManageKitComponent : BlazorBusyComponentBaseModel
         bool value_bool = e.Value is not null && (bool)e.Value == true;
         User.Roles ??= [];
 
-        SetRoleFoeUserRequestModel req = new()
+        SetRoleForUserRequestModel req = new()
         {
             RoleName = roleName,
             UserIdentityId = User.UserId,

@@ -775,11 +775,6 @@ public static partial class GlobalStaticConstants
         public const string GROUPSUSERS_CONTROLLER_NAME = "groups-users";
 
         /// <summary>
-        /// Группы пользователей
-        /// </summary>
-        public const string ROLESUSERS_CONTROLLER_NAME = "roles-users";
-
-        /// <summary>
         /// Профили пользователей
         /// </summary>
         public const string USERSPROFILES_CONTROLLER_NAME = "users-profiles";
@@ -815,6 +810,11 @@ public static partial class GlobalStaticConstants
         /// add
         /// </summary>
         public const string ADD_ACTION_NAME = "add";
+
+        /// <summary>
+        /// Попытка
+        /// </summary>
+        public const string TRY_ACTION_NAME = "TRY";
 
         /// <summary>
         /// Allow

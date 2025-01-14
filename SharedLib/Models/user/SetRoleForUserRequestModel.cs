@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// SetRoleFoeUserRequestModel
+/// SetRoleForUserRequestModel
 /// </summary>
-public class SetRoleFoeUserRequestModel
+public class SetRoleForUserRequestModel
 {
     /// <summary>
     /// UserIdentityId

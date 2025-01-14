@@ -10,15 +10,6 @@ namespace SharedLib;
 public partial interface IUsersProfilesService
 {
     /// <summary>
-    /// Изменяет пароль пользователя после подтверждения правильности указанного <paramref name="currentPassword"/>.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    /// <param name="currentPassword">Текущий пароль, который необходимо проверить перед изменением.</param>
-    /// <param name="newPassword">Новый пароль, который необходимо установить для указанного <paramref name="userId"/>.</param>
-    /// <param name="userId">Пользователь, пароль которого должен быть установлен. Если не указан, то для текущего пользователя (запрос/сессия)</param>
-    public Task<ResponseBaseModel> ChangePasswordAsync(string currentPassword, string newPassword, string? userId = null);
-
-    /// <summary>
     /// Получает флаг, указывающий, есть ли у пользователя пароль.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
@@ -40,14 +31,6 @@ public partial interface IUsersProfilesService
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
     public Task<ResponseBaseModel> DeleteUserDataAsync(string password, string? userId = null);
-
-    #region done
-    /// <summary>
-    /// Добавляет <paramref name="password"/> к указанному <paramref name="userId"/>, только если у пользователя еще нет пароля.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null);
-    #endregion
 
     /// <summary>
     /// Включена ли для указанного <paramref name="userId"/> двухфакторная аутентификация.
@@ -162,23 +145,39 @@ public partial interface IUsersProfilesService
     public Task<TResponseModel<string?>> GeneratePasswordResetTokenAsync(string? userId = null);
 
     /// <summary>
-    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
-    /// Он должен быть реализован в приложении, чтобы инфраструктура идентификации могла отправлять электронные письма для сброса пароля.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<ResponseBaseModel> SendPasswordResetLinkAsync(string email, string baseAddress, string pass_reset_token, string? userId = null);
-
-    /// <summary>
     /// Попытка добавить роль пользователю. Если роли такой нет, то она будет создана.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
     public Task<ResponseBaseModel> TryAddRolesToUser(IEnumerable<string> addRoles, string? userId = null);
 
+    /// <summary>
+    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
+    /// Он должен быть реализован в приложении, чтобы инфраструктура идентификации могла отправлять электронные письма для сброса пароля.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<ResponseBaseModel> SendPasswordResetLinkAsync(string baseAddress, string pass_reset_token, string? userId = null);
 
+
+    #region done
+    /// <summary>
+    /// Изменяет пароль пользователя после подтверждения правильности указанного <paramref name="currentPassword"/>.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    /// <param name="currentPassword">Текущий пароль, который необходимо проверить перед изменением.</param>
+    /// <param name="newPassword">Новый пароль, который необходимо установить для указанного <paramref name="userId"/>.</param>
+    /// <param name="userId">Пользователь, пароль которого должен быть установлен. Если не указан, то для текущего пользователя (запрос/сессия)</param>
+    public Task<ResponseBaseModel> ChangePasswordAsync(string currentPassword, string newPassword, string? userId = null);
+
+    /// <summary>
+    /// Добавляет <paramref name="password"/> к указанному <paramref name="userId"/>, только если у пользователя еще нет пароля.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null);
 
     /// <summary>
     /// Обновляет адрес Email, если токен действительный для пользователя.
     /// </summary>
     /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>
     public Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req);
+    #endregion
 }

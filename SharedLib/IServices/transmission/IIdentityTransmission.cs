@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Попытка добавить роли пользователю. Если роли такой нет, то она будет создана.
+    /// </summary>
+    public Task<ResponseBaseModel> TryAddRolesToUser(UserRolesModel req);
+
+    /// <summary>
     /// Изменяет пароль пользователя после подтверждения правильности указанного currentPassword.
     /// Если userId не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
@@ -133,7 +138,7 @@ public interface IIdentityTransmission
     /// <summary>
     /// Получить `web config` сайта
     /// </summary>
-    public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleFoeUserRequestModel req);
+    public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleForUserRequestModel req);
 
     /// <summary>
     /// Отправка Email

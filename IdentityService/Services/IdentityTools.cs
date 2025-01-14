@@ -26,50 +26,64 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ChangePasswordAsync(IdentityChangePasswordModel req)
+    public async Task<ResponseBaseModel> TryAddRolesToUser(UserRolesModel req)
     {
+        req.RolesNames = req.RolesNames
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .DistinctBy(x => x.ToLower())
+            .ToList();
+
+        if (req.RolesNames.Count == 0)
+            return ResponseBaseModel.CreateError("Не указаны роли для добавления");
+
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
             return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
 
-         string msg;
-        IdentityResult changePasswordResult = await userManager.ChangePasswordAsync(user, req.CurrentPassword, req.NewPassword);
-        if (!changePasswordResult.Succeeded)
-            return new()
-            {
-                Messages = [.. changePasswordResult.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" })],
-            };
+        string[] roles_for_add_normalized = req.RolesNames.Select(r => userManager.NormalizeName(r)).ToArray();
 
-        msg = $"Пользователю [`{user.Id}`/`{user.Email}`] успешно изменён пароль.";
-        loggerRepo.LogInformation(msg);
-        return ResponseBaseModel.CreateSuccess(msg);
-    }
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        // роли, которые есть в БД
+        string?[] roles_that_are_in_db = await identityContext.Roles
+            .Where(x => roles_for_add_normalized.Contains(x.NormalizedName))
+            .Select(x => x.Name)
+            .ToArrayAsync();
 
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> AddPasswordAsync(IdentityPasswordModel req)
-    {
-        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
-        if (user is null)
-            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+        // роли, которых не хватает в бд
+        string[] roles_that_need_add_in_db = req.RolesNames
+            .Where(x => !roles_that_are_in_db.Any(y => y?.Equals(x, StringComparison.OrdinalIgnoreCase) == true))
+            .ToArray();
 
-        IdentityResult addPasswordResult = await userManager.AddPasswordAsync(user, req.Password);
-        if (!addPasswordResult.Succeeded)
+        if (roles_that_need_add_in_db.Length != 0)
         {
-            return new()
-            {
-                Messages = addPasswordResult.Errors.Select(e => new ResultMessage()
-                {
-                    TypeMessage = ResultTypesEnum.Error,
-                    Text = $"[{e.Code}: {e.Description}]"
-                }).ToList()
-            };
+            await identityContext
+                .AddRangeAsync(roles_that_need_add_in_db.Select(r => new ApplicationRole() { Name = r, Title = r, NormalizedName = userManager.NormalizeName(r) }));
+            await identityContext.SaveChangesAsync();
         }
 
-        return ResponseBaseModel.CreateSuccess("Пароль установлен");
+        IList<string> user_roles = await userManager.GetRolesAsync(user);
+
+        // роли, которые требуется добавить пользователю
+        roles_that_need_add_in_db = roles_for_add_normalized
+            .Where(x => !user_roles.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase) == true))
+            .ToArray();
+
+        if (roles_that_need_add_in_db.Length != 0)
+        { // добавляем пользователю ролей
+            roles_that_need_add_in_db = await identityContext
+                .Roles
+                .Where(x => roles_that_need_add_in_db.Contains(x.NormalizedName))
+                .Select(x => x.Id)
+                .ToArrayAsync();
+
+            await identityContext.AddRangeAsync(roles_that_need_add_in_db.Select(x => new IdentityUserRole<string>() { RoleId = x, UserId = req.UserId }));
+            await identityContext.SaveChangesAsync();
+        }
+        return ResponseBaseModel.CreateSuccess($"Добавлено {roles_that_need_add_in_db.Length} ролей пользователю");
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string[]>> SetRoleForUser(SetRoleFoeUserRequestModel req)
+    public async Task<TResponseModel<string[]>> SetRoleForUser(SetRoleForUserRequestModel req)
     {
         TResponseModel<string[]> res = new();
         using IdentityAppDbContext identityContext = await identityDbFactory.CreateDbContextAsync();
@@ -120,6 +134,49 @@ public class IdentityTools(
         }
 
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ChangePasswordAsync(IdentityChangePasswordModel req)
+    {
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+
+        string msg;
+        IdentityResult changePasswordResult = await userManager.ChangePasswordAsync(user, req.CurrentPassword, req.NewPassword);
+        if (!changePasswordResult.Succeeded)
+            return new()
+            {
+                Messages = [.. changePasswordResult.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" })],
+            };
+
+        msg = $"Пользователю [`{user.Id}`/`{user.Email}`] успешно изменён пароль.";
+        loggerRepo.LogInformation(msg);
+        return ResponseBaseModel.CreateSuccess(msg);
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> AddPasswordAsync(IdentityPasswordModel req)
+    {
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+
+        IdentityResult addPasswordResult = await userManager.AddPasswordAsync(user, req.Password);
+        if (!addPasswordResult.Succeeded)
+        {
+            return new()
+            {
+                Messages = addPasswordResult.Errors.Select(e => new ResultMessage()
+                {
+                    TypeMessage = ResultTypesEnum.Error,
+                    Text = $"[{e.Code}: {e.Description}]"
+                }).ToList()
+            };
+        }
+
+        return ResponseBaseModel.CreateSuccess("Пароль установлен");
     }
 
     /// <inheritdoc/>

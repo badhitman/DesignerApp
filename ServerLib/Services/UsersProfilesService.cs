@@ -21,7 +21,6 @@ namespace ServerLib;
 /// </summary>
 public class UsersProfilesService(
     IEmailSender<ApplicationUser> emailSender,
-    IDbContextFactory<IdentityAppDbContext> identityDbFactory,
     UserManager<ApplicationUser> userManager,
     IIdentityTransmission IdentityRepo,
     SignInManager<ApplicationUser> signInManager,
@@ -30,6 +29,17 @@ public class UsersProfilesService(
     ILogger<UsersProfilesService> LoggerRepo) : IUsersProfilesService
 {
 #pragma warning restore CS9107
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> SetPhoneNumberAsync(string? phoneNumber, string? userId = null)
+    {
+        ApplicationUserResponseModel user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        await userManager.SetPhoneNumberAsync(user.ApplicationUser, phoneNumber);
+        return ResponseBaseModel.CreateSuccess("Телефон успешно установлен");
+    }
+
     /// <inheritdoc/>
     public async Task<UserBooleanResponseModel> CheckUserPasswordAsync(string password, string? userId = null)
     {
@@ -99,46 +109,6 @@ public class UsersProfilesService(
         return new() { Response = await userManager.GetTwoFactorEnabledAsync(user.ApplicationUser) };
     }
 
-    #region done
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ChangePasswordAsync(string currentPassword, string newPassword, string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        ResponseBaseModel res = await IdentityRepo.ChangePassword(new() { CurrentPassword = currentPassword, NewPassword = newPassword, UserId = user.ApplicationUser.Id });
-        if (!res.Success())
-            return res;
-
-        user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        await signInManager.RefreshSignInAsync(user.ApplicationUser);
-        return ResponseBaseModel.CreateSuccess($"Пользователю [`{user.ApplicationUser.Id}`/`{user.ApplicationUser.Email}`] успешно изменён пароль.");
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        ResponseBaseModel addPassRes = await IdentityRepo.AddPassword(new() { Password = password, UserId = user.ApplicationUser.Id });
-        if (!addPassRes.Success())
-            return addPassRes;
-        user = await GetUser(userId);
-
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        await signInManager.RefreshSignInAsync(user.ApplicationUser);
-        return ResponseBaseModel.CreateSuccess("Пароль установлен");
-    }
-    #endregion
-
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetTwoFactorEnabledAsync(bool enabled_set, string? userId = null)
     {
@@ -206,16 +176,6 @@ public class UsersProfilesService(
         LoggerRepo.LogInformation(msg);
         await signInManager.RefreshSignInAsync(user.ApplicationUser);
         return ResponseBaseModel.CreateSuccess(msg);
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetPhoneNumberAsync(string? phoneNumber, string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-        // TODO: XXX
-        throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
@@ -381,94 +341,87 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SendPasswordResetLinkAsync(string email, string baseAddress, string pass_reset_token, string? userId = null)
+    public async Task<ResponseBaseModel> SendPasswordResetLinkAsync(string baseAddress, string pass_reset_token, string? userId = null)
     {
-        if (!MailAddress.TryCreate(email, out _))
-            return ResponseBaseModel.CreateError($"email `{email}` имеет не корректный формат. error {{4EE55201-8367-433D-9766-ABDE15B7BC04}}");
-
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
+        if (!MailAddress.TryCreate(user.ApplicationUser.Email, out _))
+            return ResponseBaseModel.CreateError($"email `{user.ApplicationUser.Email}` имеет не корректный формат. error {{4EE55201-8367-433D-9766-ABDE15B7BC04}}");
+
         string code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(pass_reset_token));
         string callbackUrl = $"{baseAddress}?code={code}";
-        await emailSender.SendPasswordResetLinkAsync(user.ApplicationUser, email, HtmlEncoder.Default.Encode(callbackUrl));
+        await emailSender.SendPasswordResetLinkAsync(user.ApplicationUser, user.ApplicationUser.Email, HtmlEncoder.Default.Encode(callbackUrl));
 
         return ResponseBaseModel.CreateSuccess("Письмо с токеном отправлено на Email");
     }
 
+
+    #region done
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> TryAddRolesToUser(IEnumerable<string> addRoles, string? userId = null)
     {
-        addRoles = addRoles
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .DistinctBy(x => x.ToLower());
-
-        if (!addRoles.Any())
-            return ResponseBaseModel.CreateError("Не указаны роли для добавления");
-
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        string[] roles_for_add_normalized = addRoles.Select(r => userManager.NormalizeName(r)).ToArray();
-
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        // роли, которые есть в БД
-        string?[] roles_that_are_in_db = await identityContext.Roles
-            .Where(x => roles_for_add_normalized.Contains(x.NormalizedName))
-            .Select(x => x.Name)
-            .ToArrayAsync();
-
-        // роли, которых не хватает в бд
-        string[] roles_that_need_add_in_db = addRoles
-            .Where(x => !roles_that_are_in_db.Any(y => y?.Equals(x, StringComparison.OrdinalIgnoreCase) == true))
-            .ToArray();
-
-        if (roles_that_need_add_in_db.Length != 0)
-        {
-            await identityContext
-                .AddRangeAsync(roles_that_need_add_in_db.Select(r => new ApplicationRole() { Name = r, Title = r, NormalizedName = userManager.NormalizeName(r) }));
-            await identityContext.SaveChangesAsync();
-        }
-
-        IList<string> user_roles = await userManager.GetRolesAsync(user.ApplicationUser);
-
-        // роли, которые требуется добавить пользователю
-        roles_that_need_add_in_db = roles_for_add_normalized
-            .Where(x => !user_roles.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase) == true))
-            .ToArray();
-
-        if (roles_that_need_add_in_db.Length != 0)
-        { // добавляем пользователю ролей
-            roles_that_need_add_in_db = await identityContext
-                .Roles
-                .Where(x => roles_that_need_add_in_db.Contains(x.NormalizedName))
-                .Select(x => x.Id)
-                .ToArrayAsync();
-
-            await identityContext.AddRangeAsync(roles_that_need_add_in_db.Select(x => new IdentityUserRole<string>() { RoleId = x, UserId = userId! }));
-            await identityContext.SaveChangesAsync();
-        }
-        return ResponseBaseModel.CreateSuccess($"Добавлено {addRoles.Count()} ролей пользователю");
+        return await IdentityRepo.TryAddRolesToUser(new() { RolesNames = [.. addRoles], UserId = user.ApplicationUser.Id });
     }
 
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> ChangePasswordAsync(string currentPassword, string newPassword, string? userId = null)
+    {
+        ApplicationUserResponseModel user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
 
+        ResponseBaseModel res = await IdentityRepo.ChangePassword(new() { CurrentPassword = currentPassword, NewPassword = newPassword, UserId = user.ApplicationUser.Id });
+        if (!res.Success())
+            return res;
+
+        user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        await signInManager.RefreshSignInAsync(user.ApplicationUser);
+        return ResponseBaseModel.CreateSuccess($"Пользователю [`{user.ApplicationUser.Id}`/`{user.ApplicationUser.Email}`] успешно изменён пароль.");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null)
+    {
+        ApplicationUserResponseModel user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        ResponseBaseModel addPassRes = await IdentityRepo.AddPassword(new() { Password = password, UserId = user.ApplicationUser.Id });
+        if (!addPassRes.Success())
+            return addPassRes;
+        user = await GetUser(userId);
+
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        await signInManager.RefreshSignInAsync(user.ApplicationUser);
+        return ResponseBaseModel.CreateSuccess("Пароль установлен");
+    }
 
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req)
     {
-        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
-        if (user is null)
-            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
-
         ResponseBaseModel changeRes = await IdentityRepo.ChangeEmailAsync(req);
         if (!changeRes.Success())
             return changeRes;
 
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+
         await signInManager.RefreshSignInAsync(user);
         return ResponseBaseModel.CreateSuccess("Благодарим вас за подтверждение изменения адреса электронной почты.");
     }
+
 
     /// <summary>
     /// Read Identity user data.
@@ -512,4 +465,5 @@ public class UsersProfilesService(
             ApplicationUser = user
         };
     }
+    #endregion
 }

@@ -10,6 +10,16 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Попытка добавить роли пользователю. Если роли такой нет, то она будет создана.
+    /// </summary>
+    public Task<ResponseBaseModel> TryAddRolesToUser(UserRolesModel req);
+
+    /// <summary>
+    /// SetRoleForUser
+    /// </summary>
+    public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleForUserRequestModel req);
+
+    /// <summary>
     /// Изменяет пароль пользователя после подтверждения правильности указанного currentPassword.
     /// Если userId не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
@@ -18,17 +28,11 @@ public interface IIdentityTools
     /// Если не указан, то для текущего пользователя (запрос/сессия).</param>
     public Task<ResponseBaseModel> ChangePasswordAsync(IdentityChangePasswordModel req);
 
-
     /// <summary>
     /// Добавляет password к указанному userId, только если у пользователя еще нет пароля.
     /// Если userId не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
     public Task<ResponseBaseModel> AddPasswordAsync(IdentityPasswordModel req);
-
-    /// <summary>
-    /// SetRoleForUser
-    /// </summary>
-    public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleFoeUserRequestModel req);
 
     /// <summary>
     /// SelectUsersOfIdentity

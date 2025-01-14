@@ -12,13 +12,13 @@ namespace Transmission.Receives.Identity;
 /// SetRoleForUserReceive
 /// </summary>
 public class SetRoleForUserReceive(IIdentityTools identityRepo, ILogger<SetRoleForUserReceive> _logger) 
-    : IResponseReceive<SetRoleFoeUserRequestModel?, TResponseModel<string[]>?>
+    : IResponseReceive<SetRoleForUserRequestModel?, TResponseModel<string[]>?>
 {
     /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.SetRoleForUserOfIdentityReceive;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string[]>?> ResponseHandleAction(SetRoleFoeUserRequestModel? req)
+    public async Task<TResponseModel<string[]>?> ResponseHandleAction(SetRoleForUserRequestModel? req)
     {
         ArgumentNullException.ThrowIfNull(req);
         _logger.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings)}");
