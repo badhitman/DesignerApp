@@ -30,18 +30,6 @@ public class TelegramJoinAccountDeleteReceive(IIdentityTools identityRepo, ILogg
             return ResponseBaseModel.CreateError(msg);
         }
 
-        try
-        {
-            ResponseBaseModel join_remove = await identityRepo.TelegramAccountRemoveTelegramJoin(payload);
-            return ResponseBaseModel.Create(join_remove.Messages);
-        }
-        catch (Exception ex)
-        {
-            msg = "ошибка обработки входящего параметра `telegramUserId` .error C1722167-1ECE-430F-884D-2454C0494D7C";
-            _logger.LogError(ex, msg);
-            ResponseBaseModel res = ResponseBaseModel.CreateError(msg);
-            res.Messages.InjectException(ex);
-            return res;
-        }
+        return await identityRepo.TelegramAccountRemoveTelegramJoin(payload);
     }
 }

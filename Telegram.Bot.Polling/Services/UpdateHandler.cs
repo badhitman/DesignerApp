@@ -3,9 +3,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
-using ServerLib;
 using SharedLib;
-using Microsoft.Extensions.Logging;
 
 namespace Telegram.Bot.Services;
 

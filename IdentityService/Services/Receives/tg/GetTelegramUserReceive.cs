@@ -31,18 +31,6 @@ public class GetTelegramUserReceive(IIdentityTools identityRepo, ILogger<GetTele
             return res;
         }
 
-        try
-        {
-            res = await identityRepo.GetTelegramUserCachedInfo(payload.Value);
-        }
-        catch (Exception ex)
-        {
-            msg = $"ошибка обработки запроса `{payload}`. error {{52351B07-1621-4F50-8F6A-CF97E39F3159}}";
-            _logger.LogError(ex, msg);
-            res.AddError(msg);
-            res.Messages.InjectException(ex);
-        }
-
-        return res;
+        return await identityRepo.GetTelegramUserCachedInfo(payload.Value);
     }
 }

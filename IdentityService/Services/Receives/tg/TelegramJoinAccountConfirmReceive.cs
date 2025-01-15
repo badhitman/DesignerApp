@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
@@ -33,19 +32,6 @@ public class TelegramJoinAccountConfirmReceive(IIdentityTools identityRepo, ILog
             return res;
         }
 
-        try
-        {
-            ResponseBaseModel userCheck = await identityRepo.TelegramJoinAccountConfirmTokenFromTelegram(confirm);
-            res.AddRangeMessages(userCheck.Messages);
-        }
-        catch (Exception ex)
-        {
-            msg = $"ошибка обработки запроса 354EFC73-B065-4F8C-AF00-808314C52E10";
-            res.AddError(msg);
-            _logger.LogError(ex, msg);
-            res.Messages.InjectException(ex);
-        }
-
-        return res;
+        return await identityRepo.TelegramJoinAccountConfirmTokenFromTelegram(confirm);
     }
 }

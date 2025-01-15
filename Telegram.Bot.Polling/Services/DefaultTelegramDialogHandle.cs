@@ -5,12 +5,13 @@
 using SharedLib;
 using System.Net.Mail;
 
-namespace ServerLib;
+namespace Telegram.Bot.Services;
 
 /// <summary>
 /// Default: handle telegram dialog
 /// </summary>
-public class DefaultTelegramDialogHandle(IIdentityTransmission identityRepo, ILogger<DefaultTelegramDialogHandle> _logger, TelegramBotConfigModel webConf) : ITelegramDialogService
+public class DefaultTelegramDialogHandle(IIdentityTransmission identityRepo, ILogger<DefaultTelegramDialogHandle> _logger, TelegramBotConfigModel webConf)
+    : ITelegramDialogService
 {
     /// <inheritdoc/>
     public async Task<TelegramDialogResponseModel> TelegramDialogHandle(TelegramDialogRequestModel tgDialog)

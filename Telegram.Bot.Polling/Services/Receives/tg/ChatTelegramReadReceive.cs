@@ -12,7 +12,7 @@ namespace Transmission.Receives.telegram;
 /// <summary>
 /// Прочитать данные чата
 /// </summary>
-public class ChatTelegramReadReceive(IDbContextFactory<TelegramBotContext> tgDbFactory)
+public class ChatTelegramReadReceive(ITelegramBotService tgRepo)
     : IResponseReceive<int, ChatTelegramModelDB?>
 {
     /// <inheritdoc/>
@@ -21,12 +21,6 @@ public class ChatTelegramReadReceive(IDbContextFactory<TelegramBotContext> tgDbF
     /// <inheritdoc/>
     public async Task<ChatTelegramModelDB?> ResponseHandleAction(int chat_id)
     {
-        TResponseModel<ChatTelegramModelDB> res = new();
-        using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
-        return await context
-            .Chats
-            .Include(x => x.UsersJoins!)
-            .ThenInclude(x => x.User)
-            .FirstAsync(x => x.Id == chat_id);
+        return await tgRepo.ChatTelegramRead(chat_id);
     }
 }

@@ -118,9 +118,14 @@ builder.ConfigureServices((context, services) =>
                 return new TelegramBotClient(options, httpClient);
             });
 
-    services.AddScoped<StoreTelegramService>();
-    services.AddScoped<UpdateHandler>();
-    services.AddScoped<ReceiverService>();
+    // TelegramBotService : ITelegramBotService
+
+    services
+    .AddScoped<ITelegramBotService, TelegramBotService>()
+    .AddScoped<StoreTelegramService>()
+    .AddScoped<UpdateHandler>()
+    .AddScoped<ReceiverService>();
+
     services.AddHostedService<PollingService>();
 
     #region Telegram dialog - handlers answer to incoming messages
