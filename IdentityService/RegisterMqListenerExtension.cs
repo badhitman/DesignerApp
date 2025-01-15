@@ -49,7 +49,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<TelegramJoinAccountConfirmReceive, TelegramJoinAccountConfirmModel, ResponseBaseModel>()
             .RegisterMqListener<TelegramJoinAccountDeleteReceive, TelegramAccountRemoveJoinRequestTelegramModel, ResponseBaseModel>()
             .RegisterMqListener<UpdateTelegramMainUserMessageReceive, MainUserMessageModel, ResponseBaseModel>()
-            .RegisterMqListener<GetTelegramUserReceive, long?, TResponseModel<TelegramUserBaseModel>>()
+            .RegisterMqListener<GetTelegramUserReceive, long, TResponseModel<TelegramUserBaseModel>>()
             .RegisterMqListener<DeleteRoleReceive, string, ResponseBaseModel>()
             .RegisterMqListener<DeleteRoleFromUserReceive, RoleEmailModel, ResponseBaseModel>()
             .RegisterMqListener<AddRoleToUserReceive, RoleEmailModel, ResponseBaseModel>()
