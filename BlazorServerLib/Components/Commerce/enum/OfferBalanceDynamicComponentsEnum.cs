@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlazorWebLib.Components.Commerce.Attendances;
+using BlazorWebLib.Components.Commerce;
 using System.ComponentModel;
 
 namespace BlazorWebLib;
@@ -12,14 +14,14 @@ namespace BlazorWebLib;
 public enum OfferBalanceDynamicComponentsEnum
 {
     /// <summary>
-    /// <see cref="BlazorWebLib.Components.Commerce.GoodsOfferBalanceComponent"/>
+    /// <see cref="GoodsOfferBalanceComponent"/>
     /// </summary>
-    [Description(nameof(BlazorWebLib.Components.Commerce.GoodsOfferBalanceComponent))]
+    [Description(nameof(GoodsOfferBalanceComponent))]
     Goods,
 
     /// <summary>
-    /// <see cref="BlazorWebLib.Components.Commerce.Attendances.AttendancesOfferBalanceComponent"/>
+    /// <see cref="AttendancesOfferBalanceComponent"/>
     /// </summary>
-    [Description(nameof(BlazorWebLib.Components.Commerce.Attendances.AttendancesOfferBalanceComponent))]
+    [Description(nameof(AttendancesOfferBalanceComponent))]
     Attendances,
 }

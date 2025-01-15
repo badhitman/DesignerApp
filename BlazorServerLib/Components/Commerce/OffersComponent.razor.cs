@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
+using System.Reflection;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -40,6 +41,11 @@ public partial class OffersComponent : BlazorBusyComponentRegistersModel
         FullWidth = true,
         CloseButton = true
     };
+
+    static Type? GetType(string strFullyQualifiedName)
+    {
+        return Assembly.GetExecutingAssembly().GetTypes().Single(t => t.Name == strFullyQualifiedName);
+    }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

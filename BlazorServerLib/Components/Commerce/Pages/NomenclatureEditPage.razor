@@ -1,4 +1,6 @@
 ﻿@page "/nomenclature/card/{NomenclatureId:int}/{ViewMode}"
+@page "/nomenclature/card/{NomenclatureId:int}"
+
 @using MudBlazor
 @inherits BlazorBusyComponentBaseAuthModel
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
@@ -6,7 +8,7 @@
 
 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-2">
     <MudTabPanel Text="Параметры">
-        <CascadingValue Value="ViewMode">
+        <CascadingValue Value="@(string.IsNullOrWhiteSpace(ViewMode) ? OfferBalanceDynamicComponentsEnum.Goods : (OfferBalanceDynamicComponentsEnum)(Enum.Parse(typeof(OfferBalanceDynamicComponentsEnum), ViewMode, ignoreCase: true)))">
             <NomenclatureEditComponent NomenclatureId="NomenclatureId" />
         </CascadingValue>
     </MudTabPanel>

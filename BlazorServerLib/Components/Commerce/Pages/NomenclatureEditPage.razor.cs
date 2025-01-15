@@ -22,5 +22,5 @@ public partial class NomenclatureEditPage : BlazorBusyComponentBaseAuthModel
     /// ViewMode
     /// </summary>
     [Parameter]
-    public OfferBalanceDynamicComponentsEnum ViewMode {  get; set; } = OfferBalanceDynamicComponentsEnum.Goods;
+    public string? ViewMode {  get; set; }
 }
