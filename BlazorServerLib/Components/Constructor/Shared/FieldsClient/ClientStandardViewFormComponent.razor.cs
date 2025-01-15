@@ -2,9 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
-using BlazorWebLib.Components.Constructor.Pages;
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Constructor.Shared.FieldsClient;
@@ -57,7 +56,7 @@ public partial class ClientStandardViewFormComponent : BlazorBusyComponentBaseMo
         {
             await SetBusy();
 
-            List<EntryNestedModel> res = await ConstructorRepo.ReadDirectories([.. Form.FieldsDirectoriesLinks.Select(x => x.DirectoryId).Distinct()]);
+            Directories = await ConstructorRepo.ReadDirectories([.. Form.FieldsDirectoriesLinks.Select(x => x.DirectoryId).Distinct()]);
             IsBusyProgress = false;
         }
 

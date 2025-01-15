@@ -36,7 +36,7 @@ public sealed class PersistingRevalidatingAuthenticationStateProvider(ILoggerFac
     {
         // Get the user manager from a new scope to ensure it fetches fresh data
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-        UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         return await ValidateSecurityStampAsync(userManager, authenticationState.User);
     }
 

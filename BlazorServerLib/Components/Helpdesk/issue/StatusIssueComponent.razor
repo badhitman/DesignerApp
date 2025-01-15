@@ -9,7 +9,7 @@
 <MudSelect ReadOnly="@(!CanEdit || IsBusyProgress)" @bind-Value="IssueStep" T="StatusesDocumentsEnum" Label="Статус" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
     @foreach (StatusesDocumentsEnum step in Steps())
     {
-        <MudSelectItem Class="@(step == Issue.StatusDocument ? "text-success fw-bold" : "")" T="StatusesDocumentsEnum" Value="@step">
+        <MudSelectItem Class="@(step == Issue.StatusDocument ? "text-primary fw-bold" : "")" T="StatusesDocumentsEnum" Value="@step">
             @step.DescriptionInfo()
         </MudSelectItem>
     }

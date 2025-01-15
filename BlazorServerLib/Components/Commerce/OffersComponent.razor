@@ -68,6 +68,7 @@
             <MudTd DataLabel="Ед. изм.">@context.OfferUnit.DescriptionInfo()</MudTd>
             <MudTd DataLabel="Баланс">
                 @RegistersCache.Where(x => x.OfferId == context.Id).Sum(x => x.Quantity)
+                <DynamicComponent Type="@(Type.GetType(ViewMode.DescriptionInfo()))" />
             </MudTd>
         </RowTemplate>
         <NoRecordsContent>

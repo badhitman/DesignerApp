@@ -125,6 +125,11 @@ public class Program
         // Scoped
         builder.Services.AddScoped<IIdentityTools, IdentityTools>();
 
+         //builder.Services
+         //   .AddScoped<UserManager<ApplicationUser>>()
+         //   //.AddScoped<RoleManager<ApplicationUser>>()
+         //   ;
+
         #region MQ Transmission (remote methods call)
         builder.Services.AddScoped<IRabbitClient, RabbitClient>();
 
@@ -146,8 +151,6 @@ public class Program
         builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
 
         builder.Services.AddOptions();
-
-        builder.Services.AddHostedService<Worker>();
 
         IHost host = builder.Build();
         host.Run();

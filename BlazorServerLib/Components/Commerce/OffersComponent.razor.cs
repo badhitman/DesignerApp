@@ -23,6 +23,12 @@ public partial class OffersComponent : BlazorBusyComponentRegistersModel
     [Parameter, EditorRequired]
     public required NomenclatureModelDB CurrentNomenclature { get; set; }
 
+    /// <summary>
+    /// ViewMode
+    /// </summary>
+    [CascadingParameter]
+    public OfferBalanceDynamicComponentsEnum ViewMode { get; set; } = OfferBalanceDynamicComponentsEnum.Goods;
+
 
     bool _hideMultiplicity;
     bool _hideWorth;

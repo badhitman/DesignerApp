@@ -12,22 +12,26 @@ using System.Text;
 using SharedLib;
 using System.Net.Mail;
 using Microsoft.EntityFrameworkCore.Storage;
-using Org.BouncyCastle.Ocsp;
-using DocumentFormat.OpenXml.Drawing;
 
 namespace IdentityService;
+
+/*
+ using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using IEmailSender<ApplicationUser> emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender<ApplicationUser>>();
+ */
 
 /// <summary>
 /// IdentityTools
 /// </summary>
 public class IdentityTools(
-    IEmailSender<ApplicationUser> emailSender,
+    IServiceScopeFactory serviceScopeFactory,
+    //IEmailSender<ApplicationUser> emailSender,
     IMailProviderService mailRepo,
     ILogger<IdentityTools> loggerRepo,
-    IUserStore<ApplicationUser> userStore,
+    //IUserStore<ApplicationUser> userStore,
     ITelegramTransmission tgRemoteRepo,
-    RoleManager<ApplicationRole> roleManager,
-    UserManager<ApplicationUser> userManager,
+    //RoleManager<ApplicationRole> roleManager,
+    //UserManager<ApplicationUser> userManager,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     #region Telegram
@@ -74,6 +78,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> TelegramJoinAccountDeleteAction(string userId)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
         if (user is null)
             return ResponseBaseModel.CreateError($"Пользователь #{userId} не найден");
@@ -123,6 +129,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountCreate(string userId)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
         if (user is null)
             return new TResponseModel<TelegramJoinAccountModelDb>() { Messages = ResponseBaseModel.CreateError($"Пользователь #{userId} не найден").Messages };//ResponseBaseModel.CreateError($"Пользователь #{userId} не найден");
@@ -337,6 +345,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(TelegramJoinAccountStateRequestModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
             return TResponseModel<TelegramJoinAccountModelDb>.Build(ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден"));
@@ -381,7 +391,8 @@ public class IdentityTools(
         TResponseModel<CheckTelegramUserAuthModel> res = new();
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
         TelegramUserModelDb? tgUserDb = await identityContext.TelegramUsers.FirstOrDefaultAsync(x => x.TelegramId == user.TelegramUserId);
-
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         if (tgUserDb is null)
         {
             using IDbContextTransaction transaction = identityContext.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
@@ -476,6 +487,10 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        IEmailSender<ApplicationUser> emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender<ApplicationUser>>();
+
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
             return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
@@ -501,6 +516,9 @@ public class IdentityTools(
         if (req.RolesNames.Count == 0)
             return ResponseBaseModel.CreateError("Не указаны роли для добавления");
 
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
             return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
@@ -508,6 +526,7 @@ public class IdentityTools(
         string[] roles_for_add_normalized = req.RolesNames.Select(r => userManager.NormalizeName(r)).ToArray();
 
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+
         // роли, которые есть в БД
         string?[] roles_that_are_in_db = await identityContext.Roles
             .Where(x => roles_for_add_normalized.Contains(x.NormalizedName))
@@ -604,6 +623,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ChangePasswordAsync(IdentityChangePasswordModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
             return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
@@ -624,6 +645,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> AddPasswordAsync(IdentityPasswordModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
             return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
@@ -855,6 +878,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
             return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
@@ -1017,6 +1042,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId);
         if (user is null)
             return ResponseBaseModel.CreateError($"Пользователь не найден: {req.UserId}");
@@ -1028,6 +1055,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<TResponseModel<RoleInfoModel>> GetRole(string role_id)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         ApplicationRole? role_db = await roleManager.FindByIdAsync(role_id);
         if (role_db is null)
             return new() { Messages = ResponseBaseModel.ErrorMessage($"Роль #{role_id} не найдена в БД") };
@@ -1053,7 +1082,8 @@ public class IdentityTools(
 
         if (!string.IsNullOrWhiteSpace(req.OwnerId))
             q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.UserId && req.OwnerId == y.RoleId));
-
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         if (!string.IsNullOrWhiteSpace(req.FindQuery))
         {
             string upp_query = req.FindQuery.ToUpper();
@@ -1107,7 +1137,8 @@ public class IdentityTools(
 
         if (!string.IsNullOrWhiteSpace(req.OwnerId))
             q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.RoleId && req.OwnerId == y.UserId));
-
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         if (!string.IsNullOrWhiteSpace(req.FindQuery))
             q = q.Where(x => EF.Functions.Like(x.NormalizedName, $"%{roleManager.KeyNormalizer.NormalizeName(req.FindQuery)}%") || x.Id == req.FindQuery);
 
@@ -1137,6 +1168,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> CateNewRole(string role_name)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         role_name = role_name.Trim();
         if (string.IsNullOrEmpty(role_name))
             return ResponseBaseModel.CreateError("Не указано имя роли");
@@ -1159,6 +1192,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteRole(string role_name)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
         if (role_db is null)
             return ResponseBaseModel.CreateError($"Роль #{role_name} не найдена в БД");
@@ -1186,10 +1221,13 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         ApplicationRole? role_db = await roleManager.FindByNameAsync(req.RoleName);
         if (role_db is null)
             return ResponseBaseModel.CreateError($"Роль с именем '{req.RoleName}' не найдена в БД");
 
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user_db = await userManager.FindByEmailAsync(req.Email);
         if (user_db is null)
             return ResponseBaseModel.CreateError($"Пользователь `{req.Email}` не найден в БД");
@@ -1211,10 +1249,13 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         ApplicationRole? role_db = await roleManager.FindByNameAsync(req.RoleName);
         if (role_db is null)
             return ResponseBaseModel.CreateError($"Роль с именем '{req.RoleName}' не найдена в БД");
 
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user_db = await userManager.FindByEmailAsync(req.Email);
         if (user_db is null)
             return ResponseBaseModel.CreateError($"Пользователь `{req.Email}` не найден в БД");
@@ -1236,6 +1277,8 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ResetPasswordAsync(IdentityPasswordTokenModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         string msg;
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId);
         if (user is null)
@@ -1262,7 +1305,8 @@ public class IdentityTools(
     public async Task<TResponseModel<UserInfoModel>> FindByEmailAsync(string email)
     {
         TResponseModel<UserInfoModel> res = new();
-
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByEmailAsync(email);
         if (user is null)
         {
@@ -1293,6 +1337,10 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> GenerateEmailConfirmation(SimpleUserIdentityModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        IEmailSender<ApplicationUser> emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender<ApplicationUser>>();
+
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByEmailAsync(req.Email);
         if (user is null)
             return ResponseBaseModel.CreateError($"Пользователь не найден: {req.Email}");
@@ -1309,7 +1357,8 @@ public class IdentityTools(
     {
         if (req.UserId is null || req.Code is null)
             return ResponseBaseModel.CreateError("UserId is null || Code is null. error {715DE145-87B0-48B0-9341-0A21962045BF}");
-
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId);
         if (user is null)
             return ResponseBaseModel.CreateError($"Ошибка загрузки пользователя с идентификатором {req.UserId}");
@@ -1488,11 +1537,15 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<RegistrationNewUserResponseModel> CreateNewUserEmailAsync(string email)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using IUserStore<ApplicationUser> userStore = scope.ServiceProvider.GetRequiredService<IUserStore<ApplicationUser>>();
+
         IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
         ApplicationUser user = IdentityStatic.CreateInstanceUser();
         await userStore.SetUserNameAsync(user, email, CancellationToken.None);
         await emailStore.SetEmailAsync(user, email, CancellationToken.None);
 
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         IdentityResult result = await userManager.CreateAsync(user);
         if (!result.Succeeded)
             return new() { Messages = result.Errors.Select(x => new ResultMessage() { Text = $"[{x.Code}: {x.Description}]", TypeMessage = ResultTypesEnum.Error }).ToList() };
@@ -1509,8 +1562,11 @@ public class IdentityTools(
     /// <inheritdoc/>
     public async Task<RegistrationNewUserResponseModel> CreateNewUserWithPasswordAsync(RegisterNewUserPasswordModel req)
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using IUserStore<ApplicationUser> userStore = scope.ServiceProvider.GetRequiredService<IUserStore<ApplicationUser>>();
         ApplicationUser user = IdentityStatic.CreateInstanceUser();
 
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         await userStore.SetUserNameAsync(user, req.Email, CancellationToken.None);
         IUserEmailStore<ApplicationUser> emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, req.Email, CancellationToken.None);
@@ -1527,6 +1583,7 @@ public class IdentityTools(
 
         string callbackUrl = $"{req.BaseAddress}?userId={userId}&code={code}";
 
+        IEmailSender<ApplicationUser> emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender<ApplicationUser>>();
         await emailSender.SendConfirmationLinkAsync(user, req.Email, System.Text.Encodings.Web.HtmlEncoder.Default.Encode(callbackUrl));
 
         RegistrationNewUserResponseModel res = new()
@@ -1549,6 +1606,10 @@ public class IdentityTools(
 
     IUserEmailStore<ApplicationUser> GetEmailStore()
     {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using IUserStore<ApplicationUser> userStore = scope.ServiceProvider.GetRequiredService<IUserStore<ApplicationUser>>();
+
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         if (!userManager.SupportsUserEmail)
         {
             throw new NotSupportedException("Для пользовательского интерфейса по умолчанию требуется хранилище пользователей с поддержкой электронной почты.");
