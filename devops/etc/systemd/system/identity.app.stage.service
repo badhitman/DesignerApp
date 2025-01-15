@@ -1,0 +1,17 @@
+[Unit]
+Description=identity.app.stage.service
+
+[Service]
+WorkingDirectory=/srv/services.stage/IdentityService/
+ExecStart=/usr/bin/dotnet /srv/services.stage/IdentityService/IdentityService.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-identity-app.stage
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Staging
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+Environment=TransmissionQueueNamePrefix=_stage
+
+[Install]
+WantedBy=multi-user.target

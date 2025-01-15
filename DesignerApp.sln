@@ -105,6 +105,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stage", "stage", "{CEF1BB59
 		devops\etc\systemd\system\comm.app.stage.service = devops\etc\systemd\system\comm.app.stage.service
 		devops\etc\systemd\system\constructor.app.stage.service = devops\etc\systemd\system\constructor.app.stage.service
 		devops\etc\systemd\system\hd.app.stage.service = devops\etc\systemd\system\hd.app.stage.service
+		devops\etc\systemd\system\identity.app.stage.service = devops\etc\systemd\system\identity.app.stage.service
 		devops\etc\systemd\system\tg.app.stage.service = devops\etc\systemd\system\tg.app.stage.service
 		devops\etc\systemd\system\web.app.stage.service = devops\etc\systemd\system\web.app.stage.service
 	EndProjectSection
@@ -128,6 +129,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prod", "prod", "{1B873580-3
 		devops\etc\systemd\system\comm.app.service = devops\etc\systemd\system\comm.app.service
 		devops\etc\systemd\system\constructor.app.service = devops\etc\systemd\system\constructor.app.service
 		devops\etc\systemd\system\hd.app.service = devops\etc\systemd\system\hd.app.service
+		devops\etc\systemd\system\identity.app.service = devops\etc\systemd\system\identity.app.service
 		devops\etc\systemd\system\tg.app.service = devops\etc\systemd\system\tg.app.service
 		devops\etc\systemd\system\web.app.service = devops\etc\systemd\system\web.app.service
 	EndProjectSection
