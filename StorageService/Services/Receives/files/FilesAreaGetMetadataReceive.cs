@@ -17,12 +17,7 @@ namespace Transmission.Receives.storage;
 public class FilesAreaGetMetadataReceive(ILogger<FilesSelectReceive> loggerRepo, ISerializeStorage serializeStorageRepo)
     : IResponseReceive<FilesAreaMetadataRequestModel?, TResponseModel<FilesAreaMetadataModel[]>?>
 {
-    /// <summary>
-    /// Получить сводку (метаданные) по пространствам хранилища
-    /// </summary>
-    /// <remarks>
-    /// Общий размер и количество группируется по AppName
-    /// </remarks>
+    /// <inheritdoc/>
     public static string QueueName => GlobalStaticConstants.TransmissionQueues.FilesAreaGetMetadataReceive;
 
     /// <summary>

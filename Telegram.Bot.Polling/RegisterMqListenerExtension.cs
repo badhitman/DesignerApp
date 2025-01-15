@@ -30,7 +30,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<ChatsSelectTelegramReceive, TPaginationRequestModel<string?>, TPaginationResponseModel<ChatTelegramModelDB>>()
             .RegisterMqListener<ForwardMessageTelegramReceive, ForwardMessageTelegramBotModel, TResponseModel<MessageComplexIdsModel>>()
             .RegisterMqListener<ChatTelegramReadReceive, int, ChatTelegramModelDB>()
-            .RegisterMqListener<ErrorsForChatsSelectTelegramReceive, TPaginationRequestModel<long[]?>, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>>()
+            .RegisterMqListener<ErrorsForChatsSelectTelegramReceive, TPaginationRequestModel<long[]>, TPaginationResponseModel<ErrorSendingMessageTelegramBotModelDB>>()
             ;
     }
 }
