@@ -19,6 +19,6 @@ public class AttendancesRecordsStatusChangeByHelpdeskIdReceive(ICommerceService 
     public async Task<TResponseModel<bool>?> ResponseHandleAction(TAuthRequestModel<StatusChangeRequestModel>? req)
     {
         ArgumentNullException.ThrowIfNull(req);
-        return await commRepo.StatusesOrdersAttendancesChangeByHelpdeskDocumentId(req);
+        return await commRepo.AttendancesRecordsStatusesChangeByHelpdeskId(req);
     }
 }

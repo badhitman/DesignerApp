@@ -5,12 +5,12 @@
 namespace SharedLib;
 
 /// <summary>
-/// WorksFindResponseModel
+/// Доступные слоты для записи/брони
 /// </summary>
 public class WorksFindResponseModel : WorksFindBaseModel
 {
     /// <summary>
-    /// WorkSchedulesFindResponseModel
+    /// Доступные слоты для записи/брони
     /// </summary>
     public WorksFindResponseModel()
     {
@@ -19,7 +19,7 @@ public class WorksFindResponseModel : WorksFindBaseModel
     }
 
     /// <summary>
-    /// WorkSchedulesFindResponseModel
+    /// Доступные слоты для записи/брони
     /// </summary>
     public WorksFindResponseModel(DateOnly start, DateOnly end, List<WeeklyScheduleModelDB> WeeklySchedules, List<CalendarScheduleModelDB> CalendarsSchedules, List<OrganizationContractorModel> OrganizationsContracts, List<OrderAttendanceModelDB> OrdersAttendances)
     {

@@ -244,7 +244,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> OrderAttendanceDeleteRecord(TAuthRequestModel<int> req)
+    public async Task<ResponseBaseModel> AttendanceRecordDelete(TAuthRequestModel<int> req)
     {
         UserInfoModel actor = default!;
         OrderAttendanceModelDB? orderAttendanceDB = null;
@@ -306,7 +306,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool>> StatusesOrdersAttendancesChangeByHelpdeskDocumentId(TAuthRequestModel<StatusChangeRequestModel> req)
+    public async Task<TResponseModel<bool>> AttendancesRecordsStatusesChangeByHelpdeskId(TAuthRequestModel<StatusChangeRequestModel> req)
     {
         TResponseModel<bool> res = new();
         TResponseModel<UserInfoModel[]> actorRes = await identityRepo.GetUsersIdentity([req.SenderActionUserId]);
@@ -348,7 +348,7 @@ public partial class CommerceImplementService : ICommerceService
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            msg = $"Не удалось выполнить команду блокировки БД {nameof(StatusesOrdersAttendancesChangeByHelpdeskDocumentId)}: ";
+            msg = $"Не удалось выполнить команду блокировки БД {nameof(AttendancesRecordsStatusesChangeByHelpdeskId)}: ";
             loggerRepo.LogError(ex, $"{msg}{JsonConvert.SerializeObject(req, Formatting.Indented, GlobalStaticConstants.JsonSerializerSettings)}");
             res.AddError($"{msg}{ex.Message}");
             return res;
