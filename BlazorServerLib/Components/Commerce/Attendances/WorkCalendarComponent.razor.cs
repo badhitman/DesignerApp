@@ -95,7 +95,7 @@ public partial class WorkCalendarComponent : BlazorBusyComponentBaseAuthModel
         };
 
         if (OfferCurrent is not null && OfferCurrent.Id > 0)
-            req.Payload.OfferFilter = OfferCurrent.Id;
+            req.Payload.OfferFilter = [OfferCurrent.Id];
 
         await SetBusy();
         TResponseModel<TPaginationResponseModel<CalendarScheduleModelDB>> res = await CommerceRepo.CalendarsSchedulesSelect(new() { Payload = req, SenderActionUserId = CurrentUserSession.UserId });

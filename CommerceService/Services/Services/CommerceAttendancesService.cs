@@ -541,8 +541,13 @@ public partial class CommerceImplementService : ICommerceService
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
         IQueryable<WeeklyScheduleModelDB> q = context
-            .WeeklySchedules.Where(x => x.ContextName == req.Payload.ContextName && x.OfferId == req.Payload.OfferFilter && x.NomenclatureId == req.Payload.NomenclatureFilter)
-            .AsQueryable();
+            .WeeklySchedules.Where(x => x.ContextName == req.Payload.ContextName);
+
+        if (req.Payload.OfferFilter is not null && req.Payload.OfferFilter.Length != 0)
+            q = q.Where(x => req.Payload.OfferFilter.Any(i => i == x.OfferId));
+
+        if (req.Payload.NomenclatureFilter is not null && req.Payload.NomenclatureFilter.Length != 0)
+            q = q.Where(x => req.Payload.NomenclatureFilter.Any(i => i == x.NomenclatureId));
 
         if (req.Payload.Weekdays is not null && req.Payload.Weekdays.Length != 0)
             q = q.Where(x => req.Payload.Weekdays.Any(y => y == x.Weekday));
@@ -689,8 +694,13 @@ public partial class CommerceImplementService : ICommerceService
 
         IQueryable<CalendarScheduleModelDB> q = context
             .CalendarsSchedules
-            .Where(x => x.OfferId == req.Payload.Payload.OfferFilter && x.NomenclatureId == req.Payload.Payload.NomenclatureFilter && (!req.Payload.Payload.ActualOnly || x.DateScheduleCalendar >= _dtp))
-            .AsQueryable();
+            .Where(x => !req.Payload.Payload.ActualOnly || x.DateScheduleCalendar >= _dtp);
+
+        if (req.Payload.Payload.OfferFilter is not null && req.Payload.Payload.OfferFilter.Length != 0)
+            q = q.Where(x => req.Payload.Payload.OfferFilter.Any(i => i == x.OfferId));
+
+        if (req.Payload.Payload.NomenclatureFilter is not null && req.Payload.Payload.NomenclatureFilter.Length != 0)
+            q = q.Where(x => req.Payload.Payload.NomenclatureFilter.Any(i => i == x.NomenclatureId));
 
         if (req.Payload.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.Payload.AfterDateUpdate));

@@ -89,17 +89,17 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
                     IncludeExternalData = true,
                     OrganizationFilter = OrganizationFilter,
                     AddressForOrganizationFilter = AddressForOrganization,
-                    NomenclatureFilter = NomenclatureFilter,
-                    OfferFilter = OfferFilter,
+                    NomenclatureFilter = NomenclatureFilter.HasValue ? [NomenclatureFilter.Value] : null,
+                    OfferFilter = OfferFilter.HasValue ? [OfferFilter.Value] : null,
                 }
             }
         };
 
         await SetBusy(token: token);
-        
+
         TPaginationResponseModel<OrderDocumentModelDB> res = await CommerceRepo.OrdersSelect(req);
         IsBusyProgress = false;
-        
+
         if (res.Response is null)
             return new TableData<OrderDocumentModelDB>() { TotalItems = 0, Items = [] };
 

@@ -12,10 +12,10 @@ public class OffersSelectRequestBaseModel
     /// <summary>
     /// Фильтр по номенклатуре
     /// </summary>
-    public int? NomenclatureFilter { get; set; }
+    public int[]? NomenclatureFilter { get; set; }
 
     /// <summary>
     /// Фильтр по коммерческому предложению
     /// </summary>
-    public int? OfferFilter { get; set; }
+    public int[]? OfferFilter { get; set; }
 }

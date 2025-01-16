@@ -476,11 +476,11 @@ public partial class CommerceImplementService : ICommerceService
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
             q = q.Where(x => x.NormalizedUpperName.Contains(req.Payload.SearchQuery.ToUpper()));
 
-        if (req.Payload.OfferFilter.HasValue && req.Payload.OfferFilter.Value != 0)
-            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.OfferId == req.Payload.OfferFilter));
+        if (req.Payload.OfferFilter is not null && req.Payload.OfferFilter.Length != 0)
+            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && req.Payload.OfferFilter.Any(i => i == y.OfferId)));
 
-        if (req.Payload.NomenclatureFilter.HasValue && req.Payload.NomenclatureFilter.Value != 0)
-            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && y.NomenclatureId == req.Payload.NomenclatureFilter));
+        if (req.Payload.NomenclatureFilter is not null && req.Payload.NomenclatureFilter.Length != 0)
+            q = q.Where(x => context.RowsOfWarehouseDocuments.Any(y => y.WarehouseDocumentId == x.Id && req.Payload.NomenclatureFilter.Any(i => i == y.NomenclatureId)));
 
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
@@ -504,12 +504,12 @@ public partial class CommerceImplementService : ICommerceService
 
         return new()
         {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
         };
     }
 
