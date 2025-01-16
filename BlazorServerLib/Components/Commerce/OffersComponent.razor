@@ -1,6 +1,6 @@
 ﻿@using BlazorWebLib.Components.ParametersShared
 @using MudBlazor
-@inherits BlazorBusyComponentRegistersModel
+@inherits BlazorRegistersComponent
 
 <style>
     td.mud-table-cell sup.bi, i.bi {
@@ -67,8 +67,7 @@
             }
             <MudTd DataLabel="Ед. изм.">@context.OfferUnit.DescriptionInfo()</MudTd>
             <MudTd DataLabel="Баланс">
-                @RegistersCache.Where(x => x.OfferId == context.Id).Sum(x => x.Quantity)
-                <DynamicComponent Type="@(GetType(ViewMode.DescriptionInfo()))" />
+                <DynamicComponent Type="@(GetType(ViewMode.DescriptionInfo()))" Parameters="@Parameters(context)" />
             </MudTd>
         </RowTemplate>
         <NoRecordsContent>

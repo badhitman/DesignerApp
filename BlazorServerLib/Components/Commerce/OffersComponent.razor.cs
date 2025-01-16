@@ -3,17 +3,17 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using System.Reflection;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
-using System.Reflection;
 
 namespace BlazorWebLib.Components.Commerce;
 
 /// <summary>
 /// OffersComponent
 /// </summary>
-public partial class OffersComponent : BlazorBusyComponentRegistersModel
+public partial class OffersComponent : BlazorRegistersComponent
 {
     [Inject]
     IStorageTransmission StorageTransmissionRepo { get; set; } = default!;
@@ -45,6 +45,14 @@ public partial class OffersComponent : BlazorBusyComponentRegistersModel
     static Type? GetType(string strFullyQualifiedName)
     {
         return Assembly.GetExecutingAssembly().GetTypes().Single(t => t.Name == strFullyQualifiedName);
+    }
+
+    Dictionary<string, object> Parameters(OfferModelDB ctx)
+    {
+        Dictionary<string, object> par = [];
+        par.Add(nameof(OfferBalanceBaseModel.ContextOffer), ctx);
+        par.Add(nameof(OfferBalanceBaseModel.Parent), this);
+        return par;
     }
 
     /// <inheritdoc/>

@@ -11,7 +11,7 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// AddRowToOrderDocumentComponent
 /// </summary>
-public partial class AddRowToOrderDocumentComponent : BlazorBusyComponentRegistersModel
+public partial class AddRowToOrderDocumentComponent : BlazorRegistersComponent
 {
     /// <summary>
     /// Склад

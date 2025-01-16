@@ -12,7 +12,7 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// OffersTableBaseComponent
 /// </summary>
-public abstract class OffersTableBaseComponent : BlazorBusyComponentRegistersModel
+public abstract class OffersTableBaseComponent : BlazorRegistersComponent
 {
     /// <summary>
     /// ReadOnly

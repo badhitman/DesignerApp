@@ -1,1 +1,3 @@
-﻿<!-- <h3>GoodsOfferBalanceComponent</h3> -->
+﻿@inherits OfferBalanceBaseModel
+
+@Parent.RegistersCache.Where(x => x.OfferId == ContextOffer.Id).Sum(x => x.Quantity)

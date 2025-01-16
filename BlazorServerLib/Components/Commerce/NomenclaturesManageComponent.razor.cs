@@ -13,7 +13,7 @@ namespace BlazorWebLib.Components.Commerce;
 /// <summary>
 /// NomenclaturesManageComponent
 /// </summary>
-public partial class NomenclaturesManageComponent : BlazorBusyComponentRegistersModel
+public partial class NomenclaturesManageComponent : BlazorRegistersComponent
 {
     [Inject]
     IJSRuntime JsRuntimeRepo { get; set; } = default!;

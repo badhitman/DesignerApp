@@ -8,9 +8,9 @@ using SharedLib;
 namespace BlazorLib;
 
 /// <summary>
-/// BlazorBusyComponentRegistersModel
+/// BlazorRegistersComponent
 /// </summary>
-public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBaseAuthModel
+public abstract class BlazorRegistersComponent : BlazorBusyComponentBaseAuthModel
 {
     /// <summary>
     /// Commerce
@@ -22,7 +22,7 @@ public abstract class BlazorBusyComponentRegistersModel : BlazorBusyComponentBas
     /// <summary>
     /// RegistersCache
     /// </summary>
-    protected List<OfferAvailabilityModelDB> RegistersCache = [];
+    public List<OfferAvailabilityModelDB> RegistersCache = [];
 
     /// <summary>
     /// CacheRegistersUpdate
