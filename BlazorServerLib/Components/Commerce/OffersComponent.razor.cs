@@ -104,7 +104,7 @@ public partial class OffersComponent : BlazorRegistersComponent
 
         if (res.Response?.Response is not null)
         {
-            await CacheRegistersUpdate(offers: res.Response.Response.Select(x => x.Id), goods: []);
+            await CacheRegistersUpdate(offers: res.Response.Response.Select(x => x.Id).ToArray(), goods: []);
             IsBusyProgress = false;
             return new TableData<OfferModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
         }

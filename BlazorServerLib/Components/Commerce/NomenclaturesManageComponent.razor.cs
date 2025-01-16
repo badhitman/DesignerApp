@@ -37,6 +37,9 @@ public partial class NomenclaturesManageComponent : BlazorRegistersComponent
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Скачать полный прайс
+    /// </summary>
     async Task DownloadFullPrice()
     {
         await SetBusy();
@@ -69,7 +72,7 @@ public partial class NomenclaturesManageComponent : BlazorRegistersComponent
 
         if (res.Response is not null)
         {
-            await CacheRegistersUpdate(offers: [], goods: res.Response.Select(x => x.Id));
+            await CacheRegistersUpdate(offers: [], goods: res.Response.Select(x => x.Id).ToArray());
             IsBusyProgress = false;
             return new TableData<NomenclatureModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };
         }

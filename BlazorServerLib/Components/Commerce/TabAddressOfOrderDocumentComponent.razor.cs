@@ -49,7 +49,7 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
 
         List<Task> tasks = [
             Task.Run(async () => { TResponseModel<List<RubricIssueHelpdeskModelDB>> res = await HelpdeskRepo.RubricRead(0); SnackbarRepo.ShowMessagesResponse(res.Messages); RubricMetadataShadow = res.Response; }),
-            CacheRegistersUpdate(offers: CurrentTab.Rows!.Select(x => x.OfferId),goods: [],CurrentTab.WarehouseId, true),
+            CacheRegistersUpdate(offers: CurrentTab.Rows!.Select(x => x.OfferId).ToArray(),goods: [],CurrentTab.WarehouseId, true),
             Task.Run(async () => { TResponseModel<bool?> showingPriceSelectorOrder = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.ShowingPriceSelectorOrder); _showingPriceSelectorOrder = showingPriceSelectorOrder.Response == true; if (!showingPriceSelectorOrder.Success()) SnackbarRepo.ShowMessagesResponse(showingPriceSelectorOrder.Messages); }) ];
 
         await Task.WhenAll(tasks);
@@ -74,7 +74,7 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
             return;
 
         await SetBusy();
-        await CacheRegistersUpdate(offers: CurrentTab.Rows.Select(x => x.OfferId), goods: [], CurrentTab.WarehouseId, true);
+        await CacheRegistersUpdate(offers: CurrentTab.Rows.Select(x => x.OfferId).ToArray(), goods: [], CurrentTab.WarehouseId, true);
         await SetBusy(false);
     }
 
@@ -95,7 +95,7 @@ public partial class TabAddressOfOrderDocumentComponent : OffersTableBaseCompone
         if (CurrentTab.Rows is not null)
             InvokeAsync(async () =>
             {
-                await CacheRegistersUpdate(offers: CurrentTab.Rows.Select(x => x.OfferId), goods: [], CurrentTab.WarehouseId, true);
+                await CacheRegistersUpdate(offers: CurrentTab.Rows.Select(x => x.OfferId).ToArray(), goods: [], CurrentTab.WarehouseId, true);
                 StateHasChanged();
             });
         else

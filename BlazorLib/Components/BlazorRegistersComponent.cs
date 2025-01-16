@@ -27,7 +27,7 @@ public abstract class BlazorRegistersComponent : BlazorBusyComponentBaseAuthMode
     /// <summary>
     /// CacheRegistersUpdate
     /// </summary>
-    protected async Task CacheRegistersUpdate(IEnumerable<int> offers, IEnumerable<int> goods, int warehouseId = 0, bool clearCache = false)
+    protected async Task CacheRegistersUpdate(int[] offers, int[] goods, int warehouseId = 0, bool clearCache = false)
     {
         if (clearCache)
         {
@@ -40,7 +40,7 @@ public abstract class BlazorRegistersComponent : BlazorBusyComponentBaseAuthMode
         offers = [.. offers.Where(x => x > 0 && !RegistersCache.Any(y => y.Id == x)).Distinct()];
         goods = [.. goods.Where(x => x > 0 && !RegistersCache.Any(y => y.Id == x)).Distinct()];
 
-        if (!goods.Any() || !offers.Any())
+        if (goods.Length == 0 && offers.Length == 0)
             return;
 
         TPaginationRequestModel<RegistersSelectRequestBaseModel> reqData = new()
@@ -59,7 +59,7 @@ public abstract class BlazorRegistersComponent : BlazorBusyComponentBaseAuthMode
         await SetBusy();
         TPaginationResponseModel<OfferAvailabilityModelDB> rubrics = await CommerceRepo.OffersRegistersSelect(reqData);
         await SetBusy(false);
-        
+
         if (rubrics.Response is not null && rubrics.Response.Count != 0)
         {
             lock (this)
