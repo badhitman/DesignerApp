@@ -26,7 +26,7 @@ public static partial class GlobalTools
     /// </summary>
     public static bool IsPhoneNumber(string? number)
     {
-        if(string.IsNullOrWhiteSpace(number))
+        if (string.IsNullOrWhiteSpace(number))
             return false;
 
         return Regex.Match(number, @"^(\+?[0-9]{11})$").Success;
@@ -372,7 +372,7 @@ public static partial class GlobalTools
             if (type != null)
                 return type;
         }
-        return null;
+        return Assembly.GetExecutingAssembly().GetTypes().SingleOrDefault(t => t.Name == strFullyQualifiedName);
     }
 
     /// <summary>

@@ -35,7 +35,7 @@ else
             </div>
         </div>
         <div class="card-body">
-            <OffersComponent CurrentNomenclature="editNomenclature" />
+            <DynamicComponent Type="GetType(ViewSet.DescriptionInfo())" Parameters="Parameters" />
             <AuthorizeView Roles="@GlobalStaticConstants.Roles.Admin">
                 <Authorized>
                     <div class="card mt-3">

@@ -1,6 +1,6 @@
 ﻿@using BlazorWebLib.Components.ParametersShared
 @using MudBlazor
-@inherits BlazorRegistersComponent
+@inherits BlazorBusyComponentBaseAuthModel
 
 <style>
     td.mud-table-cell sup.bi, i.bi {
@@ -34,13 +34,9 @@
         <HeaderContent>
             <MudTh>Номенклатура</MudTh>
             <MudTh>Название</MudTh>
-            <MudTh>Цена@(_hideWorth ? "" : "/Стоимость")</MudTh>
-            @if (!_hideMultiplicity)
-            {
-                <MudTh>Кратность</MudTh>
-            }
+            <MudTh>Цена</MudTh>
             <MudTh>Ед. изм.</MudTh>
-            <MudTh>Баланс</MudTh>
+            <MudTh>Записи</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Номенклатура">
@@ -55,19 +51,11 @@
                 </AuthorizeView>
             </MudTd>
             <MudTd DataLabel="Цена">
-                @($"{context.Price}{(_hideWorth ? "" : $"/{Math.Round(context.Price / context.Multiplicity, 2)}")}")
-                @if (CurrentUserSession!.IsAdmin)
-                {
-                    <PricesRulesForOfferComponent Offer="context" />
-                }
+                @context.Price
             </MudTd>
-            @if (!_hideMultiplicity)
-            {
-                <MudTd DataLabel="Кратность">@context.Multiplicity</MudTd>
-            }
             <MudTd DataLabel="Ед. изм.">@context.OfferUnit.DescriptionInfo()</MudTd>
-            <MudTd DataLabel="Баланс">
-                <DynamicComponent Type="@(GetType(ViewMode.DescriptionInfo()))" Parameters="@Parameters(context)" />
+            <MudTd DataLabel="Записи">
+                ~
             </MudTd>
         </RowTemplate>
         <NoRecordsContent>

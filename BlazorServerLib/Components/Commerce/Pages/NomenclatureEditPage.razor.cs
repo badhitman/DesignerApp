@@ -24,8 +24,5 @@ public partial class NomenclatureEditPage : BlazorBusyComponentBaseAuthModel
     [Parameter]
     public string? ViewMode {  get; set; }
 
-    OfferBalanceDynamicComponentsEnum ModeView
-        => string.IsNullOrWhiteSpace(ViewMode) || !Enum.TryParse(typeof(OfferBalanceDynamicComponentsEnum), ViewMode, out object? ovm)
-        ? OfferBalanceDynamicComponentsEnum.Goods 
-        : (OfferBalanceDynamicComponentsEnum)ovm;
+    OffersListModesEnum GetMode => string.IsNullOrWhiteSpace(ViewMode) || !Enum.TryParse(typeof(OffersListModesEnum), ViewMode, out object? pvm) ? OffersListModesEnum.Goods : (OffersListModesEnum)pvm;
 }

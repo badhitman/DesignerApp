@@ -9,19 +9,19 @@ using System.ComponentModel;
 namespace BlazorWebLib;
 
 /// <summary>
-/// OfferBalanceDynamicComponentsEnum
+/// OffersListModesEnum
 /// </summary>
-public enum OfferBalanceDynamicComponentsEnum
+public enum OffersListModesEnum
 {
     /// <summary>
-    /// <see cref="GoodsOfferBalanceComponent"/>
+    /// <see cref="OffersGoodsListComponent"/>
     /// </summary>
-    [Description(nameof(GoodsOfferBalanceComponent))]
+    [Description(nameof(OffersGoodsListComponent))]
     Goods,
 
     /// <summary>
-    /// <see cref="AttendancesOfferBalanceComponent"/>
+    /// <see cref="OffersAttendancesListComponent"/>
     /// </summary>
-    [Description(nameof(AttendancesOfferBalanceComponent))]
+    [Description(nameof(OffersAttendancesListComponent))]
     Attendances,
 }

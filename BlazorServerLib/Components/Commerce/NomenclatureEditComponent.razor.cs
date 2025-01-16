@@ -5,6 +5,8 @@
 using Microsoft.AspNetCore.Components;
 using BlazorLib;
 using SharedLib;
+using System.Reflection;
+using BlazorWebLib.Components.Commerce.Attendances;
 
 namespace BlazorWebLib.Components.Commerce;
 
@@ -23,6 +25,12 @@ public partial class NomenclatureEditComponent : BlazorBusyComponentBaseAuthMode
     [Parameter, EditorRequired]
     public required int NomenclatureId { get; set; }
 
+    /// <summary>
+    /// ModeView
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public OffersListModesEnum ViewSet { get; set; } = OffersListModesEnum.Goods;
+
 
     NomenclatureModelDB? CurrentNomenclature;
     NomenclatureModelDB? editNomenclature;
@@ -32,6 +40,23 @@ public partial class NomenclatureEditComponent : BlazorBusyComponentBaseAuthMode
     Dictionary<string, object> editorConf = default!;
 
     bool CanSave => CurrentNomenclature is not null && (CurrentNomenclature.Name != editNomenclature?.Name || CurrentNomenclature.Description != editNomenclature?.Description || CurrentNomenclature.BaseUnit != editNomenclature?.BaseUnit);
+
+    static Type? GetType(string strFullyQualifiedName)
+    {
+        return Assembly.GetExecutingAssembly().GetTypes().Single(t => t.Name == strFullyQualifiedName);
+    }
+
+    Dictionary<string, object> Parameters
+    {
+        get
+        {
+            Dictionary<string, object> par = [];
+            par.Add(nameof(OffersAttendancesListComponent.CurrentNomenclature), editNomenclature!);
+            //par.Add(nameof(OfferBalanceBaseModel.Parent), this);
+            return par;
+        }
+    }
+
 
     async Task SaveNomenclature()
     {

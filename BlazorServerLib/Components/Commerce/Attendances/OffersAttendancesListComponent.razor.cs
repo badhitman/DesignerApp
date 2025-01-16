@@ -3,20 +3,20 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using System.Reflection;
 using BlazorLib;
 using SharedLib;
 using MudBlazor;
 
-namespace BlazorWebLib.Components.Commerce;
+namespace BlazorWebLib.Components.Commerce.Attendances;
 
 /// <summary>
-/// OffersComponent
+/// OffersAttendancesListComponent
 /// </summary>
-public partial class OffersComponent : BlazorRegistersComponent
+public partial class OffersAttendancesListComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     IStorageTransmission StorageTransmissionRepo { get; set; } = default!;
+
 
     /// <summary>
     /// CurrentNomenclature
@@ -24,15 +24,6 @@ public partial class OffersComponent : BlazorRegistersComponent
     [Parameter, EditorRequired]
     public required NomenclatureModelDB CurrentNomenclature { get; set; }
 
-    /// <summary>
-    /// ViewMode
-    /// </summary>
-    [CascadingParameter]
-    public OfferBalanceDynamicComponentsEnum ViewMode { get; set; } = OfferBalanceDynamicComponentsEnum.Goods;
-
-
-    bool _hideMultiplicity;
-    bool _hideWorth;
 
     private MudTable<OfferModelDB> table = default!;
     bool _visibleChangeConfig;
@@ -41,34 +32,6 @@ public partial class OffersComponent : BlazorRegistersComponent
         FullWidth = true,
         CloseButton = true
     };
-
-    static Type? GetType(string strFullyQualifiedName)
-    {
-        return Assembly.GetExecutingAssembly().GetTypes().Single(t => t.Name == strFullyQualifiedName);
-    }
-
-    Dictionary<string, object> Parameters(OfferModelDB ctx)
-    {
-        Dictionary<string, object> par = [];
-        par.Add(nameof(OfferBalanceBaseModel.ContextOffer), ctx);
-        par.Add(nameof(OfferBalanceBaseModel.Parent), this);
-        return par;
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        await SetBusy();
-
-        List<Task> tasks = [
-            Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.HideWorthOffers); if (!res.Success()) SnackbarRepo.ShowMessagesResponse(res.Messages); else _hideWorth = res.Response == true; }),
-            Task.Run(async () => { TResponseModel<bool?> res = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.HideMultiplicityOffers); if (!res.Success()) SnackbarRepo.ShowMessagesResponse(res.Messages); else _hideMultiplicity = res.Response == true;})];
-
-        await Task.WhenAll(tasks);
-
-        await SetBusy(false);
-    }
 
     void CancelChangeConfig()
     {
