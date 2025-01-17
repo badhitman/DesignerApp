@@ -17,6 +17,9 @@ public partial class OffersAttendancesListComponent : BlazorBusyComponentBaseAut
     [Inject]
     IStorageTransmission StorageTransmissionRepo { get; set; } = default!;
 
+    [Inject]
+    ICommerceTransmission CommerceRepo { get; set; } = default!;
+
 
     /// <summary>
     /// CurrentNomenclature
@@ -67,7 +70,7 @@ public partial class OffersAttendancesListComponent : BlazorBusyComponentBaseAut
 
         if (res.Response?.Response is not null)
         {
-            await CacheRegistersUpdate(offers: res.Response.Response.Select(x => x.Id).ToArray(), goods: []);
+            //await CacheRegistersUpdate(offers: res.Response.Response.Select(x => x.Id).ToArray(), goods: []);
             IsBusyProgress = false;
             return new TableData<OfferModelDB>() { TotalItems = res.Response.TotalRowsCount, Items = res.Response.Response };
         }
