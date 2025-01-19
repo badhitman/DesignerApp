@@ -11,6 +11,11 @@ public partial interface ICommerceService
 {
     #region records
     /// <summary>
+    /// Подбор записей (актуальных)
+    /// </summary>
+    public Task<TPaginationResponseModel<RecordsAttendanceModelDB>> RecordsAttendancesSelect(TPaginationRequestAuthModel<RecordsAttendancesRequestModel> req);
+
+    /// <summary>
     /// Удалить запись/бронь
     /// </summary>
     public Task<ResponseBaseModel> RecordAttendanceDelete(TAuthRequestModel<int> orderId);
@@ -33,8 +38,6 @@ public partial interface ICommerceService
     /// Создать пакет записей/броней
     /// </summary>
     public Task<ResponseBaseModel> RecordsAttendanceCreate(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules);
-
-
     #endregion
 
     /// <summary>

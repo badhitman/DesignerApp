@@ -20,7 +20,7 @@ public partial class AttendancesCatalogComponent : BlazorBusyComponentBaseAuthMo
 
     bool _expanded;
     MudTable<NomenclatureModelDB> tableRef = default!;
-
+    List<RecordsAttendanceModelDB> currentRecords = [];
 
     async void CreateNomenclatureAction(NomenclatureModelDB nom)
     {
@@ -49,6 +49,24 @@ public partial class AttendancesCatalogComponent : BlazorBusyComponentBaseAuthMo
 
         if (res.Response is null)
             return new TableData<NomenclatureModelDB>() { TotalItems = 0, Items = [] };
+
+
+        TPaginationRequestAuthModel<RecordsAttendancesRequestModel> recReq = new()
+        {
+            Payload = new RecordsAttendancesRequestModel()
+            {
+                NomenclatureFilter = [.. res.Response.Select(x => x.Id)],
+                ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
+                IncludeExternalData = true,
+            },
+            SenderActionUserId = CurrentUserSession!.UserId,
+            PageNum = 0,
+            PageSize = int.MaxValue,
+            SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
+        };
+
+        TPaginationResponseModel<RecordsAttendanceModelDB> recordsSelect = await CommerceRepo.RecordsAttendancesSelect(recReq);
+        List<RecordsAttendanceModelDB> currentRecords = recordsSelect.Response ?? [];
 
         return new TableData<NomenclatureModelDB>() { TotalItems = res.TotalRowsCount, Items = res.Response };
     }

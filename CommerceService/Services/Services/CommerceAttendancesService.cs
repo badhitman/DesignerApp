@@ -15,6 +15,55 @@ namespace CommerceService;
 /// </summary>
 public partial class CommerceImplementService : ICommerceService
 {
+    #region records
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<RecordsAttendanceModelDB>> RecordsAttendancesSelect(TPaginationRequestAuthModel<RecordsAttendancesRequestModel> req)
+    {
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        IQueryable<RecordsAttendanceModelDB> q = context
+            .RecordsAttendances
+            .Where(x => x.ContextName == req.Payload.ContextName)
+            .AsQueryable();
+
+        if (req.Payload.AfterDateUpdate.HasValue)
+            q = q.Where(x => x.DateExecute >= DateOnly.FromDateTime(req.Payload.AfterDateUpdate.Value));
+
+        if (req.Payload.OfferFilter is not null && req.Payload.OfferFilter.Length != 0)
+            q = q.Where(x => req.Payload.OfferFilter.Any(i => i == x.OfferId));
+
+        if (req.Payload.NomenclatureFilter is not null && req.Payload.NomenclatureFilter.Length != 0)
+            q = q.Where(x => req.Payload.NomenclatureFilter.Any(i => i == x.NomenclatureId));
+
+        if (req.Payload.AfterDateUpdate is not null)
+            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
+
+        IOrderedQueryable<RecordsAttendanceModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+           ? q.OrderBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
+           : q.OrderByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
+
+        IQueryable<RecordsAttendanceModelDB> pq = oq
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize);
+
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<RecordsAttendanceModelDB, NomenclatureModelDB?> inc_query = pq
+            .Include(x => x.Offer)
+            .Include(x => x.Nomenclature);
+
+        return new()
+        {
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
+        };
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> RecordsAttendanceCreate(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules)
     {
@@ -463,7 +512,53 @@ public partial class CommerceImplementService : ICommerceService
             : [.. await q.ToArrayAsync()],
         };
     }
+    #endregion
 
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<WeeklyScheduleModelDB>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
+    {
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
+        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
+
+        IQueryable<WeeklyScheduleModelDB> q = context
+            .WeeklySchedules.Where(x => x.ContextName == req.Payload.ContextName);
+
+        if (req.Payload.OfferFilter is not null && req.Payload.OfferFilter.Length != 0)
+            q = q.Where(x => req.Payload.OfferFilter.Any(i => i == x.OfferId));
+
+        if (req.Payload.NomenclatureFilter is not null && req.Payload.NomenclatureFilter.Length != 0)
+            q = q.Where(x => req.Payload.NomenclatureFilter.Any(i => i == x.NomenclatureId));
+
+        if (req.Payload.Weekdays is not null && req.Payload.Weekdays.Length != 0)
+            q = q.Where(x => req.Payload.Weekdays.Any(y => y == x.Weekday));
+
+        if (req.Payload.AfterDateUpdate is not null)
+            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
+
+        IOrderedQueryable<WeeklyScheduleModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+           ? q.OrderBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
+           : q.OrderByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
+
+        IQueryable<WeeklyScheduleModelDB> pq = oq
+            .Skip(req.PageNum * req.PageSize)
+            .Take(req.PageSize);
+
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<WeeklyScheduleModelDB, NomenclatureModelDB?> inc_query = pq
+            .Include(x => x.Offer)
+            .Include(x => x.Nomenclature);
+
+        return new()
+        {
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
+        };
+    }
 
     /// <inheritdoc/>
     public async Task<WorksFindResponseModel> WorkSchedulesFind(WorkFindRequestModel req, int[]? organizationsFilter = null)
@@ -530,52 +625,6 @@ public partial class CommerceImplementService : ICommerceService
         ]);
 
         return new WorksFindResponseModel(req.StartDate, req.EndDate, WeeklySchedules, CalendarsSchedules, OrganizationsContracts, OrdersAttendances);
-    }
-
-    /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<WeeklyScheduleModelDB>> WeeklySchedulesSelect(TPaginationRequestModel<WorkSchedulesSelectRequestModel> req)
-    {
-        if (req.PageSize < 10)
-            req.PageSize = 10;
-
-        using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-
-        IQueryable<WeeklyScheduleModelDB> q = context
-            .WeeklySchedules.Where(x => x.ContextName == req.Payload.ContextName);
-
-        if (req.Payload.OfferFilter is not null && req.Payload.OfferFilter.Length != 0)
-            q = q.Where(x => req.Payload.OfferFilter.Any(i => i == x.OfferId));
-
-        if (req.Payload.NomenclatureFilter is not null && req.Payload.NomenclatureFilter.Length != 0)
-            q = q.Where(x => req.Payload.NomenclatureFilter.Any(i => i == x.NomenclatureId));
-
-        if (req.Payload.Weekdays is not null && req.Payload.Weekdays.Length != 0)
-            q = q.Where(x => req.Payload.Weekdays.Any(y => y == x.Weekday));
-
-        if (req.Payload.AfterDateUpdate is not null)
-            q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
-
-        IOrderedQueryable<WeeklyScheduleModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-           ? q.OrderBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
-           : q.OrderByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
-
-        IQueryable<WeeklyScheduleModelDB> pq = oq
-            .Skip(req.PageNum * req.PageSize)
-            .Take(req.PageSize);
-
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<WeeklyScheduleModelDB, NomenclatureModelDB?> inc_query = pq
-            .Include(x => x.Offer)
-            .Include(x => x.Nomenclature);
-
-        return new()
-        {
-            PageNum = req.PageNum,
-            PageSize = req.PageSize,
-            SortingDirection = req.SortingDirection,
-            SortBy = req.SortBy,
-            TotalRowsCount = await q.CountAsync(),
-            Response = req.Payload.IncludeExternalData ? [.. await inc_query.ToArrayAsync()] : [.. await pq.ToArrayAsync()]
-        };
     }
 
     /// <inheritdoc/>

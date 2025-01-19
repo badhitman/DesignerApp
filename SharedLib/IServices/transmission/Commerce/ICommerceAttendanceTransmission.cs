@@ -7,6 +7,11 @@ namespace SharedLib;
 public partial interface ICommerceTransmission
 {
     /// <summary>
+    /// Подбор записей (актуальных)
+    /// </summary>
+    public Task<TPaginationResponseModel<RecordsAttendanceModelDB>> RecordsAttendancesSelect(TPaginationRequestAuthModel<RecordsAttendancesRequestModel> req);
+
+    /// <summary>
     /// AttendanceRecordsDelete
     /// </summary>
     public Task<ResponseBaseModel> AttendanceRecordsDelete(TAuthRequestModel<int> req);

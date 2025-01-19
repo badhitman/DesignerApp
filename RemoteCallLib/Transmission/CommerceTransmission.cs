@@ -12,6 +12,10 @@ namespace RemoteCallLib;
 public partial class CommerceTransmission(IRabbitClient rabbitClient) : ICommerceTransmission
 {
     /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<RecordsAttendanceModelDB>> RecordsAttendancesSelect(TPaginationRequestAuthModel<RecordsAttendancesRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<RecordsAttendanceModelDB>>(GlobalStaticConstants.TransmissionQueues.RecordsAttendancesSelectCommerceReceive, req) ?? new();
+
+    /// <inheritdoc/>
     public async Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> req)
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.CreateAttendanceRecordsCommerceReceive, req) ?? new();
 
@@ -49,7 +53,7 @@ public partial class CommerceTransmission(IRabbitClient rabbitClient) : ICommerc
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TPaginationResponseModel<OfferModelDB>>> OffersSelect(TAuthRequestModel<TPaginationRequestModel<OffersSelectRequestModel>> req)
-        => await rabbitClient.MqRemoteCall< TResponseModel<TPaginationResponseModel<OfferModelDB>>>(GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive, req) ?? new();
+        => await rabbitClient.MqRemoteCall<TResponseModel<TPaginationResponseModel<OfferModelDB>>>(GlobalStaticConstants.TransmissionQueues.OfferSelectCommerceReceive, req) ?? new();
 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> OfferUpdate(TAuthRequestModel<OfferModelDB> offer)

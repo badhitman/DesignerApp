@@ -55,7 +55,20 @@
             </MudTd>
             <MudTd DataLabel="Ед. изм.">@context.OfferUnit.DescriptionInfo()</MudTd>
             <MudTd DataLabel="Записи">
-                ~
+                @{
+                    RecordsAttendanceModelDB[] crs = currentRecords.Where(x => x.OfferId == context.Id).ToArray();
+                }
+                @if (crs.Length == 0)
+                {
+                    <span>~ нет</span>
+                }
+                else
+                {
+                    foreach (RecordsAttendanceModelDB ra in crs)
+                    {
+                        <span class="badge text-bg-info">@ra.ToString()</span>
+                    }
+                }
             </MudTd>
         </RowTemplate>
         <NoRecordsContent>
