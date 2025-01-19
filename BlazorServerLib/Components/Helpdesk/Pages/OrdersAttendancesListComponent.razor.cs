@@ -17,7 +17,7 @@ public partial class OrdersAttendancesListComponent(ICommerceTransmission Commer
     /// OrdersAttendances
     /// </summary>
     [Parameter, EditorRequired]
-    public required OrderAttendanceModelDB[] OrdersAttendances { get; set; }
+    public required RecordsAttendanceModelDB[] OrdersAttendances { get; set; }
 
     /// <summary>
     /// HelpdeskIssueId
@@ -29,13 +29,13 @@ public partial class OrdersAttendancesListComponent(ICommerceTransmission Commer
     /// UpdateRecords
     /// </summary>
     [Parameter, EditorRequired]
-    public required Action<OrderAttendanceModelDB[]> UpdateRecords { get; set; }
+    public required Action<RecordsAttendanceModelDB[]> UpdateRecords { get; set; }
 
     int? _initDeleteOrder;
 
-    bool CanDeleteRecord(OrderAttendanceModelDB rec) => CurrentUserSession?.IsAdmin == true || rec.AuthorIdentityUserId == CurrentUserSession?.UserId;
+    bool CanDeleteRecord(RecordsAttendanceModelDB rec) => CurrentUserSession?.IsAdmin == true || rec.AuthorIdentityUserId == CurrentUserSession?.UserId;
 
-    async Task DeleteRecord(OrderAttendanceModelDB rec)
+    async Task DeleteRecord(RecordsAttendanceModelDB rec)
     {
         if (CurrentUserSession is null)
             return;
@@ -50,7 +50,7 @@ public partial class OrdersAttendancesListComponent(ICommerceTransmission Commer
         ResponseBaseModel resDel = await CommerceRepo.AttendanceRecordsDelete(new() { Payload = rec.Id, SenderActionUserId = CurrentUserSession.UserId });
         SnackbarRepo.ShowMessagesResponse(resDel.Messages);
 
-        TResponseModel<OrderAttendanceModelDB[]> resReload = await CommerceRepo.OrdersAttendancesByIssues(new() { IssueIds = [HelpdeskIssueId] });
+        TResponseModel<RecordsAttendanceModelDB[]> resReload = await CommerceRepo.OrdersAttendancesByIssues(new() { IssueIds = [HelpdeskIssueId] });
         SnackbarRepo.ShowMessagesResponse(resReload.Messages);
 
         if (resReload.Success() && resReload.Response is not null)

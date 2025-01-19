@@ -13,7 +13,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (OrderAttendanceModelDB row in OrdersAttendances.OrderBy(x => x.DateExecute).ThenBy(x => x.StartPart))
+        @foreach (RecordsAttendanceModelDB row in OrdersAttendances.OrderBy(x => x.DateExecute).ThenBy(x => x.StartPart))
         {
             <tr title="создан: @row.CreatedAtUTC.GetHumanDateTime()" @key="@($"row:{row.Id}")">
                 <td>@row.DateExecute</td>

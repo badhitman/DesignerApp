@@ -9,7 +9,7 @@ namespace SharedLib;
 /// <summary>
 /// OrderAttendancesModelDB
 /// </summary>
-public class OrderAttendanceModelDB : OrderDocumentBaseModelDB
+public class RecordsAttendanceModelDB : OrderDocumentBaseModelDB
 {
     /// <summary>
     /// Торговое предложение

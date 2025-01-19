@@ -21,7 +21,7 @@ public class WorksFindResponseModel : WorksFindBaseModel
     /// <summary>
     /// Доступные слоты для записи/брони
     /// </summary>
-    public WorksFindResponseModel(DateOnly start, DateOnly end, List<WeeklyScheduleModelDB> WeeklySchedules, List<CalendarScheduleModelDB> CalendarsSchedules, List<OrganizationContractorModel> OrganizationsContracts, List<OrderAttendanceModelDB> OrdersAttendances)
+    public WorksFindResponseModel(DateOnly start, DateOnly end, List<WeeklyScheduleModelDB> WeeklySchedules, List<CalendarScheduleModelDB> CalendarsSchedules, List<OrganizationContractorModel> OrganizationsContracts, List<RecordsAttendanceModelDB> OrdersAttendances)
     {
         StartDate = start;
         EndDate = end;
@@ -105,7 +105,7 @@ public class WorksFindResponseModel : WorksFindBaseModel
             }
         }
 
-        static bool QueryFindIndex(OrderAttendanceModelDB order, WorkScheduleModel ws)
+        static bool QueryFindIndex(RecordsAttendanceModelDB order, WorkScheduleModel ws)
         {
             return
                 order.DateExecute == ws.Date &&

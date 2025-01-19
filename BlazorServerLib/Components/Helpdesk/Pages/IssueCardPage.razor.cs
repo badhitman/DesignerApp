@@ -47,12 +47,12 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
     public List<UserInfoModel> UsersIdentityDump = [];
 
     OrderDocumentModelDB[]? OrdersJournal;
-    OrderAttendanceModelDB[]? OrdersAttendancesJournal;
+    RecordsAttendanceModelDB[]? OrdersAttendancesJournal;
     bool ShowingTelegramArea;
     bool ShowingWappiArea;
     bool ShowingAttachmentsIssueArea;
 
-    void ReloadRecords(OrderAttendanceModelDB[] sender)
+    void ReloadRecords(RecordsAttendanceModelDB[] sender)
     {
         OrdersAttendancesJournal = sender;
         StateHasChanged();
@@ -99,7 +99,7 @@ public partial class IssueCardPage : BlazorBusyComponentBaseAuthModel
             IssueIds = [Id],
         };
 
-        TResponseModel<OrderAttendanceModelDB[]> res = await CommRepo.OrdersAttendancesByIssues(req);
+        TResponseModel<RecordsAttendanceModelDB[]> res = await CommRepo.OrdersAttendancesByIssues(req);
 
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         OrdersAttendancesJournal = res.Response is null

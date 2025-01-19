@@ -1219,7 +1219,7 @@ public class HelpdeskImplementService(
 
                 TelegramBotConfigModel wc = default!;
                 TResponseModel<OrderDocumentModelDB[]> comm_res = default!;
-                TResponseModel<OrderAttendanceModelDB[]> attendance_res = default!;
+                TResponseModel<RecordsAttendanceModelDB[]> attendance_res = default!;
 
                 await Task.WhenAll([
                     Task.Run(async () => { comm_res = await commRepo.OrdersByIssues(req_comm); }),
@@ -1483,7 +1483,7 @@ public class HelpdeskImplementService(
             IssueIds = [issue_data.Id],
         };
         TResponseModel<OrderDocumentModelDB[]> find_orders = default!;
-        TResponseModel<OrderAttendanceModelDB[]> find_orders_attendances = default!;
+        TResponseModel<RecordsAttendanceModelDB[]> find_orders_attendances = default!;
 
         await Task.WhenAll([
                 Task.Run(async () => find_orders = await commRepo.OrdersByIssues(req_docs)),
@@ -1502,7 +1502,7 @@ public class HelpdeskImplementService(
                 await commRepo.StatusesOrdersAttendancesChangeByHelpdeskDocumentId(new() { SenderActionUserId = req.SenderActionUserId, Payload = new() { DocumentId = issue_data.Id, Step = nextStatus, } }, false);
 
             OrderDocumentModelDB? order_obj = find_orders.Response?.FirstOrDefault();
-            OrderAttendanceModelDB? order_attendance = find_orders_attendances.Response?.FirstOrDefault();
+            RecordsAttendanceModelDB? order_attendance = find_orders_attendances.Response?.FirstOrDefault();
 
             if (order_obj is not null && !users_ids.Contains(order_obj.AuthorIdentityUserId))
                 users_ids.Add(order_obj.AuthorIdentityUserId);

@@ -134,7 +134,7 @@ public partial class CommerceLayerContext : DbContext
     /// <summary>
     /// Заказы на услуги (бронь/запись)
     /// </summary>
-    public DbSet<OrderAttendanceModelDB> OrdersAttendances { get; set; } = default!;
+    public DbSet<RecordsAttendanceModelDB> RecordsAttendances { get; set; } = default!;
 
 
     /// <summary>

@@ -9,6 +9,7 @@ namespace SharedLib;
 /// </summary>
 public partial interface ICommerceService
 {
+    #region records
     /// <summary>
     /// Удалить запись/бронь
     /// </summary>
@@ -26,12 +27,15 @@ public partial interface ICommerceService
     /// <summary>
     /// Получить брони/записи по HelpDesk
     /// </summary>
-    public Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req);
+    public Task<TResponseModel<RecordsAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req);
 
     /// <summary>
     /// Создать пакет записей/броней
     /// </summary>
     public Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules);
+
+
+    #endregion
 
     /// <summary>
     /// Поиск доступных услуг/броней

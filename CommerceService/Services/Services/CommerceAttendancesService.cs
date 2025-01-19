@@ -44,7 +44,7 @@ public partial class CommerceImplementService : ICommerceService
 
         UserInfoModel actor = actorRes.Response[0];
 
-        List<OrderAttendanceModelDB> recordsForAdd = records.Select(x => new OrderAttendanceModelDB()
+        List<RecordsAttendanceModelDB> recordsForAdd = records.Select(x => new RecordsAttendanceModelDB()
         {
             AuthorIdentityUserId = workSchedules.SenderActionUserId,
             ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME,
@@ -66,7 +66,7 @@ public partial class CommerceImplementService : ICommerceService
         LockTransactionModelDB[] offersLocked = recordsForAdd
             .Select(x => new LockTransactionModelDB()
             {
-                LockerName = $"{nameof(OrderAttendanceModelDB)} /{x.DateExecute}: {x.StartPart}-{x.EndPart}",
+                LockerName = $"{nameof(RecordsAttendanceModelDB)} /{x.DateExecute}: {x.StartPart}-{x.EndPart}",
                 LockerId = x.OfferId,
                 RubricId = x.OrganizationId
             }).ToArray();
@@ -247,11 +247,11 @@ public partial class CommerceImplementService : ICommerceService
     public async Task<ResponseBaseModel> AttendanceRecordDelete(TAuthRequestModel<int> req)
     {
         UserInfoModel actor = default!;
-        OrderAttendanceModelDB? orderAttendanceDB = null;
+        RecordsAttendanceModelDB? orderAttendanceDB = null;
         ResponseBaseModel res = new();
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
         await Task.WhenAll([
-            Task.Run(async () => { orderAttendanceDB = await context.OrdersAttendances.FirstOrDefaultAsync(x => x.Id == req.Payload); }),
+            Task.Run(async () => { orderAttendanceDB = await context.RecordsAttendances.FirstOrDefaultAsync(x => x.Id == req.Payload); }),
             Task.Run(async () => {
                 TResponseModel<UserInfoModel[]> actorRes = await identityRepo.GetUsersIdentity([req.SenderActionUserId]);
                 if (!actorRes.Success() || actorRes.Response is null || actorRes.Response.Length != 1)
@@ -318,8 +318,8 @@ public partial class CommerceImplementService : ICommerceService
         UserInfoModel actor = actorRes.Response[0];
         string msg;
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        List<OrderAttendanceModelDB> ordersDb = await context
-            .OrdersAttendances
+        List<RecordsAttendanceModelDB> ordersDb = await context
+            .RecordsAttendances
             .Where(x => x.HelpdeskId == req.Payload.DocumentId && x.StatusDocument != req.Payload.Step)
             .ToListAsync();
 
@@ -334,7 +334,7 @@ public partial class CommerceImplementService : ICommerceService
         LockTransactionModelDB[] offersLocked = ordersDb
            .Select(x => new LockTransactionModelDB()
            {
-               LockerName = $"{nameof(OrderAttendanceModelDB)} /{x.DateExecute}: {x.StartPart}-{x.EndPart}",
+               LockerName = $"{nameof(RecordsAttendanceModelDB)} /{x.DateExecute}: {x.StartPart}-{x.EndPart}",
                LockerId = x.OfferId,
                RubricId = x.OrganizationId
            }).ToArray();
@@ -422,7 +422,7 @@ public partial class CommerceImplementService : ICommerceService
         context.RemoveRange(offersLocked);
         await context.SaveChangesAsync();
         res.Response = await context
-                            .OrdersAttendances
+                            .RecordsAttendances
                             .Where(x => x.HelpdeskId == req.Payload.DocumentId)
                             .ExecuteUpdateAsync(set => set
                             .SetProperty(p => p.StatusDocument, req.Payload.Step)
@@ -436,7 +436,7 @@ public partial class CommerceImplementService : ICommerceService
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<OrderAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req)
+    public async Task<TResponseModel<RecordsAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req)
     {
         if (req.IssueIds.Length == 0)
             return new()
@@ -446,12 +446,12 @@ public partial class CommerceImplementService : ICommerceService
             };
 
         using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
-        IQueryable<OrderAttendanceModelDB> q = context
-            .OrdersAttendances
+        IQueryable<RecordsAttendanceModelDB> q = context
+            .RecordsAttendances
             .Where(x => req.IssueIds.Any(y => y == x.HelpdeskId))
             .AsQueryable();
 
-        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<OrderAttendanceModelDB, NomenclatureModelDB?> inc_query = q
+        Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<RecordsAttendanceModelDB, NomenclatureModelDB?> inc_query = q
             .Include(x => x.Organization)
             .Include(x => x.Offer!)
             .Include(x => x.Nomenclature);
@@ -480,7 +480,7 @@ public partial class CommerceImplementService : ICommerceService
 
         List<WeeklyScheduleModelDB> WeeklySchedules = default!;
         List<CalendarScheduleModelDB> CalendarsSchedules = default!;
-        List<OrderAttendanceModelDB> OrdersAttendances = default!;
+        List<RecordsAttendanceModelDB> OrdersAttendances = default!;
         List<OrganizationContractorModel> OrganizationsContracts = default!;
 
         await Task.WhenAll([
@@ -499,8 +499,8 @@ public partial class CommerceImplementService : ICommerceService
              Task.Run(async ()=> {
                 using CommerceContext context = await commerceDbFactory.CreateDbContextAsync();
 
-                IQueryable<OrderAttendanceModelDB> q = context
-                    .OrdersAttendances
+                IQueryable<RecordsAttendanceModelDB> q = context
+                    .RecordsAttendances
                     .Where(x => x.ContextName == req.ContextName && x.DateExecute >= req.StartDate && x.DateExecute <= req.EndDate)
                     .Where(x => req.OffersFilter.Any(y => y == x.OfferId));
 

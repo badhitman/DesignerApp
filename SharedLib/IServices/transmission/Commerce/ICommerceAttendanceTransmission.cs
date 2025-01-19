@@ -19,7 +19,7 @@ public partial interface ICommerceTransmission
     /// <summary>
     /// Получить заказы (по заявкам)
     /// </summary>
-    public Task<TResponseModel<OrderAttendanceModelDB[]>> OrdersAttendancesByIssues(OrdersByIssuesSelectRequestModel req);
+    public Task<TResponseModel<RecordsAttendanceModelDB[]>> OrdersAttendancesByIssues(OrdersByIssuesSelectRequestModel req);
 
     /// <summary>
     /// Create attendance records

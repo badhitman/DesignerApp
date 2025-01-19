@@ -93,7 +93,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
 
     //
     Dictionary<int, List<OrderDocumentModelDB>> OrdersCache = [];
-    Dictionary<int, List<OrderAttendanceModelDB>> OrdersAttendancesCache = [];
+    Dictionary<int, List<RecordsAttendanceModelDB>> OrdersAttendancesCache = [];
     async Task UpdateOrdersCache()
     {
         int[] issues_ids = Issues.Where(x => !OrdersCache.ContainsKey(x.Id)).Select(x => x.Id).ToArray();
@@ -133,12 +133,12 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
                     IssueIds = issues_attendance_ids,
                     IncludeExternalData = true
                 };
-                TResponseModel<OrderAttendanceModelDB[]> restAttendance = await commRepo.OrdersAttendancesByIssues(req);
+                TResponseModel<RecordsAttendanceModelDB[]> restAttendance = await commRepo.OrdersAttendancesByIssues(req);
                 if (restAttendance.Success() && restAttendance.Response is not null && restAttendance.Response.Length != 0)
                 {
                     lock(OrdersAttendancesCache)
                     {
-                        foreach (OrderAttendanceModelDB ro in restAttendance.Response)
+                        foreach (RecordsAttendanceModelDB ro in restAttendance.Response)
                         {
                             if(!OrdersAttendancesCache.ContainsKey(ro.HelpdeskId!.Value))
                                 OrdersAttendancesCache.Add(ro.HelpdeskId!.Value, []);
