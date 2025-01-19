@@ -25,6 +25,6 @@ public class AttendanceRecordsDeleteReceive(ICommerceService commerceRepo, ILogg
     {
         ArgumentNullException.ThrowIfNull(payload);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(payload, GlobalStaticConstants.JsonSerializerSettings)}");
-        return await commerceRepo.AttendanceRecordDelete(payload);
+        return await commerceRepo.RecordAttendanceDelete(payload);
     }
 }

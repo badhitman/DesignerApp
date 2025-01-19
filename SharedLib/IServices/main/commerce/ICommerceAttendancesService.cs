@@ -13,7 +13,7 @@ public partial interface ICommerceService
     /// <summary>
     /// Удалить запись/бронь
     /// </summary>
-    public Task<ResponseBaseModel> AttendanceRecordDelete(TAuthRequestModel<int> orderId);
+    public Task<ResponseBaseModel> RecordAttendanceDelete(TAuthRequestModel<int> orderId);
 
     /// <summary>
     /// Смена статуса записи/брони по идентификатору HelpDesk документа
@@ -22,17 +22,17 @@ public partial interface ICommerceService
     /// В запросе нельзя указывать идентификатор заказа: только идентификатор HelpDesk документа.
     /// Допускается ситуация, когда под одним идентификатором HelpDesk документа могут существовать несколько заказов (объединённые заказы).
     /// </remarks>
-    public Task<TResponseModel<bool>> AttendancesRecordsStatusesChangeByHelpdeskId(TAuthRequestModel<StatusChangeRequestModel> req);
+    public Task<TResponseModel<bool>> RecordsAttendancesStatusesChangeByHelpdeskId(TAuthRequestModel<StatusChangeRequestModel> req);
 
     /// <summary>
     /// Получить брони/записи по HelpDesk
     /// </summary>
-    public Task<TResponseModel<RecordsAttendanceModelDB[]>> AttendancesRecordsByIssuesGet(OrdersByIssuesSelectRequestModel req);
+    public Task<TResponseModel<RecordsAttendanceModelDB[]>> RecordsAttendancesByIssuesGet(OrdersByIssuesSelectRequestModel req);
 
     /// <summary>
     /// Создать пакет записей/броней
     /// </summary>
-    public Task<ResponseBaseModel> CreateAttendanceRecords(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules);
+    public Task<ResponseBaseModel> RecordsAttendanceCreate(TAuthRequestModel<CreateAttendanceRequestModel> workSchedules);
 
 
     #endregion

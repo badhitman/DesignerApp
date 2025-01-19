@@ -25,6 +25,6 @@ public class AttendanceRecordsCreateReceive(ICommerceService commerceRepo, ILogg
     {
         ArgumentNullException.ThrowIfNull(payload);
         loggerRepo.LogInformation($"call `{GetType().Name}`: {JsonConvert.SerializeObject(payload, GlobalStaticConstants.JsonSerializerSettings)}");
-        return await commerceRepo.CreateAttendanceRecords(payload);
+        return await commerceRepo.RecordsAttendanceCreate(payload);
     }
 }
