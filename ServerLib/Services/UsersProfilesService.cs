@@ -327,6 +327,8 @@ public class UsersProfilesService(
         };
     }
 
+
+    #region done
     /// <inheritdoc/>
     public async Task<TResponseModel<string?>> GeneratePasswordResetTokenAsync(string? userId = null)
     {
@@ -334,14 +336,9 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        return new()
-        {
-            Response = await userManager.GeneratePasswordResetTokenAsync(user.ApplicationUser)
-        };
+        return await IdentityRepo.GeneratePasswordResetTokenAsync(user.ApplicationUser.Id);
     }
 
-
-    #region done
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> TryAddRolesToUser(IEnumerable<string> addRoles, string? userId = null)
     {

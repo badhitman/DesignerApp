@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using IdentityLib;
 using SharedLib;

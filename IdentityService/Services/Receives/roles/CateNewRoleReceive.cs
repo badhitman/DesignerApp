@@ -26,6 +26,6 @@ public class CateNewRoleReceive(IIdentityTools idRepo, ILogger<CateNewRoleReceiv
             throw new ArgumentNullException(nameof(roleName));
 
         loggerRepo.LogWarning(JsonConvert.SerializeObject(roleName, GlobalStaticConstants.JsonSerializerSettings));
-        return await idRepo.CateNewRole(roleName);
+        return await idRepo.CreateNewRole(roleName);
     }
 }

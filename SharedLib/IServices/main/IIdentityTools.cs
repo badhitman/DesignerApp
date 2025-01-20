@@ -9,7 +9,7 @@ namespace SharedLib;
 /// </summary>
 public interface IIdentityTools
 {
-    #region Telegram
+    #region telegram
     /// <summary>
     /// Find user identity by telegram - receive
     /// </summary>
@@ -57,7 +57,6 @@ public interface IIdentityTools
     /// Бот может отвечать новым сообщением или редактировать своё ранее отправленное в зависимости от ситуации.
     /// </summary>
     public Task<ResponseBaseModel> UpdateTelegramMainUserMessage(MainUserMessageModel setMainUserMessage);
-    #endregion
 
     /// <summary>
     /// Получить состояние процедуры привязки аккаунта Telegram к учётной записи сайта (если есть).
@@ -69,13 +68,9 @@ public interface IIdentityTools
     /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
     /// </summary>
     public Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user);
+    #endregion
 
-    /// <summary>
-    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
-    /// Он должен быть реализован в приложении, чтобы инфраструктура идентификации могла отправлять электронные письма для сброса пароля.
-    /// </summary>
-    public Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req);
-
+    #region roles
     /// <summary>
     /// Попытка добавить роли пользователю. Если роли такой нет, то она будет создана.
     /// </summary>
@@ -85,6 +80,49 @@ public interface IIdentityTools
     /// SetRoleForUser
     /// </summary>
     public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleForUserRequestModel req);
+
+    /// <summary>
+    /// Get Role (by id)
+    /// </summary>
+    public Task<TResponseModel<RoleInfoModel>> GetRole(string role_id);
+
+    /// <summary>
+    /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
+    /// </summary>
+    public Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
+
+    /// <summary>
+    /// Создать новую роль
+    /// </summary>
+    public Task<ResponseBaseModel> CreateNewRole(string role_name);
+
+    /// <summary>
+    /// Удалить роль (если у роли нет пользователей).
+    /// </summary>
+    public Task<ResponseBaseModel> DeleteRole(string roleName);
+
+    /// <summary>
+    /// Исключить пользователя из роли (лишить пользователя роли)
+    /// </summary>
+    public Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req);
+
+    /// <summary>
+    /// Добавить роль пользователю (включить пользователя в роль)
+    /// </summary>
+    public Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req);
+    #endregion
+
+    /// <summary>
+    /// Создает токен сброса пароля для указанного <paramref name="userId"/>, используя настроенного поставщика токенов сброса пароля.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<TResponseModel<string?>> GeneratePasswordResetTokenAsync(string userId);
+
+    /// <summary>
+    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
+    /// Он должен быть реализован в приложении, чтобы инфраструктура идентификации могла отправлять электронные письма для сброса пароля.
+    /// </summary>
+    public Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req);
 
     /// <summary>
     /// Изменяет пароль пользователя после подтверждения правильности указанного currentPassword.
@@ -148,39 +186,9 @@ public interface IIdentityTools
     public Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req);
 
     /// <summary>
-    /// Get Role (by id)
-    /// </summary>
-    public Task<TResponseModel<RoleInfoModel>> GetRole(string role_id);
-
-    /// <summary>
     /// Пользователи
     /// </summary>
     public Task<TPaginationResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req);
-
-    /// <summary>
-    /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
-    /// </summary>
-    public Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
-
-    /// <summary>
-    /// Создать новую роль
-    /// </summary>
-    public Task<ResponseBaseModel> CateNewRole(string role_name);
-
-    /// <summary>
-    /// Удалить роль (если у роли нет пользователей).
-    /// </summary>
-    public Task<ResponseBaseModel> DeleteRole(string roleName);
-
-    /// <summary>
-    /// Исключить пользователя из роли (лишить пользователя роли)
-    /// </summary>
-    public Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req);
-
-    /// <summary>
-    /// Добавить роль пользователю (включить пользователя в роль)
-    /// </summary>
-    public Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req);
 
     /// <summary>
     /// Сбрасывает пароль на указанный

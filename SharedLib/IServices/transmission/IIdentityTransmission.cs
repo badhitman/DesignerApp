@@ -9,6 +9,12 @@ namespace SharedLib;
 /// </summary>
 public interface IIdentityTransmission
 {
+    /// <summary>
+    /// Создает токен сброса пароля для указанного <paramref name="userId"/>, используя настроенного поставщика токенов сброса пароля.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<TResponseModel<string?>> GeneratePasswordResetTokenAsync(string userId);
+
     #region tg
     /// <summary>
     /// Find user identity by telegram - receive
@@ -56,8 +62,7 @@ public interface IIdentityTransmission
     /// Получить данные пользователя из кэша
     /// </summary>
     public Task<TResponseModel<TelegramUserBaseModel>> GetTelegramUser(long telegramUserId);
-    #endregion
-
+    
     /// <summary>
     /// TelegramJoinAccountState
     /// </summary>
@@ -67,6 +72,7 @@ public interface IIdentityTransmission
     /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
     /// </summary>
     public Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user);
+#endregion
 
     /// <summary>
     /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
@@ -143,7 +149,7 @@ public interface IIdentityTransmission
     /// <summary>
     /// Создать новую роль
     /// </summary>
-    public Task<ResponseBaseModel> CateNewRole(string role_name);
+    public Task<ResponseBaseModel> CreateNewRole(string role_name);
 
     /// <summary>
     /// Удалить роль (если у роли нет пользователей).

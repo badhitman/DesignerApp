@@ -51,6 +51,12 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// Создает токен сброса пароля для указанного "userId", используя настроенного поставщика токенов сброса пароля.
+        /// Если "userId" не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+        /// </summary>
+        public readonly static string GeneratePasswordResetTokenReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.PASSWORD_CONTROLLER_NAME}-{Routes.RESET_ACTION_NAME}", $"{Routes.GENERATE_ACTION_NAME}-{Routes.TOKEN_CONTROLLER_NAME}");
+        
+        /// <summary>
         /// TelegramJoinAccountStateReceive
         /// </summary>
         public readonly static string TelegramJoinAccountStateReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.TELEGRAM_CONTROLLER_NAME}-{Routes.ACCOUNT_CONTROLLER_NAME}", $"{Routes.JOIN_ACTION_NAME}-{Routes.STATE_ACTION_NAME}");

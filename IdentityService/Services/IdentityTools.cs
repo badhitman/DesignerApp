@@ -12,6 +12,7 @@ using System.Text;
 using SharedLib;
 using System.Net.Mail;
 using Microsoft.EntityFrameworkCore.Storage;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace IdentityService;
 
@@ -26,15 +27,15 @@ namespace IdentityService;
 public class IdentityTools(
     IServiceScopeFactory serviceScopeFactory,
     //IEmailSender<ApplicationUser> emailSender,
-    IMailProviderService mailRepo,
-    ILogger<IdentityTools> loggerRepo,
     //IUserStore<ApplicationUser> userStore,
-    ITelegramTransmission tgRemoteRepo,
     //RoleManager<ApplicationRole> roleManager,
     //UserManager<ApplicationUser> userManager,
+    IMailProviderService mailRepo,
+    ILogger<IdentityTools> loggerRepo,
+    ITelegramTransmission tgRemoteRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
-    #region Telegram
+    #region telegram
     /// <inheritdoc/>
     public async Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByTelegram(List<long> tg_ids)
     {
@@ -340,7 +341,6 @@ public class IdentityTools(
 
         return ResponseBaseModel.CreateSuccess($"Успешно. Пользователю {user_db} установлен/обновлён идентификатор `{nameof(user_db.MainTelegramMessageId)}` set:{setMainUserMessage.MessageId}");
     }
-    #endregion
 
     /// <inheritdoc/>
     public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(TelegramJoinAccountStateRequestModel req)
@@ -483,28 +483,9 @@ public class IdentityTools(
 
         return res;
     }
+    #endregion
 
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req)
-    {
-        using IServiceScope scope = serviceScopeFactory.CreateScope();
-        IEmailSender<ApplicationUser> emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender<ApplicationUser>>();
-
-        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
-        if (user is null)
-            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
-
-        if (!MailAddress.TryCreate(user.Email, out _))
-            return ResponseBaseModel.CreateError($"email `{user.Email}` имеет не корректный формат. error {{4EE55201-8367-433D-9766-ABDE15B7BC04}}");
-
-        string code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(req.ResetToken));
-        string callbackUrl = $"{req.BaseAddress}?code={code}";
-        await emailSender.SendPasswordResetLinkAsync(user, user.Email, HtmlEncoder.Default.Encode(callbackUrl));
-
-        return ResponseBaseModel.CreateSuccess("Письмо с токеном отправлено на Email");
-    }
-
+    #region roles
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> TryAddRolesToUser(UserRolesModel req)
     {
@@ -618,6 +599,211 @@ public class IdentityTools(
         }
 
         return res;
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<RoleInfoModel>> GetRole(string role_id)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        ApplicationRole? role_db = await roleManager.FindByIdAsync(role_id);
+        if (role_db is null)
+            return new() { Messages = ResponseBaseModel.ErrorMessage($"Роль #{role_id} не найдена в БД") };
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        return new()
+        {
+            Response = new RoleInfoModel()
+            {
+                Id = role_id,
+                Name = role_db.Name,
+                Title = role_db.Title,
+                UsersCount = await identityContext.UserRoles.CountAsync(x => x.RoleId == role_id)
+            }
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req)
+    {
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        IQueryable<ApplicationRole> q = identityContext.Roles
+           .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(req.OwnerId))
+            q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.RoleId && req.OwnerId == y.UserId));
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        if (!string.IsNullOrWhiteSpace(req.FindQuery))
+            q = q.Where(x => EF.Functions.Like(x.NormalizedName, $"%{roleManager.KeyNormalizer.NormalizeName(req.FindQuery)}%") || x.Id == req.FindQuery);
+
+        int total = q.Count();
+        q = q.OrderBy(x => x.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
+        var roles = await
+            q.Select(x => new
+            {
+                x.Id,
+                x.Name,
+                x.Title,
+                UsersCount = identityContext.UserRoles.Count(z => z.RoleId == x.Id)
+            })
+            .ToArrayAsync();
+
+        return new()
+        {
+            Response = roles.Select(x => new RoleInfoModel() { Id = x.Id, Name = x.Name, Title = x.Title, UsersCount = x.UsersCount }).ToList(),
+            TotalRowsCount = total,
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortBy = req.SortBy,
+            SortingDirection = req.SortingDirection
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> CreateNewRole(string role_name)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        role_name = role_name.Trim();
+        if (string.IsNullOrEmpty(role_name))
+            return ResponseBaseModel.CreateError("Не указано имя роли");
+        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
+        if (role_db is not null)
+            return ResponseBaseModel.CreateWarning($"Роль '{role_db.Name}' уже существует");
+
+        role_db = new ApplicationRole(role_name);
+        IdentityResult ir = await roleManager.CreateAsync(role_db);
+
+        if (ir.Succeeded)
+            return ResponseBaseModel.CreateSuccess($"Роль '{role_name}' успешно создана");
+
+        return new()
+        {
+            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> DeleteRole(string role_name)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
+        if (role_db is null)
+            return ResponseBaseModel.CreateError($"Роль #{role_name} не найдена в БД");
+
+        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
+        var users_linked =
+           await (from link in identityContext.UserRoles.Where(x => x.RoleId == role_db.Id)
+                  join user in identityContext.Users on link.UserId equals user.Id
+                  select new { user.Id, user.Email }).ToArrayAsync();
+
+        if (users_linked.Length != 0)
+            return ResponseBaseModel.CreateError($"Роль '{role_db.Name}' нельзя удалить! Предварительно исключите из неё пользователей: {string.Join("; ", users_linked.Select(x => $"[{x.Email}]"))};");
+
+        IdentityResult ir = await roleManager.DeleteAsync(role_db);
+
+        if (ir.Succeeded)
+            ResponseBaseModel.CreateSuccess($"Роль '{role_db.Name}' успешно удалена!");
+
+        return new()
+        {
+            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        ApplicationRole? role_db = await roleManager.FindByNameAsync(req.RoleName);
+        if (role_db is null)
+            return ResponseBaseModel.CreateError($"Роль с именем '{req.RoleName}' не найдена в БД");
+
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        ApplicationUser? user_db = await userManager.FindByEmailAsync(req.Email);
+        if (user_db is null)
+            return ResponseBaseModel.CreateError($"Пользователь `{req.Email}` не найден в БД");
+
+        if (!await userManager.IsInRoleAsync(user_db, req.RoleName))
+            return ResponseBaseModel.CreateWarning($"Роль '{req.RoleName}' у пользователя '{req.Email}' отсутствует.");
+
+        IdentityResult ir = await userManager.RemoveFromRoleAsync(user_db, req.RoleName);
+
+        if (ir.Succeeded)
+            return ResponseBaseModel.CreateSuccess($"Пользователь '{req.Email}' исключён из роли '{req.RoleName}'");
+
+        return new()
+        {
+            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        ApplicationRole? role_db = await roleManager.FindByNameAsync(req.RoleName);
+        if (role_db is null)
+            return ResponseBaseModel.CreateError($"Роль с именем '{req.RoleName}' не найдена в БД");
+
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        ApplicationUser? user_db = await userManager.FindByEmailAsync(req.Email);
+        if (user_db is null)
+            return ResponseBaseModel.CreateError($"Пользователь `{req.Email}` не найден в БД");
+
+        if (await userManager.IsInRoleAsync(user_db, req.RoleName))
+            return ResponseBaseModel.CreateWarning($"Роль '{req.RoleName}' у пользователя '{req.Email}' уже присутствует.");
+
+        IdentityResult ir = await userManager.AddToRoleAsync(user_db, req.RoleName);
+
+        if (ir.Succeeded)
+            return ResponseBaseModel.CreateSuccess($"Пользователю '{req.Email}' добавлена роль '{req.RoleName}'");
+
+        return new()
+        {
+            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
+        };
+    }
+    #endregion
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string?>> GeneratePasswordResetTokenAsync(string userId)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
+        if (user is null)
+            return new() { Messages = [new() { Text = $"Пользователь #{userId} не найден", TypeMessage = ResultTypesEnum.Error }] };
+
+        return new()
+        {
+            Response = await userManager.GeneratePasswordResetTokenAsync(user)
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        IEmailSender<ApplicationUser> emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender<ApplicationUser>>();
+
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+
+        if (!MailAddress.TryCreate(user.Email, out _))
+            return ResponseBaseModel.CreateError($"email `{user.Email}` имеет не корректный формат. error {{4EE55201-8367-433D-9766-ABDE15B7BC04}}");
+
+        string code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(req.ResetToken));
+        string callbackUrl = $"{req.BaseAddress}?code={code}";
+        await emailSender.SendPasswordResetLinkAsync(user, user.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
+        return ResponseBaseModel.CreateSuccess("Письмо с токеном отправлено на Email");
     }
 
     /// <inheritdoc/>
@@ -1053,27 +1239,6 @@ public class IdentityTools(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<RoleInfoModel>> GetRole(string role_id)
-    {
-        using IServiceScope scope = serviceScopeFactory.CreateScope();
-        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-        ApplicationRole? role_db = await roleManager.FindByIdAsync(role_id);
-        if (role_db is null)
-            return new() { Messages = ResponseBaseModel.ErrorMessage($"Роль #{role_id} не найдена в БД") };
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        return new()
-        {
-            Response = new RoleInfoModel()
-            {
-                Id = role_id,
-                Name = role_db.Name,
-                Title = role_db.Title,
-                UsersCount = await identityContext.UserRoles.CountAsync(x => x.RoleId == role_id)
-            }
-        };
-    }
-
-    /// <inheritdoc/>
     public async Task<TPaginationResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req)
     {
         using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
@@ -1125,152 +1290,6 @@ public class IdentityTools(
             PageSize = req.PageSize,
             SortBy = req.SortBy,
             SortingDirection = req.SortingDirection
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req)
-    {
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        IQueryable<ApplicationRole> q = identityContext.Roles
-           .AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(req.OwnerId))
-            q = q.Where(x => identityContext.UserRoles.Any(y => x.Id == y.RoleId && req.OwnerId == y.UserId));
-        using IServiceScope scope = serviceScopeFactory.CreateScope();
-        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-        if (!string.IsNullOrWhiteSpace(req.FindQuery))
-            q = q.Where(x => EF.Functions.Like(x.NormalizedName, $"%{roleManager.KeyNormalizer.NormalizeName(req.FindQuery)}%") || x.Id == req.FindQuery);
-
-        int total = q.Count();
-        q = q.OrderBy(x => x.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
-        var roles = await
-            q.Select(x => new
-            {
-                x.Id,
-                x.Name,
-                x.Title,
-                UsersCount = identityContext.UserRoles.Count(z => z.RoleId == x.Id)
-            })
-            .ToArrayAsync();
-
-        return new()
-        {
-            Response = roles.Select(x => new RoleInfoModel() { Id = x.Id, Name = x.Name, Title = x.Title, UsersCount = x.UsersCount }).ToList(),
-            TotalRowsCount = total,
-            PageNum = req.PageNum,
-            PageSize = req.PageSize,
-            SortBy = req.SortBy,
-            SortingDirection = req.SortingDirection
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> CateNewRole(string role_name)
-    {
-        using IServiceScope scope = serviceScopeFactory.CreateScope();
-        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-        role_name = role_name.Trim();
-        if (string.IsNullOrEmpty(role_name))
-            return ResponseBaseModel.CreateError("Не указано имя роли");
-        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
-        if (role_db is not null)
-            return ResponseBaseModel.CreateWarning($"Роль '{role_db.Name}' уже существует");
-
-        role_db = new ApplicationRole(role_name);
-        IdentityResult ir = await roleManager.CreateAsync(role_db);
-
-        if (ir.Succeeded)
-            return ResponseBaseModel.CreateSuccess($"Роль '{role_name}' успешно создана");
-
-        return new()
-        {
-            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteRole(string role_name)
-    {
-        using IServiceScope scope = serviceScopeFactory.CreateScope();
-        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-        ApplicationRole? role_db = await roleManager.FindByNameAsync(role_name);
-        if (role_db is null)
-            return ResponseBaseModel.CreateError($"Роль #{role_name} не найдена в БД");
-
-        using IdentityAppDbContext identityContext = identityDbFactory.CreateDbContext();
-        var users_linked =
-           await (from link in identityContext.UserRoles.Where(x => x.RoleId == role_db.Id)
-                  join user in identityContext.Users on link.UserId equals user.Id
-                  select new { user.Id, user.Email }).ToArrayAsync();
-
-        if (users_linked.Length != 0)
-            return ResponseBaseModel.CreateError($"Роль '{role_db.Name}' нельзя удалить! Предварительно исключите из неё пользователей: {string.Join("; ", users_linked.Select(x => $"[{x.Email}]"))};");
-
-        IdentityResult ir = await roleManager.DeleteAsync(role_db);
-
-        if (ir.Succeeded)
-            ResponseBaseModel.CreateSuccess($"Роль '{role_db.Name}' успешно удалена!");
-
-        return new()
-        {
-            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req)
-    {
-        using IServiceScope scope = serviceScopeFactory.CreateScope();
-        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-        ApplicationRole? role_db = await roleManager.FindByNameAsync(req.RoleName);
-        if (role_db is null)
-            return ResponseBaseModel.CreateError($"Роль с именем '{req.RoleName}' не найдена в БД");
-
-        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        ApplicationUser? user_db = await userManager.FindByEmailAsync(req.Email);
-        if (user_db is null)
-            return ResponseBaseModel.CreateError($"Пользователь `{req.Email}` не найден в БД");
-
-        if (!await userManager.IsInRoleAsync(user_db, req.RoleName))
-            return ResponseBaseModel.CreateWarning($"Роль '{req.RoleName}' у пользователя '{req.Email}' отсутствует.");
-
-        IdentityResult ir = await userManager.RemoveFromRoleAsync(user_db, req.RoleName);
-
-        if (ir.Succeeded)
-            return ResponseBaseModel.CreateSuccess($"Пользователь '{req.Email}' исключён из роли '{req.RoleName}'");
-
-        return new()
-        {
-            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
-        };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req)
-    {
-        using IServiceScope scope = serviceScopeFactory.CreateScope();
-        using RoleManager<ApplicationRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-        ApplicationRole? role_db = await roleManager.FindByNameAsync(req.RoleName);
-        if (role_db is null)
-            return ResponseBaseModel.CreateError($"Роль с именем '{req.RoleName}' не найдена в БД");
-
-        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        ApplicationUser? user_db = await userManager.FindByEmailAsync(req.Email);
-        if (user_db is null)
-            return ResponseBaseModel.CreateError($"Пользователь `{req.Email}` не найден в БД");
-
-        if (await userManager.IsInRoleAsync(user_db, req.RoleName))
-            return ResponseBaseModel.CreateWarning($"Роль '{req.RoleName}' у пользователя '{req.Email}' уже присутствует.");
-
-        IdentityResult ir = await userManager.AddToRoleAsync(user_db, req.RoleName);
-
-        if (ir.Succeeded)
-            return ResponseBaseModel.CreateSuccess($"Пользователю '{req.Email}' добавлена роль '{req.RoleName}'");
-
-        return new()
-        {
-            Messages = ir.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}: {x.Description}]" }).ToList()
         };
     }
 
