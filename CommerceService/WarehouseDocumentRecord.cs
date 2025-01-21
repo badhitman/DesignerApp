@@ -1,7 +1,0 @@
-﻿////////////////////////////////////////////////
-// © https://github.com/badhitman - @FakeGov 
-////////////////////////////////////////////////
-
-namespace CommerceService;
-
-record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);

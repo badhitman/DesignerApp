@@ -35,6 +35,20 @@ public class IdentityTools(
     ITelegramTransmission tgRemoteRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<IEnumerable<string>?>> GenerateNewTwoFactorRecoveryCodesAsync(string userId)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
+        if (user is null)
+            return new() { Messages = [new() { Text = $"Пользователь #{userId} не найден", TypeMessage = ResultTypesEnum.Error }] };
+
+        return new() { Response = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) };
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<string?>> GetAuthenticatorKey(string userId)
     {
         using IServiceScope scope = serviceScopeFactory.CreateScope();

@@ -161,7 +161,7 @@ public partial class OrganizationsExecutorsComponent : BlazorBusyComponentUsersC
         if (CurrentUserSession is null)
             return new TableData<UserOrganizationModelDB>() { TotalItems = 0, Items = [] };
 
-        TPaginationRequestAuthModel<UsersOrganizationsStatusesRequest> req = new()
+        TPaginationRequestAuthModel<UsersOrganizationsStatusesRequestModel> req = new()
         {
             Payload = new()
             {

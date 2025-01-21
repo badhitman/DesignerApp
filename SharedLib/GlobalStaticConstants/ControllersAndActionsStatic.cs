@@ -605,6 +605,16 @@ public static partial class GlobalStaticConstants
         public const string USER_CONTROLLER_NAME = "user";
 
         /// <summary>
+        /// Authenticator
+        /// </summary>
+        public const string AUTHENTICATOR_CONTROLLER_NAME = "authenticator";
+
+        /// <summary>
+        /// Key
+        /// </summary>
+        public const string KEY_CONTROLLER_NAME = "key";
+
+        /// <summary>
         /// Cache
         /// </summary>
         public const string CACHE_CONTROLLER_NAME = "cache";

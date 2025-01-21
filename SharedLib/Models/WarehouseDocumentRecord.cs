@@ -4,4 +4,7 @@
 
 namespace SharedLib;
 
-record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);
+/// <summary>
+/// WarehouseDocumentRecord
+/// </summary>
+public record WarehouseDocumentRecord(int WarehouseId, bool IsDisabled);

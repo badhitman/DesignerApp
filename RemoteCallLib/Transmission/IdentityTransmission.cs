@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DocumentFormat.OpenXml.Drawing;
 using SharedLib;
 
 namespace RemoteCallLib;
@@ -12,89 +11,11 @@ namespace RemoteCallLib;
 /// </summary>
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
-    #region tg
-    public async Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByTelegram(List<long> req)
-        => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel[]>>(GlobalStaticConstants.TransmissionQueues.GetUsersIdentityByTelegramReceive, req) ?? new();
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string?>> GetAuthenticatorKey(string userId)
+        => await rabbitClient.MqRemoteCall<TResponseModel<string?>>(GlobalStaticConstants.TransmissionQueues.GetAuthenticatorKeyReceive, userId) ?? new();
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> TelegramAccountRemoveIdentityJoin(TelegramAccountRemoveJoinRequestIdentityModel req)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramAccountRemoveIdentityJoinReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> TelegramJoinAccountDeleteAction(string userId)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteActionReceive, userId) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountCreate(string userId)
-        => await rabbitClient.MqRemoteCall<TResponseModel<TelegramJoinAccountModelDb>>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountCreateReceive, userId) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<TelegramUserViewModel>> FindUsersTelegram(FindRequestModel req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<TelegramUserViewModel>>(GlobalStaticConstants.TransmissionQueues.FindUsersTelegramReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive, req, waitResponse) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> TelegramJoinAccountDelete(TelegramAccountRemoveJoinRequestTelegramModel req)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive, setMainMessage) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<TelegramUserBaseModel>> GetTelegramUser(long telegramUserId)
-        => await rabbitClient.MqRemoteCall<TResponseModel<TelegramUserBaseModel>>(GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive, telegramUserId) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(TelegramJoinAccountStateRequestModel req)
-        => await rabbitClient.MqRemoteCall<TResponseModel<TelegramJoinAccountModelDb>>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountStateReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user)
-        => await rabbitClient.MqRemoteCall<TResponseModel<CheckTelegramUserAuthModel>>(GlobalStaticConstants.TransmissionQueues.CheckTelegramUserReceive, user) ?? new();
-    #endregion
-
-    #region roles
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> TryAddRolesToUser(UserRolesModel req)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TryAddRolesToUserReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<RoleInfoModel>> GetRole(string roleName)
-        => await rabbitClient.MqRemoteCall<TResponseModel<RoleInfoModel>>(GlobalStaticConstants.TransmissionQueues.GetRoleReceive, roleName) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<RoleInfoModel>>(GlobalStaticConstants.TransmissionQueues.FindRolesAsyncReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> CreateNewRole(string roleName)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.CateNewRoleReceive, roleName) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteRole(string roleName)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.DeleteRoleReceive, roleName) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.DeleteRoleFromUserReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.AddRoleToUserReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<string[]>> SetRoleForUser(SetRoleForUserRequestModel req)
-        => await rabbitClient.MqRemoteCall<TResponseModel<string[]>>(GlobalStaticConstants.TransmissionQueues.SetRoleForUserOfIdentityReceive, req) ?? new();
-    #endregion
-
-    /// <summary>
-    /// Создает токен сброса пароля для указанного <paramref name="userId"/>, используя настроенного поставщика токенов сброса пароля.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
     public async Task<TResponseModel<string?>> GeneratePasswordResetTokenAsync(string userId)
         => await rabbitClient.MqRemoteCall<TResponseModel<string?>>(GlobalStaticConstants.TransmissionQueues.GeneratePasswordResetTokenReceive, userId) ?? new();
 
@@ -179,10 +100,89 @@ public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmi
         => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.ClaimsForUserFlushReceive, userIdIdentity) ?? new();
 
     /// <inheritdoc/>
+    public async Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByEmails(IEnumerable<string> ids_emails)
+        => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel[]>>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByEmailReceive, ids_emails) ?? new();
+
+    #region tg
+    /// <inheritdoc/>
     public async Task<TResponseModel<UserInfoModel[]>> GetUserIdentityByTelegram(long[] ids_users)
         => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel[]>>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByTelegramIdsReceive, ids_users) ?? new();
 
+    public async Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByTelegram(List<long> req)
+        => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel[]>>(GlobalStaticConstants.TransmissionQueues.GetUsersIdentityByTelegramReceive, req) ?? new();
+
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByEmails(IEnumerable<string> ids_emails)
-        => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel[]>>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByEmailReceive, ids_emails) ?? new();
+    public async Task<ResponseBaseModel> TelegramAccountRemoveIdentityJoin(TelegramAccountRemoveJoinRequestIdentityModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramAccountRemoveIdentityJoinReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> TelegramJoinAccountDeleteAction(string userId)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteActionReceive, userId) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountCreate(string userId)
+        => await rabbitClient.MqRemoteCall<TResponseModel<TelegramJoinAccountModelDb>>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountCreateReceive, userId) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<TelegramUserViewModel>> FindUsersTelegram(FindRequestModel req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<TelegramUserViewModel>>(GlobalStaticConstants.TransmissionQueues.FindUsersTelegramReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountConfirmReceive, req, waitResponse) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> TelegramJoinAccountDelete(TelegramAccountRemoveJoinRequestTelegramModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountDeleteReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.UpdateTelegramMainUserMessageReceive, setMainMessage) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TelegramUserBaseModel>> GetTelegramUser(long telegramUserId)
+        => await rabbitClient.MqRemoteCall<TResponseModel<TelegramUserBaseModel>>(GlobalStaticConstants.TransmissionQueues.GetTelegramUserReceive, telegramUserId) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(TelegramJoinAccountStateRequestModel req)
+        => await rabbitClient.MqRemoteCall<TResponseModel<TelegramJoinAccountModelDb>>(GlobalStaticConstants.TransmissionQueues.TelegramJoinAccountStateReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user)
+        => await rabbitClient.MqRemoteCall<TResponseModel<CheckTelegramUserAuthModel>>(GlobalStaticConstants.TransmissionQueues.CheckTelegramUserReceive, user) ?? new();
+    #endregion
+
+    #region roles
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> TryAddRolesToUser(UserRolesModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.TryAddRolesToUserReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<RoleInfoModel>> GetRole(string roleName)
+        => await rabbitClient.MqRemoteCall<TResponseModel<RoleInfoModel>>(GlobalStaticConstants.TransmissionQueues.GetRoleReceive, roleName) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<RoleInfoModel>>(GlobalStaticConstants.TransmissionQueues.FindRolesAsyncReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> CreateNewRole(string roleName)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.CateNewRoleReceive, roleName) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> DeleteRole(string roleName)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.DeleteRoleReceive, roleName) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.DeleteRoleFromUserReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.AddRoleToUserReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string[]>> SetRoleForUser(SetRoleForUserRequestModel req)
+        => await rabbitClient.MqRemoteCall<TResponseModel<string[]>>(GlobalStaticConstants.TransmissionQueues.SetRoleForUserOfIdentityReceive, req) ?? new();
+    #endregion
 }

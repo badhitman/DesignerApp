@@ -51,6 +51,11 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// Ключ аутентификации пользователя.
+        /// </summary>
+        public readonly static string GetAuthenticatorKeyReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.AUTHENTICATOR_CONTROLLER_NAME}-{Routes.KEY_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
+        
+        /// <summary>
         /// Создает токен сброса пароля для указанного "userId", используя настроенного поставщика токенов сброса пароля.
         /// Если "userId" не указан, то команда выполняется для текущего пользователя (запрос/сессия)
         /// </summary>

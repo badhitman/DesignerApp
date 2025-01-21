@@ -10,80 +10,21 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Ключ аутентификации пользователя.
+    /// </summary>
+    public Task<TResponseModel<string?>> GetAuthenticatorKey(string userId);
+
+    /// <summary>
     /// Создает токен сброса пароля для указанного <paramref name="userId"/>, используя настроенного поставщика токенов сброса пароля.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
     public Task<TResponseModel<string?>> GeneratePasswordResetTokenAsync(string userId);
-
-    #region tg
-    /// <summary>
-    /// Find user identity by telegram - receive
-    /// </summary>
-    public Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByTelegram(List<long> req);
-
-    /// <summary>
-    /// Удалить связь Telegram аккаунта с учётной записью сайта
-    /// </summary>
-    public Task<ResponseBaseModel> TelegramAccountRemoveIdentityJoin(TelegramAccountRemoveJoinRequestIdentityModel req);
-
-    /// <summary>
-    /// Удалить текущую процедуру привязки Telegram аккаунта к учётной записи сайта
-    /// </summary>
-    public Task<ResponseBaseModel> TelegramJoinAccountDeleteAction(string userId);
-
-    /// <summary>
-    /// Инициировать новую процедуру привязки Telegram аккаунта к учётной записи сайта
-    /// </summary>
-    public Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountCreate(string userId);
-
-    /// <summary>
-    /// Telegram пользователи (сохранённые).
-    /// Все пользователи, которые когда либо писали что либо в бота - сохраняются/кэшируются в БД.
-    /// </summary>
-    public Task<TPaginationResponseModel<TelegramUserViewModel>> FindUsersTelegram(FindRequestModel req);
-
-    /// <summary>
-    /// Проверка Telegram пользователя
-    /// </summary>
-    public Task<ResponseBaseModel> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true);
-
-    /// <summary>
-    /// Удалить связь Telegram аккаунта с учётной записью сайта
-    /// </summary>
-    public Task<ResponseBaseModel> TelegramJoinAccountDelete(TelegramAccountRemoveJoinRequestTelegramModel req);
-
-    /// <summary>
-    /// Основное сообщение в чате в котором Bot ведёт диалог с пользователем.
-    /// Бот может отвечать новым сообщением или редактировать своё ранее отправленное в зависимости от ситуации.
-    /// </summary>
-    public Task<ResponseBaseModel> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage);
-
-    /// <summary>
-    /// Получить данные пользователя из кэша
-    /// </summary>
-    public Task<TResponseModel<TelegramUserBaseModel>> GetTelegramUser(long telegramUserId);
-    
-    /// <summary>
-    /// TelegramJoinAccountState
-    /// </summary>
-    public Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(TelegramJoinAccountStateRequestModel req);
-
-    /// <summary>
-    /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
-    /// </summary>
-    public Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user);
-#endregion
 
     /// <summary>
     /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
     /// Он должен быть реализован в приложении, чтобы инфраструктура идентификации могла отправлять электронные письма для сброса пароля.
     /// </summary>
     public Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req);
-
-    /// <summary>
-    /// Попытка добавить роли пользователю. Если роли такой нет, то она будет создана.
-    /// </summary>
-    public Task<ResponseBaseModel> TryAddRolesToUser(UserRolesModel req);
 
     /// <summary>
     /// Изменяет пароль пользователя после подтверждения правильности указанного currentPassword.
@@ -132,39 +73,9 @@ public interface IIdentityTransmission
     public Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req);
 
     /// <summary>
-    /// Get Role (by id)
-    /// </summary>
-    public Task<TResponseModel<RoleInfoModel>> GetRole(string roleName);
-
-    /// <summary>
     /// Пользователи
     /// </summary>
     public Task<TPaginationResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req);
-
-    /// <summary>
-    /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
-    /// </summary>
-    public Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
-
-    /// <summary>
-    /// Создать новую роль
-    /// </summary>
-    public Task<ResponseBaseModel> CreateNewRole(string role_name);
-
-    /// <summary>
-    /// Удалить роль (если у роли нет пользователей).
-    /// </summary>
-    public Task<ResponseBaseModel> DeleteRole(string roleName);
-
-    /// <summary>
-    /// Исключить пользователя из роли (лишить пользователя роли)
-    /// </summary>
-    public Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req);
-
-    /// <summary>
-    /// Добавить роль пользователю (включить пользователя в роль)
-    /// </summary>
-    public Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req);
 
     /// <summary>
     /// Сбрасывает пароль на указанный
@@ -207,11 +118,6 @@ public interface IIdentityTransmission
     public Task<ResponseBaseModel> ConfirmUserEmailCode(UserCodeModel req);
 
     /// <summary>
-    /// Получить `web config` сайта
-    /// </summary>
-    public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleForUserRequestModel req);
-
-    /// <summary>
     /// Отправка Email
     /// </summary>
     public Task<ResponseBaseModel> SendEmail(SendEmailRequestModel req, bool waitResponse = true);
@@ -227,18 +133,118 @@ public interface IIdentityTransmission
     public Task<TResponseModel<UserInfoModel[]>> GetUsersIdentity(IEnumerable<string> ids_users);
 
     /// <summary>
-    /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
-    /// </summary>
-    public Task<TResponseModel<bool>> ClaimsUserFlush(string userIdIdentity);
-
-    /// <summary>
     /// Получить пользователей из Identity по их Email`s
     /// </summary>
     public Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByEmails(IEnumerable<string> ids_emails);
+
+    #region roles
+    /// <summary>
+    /// Попытка добавить роли пользователю. Если роли такой нет, то она будет создана.
+    /// </summary>
+    public Task<ResponseBaseModel> TryAddRolesToUser(UserRolesModel req);
+
+    /// <summary>
+    /// Get Role (by id)
+    /// </summary>
+    public Task<TResponseModel<RoleInfoModel>> GetRole(string roleName);
+
+    /// <summary>
+    /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
+    /// </summary>
+    public Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
+
+    /// <summary>
+    /// Создать новую роль
+    /// </summary>
+    public Task<ResponseBaseModel> CreateNewRole(string role_name);
+
+    /// <summary>
+    /// Удалить роль (если у роли нет пользователей).
+    /// </summary>
+    public Task<ResponseBaseModel> DeleteRole(string roleName);
+
+    /// <summary>
+    /// Исключить пользователя из роли (лишить пользователя роли)
+    /// </summary>
+    public Task<ResponseBaseModel> DeleteRoleFromUser(RoleEmailModel req);
+
+    /// <summary>
+    /// Добавить роль пользователю (включить пользователя в роль)
+    /// </summary>
+    public Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req);
+
+    /// <summary>
+    /// Получить `web config` сайта
+    /// </summary>
+    public Task<TResponseModel<string[]>> SetRoleForUser(SetRoleForUserRequestModel req);
+    #endregion
+
+    #region tg
+    /// <summary>
+    /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
+    /// </summary>
+    public Task<TResponseModel<bool>> ClaimsUserFlush(string userIdIdentity);
 
     /// <summary>
     /// Поиск пользователей в Identity по их Telegram chat id
     /// </summary>
     public Task<TResponseModel<UserInfoModel[]>> GetUserIdentityByTelegram(long[] ids_users);
 
+    /// <summary>
+    /// Find user identity by telegram - receive
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByTelegram(List<long> req);
+
+    /// <summary>
+    /// Удалить связь Telegram аккаунта с учётной записью сайта
+    /// </summary>
+    public Task<ResponseBaseModel> TelegramAccountRemoveIdentityJoin(TelegramAccountRemoveJoinRequestIdentityModel req);
+
+    /// <summary>
+    /// Удалить текущую процедуру привязки Telegram аккаунта к учётной записи сайта
+    /// </summary>
+    public Task<ResponseBaseModel> TelegramJoinAccountDeleteAction(string userId);
+
+    /// <summary>
+    /// Инициировать новую процедуру привязки Telegram аккаунта к учётной записи сайта
+    /// </summary>
+    public Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountCreate(string userId);
+
+    /// <summary>
+    /// Telegram пользователи (сохранённые).
+    /// Все пользователи, которые когда либо писали что либо в бота - сохраняются/кэшируются в БД.
+    /// </summary>
+    public Task<TPaginationResponseModel<TelegramUserViewModel>> FindUsersTelegram(FindRequestModel req);
+
+    /// <summary>
+    /// Проверка Telegram пользователя
+    /// </summary>
+    public Task<ResponseBaseModel> TelegramJoinAccountConfirmToken(TelegramJoinAccountConfirmModel req, bool waitResponse = true);
+
+    /// <summary>
+    /// Удалить связь Telegram аккаунта с учётной записью сайта
+    /// </summary>
+    public Task<ResponseBaseModel> TelegramJoinAccountDelete(TelegramAccountRemoveJoinRequestTelegramModel req);
+
+    /// <summary>
+    /// Основное сообщение в чате в котором Bot ведёт диалог с пользователем.
+    /// Бот может отвечать новым сообщением или редактировать своё ранее отправленное в зависимости от ситуации.
+    /// </summary>
+    public Task<ResponseBaseModel> UpdateTelegramMainUserMessage(MainUserMessageModel setMainMessage);
+
+    /// <summary>
+    /// Получить данные пользователя из кэша
+    /// </summary>
+    public Task<TResponseModel<TelegramUserBaseModel>> GetTelegramUser(long telegramUserId);
+
+    /// <summary>
+    /// TelegramJoinAccountState
+    /// </summary>
+    public Task<TResponseModel<TelegramJoinAccountModelDb>> TelegramJoinAccountState(TelegramJoinAccountStateRequestModel req);
+
+    /// <summary>
+    /// Проверка пользователя (сообщение из службы TelegramBot серверной части сайта)
+    /// </summary>
+    public Task<TResponseModel<CheckTelegramUserAuthModel>> CheckTelegramUser(CheckTelegramUserHandleModel user);
+    #endregion
 }

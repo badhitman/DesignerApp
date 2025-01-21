@@ -4,4 +4,7 @@
 
 namespace SharedLib;
 
-record WarehouseRowDocumentRecord(int WarehouseId, RowOfOrderDocumentModelDB Row);
+/// <summary>
+/// WarehouseRowDocumentRecord
+/// </summary>
+public record WarehouseRowDocumentRecord(int WarehouseId, RowOfOrderDocumentModelDB Row);

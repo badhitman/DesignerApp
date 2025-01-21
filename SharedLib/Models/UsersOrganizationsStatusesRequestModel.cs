@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// UsersOrganizationsStatusesRequest
+/// UsersOrganizationsStatusesRequestModel
 /// </summary>
-public class UsersOrganizationsStatusesRequest : UniversalSelectRequestModel
+public class UsersOrganizationsStatusesRequestModel : UniversalSelectRequestModel
 {
     /// <summary>
     /// UsersOrganizationsFilter

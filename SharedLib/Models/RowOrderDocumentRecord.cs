@@ -5,4 +5,7 @@
 
 namespace SharedLib;
 
-record RowOrderDocumentRecord(int DocumentId, StatusesDocumentsEnum DocumentStatus, int OfferId, int GoodsId, decimal Quantity, int WarehouseId);
+/// <summary>
+/// RowOrderDocumentRecord
+/// </summary>
+public record RowOrderDocumentRecord(int DocumentId, StatusesDocumentsEnum DocumentStatus, int OfferId, int GoodsId, decimal Quantity, int WarehouseId);
