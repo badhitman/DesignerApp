@@ -75,12 +75,6 @@ public partial interface IUsersProfilesService
     public Task<TResponseModel<IEnumerable<UserLoginInfoModel>?>> GetUserLogins(string? userId = null);
 
     /// <summary>
-    /// Получает хэш пароля для указанного <paramref name="userId"/>.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<TResponseModel<string?>> GetPasswordHash(string? userId = null);
-
-    /// <summary>
     /// Добавляет внешнюю <see cref="UserLoginInfoModel"/> к указанному <paramref name="userId"/>.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>

@@ -12,14 +12,9 @@ using System.Text;
 using SharedLib;
 using System.Net.Mail;
 using Microsoft.EntityFrameworkCore.Storage;
-using DocumentFormat.OpenXml.Spreadsheet;
+using Org.BouncyCastle.Ocsp;
 
 namespace IdentityService;
-
-/*
- using IServiceScope scope = serviceScopeFactory.CreateScope();
-        using IEmailSender<ApplicationUser> emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender<ApplicationUser>>();
- */
 
 /// <summary>
 /// IdentityTools
@@ -35,6 +30,19 @@ public class IdentityTools(
     ITelegramTransmission tgRemoteRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<int?>> CountRecoveryCodes(string userId)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
+        if (user is null)
+            return new() { Messages = [new() { Text = $"Пользователь #{userId} не найден", TypeMessage = ResultTypesEnum.Error }] };
+
+        return new() { Response = await userManager.CountRecoveryCodesAsync(user) };
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> GenerateChangeEmailToken(GenerateChangeEmailTokenRequestModel req)
     {

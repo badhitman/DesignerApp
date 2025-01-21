@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Возвращает количество кодов восстановления, действительных для пользователя
+    /// </summary>
+    public Task<TResponseModel<int?>> CountRecoveryCodes(string userId);
+
+    /// <summary>
     /// Создает (и отправляет) токен изменения адреса электронной почты для указанного пользователя.
     /// </summary>
     public Task<ResponseBaseModel> GenerateChangeEmailToken(GenerateChangeEmailTokenRequestModel req);

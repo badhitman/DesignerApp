@@ -54,6 +54,11 @@ public static partial class GlobalStaticConstants
         /// Создает (и отправляет) токен изменения адреса электронной почты для указанного пользователя.
         /// </summary>
         public readonly static string GenerateChangeEmailTokenReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.CHANGE_ACTION_NAME}-{Routes.EMAIL_CONTROLLER_NAME}", $"{Routes.GENERATE_ACTION_NAME}-{Routes.TOKEN_CONTROLLER_NAME}");
+
+        /// <summary>
+        /// Возвращает количество кодов восстановления, действительных для пользователя
+        /// </summary>
+        public readonly static string CountRecoveryCodesReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.RECOVERY_CONTROLLER_NAME}-{Routes.CODES_CONTROLLER_NAME}", Routes.COUNT_ACTION_NAME);
         
         /// <summary>
         /// GenerateNewTwoFactorRecoveryCodesReceive

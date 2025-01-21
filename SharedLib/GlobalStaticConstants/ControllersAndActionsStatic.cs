@@ -847,6 +847,11 @@ public static partial class GlobalStaticConstants
         public const string GENERATE_ACTION_NAME = "generate";
 
         /// <summary>
+        /// Count
+        /// </summary>
+        public const string COUNT_ACTION_NAME = "count";
+
+        /// <summary>
         /// Попытка
         /// </summary>
         public const string TRY_ACTION_NAME = "TRY";

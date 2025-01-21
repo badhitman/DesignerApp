@@ -23,7 +23,6 @@ public class UsersProfilesService(
     SignInManager<ApplicationUser> signInManager,
     UserManager<ApplicationUser> userManager,
     IIdentityTransmission IdentityRepo,
-    IUserStore<ApplicationUser> userStore,
     IHttpContextAccessor httpContextAccessor,
     ILogger<UsersProfilesService> LoggerRepo) : IUsersProfilesService
 {
@@ -220,6 +219,7 @@ public class UsersProfilesService(
         return new(ResponseBaseModel.SuccessMessage("Токен действителен"));
     }
 
+    #region done
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> CountRecoveryCodes(string? userId = null)
     {
@@ -227,24 +227,9 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        return new() { Response = await userManager.CountRecoveryCodesAsync(user.ApplicationUser) };
+        return await IdentityRepo.CountRecoveryCodes(user.ApplicationUser.Id);
     }
 
-    /// <inheritdoc/>
-    public async Task<TResponseModel<string?>> GetPasswordHash(string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        string? passwordHash = null;
-        if (userStore is IUserPasswordStore<ApplicationUser> userPasswordStore && httpContextAccessor.HttpContext is not null)
-            passwordHash = await userPasswordStore.GetPasswordHashAsync(user.ApplicationUser, httpContextAccessor.HttpContext.RequestAborted);
-
-        return new() { Response = passwordHash };
-    }
-
-    #region done
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> GenerateChangeEmailToken(string newEmail, string baseAddress, string? userId = null)
     {
